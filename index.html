@@ -1113,328 +1113,6 @@ const maskEmail = e => { const p=e.split("@"); return p[0][0]+"•".repeat(Math.
 const maskPhone = p => p.slice(0,7)+" •••• ••"+p.slice(-2);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-/* ================================================== state ================ */
-const FREE_CREDITS = 5, PACK_SIZE = 10, LIST_SIZE = 15;
-const DEFAULT_STATE = {
-  loggedIn:false, mobile:"", company:"",
-  freeLeft:FREE_CREDITS, paidLeft:0,
-  productId:null, rawDesc:"", size:"₹50–500 cr", geo:"West India",
-  unlocked:{}, credited:{}, currentIndustry:null
-};
-let state = Object.assign({}, DEFAULT_STATE);
-let pendingOtp = null, payMethod = "upi";
-
-function save(){ try{ localStorage.setItem("nm_state", JSON.stringify(state)); }catch(e){} }
-function load(){
-  try{
-    const raw = localStorage.getItem("nm_state");
-    if(raw) state = Object.assign({}, DEFAULT_STATE, JSON.parse(raw));
-  }catch(e){ state = Object.assign({}, DEFAULT_STATE); }
-}
-
-function product(){ return PRODUCTS.find(p=>p.id===state.productId) || PRODUCTS[0]; }
-function sizeKey(){ return state.size==="Under ₹50 cr"?"s":state.size==="Over ₹500 cr"?"l":"m"; }
-function ranked(){
-  const p = product();
-  return IND.map(([code,label],i)=>({code,label,score:p.s[i],
-    reason:(REASON[p.id]&&REASON[p.id][code])||"Plausible fit on the base matrix — worth confirming before you spend time here."
-  })).sort((a,b)=>b.score-a.score).slice(0,6);
-}
-function unlockedCount(code){ return state.unlocked[code]||0; }
-function totalCredits(){ return state.freeLeft + state.paidLeft; }
-
-function extract(text){
-  const t=(text||"").toLowerCase(); let best=null,bestHits=0;
-  for(const p of PRODUCTS){ let h=0; for(const k of p.kw) if(t.includes(k)) h += k.length>6?2:1;
-    if(h>bestHits){bestHits=h;best=p;} }
-  const geo = /gujarat|maharashtra|pune|mumbai|west india|rajkot|surat|ahmedabad/.test(t)?"West India"
-    : /tamil|chennai|bengaluru|bangalore|karnataka|kerala|hyderabad|south/.test(t)?"South India"
-    : /delhi|ncr|punjab|haryana|ludhiana|noida|gurugram|north/.test(t)?"North India"
-    : /kolkata|odisha|east/.test(t)?"East India":"All India";
-  const size = /small|msme|sme|micro/.test(t)?"Under ₹50 cr":"₹50–500 cr";
-  return {product:best||PRODUCTS[0],geo,size};
-}
-
-/* ================================================== router =============== */
-const SCREENS = ["landing","login","otp","search","results","contacts","pay"];
-const LANDING_ANCHORS = {why:"why", data:"data", pricing:"pricing", faq:"faq", how:"how", optout:"optout"};
-
-function show(name){
-  SCREENS.forEach(s => { const el=$("screen-"+s); if(el) el.hidden = (s!==name); });
-  renderChrome(name);
-}
-
-function route(){
-  const raw = (location.hash || "#/").replace(/^#/,"");
-  const parts = raw.split("/").filter(Boolean);
-  const head = parts[0] || "";
-
-  if(LANDING_ANCHORS[head]){
-    show("landing");
-    const t = document.getElementById(LANDING_ANCHORS[head]);
-    if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
-    return;
-  }
-  if(head === "" ){ show("landing"); window.scrollTo(0,0); return; }
-
-  if(head === "login"){
-    if(state.loggedIn){ location.hash = "#/search"; return; }
-    show("login"); window.scrollTo(0,0); return;
-  }
-  if(head === "otp"){
-    if(!pendingOtp){ location.hash = "#/login"; return; }
-    show("otp"); window.scrollTo(0,0); return;
-  }
-  if(!state.loggedIn){ location.hash = "#/login"; return; }
-
-  if(head === "search"){ show("search"); renderSearch(); window.scrollTo(0,0); return; }
-  if(head === "results"){
-    if(!state.productId){ location.hash = "#/search"; return; }
-    show("results"); renderResults(); window.scrollTo(0,0); return;
-  }
-  if(head === "contacts"){
-    const code = parts[1];
-    if(!state.productId || !code || !IND.some(i=>i[0]===code)){ location.hash="#/results"; return; }
-    state.currentIndustry = code; save();
-    show("contacts"); renderContacts(); window.scrollTo(0,0); return;
-  }
-  if(head === "pay"){
-    if(!state.currentIndustry){ location.hash="#/results"; return; }
-    show("pay"); window.scrollTo(0,0); return;
-  }
-  location.hash = "#/";
-}
-
-function renderChrome(screen){
-  const onLanding = screen === "landing";
-  $("navLinks").hidden = !onLanding;
-  if(state.loggedIn){
-    $("credPill").hidden = false;
-    $("credVal").textContent = state.freeLeft + " free · " + state.paidLeft + " paid";
-    $("navCta").textContent = onLanding ? "Open app" : "Sign out";
-  }else{
-    $("credPill").hidden = true;
-    $("navCta").textContent = "Sign in";
-  }
-}
-
-/* ================================================== login =============== */
-$("loginForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const m = $("mobile").value.replace(/\D/g,"");
-  const c = $("company").value.trim();
-  $("mobileErr").textContent = ""; $("companyErr").textContent = "";
-  if(m.length !== 10 || !/^[6-9]/.test(m)){
-    $("mobileErr").textContent = "Enter a 10-digit Indian mobile number."; $("mobile").focus(); return;
-  }
-  if(c.length < 2){ $("companyErr").textContent = "We need your company name."; $("company").focus(); return; }
-  pendingOtp = { mobile:m, company:c, code:String(Math.floor(100000+Math.random()*900000)) };
-  $("otpTo").textContent = "+91 " + m.slice(0,5) + " " + m.slice(5);
-  $("demoCode").textContent = pendingOtp.code;
-  ["o1","o2","o3","o4","o5","o6"].forEach(id => { $(id).value = ""; });
-  $("otpErr").textContent = "";
-  location.hash = "#/otp";
-  setTimeout(()=>$("o1").focus(), 60);
-});
-
-const otpIds = ["o1","o2","o3","o4","o5","o6"];
-otpIds.forEach((id,i) => {
-  const el = $(id);
-  el.addEventListener("input", () => {
-    el.value = el.value.replace(/\D/g,"").slice(0,1);
-    if(el.value && i < 5) $(otpIds[i+1]).focus();
-  });
-  el.addEventListener("keydown", ev => {
-    if(ev.key === "Backspace" && !el.value && i > 0) $(otpIds[i-1]).focus();
-  });
-  el.addEventListener("paste", ev => {
-    const d = (ev.clipboardData.getData("text")||"").replace(/\D/g,"").slice(0,6);
-    if(d.length){ ev.preventDefault(); d.split("").forEach((ch,j)=>{ if(otpIds[j]) $(otpIds[j]).value = ch; });
-      $(otpIds[Math.min(d.length,6)-1]).focus(); }
-  });
-});
-
-$("otpForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const entered = otpIds.map(id=>$(id).value).join("");
-  if(entered.length !== 6){ $("otpErr").textContent = "Enter all six digits."; return; }
-  if(!pendingOtp || entered !== pendingOtp.code){
-    $("otpErr").textContent = "That code does not match. Check the number shown below.";
-    return;
-  }
-  state.loggedIn = true;
-  state.mobile = pendingOtp.mobile;
-  state.company = pendingOtp.company;
-  pendingOtp = null;
-  save();
-  location.hash = "#/search";
-});
-
-$("changeNum").addEventListener("click", () => { pendingOtp = null; location.hash = "#/login"; });
-$("backHome").addEventListener("click", () => { location.hash = "#/"; });
-$("brandBtn").addEventListener("click", () => { location.hash = "#/"; });
-$("navCta").addEventListener("click", () => {
-  if(!state.loggedIn){ location.hash = "#/login"; return; }
-  if(!$("screen-landing").hidden){ location.hash = state.productId ? "#/results" : "#/search"; return; }
-  if(confirm("Sign out? Your free credits and unlocked contacts stay with this number.")){
-    state.loggedIn = false; save(); location.hash = "#/";
-  }
-});
-
-/* ================================================== search ============== */
-$("examples").innerHTML = EXAMPLES.map((e,i)=>`<button class="chipbtn" type="button" data-i="${i}">${EX_LABELS[i]}</button>`).join("");
-Array.prototype.forEach.call($("examples").querySelectorAll(".chipbtn"), b => {
-  b.addEventListener("click", ()=>{ $("desc").value = EXAMPLES[b.dataset.i]; $("descErr").textContent=""; });
-});
-function renderSearch(){ $("desc").value = state.rawDesc || ""; $("descErr").textContent = ""; }
-$("searchBtn").addEventListener("click", () => {
-  const v = $("desc").value.trim();
-  if(v.length < 12){ $("descErr").textContent = "Tell us a little more — a sentence is enough."; $("desc").focus(); return; }
-  const got = extract(v);
-  state.rawDesc = v; state.productId = got.product.id; state.geo = got.geo; state.size = got.size;
-  save();
-  location.hash = "#/results";
-});
-
-/* ================================================== results ============= */
-function renderResults(){
-  $("icp").innerHTML =
-    `<label class="chip"><span class="k">Category</span><select id="selProduct" aria-label="Product category">` +
-      PRODUCTS.map(p=>`<option value="${p.id}"${p.id===state.productId?" selected":""}>${esc(p.label)}</option>`).join("") +
-    `</select></label>` +
-    `<label class="chip"><span class="k">Buyer size</span><select id="selSize" aria-label="Buyer company size">` +
-      ["Under ₹50 cr","₹50–500 cr","Over ₹500 cr"].map(v=>`<option${v===state.size?" selected":""}>${v}</option>`).join("") +
-    `</select></label>` +
-    `<label class="chip"><span class="k">Geography</span><select id="selGeo" aria-label="Target geography">` +
-      ["All India","West India","South India","North India","East India"].map(v=>`<option${v===state.geo?" selected":""}>${v}</option>`).join("") +
-    `</select></label>`;
-  $("selProduct").addEventListener("change", e=>{ state.productId=e.target.value; save(); renderResults(); });
-  $("selSize").addEventListener("change", e=>{ state.size=e.target.value; save(); renderResults(); });
-  $("selGeo").addEventListener("change", e=>{ state.geo=e.target.value; save(); renderResults(); });
-
-  const k = sizeKey();
-  $("ranks").innerHTML = ranked().map((r,i)=>{
-    const open = unlockedCount(r.code);
-    return `<button class="rank" data-code="${r.code}" role="listitem">
-      <span class="rank-n">${String(i+1).padStart(2,"0")}</span>
-      <span>
-        <h4>${esc(r.label)}</h4>
-        <p>${esc(r.reason)}</p>
-        <span class="who">Approach: ${esc(ROLES_BY_SIZE[r.code][k])}</span>
-      </span>
-      <span class="rank-right">
-        <span class="score">
-          <b style="color:${scoreColor(r.score)}">${r.score}<span style="color:var(--text-3); font-size:10px">/10</span></b>
-          <span class="bar"><i style="width:${r.score*10}%; background:${scoreColor(r.score)}"></i></span>
-        </span>
-        <span class="chev">${open? "✓" : "›"}</span>
-      </span>
-    </button>`;
-  }).join("");
-  Array.prototype.forEach.call($("ranks").querySelectorAll(".rank"), el => {
-    el.addEventListener("click", ()=>{ location.hash = "#/contacts/" + el.dataset.code; });
-  });
-}
-$("backSearch").addEventListener("click", ()=>{ location.hash = "#/search"; });
-$("backResults").addEventListener("click", ()=>{ location.hash = "#/results"; });
-
-/* ================================================== contacts =========== */
-function spendFreeOnOpen(code){
-  if(unlockedCount(code) > 0) return 0;
-  const n = Math.min(FREE_CREDITS, state.freeLeft);
-  if(n > 0){ state.unlocked[code] = n; state.freeLeft -= n; save(); }
-  return n;
-}
-
-function renderContacts(){
-  const code = state.currentIndustry;
-  const meta = ranked().find(r=>r.code===code) || {label:(IND.find(i=>i[0]===code)||["",""])[1], reason:"", score:0};
-  const justSpent = spendFreeOnOpen(code);
-  const list = makeContacts(code, LIST_SIZE);
-  const open = unlockedCount(code);
-
-  $("cIndustryEyebrow").textContent = "Contacts · " + state.geo;
-  $("cTitle").textContent = meta.label;
-  $("cSub").textContent = `${list.length} matched · ${state.size} · ${open} unlocked · ${state.freeLeft} free and ${state.paidLeft} paid credits left`;
-
-  let banner = "";
-  if(justSpent > 0){
-    banner = `<div class="banner good"><b>${justSpent} free contacts unlocked.</b>
-      <span>That is your free trial spent. The rest of this list needs a pack.</span></div>`;
-  }else if(open === 0){
-    banner = `<div class="banner warn"><b>No credits left.</b>
-      <span>Your five free contacts are used. ₹999 unlocks ten more, here or in any industry.</span></div>`;
-  }
-  $("cBanner").innerHTML = banner;
-
-  $("cards").innerHTML = list.map((c,i)=>{
-    const isOpen = i < open;
-    const paid = isOpen && i >= FREE_CREDITS;
-    const credited = state.credited[code+":"+i];
-    return `<article class="card${isOpen?"":" locked"}${credited?" credited":""}">
-      <div class="card-top">
-        <div><h4>${esc(c.name)}</h4><div class="role">${esc(c.title)}</div></div>
-        <span class="tag ${isOpen?(paid?"paid":"free"):"lock"}">${isOpen?(paid?"paid":"free"):"locked"}</span>
-      </div>
-      <div class="co">${esc(c.company)} · ${esc(c.city)}</div>
-      <p class="why">${esc(c.why)}</p>
-      <div class="reach">
-        <div><span class="lb">Mail</span><span class="${isOpen?"":"masked"}">${esc(isOpen?c.email:maskEmail(c.email))}</span></div>
-        <div><span class="lb">Call</span><span class="${isOpen?"":"masked"}">${esc(isOpen?c.phone+" x"+c.ext:maskPhone(c.phone))}</span></div>
-      </div>
-      ${isOpen?`<div class="card-foot">${credited
-        ? `<span class="credited-note">Credited back</span>`
-        : `<button class="wrongbtn" type="button" data-idx="${i}">Wrong contact? Get the credit back</button>`}</div>`:``}
-    </article>`;
-  }).join("");
-
-  Array.prototype.forEach.call($("cards").querySelectorAll(".wrongbtn"), b => {
-    b.addEventListener("click", ()=>{
-      state.credited[code+":"+b.dataset.idx] = true;
-      state.paidLeft += 1; save(); renderContacts(); renderChrome("contacts");
-    });
-  });
-
-  const remaining = list.length - open;
-  if(remaining > 0){
-    $("payArea").innerHTML = `<div class="paybar">
-      <div class="t"><strong>${remaining} more in ${esc(meta.label)}</strong>
-      <span>₹999 unlocks the next ${PACK_SIZE}. Wrong contacts are credited back.</span></div>
-      <button class="btn" type="button" id="goPay">Unlock ${PACK_SIZE} for ₹999</button></div>`;
-    $("goPay").addEventListener("click", ()=>{ location.hash = "#/pay"; });
-  }else{
-    $("payArea").innerHTML = `<div class="banner good" style="margin-top:18px">
-      <b>All ${list.length} delivered.</b>
-      <span>On day seven we will ask on WhatsApp which ones you reached — that answer sharpens your next list.</span></div>`;
-  }
-  renderChrome("contacts");
-}
-
-/* ================================================== payment ============ */
-function setMethod(m){
-  payMethod = m;
-  $("pmUpi").setAttribute("aria-pressed", m==="upi" ? "true":"false");
-  $("pmCard").setAttribute("aria-pressed", m==="card" ? "true":"false");
-}
-$("pmUpi").addEventListener("click", ()=>setMethod("upi"));
-$("pmCard").addEventListener("click", ()=>setMethod("card"));
-$("cancelPay").addEventListener("click", ()=>{ location.hash = "#/contacts/" + state.currentIndustry; });
-$("payBtn").addEventListener("click", () => {
-  const btn = $("payBtn");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Processing…';
-  setTimeout(()=>{
-    const code = state.currentIndustry;
-    state.paidLeft += PACK_SIZE;
-    const spend = Math.min(PACK_SIZE, LIST_SIZE - unlockedCount(code));
-    state.unlocked[code] = unlockedCount(code) + spend;
-    state.paidLeft -= spend;
-    save();
-    btn.disabled = false; btn.textContent = "Pay ₹999";
-    location.hash = "#/contacts/" + code;
-  }, 1100);
-});
-
 
 /* ================================================== hero instrument ===== */
 function buildInstrument(){
@@ -1479,12 +1157,616 @@ function buildInstrument(){
   });
 }
 
+/* ==================================================================== */
+/* CONFIGURATION — the only two lines you edit to go live                */
+/* ==================================================================== */
+/* Leave both blank and the site runs on the invented demo data, exactly
+   as it does now. Paste your Supabase project URL and ANON key here and
+   the same screens run on your real contacts instead — with the paywall
+   enforced in the database, so locked contacts never reach the browser.
+
+   The anon key is safe to put in the page. The service_role key is NOT:
+   it bypasses every security rule. It belongs only in the importer and
+   your payment webhook, never here.                                      */
+
+const NM_CONFIG = {
+  supabaseUrl:     "",   // e.g. "https://abcdefgh.supabase.co"
+  supabaseAnonKey: "",   // e.g. "eyJhbGciOi..."
+};
+
+const LIVE = Boolean(NM_CONFIG.supabaseUrl && NM_CONFIG.supabaseAnonKey);
+
+/* ================================================== state ================ */
+const FREE_CREDITS = 5, PACK_SIZE = 10, LIST_SIZE = 15;
+const DEFAULT_STATE = {
+  loggedIn:false, mobile:"", company:"",
+  freeLeft:FREE_CREDITS, paidLeft:0,
+  productId:null, rawDesc:"", size:"₹50–500 cr", geo:"West India",
+  unlocked:{}, credited:{}, currentIndustry:null,
+  ranked:null, contacts:null
+};
+let state = Object.assign({}, DEFAULT_STATE);
+let pendingOtp = null, payMethod = "upi", busy = false;
+
+function save(){ try{ localStorage.setItem("nm_state", JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem("nm_state");
+    if(raw) state = Object.assign({}, DEFAULT_STATE, JSON.parse(raw));
+  }catch(e){ state = Object.assign({}, DEFAULT_STATE); }
+}
+
+function product(){ return PRODUCTS.find(p=>p.id===state.productId) || PRODUCTS[0]; }
+function sizeKey(){ return state.size==="Under ₹50 cr"?"s":state.size==="Over ₹500 cr"?"l":"m"; }
+function unlockedCount(code){ return state.unlocked[code]||0; }
+
+function extract(text){
+  const t=(text||"").toLowerCase(); let best=null,bestHits=0;
+  for(const p of PRODUCTS){ let h=0; for(const k of p.kw) if(t.includes(k)) h += k.length>6?2:1;
+    if(h>bestHits){bestHits=h;best=p;} }
+  const geo = /gujarat|maharashtra|pune|mumbai|west india|rajkot|surat|ahmedabad/.test(t)?"West India"
+    : /tamil|chennai|bengaluru|bangalore|karnataka|kerala|hyderabad|south/.test(t)?"South India"
+    : /delhi|ncr|punjab|haryana|ludhiana|noida|gurugram|north/.test(t)?"North India"
+    : /kolkata|odisha|east/.test(t)?"East India":"All India";
+  const size = /small|msme|sme|micro/.test(t)?"Under ₹50 cr":"₹50–500 cr";
+  return {product:best||PRODUCTS[0],geo,size};
+}
+
+/* ==================================================================== */
+/* DATA LAYER                                                            */
+/* Two implementations behind one interface. Every screen calls `api.*`  */
+/* and neither knows nor cares which one is running.                     */
+/* ==================================================================== */
+
+/* ---------- demo: invented data, generated in the browser ------------ */
+const demoApi = {
+  live: false,
+
+  async sendOtp(mobile, company){
+    pendingOtp = { mobile, company, code: String(Math.floor(100000+Math.random()*900000)) };
+    return { demoCode: pendingOtp.code };
+  },
+
+  async verifyOtp(code){
+    if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
+    state.loggedIn = true;
+    state.mobile   = pendingOtp.mobile;
+    state.company  = pendingOtp.company;
+    state.freeLeft = FREE_CREDITS;
+    state.paidLeft = 0;
+    pendingOtp = null;
+    save();
+  },
+
+  async signOut(){ state.loggedIn = false; save(); },
+
+  async me(){ return { free: state.freeLeft, paid: state.paidLeft }; },
+
+  async search(raw){
+    const got = extract(raw);
+    state.rawDesc = raw; state.productId = got.product.id;
+    state.geo = got.geo; state.size = got.size;
+    save();
+    return this.rank();
+  },
+
+  async rank(){
+    const p = product(), k = sizeKey();
+    return IND.map(([code,label],i)=>({
+      code, label, score:p.s[i],
+      reason:(REASON[p.id]&&REASON[p.id][code])
+             || "Plausible fit on the base matrix — worth confirming before you spend time here.",
+      approach: ROLES_BY_SIZE[code][k],
+      available: LIST_SIZE
+    })).sort((a,b)=>b.score-a.score).slice(0,6);
+  },
+
+  async contacts(code){
+    const open = unlockedCount(code);
+    return makeContacts(code, LIST_SIZE).map((c,i)=>({
+      id: code+":"+i,
+      name: c.name, title: c.title, company: c.company, city: c.city, why: c.why,
+      email: i<open ? c.email : maskEmail(c.email),
+      phone: i<open ? c.phone+" x"+c.ext : maskPhone(c.phone),
+      unlocked: i<open,
+      tier: i<open ? (i<FREE_CREDITS ? "free" : "paid") : "locked",
+      credited: Boolean(state.credited[code+":"+i])
+    }));
+  },
+
+  async unlock(code, count){
+    const have = state.freeLeft + state.paidLeft;
+    const take = Math.min(count, have, LIST_SIZE - unlockedCount(code));
+    let free = state.freeLeft, paid = state.paidLeft;
+    for(let i=0;i<take;i++){ if(free>0) free--; else if(paid>0) paid--; }
+    state.unlocked[code] = unlockedCount(code) + take;
+    state.freeLeft = free; state.paidLeft = paid;
+    save();
+    return { unlocked: take, free, paid };
+  },
+
+  async reportWrong(id){
+    state.credited[id] = true;
+    state.paidLeft += 1;
+    save();
+    return { credited: true, paid: state.paidLeft };
+  },
+
+  async buyPack(){
+    state.paidLeft += PACK_SIZE;
+    save();
+    return { paid: state.paidLeft };
+  }
+};
+
+/* ---------- live: Supabase. The paywall runs in the database. -------- */
+function makeLiveApi(sb){
+  const rpc = async (fn, args) => {
+    const { data, error } = await sb.rpc(fn, args || {});
+    if(error) throw error;
+    return data;
+  };
+  return {
+    live: true,
+
+    async sendOtp(mobile, company){
+      state.company = company; save();
+      const { error } = await sb.auth.signInWithOtp({ phone: "+91" + mobile });
+      if(error) throw error;
+      pendingOtp = { mobile, company };
+      return {};                                   // a real SMS goes out; no code to show
+    },
+
+    async verifyOtp(code){
+      const { error } = await sb.auth.verifyOtp({
+        phone: "+91" + pendingOtp.mobile, token: code, type: "sms" });
+      if(error) throw new Error("bad-code");
+      if(pendingOtp.company){
+        await sb.from("profiles").update({ company_name: pendingOtp.company })
+                .eq("id", (await sb.auth.getUser()).data.user.id);
+      }
+      state.loggedIn = true;
+      state.mobile   = pendingOtp.mobile;
+      state.company  = pendingOtp.company;
+      pendingOtp = null;
+      await this.me();
+      save();
+    },
+
+    async signOut(){ await sb.auth.signOut(); state.loggedIn = false; save(); },
+
+    async me(){
+      const rows = await rpc("nm_me");
+      const r = (rows && rows[0]) || { free_credits:0, paid_credits:0 };
+      state.freeLeft = r.free_credits;
+      state.paidLeft = r.paid_credits;
+      if(r.company_name) state.company = r.company_name;
+      save();
+      return { free: state.freeLeft, paid: state.paidLeft };
+    },
+
+    async search(raw){
+      state.rawDesc = raw; save();
+      const rows = await rpc("nm_search", { p_raw: raw, p_size: state.size, p_geo: state.geo });
+      return rows.map(r => ({
+        code: r.industry_code, label: r.industry_name, score: Number(r.score),
+        reason: r.reason, approach: r.approach, available: r.available
+      }));
+    },
+
+    async rank(){
+      return state.ranked || this.search(state.rawDesc || "");
+    },
+
+    async contacts(code){
+      const rows = await rpc("nm_list_contacts", { p_industry: code, p_limit: LIST_SIZE });
+      return rows.map(r => ({
+        id: r.person_id, name: r.full_name, title: r.title, company: r.company_name,
+        city: r.city, why: r.why_line, email: r.email, phone: r.phone,
+        unlocked: r.unlocked, tier: r.tier, credited: r.credited_back
+      }));
+    },
+
+    async unlock(code, count){
+      const rows = await rpc("nm_unlock", { p_industry: code, p_count: count });
+      const r = (rows && rows[0]) || { unlocked:0, free_left:0, paid_left:0 };
+      state.freeLeft = r.free_left; state.paidLeft = r.paid_left;
+      state.unlocked[code] = unlockedCount(code) + r.unlocked;
+      save();
+      return { unlocked: r.unlocked, free: r.free_left, paid: r.paid_left };
+    },
+
+    async reportWrong(id){
+      const rows = await rpc("nm_report_wrong", { p_person: id });
+      const r = (rows && rows[0]) || { credited:false, paid_left:state.paidLeft };
+      state.paidLeft = r.paid_left; save();
+      return { credited: r.credited, paid: r.paid_left };
+    },
+
+    async buyPack(){
+      /* Razorpay goes here. Open checkout, and on success your server webhook
+         calls nm_credit_order() with the service_role key — never the browser,
+         or anyone could mint their own credits. Then re-read the balance: */
+      await this.me();
+      return { paid: state.paidLeft };
+    }
+  };
+}
+
+let api = demoApi;
+
+async function initApi(){
+  if(!LIVE) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  const sb = window.supabase.createClient(NM_CONFIG.supabaseUrl, NM_CONFIG.supabaseAnonKey);
+  api = makeLiveApi(sb);
+  const { data } = await sb.auth.getSession();
+  if(data && data.session){ state.loggedIn = true; await api.me(); }
+  else { state.loggedIn = false; }
+  save();
+}
+
+/* ================================================== router =============== */
+const SCREENS = ["landing","login","otp","search","results","contacts","pay"];
+const LANDING_ANCHORS = {why:"why", data:"data", pricing:"pricing", faq:"faq",
+                         how:"how", optout:"optout"};
+
+function show(name){
+  SCREENS.forEach(s => { const el=$("screen-"+s); if(el) el.hidden = (s!==name); });
+  renderChrome(name);
+}
+
+async function route(){
+  const raw = (location.hash || "#/").replace(/^#/,"");
+  const parts = raw.split("/").filter(Boolean);
+  const head = parts[0] || "";
+
+  if(LANDING_ANCHORS[head]){
+    show("landing");
+    const t = document.getElementById(LANDING_ANCHORS[head]);
+    if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+    return;
+  }
+  if(head === ""){ show("landing"); window.scrollTo(0,0); return; }
+
+  if(head === "login"){
+    if(state.loggedIn){ location.hash = "#/search"; return; }
+    show("login"); window.scrollTo(0,0); return;
+  }
+  if(head === "otp"){
+    if(!pendingOtp){ location.hash = "#/login"; return; }
+    show("otp"); window.scrollTo(0,0); return;
+  }
+  if(!state.loggedIn){ location.hash = "#/login"; return; }
+
+  if(head === "search"){ show("search"); renderSearch(); window.scrollTo(0,0); return; }
+  if(head === "results"){
+    if(!state.ranked){ location.hash = "#/search"; return; }
+    show("results"); renderResults(); window.scrollTo(0,0); return;
+  }
+  if(head === "contacts"){
+    const code = parts[1];
+    if(!state.ranked || !code){ location.hash = "#/results"; return; }
+    state.currentIndustry = code; save();
+    show("contacts"); await renderContacts(); window.scrollTo(0,0); return;
+  }
+  if(head === "pay"){
+    if(!state.currentIndustry){ location.hash = "#/results"; return; }
+    show("pay"); window.scrollTo(0,0); return;
+  }
+  location.hash = "#/";
+}
+
+function renderChrome(screen){
+  const onLanding = screen === "landing";
+  $("navLinks").hidden = !onLanding;
+  if(state.loggedIn){
+    $("credPill").hidden = false;
+    $("credVal").textContent = state.freeLeft + " free · " + state.paidLeft + " paid";
+    $("navCta").textContent = onLanding ? "Open app" : "Sign out";
+  }else{
+    $("credPill").hidden = true;
+    $("navCta").textContent = "Sign in";
+  }
+}
+
+/* ---------------------------------------------------------- small helpers */
+function setBusy(btn, on, label){
+  busy = on;
+  btn.disabled = on;
+  if(on){ btn.dataset.label = btn.textContent; btn.innerHTML = '<span class="spinner"></span> ' + (label||"Working…"); }
+  else  { btn.textContent = btn.dataset.label || btn.textContent; }
+}
+function friendly(err){
+  const m = (err && (err.message || err.error_description || "")) + "";
+  if(/bad-code/.test(m))              return "That code does not match. Try again.";
+  if(/rate|too many/i.test(m))        return "Too many attempts. Wait a minute and try again.";
+  if(/not signed in/i.test(m))        return "Your session expired. Please sign in again.";
+  if(/network|fetch|Failed to/i.test(m)) return "Could not reach the server. Check your connection.";
+  return m || "Something went wrong. Try again.";
+}
+
+/* ================================================== login =============== */
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(busy) return;
+  const m = $("mobile").value.replace(/\D/g,"");
+  const c = $("company").value.trim();
+  $("mobileErr").textContent = ""; $("companyErr").textContent = "";
+  if(m.length !== 10 || !/^[6-9]/.test(m)){
+    $("mobileErr").textContent = "Enter a 10-digit Indian mobile number."; $("mobile").focus(); return;
+  }
+  if(c.length < 2){ $("companyErr").textContent = "We need your company name."; $("company").focus(); return; }
+
+  const btn = $("sendOtpBtn");
+  setBusy(btn, true, "Sending…");
+  try{
+    const r = await api.sendOtp(m, c);
+    $("otpTo").textContent = "+91 " + m.slice(0,5) + " " + m.slice(5);
+    ["o1","o2","o3","o4","o5","o6"].forEach(id => { $(id).value = ""; });
+    $("otpErr").textContent = "";
+    const hint = document.querySelector("#screen-otp .demohint");
+    if(r.demoCode){
+      $("demoCode").textContent = r.demoCode;
+      if(hint) hint.hidden = false;
+    }else if(hint){ hint.hidden = true; }
+    location.hash = "#/otp";
+    setTimeout(()=>$("o1").focus(), 60);
+  }catch(err){
+    $("mobileErr").textContent = friendly(err);
+  }finally{ setBusy(btn, false); }
+});
+
+const otpIds = ["o1","o2","o3","o4","o5","o6"];
+otpIds.forEach((id,i) => {
+  const el = $(id);
+  el.addEventListener("input", () => {
+    el.value = el.value.replace(/\D/g,"").slice(0,1);
+    if(el.value && i < 5) $(otpIds[i+1]).focus();
+  });
+  el.addEventListener("keydown", ev => {
+    if(ev.key === "Backspace" && !el.value && i > 0) $(otpIds[i-1]).focus();
+  });
+  el.addEventListener("paste", ev => {
+    const d = (ev.clipboardData.getData("text")||"").replace(/\D/g,"").slice(0,6);
+    if(d.length){ ev.preventDefault(); d.split("").forEach((ch,j)=>{ if(otpIds[j]) $(otpIds[j]).value = ch; });
+      $(otpIds[Math.min(d.length,6)-1]).focus(); }
+  });
+});
+
+$("otpForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(busy) return;
+  const entered = otpIds.map(id=>$(id).value).join("");
+  if(entered.length !== 6){ $("otpErr").textContent = "Enter all six digits."; return; }
+  const btn = $("verifyBtn");
+  setBusy(btn, true, "Verifying…");
+  try{
+    await api.verifyOtp(entered);
+    location.hash = "#/search";
+  }catch(err){
+    $("otpErr").textContent = friendly(err);
+  }finally{ setBusy(btn, false); }
+});
+
+$("changeNum").addEventListener("click", () => { pendingOtp = null; location.hash = "#/login"; });
+$("backHome").addEventListener("click", () => { location.hash = "#/"; });
+$("brandBtn").addEventListener("click", () => { location.hash = "#/"; });
+$("navCta").addEventListener("click", async () => {
+  if(!state.loggedIn){ location.hash = "#/login"; return; }
+  if(!$("screen-landing").hidden){ location.hash = state.ranked ? "#/results" : "#/search"; return; }
+  if(confirm("Sign out? Your credits and unlocked contacts stay with this number.")){
+    await api.signOut();
+    state.ranked = null; state.contacts = null; save();
+    location.hash = "#/";
+  }
+});
+
+/* ================================================== search ============== */
+$("examples").innerHTML = EXAMPLES.map((e,i)=>
+  `<button class="chipbtn" type="button" data-i="${i}">${EX_LABELS[i]}</button>`).join("");
+Array.prototype.forEach.call($("examples").querySelectorAll(".chipbtn"), b => {
+  b.addEventListener("click", ()=>{ $("desc").value = EXAMPLES[b.dataset.i]; $("descErr").textContent=""; });
+});
+function renderSearch(){ $("desc").value = state.rawDesc || ""; $("descErr").textContent = ""; }
+
+$("searchBtn").addEventListener("click", async () => {
+  if(busy) return;
+  const v = $("desc").value.trim();
+  if(v.length < 12){
+    $("descErr").textContent = "Tell us a little more — a sentence is enough."; $("desc").focus(); return;
+  }
+  const btn = $("searchBtn");
+  setBusy(btn, true, "Finding buyers…");
+  try{
+    state.ranked = await api.search(v);
+    if(!state.ranked.length){
+      $("descErr").textContent = "No industries matched that yet. Try describing the product differently.";
+      return;
+    }
+    state.unlocked = {}; state.credited = {};
+    save();
+    location.hash = "#/results";
+  }catch(err){
+    $("descErr").textContent = friendly(err);
+  }finally{ setBusy(btn, false); }
+});
+
+/* ================================================== results ============= */
+function renderResults(){
+  $("icp").innerHTML =
+    `<label class="chip"><span class="k">Category</span><select id="selProduct" aria-label="Product category">` +
+      PRODUCTS.map(p=>`<option value="${p.id}"${p.id===state.productId?" selected":""}>${esc(p.label)}</option>`).join("") +
+    `</select></label>` +
+    `<label class="chip"><span class="k">Buyer size</span><select id="selSize" aria-label="Buyer company size">` +
+      ["Under ₹50 cr","₹50–500 cr","Over ₹500 cr"].map(v=>`<option${v===state.size?" selected":""}>${v}</option>`).join("") +
+    `</select></label>` +
+    `<label class="chip"><span class="k">Geography</span><select id="selGeo" aria-label="Target geography">` +
+      ["All India","West India","South India","North India","East India"].map(v=>`<option${v===state.geo?" selected":""}>${v}</option>`).join("") +
+    `</select></label>`;
+
+  const refresh = async () => {
+    try{ state.ranked = await api.rank(); save(); renderResults(); }
+    catch(err){ console.error(err); }
+  };
+  $("selProduct").addEventListener("change", e=>{ state.productId=e.target.value; save(); refresh(); });
+  $("selSize").addEventListener("change",   e=>{ state.size=e.target.value;      save(); refresh(); });
+  $("selGeo").addEventListener("change",    e=>{ state.geo=e.target.value;       save(); refresh(); });
+
+  const rows = state.ranked || [];
+  $("ranks").innerHTML = rows.map((r,i)=>{
+    const open = unlockedCount(r.code);
+    return `<button class="rank" data-code="${esc(r.code)}" role="listitem">
+      <span class="rank-n">${String(i+1).padStart(2,"0")}</span>
+      <span>
+        <h4>${esc(r.label)}</h4>
+        <p>${esc(r.reason)}</p>
+        <span class="who">Approach: ${esc(r.approach || "")}</span>
+      </span>
+      <span class="rank-right">
+        <span class="score">
+          <b style="color:${scoreColor(r.score)}">${Number(r.score).toFixed(0)}<span style="color:var(--text-3); font-size:10px">/10</span></b>
+          <span class="bar"><i style="width:${r.score*10}%; background:${scoreColor(r.score)}"></i></span>
+        </span>
+        <span class="chev">${open ? "✓" : "›"}</span>
+      </span>
+    </button>`;
+  }).join("");
+
+  Array.prototype.forEach.call($("ranks").querySelectorAll(".rank"), el => {
+    el.addEventListener("click", ()=>{ location.hash = "#/contacts/" + el.dataset.code; });
+  });
+}
+$("backSearch").addEventListener("click", ()=>{ location.hash = "#/search"; });
+$("backResults").addEventListener("click", ()=>{ location.hash = "#/results"; });
+
+/* ================================================== contacts =========== */
+async function renderContacts(){
+  const code = state.currentIndustry;
+  const meta = (state.ranked || []).find(r=>r.code===code) || { label: code };
+
+  $("cIndustryEyebrow").textContent = "Contacts · " + state.geo;
+  $("cTitle").textContent = meta.label;
+  $("cSub").textContent = "Loading…";
+  $("cards").innerHTML = "";
+  $("payArea").innerHTML = "";
+
+  let justSpent = 0;
+  try{
+    // first visit to an industry spends whatever free credits are left
+    if(unlockedCount(code) === 0 && state.freeLeft > 0){
+      const r = await api.unlock(code, Math.min(FREE_CREDITS, state.freeLeft));
+      justSpent = r.unlocked;
+    }
+    state.contacts = await api.contacts(code);
+  }catch(err){
+    $("cSub").textContent = "";
+    $("cBanner").innerHTML = `<div class="banner warn"><b>Could not load contacts.</b>
+      <span>${esc(friendly(err))}</span></div>`;
+    return;
+  }
+
+  const list = state.contacts;
+  const open = list.filter(c=>c.unlocked).length;
+  state.unlocked[code] = open; save();
+
+  $("cSub").textContent =
+    `${list.length} matched · ${state.size} · ${open} unlocked · ` +
+    `${state.freeLeft} free and ${state.paidLeft} paid credits left`;
+
+  $("cBanner").innerHTML =
+      justSpent > 0
+        ? `<div class="banner good"><b>${justSpent} free contacts unlocked.</b>
+             <span>That is your free trial spent. The rest of this list needs a pack.</span></div>`
+    : open === 0
+        ? `<div class="banner warn"><b>No credits left.</b>
+             <span>Your five free contacts are used. ₹999 unlocks ten more, here or in any industry.</span></div>`
+    : "";
+
+  $("cards").innerHTML = list.map(c => `
+    <article class="card${c.unlocked?"":" locked"}${c.credited?" credited":""}">
+      <div class="card-top">
+        <div><h4>${esc(c.name)}</h4><div class="role">${esc(c.title)}</div></div>
+        <span class="tag ${c.unlocked?(c.tier==="paid"?"paid":"free"):"lock"}">${esc(c.tier)}</span>
+      </div>
+      <div class="co">${esc(c.company)}${c.city?" · "+esc(c.city):""}</div>
+      <p class="why">${esc(c.why)}</p>
+      <div class="reach">
+        <div><span class="lb">Mail</span><span class="${c.unlocked?"":"masked"}">${esc(c.email||"—")}</span></div>
+        <div><span class="lb">Call</span><span class="${c.unlocked?"":"masked"}">${esc(c.phone||"—")}</span></div>
+      </div>
+      ${c.unlocked ? `<div class="card-foot">${c.credited
+        ? `<span class="credited-note">Credited back</span>`
+        : `<button class="wrongbtn" type="button" data-id="${esc(c.id)}">Wrong contact? Get the credit back</button>`}</div>` : ``}
+    </article>`).join("");
+
+  Array.prototype.forEach.call($("cards").querySelectorAll(".wrongbtn"), b => {
+    b.addEventListener("click", async ()=>{
+      b.disabled = true; b.textContent = "Crediting…";
+      try{ await api.reportWrong(b.dataset.id); await renderContacts(); }
+      catch(err){ b.disabled = false; b.textContent = friendly(err); }
+    });
+  });
+
+  const remaining = list.length - open;
+  if(remaining > 0){
+    $("payArea").innerHTML = `<div class="paybar">
+      <div class="t"><strong>${remaining} more in ${esc(meta.label)}</strong>
+      <span>₹999 unlocks the next ${PACK_SIZE}. Wrong contacts are credited back.</span></div>
+      <button class="btn" type="button" id="goPay">Unlock ${PACK_SIZE} for ₹999</button></div>`;
+    $("goPay").addEventListener("click", ()=>{ location.hash = "#/pay"; });
+  }else{
+    $("payArea").innerHTML = `<div class="banner good" style="margin-top:22px">
+      <b>All ${list.length} delivered.</b>
+      <span>On day seven we will ask on WhatsApp which ones you reached — that answer sharpens your next list.</span></div>`;
+  }
+  renderChrome("contacts");
+}
+
+/* ================================================== payment ============ */
+function setMethod(m){
+  payMethod = m;
+  $("pmUpi").setAttribute("aria-pressed", m==="upi" ? "true":"false");
+  $("pmCard").setAttribute("aria-pressed", m==="card" ? "true":"false");
+}
+$("pmUpi").addEventListener("click", ()=>setMethod("upi"));
+$("pmCard").addEventListener("click", ()=>setMethod("card"));
+$("cancelPay").addEventListener("click", ()=>{ location.hash = "#/contacts/" + state.currentIndustry; });
+
+$("payBtn").addEventListener("click", async () => {
+  if(busy) return;
+  const btn = $("payBtn");
+  setBusy(btn, true, "Processing…");
+  try{
+    await api.buyPack();
+    const code = state.currentIndustry;
+    await api.unlock(code, PACK_SIZE);
+    location.hash = "#/contacts/" + code;
+    await renderContacts();
+  }catch(err){
+    alert(friendly(err));
+  }finally{ setBusy(btn, false); }
+});
+
 /* ================================================== boot =============== */
-load();
-window.addEventListener("hashchange", route);
-if(!location.hash) location.hash = "#/";
-route();
-buildInstrument();
+(async function boot(){
+  load();
+  try{ await initApi(); }
+  catch(err){
+    console.error("Supabase failed to load; falling back to demo data.", err);
+    api = demoApi;
+  }
+  window.addEventListener("hashchange", route);
+  if(!location.hash) location.hash = "#/";
+  await route();
+  buildInstrument();
+})();
+
 })();
 </script>
 </body>
