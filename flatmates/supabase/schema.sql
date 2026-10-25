@@ -76,7 +76,8 @@ create table if not exists public.fm_listings (
 alter table public.fm_listings add column if not exists photos text[] not null default '{}';
 -- The household: same living-style answers as seekers, plus who lives there.
 alter table public.fm_listings add column if not exists household jsonb not null default '{}';
--- Shared monthly bills on top of rent: {maintenance, electricity, wifi, help} in rupees.
+-- Monthly bills on top of rent: {maintenance, electricity, wifi, help} = the NEW person's share
+-- in rupees, plus split: {mode: total|share, people, total: {...whole-flat amounts}}.
 alter table public.fm_listings add column if not exists costs jsonb not null default '{}';
 create index if not exists fm_listings_search on public.fm_listings (status, city, rent);
 
@@ -87,6 +88,9 @@ create table if not exists public.fm_listing_private (
   contact_phone text not null,
   address       text not null
 );
+
+-- Structured address: {flat, building, street, landmark, pin}. Area and city are public on the listing.
+alter table public.fm_listing_private add column if not exists address_parts jsonb not null default '{}';
 
 -- ----------------------------------------------------- unlocks/visits --
 create table if not exists public.fm_unlocks (
@@ -211,6 +215,9 @@ drop function if exists public.fm_post_listing(text, text, text, text, int, int,
   text, text, text[], text, text, text, text);
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
   text, text, text[], text, text, text, text, text[]);
+drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
+  text, text, text[], text, text, text, text, text[], jsonb, jsonb);
+drop function if exists public.fm_contact(uuid);
 
 drop function if exists public.fm_unlock(uuid);           -- contact now only via an accepted request
 drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund: contacts are used on acceptance
@@ -307,7 +314,7 @@ create or replace function public.fm_post_listing(
   p_rent int, p_deposit int, p_available_from date, p_gender text,
   p_furnishing text, p_amenities text[], p_description text,
   p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}',
-  p_household jsonb default '{}', p_costs jsonb default '{}')
+  p_household jsonb default '{}', p_costs jsonb default '{}', p_address_parts jsonb default '{}')
 returns uuid
 language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_photo text;
@@ -320,6 +327,10 @@ begin
   if jsonb_typeof(coalesce(p_household, '{}')) <> 'object' or pg_column_size(p_household) > 4096
      or jsonb_typeof(coalesce(p_costs, '{}')) <> 'object' or pg_column_size(p_costs) > 1024 then
     raise exception 'bad-details';
+  end if;
+  if jsonb_typeof(coalesce(p_address_parts, '{}')) <> 'object' or pg_column_size(p_address_parts) > 1024
+     or coalesce(p_address_parts->>'pin', '') !~ '^([1-9][0-9]{5})?$' then
+    raise exception 'bad-address';
   end if;
   -- Photos must be the caller's own uploads in the fm-photos bucket.
   foreach v_photo in array coalesce(p_photos, '{}') loop
@@ -335,8 +346,8 @@ begin
           coalesce(p_description, ''), coalesce(p_photos, '{}'),
           coalesce(p_household, '{}'), coalesce(p_costs, '{}'))
   returning id into v_id;
-  insert into fm_listing_private (listing_id, contact_name, contact_phone, address)
-  values (v_id, p_contact_name, p_contact_phone, p_address);
+  insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts)
+  values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'));
   return v_id;
 end $$;
 
@@ -441,9 +452,9 @@ $$;
 
 -- Owner contact and exact address: only for the owner, or a seeker whose request was accepted.
 create or replace function public.fm_contact(p_listing uuid)
-returns table (contact_name text, contact_phone text, address text)
+returns table (contact_name text, contact_phone text, address text, address_parts jsonb)
 language sql security definer set search_path = public stable as $$
-  select pv.contact_name, pv.contact_phone, pv.address
+  select pv.contact_name, pv.contact_phone, pv.address, pv.address_parts
   from fm_listing_private pv
   join fm_listings l on l.id = pv.listing_id
   where pv.listing_id = p_listing

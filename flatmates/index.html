@@ -422,6 +422,17 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 .form-err{color:var(--danger); font-weight:700; margin:0 0 10px}
 .bad{outline:2px solid var(--danger); outline-offset:2px; border-radius:12px}
 
+/* ---------- bills split + maps */
+.split{display:grid; grid-template-columns:1fr auto; gap:2px 12px; margin-top:10px; padding:12px 14px; border-radius:12px; background:var(--brand-soft);
+  font-size:14px; font-variant-numeric:tabular-nums}
+.split:empty{display:none}
+.split .h{grid-column:1 / -1; font-weight:700; margin-bottom:4px}
+.split .t{font-weight:800; border-top:1px solid var(--line-2); padding-top:4px; margin-top:2px}
+.map-box{margin:4px 0 12px; border-radius:14px; overflow:hidden; border:1px solid var(--line); background:var(--surface-2)}
+.map-box iframe{display:block; width:100%; height:220px; border:0}
+.map-box .map-links{display:flex; gap:12px; flex-wrap:wrap; padding:10px 12px; font-size:14px; font-weight:700}
+.map-box .map-q{padding:10px 12px 0; font-size:14px; color:var(--text-2)}
+
 .foot{color:var(--text-3); font-size:13px; padding-block:24px 40px; border-top:1px solid var(--line); margin-top:16px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
@@ -585,14 +596,19 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
           <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="1" value="0" inputmode="numeric"></div>
           <div class="field"><label for="pBhk">Flat size</label><select id="pBhk"><option value="1">1 BHK</option><option value="2" selected>2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></div>
         </div>
-        <div class="field"><label>Monthly bills on top of rent (₹, this room's share)</label>
+        <div class="field"><label>Monthly bills on top of rent (₹)</label>
+          <div class="chips" style="margin-bottom:10px">
+            <label class="chip"><input type="radio" name="billMode" value="total" checked>Whole flat's bill, split it for me</label>
+            <label class="chip"><input type="radio" name="billMode" value="share">Just the new person's share</label>
+          </div>
           <div class="grid4">
             <input type="number" id="cMaint" min="0" step="1" inputmode="numeric" placeholder="Maintenance" aria-label="Maintenance">
             <input type="number" id="cElec" min="0" step="1" inputmode="numeric" placeholder="Electricity" aria-label="Electricity, average">
             <input type="number" id="cWifi" min="0" step="1" inputmode="numeric" placeholder="Wi-Fi" aria-label="Wi-Fi">
             <input type="number" id="cHelp" min="0" step="1" inputmode="numeric" placeholder="Cook / maid" aria-label="Cook or maid">
           </div>
-          <p class="hint">Seekers see the all-in monthly cost, so there are no surprises at the visit. Leave blank if included in rent.</p></div>
+          <div class="split" id="billSplit" aria-live="polite"></div>
+          <p class="hint">Leave a box blank if it's included in the rent.</p></div>
         <div class="grid3">
           <div class="field"><label for="pFrom">Available from</label><input type="date" id="pFrom" required></div>
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
@@ -615,8 +631,20 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
             <div class="field"><label for="pName">Your name</label><input type="text" id="pName" required autocomplete="name"></div>
             <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           </div>
-          <div class="field" style="margin:0"><label for="pAddr">Exact address</label>
-            <textarea id="pAddr" required style="min-height:64px" placeholder="Flat no., building, street, landmark"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label for="aFlat">Flat / house no.</label><input type="text" id="aFlat" required maxlength="30" placeholder="e.g. B-304"></div>
+            <div class="field"><label for="aBuilding">Building or society</label><input type="text" id="aBuilding" required maxlength="80" placeholder="e.g. Green Park Apartments"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label for="aStreet">Street / road</label><input type="text" id="aStreet" maxlength="80" placeholder="e.g. 27th Main Road"></div>
+            <div class="field"><label for="aLandmark">Landmark (optional)</label><input type="text" id="aLandmark" maxlength="80" placeholder="e.g. Near Agara Lake"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label for="aPin">PIN code</label><input type="text" id="aPin" required pattern="[1-9][0-9]{5}" maxlength="6" inputmode="numeric" placeholder="6 digits"></div>
+            <div class="field"><label>&nbsp;</label><button class="btn btn-ghost btn-block" type="button" id="mapCheck">Check on Google Maps</button></div>
+          </div>
+          <div class="map-box" id="mapBox" hidden></div>
+          <p class="hint" style="margin:0">Area and city come from above. The full address is only shared with people you accept.</p>
         </div>
         <button class="btn btn-primary btn-block" type="submit">Publish my listing</button>
       </form>
@@ -764,6 +792,25 @@ const matchClass = p => p >= 80 ? "hi" : p >= 60 ? "mid" : "lo";
 const BILLS = [["maintenance","Maintenance"],["electricity","Electricity (avg)"],["wifi","Wi-Fi"],["help","Cook / maid"]];
 const billsTotal = l => BILLS.reduce((t, [k]) => t + (Number((l.costs || {})[k]) || 0), 0);
 const allIn = l => l.rent + billsTotal(l);
+// People who share the bills: everyone living there plus the new person. A whole-flat
+// takeover has no one else, so the newcomer pays the whole bill.
+const sharers = (kind, residents) => kind === "flat" ? 1 : Math.max(1, Number(residents) || 0) + 1;
+
+/* ---- addresses and maps. Google's keyless embed shows a pin for a text query. */
+function addressLine(a, area, city){
+  return [a.flat, a.building, a.street, area, city].map(x => (x || "").trim()).filter(Boolean).join(", ")
+    + (a.pin ? " - " + a.pin : "") + (a.landmark ? " (near " + a.landmark.replace(/^near\s+/i, "") + ")" : "");
+}
+const mapsQuery = (a, area, city) => [a.building, a.street, area, city, a.pin].map(x => (x || "").trim()).filter(Boolean).join(", ");
+const mapsLink = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+const dirLink = q => "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(q);
+function mapHtml(q, zoom, caption, withDirections){
+  return `<iframe title="Map: ${esc(q)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+      src="https://maps.google.com/maps?q=${encodeURIComponent(q)}&z=${zoom}&output=embed"></iframe>
+    ${caption ? `<div class="map-q">${esc(caption)}</div>` : ""}
+    <div class="map-links"><a href="${mapsLink(q)}" target="_blank" rel="noopener">Open in Google Maps</a>
+      ${withDirections ? `<a href="${dirLink(q)}" target="_blank" rel="noopener">Get directions</a>` : ""}</div>`;
+}
 const moveIn = l => l.deposit + allIn(l);
 
 function timeAgo(d){
@@ -853,38 +900,6 @@ function load(){
 function save(){ try{ localStorage.setItem("fm_state", JSON.stringify(state)); return true; }catch(e){ return false; } }
 
 /* ============================================================ demo data */
-const NAMES = ["Ananya","Rohit","Priya","Karthik","Sneha","Arjun","Meera","Vikram","Isha","Rahul","Divya","Aditya"];
-const DEMO = [
-  ["Bengaluru","HSR Layout","room",2,14000,40000,"female","full",["Wi-Fi","AC","Washing machine","Cook/maid"],"Private room with attached bath in a 2BHK. One flatmate (works in fintech, WFH twice a week). 10 min to Agara lake."],
-  ["Bengaluru","Koramangala 5th Block","flatmate",3,12500,35000,"any","semi",["Wi-Fi","Fridge","Power backup","Balcony"],"Two of us, looking for a third. Shared kitchen, own room. Walking distance to Forum mall and lots of cafes."],
-  ["Bengaluru","Whitefield","flat",2,26000,100000,"any","semi",["Parking","Lift","Gym","Power backup"],"Moving cities, handing over the lease. Gated society, 1.2 km from ITPL. Owner is fine with bachelors."],
-  ["Mumbai","Andheri West","room",2,22000,60000,"male","full",["AC","Wi-Fi","Cook/maid","Lift"],"Room in a 2BHK near Lokhandwala. Flatmate is a film editor, quiet, works late. 7 min walk to metro."],
-  ["Mumbai","Powai","flatmate",3,19000,50000,"female","full",["Gym","Wi-Fi","AC","Parking"],"Hiranandani, lake view. Two working women looking for a third. No smoking inside."],
-  ["Pune","Baner","room",2,11000,25000,"any","semi",["Wi-Fi","Washing machine","Parking"],"Spare room in a 2BHK, flatmate works at an IT park in Hinjewadi. Pet-friendly society."],
-  ["Pune","Viman Nagar","flatmate",2,13500,30000,"male","full",["AC","Wi-Fi","Power backup","Balcony"],"Near Phoenix mall. Looking for a working professional, vegetarian kitchen preferred."],
-  ["Delhi NCR","Gurugram Sector 45","room",3,16000,32000,"any","full",["AC","Cook/maid","Power backup","Parking"],"Big room in a 3BHK builder floor. Cook comes twice a day, cost shared. 10 min to Huda City Centre metro."],
-  ["Delhi NCR","Saket","flatmate",2,18000,36000,"female","semi",["Wi-Fi","Fridge","Washing machine"],"Looking for a female flatmate. Close to Select Citywalk and Saket metro. Quiet, clean house."],
-  ["Hyderabad","Gachibowli","room",3,10500,20000,"any","full",["Wi-Fi","AC","Gym","Lift","Power backup"],"Gated community, 5 min to Financial District. Two flatmates, both in tech."],
-  ["Hyderabad","Madhapur","flat",1,17000,50000,"any","full",["AC","Wi-Fi","Parking"],"1BHK lease takeover from next month. Fully furnished, near Hitech City metro."],
-  ["Chennai","Velachery","room",2,9500,30000,"female","semi",["Wi-Fi","Washing machine","Power backup"],"Room in a 2BHK, 5 min to Phoenix mall and MRTS. Current flatmate is a doctor at a nearby hospital."],
-];
-// Who already lives in each sample flat: flatmates [type, what they do, age] and the
-// 12 living-style answers in VIBE_QS order (sleep, clean, food, cook, smoke, drinks,
-// guests, noise, social, sharing, work, pets).
-const DEMO_HOMES = [
-  { fm:[["working","Fintech analyst at a payments startup","25–30"]],                                 v:"101001111111" },
-  { fm:[["working","UX designer at a food-delivery app","25–30"],["self","Runs a small coffee brand","25–30"]], v:"212121222122" },
-  { fm:[], v:"" },
-  { fm:[["working","Film editor, works late on shoots","31–40"]],                                     v:"212211110221" },
-  { fm:[["working","Consultant at a Big Four firm","25–30"],["working","Consultant, travels on weekdays","25–30"]], v:"001000101000" },
-  { fm:[["working","Software engineer in Hinjewadi","18–24"]],                                        v:"112101111112" },
-  { fm:[["working","Data scientist at an analytics firm","25–30"],["student","MS student at Pune University","18–24"]], v:"100000002011" },
-  { fm:[["working","Sales manager at a telecom company","31–40"],["working","Chartered accountant","25–30"]], v:"122212111101" },
-  { fm:[["working","Corporate lawyer","25–30"]],                                                      v:"000001001001" },
-  { fm:[["working","Backend developer at a tech MNC","25–30"],["student","PhD scholar at IIIT Hyderabad","25–30"]], v:"212211111111" },
-  { fm:[], v:"" },
-  { fm:[["working","Resident doctor at a city hospital","25–30"]],                                    v:"000000001000" },
-];
 const digitsToVibe = d => Object.fromEntries([...d].map((c, j) => [VIBE_QS[j].k, Number(c)]));
 // Sample seekers who ask to meet a flat you post in demo mode, so owners can try the inbox.
 const DEMO_SEEKERS = [
@@ -893,25 +908,106 @@ const DEMO_SEEKERS = [
   { name:"Arjun", phone:"9822033445", occupation:{ type:"working", what:"Product manager at an e-commerce company" }, v:"112101111112",
     message:"Hey, I work hybrid and keep things tidy. Would love to see the room this weekend." },
 ];
+// ---------------------------------------------------------------- sample homes
+// 100 sample homes across 8 cities, one per neighbourhood (with its PIN code). Generated
+// from a fixed seed, so every phone sees the same homes. Addresses are made up.
+const DEMO_AREAS = {
+  "Bengaluru": [["HSR Layout","560102"],["Koramangala","560034"],["Indiranagar","560038"],["Whitefield","560066"],["Marathahalli","560037"],
+    ["BTM Layout","560076"],["Electronic City","560100"],["Bellandur","560103"],["JP Nagar","560078"],["Jayanagar","560041"],["Hebbal","560024"],
+    ["Yelahanka","560064"],["Sarjapur Road","560035"]],
+  "Mumbai": [["Andheri West","400053"],["Powai","400076"],["Bandra West","400050"],["Goregaon East","400063"],["Malad West","400064"],
+    ["Thane West","400601"],["Chembur","400071"],["Lower Parel","400013"],["Kandivali East","400101"],["Vile Parle East","400057"],
+    ["Vashi","400703"],["Juhu","400049"],["Dadar West","400028"]],
+  "Pune": [["Baner","411045"],["Viman Nagar","411014"],["Kothrud","411038"],["Hinjewadi Phase 1","411057"],["Wakad","411057"],["Aundh","411007"],
+    ["Kharadi","411014"],["Hadapsar","411028"],["Magarpatta","411013"],["Koregaon Park","411001"],["Pimple Saudagar","411027"],
+    ["Shivaji Nagar","411005"],["Balewadi","411045"]],
+  "Delhi NCR": [["Gurugram Sector 45","122003"],["Saket","110017"],["Noida Sector 62","201309"],["Hauz Khas","110016"],["Lajpat Nagar","110024"],
+    ["Dwarka Sector 10","110075"],["DLF Phase 3, Gurugram","122002"],["Rajouri Garden","110027"],["Malviya Nagar","110017"],
+    ["Noida Sector 137","201305"],["Vasant Kunj","110070"],["Mayur Vihar Phase 1","110091"],["Kalkaji","110019"]],
+  "Hyderabad": [["Gachibowli","500032"],["Madhapur","500081"],["Kondapur","500084"],["Hitech City","500081"],["Kukatpally","500072"],
+    ["Banjara Hills","500034"],["Jubilee Hills","500033"],["Begumpet","500016"],["Miyapur","500049"],["Manikonda","500089"],
+    ["Ameerpet","500016"],["Secunderabad","500003"]],
+  "Chennai": [["Velachery","600042"],["Adyar","600020"],["Thoraipakkam, OMR","600097"],["Anna Nagar","600040"],["T Nagar","600017"],
+    ["Porur","600116"],["Guindy","600032"],["Sholinganallur","600119"],["Nungambakkam","600034"],["Perungudi","600096"],
+    ["Mylapore","600004"],["Tambaram","600045"]],
+  "Kolkata": [["Salt Lake Sector V","700091"],["New Town","700156"],["Ballygunge","700019"],["Park Street","700016"],["Gariahat","700029"],
+    ["Behala","700034"],["Kasba","700042"],["Rajarhat","700135"],["Tollygunge","700033"],["Dum Dum","700028"],["Jadavpur","700032"],
+    ["Lake Town","700089"]],
+  "Ahmedabad": [["Prahlad Nagar","380015"],["Satellite","380015"],["Bodakdev","380054"],["SG Highway","380059"],["Vastrapur","380015"],
+    ["Navrangpura","380009"],["Thaltej","380059"],["Gota","382481"],["Maninagar","380008"],["Chandkheda","382424"],["Bopal","380058"],
+    ["Ellisbridge","380006"]],
+};
+// Typical rent for a single room in a shared flat, per city (low, high).
+const DEMO_RENT = { "Mumbai":[17000,30000], "Bengaluru":[11000,22000], "Delhi NCR":[12000,24000], "Pune":[9000,17000],
+  "Hyderabad":[9000,17000], "Chennai":[8000,15000], "Kolkata":[7000,13000], "Ahmedabad":[7000,12500] };
+const DEMO_JOBS = { working:["Software engineer at a product company","Data analyst at a bank","UX designer at a startup","Chartered accountant",
+    "Marketing manager at an FMCG brand","Resident doctor at a city hospital","Nurse at a private hospital","Consultant at a Big Four firm",
+    "Teacher at an international school","Journalist at a news website","Architect","Corporate lawyer","HR executive at an IT firm",
+    "Sales manager at a telecom company","Civil engineer on a metro project","Product manager at a fintech","Content writer at an agency",
+    "Chef at a restaurant","Investment banker","Backend developer at a tech MNC","Pilot with a domestic airline","Pharmacist"],
+  student:["MBA student","Engineering student","MS student","Law student","Medical student","PhD scholar","Design student",
+    "CA aspirant preparing for finals","UPSC aspirant","Hotel management student"],
+  self:["Freelance photographer","Runs a small bakery","Freelance developer","Content creator","Yoga instructor","Interior designer"] };
+const DEMO_BUILDINGS = ["Green Park","Sunrise","Lake View","Silver Oak","Palm Grove","Royal Residency","Shanti Niketan","Orchid Heights",
+  "Blue Ridge","Maple Court","Sai Krupa","Prestige Garden","Lotus Enclave","Harmony Towers","Kalpataru","Nest Homes"];
+const DEMO_SUFFIX = ["Apartments","Residency","Towers","Enclave","Heights","CHS","Homes"];
+const DEMO_STREETS = ["Main Road","1st Cross Road","2nd Main","Ring Road","Station Road","Lake Road","Temple Street","School Road",
+  "Park Avenue","Link Road","College Road","Market Road"];
+const DEMO_LANDMARKS = ["the metro station","the city mall","the main bus stop","the lake","the big temple","the hospital","the park","the IT park gate"];
+const DEMO_OWNERS = ["Ananya","Rohit","Priya","Karthik","Sneha","Arjun","Meera","Vikram","Isha","Rahul","Divya","Aditya","Neha","Sameer",
+  "Pooja","Farhan","Kavya","Nikhil","Tanvi","Joseph","Ayesha","Harsh","Lakshmi","Dev"];
+const DEMO_AMEN = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking","Power backup","Gym","Lift","Balcony"];
+const DEMO_NEAR = ["5 min walk to the metro","close to the IT park","right next to a market","quiet lane, lots of trees",
+  "10 min to the railway station","near cafes and gyms","big balcony with a view","good bus connectivity"];
+let demoCache = null;
 function demoListings(){
-  const now = Date.now();
-  return DEMO.map((d, i) => {
-    const [city, locality, kind, bhk, rent, deposit, gender, furnishing, amenities, description] = d;
-    const home = DEMO_HOMES[i];
-    return {
-      id: "demo-" + (i+1), kind, city, locality, bhk, rent, deposit, gender, furnishing, amenities, description,
-      title: (kind==="flat" ? bhk+"BHK lease takeover" : kind==="flatmate" ? "Flatmate wanted for "+bhk+"BHK" : "Private room in "+bhk+"BHK") + " in " + locality,
-      available_from: new Date(now + (i%4)*7*864e5).toISOString().slice(0,10),
-      created_at: new Date(now - (i+1)*36e5*7).toISOString(),
-      unlock_count: (i*7) % 11,
-      household: Object.assign({ residents: home.fm.length,
-        flatmates: home.fm.map(([type, what, age]) => ({ type, what, age })) }, home.v ? digitsToVibe(home.v) : {}),
-      costs: { maintenance: Math.round(rent * .06 / 50) * 50, electricity: 600 + (i % 4) * 200,
-               wifi: kind === "flat" ? 900 : 350, help: amenities.includes("Cook/maid") ? 1500 : 0 },
-      private: { contact_name: NAMES[i % NAMES.length], contact_phone: "9" + String(812345670 + i*1379).slice(0,9),
-                 address: (101 + i*3) + ", " + ["Sunrise","Lake View","Green Park","Silver Oak"][i%4] + " Apartments, " + locality + ", " + city }
-    };
-  });
+  if(demoCache) return demoCache;
+  const r = rng(20261025), pick = a => a[Math.floor(r() * a.length)], between = (lo, hi, step) => Math.round((lo + r() * (hi - lo)) / step) * step;
+  const now = Date.now(), out = [];
+  let n = 0;
+  for(const [city, areas] of Object.entries(DEMO_AREAS)){
+    for(const [area, pin] of areas){
+      n++;
+      const roll = r(), kind = roll < .6 ? "room" : roll < .88 ? "flatmate" : "flat";
+      const bhk = kind === "flat" ? pick([1, 1, 2, 2, 3]) : pick([2, 2, 2, 3, 3, 4]);
+      const [lo, hi] = DEMO_RENT[city];
+      const rent = kind === "flat" ? between(lo * 1.8 * bhk * .7, hi * 1.8 * bhk * .7, 500) : between(lo, hi, 250);
+      const g = r(), gender = g < .6 ? "any" : g < .82 ? "female" : "male";
+      const residents = kind === "flat" ? 0 : Math.min(bhk, pick([1, 1, 2, 2, 3]));
+      const used = new Set();
+      const flatmates = Array.from({ length: residents }, () => {
+        const t = r(), type = t < .7 ? "working" : t < .9 ? "student" : "self";
+        let what = pick(DEMO_JOBS[type]); while(used.has(what)) what = pick(DEMO_JOBS[type]);
+        used.add(what);
+        return { type, what, age: type === "student" ? pick(["18–24","18–24","25–30"]) : pick(["25–30","25–30","31–40","18–24"]) };
+      });
+      const vibe = {}; if(residents) VIBE_QS.forEach(x => vibe[x.k] = r() < .5 ? 1 : r() < .5 ? 0 : 2);
+      const amenities = DEMO_AMEN.filter(() => r() < .45);
+      const people = sharers(kind, residents);
+      const total = { maintenance: between(1200, 3500 + bhk * 500, 100), electricity: between(1200, 4000, 100),
+                      wifi: pick([700, 800, 999, 1200]), help: amenities.includes("Cook/maid") ? between(3000, 7000, 500) : 0 };
+      const costs = {}; for(const [k] of BILLS) costs[k] = Math.round(total[k] / people / 10) * 10;
+      if(people > 1) costs.split = { mode:"total", people, total };
+      const near = pick(DEMO_NEAR);
+      const title = (kind === "flat" ? `${bhk}BHK lease takeover` : kind === "flatmate" ? `Flatmate wanted for ${bhk}BHK` : `Private room in ${bhk}BHK`) + ` in ${area}`;
+      const who = residents ? `${residents === 1 ? "One flatmate" : residents + " of us"} already living here. ` : "Whole flat, you set the rules. ";
+      const parts = { flat: pick(["A","B","C","D"]) + "-" + (100 * (1 + Math.floor(r() * 12)) + 1 + Math.floor(r() * 8)),
+        building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
+      out.push({
+        id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
+        description: who + `${near[0].toUpperCase() + near.slice(1)}. ${pick(["Owner is friendly and lives nearby.",
+          "Society has 24/7 security.", "Water supply is reliable round the clock.", "Move-in ready, freshly painted.", "Ideal for working professionals."])}`,
+        title, available_from: new Date(now + Math.floor(r() * 30) * 864e5).toISOString().slice(0, 10),
+        created_at: new Date(now - Math.floor(r() * 20 * 24 + 2) * 36e5).toISOString(),
+        unlock_count: Math.floor(r() * 9),
+        household: Object.assign({ residents, flatmates }, vibe), costs,
+        private: { contact_name: pick(DEMO_OWNERS), contact_phone: "9" + String(Math.floor(r() * 9e8) + 1e8).slice(0, 9),
+                   address: addressLine(parts, area, city), address_parts: parts }
+      });
+    }
+  }
+  return demoCache = out;
 }
 
 /* ========================================================== data layer */
@@ -1184,7 +1280,7 @@ function makeLiveApi(sb){
       const id = await rpc("fm_post_listing", { p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
-        p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address,
+        p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
         p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {} });
       return { id, photos:"kept" };
     },
@@ -1290,7 +1386,8 @@ function matesHtml(hh, seed){
 // the Android app, which made forms look like they did nothing. Show it on the page instead.
 const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocality:"Area / locality", pRent:"Rent (at least ₹500)",
   pDeposit:"Deposit", cMaint:"Maintenance", cElec:"Electricity", cWifi:"Wi-Fi", cHelp:"Cook / maid", pFrom:"Available from",
-  pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)", pAddr:"Exact address",
+  pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)",
+  aFlat:"Flat / house no.", aBuilding:"Building or society", aPin:"PIN code (6 digits)",
   lgName:"Your name", lgPhone:"Mobile number (10 digits, starting with 6–9)", lgOtp:"The 6-digit code",
   obWhat:"A few words about what you do", vAt:"Date and time" };
 function showFormError(form, text){
@@ -1723,8 +1820,9 @@ async function openListing(id){
         <div><span>Owner</span><b>${esc(contact.contact_name)}</b> <span class="verified">✓ Phone verified</span></div>
         <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
       </div>
-      <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div>
-        <a class="hint" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}">Open in Maps</a></div>
+      <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div></div>
+      <div class="map-box" style="margin-top:10px">${mapHtml(contact.address_parts && contact.address_parts.building
+        ? mapsQuery(contact.address_parts, l.locality, l.city) : contact.address, 16, "", !l.is_owner)}</div>
       ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <a class="btn btn-ghost btn-sm" href="tel:+91${esc(contact.contact_phone)}">Call</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from Navigate Me Flatmates. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
@@ -1759,8 +1857,9 @@ async function openListing(id){
   const matchBlock = !m ? "" : `<p style="margin:12px 0 0;font-weight:800">${m.pct}% match with how you live</p>
     <ul class="reasons">${m.good.slice(0, 4).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
       ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>`;
+  const sp = (l.costs || {}).split;
   const bill = BILLS.filter(([k]) => Number((l.costs || {})[k]) > 0)
-    .map(([k, label]) => `<span class="muted">${label}</span><span>${inr(l.costs[k])}</span>`).join("");
+    .map(([k, label]) => `<span class="muted">${label}${sp && sp.total && sp.total[k] ? ` <span class="hint">(${inr(sp.total[k])} for the flat ÷ ${sp.people})</span>` : ""}</span><span>${inr(l.costs[k])}</span>`).join("");
   $("lBody").innerHTML = `
     <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
@@ -1768,7 +1867,8 @@ async function openListing(id){
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     <div class="household">${mates.length ? matesHtml(hh, l.id) : ""}
       ${traits ? `<div class="traits">${traits}</div>` : ""}${matchBlock}</div>` : ""}
-    <h3 class="section-h">What it costs each month</h3>
+    <h3 class="section-h">What you'd pay each month</h3>
+    ${sp ? `<p class="hint" style="margin:-4px 0 8px">Bills are split equally between ${sp.people} people, including you. Below is your share.</p>` : ""}
     <div class="bill">
       <span class="muted">Rent</span><span>${inr(l.rent)}</span>${bill}
       <span class="tot">All-in per month</span><span class="tot">${inr(allIn(l))}</span>
@@ -1783,6 +1883,8 @@ async function openListing(id){
     </div>
     ${(l.amenities || []).length ? `<div class="meta">${l.amenities.map(a => `<span>${esc(a)}</span>`).join("")}</div>` : ""}
     <p style="white-space:pre-line">${esc(l.description)}</p>
+    ${contact ? "" : `<h3 class="section-h">Where it is</h3><div class="map-box">${mapHtml(l.locality + ", " + l.city, 14,
+      "Approximate area. The exact address is shared once the owner accepts.", false)}</div>`}
     <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} asked to meet` : ""}</p>
     ${lock}`;
   if(!$("dlgListing").open) $("dlgListing").showModal();
@@ -1996,6 +2098,42 @@ $("pPreviews").addEventListener("click", e => {
 ["dragleave","drop"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.remove("over"); }));
 $("pDrop").addEventListener("drop", e => addPhotos(e.dataTransfer.files));
 
+/* Bills: owners can type the whole flat's bill; the newcomer's share is that divided by
+   everyone who'll live there. What's stored (and summed into "all-in") is always the share. */
+function billsFromForm(){
+  const mode = (document.querySelector("[name=billMode]:checked") || {}).value || "total";
+  const kind = (document.querySelector("#postForm [name=kind]:checked") || {}).value || "room";
+  const people = mode === "total" ? sharers(kind, $("hCount").value) : 1;
+  const typed = { maintenance:$("cMaint").value, electricity:$("cElec").value, wifi:$("cWifi").value, help:$("cHelp").value };
+  const total = {}, costs = {};
+  for(const [k] of BILLS){ total[k] = Math.max(0, Math.round(Number(typed[k]) || 0)); costs[k] = Math.round(total[k] / people); }
+  if(mode === "total" && people > 1) costs.split = { mode, people, total };
+  return { mode, people, total, costs };
+}
+function renderBillSplit(){
+  const b = billsFromForm(), share = BILLS.reduce((t, [k]) => t + b.costs[k], 0);
+  if(!share){ $("billSplit").innerHTML = ""; return; }
+  const rows = BILLS.filter(([k]) => b.total[k]).map(([k, label]) =>
+    `<span>${label}${b.mode === "total" && b.people > 1 ? ` <span class="hint">(${inr(b.total[k])} ÷ ${b.people})</span>` : ""}</span><span>${inr(b.costs[k])}</span>`).join("");
+  const rent = Number($("pRent").value) || 0;
+  $("billSplit").innerHTML = `<span class="h">${b.mode === "total" && b.people > 1
+      ? `Split equally between ${b.people} people (everyone living there plus the new flatmate). The new flatmate pays:`
+      : "The new flatmate pays:"}</span>${rows}
+    <span class="t">Bills per month</span><span class="t">${inr(share)}</span>
+    ${rent ? `<span class="t">All-in with rent</span><span class="t">${inr(rent + share)}</span>` : ""}`;
+}
+["cMaint","cElec","cWifi","cHelp","pRent","hCount"].forEach(id => $(id).addEventListener("input", renderBillSplit));
+$("postForm").addEventListener("change", e => { if(e.target.name === "billMode" || e.target.name === "kind" || e.target.id === "hCount") renderBillSplit(); });
+
+const addressFromForm = () => ({ flat:$("aFlat").value.trim(), building:$("aBuilding").value.trim(), street:$("aStreet").value.trim(),
+  landmark:$("aLandmark").value.trim(), pin:$("aPin").value.trim() });
+$("mapCheck").addEventListener("click", () => {
+  const a = addressFromForm(), area = $("pLocality").value.trim(), city = $("pCity").value;
+  if(!a.building && !area){ toast("Fill in the building and area first."); return; }
+  $("mapBox").hidden = false;
+  $("mapBox").innerHTML = mapHtml(mapsQuery(a, area, city), 16, "Check the pin is on your building: " + addressLine(a, area, city), false);
+});
+
 function renderFmRows(){
   const n = Number($("hCount").value);
   const keep = $("fmRows").children.length ? readFmRows($("fmRows"), $("fmRows").children.length, "p") : (state.homeDraft.flatmates || []);
@@ -2010,6 +2148,7 @@ function renderPost(){
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
   if(!$("pName").value) $("pName").value = state.user.name || "";
   if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
+  renderBillSplit();
 }
 $("postForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -2026,10 +2165,10 @@ $("postForm").addEventListener("submit", async e => {
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p") }, readQuiz($("hQuiz"), "h")),
-      costs: { maintenance: Number($("cMaint").value) || 0, electricity: Number($("cElec").value) || 0,
-               wifi: Number($("cWifi").value) || 0, help: Number($("cHelp").value) || 0 }
+      costs: billsFromForm().costs
     },
-    private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(), address: $("pAddr").value.trim() }
+    private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(),
+               address: addressLine(addressFromForm(), $("pLocality").value, $("pCity").value), address_parts: addressFromForm() }
   };
   btn.disabled = true;
   try{
@@ -2043,6 +2182,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     state.homeDraft = Object.assign({}, p.listing.household); save();
     f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+    $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderBillSplit();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."
       : res.photos === "shrunk" ? "Your listing is live. Photos were saved smaller to fit this phone's demo storage."
       : skipped ? `Your listing is live. ${skipped} photo${skipped === 1 ? "" : "s"} couldn't be read and ${skipped === 1 ? "was" : "were"} left out.`

@@ -20,7 +20,8 @@
 5. **Contacts are used only on acceptance**, so there are no refunds to manage. A pending request
    holds a contact until the owner replies. After the 5 free ones: **10 contacts for ₹500**.
 
-In demo mode the other side is simulated: sample owners reply about 6 seconds after a request
+Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
+realistic rents, flatmates and split bills (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
 after you post it.
 
@@ -29,8 +30,13 @@ after you post it.
 - **Vibe match.** Seekers answer 12 living-style questions. Owners describe their household with the same questions,
   plus who lives there. Every flat shows a match %, what fits and what might clash, and seekers
   can sort by best match.
-- **All-in rent.** Owners add the room's share of maintenance, electricity, Wi-Fi and cook/maid.
-  Cards lead with the all-in monthly figure; the detail shows the full bill and the move-in amount.
+- **All-in rent, bills split fairly.** Owners type the whole flat's maintenance, electricity, Wi-Fi
+  and cook/maid bills, and the app splits them equally between everyone living there plus the
+  new flatmate (or the owner enters just the newcomer's share). Seekers see their share, how it
+  was worked out, the all-in monthly figure and the move-in amount.
+- **Proper address + Google Maps.** Flat/house no., building, street, area, landmark, city and
+  PIN code (checked). Owners can preview the pin on Google Maps before publishing. Seekers see
+  the area on a map; the exact address, map and directions appear once the owner accepts.
 - **Save before you spend.** A free ♥ shortlist, so seekers decide which owners to ask.
 - **Owners choose who they meet.** Numbers are only shared after the owner accepts a request.
 - **Illustrated rooms.** Listings without photos get a drawn room in place of a blank tile.
@@ -51,8 +57,8 @@ database decides, so the app can't be tricked into free contacts while charges a
 ## Files
 
 - `index.html`: the whole app (onboarding, browse, requests, approvals, post, pay, visits). No build step.
-- `supabase/schema.sql`: tables, row-level security and RPCs. The paywall is enforced here,
-  so a locked phone number or address never reaches the browser.
+- `supabase/schema.sql`: tables, row-level security and RPCs. Requests, approvals, contacts and
+  the match score are enforced here, so a number or address never reaches someone who wasn't accepted.
 - `supabase/functions/fm-pay/index.ts`: Razorpay order creation, payment verification and webhook.
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
 
