@@ -1075,7 +1075,9 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   $("modeNote").textContent = api.live ? "" : "Demo mode: sample listings, no real payments. Your data stays in this browser.";
   renderHeader(); route();
   // Installable app + offline. Skipped where service workers aren't allowed (file://, embedded previews).
-  if("serviceWorker" in navigator && /^https:|^http:\/\/localhost|^http:\/\/127\./.test(location.href)){
+  // The Android app ships its files inside the APK, so it doesn't need one.
+  if("serviceWorker" in navigator && location.hostname !== "appassets.androidplatform.net" &&
+     /^https:|^http:\/\/localhost|^http:\/\/127\./.test(location.href)){
     navigator.serviceWorker.register("sw.js").catch(() => {});
   }
 })();
