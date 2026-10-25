@@ -1,27 +1,34 @@
 # Navigate Me Flatmates
 
+A flatmate app built around **vibe**: people who live the same way find each other first, and
+the room comes second.
+
 ## How it flows
 
 1. **Welcome page = sign-in.** A short write-up and the sign-in card, which asks what you came
    for: *post my flat* or *looking for a room*, then name, mobile and a one-time code.
 2. **Questions at sign-in, one per screen, required.**
-   - Room seekers (17): what they do (working / student / self-employed / between jobs) and
-     where, city, **the areas they like (pick several)**, all-in budget, then 12 living-style questions: bedtime, cleanliness, food,
-     cooking, smoking, drinks, guests, noise, time together, groceries and chores, weekday
-     routine, pets. Smoking, food and pets count double in the match.
-   - Flat owners (14): how many live there, each flatmate's work or studies and age range, then
-     the same 12 questions about the household. The posting form comes prefilled.
-3. **Welcome gift.** Every seeker gets **5 free contacts**, revealed as a gift after onboarding.
-4. **Ask to meet, owner approves.** A seeker opens a flat and sends a request: their name, what
+   - Room seekers (19): what they do (working / student / self-employed / between jobs) and
+     where, city, the areas they like (pick several), monthly rent budget, 12 living-style
+     questions (bedtime, cleanliness, food, cooking, smoking, drinks, guests, noise, time
+     together, groceries and chores, weekday routine, pets; smoking, food and pets count double),
+     then **music and hobbies** (shown as "you both like", never part of the score).
+   - Flat owners (16): how many live there, each flatmate's work or studies and age range, the
+     same 12 questions and music/hobbies for the household. The posting form comes prefilled.
+3. **Vibe matches.** Discover opens with a "Your vibe matches" row: every home in the city with an
+   80%+ match, whatever the area or budget filters say, so a great fit is never missed.
+4. **Welcome gift, on the first request.** Nothing about money on the sign-in page or during
+   onboarding. The first time a seeker asks to meet an owner, a gift opens: **5 free contacts**.
+5. **Ask to meet, owner approves.** A seeker opens a flat and sends a request: their name, what
    they do, their answers and match %, plus an optional note. The owner gets an in-app
    notification (badge on Requests) and sees the profile with each trait marked as matching or
    clashing. Only when the owner **accepts** do both get each other's number, and the seeker
    gets the address. Declined requests cost nothing.
-5. **Contacts are used only on acceptance**, so there are no refunds to manage. A pending request
+6. **Contacts are used only on acceptance**, so there are no refunds to manage. A pending request
    holds a contact until the owner replies. After the 5 free ones: **10 contacts for ₹500**.
 
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
-realistic rents, flatmates and split bills (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
+realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
 after you post it.
 
@@ -54,10 +61,12 @@ suggests the single change that brings most homes back ("Remove “No smoking”
 - **Vibe match.** Seekers answer 12 living-style questions. Owners describe their household with the same questions,
   plus who lives there. Every flat shows a match %, what fits and what might clash, and seekers
   can sort by best match.
-- **All-in rent, bills split fairly.** Owners type the whole flat's maintenance, electricity, Wi-Fi
-  and cook/maid bills, and the app splits them equally between everyone living there plus the
-  new flatmate (or the owner enters just the newcomer's share). Seekers see their share, how it
-  was worked out, the all-in monthly figure and the move-in amount.
+- **Private room, shared room or whole flat.** Shared rooms (twin sharing) are a listing type of
+  their own, and seekers can filter for them.
+- **Rent is just rent.** Expenses are listed per room and never added into it: the owner ticks
+  what applies (maintenance, electricity, water, Wi-Fi, cooking gas, cook, maid, parking) and
+  enters the room's amount, or "as per use" for electricity, water and gas. Cards show
+  "₹14,000/month rent · + ₹1,500 expenses". Budgets, filters and sorting use rent only.
 - **Proper address + Google Maps.** Flat/house no., building, street, area, landmark, city and
   PIN code (checked). Owners can preview the pin on Google Maps before publishing. Seekers see
   the area on a map; the exact address, map and directions appear once the owner accepts.
@@ -70,7 +79,7 @@ suggests the single change that brings most homes back ("Remove “No smoking”
 | Who | What | Price |
 |---|---|---|
 | Owner | Post a listing with photos and flatmates (unlimited) | Free |
-| Seeker | Browse, see households, matches and all-in costs | Free |
+| Seeker | Browse, see households, vibe matches, rent and expenses | Free |
 | Seeker | Welcome gift: first 5 accepted contacts | Free |
 | Seeker | After that: 10 accepted contacts | ₹500 (₹50 each) |
 

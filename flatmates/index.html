@@ -9,7 +9,7 @@
 <meta property="og:title" content="Navigate Me Flatmates">
 <meta property="og:description" content="Find a room, and the people worth sharing it with.">
 <meta property="og:locale" content="en_IN">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2312813F'/%3E%3Cpath d='M5 12l7-6 7 6v7h-5v-4h-4v4H5z' fill='%23fff'/%3E%3Crect x='10.5' y='14' width='3' height='3' fill='%23F26B1D'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23F26B1D'/%3E%3Cpath d='M4 12.2 12 5.5l8 6.7V20H4z' fill='%23fff'/%3E%3Cpath d='M12 17.8s-3.5-2.2-3.5-4.5a1.9 1.9 0 0 1 3.5-1.1 1.9 1.9 0 0 1 3.5 1.1c0 2.3-3.5 4.5-3.5 4.5z' fill='%23F26B1D'/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -100,7 +100,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
   backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
 .bar{display:flex; align-items:center; gap:12px; height:62px}
 .logo{display:flex; align-items:center; gap:9px; font-family:var(--display); font-weight:800; font-size:19px; text-decoration:none; color:var(--text); white-space:nowrap}
-.logo i{width:30px; height:30px; border-radius:9px; background:var(--brand); display:grid; place-items:center}
+.logo i{width:32px; height:32px; border-radius:10px; background:var(--accent); display:grid; place-items:center; box-shadow:0 2px 8px rgba(242,107,29,.35)}
 .logo small{font-weight:600; color:var(--text-3); font-size:13px}
 .nav{display:flex; gap:4px; margin-left:auto; align-items:center}
 .tab{border:0; background:none; padding:8px 14px; border-radius:999px; cursor:pointer; color:var(--text-2); font-weight:700; display:flex; align-items:center; gap:6px}
@@ -443,6 +443,11 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 .d-row #fCity{flex:1; min-width:0; font-weight:700}
 .d-row #fSort{width:auto; flex:none}
 .d-row .btn{flex:none; height:44px}
+@media (max-width:560px){
+  .d-row{flex-wrap:wrap}
+  .d-row #fCity{flex-basis:100%}
+  .d-row .btn, .d-row #fSort{flex:1 1 0; min-width:0}
+}
 .area-chips{display:flex; gap:8px; overflow-x:auto; padding:2px 0 4px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
 .area-chips::-webkit-scrollbar{display:none}
 .area-chips button{flex:none; border:1px solid var(--line-2); background:var(--surface); color:var(--text); border-radius:999px; padding:7px 14px;
@@ -470,6 +475,26 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 .notif-ask{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
 .notif-ask p{margin:0}
 
+.exp-list{display:grid; gap:6px}
+.exp-row{display:grid; grid-template-columns:1.2fr 1fr auto; gap:10px; align-items:center; padding:6px 10px; border:1px solid var(--line); border-radius:12px}
+.exp-row label{margin:0; font-weight:600; color:var(--text); display:flex; gap:8px; align-items:center; font-size:15px}
+.exp-row .exp-use{font-weight:500; color:var(--text-2); font-size:13px; white-space:nowrap}
+.exp-row input[type=number]{padding:8px 10px}
+.exp-row input[type=checkbox]{width:18px; height:18px; accent-color:var(--brand)}
+.exp-row input:disabled{opacity:.45}
+@media (max-width:420px){ .exp-row{grid-template-columns:1fr 1fr} .exp-row .exp-use{grid-column:2} }
+
+/* ---------- vibe matches + interests */
+#vibeRow{margin:6px 0 18px}
+.vrow-h h2{font-size:24px}
+.vrow-h .eyebrow{color:var(--accent); margin:0}
+.vrow{display:grid; grid-auto-flow:column; grid-auto-columns:min(78vw, 300px); gap:14px; overflow-x:auto; padding:12px 2px 14px;
+  scroll-snap-type:x mandatory; scrollbar-width:none}
+.vrow::-webkit-scrollbar{display:none}
+.vrow .card{scroll-snap-align:start; border:2px solid var(--accent)}
+.both{font-size:13px; font-weight:700; color:var(--accent)}
+.traits.likes span.g{border-color:var(--accent); color:var(--accent); font-weight:700}
+
 .foot{color:var(--text-3); font-size:13px; padding-block:24px 40px; border-top:1px solid var(--line); margin-top:16px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
@@ -482,13 +507,13 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 <section id="view-welcome" hidden>
   <div class="w-band">
     <div class="wrap w-top">
-      <span class="logo"><i><svg width="17" height="17" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v9h-6v-6H9v6H3z" fill="#fff"/></svg></i>Flatmates <small>by Navigate Me</small></span>
+      <span class="logo"><i><svg width="19" height="19" viewBox="0 0 24 24"><path d="M2.5 11.6 12 3.5l9.5 8.1V21h-19z" fill="#fff"/><path d="M12 18.6s-4.2-2.6-4.2-5.4a2.3 2.3 0 0 1 4.2-1.3 2.3 2.3 0 0 1 4.2 1.3c0 2.8-4.2 5.4-4.2 5.4z" fill="#F26B1D"/></svg></i>Flatmates <small>by Navigate Me</small></span>
     </div>
     <div class="wrap w-grid">
       <div class="w-copy">
-        <h1>Find a room. <em>Find your people.</em></h1>
-        <p class="lede">Moving to a new city is hard enough. See who already lives in each flat, how they live and what you'll really pay each month, so you move in with people you'll actually get along with.</p>
-        <ul class="w-points"><li>No brokers</li><li>Every phone number verified</li><li>Owners choose who they meet</li></ul>
+        <h1>Find flatmates who <em>match your vibe.</em></h1>
+        <p class="lede">Night owl or early bird? Veg kitchen or biryani Sundays? Gym at 6 or Netflix till 2? Tell us how you live, and we'll match you with flatmates who live the same way.</p>
+        <ul class="w-points"><li>Matched on 12 lifestyle questions</li><li>Meet the people before the room</li><li>No brokers, ever</li></ul>
       </div>
       <div class="city" id="city" aria-hidden="true"></div>
       <div class="w-card">
@@ -498,16 +523,15 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
           <div class="roles">
             <label class="role"><input type="radio" name="role" value="owner" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
-              <span><b>I want to post my flat</b><span>I have a spare room and need a flatmate</span></span></label>
+              <span><b>I'm looking for a flatmate</b><span>I have a flat with a spare room or bed</span></span></label>
             <label class="role"><input type="radio" name="role" value="seeker" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/><path d="M8.5 12.5V10l2.5-2 2.5 2v2.5"/></svg></span>
-              <span><b>I'm looking for a room</b><span>A flat or a room on rent, with good people</span></span></label>
+              <span><b>I'm looking for a room</b><span>A private or shared room, with people who match my vibe</span></span></label>
           </div>
           <div class="field"><label for="lgName">Your name</label><input type="text" id="lgName" required autocomplete="name" placeholder="First name is fine"></div>
           <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <button class="btn btn-primary btn-block" type="submit">Send me a code</button>
           <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.</p>
-          <div class="gift-note"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M2 9h20v-1a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/><path d="M12 7v14"/><path d="M12 7c-2-4-6-4-6-1.5S10 7 12 7zM12 7c2-4 6-4 6-1.5S14 7 12 7z"/></svg><span><b>A welcome gift</b>Looking for a room? Your first 5 contacts with owners are on us.</span></div>
         </form>
         <form id="otpForm" novalidate hidden>
           <h2>Check your messages</h2>
@@ -524,24 +548,24 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 
   <div class="wrap story">
     <p class="eyebrow">Why people choose Flatmates</p>
-    <h2 class="story-h">Four walls make a flat. The people inside make it home.</h2>
+    <h2 class="story-h">A great flatmate beats a great flat. Every time.</h2>
     <div class="story-grid">
       <article class="story-card"><div class="pic" id="storyArt1"></div><div class="txt">
-        <h3>Know who you'll live with</h3>
-        <p>A doctor on night shifts? Two MBA students? Every listing shows who's already there, what they do, and whether the kitchen is veg.</p></div></article>
+        <h3>Meet your flatmates first</h3>
+        <p>A doctor on night shifts? Two MBA students who love cricket? See who already lives there, what they do and what they're into, before you see the room.</p></div></article>
       <article class="story-card"><div class="pic" id="storyArt2"></div><div class="txt">
-        <h3>See how well you'll get along</h3>
-        <p>Bedtimes, guests, smoking, chores. Answer 12 quick questions and every flat shows a match score, with what fits and what might clash.</p></div></article>
+        <h3>Your vibe, matched</h3>
+        <p>Bedtimes, guests, smoking, chores. Answer 12 quick questions and every home shows a vibe score, with what clicks and what might clash. 80%+? We put it right at the top.</p></div></article>
       <article class="story-card"><div class="pic" id="storyArt3"></div><div class="txt">
-        <h3>The real monthly number</h3>
-        <p>Rent plus your fair share of maintenance, electricity, Wi-Fi and the cook, worked out for you. No surprises when you visit.</p></div></article>
+        <h3>Your room, your way</h3>
+        <p>A private room, a shared room or a whole flat. Rent is shown on its own, and every extra like maintenance or electricity is listed for the room. No surprises.</p></div></article>
     </div>
     <div class="steps">
-      <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate for your spare room</h3>
+      <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate who fits in</h3>
         <ol><li><b>Describe your home</b> and the people in it. It takes about two minutes.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
-          <li><b>Get notified when someone who fits asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol></div>
-      <div><p class="eyebrow">If you need a room</p><h3>Find a home that fits how you live</h3>
-        <ol><li><b>Tell us how you live</b>, which areas you like and your budget.</li><li><b>Browse homes ranked by fit</b>, with the all-in monthly cost.</li>
+          <li><b>Get a notification when someone with your vibe asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol></div>
+      <div><p class="eyebrow">If you need a room</p><h3>Find people who live like you</h3>
+        <ol><li><b>Tell us how you live</b>, what you're into, which areas you like and your budget.</li><li><b>See your vibe matches first</b>, then every other home ranked by fit.</li>
           <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol></div>
     </div>
     <p class="w-foot" id="modeNote"></p>
@@ -563,7 +587,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 <!-- ================================================================ app -->
 <header class="app-head" id="appHead" hidden>
   <div class="wrap bar">
-    <a class="logo" href="#"><i><svg width="17" height="17" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v9h-6v-6H9v6H3z" fill="#fff"/></svg></i>Flatmates <small>by Navigate Me</small></a>
+    <a class="logo" href="#"><i><svg width="19" height="19" viewBox="0 0 24 24"><path d="M2.5 11.6 12 3.5l9.5 8.1V21h-19z" fill="#fff"/><path d="M12 18.6s-4.2-2.6-4.2-5.4a2.3 2.3 0 0 1 4.2-1.3 2.3 2.3 0 0 1 4.2 1.3c0 2.8-4.2 5.4-4.2 5.4z" fill="#F26B1D"/></svg></i>Flatmates <small>by Navigate Me</small></a>
     <nav class="nav" id="nav"></nav>
     <button class="me" id="meBtn" aria-label="My account"></button>
   </div>
@@ -580,12 +604,15 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
         <button class="btn btn-ghost btn-sm" type="button" id="filtersBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
           Filters <i class="badge" id="fCount" hidden></i></button>
-        <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest all-in</option></select>
+        <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest rent</option></select>
       </div>
       <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
       <div class="active-f" id="activeF"></div>
     </div>
-    <div id="spotlight"></div>
+    <section id="vibeRow" hidden>
+      <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
+      <div class="vrow" id="vibeCards"></div>
+    </section>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
   </section>
@@ -617,7 +644,8 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
       <form id="postForm" novalidate autocomplete="on">
         <div class="field"><label>What are you offering?</label>
           <div class="chips">
-            <label class="chip"><input type="radio" name="kind" value="room" checked>Room in my flat</label>
+            <label class="chip"><input type="radio" name="kind" value="room" checked>Private room</label>
+            <label class="chip"><input type="radio" name="kind" value="shared">Shared room (twin sharing)</label>
             <label class="chip"><input type="radio" name="kind" value="flatmate">Looking for a flatmate</label>
             <label class="chip"><input type="radio" name="kind" value="flat">Whole flat takeover</label>
           </div></div>
@@ -637,19 +665,10 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
           <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="1" value="0" inputmode="numeric"></div>
           <div class="field"><label for="pBhk">Flat size</label><select id="pBhk"><option value="1">1 BHK</option><option value="2" selected>2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></div>
         </div>
-        <div class="field"><label>Monthly bills on top of rent (₹)</label>
-          <div class="chips" style="margin-bottom:10px">
-            <label class="chip"><input type="radio" name="billMode" value="total" checked>Whole flat's bill, split it for me</label>
-            <label class="chip"><input type="radio" name="billMode" value="share">Just the new person's share</label>
-          </div>
-          <div class="grid4">
-            <input type="number" id="cMaint" min="0" step="1" inputmode="numeric" placeholder="Maintenance" aria-label="Maintenance">
-            <input type="number" id="cElec" min="0" step="1" inputmode="numeric" placeholder="Electricity" aria-label="Electricity, average">
-            <input type="number" id="cWifi" min="0" step="1" inputmode="numeric" placeholder="Wi-Fi" aria-label="Wi-Fi">
-            <input type="number" id="cHelp" min="0" step="1" inputmode="numeric" placeholder="Cook / maid" aria-label="Cook or maid">
-          </div>
-          <div class="split" id="billSplit" aria-live="polite"></div>
-          <p class="hint">Leave a box blank if it's included in the rent.</p></div>
+        <div class="field"><label>Monthly expenses for this room (not part of rent)</label>
+          <p class="hint" style="margin:0 0 8px">Tick what the new person pays on top of rent and enter this room's amount.</p>
+          <div class="exp-list" id="expList"></div>
+          <div class="split" id="expSum" aria-live="polite"></div></div>
         <div class="grid3">
           <div class="field"><label for="pFrom">Available from</label><input type="date" id="pFrom" required></div>
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
@@ -663,6 +682,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
             <select id="hCount"><option value="0">Nobody, it's a whole flat</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
           <div id="fmRows"></div>
           <details><summary class="hint" style="cursor:pointer">Review living-style answers</summary><div class="quiz" id="hQuiz" style="margin-top:10px"></div></details>
+          <details><summary class="hint" style="cursor:pointer">Music and hobbies</summary><div class="quiz" id="hInt" style="margin-top:10px"></div></details>
         </div>
         <div class="field"><label for="pDesc">About the flat and flatmates</label>
           <textarea id="pDesc" maxlength="1200" placeholder="House rules, how far from the metro or office, what's included in rent..."></textarea></div>
@@ -703,7 +723,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
     <div class="panel" id="vibePanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
       <button class="btn btn-ghost btn-sm" data-vibe-open>Edit answers</button></div>
-      <div class="traits" id="vibeTraits"></div></div>
+      <div class="traits" id="vibeTraits"></div><div id="myInterests"></div></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
   </section>
@@ -714,6 +734,11 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 <!-- ================================================================ dialogs -->
 <dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="lBody"></div></dialog>
+
+<dialog id="dlgGift"><div class="mbody gift-card" style="border:0;margin:0;max-width:none;padding:28px 22px 22px">
+    <div id="giftBody"></div>
+    <button class="btn btn-accent btn-block" type="button" id="giftGo" style="margin-top:16px">Use 1 to send my request</button>
+  </div></dialog>
 
 <dialog id="dlgPay"><div class="mhead"><h2>More contacts</h2><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
@@ -732,7 +757,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 <dialog id="dlgFilters"><div class="mhead"><div><h2>Filters</h2><div class="loc">Saved for next time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
     <form id="filterForm" novalidate>
-      <h3 class="section-h" style="margin-top:4px">Budget, all-in per month</h3>
+      <h3 class="section-h" style="margin-top:4px">Rent per month</h3>
       <div class="chips" id="bandChips"></div>
       <div class="grid2" style="margin-top:10px">
         <div class="field"><label for="fMin">Min (₹)</label><input type="number" id="fMin" min="0" step="1" inputmode="numeric" placeholder="No minimum"></div>
@@ -740,7 +765,8 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
       </div>
       <h3 class="section-h">Looking for</h3>
       <div class="chips">
-        <label class="chip"><input type="checkbox" name="fKind" value="room">Room in a shared flat</label>
+        <label class="chip"><input type="checkbox" name="fKind" value="room">Private room</label>
+        <label class="chip"><input type="checkbox" name="fKind" value="shared">Shared room</label>
         <label class="chip"><input type="checkbox" name="fKind" value="flatmate">Flatmate to share with</label>
         <label class="chip"><input type="checkbox" name="fKind" value="flat">Whole flat</label></div>
       <h3 class="section-h">Homes open to</h3>
@@ -812,7 +838,7 @@ const PACK_PRICE = 500, PACK_CREDITS = 10, WELCOME_CREDITS = 5;
 const CHARGES_ON = true;
 const CITIES = ["Bengaluru","Mumbai","Pune","Delhi NCR","Hyderabad","Chennai","Kolkata","Ahmedabad"];
 const AMENITIES = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking","Power backup","Gym","Lift","Balcony"];
-const KIND_LABEL = {room:"Room available", flatmate:"Flatmate wanted", flat:"Whole flat"};
+const KIND_LABEL = {room:"Private room", shared:"Shared room", flatmate:"Flatmate wanted", flat:"Whole flat"};
 const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurnished"};
 const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
 
@@ -859,6 +885,28 @@ function readQuiz(root, prefix){
   return out;
 }
 const answered = v => VIBE_QS.filter(x => v && Number.isInteger(v[x.k])).length;
+
+/* ---- interests: shown as "you both like", never part of the vibe score. */
+const INTERESTS = {
+  music: ["Bollywood","Indie","Punjabi","Hip-hop","Rock","Pop","EDM","Classical","Lo-fi","Jazz","Devotional","Tamil / Telugu","Ghazals","K-pop"],
+  hobbies: ["Cricket","Football","Gym","Yoga","Running","Cooking","Reading","Gaming","Movies & series","Travel","Trekking",
+            "Photography","Playing music","Dancing","Art","Board games","Badminton","Cycling"],
+};
+const interestsOf = x => ({ music: (x && x.music) || [], hobbies: (x && x.hobbies) || [] });
+const allInterests = x => { const i = interestsOf(x); return i.music.concat(i.hobbies); };
+const sharedInterests = (a, b) => { const mine = new Set(allInterests(a)); return allInterests(b).filter(x => mine.has(x)); };
+function interestChips(prefix, sel){
+  const i = interestsOf(sel);
+  return Object.entries(INTERESTS).map(([k, list]) => `<fieldset><legend>${k === "music" ? "Music" : "Hobbies"}</legend><div class="chips">${list.map(v =>
+    `<label class="chip"><input type="checkbox" name="${prefix}_${k}" value="${esc(v)}"${i[k].includes(v) ? " checked" : ""}>${esc(v)}</label>`).join("")}</div></fieldset>`).join("");
+}
+const readInterests = (root, prefix) => Object.fromEntries(Object.keys(INTERESTS).map(k =>
+  [k, [...root.querySelectorAll(`[name=${prefix}_${k}]:checked`)].map(x => x.value)]));
+function interestsHtml(theirs, mine){
+  const all = allInterests(theirs); if(!all.length) return "";
+  const both = new Set(sharedInterests(mine, theirs));
+  return `<div class="traits likes">${all.map(v => `<span class="${both.has(v) ? "g" : ""}">${both.has(v) ? "♥ " : ""}${esc(v)}</span>`).join("")}</div>`;
+}
 // Same formula as fm_match() in schema.sql: weighted 1 - gap/2, needs 4 shared answers.
 function vibeMatch(me, home){
   let sum = 0, tot = 0, n = 0; const good = [], clash = [];
@@ -875,13 +923,17 @@ function vibeMatch(me, home){
 const matchClass = p => p >= 80 ? "hi" : p >= 60 ? "mid" : "lo";
 
 /* ---- money: rent plus this room's share of the bills */
-const BILLS = [["maintenance","Maintenance"],["electricity","Electricity (avg)"],["wifi","Wi-Fi"],["help","Cook / maid"]];
+// Rent is the price. Expenses are listed per room, separately, and never added to rent.
+// A value is rupees per month, or "usage" when it's paid as per meter (electricity).
+const BILLS = [["maintenance","Maintenance"],["electricity","Electricity"],["water","Water"],["wifi","Wi-Fi"],
+  ["gas","Cooking gas"],["cook","Cook"],["maid","Maid / cleaning"],["parking","Parking"],["help","Cook / maid"]];
+const expenseItems = l => BILLS.filter(([k]) => { const v = (l.costs || {})[k]; return v === "usage" || Number(v) > 0; });
 const billsTotal = l => BILLS.reduce((t, [k]) => t + (Number((l.costs || {})[k]) || 0), 0);
-const allIn = l => l.rent + billsTotal(l);
-// People who share the bills: everyone living there plus the new person. A whole-flat
-// takeover has no one else, so the newcomer pays the whole bill.
-const sharers = (kind, residents) => kind === "flat" ? 1 : Math.max(1, Number(residents) || 0) + 1;
-
+const hasUsage = l => BILLS.some(([k]) => (l.costs || {})[k] === "usage");
+const expensesLine = l => {
+  const n = billsTotal(l), u = hasUsage(l);
+  return n ? `+ ${inr(n)} expenses${u ? " + electricity as per use" : ""}` : u ? "+ electricity as per use" : "No extra expenses";
+};
 /* ---- addresses and maps. Google's keyless embed shows a pin for a text query. */
 function addressLine(a, area, city){
   return [a.flat, a.building, a.street, area, city].map(x => (x || "").trim()).filter(Boolean).join(", ")
@@ -897,7 +949,7 @@ function mapHtml(q, zoom, caption, withDirections){
     <div class="map-links"><a href="${mapsLink(q)}" target="_blank" rel="noopener">Open in Google Maps</a>
       ${withDirections ? `<a href="${dirLink(q)}" target="_blank" rel="noopener">Get directions</a>` : ""}</div>`;
 }
-const moveIn = l => l.deposit + allIn(l);
+const moveIn = l => l.deposit + l.rent;
 
 function timeAgo(d){
   const m = Math.max(1, Math.round((Date.now() - new Date(d)) / 6e4));
@@ -990,9 +1042,11 @@ const digitsToVibe = d => Object.fromEntries([...d].map((c, j) => [VIBE_QS[j].k,
 // Sample seekers who ask to meet a flat you post in demo mode, so owners can try the inbox.
 const DEMO_SEEKERS = [
   { name:"Riya", phone:"9822011223", occupation:{ type:"student", what:"MBA student at a Pune business school" }, v:"101001111111",
-    message:"Hi! I'm starting my second year in November and looking for a calm place close to college." },
+    message:"Hi! I'm starting my second year in November and looking for a calm place close to college.",
+    interests:{ music:["Bollywood","Punjabi","Lo-fi"], hobbies:["Cricket","Movies & series","Cooking"] } },
   { name:"Arjun", phone:"9822033445", occupation:{ type:"working", what:"Product manager at an e-commerce company" }, v:"112101111112",
-    message:"Hey, I work hybrid and keep things tidy. Would love to see the room this weekend." },
+    message:"Hey, I work hybrid and keep things tidy. Would love to see the room this weekend.",
+    interests:{ music:["Indie","Lo-fi"], hobbies:["Cricket","Gym","Cooking"] } },
 ];
 // ---------------------------------------------------------------- sample homes
 // 100 sample homes across 8 cities, one per neighbourhood (with its PIN code). Generated
@@ -1054,10 +1108,10 @@ function demoListings(){
   for(const [city, areas] of Object.entries(DEMO_AREAS)){
     for(const [area, pin] of areas){
       n++;
-      const roll = r(), kind = roll < .6 ? "room" : roll < .88 ? "flatmate" : "flat";
+      const roll = r(), kind = roll < .5 ? "room" : roll < .65 ? "shared" : roll < .88 ? "flatmate" : "flat";
       const bhk = kind === "flat" ? pick([1, 1, 2, 2, 3]) : pick([2, 2, 2, 3, 3, 4]);
       const [lo, hi] = DEMO_RENT[city];
-      const rent = kind === "flat" ? between(lo * 1.8 * bhk * .7, hi * 1.8 * bhk * .7, 500) : between(lo, hi, 250);
+      const rent = kind === "flat" ? between(lo * 1.8 * bhk * .7, hi * 1.8 * bhk * .7, 500) : kind === "shared" ? between(lo * .55, hi * .6, 250) : between(lo, hi, 250);
       const g = r(), gender = g < .6 ? "any" : g < .82 ? "female" : "male";
       const residents = kind === "flat" ? 0 : Math.min(bhk, pick([1, 1, 2, 2, 3]));
       const used = new Set();
@@ -1069,13 +1123,20 @@ function demoListings(){
       });
       const vibe = {}; if(residents) VIBE_QS.forEach(x => vibe[x.k] = r() < .5 ? 1 : r() < .5 ? 0 : 2);
       const amenities = DEMO_AMEN.filter(() => r() < .45);
-      const people = sharers(kind, residents);
-      const total = { maintenance: between(1200, 3500 + bhk * 500, 100), electricity: between(1200, 4000, 100),
-                      wifi: pick([700, 800, 999, 1200]), help: amenities.includes("Cook/maid") ? between(3000, 7000, 500) : 0 };
-      const costs = {}; for(const [k] of BILLS) costs[k] = Math.round(total[k] / people / 10) * 10;
-      if(people > 1) costs.split = { mode:"total", people, total };
+      // This room's monthly expenses, separate from rent; not every home charges every one.
+      const costs = {};
+      if(r() < .75) costs.maintenance = between(500, 1500 + bhk * 200, 50);
+      costs.electricity = r() < .45 ? "usage" : between(500, 1500, 50);
+      if(r() < .3) costs.water = between(150, 400, 50);
+      if(r() < .7) costs.wifi = pick([250, 300, 350, 400, 500]);
+      if(r() < .35) costs.gas = r() < .5 ? "usage" : between(200, 400, 50);
+      if(amenities.includes("Cook/maid")) costs.cook = between(1200, 3000, 100);
+      if(r() < .4) costs.maid = between(400, 1200, 100);
+      if(amenities.includes("Parking") && r() < .5) costs.parking = pick([500, 750, 1000]);
+      if(kind === "shared"){ for(const k of Object.keys(costs)) if(typeof costs[k] === "number") costs[k] = Math.round(costs[k] * .6 / 10) * 10; }
       const near = pick(DEMO_NEAR);
-      const title = (kind === "flat" ? `${bhk}BHK lease takeover` : kind === "flatmate" ? `Flatmate wanted for ${bhk}BHK` : `Private room in ${bhk}BHK`) + ` in ${area}`;
+      const title = (kind === "flat" ? `${bhk}BHK lease takeover` : kind === "flatmate" ? `Flatmate wanted for ${bhk}BHK`
+        : kind === "shared" ? `Shared room (twin sharing) in ${bhk}BHK` : `Private room in ${bhk}BHK`) + ` in ${area}`;
       const who = residents ? `${residents === 1 ? "One flatmate" : residents + " of us"} already living here. ` : "Whole flat, you set the rules. ";
       const parts = { flat: pick(["A","B","C","D"]) + "-" + (100 * (1 + Math.floor(r() * 12)) + 1 + Math.floor(r() * 8)),
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
@@ -1087,7 +1148,8 @@ function demoListings(){
         title, available_from: new Date(now + Math.floor(r() * 30) * 864e5).toISOString().slice(0, 10),
         created_at: new Date(now - Math.floor(r() * 20 * 24 + 2) * 36e5).toISOString(),
         unlock_count: Math.floor(r() * 9),
-        household: Object.assign({ residents, flatmates }, vibe), costs,
+        household: Object.assign({ residents, flatmates, interests: residents ? {
+          music: INTERESTS.music.filter(() => r() < .2).slice(0, 3), hobbies: INTERESTS.hobbies.filter(() => r() < .18).slice(0, 4) } : {} }, vibe), costs,
         private: { contact_name: pick(DEMO_OWNERS), contact_phone: "9" + String(Math.floor(r() * 9e8) + 1e8).slice(0, 9),
                    address: addressLine(parts, area, city), address_parts: parts }
       });
@@ -1135,6 +1197,7 @@ const demoApi = {
     save();
   },
   async setVibe(v){ state.vibe = v; save(); },
+  async setInterests(i){ state.interests = i; save(); },
   async setOccupation(o){ state.user.occupation = o; save(); },
   reqFor(id){ return state.requests.find(r => r.listing_id === id && r.seeker_phone === this.me_()); },
   view(l){
@@ -1148,7 +1211,7 @@ const demoApi = {
     this.tick();
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
       (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
-      (!f.maxRent || allIn(l) <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
+      (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
       (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
     ).map(l => this.view(l));
   },
@@ -1171,7 +1234,7 @@ const demoApi = {
     if(CHARGES_ON && state.credits - state.pending < 1) return { error:"no-credits" };
     const m = vibeMatch(state.vibe, l.household);
     const fresh = { id:"r" + Date.now(), listing_id:id, listing_title:l.title, seeker_phone:me.phone,
-      seeker:{ name:me.name, occupation:me.occupation, vibe:state.vibe, phone:me.phone },
+      seeker:{ name:me.name, occupation:me.occupation, vibe:state.vibe, phone:me.phone, interests:state.interests || {} },
       status:"pending", message:(message || "").slice(0, 300), match_pct: m ? m.pct : null,
       created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true };
     if(r) Object.assign(r, fresh); else state.requests.push(fresh);
@@ -1218,7 +1281,7 @@ const demoApi = {
       const s = DEMO_SEEKERS[state.myListings.indexOf(l) % DEMO_SEEKERS.length], v = digitsToVibe(s.v);
       const m = vibeMatch(v, l.household);
       state.requests.push({ id:"r" + now + lid, listing_id:lid, listing_title:l.title, seeker_phone:s.phone,
-        seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone }, status:"pending", message:s.message,
+        seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {} }, status:"pending", message:s.message,
         match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true });
     }
     save();
@@ -1231,6 +1294,7 @@ const demoApi = {
       return { id:r.id, listing_id:r.listing_id, listing_title:r.listing_title, direction: incoming ? "incoming" : "outgoing",
         status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at,
         name: incoming ? r.seeker.name : null, occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
+        interests: incoming ? r.seeker.interests || {} : null,
         phone: incoming && r.status === "approved" ? "+91" + r.seeker.phone : null,
         unseen: incoming ? !r.seen_owner && r.status === "pending" : !r.seen_seeker };
     }).sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -1333,15 +1397,17 @@ function makeLiveApi(sb){
       state.user = { phone: r.phone.replace(/^\+?91/, ""), name: r.full_name || "", role: r.role || null, occupation: r.occupation || {} };
       Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given });
       if(answered(r.vibe)) state.vibe = r.vibe;
+      if(r.interests && allInterests(r.interests).length) state.interests = r.interests;
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
     async setVibe(v){ state.vibe = v; save(); await rpc("fm_set_vibe", { p_vibe: v }); },
+    async setInterests(i){ state.interests = i; save(); await rpc("fm_set_interests", { p_interests: i }); },
     async setOccupation(o){ await rpc("fm_set_occupation", { p_occ: o }); state.user.occupation = o; save(); },
     async search(f){
       const rows = await rpc("fm_search", { p_city: f.city || null, p_kind: f.kind || null,
         p_max_rent: f.maxRent || null, p_gender: f.gender || null, p_q: f.q || null });
-      return rows.filter(l => !f.maxRent || allIn(l) <= f.maxRent);   // the server only checks rent
+      return rows;
     },
     async get(id){ return (await all()).find(l => l.id === id); },
     async contact(id){ const c = one(await rpc("fm_contact", { p_listing: id })); return c.contact_phone ? c : null; },
@@ -1678,7 +1744,7 @@ function buildCity(){
       ${ringSvg(86, 96)}<ul class="reasons" style="margin:0"><li><span class="g">✓</span>Both night owls</li><li><span class="g">✓</span>Same food habits</li><li><span class="c">!</span>They have guests often</li></ul></div>`;
   $("storyArt3").innerHTML = `<div style="position:absolute;inset:0;padding:18px 22px;display:flex;flex-direction:column;justify-content:center">
       <div class="bill"><span class="muted">Rent</span><span>₹14,000</span><span class="muted">Maintenance</span><span>₹850</span>
-      <span class="muted">Electricity, Wi-Fi, cook</span><span>₹2,450</span><span class="tot">All-in per month</span><span class="tot">₹17,300</span></div></div>`;
+      <span class="muted">Electricity</span><span>As per use</span><span class="muted">Wi-Fi</span><span>₹350</span></div></div>`;
 }
 function startCity(){
   if(!$("city").firstChild) buildCity();
@@ -1751,22 +1817,27 @@ function obSteps(role){
     { k:"residents", q:"How many people live in your flat right now?", why:"Including you. People looking for a room want to know who they'd share with.",
       opts:[{v:1,t:"Just me"},{v:2,t:"Two of us"},{v:3,t:"Three of us"},{v:4,t:"Four of us"},{v:0,t:"Nobody",s:"I'm letting out the whole flat"}] },
     { k:"flatmates", form:"flatmates", q:"Tell us a little about everyone who lives there", why:"What they do and their age range. It's the first thing people look for." },
-    ...vibe ];
+    ...vibe,
+    { k:"music", form:"music", q:"What music plays in your flat?", why:"Just for fun, it doesn't change the vibe score. People love finding a flatmate with the same playlist." },
+    { k:"hobbies", form:"hobbies", q:"What are you all into?", why:"Shown on your listing, so people with the same interests notice you." } ];
   return [
     { k:"occType", q:"First, what do you do?", why:"Owners like to know who they'd be living with.",
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
     { k:"occWhat", form:"text", q:"", why:"" },
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true, opts: CITIES.map(c => ({ v:c, t:c })) },
     { k:"areas", form:"areas", q:"", why:"" },
-    { k:"budget", q:"What can you spend each month, all-in?", why:"Rent plus your share of the bills. We do the maths for every home.",
+    { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
       opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
-    ...vibe ];
+    ...vibe,
+    { k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
+    { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." } ];
 }
 let ob = null;
 function startOnboarding(role){
   if(ob && ob.role === role) return renderOb();
   const occ = (state.user && state.user.occupation) || {};
-  const prev = role === "owner" ? state.homeDraft : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), state.vibe);
+  const prev = role === "owner" ? Object.assign({}, state.homeDraft, interestsOf((state.homeDraft || {}).interests))
+    : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), state.vibe, interestsOf(state.interests));
   ob = { role, steps: obSteps(role), i: 0, a: Object.assign({}, prev) };
   renderOb();
 }
@@ -1803,6 +1874,10 @@ function renderOb(){
   const intro = ob.i === 0 ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "let's set up your profile"}</p>` : "";
   let inner;
   if(st.form === "text") inner = obTextStep();
+  else if(st.form === "music" || st.form === "hobbies") inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why)}</p>
+    <form id="obIntForm" novalidate><div class="ob-areas">${INTERESTS[st.form].map(v =>
+      `<label class="chip"><input type="checkbox" value="${esc(v)}"${(ob.a[st.form] || []).includes(v) ? " checked" : ""}>${esc(v)}</label>`).join("")}</div>
+    <button class="btn btn-primary" type="submit">Continue</button></form>`;
   else if(st.form === "areas") inner = `<h1>Which areas of ${esc(ob.a.city || "the city")} work for you?</h1>
     <p class="why">Pick as many as you like: near work, college or friends. You can change this any time.</p>
     <form id="obAreaForm" novalidate><div class="ob-areas">${(CITY_AREAS[ob.a.city] || []).map(a =>
@@ -1830,6 +1905,7 @@ $("obStage").addEventListener("submit", e => {
   e.preventDefault();
   if(e.target.id === "obTextForm"){ if(!formOk(e.target)) return; ob.a.occWhat = $("obWhat").value.trim(); obNext(); }
   if(e.target.id === "obFmForm"){ ob.a.flatmates = readFmRows(e.target, ob.a.residents, "o"); obNext(); }
+  if(e.target.id === "obIntForm"){ ob.a[ob.steps[ob.i].k] = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
   if(e.target.id === "obAreaForm"){ ob.a.areas = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
 });
 $("obBack").addEventListener("click", () => {
@@ -1844,7 +1920,8 @@ async function finishOnboarding(){
   const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
   $("obBar").style.width = "100%"; $("obCount").textContent = ""; $("obBack").style.visibility = "hidden";
   if(role === "owner"){
-    state.homeDraft = Object.assign({ residents: Number.isInteger(a.residents) ? a.residents : 1, flatmates: a.flatmates || [] }, vibe);
+    state.homeDraft = Object.assign({ residents: Number.isInteger(a.residents) ? a.residents : 1, flatmates: a.flatmates || [],
+      interests: { music: a.music || [], hobbies: a.hobbies || [] } }, vibe);
     state.onboarded.owner = true; save();
     $("obStage").innerHTML = `<div class="ob-q finale">${roomArtBox()}<h1>Lovely. Now, the room itself.</h1>
       <p>Your household is saved. Add the room, a few photos and the rent, and you're live. When someone who fits asks to meet you, you'll get a notification here.</p>
@@ -1856,6 +1933,7 @@ async function finishOnboarding(){
   try{
     await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
     await api.setVibe(vibe);
+    await api.setInterests({ music: a.music || [], hobbies: a.hobbies || [] });
   }catch(err){ console.error(err); }
   state.onboarded.seeker = true; save();
   await api.me();
@@ -1864,14 +1942,11 @@ async function finishOnboarding(){
   const scores = rows.map(l => (vibeMatch(state.vibe, l.household) || { pct: 0 }).pct);
   const best = Math.max(0, ...scores), strong = scores.filter(p => p >= 75).length;
   const where = prefs().areas.length === 1 ? prefs().areas[0] : prefs().city || "your city";
-  const gift = CHARGES_ON && state.credits > 0 && onGift();
   $("obStage").innerHTML = `<div class="ob-q finale">
-    ${gift ? `<div class="gift-card"><div class="giftbox" aria-hidden="true"><div class="box"></div><div class="rib"></div><div class="lid"></div><div class="bow"></div><div class="num">${state.credits}</div></div>
-      <p class="eyebrow" style="color:var(--accent)">A welcome gift for you</p><h2>${state.credits} free contacts</h2>
-      <p>Ask to meet any owner whose home fits you. A contact is only used when they say yes.</p></div>` : ""}
+    <p class="eyebrow">Your vibe profile is ready</p>
     <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
-    <p>${strong ? `${strong} of them ${strong === 1 ? "is a" : "are"} strong ${strong === 1 ? "match" : "matches"} for how you live. Your best one is ${best}%.`
+    <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}</p>
     <button class="btn btn-primary" type="button" id="obDone">Show me</button></div>`;
   let n = 0;
@@ -1895,7 +1970,7 @@ const RULES = { veg:["Veg-only kitchen", hh => hh.food === 0], noSmoke:["No smok
   noDrinks:["No alcohol", hh => hh.drinks === 0], pets:["Pet-friendly", hh => hh.pets >= 1] };
 function applyFilters(rows, f){
   return rows.filter(l => {
-    const cost = allIn(l), hh = l.household || {}, shared = l.kind !== "flat" && (hh.residents || 0) > 0;
+    const cost = l.rent, hh = l.household || {}, shared = l.kind !== "flat" && (hh.residents || 0) > 0;
     if(f.areas.length && !f.areas.includes(l.locality)) return false;
     if(f.min && cost < f.min) return false;
     if(f.max && cost > f.max) return false;
@@ -1934,7 +2009,7 @@ function applyPrefs(){ $("fCity").value = prefs().city; }
 
 const REQ_TAG = { pending:"Request sent", approved:"Accepted", declined:"Not this time" };
 function cardHtml(l, i){
-  const m = vibeMatch(state.vibe, l.household), hh = l.household || {}, bills = billsTotal(l), ph = photosOf(l), mates = matesOf(hh);
+  const m = vibeMatch(state.vibe, l.household), hh = l.household || {}, ph = photosOf(l), mates = matesOf(hh);
   const tag = l.is_owner ? "Your listing" : REQ_TAG[l.request_status] || "";
   return `<article class="card" tabindex="0" data-id="${esc(l.id)}" style="--i:${Math.min(i || 0, 12)}">
     <div class="thumb">${picHtml(l)}
@@ -1948,25 +2023,15 @@ function cardHtml(l, i){
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}</div>
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span></div>` : ""}
+      ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
       <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
-      <div class="price">${inr(allIn(l))}<small> /month all-in</small></div>
-      <div class="allin">${inr(l.rent)} rent${bills ? ` + ${inr(bills)} bills` : ""} · deposit ${inr(l.deposit)}</div>
+      <div class="price">${inr(l.rent)}<small> /month rent</small></div>
+      <div class="allin">${esc(expensesLine(l))} · deposit ${inr(l.deposit)}</div>
       <div class="fresh">Posted ${timeAgo(l.created_at)}</div>
     </div></article>`;
 }
-function spotlightHtml(l, m){
-  const mates = matesOf(l.household);
-  return `<article class="spot" tabindex="0" data-id="${esc(l.id)}">
-    <div class="pic">${picHtml(l)}<span class="ring-wrap">${ringSvg(m.pct, 84)}</span></div>
-    <div class="txt"><p class="eyebrow">Your best match right now</p>
-      <h2>${esc(l.title)}</h2>
-      <div class="who">${esc(l.locality)}, ${esc(l.city)}${mates.length ? " · Live with " + esc(mates.map(x => x.what || OCC[x.type]).join(" and ")) : ""}</div>
-      <ul class="reasons">${m.good.slice(0, 3).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
-        ${m.clash.slice(0, 1).map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
-      <div class="price">${inr(allIn(l))}<small> /month all-in</small></div></div></article>`;
-}
 function giftPillHtml(){
-  if(!CHARGES_ON || !isSeeker()) return "";
+  if(!CHARGES_ON || !isSeeker() || !state.giftSeen) return "";   // the gift is revealed on the first request
   const n = contactsLeft();
   return `<button class="gift-pill" type="button" data-gift>${GIFT_SVG}${n ? contactsLabel(n) : "Get more contacts"}</button>`;
 }
@@ -1988,7 +2053,7 @@ async function renderDiscover(){
   let list = applyFilters(rows, f);
   const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
   if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
-  else if(sort === "cost") list.sort((a, b) => allIn(a) - allIn(b));
+  else if(sort === "cost") list.sort((a, b) => a.rent - b.rent);
   else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
   const strong = list.filter(l => score(l) >= 75).length;
   const where = f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
@@ -1997,12 +2062,14 @@ async function renderDiscover(){
   $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} in ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
   renderUrgent();
-  const top = list.find(l => !l.request_status && score(l) >= 0);
-  const tm = top && vibeMatch(state.vibe, top.household);
-  $("spotlight").innerHTML = tm ? spotlightHtml(top, tm) : "";
-  const rest = tm ? list.filter(l => l !== top) : list;
-  $("count").textContent = tm && rest.length ? "More homes" : "";
-  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : tm ? "" : emptyHtml(rows, f);
+  // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
+  const vibes = rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
+  $("vibeRow").hidden = !vibes.length;
+  $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} in ${f.city || "all cities"} where the people live like you`;
+  $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
+  const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
+  $("count").textContent = rest.length ? (vibes.length ? "More homes" : "") : "";
+  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : vibes.length && list.length ? "" : emptyHtml(rows, f);
 }
 // When nothing matches, offer the changes that would bring homes back, with counts.
 let suggestions = [];
@@ -2091,7 +2158,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","spotlight"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","savedCards","vibeCards"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null;
@@ -2135,15 +2202,16 @@ async function openListing(id){
     }else{
       const left = contactsLeft();
       lock = `<div class="lock">
-        <h3>Like this home? Ask to meet them</h3>
-        <p>We'll send the owner your profile. If they think you'd fit, they accept, and you both get each other's number and the address.</p>
+        <h3>Feel the vibe? Ask to meet them</h3>
+        <p>We'll send the owner your vibe profile. If they feel it too, they accept, and you both get each other's number and the address.</p>
         <div class="share"><span>${esc(state.user.name || "You")}</span>${state.user.occupation && state.user.occupation.type ? `<span>${esc(occLine(state.user.occupation))}</span>` : ""}
           <span>Your 12 living-style answers</span>${m ? `<span>${m.pct}% match</span>` : ""}</div>
         <textarea id="reqMsg" maxlength="300" placeholder="Say hello (optional): when you'd like to move, anything they should know"></textarea>
         <button class="btn btn-accent btn-block" style="margin-top:10px" data-action="request">${CHARGES_ON && !left ? `Get ${PACK_CREDITS} more contacts · ₹${PACK_PRICE}` : "Send request"}</button>
-        ${CHARGES_ON ? `<div class="promise-line"><b>${GIFT_SVG.replace("<svg", '<svg width="16" height="16"')}</b><span>${left
+        ${!CHARGES_ON || !state.giftSeen ? `<div class="promise-line"><b>✓</b><span>The owner sees your vibe profile and decides. Your number is only shared if they accept.</span></div>`
+          : `<div class="promise-line"><b>${GIFT_SVG.replace("<svg", '<svg width="16" height="16"')}</b><span>${left
           ? `You have ${contactsLabel(left)}. One is used only if the owner accepts.`
-          : "You've used your free contacts. Requests that aren't accepted never cost anything."}</span></div>` : ""}
+          : "You've used your free contacts. Requests that aren't accepted never cost anything."}</span></div>`}
         ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:12px" data-action="save">♥ Not sure yet? Save it</button>`}
       </div>`;
     }
@@ -2153,24 +2221,29 @@ async function openListing(id){
   const matchBlock = !m ? "" : `<p style="margin:12px 0 0;font-weight:800">${m.pct}% match with how you live</p>
     <ul class="reasons">${m.good.slice(0, 4).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
       ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>`;
-  const sp = (l.costs || {}).split;
-  const bill = BILLS.filter(([k]) => Number((l.costs || {})[k]) > 0)
-    .map(([k, label]) => `<span class="muted">${label}${sp && sp.total && sp.total[k] ? ` <span class="hint">(${inr(sp.total[k])} for the flat ÷ ${sp.people})</span>` : ""}</span><span>${inr(l.costs[k])}</span>`).join("");
+  const items = expenseItems(l);
+  const bill = items.map(([k, label]) => `<span class="muted">${label}</span><span>${l.costs[k] === "usage" ? "As per use" : inr(l.costs[k])}</span>`).join("");
   $("lBody").innerHTML = `
     <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     <div class="household">${mates.length ? matesHtml(hh, l.id) : ""}
-      ${traits ? `<div class="traits">${traits}</div>` : ""}${matchBlock}</div>` : ""}
-    <h3 class="section-h">What you'd pay each month</h3>
-    ${sp ? `<p class="hint" style="margin:-4px 0 8px">Bills are split equally between ${sp.people} people, including you. Below is your share.</p>` : ""}
+      ${traits ? `<div class="traits">${traits}</div>` : ""}${matchBlock}
+      ${allInterests(hh.interests).length ? `<p style="margin:12px 0 0;font-weight:800">What they're into${sharedInterests(state.interests, hh.interests).length
+        ? ` · <span style="color:var(--accent)">you both like ${esc(sharedInterests(state.interests, hh.interests).join(", "))}</span>` : ""}</p>
+        ${interestsHtml(hh.interests, state.interests)}` : ""}</div>` : ""}
+    <h3 class="section-h">Rent</h3>
     <div class="bill">
-      <span class="muted">Rent</span><span>${inr(l.rent)}</span>${bill}
-      <span class="tot">All-in per month</span><span class="tot">${inr(allIn(l))}</span>
-      <span class="muted">To move in (deposit + first month)</span><span>${inr(moveIn(l))}</span>
+      <span class="tot" style="border:0;padding:0">Rent per month</span><span class="tot" style="border:0;padding:0">${inr(l.rent)}</span>
+      <span class="muted">Deposit</span><span>${inr(l.deposit)}</span>
+      <span class="muted">To move in (deposit + first month's rent)</span><span>${inr(moveIn(l))}</span>
       <span class="muted">Brokerage</span><span>₹0</span>
     </div>
+    <h3 class="section-h">Monthly expenses for this room</h3>
+    <p class="hint" style="margin:-4px 0 8px">Paid on top of rent. Not included in the rent above.</p>
+    ${items.length ? `<div class="bill">${bill}${billsTotal(l) ? `<span class="tot">Fixed expenses per month</span><span class="tot">${inr(billsTotal(l))}</span>` : ""}</div>`
+      : `<p style="margin:0">No extra expenses. Everything is included in the rent.</p>`}
     <div class="kv">
       <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
@@ -2198,6 +2271,8 @@ $("lBody").addEventListener("click", async e => {
   if(act === "request") return sendRequest(currentId, ($("reqMsg") || {}).value || "");
 });
 async function sendRequest(id, message){
+  // First ever request: reveal the welcome gift, then carry on with the request.
+  if(CHARGES_ON && !state.giftSeen && onGift() && contactsLeft() > 0) return openGift(() => sendRequest(id, message));
   if(CHARGES_ON && !contactsLeft()) return openPay(() => sendRequest(id, message));
   try{
     const r = await api.sendRequest(id, message.trim());
@@ -2246,6 +2321,7 @@ function incomingHtml(r, l){
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
       ${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <div class="traits">${traits}</div>
+      ${allInterests(r.interests).length ? `<p class="occ" style="margin:8px 0 0">Into (♥ = same as your home):</p>${interestsHtml(r.interests, hh.interests)}` : ""}
       <div class="acts">${r.status === "pending" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
         : r.status === "approved" && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
@@ -2274,6 +2350,22 @@ $("reqList").addEventListener("click", async e => {
   }
   const o = e.target.closest("[data-open]"); if(o) openListing(o.dataset.open);
 });
+
+/* ========================================================= welcome gift */
+let afterGift = null;
+function openGift(then){
+  afterGift = then;
+  const n = contactsLeft();
+  $("giftBody").innerHTML = `<div class="giftbox" aria-hidden="true"><div class="box"></div><div class="rib"></div><div class="lid"></div><div class="bow"></div><div class="num">${n}</div></div>
+    <p class="eyebrow" style="color:var(--accent)">Surprise! A welcome gift</p><h2>Your first ${n} contacts are on us</h2>
+    <p>Ask to meet any household that matches your vibe. A contact is only used when the owner says yes, so you never pay for a "no".</p>`;
+  $("dlgGift").showModal();
+}
+$("giftGo").addEventListener("click", () => {
+  state.giftSeen = true; save(); $("dlgGift").close();
+  const next = afterGift; afterGift = null; if(next) next();
+});
+$("dlgGift").addEventListener("close", () => { if(!state.giftSeen){ state.giftSeen = true; save(); afterGift = null; } });
 
 /* ============================================================= payment */
 let afterPay = null;
@@ -2318,14 +2410,14 @@ $("visitForm").addEventListener("submit", async e => {
 /* ========================================================== vibe edit */
 document.addEventListener("click", e => {
   if(!e.target.closest("[data-vibe-open]")) return;
-  $("vQuiz").innerHTML = quizHtml("v", state.vibe);
+  $("vQuiz").innerHTML = quizHtml("v", state.vibe) + `<h3 class="section-h">Music and hobbies <span class="hint">(not scored)</span></h3>` + interestChips("vi", state.interests);
   $("dlgVibe").showModal();
 });
 $("vibeForm").addEventListener("submit", async e => {
   e.preventDefault();
   const v = readQuiz(e.target, "v");
   if(answered(v) < 8){ toast("Please answer at least 8 of the questions."); return; }
-  try{ await api.setVibe(v); }catch(err){ console.error(err); }
+  try{ await api.setVibe(v); await api.setInterests(readInterests(e.target, "vi")); }catch(err){ console.error(err); }
   $("dlgVibe").close(); toast("Saved. Your matches are updated.");
   if($("dlgListing").open && currentId) openListing(currentId);
   route();
@@ -2346,7 +2438,7 @@ async function renderMine(){
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
       <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
-      <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${inr(allIn(l))}/month all-in</div>
+      <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${inr(l.rent)}/month rent</div>
       <div class="stats" style="margin:12px 0">
         <div class="stat"><b>${reqs.filter(r => r.status === "pending").length}</b><span>waiting for you</span></div>
         <div class="stat"><b>${reqs.filter(r => r.status === "approved").length}</b><span>accepted</span></div>
@@ -2398,32 +2490,49 @@ $("pPreviews").addEventListener("click", e => {
 ["dragleave","drop"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.remove("over"); }));
 $("pDrop").addEventListener("drop", e => addPhotos(e.dataTransfer.files));
 
-/* Bills: owners can type the whole flat's bill; the newcomer's share is that divided by
-   everyone who'll live there. What's stored (and summed into "all-in") is always the share. */
-function billsFromForm(){
-  const mode = (document.querySelector("[name=billMode]:checked") || {}).value || "total";
-  const kind = (document.querySelector("#postForm [name=kind]:checked") || {}).value || "room";
-  const people = mode === "total" ? sharers(kind, $("hCount").value) : 1;
-  const typed = { maintenance:$("cMaint").value, electricity:$("cElec").value, wifi:$("cWifi").value, help:$("cHelp").value };
-  const total = {}, costs = {};
-  for(const [k] of BILLS){ total[k] = Math.max(0, Math.round(Number(typed[k]) || 0)); costs[k] = Math.round(total[k] / people); }
-  if(mode === "total" && people > 1) costs.split = { mode, people, total };
-  return { mode, people, total, costs };
+/* Expenses: one row per type. Ticked rows carry this room's monthly amount, or "As per use"
+   for electricity. They're shown next to the rent, never added into it. */
+const USAGE_OK = ["electricity", "water", "gas"];
+function renderExpenseRows(costs){
+  costs = costs || {};
+  $("expList").innerHTML = BILLS.filter(([k]) => k !== "help").map(([k, label]) => {
+    const v = costs[k], on = v === "usage" || Number(v) > 0;
+    return `<div class="exp-row" data-k="${k}">
+      <label class="exp-on"><input type="checkbox" name="exp_${k}"${on ? " checked" : ""}> ${label}</label>
+      <input type="number" min="0" step="1" inputmode="numeric" name="amt_${k}" placeholder="₹ / month" aria-label="${label} amount"
+        value="${Number(v) > 0 ? Number(v) : ""}"${on && v !== "usage" ? "" : " disabled"}>
+      ${USAGE_OK.includes(k) ? `<label class="exp-use"><input type="checkbox" name="use_${k}"${v === "usage" ? " checked" : ""}${on ? "" : " disabled"}> As per use</label>` : "<span></span>"}
+    </div>`;
+  }).join("");
+  renderExpenseSum();
 }
-function renderBillSplit(){
-  const b = billsFromForm(), share = BILLS.reduce((t, [k]) => t + b.costs[k], 0);
-  if(!share){ $("billSplit").innerHTML = ""; return; }
-  const rows = BILLS.filter(([k]) => b.total[k]).map(([k, label]) =>
-    `<span>${label}${b.mode === "total" && b.people > 1 ? ` <span class="hint">(${inr(b.total[k])} ÷ ${b.people})</span>` : ""}</span><span>${inr(b.costs[k])}</span>`).join("");
-  const rent = Number($("pRent").value) || 0;
-  $("billSplit").innerHTML = `<span class="h">${b.mode === "total" && b.people > 1
-      ? `Split equally between ${b.people} people (everyone living there plus the new flatmate). The new flatmate pays:`
-      : "The new flatmate pays:"}</span>${rows}
-    <span class="t">Bills per month</span><span class="t">${inr(share)}</span>
-    ${rent ? `<span class="t">All-in with rent</span><span class="t">${inr(rent + share)}</span>` : ""}`;
+function expensesFromForm(){
+  const costs = {};
+  for(const row of $("expList").querySelectorAll(".exp-row")){
+    const k = row.dataset.k;
+    if(!row.querySelector(`[name=exp_${k}]`).checked) continue;
+    const use = row.querySelector(`[name=use_${k}]`);
+    if(use && use.checked){ costs[k] = "usage"; continue; }
+    const amt = Math.round(Number(row.querySelector(`[name=amt_${k}]`).value) || 0);
+    if(amt > 0) costs[k] = amt;
+  }
+  return costs;
 }
-["cMaint","cElec","cWifi","cHelp","pRent","hCount"].forEach(id => $(id).addEventListener("input", renderBillSplit));
-$("postForm").addEventListener("change", e => { if(e.target.name === "billMode" || e.target.name === "kind" || e.target.id === "hCount") renderBillSplit(); });
+function renderExpenseSum(){
+  const l = { costs: expensesFromForm() }, items = expenseItems(l);
+  $("expSum").innerHTML = items.length ? `<span class="h">The new flatmate pays, on top of rent:</span>${items.map(([k, label]) =>
+      `<span>${label}</span><span>${l.costs[k] === "usage" ? "As per use" : inr(l.costs[k])}</span>`).join("")}
+    ${billsTotal(l) ? `<span class="t">Fixed expenses per month</span><span class="t">${inr(billsTotal(l))}</span>` : ""}` : "";
+}
+$("expList").addEventListener("change", e => {
+  const row = e.target.closest(".exp-row"); if(!row) return;
+  const k = row.dataset.k, on = row.querySelector(`[name=exp_${k}]`).checked, use = row.querySelector(`[name=use_${k}]`);
+  if(use) use.disabled = !on;
+  row.querySelector(`[name=amt_${k}]`).disabled = !on || (use && use.checked);
+  if(e.target.name === `exp_${k}` && on && !(use && use.checked)) row.querySelector(`[name=amt_${k}]`).focus();
+  renderExpenseSum();
+});
+$("expList").addEventListener("input", renderExpenseSum);
 
 const addressFromForm = () => ({ flat:$("aFlat").value.trim(), building:$("aBuilding").value.trim(), street:$("aStreet").value.trim(),
   landmark:$("aLandmark").value.trim(), pin:$("aPin").value.trim() });
@@ -2445,13 +2554,14 @@ $("pCity").addEventListener("change", fillAreaList);
 function renderPost(){
   const d = state.homeDraft || {};
   $("hQuiz").innerHTML = quizHtml("h", d);
+  $("hInt").innerHTML = interestChips("hi", d.interests);
   if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
   $("fmRows").innerHTML = ""; renderFmRows();
   fillAreaList();
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
   if(!$("pName").value) $("pName").value = state.user.name || "";
   if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
-  renderBillSplit();
+  if(!$("expList").children.length) renderExpenseRows();
 }
 $("postForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -2467,8 +2577,8 @@ $("postForm").addEventListener("submit", async e => {
       available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
       description: $("pDesc").value.trim(),
-      household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p") }, readQuiz($("hQuiz"), "h")),
-      costs: billsFromForm().costs
+      household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") }, readQuiz($("hQuiz"), "h")),
+      costs: expensesFromForm()
     },
     private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(),
                address: addressLine(addressFromForm(), $("pLocality").value, $("pCity").value), address_parts: addressFromForm() }
@@ -2485,7 +2595,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     state.homeDraft = Object.assign({}, p.listing.household); save();
     f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
-    $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderBillSplit();
+    $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderExpenseRows();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."
       : res.photos === "shrunk" ? "Your listing is live. Photos were saved smaller to fit this phone's demo storage."
       : skipped ? `Your listing is live. ${skipped} photo${skipped === 1 ? "" : "s"} couldn't be read and ${skipped === 1 ? "was" : "were"} left out.`
@@ -2513,6 +2623,8 @@ async function renderAccount(){
   $("vibeTraits").innerHTML = answered(state.vibe)
     ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")
     : `<p class="hint" style="margin:0">Not answered yet.</p>`;
+  $("myInterests").innerHTML = allInterests(state.interests).length
+    ? `<p class="hint" style="margin:12px 0 0">Into</p>${interestsHtml(state.interests, {})}` : "";
   const [unlocked, visits] = await Promise.all([api.unlockedListings(), api.visits()]);
   $("creditLine").innerHTML = CHARGES_ON
     ? `${GIFT_SVG.replace("<svg", '<svg width="16" height="16" style="vertical-align:-3px;color:var(--accent)"')} You have ${contactsLabel(contactsLeft())}${state.pending ? ` (${state.pending} held by requests waiting for a reply)` : ""}. Contacts never expire.`

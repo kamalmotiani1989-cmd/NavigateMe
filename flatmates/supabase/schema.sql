@@ -39,6 +39,8 @@ alter table public.fm_profiles add column if not exists vibe jsonb not null defa
 -- What they do: {type: working|student|self|between, what: "Analyst at Deloitte"}.
 alter table public.fm_profiles add column if not exists occupation jsonb not null default '{}';
 alter table public.fm_profiles add column if not exists gift_given boolean not null default false;
+-- Music and hobbies: shown to owners and as "you both like", never part of the match score.
+alter table public.fm_profiles add column if not exists interests jsonb not null default '{}';
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -58,7 +60,7 @@ create trigger fm_on_auth_user_created
 create table if not exists public.fm_listings (
   id            uuid primary key default gen_random_uuid(),
   owner_id      uuid not null references auth.users(id) on delete cascade,
-  kind          text not null check (kind in ('room','flatmate','flat')),
+  kind          text not null check (kind in ('room','shared','flatmate','flat')),
   title         text not null check (char_length(title) between 5 and 90),
   city          text not null,
   locality      text not null,
@@ -76,9 +78,12 @@ create table if not exists public.fm_listings (
 alter table public.fm_listings add column if not exists photos text[] not null default '{}';
 -- The household: same living-style answers as seekers, plus who lives there.
 alter table public.fm_listings add column if not exists household jsonb not null default '{}';
--- Monthly bills on top of rent: {maintenance, electricity, wifi, help} = the NEW person's share
--- in rupees, plus split: {mode: total|share, people, total: {...whole-flat amounts}}.
+-- Monthly expenses for the room, NOT included in rent: {maintenance: 1200, electricity: "usage", ...}.
+-- Only the expenses that apply are present; "usage" means paid as per meter/usage.
 alter table public.fm_listings add column if not exists costs jsonb not null default '{}';
+-- 'shared' (a bed in a twin-sharing room) was added later; widen the check on existing databases.
+alter table public.fm_listings drop constraint if exists fm_listings_kind_check;
+alter table public.fm_listings add constraint fm_listings_kind_check check (kind in ('room','shared','flatmate','flat'));
 create index if not exists fm_listings_search on public.fm_listings (status, city, rent);
 
 -- Private part: never readable directly. Released only by fm_contact().
@@ -209,6 +214,7 @@ create policy fm_orders_self on public.fm_orders
 -- ------------------------------------------------------------- RPCs --
 -- Return types and signatures changed since the first version; drop the old ones.
 drop function if exists public.fm_me();
+drop function if exists public.fm_inbox();
 drop function if exists public.fm_set_name(text);
 drop function if exists public.fm_search(text, text, int, text, text);
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
@@ -224,13 +230,21 @@ drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund
 
 create or replace function public.fm_me()
 returns table (credits int, full_name text, phone text, role text, vibe jsonb, occupation jsonb,
-               gift_given boolean, packs bigint, pending bigint)
+               gift_given boolean, packs bigint, pending bigint, interests jsonb)
 language sql security definer set search_path = public stable as $$
   select p.credits, p.full_name, p.phone, p.role, p.vibe, p.occupation, p.gift_given,
          (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid'),
-         (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending')
+         (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending'),
+         p.interests
   from fm_profiles p where p.id = auth.uid();
 $$;
+
+create or replace function public.fm_set_interests(p_interests jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if jsonb_typeof(p_interests) <> 'object' or pg_column_size(p_interests) > 2048 then raise exception 'bad-interests'; end if;
+  update fm_profiles set interests = p_interests where id = auth.uid();
+end $$;
 
 create or replace function public.fm_set_vibe(p_vibe jsonb) returns void
 language plpgsql security definer set search_path = public as $$
@@ -424,7 +438,7 @@ end $$;
 create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
-               name text, occupation jsonb, vibe jsonb, phone text, unseen boolean)
+               name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
@@ -434,7 +448,8 @@ language sql security definer set search_path = public stable as $$
          case when l.owner_id = auth.uid() then sp.vibe end,
          case when l.owner_id = auth.uid() and r.status = 'approved' then sp.phone end,
          case when l.owner_id = auth.uid() then not r.seen_by_owner and r.status = 'pending'
-              else not r.seen_by_seeker end
+              else not r.seen_by_seeker end,
+         case when l.owner_id = auth.uid() then sp.interests end
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
