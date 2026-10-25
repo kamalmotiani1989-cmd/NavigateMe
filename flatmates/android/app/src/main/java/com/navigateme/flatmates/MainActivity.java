@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -208,6 +209,9 @@ public class MainActivity extends Activity {
     /** Android 15 draws apps edge to edge; pad the page so it doesn't sit under the bars. */
     private void keepClearOfSystemBars(FrameLayout root) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
+        // Dark icons on the white bars (the theme sets this too; edge to edge needs it explicitly).
+        int light = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+        getWindow().getInsetsController().setSystemBarsAppearance(light, light);
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
