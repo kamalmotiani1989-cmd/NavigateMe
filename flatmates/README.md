@@ -45,6 +45,29 @@ Android Chrome shows **Install app**; on iPhone use Share → **Add to Home Scre
 full-screen with its own icon. The service worker loads the newest version whenever there's a
 connection, so changes show up on the next open.
 
+## Android app (APK)
+
+Download on the phone: https://github.com/kamalmotiani1989-cmd/NavigateMe/releases/download/flatmates-apk/flatmates.apk
+
+Open the downloaded file and allow "Install unknown apps" for your browser when Android asks.
+New versions install over the old one and keep your data.
+
+How it's built: `android/` is a small native app that shows the web app full-screen. The build
+copies `index.html` and `icons/` into the APK, so you only ever edit the web app. Every push that
+changes `flatmates/` runs `.github/workflows/flatmates-apk.yml`, which builds the APK and replaces
+the file at the link above (about 3 minutes).
+
+To build on your own computer instead: open `flatmates/android` in Android Studio and press Run,
+or run `./gradlew assembleRelease` there (output in `app/build/outputs/apk/release/`).
+
+**Before the Play Store:** the APK is signed with `android/testing.keystore`, which is public in
+this repo, so it's only for testing. Create your own key once
+(`keytool -genkeypair -keystore upload.keystore -alias upload -keyalg RSA -validity 10000`)
+and add these repository secrets: `ANDROID_KEYSTORE_BASE64` (the file, base64-encoded),
+`ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`. The workflow uses
+them automatically. Keep that keystore safe: Play only accepts updates signed with it.
+Phones with the testing build must uninstall it once before installing the properly signed one.
+
 ## Go live
 
 1. Create a Supabase project. Under Authentication → Providers enable **Phone** (needs an SMS
