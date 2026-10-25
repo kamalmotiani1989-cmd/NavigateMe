@@ -8,6 +8,18 @@ At sign-in everyone answers one question:
 Only owners can post and only seekers can unlock; the database enforces both. Anyone can
 switch role from My account (or from the prompt they see when they try the other side's action).
 
+## What makes it different
+
+- **Vibe match.** Seekers answer 8 quick living-style questions (bedtime, cleanliness, food,
+  smoking, drinks, guests, work, pets). Owners describe their household with the same questions,
+  plus who lives there. Every flat shows a match %, what fits and what might clash, and seekers
+  can sort by best match.
+- **All-in rent.** Owners add the room's share of maintenance, electricity, Wi-Fi and cook/maid.
+  Cards lead with the all-in monthly figure; the detail shows the full bill and the move-in amount.
+- **Save before you spend.** A free ♥ shortlist, so seekers decide which flats are worth an unlock.
+- **Unlocks never expire.** ₹100 a flat, no plans, tiers or brokers.
+- **Illustrated rooms.** Listings without photos get a drawn room in place of a blank tile.
+
 ## Pricing
 
 | Who | What | Price |

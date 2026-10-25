@@ -31,6 +31,8 @@ create table if not exists public.fm_profiles (
 -- Added after the first version; safe to re-run on an existing database.
 alter table public.fm_profiles add column if not exists role text
   check (role in ('owner','seeker'));
+-- Seeker's living-style answers, used for the vibe match ({sleep:0..2, clean:0..2, ...}).
+alter table public.fm_profiles add column if not exists vibe jsonb not null default '{}';
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -66,6 +68,10 @@ create table if not exists public.fm_listings (
   created_at    timestamptz not null default now()
 );
 alter table public.fm_listings add column if not exists photos text[] not null default '{}';
+-- The household: same living-style answers as seekers, plus who lives there.
+alter table public.fm_listings add column if not exists household jsonb not null default '{}';
+-- Shared monthly bills on top of rent: {maintenance, electricity, wifi, help} in rupees.
+alter table public.fm_listings add column if not exists costs jsonb not null default '{}';
 create index if not exists fm_listings_search on public.fm_listings (status, city, rent);
 
 -- Private part: never readable directly. Released only by fm_contact().
@@ -153,12 +159,21 @@ drop function if exists public.fm_set_name(text);
 drop function if exists public.fm_search(text, text, int, text, text);
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
   text, text, text[], text, text, text, text);
+drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
+  text, text, text[], text, text, text, text, text[]);
 
 create or replace function public.fm_me()
-returns table (credits int, full_name text, phone text, role text)
+returns table (credits int, full_name text, phone text, role text, vibe jsonb)
 language sql security definer set search_path = public stable as $$
-  select p.credits, p.full_name, p.phone, p.role from fm_profiles p where p.id = auth.uid();
+  select p.credits, p.full_name, p.phone, p.role, p.vibe from fm_profiles p where p.id = auth.uid();
 $$;
+
+create or replace function public.fm_set_vibe(p_vibe jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if jsonb_typeof(p_vibe) <> 'object' or pg_column_size(p_vibe) > 2048 then raise exception 'bad-vibe'; end if;
+  update fm_profiles set vibe = p_vibe where id = auth.uid();
+end $$;
 
 -- Null arguments leave the current value alone.
 create or replace function public.fm_set_profile(p_name text, p_role text) returns void
@@ -178,12 +193,12 @@ create or replace function public.fm_search(
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
-  amenities text[], description text, photos text[], created_at timestamptz,
+  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
-         l.photos, l.created_at,
+         l.photos, l.household, l.costs, l.created_at,
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
@@ -203,7 +218,8 @@ create or replace function public.fm_post_listing(
   p_kind text, p_title text, p_city text, p_locality text, p_bhk int,
   p_rent int, p_deposit int, p_available_from date, p_gender text,
   p_furnishing text, p_amenities text[], p_description text,
-  p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}')
+  p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}',
+  p_household jsonb default '{}', p_costs jsonb default '{}')
 returns uuid
 language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_photo text;
@@ -213,6 +229,10 @@ begin
     raise exception 'owners-only';
   end if;
   if coalesce(array_length(p_photos, 1), 0) > 6 then raise exception 'too-many-photos'; end if;
+  if jsonb_typeof(coalesce(p_household, '{}')) <> 'object' or pg_column_size(p_household) > 4096
+     or jsonb_typeof(coalesce(p_costs, '{}')) <> 'object' or pg_column_size(p_costs) > 1024 then
+    raise exception 'bad-details';
+  end if;
   -- Photos must be the caller's own uploads in the fm-photos bucket.
   foreach v_photo in array coalesce(p_photos, '{}') loop
     if position('/storage/v1/object/public/fm-photos/' || auth.uid()::text || '/' in v_photo) = 0 then
@@ -220,10 +240,12 @@ begin
     end if;
   end loop;
   insert into fm_listings (owner_id, kind, title, city, locality, bhk, rent, deposit,
-                           available_from, gender, furnishing, amenities, description, photos)
+                           available_from, gender, furnishing, amenities, description, photos,
+                           household, costs)
   values (auth.uid(), p_kind, p_title, p_city, p_locality, p_bhk, p_rent, p_deposit,
           p_available_from, p_gender, p_furnishing, coalesce(p_amenities, '{}'),
-          coalesce(p_description, ''), coalesce(p_photos, '{}'))
+          coalesce(p_description, ''), coalesce(p_photos, '{}'),
+          coalesce(p_household, '{}'), coalesce(p_costs, '{}'))
   returning id into v_id;
   insert into fm_listing_private (listing_id, contact_name, contact_phone, address)
   values (v_id, p_contact_name, p_contact_phone, p_address);

@@ -99,6 +99,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .hint{font-size:13px; color:var(--text-3); margin-top:4px}
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 14px}
 .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:0 14px}
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+@media (max-width:560px){ .grid4{grid-template-columns:1fr 1fr} }
 @media (max-width:560px){ .grid3{grid-template-columns:1fr 1fr} }
 .chips{display:flex; flex-wrap:wrap; gap:8px}
 .chip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--line-2);
@@ -106,15 +108,81 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .chip input{display:none}
 .chip:has(input:checked){background:var(--brand); color:var(--on-brand); border-color:var(--brand)}
 
-/* hero */
-.hero{padding:28px 0 8px}
-.hero h1{font-size:clamp(26px,4.5vw,40px)}
-.hero p{color:var(--text-2); margin:8px 0 0; max-width:640px}
-.deal{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:18px 0 6px}
-.deal div{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px}
-.deal b{display:block; font-family:Archivo; font-size:20px}
-.deal span{color:var(--text-2); font-size:14px}
-@media (max-width:640px){ .deal{grid-template-columns:1fr} }
+/* hero: two paths in, then what makes the model different */
+.hero{padding:32px 0 8px}
+.eyebrow{font-family:Archivo; font-weight:700; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--brand); margin:0 0 8px}
+.hero h1{font-size:clamp(30px,5.4vw,52px); font-stretch:85%; letter-spacing:-.01em; max-width:15ch; text-wrap:balance}
+.lede{color:var(--text-2); margin:12px 0 0; max-width:60ch; font-size:17px}
+.paths{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:24px 0 0}
+.path{position:relative; display:flex; flex-direction:column; gap:4px; padding:20px 56px 20px 20px; border-radius:18px;
+  text-decoration:none; color:var(--text); border:1px solid var(--line); transition:transform .15s}
+.path:hover{transform:translateY(-2px)}
+.path:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.path-owner{background:var(--brand); color:var(--on-brand); border-color:transparent}
+.path-seeker{background:var(--accent-soft)}
+.path-k{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
+.path b{font-family:Archivo; font-size:22px; line-height:1.15}
+.path span:last-of-type{font-size:15px; opacity:.85}
+.path i{position:absolute; right:18px; top:50%; transform:translateY(-50%); font-style:normal; font-size:26px; font-weight:700}
+.promise{list-style:none; padding:0; margin:18px 0 0; display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+.promise li{padding:14px 14px 14px 0; display:flex; flex-direction:column; gap:2px}
+.promise li + li{padding-left:14px; border-left:1px solid var(--line)}
+.promise b{font-family:Archivo; font-size:17px}
+.promise span{font-size:14px; color:var(--text-2)}
+@media (max-width:760px){
+  .paths{grid-template-columns:1fr}
+  .promise{grid-template-columns:1fr 1fr}
+  .promise li:nth-child(3){padding-left:0; border-left:0}
+  .promise li:nth-child(n+3){border-top:1px solid var(--line)}
+}
+
+/* vibe match */
+.vibe-cta{display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center; margin:22px 0 0; padding:16px 18px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius)}
+.vibe-cta p{margin:2px 0 0; color:var(--text-2); font-size:14px; max-width:68ch}
+.vibe-cta-art{display:flex}
+.vibe-cta-art span{width:30px; height:30px; border-radius:50%; border:3px solid var(--surface); background:var(--brand)}
+.vibe-cta-art span:nth-child(2){background:var(--accent); margin-left:-10px}
+.vibe-cta-art span:nth-child(3){background:var(--ok); margin-left:-10px}
+@media (max-width:640px){ .vibe-cta{grid-template-columns:1fr} .vibe-cta-art{display:none} }
+.match{position:absolute; top:10px; right:10px; z-index:2; font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px;
+  background:var(--surface); color:var(--text)}
+.match.hi{background:var(--ok); color:#fff}
+.match.mid{background:#E9B949; color:#2A1E00}
+.match.lo{background:var(--surface); color:var(--text-2)}
+.quiz{display:grid; gap:14px}
+.quiz fieldset{border:0; margin:0; padding:0}
+.quiz legend{font-weight:700; margin-bottom:6px; padding:0}
+.reasons{list-style:none; margin:8px 0 0; padding:0; display:grid; gap:4px; font-size:14px}
+.reasons li{display:flex; gap:8px}
+.reasons .g{color:var(--ok); font-weight:800}
+.reasons .c{color:var(--warn); font-weight:800}
+.section-h{font-family:Archivo; font-size:16px; margin:18px 0 6px}
+.household{background:var(--surface-2); border-radius:12px; padding:12px 14px}
+.traits{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.traits span{font-size:13px; padding:3px 10px; border-radius:999px; background:var(--surface); border:1px solid var(--line)}
+.meter{height:8px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin:6px 0 2px}
+.meter i{display:block; height:100%; background:var(--ok); border-radius:inherit}
+
+/* saved + freshness */
+.heart{position:absolute; bottom:10px; right:10px; z-index:2; width:36px; height:36px; border-radius:50%; border:0; cursor:pointer;
+  background:rgba(255,255,255,.92); color:#9A9AA2; font-size:18px; line-height:1; display:grid; place-items:center}
+.heart[aria-pressed="true"]{color:#D2334A}
+.heart:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.saved-chip{align-self:end; height:44px}
+.saved-chip span[aria-hidden]{color:#D2334A}
+.saved-chip:has(input:checked) span[aria-hidden]{color:inherit}
+.fresh{font-size:12px; color:var(--text-3)}
+.verified{display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:var(--ok)}
+
+/* costs */
+.allin{font-size:13px; color:var(--text-2); font-weight:600}
+.bill{display:grid; grid-template-columns:1fr auto; gap:4px 12px; font-size:15px; font-variant-numeric:tabular-nums}
+.bill .tot{font-weight:800; border-top:1px solid var(--line); padding-top:6px; margin-top:2px}
+.bill .muted{color:var(--text-2)}
+.art{position:absolute; inset:0; width:100%; height:100%}
+.gallery .art{position:static; flex:0 0 100%; height:240px; border-radius:12px}
 
 /* filters + cards */
 .filters{display:flex; flex-wrap:wrap; gap:10px; align-items:end; background:var(--surface);
@@ -132,7 +200,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .thumb.has-photo::after{content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.55),transparent 55%)}
 .thumb b,.thumb .tag{z-index:1}
 .thumb b{position:relative; font-family:Archivo; font-size:22px; text-shadow:0 1px 6px rgba(0,0,0,.35)}
-.thumb .count{position:absolute; right:10px; bottom:10px; z-index:1; background:rgba(0,0,0,.5); color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px}
+.thumb .count{position:absolute; left:10px; top:40px; z-index:1; background:rgba(0,0,0,.5); color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px}
 
 /* photo upload + gallery */
 .drop{display:flex; flex-direction:column; align-items:center; gap:6px; padding:18px; border:2px dashed var(--line-2);
@@ -164,7 +232,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .notice{background:var(--brand-soft); border-radius:12px; padding:14px; margin-top:12px}
 .notice p{margin:0 0 10px}
 .tag{position:absolute; top:10px; left:10px; background:rgba(0,0,0,.45); color:#fff; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700}
-.tag.r{left:auto; right:10px}
+.tag.r{left:auto; right:10px; top:42px}
 .tag.ok{background:var(--ok); }
 .card .body{padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1}
 .card h3{font-size:17px}
@@ -238,17 +306,36 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
   <!-- ============================================================ browse -->
   <section id="view-browse">
     <div class="hero">
-      <h1>Find a room or flatmate. Owners list free.</h1>
-      <p>Already renting a flat with a spare room? Post it free in two minutes. Looking for a place? Browse everything for free and pay only when you want to contact the owner and visit.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-        <a class="btn btn-primary" href="#post">I have a flat: post free</a>
-        <a class="btn btn-ghost" href="#browse">I need a room: browse</a>
+      <p class="eyebrow">Flatmates, not just flats</p>
+      <h1>Live with people you'll actually get along with.</h1>
+      <p class="lede">Every listing here is a real home with real people in it. See who lives there, how they live and what it all costs each month, before you spend a rupee.</p>
+      <div class="paths">
+        <a class="path path-owner" href="#post">
+          <span class="path-k">I have a flat</span>
+          <b>Find a flatmate for your spare room</b>
+          <span>Post with photos in 2 minutes. Free, always.</span>
+          <i aria-hidden="true">→</i>
+        </a>
+        <a class="path path-seeker" href="#rooms">
+          <span class="path-k">I need a room</span>
+          <b>Find a flat that fits how you live</b>
+          <span>Browse free. ₹500 unlocks 5 owners.</span>
+          <i aria-hidden="true">→</i>
+        </a>
       </div>
-      <div class="deal">
-        <div><b>₹0</b><span>to post your flat or room, as many as you like</span></div>
-        <div><b>₹0</b><span>to browse rent, area, amenities and preferences</span></div>
-        <div><b>₹500 for 5 flats</b><span>unlock owner's phone, exact address and book visits</span></div>
-      </div>
+      <ul class="promise">
+        <li><b>₹100 a flat</b><span>₹500 for 5 unlocks. No plans, no tiers.</span></li>
+        <li><b>Never expires</b><span>Use your unlocks next week or next year.</span></li>
+        <li><b>No brokers</b><span>You talk to the person who lives there.</span></li>
+        <li><b>All-in rent</b><span>Rent plus bills, so the real number shows up front.</span></li>
+      </ul>
+    </div>
+
+    <div class="vibe-cta" id="vibeCta">
+      <div class="vibe-cta-art" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div><b id="vibeCtaTitle">See your match with every flat</b>
+        <p id="vibeCtaText">Answer 8 quick questions about how you live: bedtime, food, guests, smoking. Each flat then shows how well you'd fit with the people already there.</p></div>
+      <button class="btn btn-primary" type="button" data-vibe-open id="vibeCtaBtn">Take the vibe check</button>
     </div>
 
     <form class="filters" id="filters">
@@ -258,10 +345,13 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
         <input type="text" id="fQ" placeholder="e.g. Koramangala"></div>
       <div class="field"><label for="fKind">Looking for</label>
         <select id="fKind"><option value="">Anything</option><option value="room">Room in a shared flat</option><option value="flatmate">Flatmate to share with</option><option value="flat">Whole flat (takeover)</option></select></div>
-      <div class="field"><label for="fRent">Max rent</label>
-        <select id="fRent"><option value="">Any</option><option>10000</option><option>15000</option><option>20000</option><option>30000</option><option>50000</option></select></div>
+      <div class="field"><label for="fRent">Max all-in / month</label>
+        <select id="fRent"><option value="">Any</option><option value="10000">₹10,000</option><option value="15000">₹15,000</option><option value="20000">₹20,000</option><option value="30000">₹30,000</option><option value="50000">₹50,000</option></select></div>
       <div class="field"><label for="fGender">For</label>
         <select id="fGender"><option value="">Anyone</option><option value="female">Women</option><option value="male">Men</option></select></div>
+      <div class="field"><label for="fSort">Sort</label>
+        <select id="fSort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest all-in</option></select></div>
+      <label class="chip saved-chip"><input type="checkbox" id="fSaved"><span aria-hidden="true">♥</span> Saved <span id="savedCount">0</span></label>
     </form>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
@@ -295,6 +385,14 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
           <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="500" value="0" inputmode="numeric"></div>
           <div class="field"><label for="pBhk">Flat size</label><select id="pBhk"><option value="1">1 BHK</option><option value="2" selected>2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></div>
         </div>
+        <div class="field"><label>Monthly bills on top of rent (₹, this room's share)</label>
+          <div class="grid4">
+            <input type="number" id="cMaint" min="0" step="50" inputmode="numeric" placeholder="Maintenance" aria-label="Maintenance">
+            <input type="number" id="cElec" min="0" step="50" inputmode="numeric" placeholder="Electricity" aria-label="Electricity, average">
+            <input type="number" id="cWifi" min="0" step="50" inputmode="numeric" placeholder="Wi-Fi" aria-label="Wi-Fi">
+            <input type="number" id="cHelp" min="0" step="50" inputmode="numeric" placeholder="Cook / maid" aria-label="Cook or maid">
+          </div>
+          <p class="hint">Seekers see the all-in monthly cost, so there are no surprises at the visit. Leave blank if included in rent.</p></div>
         <div class="grid3">
           <div class="field"><label for="pFrom">Available from</label><input type="date" id="pFrom" required></div>
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
@@ -306,6 +404,17 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
             <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
           <div class="previews" id="pPreviews"></div></div>
         <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
+        <div class="household" style="margin-bottom:14px">
+          <h3 class="section-h" style="margin-top:0">Your household</h3>
+          <p class="hint" style="margin:0 0 10px">Seekers answer the same questions, and each one sees how well they'd match with you.</p>
+          <div class="grid2">
+            <div class="field"><label for="hCount">People living there now</label>
+              <select id="hCount"><option value="0">Nobody yet</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4+</option></select></div>
+            <div class="field"><label for="hAbout">Who they are</label>
+              <input type="text" id="hAbout" maxlength="120" placeholder="e.g. Product designer, 27, and a doctor, 29"></div>
+          </div>
+          <div class="quiz" id="hQuiz"></div>
+        </div>
         <div class="field"><label for="pDesc">About the flat and flatmates</label>
           <textarea id="pDesc" maxlength="1200" placeholder="Who lives there, house rules, how far from metro/office, what's included in rent..."></textarea></div>
         <div class="private">
@@ -343,6 +452,10 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
         </div>
         <button class="btn btn-accent" style="margin-top:14px" data-action="buy" id="buyBtn">Buy 5 unlocks for ₹500</button>
       </div>
+      <div class="panel" id="vibePanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
+        <div><h2>My living style</h2><p class="sub">Used to show your match % with each household.</p></div>
+        <button class="btn btn-ghost btn-sm" data-vibe-open id="vibeEdit">Edit</button></div>
+        <div class="traits" id="vibeTraits"></div></div>
       <div class="panel" id="unlockedPanel"><h2>Flats I unlocked</h2><p class="sub">Owner contact and address, plus visits you've booked.</p><div id="myUnlocked"></div></div>
       <div class="panel" id="listingsPanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
         <div><h2>My listings</h2><p class="sub">Visit requests from seekers show up here.</p></div>
@@ -395,6 +508,12 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
     <p class="hint" id="payNote"></p>
   </div></dialog>
 
+<dialog id="dlgVibe"><div class="mhead"><div><h2>Your vibe check</h2><div class="loc">8 questions, about 30 seconds. Change them any time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody">
+    <form id="vibeForm"><div class="quiz" id="vQuiz"></div>
+      <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Show my matches</button></form>
+  </div></dialog>
+
 <dialog id="dlgVisit"><div class="mhead"><h2>Book a visit</h2><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
     <form id="visitForm">
@@ -437,6 +556,95 @@ function toast(msg){
   const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), 2800);
 }
+/* ---- vibe match: same 8 questions for seekers and households. Answers are
+   0..2 on a scale, so "how far apart" is a fair measure of friction.      */
+const VIBE_QS = [
+  // o: answer choices. t: how the same answer reads as a trait of a household.
+  {k:"sleep",  q:"Usual bedtime",           o:["Before 11 pm","Around midnight","After 1 am"],         t:["Early to bed","Sleeps around midnight","Night owls"]},
+  {k:"clean",  q:"Kitchen and common areas", o:["Spotless, always","Tidy most days","Relaxed about it"], t:["Spotless home","Tidy most days","Relaxed about mess"]},
+  {k:"food",   q:"Food cooked at home",      o:["Veg only","Veg and eggs","Non-veg is fine"],          t:["Veg-only kitchen","Veg and eggs","Non-veg cooked"]},
+  {k:"smoke",  q:"Smoking",                  o:["Never","Outside only","Fine indoors"],                t:["No smoking","Smoke outside only","Smoking OK indoors"]},
+  {k:"drinks", q:"Drinks at home",           o:["Never","Now and then","Regularly"],                   t:["No alcohol","Drinks now and then","Drinks regularly"]},
+  {k:"guests", q:"Friends over",             o:["Rarely","Weekends","Often"],                          t:["Guests rarely","Guests on weekends","Guests often"]},
+  {k:"work",   q:"Work days",                o:["At the office","Hybrid","From home"],                 t:["Out at office","Hybrid work","Work from home"]},
+  {k:"pets",   q:"Pets",                     o:["No pets, please","Fine with pets","Have a pet"],      t:["No pets","Pet-friendly","Has a pet"]},
+];
+function quizHtml(prefix, values){
+  return VIBE_QS.map(x => `<fieldset><legend>${esc(x.q)}</legend><div class="chips">${x.o.map((o, i) =>
+    `<label class="chip"><input type="radio" name="${prefix}_${x.k}" value="${i}"${values && values[x.k] === i ? " checked" : ""}>${esc(o)}</label>`
+  ).join("")}</div></fieldset>`).join("");
+}
+function readQuiz(root, prefix){
+  const out = {};
+  for(const x of VIBE_QS){
+    const el = root.querySelector(`[name=${prefix}_${x.k}]:checked`);
+    if(el) out[x.k] = Number(el.value);
+  }
+  return out;
+}
+const answered = v => VIBE_QS.filter(x => v && Number.isInteger(v[x.k])).length;
+function vibeMatch(me, home){
+  let sum = 0, n = 0; const good = [], clash = [];
+  for(const x of VIBE_QS){
+    const a = me && me[x.k], b = home && home[x.k];
+    if(!Number.isInteger(a) || !Number.isInteger(b)) continue;
+    const d = Math.abs(a - b); sum += 1 - d/2; n++;
+    if(d === 0) good.push(`${x.q}: ${x.o[b].toLowerCase()}, same as you`);
+    if(d === 2) clash.push(`${x.q}: they say ${x.o[b].toLowerCase()}, you say ${x.o[a].toLowerCase()}`);
+  }
+  if(n < 4) return null;
+  return { pct: Math.round(sum / n * 100), good, clash };
+}
+const matchClass = p => p >= 80 ? "hi" : p >= 60 ? "mid" : "lo";
+
+/* ---- money: rent plus this room's share of the bills */
+const BILLS = [["maintenance","Maintenance"],["electricity","Electricity (avg)"],["wifi","Wi-Fi"],["help","Cook / maid"]];
+const billsTotal = l => BILLS.reduce((t, [k]) => t + (Number((l.costs || {})[k]) || 0), 0);
+const allIn = l => l.rent + billsTotal(l);
+const moveIn = l => l.deposit + allIn(l);
+
+function timeAgo(d){
+  const m = Math.max(1, Math.round((Date.now() - new Date(d)) / 6e4));
+  if(m < 60) return m + " min ago";
+  const h = Math.round(m / 60); if(h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+  const days = Math.round(h / 24); return days === 1 ? "yesterday" : days + " days ago";
+}
+
+/* ---- illustrated room for listings without photos. Seeded by listing id,
+   so the same flat always gets the same picture.                          */
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a;
+  t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function roomArt(id, kind){
+  let h = 0; for(const c of String(id)) h = (h * 31 + c.charCodeAt(0)) | 0;
+  const r = rng(h), pick = a => a[Math.floor(r() * a.length)];
+  const wall = pick(["#E8D5C4","#D7E3D3","#D9DDEB","#F0E2C8","#E6D0D6","#CFE1E2"]);
+  const floor = pick(["#B98B62","#A7774F","#C9A27A","#8E6A4E"]);
+  const accent = pick(["#0D6E73","#C2581B","#5B5BAF","#B03A5B","#2F7D4F","#D19A1E"]);
+  const night = r() < .35, sky = night ? "#27315A" : pick(["#9FD3F0","#BFE3F5","#F6C9A0"]);
+  const winX = 40 + Math.floor(r() * 150);
+  const bed = kind === "room" || (kind !== "flatmate" && r() < .5);
+  const furniture = bed
+    ? `<rect x="190" y="150" width="170" height="44" rx="6" fill="${accent}"/><rect x="190" y="132" width="170" height="26" rx="8" fill="#F7F3EC"/>
+       <rect x="182" y="118" width="12" height="80" rx="4" fill="${floor}"/><rect x="200" y="138" width="44" height="18" rx="8" fill="#fff"/>`
+    : `<rect x="180" y="146" width="180" height="40" rx="10" fill="${accent}"/><rect x="186" y="122" width="168" height="34" rx="12" fill="${accent}" opacity=".85"/>
+       <rect x="170" y="140" width="22" height="46" rx="10" fill="${accent}"/><rect x="348" y="140" width="22" height="46" rx="10" fill="${accent}"/>
+       <rect x="205" y="132" width="40" height="22" rx="6" fill="#F4E9D8"/>`;
+  return `<svg class="art" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of the room">
+    <rect width="400" height="240" fill="${wall}"/>
+    <rect x="${winX}" y="34" width="96" height="78" rx="4" fill="${sky}" stroke="#fff" stroke-width="6"/>
+    <line x1="${winX + 48}" y1="34" x2="${winX + 48}" y2="112" stroke="#fff" stroke-width="4"/>
+    ${night ? `<circle cx="${winX + 72}" cy="56" r="9" fill="#F4E9B8"/>` : `<circle cx="${winX + 24}" cy="58" r="10" fill="#FFE29A" opacity=".9"/>`}
+    <rect x="0" y="194" width="400" height="46" fill="${floor}"/>
+    <ellipse cx="250" cy="212" rx="120" ry="14" fill="#fff" opacity=".22"/>
+    ${furniture}
+    <rect x="${winX < 120 ? 300 : 60}" y="48" width="44" height="34" rx="2" fill="#fff"/><rect x="${winX < 120 ? 305 : 65}" y="53" width="34" height="24" fill="${accent}" opacity=".55"/>
+    <rect x="34" y="168" width="26" height="26" rx="4" fill="#C8693F"/>
+    <path d="M47 168 C30 140 36 128 47 120 C58 128 64 140 47 168Z" fill="#3E7D4D"/><path d="M47 168 C38 148 24 146 22 136 C34 134 44 146 47 168Z" fill="#4F9460"/>
+    <line x1="${winX < 200 ? 330 : 120}" y1="0" x2="${winX < 200 ? 330 : 120}" y2="40" stroke="#555" stroke-width="2"/>
+    <path d="M${winX < 200 ? 316 : 106} 52 L${winX < 200 ? 344 : 134} 52 L${winX < 200 ? 336 : 126} 38 L${winX < 200 ? 324 : 114} 38Z" fill="${night ? "#FFD27A" : "#F2F2F2"}"/>
+  </svg>`;
+}
+
 const ROLE_LABEL = {owner:"Flat owner, looking for a flatmate", seeker:"Looking for a room"};
 // Only render images we produced: our storage URLs or resized data URLs.
 const safeImg = u => /^(https:\/\/|data:image\/(jpeg|png|webp);base64,)/.test(String(u)) ? String(u) : "";
@@ -457,7 +665,8 @@ const blobToDataUrl = b => new Promise(res => { const r = new FileReader(); r.on
 function hue(id){ let h = 0; for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) % 360; return h; }
 
 /* ================================================================ state */
-const freshState = () => ({ user:null, credits:0, unlocked:[], myListings:[], visits:[] });
+// vibe and saved belong to the device, so they survive signing in and out.
+const freshState = () => ({ user:null, credits:0, unlocked:[], myListings:[], visits:[], vibe:{}, saved:[] });
 let state;
 function load(){
   try{ state = Object.assign(freshState(), JSON.parse(localStorage.getItem("fm_state") || "{}")); }
@@ -481,6 +690,21 @@ const DEMO = [
   ["Hyderabad","Madhapur","flat",1,17000,50000,"any","full",["AC","Wi-Fi","Parking"],"1BHK lease takeover from next month. Fully furnished, near Hitech City metro."],
   ["Chennai","Velachery","room",2,9500,30000,"female","semi",["Wi-Fi","Washing machine","Power backup"],"Room in a 2BHK, 5 min to Phoenix mall and MRTS. Current flatmate is a doctor at a nearby hospital."],
 ];
+// Who already lives in each sample flat: [people, about them, answers to the 8 vibe questions].
+const DEMO_HOMES = [
+  [1, "Fintech analyst, 27. Cooks on weekends.",              "10111101"],
+  [2, "UX designer and a startup founder, both 26",           "21222121"],
+  [0, "Whole flat, you set the rules",                        ""],
+  [1, "Film editor, 31. Works late, sleeps late.",            "21111121"],
+  [2, "Two consultants, 28 and 29. Gym before work.",         "00111001"],
+  [1, "Software engineer, 25, with a friendly beagle",        "11100112"],
+  [2, "Data scientists, 26 and 27. Weekend board games.",     "10000110"],
+  [2, "Sales manager and a chartered accountant, 30s",        "12121201"],
+  [1, "Lawyer, 29. Quiet weekdays, brunch on Sundays.",       "00010101"],
+  [2, "Two backend developers, both night owls",              "21221021"],
+  [0, "Whole flat, you set the rules",                        ""],
+  [1, "Resident doctor, 28. Odd shifts, very tidy.",          "00000000"],
+];
 function demoListings(){
   const now = Date.now();
   return DEMO.map((d, i) => {
@@ -492,6 +716,10 @@ function demoListings(){
       available_from: new Date(now + (i%4)*7*864e5).toISOString().slice(0,10),
       created_at: new Date(now - (i+1)*36e5*7).toISOString(),
       unlock_count: (i*7) % 11,
+      household: Object.assign({ residents: DEMO_HOMES[i][0], about: DEMO_HOMES[i][1] },
+        Object.fromEntries([...DEMO_HOMES[i][2]].map((c, j) => [VIBE_QS[j].k, Number(c)]))),
+      costs: { maintenance: Math.round(rent * .06 / 50) * 50, electricity: 600 + (i % 4) * 200,
+               wifi: kind === "flat" ? 900 : 350, help: amenities.includes("Cook/maid") ? 1500 : 0 },
       private: { contact_name: name, contact_phone: "9" + String(812345670 + i*1379).slice(0,9),
                  address: (101 + i*3) + ", " + ["Sunrise","Lake View","Green Park","Silver Oak"][i%4] + " Apartments, " + locality + ", " + city }
     };
@@ -512,7 +740,8 @@ const demoApi = {
   async verifyOtp(code){
     if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
     if(!state.user || state.user.phone !== pendingOtp.phone){
-      state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits });
+      state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits,
+                                             vibe: state.vibe, saved: state.saved });
     }
     state.user = { phone: pendingOtp.phone, name: pendingOtp.name, role: pendingOtp.role };
     pendingOtp = null; save();
@@ -520,10 +749,11 @@ const demoApi = {
   async signOut(){ state.user = null; save(); },
   async me(){ return { credits: state.credits, user: state.user }; },
   async setRole(role){ state.user.role = role; save(); },
+  async setVibe(v){ state.vibe = v; save(); },
   async search(f){
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
       (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
-      (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
+      (!f.maxRent || allIn(l) <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
       (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
     ).map(l => this.view(l)).sort((a,b) => b.created_at.localeCompare(a.created_at));
   },
@@ -623,14 +853,20 @@ function makeLiveApi(sb){
       const r = rows && rows[0];
       if(!r){ state.user = null; state.credits = 0; save(); return { credits:0, user:null }; }
       state.user = { phone: (r.phone || "").replace(/^\+?91/, ""), name: r.full_name || "", role: r.role || null };
-      state.credits = r.credits; save();
+      state.credits = r.credits;
+      // The account's answers win; answers given before signing in get saved to the account.
+      if(answered(r.vibe)) state.vibe = r.vibe;
+      else if(answered(state.vibe)) rpc("fm_set_vibe", { p_vibe: state.vibe }).catch(() => {});
+      save();
       return { credits: r.credits, user: state.user };
     },
     async search(f){
-      return rpc("fm_search", { p_city: f.city || null, p_kind: f.kind || null,
+      const rows = await rpc("fm_search", { p_city: f.city || null, p_kind: f.kind || null,
         p_max_rent: f.maxRent || null, p_gender: f.gender || null, p_q: f.q || null });
+      return rows.filter(l => !f.maxRent || allIn(l) <= f.maxRent);   // the server only checks rent
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); state.user.role = role; save(); },
+    async setVibe(v){ state.vibe = v; save(); if(state.user) await rpc("fm_set_vibe", { p_vibe: v }); },
     async get(id){ return (await rpc("fm_search", {})).find(l => l.id === id); },
     async uploadPhotos(files){
       const me = await uid();
@@ -653,7 +889,7 @@ function makeLiveApi(sb){
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address,
-        p_photos:l.photos || [] });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {} });
     },
     async myListings(){ return (await rpc("fm_search", {})).filter(l => l.is_owner); },
     async unlockedListings(){ return (await rpc("fm_search", {})).filter(l => l.unlocked && !l.is_owner); },
@@ -711,13 +947,14 @@ async function initApi(){
 /* ============================================================== router */
 const VIEWS = ["browse","post","account"];
 function route(){
-  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "browse";
+  const h = location.hash.slice(1);
+  const v = VIEWS.includes(h) ? h : "browse";
   VIEWS.forEach(n => $("view-"+n).hidden = n !== v);
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.view === v));
   if(v === "browse") renderBrowse();
   if(v === "post") renderPost();
   if(v === "account") renderAccount();
-  window.scrollTo(0, 0);
+  if(h === "rooms") $("vibeCta").scrollIntoView({ block:"start" }); else window.scrollTo(0, 0);
 }
 function go(v){ if(location.hash === "#"+v) route(); else location.hash = v; }
 
@@ -771,40 +1008,92 @@ $("otpForm").addEventListener("submit", async e => {
 /* ============================================================== browse */
 function filters(){
   return { city:$("fCity").value, q:$("fQ").value.trim(), kind:$("fKind").value,
-           maxRent: Number($("fRent").value) || 0, gender:$("fGender").value };
+           maxRent: Number($("fRent").value) || 0, gender:$("fGender").value,
+           sort:$("fSort").value, savedOnly:$("fSaved").checked };
 }
+const isSaved = id => state.saved.includes(id);
+function toggleSaved(id){
+  state.saved = isSaved(id) ? state.saved.filter(x => x !== id) : state.saved.concat(id);
+  save(); renderSavedCount();
+  return isSaved(id);
+}
+function renderSavedCount(){ $("savedCount").textContent = state.saved.length; }
+const photosOf = l => (l.photos || []).map(safeImg).filter(Boolean);
+
 function cardHtml(l){
-  const h = hue(l.id);
-  const photos = (l.photos || []).map(safeImg).filter(Boolean);
+  const photos = photosOf(l);
+  const m = vibeMatch(state.vibe, l.household);
+  const bills = billsTotal(l);
   return `<article class="card" tabindex="0" data-id="${esc(l.id)}">
-    <div class="thumb${photos.length ? " has-photo" : ""}" style="background:linear-gradient(135deg,hsl(${h} 45% 42%),hsl(${(h+40)%360} 55% 58%))">
-      ${photos.length ? `<img src="${esc(photos[0])}" alt="" loading="lazy">` : ""}
+    <div class="thumb${photos.length ? " has-photo" : ""}">
+      ${photos.length ? `<img src="${esc(photos[0])}" alt="" loading="lazy">` : roomArt(l.id, l.kind)}
       ${photos.length > 1 ? `<span class="count">${photos.length} photos</span>` : ""}
       <span class="tag">${esc(KIND_LABEL[l.kind])}</span>
+      ${m ? `<span class="match ${matchClass(m.pct)}" title="How well your living style fits this household">${m.pct}% match</span>` : ""}
       ${l.is_owner ? '<span class="tag r">Your listing</span>' : l.unlocked ? '<span class="tag r ok">Unlocked</span>' : ""}
-      <b>${l.bhk} BHK · ${esc(l.locality)}</b>
+      <button class="heart" type="button" data-save="${esc(l.id)}" aria-pressed="${isSaved(l.id)}" aria-label="Save this flat">♥</button>
     </div>
     <div class="body">
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}</div>
+      ${l.household && l.household.about ? `<div class="loc" style="color:var(--text)">${l.household.residents ? `Live with: ` : ""}${esc(l.household.about)}</div>` : ""}
       <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
-      <div class="price">${inr(l.rent)}<small> /month · deposit ${inr(l.deposit)}</small></div>
+      <div class="price">${inr(allIn(l))}<small> /month all-in</small></div>
+      <div class="allin">${inr(l.rent)} rent${bills ? ` + ${inr(bills)} bills` : ""} · deposit ${inr(l.deposit)}</div>
+      <div class="fresh">Posted ${timeAgo(l.created_at)}</div>
     </div></article>`;
 }
 let browseSeq = 0;
 async function renderBrowse(){
-  const seq = ++browseSeq;
-  const rows = await api.search(filters());
+  const seq = ++browseSeq, f = filters();
+  let rows = await api.search(f);
   if(seq !== browseSeq) return;
+  renderVibeCta(); renderSavedCount();
+  if(f.savedOnly) rows = rows.filter(l => isSaved(l.id));
+  const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
+  if(f.sort === "match" && answered(state.vibe)) rows.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
+  else if(f.sort === "cost") rows.sort((a, b) => allIn(a) - allIn(b));
+  else rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
   $("count").textContent = rows.length + (rows.length === 1 ? " place" : " places") + " found";
   $("cards").innerHTML = rows.length ? rows.map(cardHtml).join("")
-    : `<div class="empty">Nothing matches yet. Try another area or a higher budget.</div>`;
+    : `<div class="empty">${f.savedOnly ? "No saved flats yet. Tap ♥ on any flat to keep it here, free." : "Nothing matches yet. Try another area or a higher budget."}</div>`;
+}
+function renderVibeCta(){
+  const n = answered(state.vibe);
+  $("vibeCtaTitle").textContent = n ? "Your vibe is set" : "See your match with every flat";
+  $("vibeCtaText").textContent = n
+    ? "Flats are sorted by how well you'd fit with the people already living there. Change your answers any time."
+    : "Answer 8 quick questions about how you live: bedtime, food, guests, smoking. Each flat then shows how well you'd fit with the people already there.";
+  $("vibeCtaBtn").textContent = n ? "Edit my answers" : "Take the vibe check";
 }
 $("filters").addEventListener("input", renderBrowse);
 $("filters").addEventListener("submit", e => e.preventDefault());
-$("cards").addEventListener("click", e => { const c = e.target.closest(".card"); if(c) openListing(c.dataset.id); });
+$("cards").addEventListener("click", e => {
+  const h = e.target.closest("[data-save]");
+  if(h){ e.stopPropagation(); const on = toggleSaved(h.dataset.save); h.setAttribute("aria-pressed", on);
+         toast(on ? "Saved. Find it under ♥ Saved." : "Removed from saved"); if($("fSaved").checked) renderBrowse(); return; }
+  const c = e.target.closest(".card"); if(c) openListing(c.dataset.id);
+});
 $("cards").addEventListener("keydown", e => {
+  if(e.target.closest("[data-save]")) return;
   const c = e.target.closest(".card"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
+});
+
+/* ============================================================ vibe check */
+function openVibe(){
+  $("vQuiz").innerHTML = quizHtml("v", state.vibe);
+  $("dlgVibe").showModal();
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-vibe-open]")) openVibe(); });
+$("vibeForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const v = readQuiz(e.target, "v");
+  if(answered(v) < 4){ toast("Answer at least 4 questions to see matches."); return; }
+  try{ await api.setVibe(v); }catch(err){ console.error(err); }
+  $("dlgVibe").close(); toast("Done. Flats now show your match.");
+  $("fSort").value = "match";
+  if(location.hash === "#account") renderAccount(); else go("browse");
+  if($("dlgListing").open && currentId) openListing(currentId);
 });
 
 /* ======================================================= listing modal */
@@ -821,7 +1110,7 @@ async function openListing(id){
   if(contact){
     lock = `<div class="lock open">
       <div class="kv" style="margin-top:0">
-        <div><span>Owner</span><b>${esc(contact.contact_name)}</b></div>
+        <div><span>Owner</span><b>${esc(contact.contact_name)}</b> <span class="verified">✓ Phone verified</span></div>
         <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
       </div>
       <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div>
@@ -841,20 +1130,55 @@ async function openListing(id){
     const c = state.user ? state.credits : 0;
     lock = `<div class="lock">
       <b>Owner contact and exact address are locked</b>
-      <div class="kv"><div><span>Owner</span><b class="blur">Xxxxxx</b></div><div><span>Phone</span><b class="blur">+91 98xxxxxx12</b></div></div>
+      <div class="kv"><div><span>Owner</span><b class="blur">Xxxxxx</b> <span class="verified">✓ Phone verified</span></div><div><span>Phone</span><b class="blur">+91 98xxxxxx12</b></div></div>
       <p class="hint" style="margin:0 0 10px">Unlock to get the owner's phone and address and book a visit. ${state.user && c > 0
-        ? `Uses 1 of your ${c} unlocks.` : `₹500 gets you 5 unlocks (₹100 per flat).`}</p>
+        ? `Uses 1 of your ${c} unlocks.` : `₹500 gets you 5 unlocks (₹100 per flat), and they never expire.`}</p>
       <button class="btn btn-accent btn-block" data-action="unlock">${state.user && c > 0 ? "Unlock this flat (1 credit)" : "Unlock: ₹500 for 5 flats"}</button>
+      ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:8px" data-action="save">♥ Not sure yet? Save it free</button>`}
     </div>`;
   }
-  const photos = (l.photos || []).map(safeImg).filter(Boolean);
+
+  const photos = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
+  const traits = VIBE_QS.filter(x => Number.isInteger(hh[x.k])).map(x => `<span>${esc(x.t[hh[x.k]])}</span>`).join("");
+  const people = hh.residents ? `${hh.residents === 4 ? "4+" : hh.residents} ${hh.residents === 1 ? "person lives" : "people live"} here` : "";
+  let matchBlock = "";
+  if(l.kind !== "flat" && traits){
+    matchBlock = m
+      ? `<div class="meter" aria-hidden="true"><i style="width:${m.pct}%"></i></div>
+         <b>${m.pct}% match with this household</b>
+         <ul class="reasons">${m.good.slice(0, 4).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
+           ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
+         <button class="btn btn-ghost btn-sm" style="margin-top:8px" data-vibe-open>Edit my answers</button>`
+      : `<p class="hint" style="margin:6px 0">Take the 30-second vibe check to see how well you'd fit with them.</p>
+         <button class="btn btn-primary btn-sm" data-vibe-open>Take the vibe check</button>`;
+  }
+  const bill = BILLS.filter(([k]) => Number((l.costs || {})[k]) > 0)
+    .map(([k, label]) => `<span class="muted">${label}</span><span>${inr(l.costs[k])}</span>`).join("");
+
   $("lBody").innerHTML = `
-    ${photos.length ? `<div class="gallery">${photos.map((u, i) =>
-      `<img src="${esc(u)}" alt="Photo ${i+1} of ${photos.length}" loading="lazy">`).join("")}</div>
-      ${photos.length > 1 ? `<p class="hint" style="margin:0">${photos.length} photos · swipe to see more</p>` : ""}` : ""}
+    <div class="gallery">${photos.length
+      ? photos.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${photos.length}" loading="lazy">`).join("")
+      : roomArt(l.id, l.kind)}</div>
+    ${photos.length > 1 ? `<p class="hint" style="margin:0">${photos.length} photos · swipe to see more</p>`
+      : photos.length ? "" : `<p class="hint" style="margin:0">Illustration. The owner hasn't added photos yet.</p>`}
+
+    ${l.kind !== "flat" && (people || hh.about || traits) ? `<h3 class="section-h">Who you'd live with</h3>
+    <div class="household">
+      ${people || hh.about ? `<b>${esc(people)}${people && hh.about ? ": " : ""}${esc(hh.about || "")}</b>` : ""}
+      ${traits ? `<div class="traits">${traits}</div>` : ""}
+      ${matchBlock}
+    </div>` : ""}
+
+    <h3 class="section-h">What it costs</h3>
+    <div class="bill">
+      <span class="muted">Rent</span><span>${inr(l.rent)}</span>
+      ${bill}
+      <span class="tot">All-in per month</span><span class="tot">${inr(allIn(l))}</span>
+      <span class="muted">To move in (deposit + first month)</span><span>${inr(moveIn(l))}</span>
+      <span class="muted">Brokerage</span><span>₹0</span>
+    </div>
+
     <div class="kv">
-      <div><span>Rent</span><b>${inr(l.rent)}/mo</b></div>
-      <div><span>Deposit</span><b>${inr(l.deposit)}</b></div>
       <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
@@ -862,7 +1186,7 @@ async function openListing(id){
     </div>
     ${amen ? `<div class="meta">${amen}</div>` : ""}
     <p style="white-space:pre-line">${esc(l.description)}</p>
-    ${l.unlock_count ? `<p class="hint">${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} unlocked this flat.</p>` : ""}
+    <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} unlocked this flat` : ""}</p>
     ${lock}`;
   if(!$("dlgListing").open) $("dlgListing").showModal();
 }
@@ -871,6 +1195,7 @@ $("lBody").addEventListener("click", e => {
   if(a.dataset.action === "unlock") requireLogin(() => doUnlock(currentId), "seeker");
   if(a.dataset.action === "become-seeker") switchRole("seeker").then(() => openListing(currentId));
   if(a.dataset.action === "visit") openVisit(currentId);
+  if(a.dataset.action === "save"){ toggleSaved(currentId); a.remove(); toast("Saved. Find it under ♥ Saved."); renderBrowse(); }
 });
 async function doUnlock(id){
   if(!isSeeker()) return openListing(id);   // shows the "switch to looking for a room" prompt
@@ -951,6 +1276,7 @@ $("pPreviews").addEventListener("click", e => {
 $("pDrop").addEventListener("drop", e => addPhotos(e.dataTransfer.files));
 
 function renderPost(){
+  if(!$("hQuiz").children.length) $("hQuiz").innerHTML = quizHtml("h");
   const blocked = Boolean(state.user) && !isOwner();
   $("postBlocked").hidden = !blocked; $("postPanel").hidden = blocked;
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
@@ -974,7 +1300,11 @@ $("postForm").addEventListener("submit", e => {
         bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
         available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value,
         amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
-        description: $("pDesc").value.trim()
+        description: $("pDesc").value.trim(),
+        household: Object.assign({ residents: Number($("hCount").value), about: $("hAbout").value.trim() },
+                                 readQuiz($("hQuiz"), "h")),
+        costs: { maintenance: Number($("cMaint").value) || 0, electricity: Number($("cElec").value) || 0,
+                 wifi: Number($("cWifi").value) || 0, help: Number($("cHelp").value) || 0 }
       },
       private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(), address: $("pAddr").value.trim() }
     };
@@ -1007,6 +1337,11 @@ async function renderAccount(){
   $("accSwitch").dataset.switch = isOwner() ? "seeker" : "owner";
   $("seekerStats").hidden = $("buyBtn").hidden = $("unlockedPanel").hidden = isOwner();
   $("listingsPanel").hidden = isSeeker();
+  $("vibePanel").hidden = isOwner();
+  $("vibeTraits").innerHTML = answered(state.vibe)
+    ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.q)}: ${esc(x.o[state.vibe[x.k]])}</span>`).join("")
+    : `<p class="hint" style="margin:0">Not set yet. Take the 30-second vibe check to see who you'd get along with.</p>`;
+  $("vibeEdit").textContent = answered(state.vibe) ? "Edit" : "Take the vibe check";
 
   const [unlocked, mine, visits, incoming] = await Promise.all(
     [api.unlockedListings(), api.myListings(), api.visits(), api.incomingVisits()]);
