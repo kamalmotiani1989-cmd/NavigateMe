@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Post your rented flat for free and find a flatmate or roommate. Seekers pay only to unlock owner contact, exact address and book a visit: Rs 500 for 5 flats.">
+<meta name="theme-color" content="#0D6E73">
+<meta property="og:title" content="Navigate Me Flatmates: post free, find your flatmate">
+<meta property="og:description" content="List your room free. Unlock owner contact and book visits: Rs 500 for 5 flats.">
+<meta property="og:locale" content="en_IN">
+<title>Navigate Me Flatmates</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230D6E73'/%3E%3Cpath d='M5 12l7-6 7 6v7h-5v-4h-4v4H5z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#F6F6F4; --surface:#FFFFFF; --surface-2:#F0F0EC; --line:#E3E3DE; --line-2:#CFCFC8;
+  --text:#18181B; --text-2:#55555C; --text-3:#8A8A93;
+  --brand:#0D6E73; --brand-2:#0A5A5E; --brand-soft:#E3F1F1; --on-brand:#FFFFFF;
+  --accent:#C2581B; --accent-soft:#FBEADF;
+  --ok:#1E7A3C; --ok-soft:#E2F3E7; --warn:#9A5B00; --danger:#B42318;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.06);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121214; --surface:#1B1B1F; --surface-2:#232328; --line:#2E2E35; --line-2:#3C3C44;
+    --text:#F2F2F4; --text-2:#B4B4BC; --text-3:#80808A;
+    --brand:#3FB3B8; --brand-2:#5CC6CA; --brand-soft:#173638; --on-brand:#081B1C;
+    --accent:#F0915A; --accent-soft:#3A2418;
+    --ok:#5BCB7E; --ok-soft:#173222; --warn:#E3A44A; --danger:#F07367;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--text);
+  font:16px/1.5 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:Archivo,system-ui,sans-serif; font-stretch:92%; line-height:1.15; margin:0}
+a{color:var(--brand)}
+button,input,select,textarea{font:inherit; color:inherit}
+.wrap{max-width:1120px; margin:0 auto; padding:0 16px}
+
+/* header */
+header{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+.bar{display:flex; align-items:center; gap:12px; height:60px}
+.logo{display:flex; align-items:center; gap:8px; font-family:Archivo; font-weight:800; font-size:18px;
+  text-decoration:none; color:var(--text); white-space:nowrap}
+.logo i{width:28px;height:28px;border-radius:8px;background:var(--brand);display:grid;place-items:center}
+.logo small{font-weight:600; color:var(--text-3); font-size:13px}
+nav{display:flex; gap:4px; margin-left:auto; align-items:center}
+.tab{border:0; background:none; padding:8px 12px; border-radius:999px; cursor:pointer; color:var(--text-2); font-weight:600}
+.tab[aria-current="true"]{background:var(--surface-2); color:var(--text)}
+.pill{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px;
+  background:var(--brand-soft); color:var(--brand); font-weight:700; font-size:14px; border:0; cursor:pointer; white-space:nowrap}
+@media (max-width:720px){
+  .logo small{display:none}
+  nav{position:fixed; bottom:0; left:0; right:0; justify-content:space-around; background:var(--surface);
+    border-top:1px solid var(--line); padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)); margin:0}
+  header{backdrop-filter:none; background:var(--bg)}  /* a filter would trap the fixed nav inside the header */
+  body{padding-bottom:70px}
+  .bar .pill{margin-left:auto}
+}
+
+/* buttons, forms */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid transparent;
+  border-radius:10px; padding:10px 16px; font-weight:700; cursor:pointer; text-decoration:none}
+.btn-primary{background:var(--brand); color:var(--on-brand)}
+.btn-primary:hover{background:var(--brand-2)}
+.btn-accent{background:var(--accent); color:#fff}
+.btn-ghost{background:var(--surface); border-color:var(--line-2); color:var(--text)}
+.btn-sm{padding:6px 10px; font-size:14px; border-radius:8px}
+.btn[disabled]{opacity:.55; cursor:not-allowed}
+.btn-block{width:100%}
+label{display:block; font-weight:600; font-size:14px; color:var(--text-2); margin-bottom:4px}
+.field{margin-bottom:14px}
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],select,textarea{
+  width:100%; padding:10px 12px; border:1px solid var(--line-2); border-radius:10px; background:var(--surface)}
+textarea{min-height:96px; resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-offset:1px; border-color:transparent}
+.hint{font-size:13px; color:var(--text-3); margin-top:4px}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 14px}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:0 14px}
+@media (max-width:560px){ .grid3{grid-template-columns:1fr 1fr} }
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--line-2);
+  border-radius:999px; font-size:14px; cursor:pointer; background:var(--surface); user-select:none}
+.chip input{display:none}
+.chip:has(input:checked){background:var(--brand); color:var(--on-brand); border-color:var(--brand)}
+
+/* hero */
+.hero{padding:28px 0 8px}
+.hero h1{font-size:clamp(26px,4.5vw,40px)}
+.hero p{color:var(--text-2); margin:8px 0 0; max-width:640px}
+.deal{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:18px 0 6px}
+.deal div{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px}
+.deal b{display:block; font-family:Archivo; font-size:20px}
+.deal span{color:var(--text-2); font-size:14px}
+@media (max-width:640px){ .deal{grid-template-columns:1fr} }
+
+/* filters + cards */
+.filters{display:flex; flex-wrap:wrap; gap:10px; align-items:end; background:var(--surface);
+  border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:18px 0}
+.filters .field{margin:0; flex:1 1 150px}
+.count{color:var(--text-3); font-size:14px; margin:0 0 10px}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; padding-bottom:32px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+  display:flex; flex-direction:column; cursor:pointer; box-shadow:var(--shadow); transition:transform .12s}
+.card:hover{transform:translateY(-2px)}
+.card:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.thumb{height:120px; position:relative; display:flex; align-items:flex-end; padding:10px; color:#fff}
+.thumb b{font-family:Archivo; font-size:22px; text-shadow:0 1px 6px rgba(0,0,0,.25)}
+.tag{position:absolute; top:10px; left:10px; background:rgba(0,0,0,.45); color:#fff; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700}
+.tag.r{left:auto; right:10px}
+.tag.ok{background:var(--ok); }
+.card .body{padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1}
+.card h3{font-size:17px}
+.loc{color:var(--text-2); font-size:14px}
+.price{font-family:Archivo; font-weight:800; font-size:20px; margin-top:auto}
+.price small{font-family:"Source Sans 3"; font-weight:600; color:var(--text-3); font-size:13px}
+.meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
+.meta span{font-size:12px; background:var(--surface-2); padding:2px 8px; border-radius:6px; color:var(--text-2)}
+.empty{text-align:center; padding:48px 16px; color:var(--text-2); background:var(--surface); border:1px dashed var(--line-2); border-radius:var(--radius)}
+
+/* panels */
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin:18px 0}
+.panel h2{font-size:22px; margin-bottom:4px}
+.sub{color:var(--text-2); margin:0 0 16px}
+.private{background:var(--accent-soft); border-radius:12px; padding:14px; margin:6px 0 14px}
+.private h3{font-size:15px; color:var(--accent); margin-bottom:8px}
+.row{display:flex; gap:12px; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .t{font-weight:700}
+.row .s{font-size:14px; color:var(--text-2)}
+.status{font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px; background:var(--surface-2)}
+.status.confirmed{background:var(--ok-soft); color:var(--ok)}
+.status.cancelled{color:var(--text-3); text-decoration:line-through}
+.stats{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+.stat{background:var(--surface-2); border-radius:12px; padding:12px}
+.stat b{font-family:Archivo; font-size:26px; display:block}
+.stat span{font-size:13px; color:var(--text-2)}
+
+/* modal */
+dialog{border:0; padding:0; border-radius:18px; width:min(560px,calc(100vw - 24px)); max-height:calc(100dvh - 32px);
+  background:var(--surface); color:var(--text); box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,10,12,.55)}
+.mhead{display:flex; justify-content:space-between; align-items:start; gap:12px; padding:18px 20px 0}
+.mhead h2{font-size:22px}
+.x{border:0; background:var(--surface-2); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:18px; flex:none}
+.mbody{padding:12px 20px 20px}
+.kv{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:12px 0}
+.kv div{background:var(--surface-2); border-radius:10px; padding:8px 10px}
+.kv span{display:block; font-size:12px; color:var(--text-3)}
+.kv b{font-size:15px}
+.lock{border:1px dashed var(--line-2); border-radius:12px; padding:14px; margin-top:12px}
+.lock.open{border-style:solid; border-color:var(--ok); background:var(--ok-soft)}
+.blur{filter:blur(5px); user-select:none}
+.pack{border:2px solid var(--brand); border-radius:14px; padding:16px; text-align:center; margin:8px 0 14px}
+.pack b{font-family:Archivo; font-size:34px; display:block}
+.paym{display:flex; gap:8px; margin-bottom:14px}
+.paym .chip{flex:1; justify-content:center}
+.otpbox{letter-spacing:.5em; text-align:center; font-size:22px!important}
+.demo{background:var(--brand-soft); color:var(--brand); padding:8px 12px; border-radius:10px; font-size:14px; margin-bottom:12px}
+.toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%); background:var(--text); color:var(--bg);
+  padding:10px 16px; border-radius:10px; font-weight:600; z-index:100; max-width:calc(100vw - 32px)}
+footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px solid var(--line); margin-top:16px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#browse"><i><svg width="16" height="16" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v9h-6v-6H9v6H3z" fill="#fff"/></svg></i>Flatmates <small>by Navigate Me</small></a>
+    <nav>
+      <button class="tab" data-view="browse">Find a room</button>
+      <button class="tab" data-view="post">Post free</button>
+      <button class="tab" data-view="account">My account</button>
+    </nav>
+    <button class="pill" id="creditPill" title="Visit credits left">0 unlocks</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============================================================ browse -->
+  <section id="view-browse">
+    <div class="hero">
+      <h1>Find a room or flatmate. Owners list free.</h1>
+      <p>Already renting a flat with a spare room? Post it free in two minutes. Looking for a place? Browse everything for free and pay only when you want to contact the owner and visit.</p>
+      <div class="deal">
+        <div><b>₹0</b><span>to post your flat or room, as many as you like</span></div>
+        <div><b>₹0</b><span>to browse rent, area, amenities and preferences</span></div>
+        <div><b>₹500 for 5 flats</b><span>unlock owner's phone, exact address and book visits</span></div>
+      </div>
+    </div>
+
+    <form class="filters" id="filters">
+      <div class="field"><label for="fCity">City</label>
+        <select id="fCity"><option value="">All cities</option></select></div>
+      <div class="field"><label for="fQ">Area</label>
+        <input type="text" id="fQ" placeholder="e.g. Koramangala"></div>
+      <div class="field"><label for="fKind">Looking for</label>
+        <select id="fKind"><option value="">Anything</option><option value="room">Room in a shared flat</option><option value="flatmate">Flatmate to share with</option><option value="flat">Whole flat (takeover)</option></select></div>
+      <div class="field"><label for="fRent">Max rent</label>
+        <select id="fRent"><option value="">Any</option><option>10000</option><option>15000</option><option>20000</option><option>30000</option><option>50000</option></select></div>
+      <div class="field"><label for="fGender">For</label>
+        <select id="fGender"><option value="">Anyone</option><option value="female">Women</option><option value="male">Men</option></select></div>
+    </form>
+    <p class="count" id="count"></p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- ============================================================== post -->
+  <section id="view-post" hidden>
+    <div class="panel">
+      <h2>Post your flat, free</h2>
+      <p class="sub">Your phone number and exact address stay hidden. Only people who unlock your listing see them, so you hear from serious seekers only.</p>
+      <form id="postForm" autocomplete="on">
+        <div class="field"><label>What are you offering?</label>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="kind" value="room" checked>Room in my flat</label>
+            <label class="chip"><input type="radio" name="kind" value="flatmate">Looking for a flatmate</label>
+            <label class="chip"><input type="radio" name="kind" value="flat">Whole flat takeover</label>
+          </div></div>
+        <div class="field"><label for="pTitle">Title</label>
+          <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Private room in 2BHK near metro"></div>
+        <div class="grid2">
+          <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
+          <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout"></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="100" inputmode="numeric"></div>
+          <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="500" value="0" inputmode="numeric"></div>
+          <div class="field"><label for="pBhk">Flat size</label><select id="pBhk"><option value="1">1 BHK</option><option value="2" selected>2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label for="pFrom">Available from</label><input type="date" id="pFrom" required></div>
+          <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
+          <div class="field"><label for="pFurn">Furnishing</label><select id="pFurn"><option value="full">Fully furnished</option><option value="semi" selected>Semi furnished</option><option value="none">Unfurnished</option></select></div>
+        </div>
+        <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
+        <div class="field"><label for="pDesc">About the flat and flatmates</label>
+          <textarea id="pDesc" maxlength="1200" placeholder="Who lives there, house rules, how far from metro/office, what's included in rent..."></textarea></div>
+        <div class="private">
+          <h3>Private: shown only to people who unlock</h3>
+          <div class="grid2">
+            <div class="field"><label for="pName">Your name</label><input type="text" id="pName" required autocomplete="name"></div>
+            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+          </div>
+          <div class="field" style="margin:0"><label for="pAddr">Exact address</label>
+            <textarea id="pAddr" required style="min-height:64px" placeholder="Flat no., building, street, landmark"></textarea></div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Post for free</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- =========================================================== account -->
+  <section id="view-account" hidden>
+    <div class="panel" id="signedOut">
+      <h2>Sign in</h2>
+      <p class="sub">Sign in with your mobile number to post a flat, unlock listings and book visits.</p>
+      <button class="btn btn-primary" data-action="signin">Sign in with OTP</button>
+    </div>
+    <div id="signedIn" hidden>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
+          <div><h2 id="accName">My account</h2><p class="sub" id="accPhone"></p></div>
+          <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="stCredits">0</b><span>unlocks left</span></div>
+          <div class="stat"><b id="stUnlocked">0</b><span>flats unlocked</span></div>
+          <div class="stat"><b id="stListings">0</b><span>my listings</span></div>
+        </div>
+        <button class="btn btn-accent" style="margin-top:14px" data-action="buy">Buy 5 unlocks for ₹500</button>
+      </div>
+      <div class="panel"><h2>Flats I unlocked</h2><p class="sub">Owner contact and address, plus visits you've booked.</p><div id="myUnlocked"></div></div>
+      <div class="panel"><h2>My listings</h2><p class="sub">Visit requests from seekers show up here.</p><div id="myListings"></div></div>
+    </div>
+  </section>
+
+  <footer>
+    Posting is always free. Seekers pay ₹500 for a pack of 5 unlocks; each unlock reveals one flat's owner phone and exact address and lets you book visits there. Once a flat is unlocked it stays unlocked. Never pay a deposit before visiting.
+    <div id="modeNote"></div>
+  </footer>
+</main>
+
+<!-- ================================================================ modals -->
+<dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="lBody"></div></dialog>
+
+<dialog id="dlgLogin"><div class="mhead"><h2>Sign in</h2><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody">
+    <form id="loginForm">
+      <div class="field"><label for="lgName">Your name</label><input type="text" id="lgName" required autocomplete="name"></div>
+      <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+      <button class="btn btn-primary btn-block" type="submit">Send OTP</button>
+    </form>
+    <form id="otpForm" hidden>
+      <div class="demo" id="otpDemo" hidden></div>
+      <div class="field"><label for="lgOtp">Enter the 6-digit OTP sent to <span id="otpTo"></span></label>
+        <input type="text" class="otpbox" id="lgOtp" required pattern="[0-9]{6}" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
+      <button class="btn btn-primary btn-block" type="submit">Verify</button>
+    </form>
+  </div></dialog>
+
+<dialog id="dlgPay"><div class="mhead"><h2>Unlock pack</h2><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody">
+    <div class="pack"><b>₹500</b>5 flat unlocks · ₹100 per flat</div>
+    <p class="sub">Each unlock shows one owner's phone number and exact address, and lets you book visits to that flat. Unlocks don't expire.</p>
+    <div class="paym" id="payMethods">
+      <label class="chip"><input type="radio" name="pm" value="upi" checked>UPI</label>
+      <label class="chip"><input type="radio" name="pm" value="card">Card</label>
+      <label class="chip"><input type="radio" name="pm" value="nb">Netbanking</label>
+    </div>
+    <button class="btn btn-accent btn-block" id="payBtn">Pay ₹500</button>
+    <p class="hint" id="payNote"></p>
+  </div></dialog>
+
+<dialog id="dlgVisit"><div class="mhead"><h2>Book a visit</h2><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody">
+    <form id="visitForm">
+      <div class="field"><label for="vAt">Date and time</label><input type="datetime-local" id="vAt" required></div>
+      <div class="field"><label for="vNote">Note to owner (optional)</label><textarea id="vNote" maxlength="300" style="min-height:70px" placeholder="I work in Whitefield, looking to move in by the 1st."></textarea></div>
+      <button class="btn btn-primary btn-block" type="submit">Send visit request</button>
+      <p class="hint">The owner gets your request and can confirm it. You can also call them directly.</p>
+    </form>
+  </div></dialog>
+
+<script>
+/* ==================================================================== */
+/* CONFIGURATION: paste your Supabase project to go live                */
+/* ==================================================================== */
+/* Leave blank and the app runs in demo mode on sample listings, with
+   everything saved in this browser. Fill these in (after running
+   supabase/schema.sql and deploying functions/fm-pay) and the same
+   screens run on real data, with the paywall enforced in the database.
+   The anon key is safe in the page; the service_role key never is.     */
+const FM_CONFIG = {
+  supabaseUrl:     "",   // e.g. "https://abcdefgh.supabase.co"
+  supabaseAnonKey: "",
+};
+const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
+
+const PACK_PRICE = 500, PACK_CREDITS = 5;
+const CITIES = ["Bengaluru","Mumbai","Pune","Delhi NCR","Hyderabad","Chennai","Kolkata","Ahmedabad"];
+const AMENITIES = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking","Power backup","Gym","Lift","Balcony"];
+const KIND_LABEL = {room:"Room available", flatmate:"Flatmate wanted", flat:"Whole flat"};
+const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurnished"};
+const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+const fmtDate = d => new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short"});
+const fmtDateTime = d => new Date(d).toLocaleString("en-IN", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
+function toast(msg){
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2800);
+}
+function hue(id){ let h = 0; for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) % 360; return h; }
+
+/* ================================================================ state */
+const freshState = () => ({ user:null, credits:0, unlocked:[], myListings:[], visits:[] });
+let state;
+function load(){
+  try{ state = Object.assign(freshState(), JSON.parse(localStorage.getItem("fm_state") || "{}")); }
+  catch(e){ state = freshState(); }
+}
+function save(){ try{ localStorage.setItem("fm_state", JSON.stringify(state)); }catch(e){} }
+
+/* ============================================================ demo data */
+const NAMES = ["Ananya","Rohit","Priya","Karthik","Sneha","Arjun","Meera","Vikram","Isha","Rahul","Divya","Aditya"];
+const DEMO = [
+  ["Bengaluru","HSR Layout","room",2,14000,40000,"female","full",["Wi-Fi","AC","Washing machine","Cook/maid"],"Private room with attached bath in a 2BHK. One flatmate (works in fintech, WFH twice a week). 10 min to Agara lake."],
+  ["Bengaluru","Koramangala 5th Block","flatmate",3,12500,35000,"any","semi",["Wi-Fi","Fridge","Power backup","Balcony"],"Two of us, looking for a third. Shared kitchen, own room. Walking distance to Forum mall and lots of cafes."],
+  ["Bengaluru","Whitefield","flat",2,26000,100000,"any","semi",["Parking","Lift","Gym","Power backup"],"Moving cities, handing over the lease. Gated society, 1.2 km from ITPL. Owner is fine with bachelors."],
+  ["Mumbai","Andheri West","room",2,22000,60000,"male","full",["AC","Wi-Fi","Cook/maid","Lift"],"Room in a 2BHK near Lokhandwala. Flatmate is a film editor, quiet, works late. 7 min walk to metro."],
+  ["Mumbai","Powai","flatmate",3,19000,50000,"female","full",["Gym","Wi-Fi","AC","Parking"],"Hiranandani, lake view. Two working women looking for a third. No smoking inside."],
+  ["Pune","Baner","room",2,11000,25000,"any","semi",["Wi-Fi","Washing machine","Parking"],"Spare room in a 2BHK, flatmate works at an IT park in Hinjewadi. Pet-friendly society."],
+  ["Pune","Viman Nagar","flatmate",2,13500,30000,"male","full",["AC","Wi-Fi","Power backup","Balcony"],"Near Phoenix mall. Looking for a working professional, vegetarian kitchen preferred."],
+  ["Delhi NCR","Gurugram Sector 45","room",3,16000,32000,"any","full",["AC","Cook/maid","Power backup","Parking"],"Big room in a 3BHK builder floor. Cook comes twice a day, cost shared. 10 min to Huda City Centre metro."],
+  ["Delhi NCR","Saket","flatmate",2,18000,36000,"female","semi",["Wi-Fi","Fridge","Washing machine"],"Looking for a female flatmate. Close to Select Citywalk and Saket metro. Quiet, clean house."],
+  ["Hyderabad","Gachibowli","room",3,10500,20000,"any","full",["Wi-Fi","AC","Gym","Lift","Power backup"],"Gated community, 5 min to Financial District. Two flatmates, both in tech."],
+  ["Hyderabad","Madhapur","flat",1,17000,50000,"any","full",["AC","Wi-Fi","Parking"],"1BHK lease takeover from next month. Fully furnished, near Hitech City metro."],
+  ["Chennai","Velachery","room",2,9500,30000,"female","semi",["Wi-Fi","Washing machine","Power backup"],"Room in a 2BHK, 5 min to Phoenix mall and MRTS. Current flatmate is a doctor at a nearby hospital."],
+];
+function demoListings(){
+  const now = Date.now();
+  return DEMO.map((d, i) => {
+    const [city, locality, kind, bhk, rent, deposit, gender, furnishing, amenities, description] = d;
+    const name = NAMES[i % NAMES.length];
+    return {
+      id: "demo-" + (i+1), kind, city, locality, bhk, rent, deposit, gender, furnishing, amenities, description,
+      title: (kind==="flat" ? bhk+"BHK lease takeover" : kind==="flatmate" ? "Flatmate wanted for "+bhk+"BHK" : "Private room in "+bhk+"BHK") + " in " + locality,
+      available_from: new Date(now + (i%4)*7*864e5).toISOString().slice(0,10),
+      created_at: new Date(now - i*36e5*7).toISOString(),
+      unlock_count: (i*7) % 11,
+      private: { contact_name: name, contact_phone: "9" + String(812345670 + i*1379).slice(0,9),
+                 address: (101 + i*3) + ", " + ["Sunrise","Lake View","Green Park","Silver Oak"][i%4] + " Apartments, " + locality + ", " + city }
+    };
+  });
+}
+
+/* ========================================================== data layer */
+/* Two implementations, one interface. Screens only call api.*          */
+let pendingOtp = null;
+
+const demoApi = {
+  live:false,
+  all(){ return demoListings().concat(state.myListings); },
+  async sendOtp(phone, name){
+    pendingOtp = { phone, name, code: String(Math.floor(100000 + Math.random()*900000)) };
+    return { demoCode: pendingOtp.code };
+  },
+  async verifyOtp(code){
+    if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
+    if(!state.user || state.user.phone !== pendingOtp.phone){
+      state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits });
+    }
+    state.user = { phone: pendingOtp.phone, name: pendingOtp.name };
+    pendingOtp = null; save();
+  },
+  async signOut(){ state.user = null; save(); },
+  async me(){ return { credits: state.credits, user: state.user }; },
+  async search(f){
+    return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
+      (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
+      (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
+      (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
+    ).map(l => this.view(l)).sort((a,b) => b.created_at.localeCompare(a.created_at));
+  },
+  view(l){
+    const mine = Boolean(state.user && l.owner_phone === state.user.phone);
+    const { private: _p, ...pub } = l;
+    return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id) };
+  },
+  async get(id){ const l = this.all().find(x => x.id === id); return l && this.view(l); },
+  async contact(id){
+    const l = this.all().find(x => x.id === id);
+    const v = l && this.view(l);
+    return v && v.unlocked ? l.private : null;
+  },
+  async unlock(id){
+    const l = await this.get(id);
+    if(l.unlocked) return { unlocked:true, charged:false, credits: state.credits };
+    if(state.credits < 1) return { unlocked:false, charged:false, credits: 0 };
+    state.credits -= 1; state.unlocked.push(id); save();
+    return { unlocked:true, charged:true, credits: state.credits };
+  },
+  async post(p){
+    const id = "mine-" + Date.now().toString(36);
+    state.myListings.push({ ...p.listing, id, owner_phone: state.user.phone, status:"active",
+      created_at: new Date().toISOString(), unlock_count:0, private: p.private });
+    save(); return id;
+  },
+  async myListings(){
+    return state.myListings.filter(l => l.owner_phone === state.user.phone).map(l => this.view(l));
+  },
+  async unlockedListings(){ return (await Promise.all(state.unlocked.map(id => this.get(id)))).filter(Boolean); },
+  async visits(){ return state.visits.filter(v => v.seeker_phone === state.user.phone); },
+  async requestVisit(id, at, note){
+    if(new Date(at) < new Date()) throw new Error("visit-in-past");
+    state.visits.push({ id: "v" + Date.now(), listing_id: id, visit_at: at, note, status:"requested", seeker_phone: state.user.phone });
+    save();
+  },
+  async incomingVisits(){ return []; },  // other people's requests only exist in live mode
+  async setVisitStatus(vid, status){
+    const v = state.visits.find(x => x.id === vid); if(v){ v.status = status; save(); }
+  },
+  async setListingStatus(id, status){
+    const l = state.myListings.find(x => x.id === id); if(l){ l.status = status; save(); }
+  },
+  async buyPack(){ state.credits += PACK_CREDITS; save(); return { credits: state.credits }; }
+};
+
+function makeLiveApi(sb){
+  const rpc = async (fn, args) => {
+    const { data, error } = await sb.rpc(fn, args || {});
+    if(error) throw error;
+    return data;
+  };
+  const uid = async () => (await sb.auth.getUser()).data.user?.id;
+  const fnUrl = path => FM_CONFIG.supabaseUrl + "/functions/v1/fm-pay/" + path;
+  async function callPay(path, body){
+    const { data } = await sb.auth.getSession();
+    const r = await fetch(fnUrl(path), { method:"POST",
+      headers:{ "Content-Type":"application/json", apikey: FM_CONFIG.supabaseAnonKey,
+                Authorization: "Bearer " + (data.session?.access_token || "") },
+      body: JSON.stringify(body || {}) });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || "payment");
+    return j;
+  }
+  function loadRazorpay(){
+    if(window.Razorpay) return Promise.resolve();
+    return new Promise((res, rej) => {
+      const s = document.createElement("script");
+      s.src = "https://checkout.razorpay.com/v1/checkout.js"; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+  return {
+    live:true,
+    async sendOtp(phone, name){
+      const { error } = await sb.auth.signInWithOtp({ phone: "+91" + phone });
+      if(error) throw error;
+      pendingOtp = { phone, name }; return {};
+    },
+    async verifyOtp(code){
+      const { error } = await sb.auth.verifyOtp({ phone: "+91" + pendingOtp.phone, token: code, type: "sms" });
+      if(error) throw new Error("bad-code");
+      if(pendingOtp.name) await rpc("fm_set_name", { p_name: pendingOtp.name });
+      pendingOtp = null; await this.me();
+    },
+    async signOut(){ await sb.auth.signOut(); state.user = null; state.credits = 0; save(); },
+    async me(){
+      const rows = await rpc("fm_me");
+      const r = rows && rows[0];
+      if(!r){ state.user = null; state.credits = 0; save(); return { credits:0, user:null }; }
+      state.user = { phone: (r.phone || "").replace(/^\+?91/, ""), name: r.full_name || "" };
+      state.credits = r.credits; save();
+      return { credits: r.credits, user: state.user };
+    },
+    async search(f){
+      return rpc("fm_search", { p_city: f.city || null, p_kind: f.kind || null,
+        p_max_rent: f.maxRent || null, p_gender: f.gender || null, p_q: f.q || null });
+    },
+    async get(id){ return (await rpc("fm_search", {})).find(l => l.id === id); },
+    async contact(id){ const rows = await rpc("fm_contact", { p_listing: id }); return rows && rows[0] || null; },
+    async unlock(id){
+      const r = (await rpc("fm_unlock", { p_listing: id }))[0];
+      state.credits = r.credits; save(); return r;
+    },
+    async post(p){
+      const l = p.listing, pv = p.private;
+      return rpc("fm_post_listing", { p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
+        p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
+        p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
+        p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address });
+    },
+    async myListings(){ return (await rpc("fm_search", {})).filter(l => l.is_owner); },
+    async unlockedListings(){ return (await rpc("fm_search", {})).filter(l => l.unlocked && !l.is_owner); },
+    async visits(){
+      const { data, error } = await sb.from("fm_visits").select("*").eq("seeker_id", await uid()).order("visit_at");
+      if(error) throw error; return data;
+    },
+    async incomingVisits(){
+      const me = await uid();
+      const { data, error } = await sb.from("fm_visits").select("*").neq("seeker_id", me).order("visit_at");
+      if(error) throw error; return data;   // RLS limits these to visits on my listings
+    },
+    async requestVisit(id, at, note){
+      await rpc("fm_request_visit", { p_listing:id, p_at:new Date(at).toISOString(), p_note:note });
+    },
+    async setVisitStatus(vid, status){ await rpc("fm_set_visit_status", { p_visit:vid, p_status:status }); },
+    async setListingStatus(id, status){
+      const { error } = await sb.from("fm_listings").update({ status }).eq("id", id);
+      if(error) throw error;
+    },
+    async buyPack(){
+      await loadRazorpay();
+      const order = await callPay("order");
+      const paid = await new Promise((resolve, reject) => {
+        const rz = new window.Razorpay({
+          key: order.key_id, order_id: order.order_id, amount: order.amount, currency: "INR",
+          name: "Navigate Me Flatmates", description: PACK_CREDITS + " flat unlocks",
+          prefill: { contact: "+91" + (state.user?.phone || ""), name: state.user?.name || "" },
+          theme: { color: "#0D6E73" },
+          handler: resolve,
+          modal: { ondismiss: () => reject(new Error("cancelled")) }
+        });
+        rz.open();
+      });
+      await callPay("verify", paid);
+      return this.me();
+    }
+  };
+}
+
+let api = demoApi;
+async function initApi(){
+  if(!LIVE) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+    s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+  const sb = window.supabase.createClient(FM_CONFIG.supabaseUrl, FM_CONFIG.supabaseAnonKey);
+  api = makeLiveApi(sb);
+  const { data } = await sb.auth.getSession();
+  if(data && data.session) await api.me(); else { state.user = null; state.credits = 0; save(); }
+}
+
+/* ============================================================== router */
+const VIEWS = ["browse","post","account"];
+function route(){
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "browse";
+  VIEWS.forEach(n => $("view-"+n).hidden = n !== v);
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.view === v));
+  if(v === "browse") renderBrowse();
+  if(v === "post") renderPost();
+  if(v === "account") renderAccount();
+  window.scrollTo(0, 0);
+}
+function go(v){ if(location.hash === "#"+v) route(); else location.hash = v; }
+
+function renderHeader(){
+  const c = state.user ? state.credits : null;
+  $("creditPill").textContent = state.user ? (c + (c === 1 ? " unlock" : " unlocks") + " left") : "Sign in";
+}
+
+/* ====================================================== auth guard ==== */
+let afterLogin = null;
+function requireLogin(then){
+  if(state.user) return then();
+  afterLogin = then;
+  $("loginForm").hidden = false; $("otpForm").hidden = true; $("otpDemo").hidden = true;
+  $("dlgLogin").showModal(); $("lgName").focus();
+}
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const phone = $("lgPhone").value.trim(), name = $("lgName").value.trim();
+  try{
+    const r = await api.sendOtp(phone, name);
+    $("otpTo").textContent = "+91 " + phone;
+    if(r.demoCode){ $("otpDemo").hidden = false; $("otpDemo").textContent = "Demo mode: your OTP is " + r.demoCode; }
+    $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus();
+  }catch(err){ console.error(err); toast("Couldn't send OTP. Check the number and try again."); }
+});
+$("otpForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  try{
+    await api.verifyOtp($("lgOtp").value.trim());
+    $("dlgLogin").close(); renderHeader(); toast("Signed in");
+    const next = afterLogin; afterLogin = null;
+    if(next) next(); else route();
+  }catch(err){ toast("That OTP didn't match. Try again."); }
+});
+
+/* ============================================================== browse */
+function filters(){
+  return { city:$("fCity").value, q:$("fQ").value.trim(), kind:$("fKind").value,
+           maxRent: Number($("fRent").value) || 0, gender:$("fGender").value };
+}
+function cardHtml(l){
+  const h = hue(l.id);
+  return `<article class="card" tabindex="0" data-id="${esc(l.id)}">
+    <div class="thumb" style="background:linear-gradient(135deg,hsl(${h} 45% 42%),hsl(${(h+40)%360} 55% 58%))">
+      <span class="tag">${esc(KIND_LABEL[l.kind])}</span>
+      ${l.is_owner ? '<span class="tag r">Your listing</span>' : l.unlocked ? '<span class="tag r ok">Unlocked</span>' : ""}
+      <b>${l.bhk} BHK · ${esc(l.locality)}</b>
+    </div>
+    <div class="body">
+      <h3>${esc(l.title)}</h3>
+      <div class="loc">${esc(l.locality)}, ${esc(l.city)}</div>
+      <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
+      <div class="price">${inr(l.rent)}<small> /month · deposit ${inr(l.deposit)}</small></div>
+    </div></article>`;
+}
+let browseSeq = 0;
+async function renderBrowse(){
+  const seq = ++browseSeq;
+  const rows = await api.search(filters());
+  if(seq !== browseSeq) return;
+  $("count").textContent = rows.length + (rows.length === 1 ? " place" : " places") + " found";
+  $("cards").innerHTML = rows.length ? rows.map(cardHtml).join("")
+    : `<div class="empty">Nothing matches yet. Try another area or a higher budget.</div>`;
+}
+$("filters").addEventListener("input", renderBrowse);
+$("filters").addEventListener("submit", e => e.preventDefault());
+$("cards").addEventListener("click", e => { const c = e.target.closest(".card"); if(c) openListing(c.dataset.id); });
+$("cards").addEventListener("keydown", e => {
+  const c = e.target.closest(".card"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
+});
+
+/* ======================================================= listing modal */
+let currentId = null;
+async function openListing(id){
+  currentId = id;
+  const l = await api.get(id);
+  if(!l){ toast("This listing is no longer available."); return; }
+  $("lTitle").textContent = l.title;
+  $("lLoc").textContent = l.locality + ", " + l.city;
+  const contact = l.unlocked ? await api.contact(id) : null;
+  const amen = (l.amenities || []).map(a => `<span>${esc(a)}</span>`).join("");
+  let lock;
+  if(contact){
+    lock = `<div class="lock open">
+      <div class="kv" style="margin-top:0">
+        <div><span>Owner</span><b>${esc(contact.contact_name)}</b></div>
+        <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
+      </div>
+      <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div>
+        <a class="hint" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}">Open in Maps</a></div>
+      ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <a class="btn btn-ghost btn-sm" href="tel:+91${esc(contact.contact_phone)}">Call owner</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I saw your listing \"" + l.title + "\" on Navigate Me Flatmates. Is it still available?")}">WhatsApp</a>
+        <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>`}
+    </div>`;
+  }else{
+    const c = state.user ? state.credits : 0;
+    lock = `<div class="lock">
+      <b>Owner contact and exact address are locked</b>
+      <div class="kv"><div><span>Owner</span><b class="blur">Xxxxxx</b></div><div><span>Phone</span><b class="blur">+91 98xxxxxx12</b></div></div>
+      <p class="hint" style="margin:0 0 10px">Unlock to get the owner's phone and address and book a visit. ${state.user && c > 0
+        ? `Uses 1 of your ${c} unlocks.` : `₹500 gets you 5 unlocks (₹100 per flat).`}</p>
+      <button class="btn btn-accent btn-block" data-action="unlock">${state.user && c > 0 ? "Unlock this flat (1 credit)" : "Unlock: ₹500 for 5 flats"}</button>
+    </div>`;
+  }
+  $("lBody").innerHTML = `
+    <div class="kv">
+      <div><span>Rent</span><b>${inr(l.rent)}/mo</b></div>
+      <div><span>Deposit</span><b>${inr(l.deposit)}</b></div>
+      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
+      <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
+      <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
+      <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
+    </div>
+    ${amen ? `<div class="meta">${amen}</div>` : ""}
+    <p style="white-space:pre-line">${esc(l.description)}</p>
+    ${l.unlock_count ? `<p class="hint">${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} unlocked this flat.</p>` : ""}
+    ${lock}`;
+  if(!$("dlgListing").open) $("dlgListing").showModal();
+}
+$("lBody").addEventListener("click", e => {
+  const a = e.target.closest("[data-action]"); if(!a) return;
+  if(a.dataset.action === "unlock") requireLogin(() => doUnlock(currentId));
+  if(a.dataset.action === "visit") openVisit(currentId);
+});
+async function doUnlock(id){
+  try{
+    const r = await api.unlock(id);
+    renderHeader();
+    if(r.unlocked){
+      if(r.charged) toast("Unlocked. " + r.credits + (r.credits === 1 ? " unlock" : " unlocks") + " left.");
+      await openListing(id); renderBrowse();
+    }else{
+      openPay(() => doUnlock(id));
+    }
+  }catch(err){ console.error(err); toast("Couldn't unlock right now. Please try again."); }
+}
+
+/* ============================================================= payment */
+let afterPay = null;
+function openPay(then){
+  afterPay = then || null;
+  $("payNote").textContent = LIVE ? "Secure checkout by Razorpay. Credits are added as soon as payment is confirmed."
+                                  : "Demo mode: no money is charged. Tapping Pay adds 5 unlocks.";
+  $("dlgPay").showModal();
+}
+$("payBtn").addEventListener("click", async () => {
+  const b = $("payBtn"); b.disabled = true;
+  try{
+    await api.buyPack();
+    $("dlgPay").close(); renderHeader(); toast("Payment received. 5 unlocks added.");
+    const next = afterPay; afterPay = null;
+    if(next) next(); else if(location.hash === "#account") renderAccount();
+  }catch(err){
+    if(err.message !== "cancelled"){ console.error(err); toast("Payment didn't go through. You weren't charged for unlocks."); }
+  }finally{ b.disabled = false; }
+});
+
+/* =============================================================== visit */
+let visitFor = null;
+function openVisit(id){
+  visitFor = id;
+  const t = new Date(Date.now() + 864e5); t.setHours(18, 0, 0, 0);
+  const local = d => new Date(d.getTime() - d.getTimezoneOffset()*6e4).toISOString().slice(0,16);
+  $("vAt").value = local(t); $("vAt").min = local(new Date()); $("vNote").value = "";
+  $("dlgVisit").showModal();
+}
+$("visitForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  try{
+    await api.requestVisit(visitFor, $("vAt").value, $("vNote").value.trim());
+    $("dlgVisit").close(); toast("Visit requested for " + fmtDateTime($("vAt").value));
+    if(location.hash === "#account") renderAccount();
+  }catch(err){ toast(err.message === "visit-in-past" ? "Pick a time in the future." : "Couldn't book the visit. Try again."); }
+});
+
+/* ================================================================ post */
+function renderPost(){
+  if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
+  if(state.user){
+    if(!$("pName").value) $("pName").value = state.user.name || "";
+    if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
+  }
+}
+$("postForm").addEventListener("submit", e => {
+  e.preventDefault();
+  requireLogin(async () => {
+    const f = e.target;
+    const p = {
+      listing: {
+        kind: f.querySelector("[name=kind]:checked").value,
+        title: $("pTitle").value.trim(), city: $("pCity").value, locality: $("pLocality").value.trim(),
+        bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
+        available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value,
+        amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
+        description: $("pDesc").value.trim()
+      },
+      private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(), address: $("pAddr").value.trim() }
+    };
+    try{
+      await api.post(p);
+      f.reset(); toast("Your flat is live. It's free, always.");
+      go("account");
+    }catch(err){ console.error(err); toast("Couldn't post the listing. Check the fields and try again."); }
+  });
+});
+
+/* ============================================================= account */
+async function renderAccount(){
+  $("signedOut").hidden = Boolean(state.user); $("signedIn").hidden = !state.user;
+  if(!state.user) return;
+  if(LIVE) await api.me();
+  renderHeader();
+  $("accName").textContent = state.user.name ? "Hi, " + state.user.name : "My account";
+  $("accPhone").textContent = "+91 " + state.user.phone;
+
+  const [unlocked, mine, visits, incoming] = await Promise.all(
+    [api.unlockedListings(), api.myListings(), api.visits(), api.incomingVisits()]);
+  $("stCredits").textContent = state.credits;
+  $("stUnlocked").textContent = unlocked.length;
+  $("stListings").textContent = mine.length;
+
+  const contacts = await Promise.all(unlocked.map(l => api.contact(l.id)));
+  $("myUnlocked").innerHTML = unlocked.length ? unlocked.map((l, i) => {
+    const c = contacts[i] || {};
+    const vs = visits.filter(v => v.listing_id === l.id);
+    return `<div class="row"><div>
+        <div class="t">${esc(l.title)}</div>
+        <div class="s">${esc(c.contact_name)} · <a href="tel:+91${esc(c.contact_phone)}">+91 ${esc(c.contact_phone)}</a> · ${esc(c.address)}</div>
+        ${vs.map(v => `<div class="s">Visit ${fmtDateTime(v.visit_at)} <span class="status ${esc(v.status)}">${esc(v.status)}</span>
+          ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-cancel="${esc(v.id)}">Cancel</button>` : ""}</div>`).join("")}
+      </div><button class="btn btn-ghost btn-sm" data-open="${esc(l.id)}">Open</button></div>`;
+  }).join("") : `<p class="hint">You haven't unlocked any flats yet. <a href="#browse">Browse rooms</a></p>`;
+
+  $("myListings").innerHTML = mine.length ? mine.map(l => {
+    const vs = incoming.filter(v => v.listing_id === l.id);
+    const closed = l.status === "closed";
+    return `<div class="row"><div>
+        <div class="t">${esc(l.title)} ${closed ? '<span class="status cancelled">closed</span>' : ""}</div>
+        <div class="s">${inr(l.rent)}/mo · ${esc(l.locality)}, ${esc(l.city)} · ${l.unlock_count || 0} unlocks</div>
+        ${vs.map(v => `<div class="s">Visit request ${fmtDateTime(v.visit_at)}${v.note ? ": “" + esc(v.note) + "”" : ""}
+          <span class="status ${esc(v.status)}">${esc(v.status)}</span>
+          ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-confirm="${esc(v.id)}">Confirm</button>` : ""}</div>`).join("")}
+      </div><button class="btn btn-ghost btn-sm" data-toggle="${esc(l.id)}" data-status="${closed ? "active" : "closed"}">${closed ? "Reopen" : "Mark rented"}</button></div>`;
+  }).join("") : `<p class="hint">No listings yet. <a href="#post">Post your flat free</a></p>`;
+}
+$("view-account").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if(!b) return;
+  try{
+    if(b.dataset.action === "signin") return requireLogin(renderAccount);
+    if(b.dataset.action === "signout"){ await api.signOut(); renderHeader(); return renderAccount(); }
+    if(b.dataset.action === "buy") return openPay(renderAccount);
+    if(b.dataset.open) return openListing(b.dataset.open);
+    if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
+    if(b.dataset.confirm){ await api.setVisitStatus(b.dataset.confirm, "confirmed"); return renderAccount(); }
+    if(b.dataset.toggle){ await api.setListingStatus(b.dataset.toggle, b.dataset.status); return renderAccount(); }
+  }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
+});
+
+/* ================================================================ boot */
+document.querySelectorAll("dialog").forEach(d => {
+  d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
+});
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.view)));
+$("creditPill").addEventListener("click", () => state.user ? openPay() : requireLogin(() => go("account")));
+window.addEventListener("hashchange", route);
+
+for(const c of CITIES){
+  $("fCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
+  $("pCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
+}
+$("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" value="${esc(a)}">${esc(a)}</label>`).join("");
+
+(async function boot(){
+  load();
+  try{ await initApi(); }
+  catch(err){ console.error("Supabase failed to load; running in demo mode.", err); api = demoApi; }
+  $("modeNote").textContent = api.live ? "" : "Demo mode: sample listings, no real payments. Your data stays in this browser.";
+  renderHeader(); route();
+})();
+</script>
+</body>
+</html>
