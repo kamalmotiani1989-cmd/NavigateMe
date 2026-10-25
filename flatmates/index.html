@@ -625,6 +625,10 @@ const FM_CONFIG = {
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
 
 const PACK_PRICE = 500, PACK_CREDITS = 5;
+// Charges are off for now: contacting an owner is free. To start charging,
+// set this to true AND run `update fm_settings set charges_enabled = true;`
+// in Supabase (the database decides; this only changes what the screens say).
+const CHARGES_ON = false;
 const CITIES = ["Bengaluru","Mumbai","Pune","Delhi NCR","Hyderabad","Chennai","Kolkata","Ahmedabad"];
 const AMENITIES = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking","Power backup","Gym","Lift","Balcony"];
 const KIND_LABEL = {room:"Room available", flatmate:"Flatmate wanted", flat:"Whole flat"};
@@ -859,6 +863,8 @@ const demoApi = {
     const l = await this.get(id);
     if(!l.is_owner && state.user.role !== "seeker") throw new Error("seekers-only");
     if(l.unlocked) return { unlocked:true, charged:false, credits: state.credits };
+    if(!CHARGES_ON){ state.unlocked.push(id); state.unlockedAt[id] = new Date().toISOString(); save();
+                     return { unlocked:true, charged:false, credits: state.credits }; }
     if(state.credits < 1) return { unlocked:false, charged:false, credits: 0 };
     state.credits -= 1; state.unlocked.push(id); state.unlockedAt[id] = new Date().toISOString(); save();
     return { unlocked:true, charged:true, credits: state.credits };
@@ -898,6 +904,7 @@ const demoApi = {
     const at = state.unlockedAt[id];
     if(!state.unlocked.includes(id)) return { refunded:false, error:"not-unlocked" };
     if(state.refunds[id]) return { refunded:false, error:"already-refunded" };
+    if(!CHARGES_ON) return { refunded:false, error:"was-free" };
     if(reason === "no_reply" && Date.now() - new Date(at) < 48*36e5) return { refunded:false, error:"too-early" };
     if(Object.keys(state.refunds).length >= 2 * state.packs) return { refunded:false, error:"limit-reached" };
     state.refunds[id] = reason; state.credits += 1; save();
@@ -1384,14 +1391,14 @@ async function openListing(id){
         <a class="btn btn-ghost btn-sm" href="tel:+91${esc(contact.contact_phone)}">Call</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I saw your listing \"" + l.title + "\" on Navigate Me Flatmates. Is it still available?")}">WhatsApp</a>
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>
-      <div class="guarantee">${l.refunded ? `<span class="hint">You got this unlock back. The contact stays visible.</span>` : `
+      ${CHARGES_ON ? `<div class="guarantee">${l.refunded ? `<span class="hint">You got this unlock back. The contact stays visible.</span>` : `
         <details><summary>Didn't work out?</summary>
           <p class="hint">If the flat is already rented, or the owner hasn't replied 48 hours after you unlocked it, you get the unlock back.</p>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
             <button class="btn btn-ghost btn-sm" data-refund="rented">It's already rented</button>
             <button class="btn btn-ghost btn-sm" data-refund="no_reply"${canNoReply ? "" : " disabled"}>No reply in 48 hours</button></div>
           ${canNoReply || !waitUntil ? "" : `<p class="hint">"No reply" opens ${fmtDateTime(waitUntil)}.</p>`}
-        </details>`}</div>`}
+        </details>`}</div>` : ""}`}
     </div>`;
   }else if(!l.is_owner && isSeeker()){
     const c = state.credits;
@@ -1399,9 +1406,11 @@ async function openListing(id){
       <h3>Like what you see?</h3>
       <p>Get the owner's number and the exact address, and book a visit.</p>
       <div class="blurred"><div><span>Owner</span><b>Xxxxxxx</b></div><div><span>Phone</span><b>+91 98xxxxxx12</b></div></div>
-      <button class="btn btn-accent btn-block" data-action="unlock">${c > 0 ? `Unlock this flat · ${c} ${c === 1 ? "unlock" : "unlocks"} left` : "Unlock this flat · ₹100"}</button>
+      ${CHARGES_ON ? `<button class="btn btn-accent btn-block" data-action="unlock">${c > 0 ? `Unlock this flat · ${c} ${c === 1 ? "unlock" : "unlocks"} left` : "Unlock this flat · ₹100"}</button>
       ${c > 0 ? "" : `<p style="margin:8px 0 0;font-size:13px;text-align:center">Comes in a pack of 5 for ₹500. They never expire.</p>`}
-      <div class="promise-line"><b>✓</b><span>Already rented, or no reply within 48 hours? You get the unlock back.</span></div>
+      <div class="promise-line"><b>✓</b><span>Already rented, or no reply within 48 hours? You get the unlock back.</span></div>`
+      : `<button class="btn btn-accent btn-block" data-action="unlock">Show the owner's contact</button>
+      <div class="promise-line"><b>✓</b><span>Every owner's phone number is verified.</span></div>`}
       ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:12px" data-action="save">♥ Not sure yet? Save it</button>`}
     </div>`;
   }
@@ -1465,6 +1474,7 @@ async function doUnlock(id){
     const r = await api.unlock(id);
     if(r.unlocked){
       if(r.charged) toast("Unlocked. " + r.credits + (r.credits === 1 ? " unlock" : " unlocks") + " left.");
+      else if(!CHARGES_ON) toast("Here's the owner's contact");
       await openListing(id); refreshCurrent();
     }else openPay(() => doUnlock(id));
   }catch(err){ console.error(err); toast("Couldn't unlock right now. Please try again."); }
@@ -1648,7 +1658,9 @@ async function renderAccount(){
     ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")
     : `<p class="hint" style="margin:0">Not answered yet.</p>`;
   const [unlocked, visits] = await Promise.all([api.unlockedListings(), api.visits()]);
-  $("creditLine").textContent = unlocked.length || state.credits
+  $("creditLine").textContent = !CHARGES_ON
+    ? "Flats you contact show up here with the owner's number and address."
+    : unlocked.length || state.credits
     ? `You have ${state.credits} ${state.credits === 1 ? "unlock" : "unlocks"} left. They never expire.`
     : "When you contact an owner, the flat shows up here with their number and address.";
   const contacts = await Promise.all(unlocked.map(l => api.contact(l.id)));

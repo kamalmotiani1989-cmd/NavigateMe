@@ -31,6 +31,13 @@ switch from their account page.
 
 ## Pricing
 
+> **Charges are currently OFF.** Contacting an owner is free and no payment screen appears.
+> To switch charges on: set `CHARGES_ON = true` in `index.html` **and** run
+> `update fm_settings set charges_enabled = true;` in Supabase. The database decides, so the
+> free period can't be abused later: unlocks made while free never turn into refundable credits.
+
+When charges are on:
+
 | Who | What | Price |
 |---|---|---|
 | Owner / current tenant | Post a listing with photos (unlimited) | Free |

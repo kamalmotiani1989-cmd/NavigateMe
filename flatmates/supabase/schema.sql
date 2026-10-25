@@ -10,6 +10,8 @@
 --     A seeker sees them only after unlocking that listing.
 --   * Unlocking a listing costs 1 visit credit. After that it stays
 --     unlocked, and the seeker can book visits to it.
+--   * Charges can be switched off: fm_settings.charges_enabled = false makes
+--     unlocking free (no credits used) and turns off refunds. It starts off.
 --   * Unlock-back guarantee: a seeker gets the credit back if the flat was
 --     already rented, or the owner hasn't replied 48 hours after the unlock.
 --     Once per unlock, at most 2 per pack bought. Two "already rented"
@@ -98,6 +100,17 @@ alter table public.fm_unlocks add column if not exists refunded_at timestamptz;
 alter table public.fm_unlocks add column if not exists refund_reason text
   check (refund_reason in ('rented','no_reply'));
 
+-- Free unlocks (made while charges were off) can never be refunded into credits.
+alter table public.fm_unlocks add column if not exists charged boolean not null default true;
+
+-- One-row app settings. Flip charges on with:
+--   update public.fm_settings set charges_enabled = true;
+create table if not exists public.fm_settings (
+  id boolean primary key default true check (id),
+  charges_enabled boolean not null default false
+);
+insert into public.fm_settings (id) values (true) on conflict (id) do nothing;
+
 create table if not exists public.fm_visits (
   id          uuid primary key default gen_random_uuid(),
   listing_id  uuid not null references public.fm_listings(id) on delete cascade,
@@ -128,6 +141,10 @@ alter table public.fm_listing_private enable row level security;
 alter table public.fm_unlocks         enable row level security;
 alter table public.fm_visits          enable row level security;
 alter table public.fm_orders          enable row level security;
+alter table public.fm_settings        enable row level security;
+
+drop policy if exists fm_settings_read on public.fm_settings;
+create policy fm_settings_read on public.fm_settings for select using (true);
 
 drop policy if exists fm_profiles_self on public.fm_profiles;
 create policy fm_profiles_self on public.fm_profiles
@@ -281,6 +298,11 @@ begin
     return query select true, false, v_credits; return;
   end if;
 
+  if not coalesce((select charges_enabled from fm_settings), false) then
+    insert into fm_unlocks (user_id, listing_id, charged) values (auth.uid(), p_listing, false);
+    return query select true, false, coalesce(v_credits, 0); return;
+  end if;
+
   if coalesce(v_credits, 0) < 1 then
     return query select false, false, coalesce(v_credits, 0); return;
   end if;
@@ -304,6 +326,7 @@ begin
 
   if v_unlock.user_id is null then return query select false, v_credits, 'not-unlocked'; return; end if;
   if v_unlock.refunded_at is not null then return query select false, v_credits, 'already-refunded'; return; end if;
+  if not v_unlock.charged then return query select false, v_credits, 'was-free'; return; end if;
   if p_reason = 'no_reply' and v_unlock.created_at > now() - interval '48 hours' then
     return query select false, v_credits, 'too-early'; return;
   end if;
