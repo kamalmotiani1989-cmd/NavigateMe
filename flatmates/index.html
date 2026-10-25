@@ -10,6 +10,10 @@
 <meta property="og:locale" content="en_IN">
 <title>Navigate Me Flatmates</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230D6E73'/%3E%3Cpath d='M5 12l7-6 7 6v7h-5v-4h-4v4H5z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Flatmates">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
@@ -35,6 +39,15 @@
     --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
   }
 }
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121214; --surface:#1B1B1F; --surface-2:#232328; --line:#2E2E35; --line-2:#3C3C44;
+  --text:#F2F2F4; --text-2:#B4B4BC; --text-3:#80808A;
+  --brand:#3FB3B8; --brand-2:#5CC6CA; --brand-soft:#173638; --on-brand:#081B1C;
+  --accent:#F0915A; --accent-soft:#3A2418;
+  --ok:#5BCB7E; --ok-soft:#173222; --warn:#E3A44A; --danger:#F07367;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
@@ -46,7 +59,7 @@ button,input,select,textarea{font:inherit; color:inherit}
 .wrap{max-width:1120px; margin:0 auto; padding:0 16px}
 
 /* header */
-header{position:sticky; top:0; z-index:20; background:color-mix(in srgb,var(--bg) 88%,transparent);
+header{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:color-mix(in srgb,var(--bg) 88%,transparent);
   backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
 .bar{display:flex; align-items:center; gap:12px; height:60px}
 .logo{display:flex; align-items:center; gap:8px; font-family:Archivo; font-weight:800; font-size:18px;
@@ -114,7 +127,42 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .card:hover{transform:translateY(-2px)}
 .card:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
 .thumb{height:120px; position:relative; display:flex; align-items:flex-end; padding:10px; color:#fff}
-.thumb b{font-family:Archivo; font-size:22px; text-shadow:0 1px 6px rgba(0,0,0,.25)}
+.thumb{height:160px; overflow:hidden}
+.thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.thumb.has-photo::after{content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.55),transparent 55%)}
+.thumb b,.thumb .tag{z-index:1}
+.thumb b{position:relative; font-family:Archivo; font-size:22px; text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.thumb .count{position:absolute; right:10px; bottom:10px; z-index:1; background:rgba(0,0,0,.5); color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px}
+
+/* photo upload + gallery */
+.drop{display:flex; flex-direction:column; align-items:center; gap:6px; padding:18px; border:2px dashed var(--line-2);
+  border-radius:12px; cursor:pointer; text-align:center; color:var(--text-2); background:var(--surface-2)}
+.drop:hover,.drop.over{border-color:var(--brand); color:var(--brand)}
+.drop input{display:none}
+.previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
+.previews:empty{display:none}
+.previews figure{margin:0; position:relative; aspect-ratio:4/3; border-radius:10px; overflow:hidden; background:var(--surface-2)}
+.previews img{width:100%; height:100%; object-fit:cover; display:block}
+.previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700;
+  background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
+.previews button{position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0;
+  background:rgba(0,0,0,.6); color:#fff; cursor:pointer; line-height:1}
+.gallery{display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; margin:4px -20px 8px; padding:0 20px;
+  scrollbar-width:none}
+.gallery::-webkit-scrollbar{display:none}
+.gallery img{flex:0 0 88%; height:240px; object-fit:cover; border-radius:12px; scroll-snap-align:center; background:var(--surface-2)}
+.gallery img:only-child{flex-basis:100%}
+.mini{width:56px; height:42px; border-radius:8px; object-fit:cover; flex:none; background:var(--surface-2)}
+
+/* role choice */
+.roles{display:grid; gap:10px; margin-bottom:16px}
+.role{display:flex; gap:12px; align-items:flex-start; padding:14px; border:2px solid var(--line-2); border-radius:14px; cursor:pointer}
+.role input{margin-top:4px; accent-color:var(--brand); width:18px; height:18px; flex:none}
+.role b{display:block; font-size:16px}
+.role span{font-size:14px; color:var(--text-2)}
+.role:has(input:checked){border-color:var(--brand); background:var(--brand-soft)}
+.notice{background:var(--brand-soft); border-radius:12px; padding:14px; margin-top:12px}
+.notice p{margin:0 0 10px}
 .tag{position:absolute; top:10px; left:10px; background:rgba(0,0,0,.45); color:#fff; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700}
 .tag.r{left:auto; right:10px}
 .tag.ok{background:var(--ok); }
@@ -192,6 +240,10 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
     <div class="hero">
       <h1>Find a room or flatmate. Owners list free.</h1>
       <p>Already renting a flat with a spare room? Post it free in two minutes. Looking for a place? Browse everything for free and pay only when you want to contact the owner and visit.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+        <a class="btn btn-primary" href="#post">I have a flat: post free</a>
+        <a class="btn btn-ghost" href="#browse">I need a room: browse</a>
+      </div>
       <div class="deal">
         <div><b>₹0</b><span>to post your flat or room, as many as you like</span></div>
         <div><b>₹0</b><span>to browse rent, area, amenities and preferences</span></div>
@@ -217,7 +269,12 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
 
   <!-- ============================================================== post -->
   <section id="view-post" hidden>
-    <div class="panel">
+    <div class="panel" id="postBlocked" hidden>
+      <h2>Posting is for flat owners</h2>
+      <p class="sub">You signed in as looking for a room. If you have a flat and want a flatmate, switch and post it free.</p>
+      <button class="btn btn-primary" data-switch="owner">I have a flat, switch to posting</button>
+    </div>
+    <div class="panel" id="postPanel">
       <h2>Post your flat, free</h2>
       <p class="sub">Your phone number and exact address stay hidden. Only people who unlock your listing see them, so you hear from serious seekers only.</p>
       <form id="postForm" autocomplete="on">
@@ -243,6 +300,11 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
           <div class="field"><label for="pFurn">Furnishing</label><select id="pFurn"><option value="full">Fully furnished</option><option value="semi" selected>Semi furnished</option><option value="none">Unfurnished</option></select></div>
         </div>
+        <div class="field"><label>Photos (up to 6)</label>
+          <label class="drop" id="pDrop"><input type="file" id="pPhotos" accept="image/*" multiple>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
+            <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
+          <div class="previews" id="pPreviews"></div></div>
         <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
         <div class="field"><label for="pDesc">About the flat and flatmates</label>
           <textarea id="pDesc" maxlength="1200" placeholder="Who lives there, house rules, how far from metro/office, what's included in rent..."></textarea></div>
@@ -270,18 +332,21 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
     <div id="signedIn" hidden>
       <div class="panel">
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
-          <div><h2 id="accName">My account</h2><p class="sub" id="accPhone"></p></div>
+          <div><h2 id="accName">My account</h2><p class="sub"><span id="accPhone"></span> · <span id="accRole"></span>
+            <button class="btn btn-ghost btn-sm" id="accSwitch"></button></p></div>
           <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button>
         </div>
-        <div class="stats">
+        <div class="stats" id="seekerStats">
           <div class="stat"><b id="stCredits">0</b><span>unlocks left</span></div>
           <div class="stat"><b id="stUnlocked">0</b><span>flats unlocked</span></div>
           <div class="stat"><b id="stListings">0</b><span>my listings</span></div>
         </div>
-        <button class="btn btn-accent" style="margin-top:14px" data-action="buy">Buy 5 unlocks for ₹500</button>
+        <button class="btn btn-accent" style="margin-top:14px" data-action="buy" id="buyBtn">Buy 5 unlocks for ₹500</button>
       </div>
-      <div class="panel"><h2>Flats I unlocked</h2><p class="sub">Owner contact and address, plus visits you've booked.</p><div id="myUnlocked"></div></div>
-      <div class="panel"><h2>My listings</h2><p class="sub">Visit requests from seekers show up here.</p><div id="myListings"></div></div>
+      <div class="panel" id="unlockedPanel"><h2>Flats I unlocked</h2><p class="sub">Owner contact and address, plus visits you've booked.</p><div id="myUnlocked"></div></div>
+      <div class="panel" id="listingsPanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
+        <div><h2>My listings</h2><p class="sub">Visit requests from seekers show up here.</p></div>
+        <a class="btn btn-primary btn-sm" href="#post">Post a flat</a></div><div id="myListings"></div></div>
     </div>
   </section>
 
@@ -298,6 +363,13 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
 <dialog id="dlgLogin"><div class="mhead"><h2>Sign in</h2><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
     <form id="loginForm">
+      <label>What are you looking for?</label>
+      <div class="roles">
+        <label class="role"><input type="radio" name="role" value="owner" required>
+          <div><b>I have a flat, looking for a flatmate</b><span>Post your flat with photos. Free, always.</span></div></label>
+        <label class="role"><input type="radio" name="role" value="seeker" required>
+          <div><b>I'm looking for a room in a flat</b><span>Browse free. Unlock owner contact and visits: ₹500 for 5 flats.</span></div></label>
+      </div>
       <div class="field"><label for="lgName">Your name</label><input type="text" id="lgName" required autocomplete="name"></div>
       <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
       <button class="btn btn-primary btn-block" type="submit">Send OTP</button>
@@ -365,6 +437,23 @@ function toast(msg){
   const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), 2800);
 }
+const ROLE_LABEL = {owner:"Flat owner, looking for a flatmate", seeker:"Looking for a room"};
+// Only render images we produced: our storage URLs or resized data URLs.
+const safeImg = u => /^(https:\/\/|data:image\/(jpeg|png|webp);base64,)/.test(String(u)) ? String(u) : "";
+const MAX_PHOTOS = 6;
+
+/* Shrink a camera photo to a sensible JPEG before upload. */
+async function resizeImage(file, maxSide, quality){
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  bmp.close && bmp.close();
+  return new Promise(res => c.toBlob(res, "image/jpeg", quality));
+}
+const blobToDataUrl = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
+
 function hue(id){ let h = 0; for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) % 360; return h; }
 
 /* ================================================================ state */
@@ -374,7 +463,7 @@ function load(){
   try{ state = Object.assign(freshState(), JSON.parse(localStorage.getItem("fm_state") || "{}")); }
   catch(e){ state = freshState(); }
 }
-function save(){ try{ localStorage.setItem("fm_state", JSON.stringify(state)); }catch(e){} }
+function save(){ try{ localStorage.setItem("fm_state", JSON.stringify(state)); return true; }catch(e){ return false; } }
 
 /* ============================================================ demo data */
 const NAMES = ["Ananya","Rohit","Priya","Karthik","Sneha","Arjun","Meera","Vikram","Isha","Rahul","Divya","Aditya"];
@@ -401,7 +490,7 @@ function demoListings(){
       id: "demo-" + (i+1), kind, city, locality, bhk, rent, deposit, gender, furnishing, amenities, description,
       title: (kind==="flat" ? bhk+"BHK lease takeover" : kind==="flatmate" ? "Flatmate wanted for "+bhk+"BHK" : "Private room in "+bhk+"BHK") + " in " + locality,
       available_from: new Date(now + (i%4)*7*864e5).toISOString().slice(0,10),
-      created_at: new Date(now - i*36e5*7).toISOString(),
+      created_at: new Date(now - (i+1)*36e5*7).toISOString(),
       unlock_count: (i*7) % 11,
       private: { contact_name: name, contact_phone: "9" + String(812345670 + i*1379).slice(0,9),
                  address: (101 + i*3) + ", " + ["Sunrise","Lake View","Green Park","Silver Oak"][i%4] + " Apartments, " + locality + ", " + city }
@@ -416,8 +505,8 @@ let pendingOtp = null;
 const demoApi = {
   live:false,
   all(){ return demoListings().concat(state.myListings); },
-  async sendOtp(phone, name){
-    pendingOtp = { phone, name, code: String(Math.floor(100000 + Math.random()*900000)) };
+  async sendOtp(phone, name, role){
+    pendingOtp = { phone, name, role, code: String(Math.floor(100000 + Math.random()*900000)) };
     return { demoCode: pendingOtp.code };
   },
   async verifyOtp(code){
@@ -425,11 +514,12 @@ const demoApi = {
     if(!state.user || state.user.phone !== pendingOtp.phone){
       state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits });
     }
-    state.user = { phone: pendingOtp.phone, name: pendingOtp.name };
+    state.user = { phone: pendingOtp.phone, name: pendingOtp.name, role: pendingOtp.role };
     pendingOtp = null; save();
   },
   async signOut(){ state.user = null; save(); },
   async me(){ return { credits: state.credits, user: state.user }; },
+  async setRole(role){ state.user.role = role; save(); },
   async search(f){
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
       (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
@@ -450,16 +540,23 @@ const demoApi = {
   },
   async unlock(id){
     const l = await this.get(id);
+    if(!l.is_owner && state.user.role !== "seeker") throw new Error("seekers-only");
     if(l.unlocked) return { unlocked:true, charged:false, credits: state.credits };
     if(state.credits < 1) return { unlocked:false, charged:false, credits: 0 };
     state.credits -= 1; state.unlocked.push(id); save();
     return { unlocked:true, charged:true, credits: state.credits };
   },
+  async uploadPhotos(files){
+    // Demo keeps photos in this browser, so they're kept small.
+    return Promise.all(files.map(async f => blobToDataUrl(await resizeImage(f, 960, 0.72))));
+  },
   async post(p){
+    if(state.user.role !== "owner") throw new Error("owners-only");
     const id = "mine-" + Date.now().toString(36);
     state.myListings.push({ ...p.listing, id, owner_phone: state.user.phone, status:"active",
       created_at: new Date().toISOString(), unlock_count:0, private: p.private });
-    save(); return id;
+    if(!save()){ state.myListings.pop(); throw new Error("storage-full"); }
+    return id;
   },
   async myListings(){
     return state.myListings.filter(l => l.owner_phone === state.user.phone).map(l => this.view(l));
@@ -509,15 +606,15 @@ function makeLiveApi(sb){
   }
   return {
     live:true,
-    async sendOtp(phone, name){
+    async sendOtp(phone, name, role){
       const { error } = await sb.auth.signInWithOtp({ phone: "+91" + phone });
       if(error) throw error;
-      pendingOtp = { phone, name }; return {};
+      pendingOtp = { phone, name, role }; return {};
     },
     async verifyOtp(code){
       const { error } = await sb.auth.verifyOtp({ phone: "+91" + pendingOtp.phone, token: code, type: "sms" });
       if(error) throw new Error("bad-code");
-      if(pendingOtp.name) await rpc("fm_set_name", { p_name: pendingOtp.name });
+      await rpc("fm_set_profile", { p_name: pendingOtp.name || null, p_role: pendingOtp.role || null });
       pendingOtp = null; await this.me();
     },
     async signOut(){ await sb.auth.signOut(); state.user = null; state.credits = 0; save(); },
@@ -525,7 +622,7 @@ function makeLiveApi(sb){
       const rows = await rpc("fm_me");
       const r = rows && rows[0];
       if(!r){ state.user = null; state.credits = 0; save(); return { credits:0, user:null }; }
-      state.user = { phone: (r.phone || "").replace(/^\+?91/, ""), name: r.full_name || "" };
+      state.user = { phone: (r.phone || "").replace(/^\+?91/, ""), name: r.full_name || "", role: r.role || null };
       state.credits = r.credits; save();
       return { credits: r.credits, user: state.user };
     },
@@ -533,7 +630,18 @@ function makeLiveApi(sb){
       return rpc("fm_search", { p_city: f.city || null, p_kind: f.kind || null,
         p_max_rent: f.maxRent || null, p_gender: f.gender || null, p_q: f.q || null });
     },
+    async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); state.user.role = role; save(); },
     async get(id){ return (await rpc("fm_search", {})).find(l => l.id === id); },
+    async uploadPhotos(files){
+      const me = await uid();
+      return Promise.all(files.map(async f => {
+        const blob = await resizeImage(f, 1600, 0.82);
+        const path = me + "/" + crypto.randomUUID() + ".jpg";
+        const { error } = await sb.storage.from("fm-photos").upload(path, blob, { contentType:"image/jpeg" });
+        if(error) throw error;
+        return sb.storage.from("fm-photos").getPublicUrl(path).data.publicUrl;
+      }));
+    },
     async contact(id){ const rows = await rpc("fm_contact", { p_listing: id }); return rows && rows[0] || null; },
     async unlock(id){
       const r = (await rpc("fm_unlock", { p_listing: id }))[0];
@@ -544,7 +652,8 @@ function makeLiveApi(sb){
       return rpc("fm_post_listing", { p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
-        p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address });
+        p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address,
+        p_photos:l.photos || [] });
     },
     async myListings(){ return (await rpc("fm_search", {})).filter(l => l.is_owner); },
     async unlockedListings(){ return (await rpc("fm_search", {})).filter(l => l.unlocked && !l.is_owner); },
@@ -612,24 +721,38 @@ function route(){
 }
 function go(v){ if(location.hash === "#"+v) route(); else location.hash = v; }
 
+const isOwner = () => Boolean(state.user && state.user.role === "owner");
+const isSeeker = () => Boolean(state.user && state.user.role === "seeker");
 function renderHeader(){
-  const c = state.user ? state.credits : null;
-  $("creditPill").textContent = state.user ? (c + (c === 1 ? " unlock" : " unlocks") + " left") : "Sign in";
+  const c = state.credits;
+  $("creditPill").textContent = !state.user ? "Sign in" : isOwner() ? "Post free"
+    : (c + (c === 1 ? " unlock" : " unlocks") + " left");
+}
+async function switchRole(role){
+  try{
+    await api.setRole(role);
+    renderHeader(); toast(role === "owner" ? "Switched: you can post your flat now." : "Switched: you can unlock flats now.");
+  }catch(err){ console.error(err); toast("Couldn't switch. Please try again."); }
 }
 
 /* ====================================================== auth guard ==== */
 let afterLogin = null;
-function requireLogin(then){
+/* Sign-in always asks the role first. `hint` pre-selects the one that fits
+   what the person was doing (posting -> owner, unlocking -> seeker). */
+function requireLogin(then, hint){
   if(state.user) return then();
   afterLogin = then;
+  $("loginForm").reset();
+  if(hint) $("loginForm").querySelector(`[name=role][value=${hint}]`).checked = true;
   $("loginForm").hidden = false; $("otpForm").hidden = true; $("otpDemo").hidden = true;
-  $("dlgLogin").showModal(); $("lgName").focus();
+  $("dlgLogin").showModal();
 }
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   const phone = $("lgPhone").value.trim(), name = $("lgName").value.trim();
+  const role = e.target.querySelector("[name=role]:checked").value;
   try{
-    const r = await api.sendOtp(phone, name);
+    const r = await api.sendOtp(phone, name, role);
     $("otpTo").textContent = "+91 " + phone;
     if(r.demoCode){ $("otpDemo").hidden = false; $("otpDemo").textContent = "Demo mode: your OTP is " + r.demoCode; }
     $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus();
@@ -641,7 +764,7 @@ $("otpForm").addEventListener("submit", async e => {
     await api.verifyOtp($("lgOtp").value.trim());
     $("dlgLogin").close(); renderHeader(); toast("Signed in");
     const next = afterLogin; afterLogin = null;
-    if(next) next(); else route();
+    if(next) next(); else go(isOwner() ? "account" : "browse");
   }catch(err){ toast("That OTP didn't match. Try again."); }
 });
 
@@ -652,8 +775,11 @@ function filters(){
 }
 function cardHtml(l){
   const h = hue(l.id);
+  const photos = (l.photos || []).map(safeImg).filter(Boolean);
   return `<article class="card" tabindex="0" data-id="${esc(l.id)}">
-    <div class="thumb" style="background:linear-gradient(135deg,hsl(${h} 45% 42%),hsl(${(h+40)%360} 55% 58%))">
+    <div class="thumb${photos.length ? " has-photo" : ""}" style="background:linear-gradient(135deg,hsl(${h} 45% 42%),hsl(${(h+40)%360} 55% 58%))">
+      ${photos.length ? `<img src="${esc(photos[0])}" alt="" loading="lazy">` : ""}
+      ${photos.length > 1 ? `<span class="count">${photos.length} photos</span>` : ""}
       <span class="tag">${esc(KIND_LABEL[l.kind])}</span>
       ${l.is_owner ? '<span class="tag r">Your listing</span>' : l.unlocked ? '<span class="tag r ok">Unlocked</span>' : ""}
       <b>${l.bhk} BHK · ${esc(l.locality)}</b>
@@ -705,6 +831,12 @@ async function openListing(id){
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I saw your listing \"" + l.title + "\" on Navigate Me Flatmates. Is it still available?")}">WhatsApp</a>
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>`}
     </div>`;
+  }else if(state.user && !isSeeker()){
+    lock = `<div class="lock">
+      <b>Owner contact and exact address are locked</b>
+      <div class="notice"><p>You're signed in as a flat owner. Unlocking other flats is for people looking for a room.</p>
+        <button class="btn btn-primary btn-sm" data-action="become-seeker">I'm looking for a room, switch</button></div>
+    </div>`;
   }else{
     const c = state.user ? state.credits : 0;
     lock = `<div class="lock">
@@ -715,7 +847,11 @@ async function openListing(id){
       <button class="btn btn-accent btn-block" data-action="unlock">${state.user && c > 0 ? "Unlock this flat (1 credit)" : "Unlock: ₹500 for 5 flats"}</button>
     </div>`;
   }
+  const photos = (l.photos || []).map(safeImg).filter(Boolean);
   $("lBody").innerHTML = `
+    ${photos.length ? `<div class="gallery">${photos.map((u, i) =>
+      `<img src="${esc(u)}" alt="Photo ${i+1} of ${photos.length}" loading="lazy">`).join("")}</div>
+      ${photos.length > 1 ? `<p class="hint" style="margin:0">${photos.length} photos · swipe to see more</p>` : ""}` : ""}
     <div class="kv">
       <div><span>Rent</span><b>${inr(l.rent)}/mo</b></div>
       <div><span>Deposit</span><b>${inr(l.deposit)}</b></div>
@@ -732,10 +868,12 @@ async function openListing(id){
 }
 $("lBody").addEventListener("click", e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
-  if(a.dataset.action === "unlock") requireLogin(() => doUnlock(currentId));
+  if(a.dataset.action === "unlock") requireLogin(() => doUnlock(currentId), "seeker");
+  if(a.dataset.action === "become-seeker") switchRole("seeker").then(() => openListing(currentId));
   if(a.dataset.action === "visit") openVisit(currentId);
 });
 async function doUnlock(id){
+  if(!isSeeker()) return openListing(id);   // shows the "switch to looking for a room" prompt
   try{
     const r = await api.unlock(id);
     renderHeader();
@@ -787,17 +925,48 @@ $("visitForm").addEventListener("submit", async e => {
 });
 
 /* ================================================================ post */
+let photoFiles = [];   // File objects picked for the listing being posted
+function renderPhotos(){
+  photoFiles.forEach(f => f.preview = f.preview || URL.createObjectURL(f));
+  $("pPreviews").innerHTML = photoFiles.map((f, i) =>
+    `<figure><img src="${f.preview}" alt="Photo ${i+1}"><button type="button" data-rm="${i}" aria-label="Remove photo">×</button></figure>`).join("");
+  $("pDrop").hidden = photoFiles.length >= MAX_PHOTOS;
+}
+function addPhotos(list){
+  const imgs = [...list].filter(f => f.type.startsWith("image/") && f.size < 20e6);
+  if(imgs.length < list.length) toast("Some files were skipped. Use images under 20 MB.");
+  photoFiles = photoFiles.concat(imgs).slice(0, MAX_PHOTOS);
+  if(photoFiles.length === MAX_PHOTOS && imgs.length) toast("Up to " + MAX_PHOTOS + " photos per listing.");
+  renderPhotos();
+}
+$("pPhotos").addEventListener("change", e => { addPhotos(e.target.files); e.target.value = ""; });
+$("pPreviews").addEventListener("click", e => {
+  const b = e.target.closest("[data-rm]"); if(!b) return;
+  const [gone] = photoFiles.splice(Number(b.dataset.rm), 1);
+  if(gone && gone.preview) URL.revokeObjectURL(gone.preview);
+  renderPhotos();
+});
+["dragenter","dragover"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.add("over"); }));
+["dragleave","drop"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.remove("over"); }));
+$("pDrop").addEventListener("drop", e => addPhotos(e.dataTransfer.files));
+
 function renderPost(){
+  const blocked = Boolean(state.user) && !isOwner();
+  $("postBlocked").hidden = !blocked; $("postPanel").hidden = blocked;
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
   if(state.user){
     if(!$("pName").value) $("pName").value = state.user.name || "";
     if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
   }
 }
+$("postBlocked").addEventListener("click", async e => {
+  if(e.target.closest("[data-switch]")){ await switchRole("owner"); renderPost(); }
+});
 $("postForm").addEventListener("submit", e => {
   e.preventDefault();
   requireLogin(async () => {
-    const f = e.target;
+    if(!isOwner()) return renderPost();       // signed in as a seeker: offer the switch
+    const f = e.target, btn = f.querySelector("[type=submit]");
     const p = {
       listing: {
         kind: f.querySelector("[name=kind]:checked").value,
@@ -809,12 +978,20 @@ $("postForm").addEventListener("submit", e => {
       },
       private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(), address: $("pAddr").value.trim() }
     };
+    btn.disabled = true;
     try{
+      if(photoFiles.length){ btn.textContent = "Uploading photos…"; p.listing.photos = await api.uploadPhotos(photoFiles); }
+      btn.textContent = "Posting…";
       await api.post(p);
-      f.reset(); toast("Your flat is live. It's free, always.");
+      f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+      toast("Your flat is live. It's free, always.");
       go("account");
-    }catch(err){ console.error(err); toast("Couldn't post the listing. Check the fields and try again."); }
-  });
+    }catch(err){
+      console.error(err);
+      toast(err.message === "storage-full" ? "Demo storage is full. Try fewer photos."
+          : "Couldn't post the listing. Check the fields and try again.");
+    }finally{ btn.disabled = false; btn.textContent = "Post for free"; }
+  }, "owner");
 });
 
 /* ============================================================= account */
@@ -825,6 +1002,11 @@ async function renderAccount(){
   renderHeader();
   $("accName").textContent = state.user.name ? "Hi, " + state.user.name : "My account";
   $("accPhone").textContent = "+91 " + state.user.phone;
+  $("accRole").textContent = ROLE_LABEL[state.user.role] || "Role not set";
+  $("accSwitch").textContent = isOwner() ? "Switch to looking for a room" : "Switch to flat owner";
+  $("accSwitch").dataset.switch = isOwner() ? "seeker" : "owner";
+  $("seekerStats").hidden = $("buyBtn").hidden = $("unlockedPanel").hidden = isOwner();
+  $("listingsPanel").hidden = isSeeker();
 
   const [unlocked, mine, visits, incoming] = await Promise.all(
     [api.unlockedListings(), api.myListings(), api.visits(), api.incomingVisits()]);
@@ -847,7 +1029,8 @@ async function renderAccount(){
   $("myListings").innerHTML = mine.length ? mine.map(l => {
     const vs = incoming.filter(v => v.listing_id === l.id);
     const closed = l.status === "closed";
-    return `<div class="row"><div>
+    const cover = safeImg((l.photos || [])[0]);
+    return `<div class="row">${cover ? `<img class="mini" src="${esc(cover)}" alt="">` : ""}<div style="flex:1">
         <div class="t">${esc(l.title)} ${closed ? '<span class="status cancelled">closed</span>' : ""}</div>
         <div class="s">${inr(l.rent)}/mo · ${esc(l.locality)}, ${esc(l.city)} · ${l.unlock_count || 0} unlocks</div>
         ${vs.map(v => `<div class="s">Visit request ${fmtDateTime(v.visit_at)}${v.note ? ": “" + esc(v.note) + "”" : ""}
@@ -860,6 +1043,7 @@ $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
     if(b.dataset.action === "signin") return requireLogin(renderAccount);
+    if(b.dataset.switch){ await switchRole(b.dataset.switch); return renderAccount(); }
     if(b.dataset.action === "signout"){ await api.signOut(); renderHeader(); return renderAccount(); }
     if(b.dataset.action === "buy") return openPay(renderAccount);
     if(b.dataset.open) return openListing(b.dataset.open);
@@ -874,7 +1058,8 @@ document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
 });
 document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.view)));
-$("creditPill").addEventListener("click", () => state.user ? openPay() : requireLogin(() => go("account")));
+$("creditPill").addEventListener("click", () =>
+  !state.user ? requireLogin(() => go(isOwner() ? "post" : "account")) : isOwner() ? go("post") : openPay());
 window.addEventListener("hashchange", route);
 
 for(const c of CITIES){
@@ -889,6 +1074,10 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   catch(err){ console.error("Supabase failed to load; running in demo mode.", err); api = demoApi; }
   $("modeNote").textContent = api.live ? "" : "Demo mode: sample listings, no real payments. Your data stays in this browser.";
   renderHeader(); route();
+  // Installable app + offline. Skipped where service workers aren't allowed (file://, embedded previews).
+  if("serviceWorker" in navigator && /^https:|^http:\/\/localhost|^http:\/\/127\./.test(location.href)){
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
 })();
 </script>
 </body>

@@ -1,13 +1,18 @@
 # Navigate Me Flatmates
 
-People already renting a flat post their spare room (or look for a flatmate) for free.
-Seekers browse everything free, and pay only to contact the owner and visit.
+At sign-in everyone answers one question:
+
+- **"I have a flat, looking for a flatmate"** (owner): posts their flat with up to 6 photos, free.
+- **"I'm looking for a room in a flat"** (seeker): browses free, pays to contact owners and visit.
+
+Only owners can post and only seekers can unlock; the database enforces both. Anyone can
+switch role from My account (or from the prompt they see when they try the other side's action).
 
 ## Pricing
 
 | Who | What | Price |
 |---|---|---|
-| Owner / current tenant | Post a listing (unlimited) | Free |
+| Owner / current tenant | Post a listing with photos (unlimited) | Free |
 | Seeker | Browse listings, rent, area, amenities, preferences | Free |
 | Seeker | Unlock pack: 5 flats (owner phone, exact address, book visits) | ₹500 (₹100 per flat) |
 
@@ -20,18 +25,32 @@ Unlocks don't expire. When all 5 are used, the next unlock asks for another ₹5
 - `supabase/schema.sql`: tables, row-level security and RPCs. The paywall is enforced here,
   so a locked phone number or address never reaches the browser.
 - `supabase/functions/fm-pay/index.ts`: Razorpay order creation, payment verification and webhook.
+- `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
 
-## Run it
+## Run it locally
 
-Open `flatmates/index.html` in a browser (or visit `/flatmates/` on the GitHub Pages site).
+```
+cd flatmates
+python3 -m http.server 8080
+```
+
+Open http://localhost:8080. On a phone on the same Wi-Fi, open `http://<your-computer-ip>:8080`.
 With no config it runs in **demo mode**: sample listings, OTP shown on screen, no real payment,
-data stored in the browser.
+data (including photos) stored in that browser.
+
+## Install as an app
+
+Once it's served over HTTPS (GitHub Pages at `/flatmates/` works), open it on the phone:
+Android Chrome shows **Install app**; on iPhone use Share → **Add to Home Screen**. It opens
+full-screen with its own icon. The service worker loads the newest version whenever there's a
+connection, so changes show up on the next open.
 
 ## Go live
 
 1. Create a Supabase project. Under Authentication → Providers enable **Phone** (needs an SMS
    provider such as Twilio or MSG91).
-2. Run `supabase/schema.sql` in the SQL editor.
+2. Run `supabase/schema.sql` in the SQL editor. It's safe to re-run, so run it again after
+   every update to this file. It also creates the public `fm-photos` storage bucket.
 3. Create a Razorpay account and set the function secrets:
    ```
    supabase secrets set RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... RAZORPAY_WEBHOOK_SECRET=...

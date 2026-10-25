@@ -2,7 +2,10 @@
 -- Navigate Me Flatmates: database schema
 -- =====================================================================
 -- Business rules this file enforces (in the database, not the browser):
---   * Posting a flat is free.
+--   * At sign-in everyone picks a role:
+--       'owner'  = has a flat, looking for a flatmate -> can post, free
+--       'seeker' = looking for a room in a flat       -> pays to unlock
+--   * Posting a flat is free (owners only), with up to 6 photos.
 --   * The owner's name, phone number and exact address stay hidden.
 --     A seeker sees them only after unlocking that listing.
 --   * Unlocking a listing costs 1 visit credit. After that it stays
@@ -25,6 +28,9 @@ create table if not exists public.fm_profiles (
   credits      int  not null default 0 check (credits >= 0),
   created_at   timestamptz not null default now()
 );
+-- Added after the first version; safe to re-run on an existing database.
+alter table public.fm_profiles add column if not exists role text
+  check (role in ('owner','seeker'));
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -59,6 +65,7 @@ create table if not exists public.fm_listings (
   status        text not null default 'active' check (status in ('active','closed')),
   created_at    timestamptz not null default now()
 );
+alter table public.fm_listings add column if not exists photos text[] not null default '{}';
 create index if not exists fm_listings_search on public.fm_listings (status, city, rent);
 
 -- Private part: never readable directly. Released only by fm_contact().
@@ -111,8 +118,8 @@ alter table public.fm_orders          enable row level security;
 drop policy if exists fm_profiles_self on public.fm_profiles;
 create policy fm_profiles_self on public.fm_profiles
   for select using (auth.uid() = id);
--- No update policy: credits can't be edited from the browser. Names go
--- through fm_set_name().
+-- No update policy: credits can't be edited from the browser. Name and
+-- role go through fm_set_profile().
 
 drop policy if exists fm_listings_read on public.fm_listings;
 create policy fm_listings_read on public.fm_listings
@@ -140,16 +147,29 @@ create policy fm_orders_self on public.fm_orders
   for select using (user_id = auth.uid());
 
 -- ------------------------------------------------------------- RPCs --
+-- Return types and signatures changed since the first version; drop the old ones.
+drop function if exists public.fm_me();
+drop function if exists public.fm_set_name(text);
+drop function if exists public.fm_search(text, text, int, text, text);
+drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
+  text, text, text[], text, text, text, text);
+
 create or replace function public.fm_me()
-returns table (credits int, full_name text, phone text)
+returns table (credits int, full_name text, phone text, role text)
 language sql security definer set search_path = public stable as $$
-  select p.credits, p.full_name, p.phone from fm_profiles p where p.id = auth.uid();
+  select p.credits, p.full_name, p.phone, p.role from fm_profiles p where p.id = auth.uid();
 $$;
 
-create or replace function public.fm_set_name(p_name text) returns void
-language sql security definer set search_path = public as $$
-  update fm_profiles set full_name = left(trim(p_name), 60) where id = auth.uid();
-$$;
+-- Null arguments leave the current value alone.
+create or replace function public.fm_set_profile(p_name text, p_role text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_role is not null and p_role not in ('owner','seeker') then raise exception 'bad-role'; end if;
+  update fm_profiles
+     set full_name = coalesce(nullif(left(trim(p_name), 60), ''), full_name),
+         role      = coalesce(p_role, role)
+   where id = auth.uid();
+end $$;
 
 -- Listings with a flag for whether the caller has them unlocked.
 create or replace function public.fm_search(
@@ -158,12 +178,12 @@ create or replace function public.fm_search(
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
-  amenities text[], description text, created_at timestamptz,
+  amenities text[], description text, photos text[], created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
-         l.created_at,
+         l.photos, l.created_at,
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
@@ -183,17 +203,27 @@ create or replace function public.fm_post_listing(
   p_kind text, p_title text, p_city text, p_locality text, p_bhk int,
   p_rent int, p_deposit int, p_available_from date, p_gender text,
   p_furnishing text, p_amenities text[], p_description text,
-  p_contact_name text, p_contact_phone text, p_address text)
+  p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}')
 returns uuid
 language plpgsql security definer set search_path = public as $$
-declare v_id uuid;
+declare v_id uuid; v_photo text;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if (select role from fm_profiles where id = auth.uid()) is distinct from 'owner' then
+    raise exception 'owners-only';
+  end if;
+  if coalesce(array_length(p_photos, 1), 0) > 6 then raise exception 'too-many-photos'; end if;
+  -- Photos must be the caller's own uploads in the fm-photos bucket.
+  foreach v_photo in array coalesce(p_photos, '{}') loop
+    if position('/storage/v1/object/public/fm-photos/' || auth.uid()::text || '/' in v_photo) = 0 then
+      raise exception 'bad-photo-url';
+    end if;
+  end loop;
   insert into fm_listings (owner_id, kind, title, city, locality, bhk, rent, deposit,
-                           available_from, gender, furnishing, amenities, description)
+                           available_from, gender, furnishing, amenities, description, photos)
   values (auth.uid(), p_kind, p_title, p_city, p_locality, p_bhk, p_rent, p_deposit,
           p_available_from, p_gender, p_furnishing, coalesce(p_amenities, '{}'),
-          coalesce(p_description, ''))
+          coalesce(p_description, ''), coalesce(p_photos, '{}'))
   returning id into v_id;
   insert into fm_listing_private (listing_id, contact_name, contact_phone, address)
   values (v_id, p_contact_name, p_contact_phone, p_address);
@@ -204,13 +234,14 @@ end $$;
 create or replace function public.fm_unlock(p_listing uuid)
 returns table (unlocked boolean, charged boolean, credits int)
 language plpgsql security definer set search_path = public as $$
-declare v_owner uuid; v_credits int;
+declare v_owner uuid; v_credits int; v_role text;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   select owner_id into v_owner from fm_listings where id = p_listing and status = 'active';
   if v_owner is null then raise exception 'listing-not-found'; end if;
 
-  select p.credits into v_credits from fm_profiles p where p.id = auth.uid() for update;
+  select p.credits, p.role into v_credits, v_role from fm_profiles p where p.id = auth.uid() for update;
+  if v_owner <> auth.uid() and v_role is distinct from 'seeker' then raise exception 'seekers-only'; end if;
 
   if v_owner = auth.uid() or exists (
        select 1 from fm_unlocks u where u.user_id = auth.uid() and u.listing_id = p_listing) then
@@ -281,3 +312,17 @@ begin
 end $$;
 
 revoke execute on function public.fm_credit_order(text, text) from public, anon, authenticated;
+
+-- ------------------------------------------------------------ photos --
+-- Public bucket: listing photos are free to browse. Each user may only
+-- write inside a folder named after their own user id.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('fm-photos', 'fm-photos', true, 2097152, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do nothing;
+
+drop policy if exists fm_photos_insert on storage.objects;
+create policy fm_photos_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists fm_photos_delete on storage.objects;
+create policy fm_photos_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);

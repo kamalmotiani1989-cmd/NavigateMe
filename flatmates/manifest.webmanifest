@@ -1,0 +1,15 @@
+{
+  "name": "Navigate Me Flatmates",
+  "short_name": "Flatmates",
+  "description": "Post your flat free and find a flatmate, or find a room in a shared flat.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F6F6F4",
+  "theme_color": "#0D6E73",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
