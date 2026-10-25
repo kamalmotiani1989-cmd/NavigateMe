@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Post your rented flat for free and find a flatmate or roommate. Seekers pay only to unlock owner contact, exact address and book a visit: Rs 500 for 5 flats.">
-<meta name="theme-color" content="#0D6E73">
-<meta property="og:title" content="Navigate Me Flatmates: post free, find your flatmate">
-<meta property="og:description" content="List your room free. Unlock owner contact and book visits: Rs 500 for 5 flats.">
-<meta property="og:locale" content="en_IN">
 <title>Navigate Me Flatmates</title>
+<meta name="description" content="Find a room and the people worth sharing it with. Owners post their spare room free; seekers see who lives there, how they live and what it really costs.">
+<meta name="theme-color" content="#0B3B40">
+<meta property="og:title" content="Navigate Me Flatmates">
+<meta property="og:description" content="Find a room, and the people worth sharing it with.">
+<meta property="og:locale" content="en_IN">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230D6E73'/%3E%3Cpath d='M5 12l7-6 7 6v7h-5v-4h-4v4H5z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -18,355 +18,480 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
 <style>
+/* Layout: a night-city welcome band (lit windows = rooms waiting for people),
+   then a calm light app where every flat is a card with a match ring.     */
 :root{
   color-scheme:light;
-  --bg:#F6F6F4; --surface:#FFFFFF; --surface-2:#F0F0EC; --line:#E3E3DE; --line-2:#CFCFC8;
+  --bg:#F5F4F0; --surface:#FFFFFF; --surface-2:#EFEEE9; --line:#E2E1DA; --line-2:#CDCCC4;
   --text:#18181B; --text-2:#55555C; --text-3:#8A8A93;
-  --brand:#0D6E73; --brand-2:#0A5A5E; --brand-soft:#E3F1F1; --on-brand:#FFFFFF;
-  --accent:#C2581B; --accent-soft:#FBEADF;
-  --ok:#1E7A3C; --ok-soft:#E2F3E7; --warn:#9A5B00; --danger:#B42318;
-  --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.06);
-  --radius:14px;
+  --brand:#0D6E73; --brand-2:#0A5A5E; --brand-soft:#E1F0EF; --on-brand:#FFFFFF;
+  --accent:#C2581B; --accent-soft:#FBE9DD;
+  --ok:#1E7A3C; --ok-soft:#E1F2E6; --warn:#9A5B00; --danger:#B42318; --mid:#C98A0C;
+  --band:#0B3B40; --band-2:#0F4D53; --on-band:#F3F1EA; --on-band-2:#A9C7C6; --lit:#FFD27A; --unlit:#164E54;
+  --shadow:0 1px 2px rgba(20,20,20,.05),0 8px 24px rgba(20,20,20,.07);
+  --radius:16px;
+  --display:"Archivo",system-ui,sans-serif; --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#121214; --surface:#1B1B1F; --surface-2:#232328; --line:#2E2E35; --line-2:#3C3C44;
-    --text:#F2F2F4; --text-2:#B4B4BC; --text-3:#80808A;
-    --brand:#3FB3B8; --brand-2:#5CC6CA; --brand-soft:#173638; --on-brand:#081B1C;
+    --bg:#111314; --surface:#1A1D1E; --surface-2:#232729; --line:#2D3234; --line-2:#3B4144;
+    --text:#F1F1EE; --text-2:#B3B8B8; --text-3:#7F8586;
+    --brand:#46B8BC; --brand-2:#64C9CC; --brand-soft:#16393B; --on-brand:#06191A;
     --accent:#F0915A; --accent-soft:#3A2418;
-    --ok:#5BCB7E; --ok-soft:#173222; --warn:#E3A44A; --danger:#F07367;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+    --ok:#5BCB7E; --ok-soft:#163222; --warn:#E3A44A; --danger:#F07367; --mid:#E3B44A;
+    --band:#071F22; --band-2:#0B2D31; --on-band:#EEF3F1; --on-band-2:#8FB3B2; --lit:#FFCF6E; --unlit:#103A3E;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#121214; --surface:#1B1B1F; --surface-2:#232328; --line:#2E2E35; --line-2:#3C3C44;
-  --text:#F2F2F4; --text-2:#B4B4BC; --text-3:#80808A;
-  --brand:#3FB3B8; --brand-2:#5CC6CA; --brand-soft:#173638; --on-brand:#081B1C;
+  --bg:#111314; --surface:#1A1D1E; --surface-2:#232729; --line:#2D3234; --line-2:#3B4144;
+  --text:#F1F1EE; --text-2:#B3B8B8; --text-3:#7F8586;
+  --brand:#46B8BC; --brand-2:#64C9CC; --brand-soft:#16393B; --on-brand:#06191A;
   --accent:#F0915A; --accent-soft:#3A2418;
-  --ok:#5BCB7E; --ok-soft:#173222; --warn:#E3A44A; --danger:#F07367;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+  --ok:#5BCB7E; --ok-soft:#163222; --warn:#E3A44A; --danger:#F07367; --mid:#E3B44A;
+  --band:#071F22; --band-2:#0B2D31; --on-band:#EEF3F1; --on-band-2:#8FB3B2; --lit:#FFCF6E; --unlit:#103A3E;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
 }
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-body{margin:0; background:var(--bg); color:var(--text);
-  font:16px/1.5 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif}
-h1,h2,h3{font-family:Archivo,system-ui,sans-serif; font-stretch:92%; line-height:1.15; margin:0}
+body{margin:0; background:var(--bg); color:var(--text); font:16px/1.5 var(--body)}
+h1,h2,h3{font-family:var(--display); font-stretch:90%; line-height:1.12; margin:0; text-wrap:balance}
 a{color:var(--brand)}
 button,input,select,textarea{font:inherit; color:inherit}
-.wrap{max-width:1120px; margin:0 auto; padding:0 16px}
+:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.wrap{max-width:1140px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--display); font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--brand); margin:0 0 6px}
 
-/* header */
-header{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:color-mix(in srgb,var(--bg) 88%,transparent);
-  backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
-.bar{display:flex; align-items:center; gap:12px; height:60px}
-.logo{display:flex; align-items:center; gap:8px; font-family:Archivo; font-weight:800; font-size:18px;
-  text-decoration:none; color:var(--text); white-space:nowrap}
-.logo i{width:28px;height:28px;border-radius:8px;background:var(--brand);display:grid;place-items:center}
-.logo small{font-weight:600; color:var(--text-3); font-size:13px}
-nav{display:flex; gap:4px; margin-left:auto; align-items:center}
-.tab{border:0; background:none; padding:8px 12px; border-radius:999px; cursor:pointer; color:var(--text-2); font-weight:600}
-.tab[aria-current="true"]{background:var(--surface-2); color:var(--text)}
-.pill{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px;
-  background:var(--brand-soft); color:var(--brand); font-weight:700; font-size:14px; border:0; cursor:pointer; white-space:nowrap}
-@media (max-width:720px){
-  .logo small{display:none}
-  nav{position:fixed; bottom:0; left:0; right:0; justify-content:space-around; background:var(--surface);
-    border-top:1px solid var(--line); padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)); margin:0}
-  header{backdrop-filter:none; background:var(--bg)}  /* a filter would trap the fixed nav inside the header */
-  body{padding-bottom:70px}
-  .bar .pill{margin-left:auto}
-}
-
-/* buttons, forms */
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid transparent;
-  border-radius:10px; padding:10px 16px; font-weight:700; cursor:pointer; text-decoration:none}
+/* ---------- buttons + forms */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid transparent; border-radius:12px;
+  padding:11px 18px; font-weight:700; cursor:pointer; text-decoration:none; transition:transform .12s, background .12s}
+.btn:active{transform:scale(.98)}
 .btn-primary{background:var(--brand); color:var(--on-brand)}
 .btn-primary:hover{background:var(--brand-2)}
 .btn-accent{background:var(--accent); color:#fff}
 .btn-ghost{background:var(--surface); border-color:var(--line-2); color:var(--text)}
-.btn-sm{padding:6px 10px; font-size:14px; border-radius:8px}
-.btn[disabled]{opacity:.55; cursor:not-allowed}
+.btn-sm{padding:7px 12px; font-size:14px; border-radius:10px}
 .btn-block{width:100%}
+.btn[disabled]{opacity:.55; cursor:not-allowed}
 label{display:block; font-weight:600; font-size:14px; color:var(--text-2); margin-bottom:4px}
 .field{margin-bottom:14px}
 input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],select,textarea{
-  width:100%; padding:10px 12px; border:1px solid var(--line-2); border-radius:10px; background:var(--surface)}
+  width:100%; padding:11px 12px; border:1px solid var(--line-2); border-radius:12px; background:var(--surface)}
 textarea{min-height:96px; resize:vertical}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-offset:1px; border-color:transparent}
-.hint{font-size:13px; color:var(--text-3); margin-top:4px}
+.hint{font-size:13px; color:var(--text-3); margin:4px 0 0}
 .grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 14px}
 .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:0 14px}
 .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
-@media (max-width:560px){ .grid4{grid-template-columns:1fr 1fr} }
-@media (max-width:560px){ .grid3{grid-template-columns:1fr 1fr} }
+@media (max-width:560px){ .grid3,.grid4{grid-template-columns:1fr 1fr} }
 .chips{display:flex; flex-wrap:wrap; gap:8px}
-.chip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--line-2);
-  border-radius:999px; font-size:14px; cursor:pointer; background:var(--surface); user-select:none}
-.chip input{display:none}
+.chip{display:inline-flex; align-items:center; gap:6px; padding:7px 13px; border:1px solid var(--line-2); border-radius:999px;
+  font-size:14px; cursor:pointer; background:var(--surface); user-select:none; margin:0; color:var(--text)}
+.chip input{position:absolute; opacity:0; pointer-events:none}
 .chip:has(input:checked){background:var(--brand); color:var(--on-brand); border-color:var(--brand)}
+.chip:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px}
 
-/* hero: two paths in, then what makes the model different */
-.hero{padding:32px 0 8px}
-.eyebrow{font-family:Archivo; font-weight:700; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--brand); margin:0 0 8px}
-.hero h1{font-size:clamp(30px,5.4vw,52px); font-stretch:85%; letter-spacing:-.01em; max-width:15ch; text-wrap:balance}
-.lede{color:var(--text-2); margin:12px 0 0; max-width:60ch; font-size:17px}
-.paths{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:24px 0 0}
-.path{position:relative; display:flex; flex-direction:column; gap:4px; padding:20px 56px 20px 20px; border-radius:18px;
-  text-decoration:none; color:var(--text); border:1px solid var(--line); transition:transform .15s}
-.path:hover{transform:translateY(-2px)}
-.path:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
-.path-owner{background:var(--brand); color:var(--on-brand); border-color:transparent}
-.path-seeker{background:var(--accent-soft)}
-.path-k{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
-.path b{font-family:Archivo; font-size:22px; line-height:1.15}
-.path span:last-of-type{font-size:15px; opacity:.85}
-.path i{position:absolute; right:18px; top:50%; transform:translateY(-50%); font-style:normal; font-size:26px; font-weight:700}
-.promise{list-style:none; padding:0; margin:18px 0 0; display:grid; grid-template-columns:repeat(4,1fr); gap:0;
-  border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
-.promise li{padding:14px 14px 14px 0; display:flex; flex-direction:column; gap:2px}
-.promise li + li{padding-left:14px; border-left:1px solid var(--line)}
-.promise b{font-family:Archivo; font-size:17px}
-.promise span{font-size:14px; color:var(--text-2)}
-@media (max-width:760px){
-  .paths{grid-template-columns:1fr}
-  .promise{grid-template-columns:1fr 1fr}
-  .promise li:nth-child(3){padding-left:0; border-left:0}
-  .promise li:nth-child(n+3){border-top:1px solid var(--line)}
+/* ---------- app header */
+.app-head{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:color-mix(in srgb,var(--bg) 90%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+.bar{display:flex; align-items:center; gap:12px; height:62px}
+.logo{display:flex; align-items:center; gap:9px; font-family:var(--display); font-weight:800; font-size:19px; text-decoration:none; color:var(--text); white-space:nowrap}
+.logo i{width:30px; height:30px; border-radius:9px; background:var(--brand); display:grid; place-items:center}
+.logo small{font-weight:600; color:var(--text-3); font-size:13px}
+.nav{display:flex; gap:4px; margin-left:auto; align-items:center}
+.tab{border:0; background:none; padding:8px 14px; border-radius:999px; cursor:pointer; color:var(--text-2); font-weight:700; display:flex; align-items:center; gap:6px}
+.tab[aria-current="true"]{background:var(--surface-2); color:var(--text)}
+.tab svg{width:20px; height:20px}
+@media (min-width:721px){ .tab[data-view="account"]{display:none} }
+.me{width:38px; height:38px; border-radius:50%; border:0; cursor:pointer; background:var(--accent); color:#fff; font-weight:800; font-family:var(--display)}
+@media (max-width:720px){
+  .logo small{display:none}
+  .app-head{backdrop-filter:none; background:var(--bg)}  /* a filter would trap the fixed nav inside the header */
+  .nav{position:fixed; bottom:0; left:0; right:0; justify-content:space-around; background:var(--surface); border-top:1px solid var(--line);
+    padding:6px max(8px, env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px, env(safe-area-inset-left,0px)); margin:0; z-index:30}
+  .tab{flex-direction:column; gap:2px; font-size:12px; padding:6px 10px}
+  .bar .me{display:none}
+  body.app{padding-bottom:76px}
 }
 
-/* vibe match */
-.vibe-cta{display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center; margin:22px 0 0; padding:16px 18px;
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius)}
-.vibe-cta p{margin:2px 0 0; color:var(--text-2); font-size:14px; max-width:68ch}
-.vibe-cta-art{display:flex}
-.vibe-cta-art span{width:30px; height:30px; border-radius:50%; border:3px solid var(--surface); background:var(--brand)}
-.vibe-cta-art span:nth-child(2){background:var(--accent); margin-left:-10px}
-.vibe-cta-art span:nth-child(3){background:var(--ok); margin-left:-10px}
-@media (max-width:640px){ .vibe-cta{grid-template-columns:1fr} .vibe-cta-art{display:none} }
-.match{position:absolute; top:10px; right:10px; z-index:2; font-size:12px; font-weight:800; padding:3px 8px; border-radius:999px;
-  background:var(--surface); color:var(--text)}
-.match.hi{background:var(--ok); color:#fff}
-.match.mid{background:#E9B949; color:#2A1E00}
-.match.lo{background:var(--surface); color:var(--text-2)}
-.quiz{display:grid; gap:14px}
-.quiz fieldset{border:0; margin:0; padding:0}
-.quiz legend{font-weight:700; margin-bottom:6px; padding:0}
-.reasons{list-style:none; margin:8px 0 0; padding:0; display:grid; gap:4px; font-size:14px}
-.reasons li{display:flex; gap:8px}
-.reasons .g{color:var(--ok); font-weight:800}
-.reasons .c{color:var(--warn); font-weight:800}
-.section-h{font-family:Archivo; font-size:16px; margin:18px 0 6px}
-.household{background:var(--surface-2); border-radius:12px; padding:12px 14px}
-.traits{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
-.traits span{font-size:13px; padding:3px 10px; border-radius:999px; background:var(--surface); border:1px solid var(--line)}
-.meter{height:8px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin:6px 0 2px}
-.meter i{display:block; height:100%; background:var(--ok); border-radius:inherit}
-
-/* saved + freshness */
-.heart{position:absolute; bottom:10px; right:10px; z-index:2; width:36px; height:36px; border-radius:50%; border:0; cursor:pointer;
-  background:rgba(255,255,255,.92); color:#9A9AA2; font-size:18px; line-height:1; display:grid; place-items:center}
-.heart[aria-pressed="true"]{color:#D2334A}
-.heart:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
-.saved-chip{align-self:end; height:44px}
-.saved-chip span[aria-hidden]{color:#D2334A}
-.saved-chip:has(input:checked) span[aria-hidden]{color:inherit}
-.fresh{font-size:12px; color:var(--text-3)}
-.verified{display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:var(--ok)}
-
-/* costs */
-.allin{font-size:13px; color:var(--text-2); font-weight:600}
-.bill{display:grid; grid-template-columns:1fr auto; gap:4px 12px; font-size:15px; font-variant-numeric:tabular-nums}
-.bill .tot{font-weight:800; border-top:1px solid var(--line); padding-top:6px; margin-top:2px}
-.bill .muted{color:var(--text-2)}
-.art{position:absolute; inset:0; width:100%; height:100%}
-.gallery .art{position:static; flex:0 0 100%; height:240px; border-radius:12px}
-
-/* filters + cards */
-.filters{display:flex; flex-wrap:wrap; gap:10px; align-items:end; background:var(--surface);
-  border:1px solid var(--line); border-radius:var(--radius); padding:14px; margin:18px 0}
-.filters .field{margin:0; flex:1 1 150px}
-.count{color:var(--text-3); font-size:14px; margin:0 0 10px}
-.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; padding-bottom:32px}
-.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
-  display:flex; flex-direction:column; cursor:pointer; box-shadow:var(--shadow); transition:transform .12s}
-.card:hover{transform:translateY(-2px)}
-.card:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
-.thumb{height:120px; position:relative; display:flex; align-items:flex-end; padding:10px; color:#fff}
-.thumb{height:160px; overflow:hidden}
-.thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
-.thumb.has-photo::after{content:""; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.55),transparent 55%)}
-.thumb b,.thumb .tag{z-index:1}
-.thumb b{position:relative; font-family:Archivo; font-size:22px; text-shadow:0 1px 6px rgba(0,0,0,.35)}
-.thumb .count{position:absolute; left:10px; top:40px; z-index:1; background:rgba(0,0,0,.5); color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px}
-
-/* photo upload + gallery */
-.drop{display:flex; flex-direction:column; align-items:center; gap:6px; padding:18px; border:2px dashed var(--line-2);
-  border-radius:12px; cursor:pointer; text-align:center; color:var(--text-2); background:var(--surface-2)}
-.drop:hover,.drop.over{border-color:var(--brand); color:var(--brand)}
-.drop input{display:none}
-.previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
-.previews:empty{display:none}
-.previews figure{margin:0; position:relative; aspect-ratio:4/3; border-radius:10px; overflow:hidden; background:var(--surface-2)}
-.previews img{width:100%; height:100%; object-fit:cover; display:block}
-.previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700;
-  background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
-.previews button{position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0;
-  background:rgba(0,0,0,.6); color:#fff; cursor:pointer; line-height:1}
-.gallery{display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; margin:4px -20px 8px; padding:0 20px;
-  scrollbar-width:none}
-.gallery::-webkit-scrollbar{display:none}
-.gallery img{flex:0 0 88%; height:240px; object-fit:cover; border-radius:12px; scroll-snap-align:center; background:var(--surface-2)}
-.gallery img:only-child{flex-basis:100%}
-.mini{width:56px; height:42px; border-radius:8px; object-fit:cover; flex:none; background:var(--surface-2)}
-
-/* role choice */
+/* ---------- welcome */
+.w-band{background:radial-gradient(1200px 500px at 80% -10%, var(--band-2), transparent 60%), var(--band); color:var(--on-band); overflow:hidden; position:relative}
+.w-band::before{content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); background:var(--band); z-index:10}
+.w-top{display:flex; align-items:center; justify-content:space-between; padding-block:18px}
+.w-top .logo{color:var(--on-band)}
+.w-top .logo small{color:var(--on-band-2)}
+.w-grid{display:grid; grid-template-columns:1.15fr .85fr; grid-template-areas:"copy card" "city card"; gap:0 40px; align-items:start; padding-block:20px 0}
+.w-copy{grid-area:copy} .w-card{grid-area:card} .city{grid-area:city}
+.w-copy h1{font-size:clamp(34px,5.6vw,62px); font-stretch:82%; letter-spacing:-.015em; color:var(--on-band)}
+.w-copy h1 em{font-style:normal; color:var(--lit)}
+.w-copy .lede{color:var(--on-band-2); font-size:18px; max-width:52ch; margin:16px 0 0}
+.city{position:relative; height:300px; margin-top:28px}
+.city > svg{position:absolute; inset:auto 0 0 0; width:100%; height:100%}
+.city .win{fill:var(--unlit); transition:fill .9s}
+.city .win.on{fill:var(--lit)}
+.tower{fill:var(--band-2)}
+.float{position:absolute; display:flex; align-items:center; gap:8px; background:var(--surface); color:var(--text); border-radius:999px;
+  padding:6px 12px 6px 6px; font-size:13px; font-weight:700; box-shadow:0 10px 30px rgba(0,0,0,.25); animation:bob 6s ease-in-out infinite}
+.float .ring-sm{width:30px; height:30px}
+.float:nth-of-type(2){animation-delay:-2s} .float:nth-of-type(3){animation-delay:-4s}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.w-card{background:var(--surface); color:var(--text); border-radius:22px; padding:24px; box-shadow:0 30px 60px rgba(0,0,0,.3); margin-bottom:40px}
+.w-card h2{font-size:26px}
+.w-card .sub{color:var(--text-2); margin:4px 0 16px}
 .roles{display:grid; gap:10px; margin-bottom:16px}
-.role{display:flex; gap:12px; align-items:flex-start; padding:14px; border:2px solid var(--line-2); border-radius:14px; cursor:pointer}
-.role input{margin-top:4px; accent-color:var(--brand); width:18px; height:18px; flex:none}
-.role b{display:block; font-size:16px}
-.role span{font-size:14px; color:var(--text-2)}
+.role{position:relative; display:grid; grid-template-columns:52px 1fr; gap:12px; align-items:center; padding:12px; border:2px solid var(--line); border-radius:16px; cursor:pointer; margin:0; color:var(--text)}
+.role input{position:absolute; opacity:0}
+.role .ic{width:52px; height:52px; border-radius:14px; display:grid; place-items:center; background:var(--surface-2)}
+.role b{display:block; font-size:16px; font-family:var(--display)}
+.role span{font-size:14px; color:var(--text-2); font-weight:400}
 .role:has(input:checked){border-color:var(--brand); background:var(--brand-soft)}
-.notice{background:var(--brand-soft); border-radius:12px; padding:14px; margin-top:12px}
-.notice p{margin:0 0 10px}
-.tag{position:absolute; top:10px; left:10px; background:rgba(0,0,0,.45); color:#fff; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700}
-.tag.r{left:auto; right:10px; top:42px}
-.tag.ok{background:var(--ok); }
-.card .body{padding:12px 14px 14px; display:flex; flex-direction:column; gap:4px; flex:1}
-.card h3{font-size:17px}
+.role:has(input:checked) .ic{background:var(--brand); color:var(--on-brand)}
+.role:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px}
+.otpbox{letter-spacing:.5em; text-align:center; font-size:22px!important}
+.demo{background:var(--brand-soft); color:var(--brand); padding:8px 12px; border-radius:10px; font-size:14px; margin-bottom:12px}
+@media (max-width:900px){
+  .w-grid{grid-template-columns:1fr; grid-template-areas:"copy" "card" "city"}
+  .city{height:200px; margin-top:0}
+  .w-card{margin:24px 0 8px}
+}
+.story{padding-block:56px 24px}
+.story-h{max-width:30ch; font-size:clamp(26px,3.6vw,38px)}
+.story-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:28px}
+.story-card{background:var(--surface); border:1px solid var(--line); border-radius:20px; overflow:hidden; display:flex; flex-direction:column}
+.story-card .pic{position:relative; height:170px; background:var(--surface-2); overflow:hidden}
+.story-card .txt{padding:16px 18px 20px}
+.story-card h3{font-size:20px; margin-bottom:6px}
+.story-card p{margin:0; color:var(--text-2)}
+@media (max-width:860px){ .story-grid{grid-template-columns:1fr} }
+.steps{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:20px}
+.steps > div{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px}
+.steps ol{margin:10px 0 0; padding-left:20px; color:var(--text-2)}
+.steps li{margin:6px 0}
+.steps li b{color:var(--text)}
+@media (max-width:700px){ .steps{grid-template-columns:1fr} }
+.w-foot{color:var(--text-3); font-size:13px; padding-block:24px 40px}
+
+/* ---------- onboarding */
+.ob{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; background:var(--bg)}
+.ob-top{display:flex; align-items:center; gap:14px; padding-block:18px}
+.ob-progress{flex:1; height:6px; background:var(--surface-2); border-radius:999px; overflow:hidden}
+.ob-progress i{display:block; height:100%; width:0; background:var(--brand); border-radius:inherit; transition:width .35s}
+.ob-count{font-family:var(--display); font-weight:700; color:var(--text-3); font-size:14px; font-variant-numeric:tabular-nums}
+.linkbtn{border:0; background:none; color:var(--text-2); font-weight:700; cursor:pointer; padding:6px}
+.ob-stage{flex:1; display:flex; flex-direction:column; justify-content:center; max-width:720px; width:100%; margin:0 auto; padding-block:12px 40px}
+.ob-q{animation:slidein .35s ease both}
+@keyframes slidein{from{transform:translateX(24px)}to{transform:none}}
+.ob-q h1{font-size:clamp(28px,4.6vw,44px); font-stretch:84%}
+.ob-q .why{color:var(--text-2); margin:10px 0 22px; font-size:17px}
+.opts{display:grid; gap:10px}
+.opts.cols{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.opt{display:flex; align-items:center; gap:14px; text-align:left; width:100%; padding:16px 18px; border:2px solid var(--line); border-radius:16px;
+  background:var(--surface); cursor:pointer; transition:border-color .15s, transform .12s}
+.opt:hover{border-color:var(--brand)}
+.opt:active{transform:scale(.99)}
+.opt[aria-pressed="true"]{border-color:var(--brand); background:var(--brand-soft)}
+.opt .dot{flex:none; width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-family:var(--display); font-weight:800; font-size:18px}
+.opt b{display:block; font-size:17px; font-family:var(--display)}
+.opt span{color:var(--text-2); font-size:14px}
+.finale{text-align:center}
+.finale .ring-lg{width:180px; height:180px; margin:0 auto 18px}
+.finale p{color:var(--text-2); font-size:18px; max-width:46ch; margin:10px auto 22px}
+
+/* ---------- match ring */
+.ring{display:block}
+.ring .trk{stroke:rgba(255,255,255,.35)}
+.ring .val{stroke-linecap:round; transition:stroke-dashoffset .8s ease}
+.ring text{font-family:var(--display); font-weight:800}
+
+/* ---------- discover */
+.greet{padding-block:26px 6px}
+.greet h1{font-size:clamp(26px,4vw,38px); font-stretch:86%}
+.greet p{color:var(--text-2); margin:6px 0 0}
+.spot{display:grid; grid-template-columns:1.1fr 1fr; background:var(--band); color:var(--on-band); border-radius:24px; overflow:hidden; margin:18px 0 6px; cursor:pointer; box-shadow:var(--shadow)}
+.spot .pic{position:relative; min-height:260px}
+.spot .pic .ring-wrap{position:absolute; left:16px; bottom:16px; background:rgba(0,0,0,.35); border-radius:50%; padding:4px}
+.spot .txt{padding:22px 24px; display:flex; flex-direction:column; gap:6px}
+.spot .eyebrow{color:var(--lit)}
+.spot h2{font-size:26px}
+.spot .who{color:var(--on-band-2)}
+.spot .reasons li{color:var(--on-band)}
+.spot .price{color:var(--on-band); margin-top:auto}
+.spot .price small{color:var(--on-band-2)}
+@media (max-width:760px){ .spot{grid-template-columns:1fr} .spot .pic{min-height:200px} }
+.filters{display:flex; flex-wrap:wrap; gap:10px; align-items:end; margin:18px 0}
+.filters .field{margin:0; flex:1 1 140px}
+.more-f{display:none}
+@media (max-width:640px){
+  .filters .field{flex-basis:calc(50% - 5px)}
+  .filters:not(.open) .field.opt-f{display:none}
+  .more-f{display:block; flex-basis:100%; border:0; background:none; color:var(--brand); font-weight:700; text-align:left; padding:2px 0; cursor:pointer}
+}
+.count{color:var(--text-3); font-size:14px; margin:0 0 10px}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; padding-bottom:36px}
+.card{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:20px; overflow:hidden; display:flex; flex-direction:column;
+  cursor:pointer; box-shadow:var(--shadow); transition:transform .15s; animation:rise .45s ease both; animation-delay:calc(var(--i,0) * 45ms)}
+.card:hover{transform:translateY(-3px)}
+@keyframes rise{from{transform:translateY(10px)}to{transform:none}}
+.thumb{position:relative; height:170px; overflow:hidden; color:#fff}
+.thumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.thumb .ring-wrap{position:absolute; right:10px; top:10px; z-index:2; background:rgba(0,0,0,.4); border-radius:50%; padding:3px}
+.tag{position:absolute; top:12px; left:12px; z-index:2; background:rgba(0,0,0,.5); color:#fff; padding:3px 9px; border-radius:7px; font-size:12px; font-weight:700}
+.tag.ok{background:var(--ok)}
+.tag.r{top:auto; bottom:12px}
+.count-ph{position:absolute; left:12px; top:40px; z-index:2; background:rgba(0,0,0,.5); color:#fff; font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px}
+.card .body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:4px; flex:1}
+.card h3{font-size:18px}
 .loc{color:var(--text-2); font-size:14px}
-.price{font-family:Archivo; font-weight:800; font-size:20px; margin-top:auto}
-.price small{font-family:"Source Sans 3"; font-weight:600; color:var(--text-3); font-size:13px}
+.people{display:flex; align-items:center; gap:8px; font-size:14px; margin-top:2px}
+.avs{display:flex}
+.avs i{width:24px; height:24px; border-radius:50%; border:2px solid var(--surface); margin-left:-7px; display:block}
+.avs i:first-child{margin-left:0}
+.price{font-family:var(--display); font-weight:800; font-size:21px; margin-top:auto; padding-top:6px}
+.price small{font-family:var(--body); font-weight:600; color:var(--text-3); font-size:13px}
+.allin{font-size:13px; color:var(--text-2); font-weight:600}
 .meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px}
 .meta span{font-size:12px; background:var(--surface-2); padding:2px 8px; border-radius:6px; color:var(--text-2)}
-.empty{text-align:center; padding:48px 16px; color:var(--text-2); background:var(--surface); border:1px dashed var(--line-2); border-radius:var(--radius)}
+.fresh{font-size:12px; color:var(--text-3)}
+.heart{position:absolute; bottom:12px; right:12px; z-index:2; width:38px; height:38px; border-radius:50%; border:0; cursor:pointer;
+  background:rgba(255,255,255,.94); color:#A0A0A8; font-size:18px; line-height:1; display:grid; place-items:center; transition:transform .15s}
+.heart[aria-pressed="true"]{color:#D2334A}
+.heart.pop{animation:pop .35s ease}
+@keyframes pop{40%{transform:scale(1.3)}}
+.empty{text-align:center; padding:48px 20px; color:var(--text-2); background:var(--surface); border:1px dashed var(--line-2); border-radius:20px}
+.empty h3{color:var(--text); margin-bottom:6px}
+.art{position:absolute; inset:0; width:100%; height:100%}
+.pic > img,.mini > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
 
-/* panels */
-.panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin:18px 0}
-.panel h2{font-size:22px; margin-bottom:4px}
-.sub{color:var(--text-2); margin:0 0 16px}
-.private{background:var(--accent-soft); border-radius:12px; padding:14px; margin:6px 0 14px}
-.private h3{font-size:15px; color:var(--accent); margin-bottom:8px}
+/* ---------- panels, account, owner home */
+.page-h{padding-block:26px 4px}
+.page-h h1{font-size:clamp(26px,4vw,36px); font-stretch:86%}
+.page-h p{color:var(--text-2); margin:6px 0 0}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px; margin:16px 0}
+.panel h2{font-size:21px; margin-bottom:4px}
+.sub{color:var(--text-2); margin:0 0 14px}
 .row{display:flex; gap:12px; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line)}
-.row:first-of-type{border-top:0}
+.row:first-child{border-top:0}
 .row .t{font-weight:700}
 .row .s{font-size:14px; color:var(--text-2)}
 .status{font-size:12px; font-weight:700; padding:2px 8px; border-radius:6px; background:var(--surface-2)}
 .status.confirmed{background:var(--ok-soft); color:var(--ok)}
 .status.cancelled{color:var(--text-3); text-decoration:line-through}
+.mini{display:block; width:64px; height:48px; border-radius:10px; flex:none; position:relative; overflow:hidden; background:var(--surface-2)}
+.mini .art{position:absolute}
 .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
-.stat{background:var(--surface-2); border-radius:12px; padding:12px}
-.stat b{font-family:Archivo; font-size:26px; display:block}
+.stat{background:var(--surface-2); border-radius:14px; padding:12px}
+.stat b{font-family:var(--display); font-size:28px; display:block; font-variant-numeric:tabular-nums}
 .stat span{font-size:13px; color:var(--text-2)}
+.mine-card{display:grid; grid-template-columns:200px 1fr; gap:0; background:var(--surface); border:1px solid var(--line); border-radius:20px; overflow:hidden; margin:16px 0}
+.mine-card .pic{position:relative; min-height:170px}
+.mine-card .txt{padding:16px 18px}
+@media (max-width:600px){ .mine-card{grid-template-columns:1fr} }
+.profile{display:flex; gap:14px; align-items:center}
+.profile .me{width:56px; height:56px; font-size:22px; cursor:default}
+.notice{background:var(--brand-soft); border-radius:14px; padding:14px; margin-top:12px}
+.notice p{margin:0 0 10px}
 
-/* modal */
-dialog{border:0; padding:0; border-radius:18px; width:min(560px,calc(100vw - 24px)); max-height:calc(100dvh - 32px);
-  background:var(--surface); color:var(--text); box-shadow:0 20px 60px rgba(0,0,0,.35)}
-dialog::backdrop{background:rgba(10,10,12,.55)}
+/* ---------- post form */
+.drop{display:flex; flex-direction:column; align-items:center; gap:6px; padding:20px; border:2px dashed var(--line-2); border-radius:14px; cursor:pointer;
+  text-align:center; color:var(--text-2); background:var(--surface-2); margin:0}
+.drop:hover,.drop.over{border-color:var(--brand); color:var(--brand)}
+.drop input{display:none}
+.previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
+.previews:empty{display:none}
+.previews figure{margin:0; position:relative; aspect-ratio:4/3; max-width:100%; border-radius:10px; overflow:hidden; background:var(--surface-2)}
+.previews img{width:100%; height:100%; object-fit:cover; display:block}
+.previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700; background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
+.previews button{position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0; background:rgba(0,0,0,.6); color:#fff; cursor:pointer}
+.private{background:var(--accent-soft); border-radius:14px; padding:14px; margin:6px 0 14px}
+.private h3{font-size:15px; color:var(--accent); margin-bottom:8px}
+.household{background:var(--surface-2); border-radius:14px; padding:14px}
+.quiz{display:grid; gap:14px}
+.quiz fieldset{border:0; margin:0; padding:0}
+.quiz legend{font-weight:700; margin-bottom:6px; padding:0}
+.section-h{font-family:var(--display); font-size:17px; margin:20px 0 8px}
+
+/* ---------- listing detail */
+dialog{border:0; padding:0; border-radius:22px; width:min(600px,calc(100vw - 24px)); max-height:calc(100dvh - 32px); background:var(--surface); color:var(--text); box-shadow:0 24px 70px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(8,20,22,.6)}
 .mhead{display:flex; justify-content:space-between; align-items:start; gap:12px; padding:18px 20px 0}
-.mhead h2{font-size:22px}
-.x{border:0; background:var(--surface-2); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:18px; flex:none}
-.mbody{padding:12px 20px 20px}
+.mhead h2{font-size:23px}
+.x{border:0; background:var(--surface-2); width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; flex:none}
+.mbody{padding:12px 20px 22px}
+.hero-pic{position:relative; height:260px; border-radius:16px; overflow:hidden; margin:4px 0 6px}
+.hero-pic .ring-wrap{position:absolute; left:12px; bottom:12px; z-index:2; background:rgba(0,0,0,.4); border-radius:50%; padding:4px}
+.gallery{display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; height:100%; scrollbar-width:none}
+.gallery::-webkit-scrollbar{display:none}
+.gallery img{flex:0 0 100%; height:100%; object-fit:cover; scroll-snap-align:center}
 .kv{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin:12px 0}
-.kv div{background:var(--surface-2); border-radius:10px; padding:8px 10px}
+.kv div{background:var(--surface-2); border-radius:12px; padding:8px 10px}
 .kv span{display:block; font-size:12px; color:var(--text-3)}
 .kv b{font-size:15px}
-.lock{border:1px dashed var(--line-2); border-radius:12px; padding:14px; margin-top:12px}
-.lock.open{border-style:solid; border-color:var(--ok); background:var(--ok-soft)}
-.blur{filter:blur(5px); user-select:none}
-.pack{border:2px solid var(--brand); border-radius:14px; padding:16px; text-align:center; margin:8px 0 14px}
-.pack b{font-family:Archivo; font-size:34px; display:block}
+.traits{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+.traits span{font-size:13px; padding:3px 10px; border-radius:999px; background:var(--surface); border:1px solid var(--line)}
+.reasons{list-style:none; margin:8px 0 0; padding:0; display:grid; gap:4px; font-size:14px}
+.reasons li{display:flex; gap:8px}
+.reasons .g{color:var(--ok); font-weight:800}
+.reasons .c{color:var(--warn); font-weight:800}
+.bill{display:grid; grid-template-columns:1fr auto; gap:4px 12px; font-size:15px; font-variant-numeric:tabular-nums}
+.bill .tot{font-weight:800; border-top:1px solid var(--line); padding-top:6px; margin-top:2px}
+.bill .muted{color:var(--text-2)}
+.verified{display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:var(--ok)}
+.lock{border-radius:18px; padding:18px; margin-top:16px; background:var(--band); color:var(--on-band)}
+.lock h3{font-size:20px}
+.lock p{color:var(--on-band-2); margin:6px 0 12px}
+.lock .blurred{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0}
+.lock .blurred div{background:rgba(255,255,255,.08); border-radius:10px; padding:8px 10px}
+.lock .blurred span{display:block; font-size:12px; color:var(--on-band-2)}
+.lock .blurred b{filter:blur(5px); user-select:none}
+.lock .promise-line{display:flex; gap:8px; align-items:start; font-size:14px; color:var(--on-band-2); margin-top:10px}
+.lock .promise-line b{color:var(--lit)}
+.lock.open{background:var(--ok-soft); color:var(--text)}
+.lock.open p{color:var(--text-2)}
+.guarantee{margin-top:12px; border-top:1px solid var(--line); padding-top:10px}
+.guarantee summary{cursor:pointer; font-weight:700; color:var(--text-2)}
+.pack{border:2px solid var(--brand); border-radius:16px; padding:16px; text-align:center; margin:8px 0 14px}
+.pack b{font-family:var(--display); font-size:36px; display:block}
 .paym{display:flex; gap:8px; margin-bottom:14px}
 .paym .chip{flex:1; justify-content:center}
-.otpbox{letter-spacing:.5em; text-align:center; font-size:22px!important}
-.demo{background:var(--brand-soft); color:var(--brand); padding:8px 12px; border-radius:10px; font-size:14px; margin-bottom:12px}
-.toast{position:fixed; left:50%; bottom:90px; transform:translateX(-50%); background:var(--text); color:var(--bg);
-  padding:10px 16px; border-radius:10px; font-weight:600; z-index:100; max-width:calc(100vw - 32px)}
-footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px solid var(--line); margin-top:16px}
+.toast{position:fixed; left:50%; bottom:96px; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:11px 16px; border-radius:12px;
+  font-weight:600; z-index:100; max-width:calc(100vw - 32px); animation:rise .25s ease}
+.foot{color:var(--text-3); font-size:13px; padding-block:24px 40px; border-top:1px solid var(--line); margin-top:16px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important; transition:none!important}
+}
 </style>
 </head>
 <body>
 
-<header>
+<!-- ================================================================ welcome -->
+<section id="view-welcome" hidden>
+  <div class="w-band">
+    <div class="wrap w-top">
+      <span class="logo"><i><svg width="17" height="17" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v9h-6v-6H9v6H3z" fill="#fff"/></svg></i>Flatmates <small>by Navigate Me</small></span>
+    </div>
+    <div class="wrap w-grid">
+      <div class="w-copy">
+        <h1>Find a room, and <em>the people</em> worth sharing it with.</h1>
+        <p class="lede">Every lit window in this city has a spare room behind it, and someone hoping the next flatmate is a good one. Flatmates helps both sides find each other: owners show their home and the people in it, seekers show how they like to live.</p>
+      </div>
+      <div class="city" id="city" aria-hidden="true"></div>
+      <div class="w-card">
+        <form id="loginForm">
+          <h2>Let's get you started</h2>
+          <p class="sub">What brings you to Flatmates today?</p>
+          <div class="roles">
+            <label class="role"><input type="radio" name="role" value="owner" required>
+              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
+              <span><b>I want to post my flat</b><span>I have a spare room and need a flatmate</span></span></label>
+            <label class="role"><input type="radio" name="role" value="seeker" required>
+              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/><path d="M8.5 12.5V10l2.5-2 2.5 2v2.5"/></svg></span>
+              <span><b>I'm looking for a room</b><span>A flat or a room on rent, with good people</span></span></label>
+          </div>
+          <div class="field"><label for="lgName">Your name</label><input type="text" id="lgName" required autocomplete="name" placeholder="First name is fine"></div>
+          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+          <button class="btn btn-primary btn-block" type="submit">Send me a code</button>
+          <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.</p>
+        </form>
+        <form id="otpForm" hidden>
+          <h2>Check your messages</h2>
+          <p class="sub">Enter the 6-digit code sent to <b id="otpTo"></b>.</p>
+          <div class="demo" id="otpDemo" hidden></div>
+          <div class="field"><label for="lgOtp">Code</label>
+            <input type="text" class="otpbox" id="lgOtp" required pattern="[0-9]{6}" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
+          <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+          <button class="linkbtn" type="button" id="otpBack" style="margin-top:8px">Use a different number</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap story">
+    <p class="eyebrow">Why it feels different</p>
+    <h2 class="story-h">A flat is four walls. A home is who you share it with.</h2>
+    <div class="story-grid">
+      <article class="story-card"><div class="pic" id="storyArt1"></div><div class="txt">
+        <h3>Meet the household first</h3>
+        <p>Every listing tells you who already lives there: what they do, when they sleep, whether the kitchen is veg, how often friends drop by.</p></div></article>
+      <article class="story-card"><div class="pic" id="storyArt2"></div><div class="txt">
+        <h3>See how well you'd fit</h3>
+        <p>Answer a few questions about how you live. Each flat then shows a match score and the reasons behind it, good and not so good.</p></div></article>
+      <article class="story-card"><div class="pic" id="storyArt3"></div><div class="txt">
+        <h3>The real monthly number</h3>
+        <p>Rent plus maintenance, electricity, Wi-Fi and the cook, added up for you. No brokers, no surprise charges at the visit.</p></div></article>
+    </div>
+    <div class="steps">
+      <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate for your spare room</h3>
+        <ol><li><b>Tell us about your home</b> and the people in it.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
+          <li><b>Hear from people who fit.</b> Your number and address stay private until someone serious asks for them.</li></ol></div>
+      <div><p class="eyebrow">If you need a room</p><h3>Find a home that fits how you live</h3>
+        <ol><li><b>Answer a few quick questions</b> about your day and habits.</li><li><b>Browse flats ranked by fit</b>, with the all-in monthly cost.</li>
+          <li><b>Talk to the owner and visit.</b> Every owner's phone is verified.</li></ol></div>
+    </div>
+    <p class="w-foot" id="modeNote"></p>
+  </div>
+</section>
+
+<!-- ============================================================= onboarding -->
+<section id="view-onboard" class="ob" hidden>
+  <div class="wrap" style="width:100%">
+    <div class="ob-top">
+      <button class="linkbtn" type="button" id="obBack" aria-label="Previous question">←</button>
+      <div class="ob-progress" aria-hidden="true"><i id="obBar"></i></div>
+      <span class="ob-count" id="obCount"></span>
+      <button class="linkbtn" type="button" id="obSkip">Skip</button>
+    </div>
+  </div>
+  <div class="wrap ob-stage" id="obStage" aria-live="polite"></div>
+</section>
+
+<!-- ================================================================ app -->
+<header class="app-head" id="appHead" hidden>
   <div class="wrap bar">
-    <a class="logo" href="#browse"><i><svg width="16" height="16" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v9h-6v-6H9v6H3z" fill="#fff"/></svg></i>Flatmates <small>by Navigate Me</small></a>
-    <nav>
-      <button class="tab" data-view="browse">Find a room</button>
-      <button class="tab" data-view="post">Post free</button>
-      <button class="tab" data-view="account">My account</button>
-    </nav>
-    <button class="pill" id="creditPill" title="Visit credits left">0 unlocks</button>
+    <a class="logo" href="#"><i><svg width="17" height="17" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8v9h-6v-6H9v6H3z" fill="#fff"/></svg></i>Flatmates <small>by Navigate Me</small></a>
+    <nav class="nav" id="nav"></nav>
+    <button class="me" id="meBtn" aria-label="My account"></button>
   </div>
 </header>
 
-<main class="wrap">
-
-  <!-- ============================================================ browse -->
-  <section id="view-browse">
-    <div class="hero">
-      <p class="eyebrow">Flatmates, not just flats</p>
-      <h1>Live with people you'll actually get along with.</h1>
-      <p class="lede">Every listing here is a real home with real people in it. See who lives there, how they live and what it all costs each month, before you spend a rupee.</p>
-      <div class="paths">
-        <a class="path path-owner" href="#post">
-          <span class="path-k">I have a flat</span>
-          <b>Find a flatmate for your spare room</b>
-          <span>Post with photos in 2 minutes. Free, always.</span>
-          <i aria-hidden="true">→</i>
-        </a>
-        <a class="path path-seeker" href="#rooms">
-          <span class="path-k">I need a room</span>
-          <b>Find a flat that fits how you live</b>
-          <span>Browse free. ₹500 unlocks 5 owners.</span>
-          <i aria-hidden="true">→</i>
-        </a>
-      </div>
-      <ul class="promise">
-        <li><b>₹100 a flat</b><span>₹500 for 5 unlocks. No plans, no tiers.</span></li>
-        <li><b>Never expires</b><span>Use your unlocks next week or next year.</span></li>
-        <li><b>No brokers</b><span>You talk to the person who lives there.</span></li>
-        <li><b>All-in rent</b><span>Rent plus bills, so the real number shows up front.</span></li>
-      </ul>
-    </div>
-
-    <div class="vibe-cta" id="vibeCta">
-      <div class="vibe-cta-art" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div><b id="vibeCtaTitle">See your match with every flat</b>
-        <p id="vibeCtaText">Answer 8 quick questions about how you live: bedtime, food, guests, smoking. Each flat then shows how well you'd fit with the people already there.</p></div>
-      <button class="btn btn-primary" type="button" data-vibe-open id="vibeCtaBtn">Take the vibe check</button>
-    </div>
-
+<main class="wrap" id="appMain" hidden>
+  <!-- seeker: discover -->
+  <section id="view-discover" hidden>
+    <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p></div>
+    <div id="spotlight"></div>
     <form class="filters" id="filters">
-      <div class="field"><label for="fCity">City</label>
-        <select id="fCity"><option value="">All cities</option></select></div>
-      <div class="field"><label for="fQ">Area</label>
-        <input type="text" id="fQ" placeholder="e.g. Koramangala"></div>
-      <div class="field"><label for="fKind">Looking for</label>
+      <div class="field"><label for="fCity">City</label><select id="fCity"><option value="">All cities</option></select></div>
+      <div class="field opt-f"><label for="fQ">Area</label><input type="text" id="fQ" placeholder="e.g. Koramangala"></div>
+      <div class="field opt-f"><label for="fKind">Looking for</label>
         <select id="fKind"><option value="">Anything</option><option value="room">Room in a shared flat</option><option value="flatmate">Flatmate to share with</option><option value="flat">Whole flat (takeover)</option></select></div>
-      <div class="field"><label for="fRent">Max all-in / month</label>
-        <select id="fRent"><option value="">Any</option><option value="10000">₹10,000</option><option value="15000">₹15,000</option><option value="20000">₹20,000</option><option value="30000">₹30,000</option><option value="50000">₹50,000</option></select></div>
-      <div class="field"><label for="fGender">For</label>
-        <select id="fGender"><option value="">Anyone</option><option value="female">Women</option><option value="male">Men</option></select></div>
-      <div class="field"><label for="fSort">Sort</label>
-        <select id="fSort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest all-in</option></select></div>
-      <label class="chip saved-chip"><input type="checkbox" id="fSaved"><span aria-hidden="true">♥</span> Saved <span id="savedCount">0</span></label>
+      <div class="field opt-f"><label for="fRent">Max all-in / month</label>
+        <select id="fRent"><option value="">Any</option><option value="12000">₹12,000</option><option value="18000">₹18,000</option><option value="25000">₹25,000</option><option value="40000">₹40,000</option></select></div>
+      <div class="field opt-f"><label for="fGender">For</label><select id="fGender"><option value="">Anyone</option><option value="female">Women</option><option value="male">Men</option></select></div>
+      <div class="field"><label for="fSort">Sort</label><select id="fSort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest all-in</option></select></div>
+      <button class="more-f" type="button" id="moreF" aria-expanded="false">More filters: area, budget, type</button>
     </form>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
   </section>
 
-  <!-- ============================================================== post -->
+  <!-- seeker: saved -->
+  <section id="view-saved" hidden>
+    <div class="page-h"><h1>Saved flats</h1><p>Your shortlist. Compare them here before you decide which ones to contact.</p></div>
+    <div class="cards" id="savedCards" style="margin-top:18px"></div>
+  </section>
+
+  <!-- owner: my listings -->
+  <section id="view-mine" hidden>
+    <div class="greet"><p class="eyebrow" id="mineTime"></p><h1 id="mineName"></h1><p id="mineSub"></p></div>
+    <div id="mineList"></div>
+  </section>
+
+  <!-- owner: post -->
   <section id="view-post" hidden>
-    <div class="panel" id="postBlocked" hidden>
-      <h2>Posting is for flat owners</h2>
-      <p class="sub">You signed in as looking for a room. If you have a flat and want a flatmate, switch and post it free.</p>
-      <button class="btn btn-primary" data-switch="owner">I have a flat, switch to posting</button>
-    </div>
-    <div class="panel" id="postPanel">
-      <h2>Post your flat, free</h2>
-      <p class="sub">Your phone number and exact address stay hidden. Only people who unlock your listing see them, so you hear from serious seekers only.</p>
+    <div class="page-h"><h1>Describe your room</h1><p>Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
+    <div class="panel">
       <form id="postForm" autocomplete="on">
         <div class="field"><label>What are you offering?</label>
           <div class="chips">
@@ -375,11 +500,16 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
             <label class="chip"><input type="radio" name="kind" value="flat">Whole flat takeover</label>
           </div></div>
         <div class="field"><label for="pTitle">Title</label>
-          <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Private room in 2BHK near metro"></div>
+          <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
         <div class="grid2">
           <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
           <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout"></div>
         </div>
+        <div class="field"><label>Photos (up to 6)</label>
+          <label class="drop" id="pDrop"><input type="file" id="pPhotos" accept="image/*" multiple>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
+            <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
+          <div class="previews" id="pPreviews"></div></div>
         <div class="grid3">
           <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="100" inputmode="numeric"></div>
           <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="500" value="0" inputmode="numeric"></div>
@@ -398,25 +528,20 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
           <div class="field"><label for="pFurn">Furnishing</label><select id="pFurn"><option value="full">Fully furnished</option><option value="semi" selected>Semi furnished</option><option value="none">Unfurnished</option></select></div>
         </div>
-        <div class="field"><label>Photos (up to 6)</label>
-          <label class="drop" id="pDrop"><input type="file" id="pPhotos" accept="image/*" multiple>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
-            <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
-          <div class="previews" id="pPreviews"></div></div>
         <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
         <div class="household" style="margin-bottom:14px">
           <h3 class="section-h" style="margin-top:0">Your household</h3>
-          <p class="hint" style="margin:0 0 10px">Seekers answer the same questions, and each one sees how well they'd match with you.</p>
+          <p class="hint" style="margin:0 0 10px">From your answers earlier. Seekers see how well they'd fit with you.</p>
           <div class="grid2">
             <div class="field"><label for="hCount">People living there now</label>
               <select id="hCount"><option value="0">Nobody yet</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4+</option></select></div>
             <div class="field"><label for="hAbout">Who they are</label>
               <input type="text" id="hAbout" maxlength="120" placeholder="e.g. Product designer, 27, and a doctor, 29"></div>
           </div>
-          <div class="quiz" id="hQuiz"></div>
+          <details><summary class="hint" style="cursor:pointer">Review living-style answers</summary><div class="quiz" id="hQuiz" style="margin-top:10px"></div></details>
         </div>
         <div class="field"><label for="pDesc">About the flat and flatmates</label>
-          <textarea id="pDesc" maxlength="1200" placeholder="Who lives there, house rules, how far from metro/office, what's included in rent..."></textarea></div>
+          <textarea id="pDesc" maxlength="1200" placeholder="House rules, how far from the metro or office, what's included in rent..."></textarea></div>
         <div class="private">
           <h3>Private: shown only to people who unlock</h3>
           <div class="grid2">
@@ -426,80 +551,40 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
           <div class="field" style="margin:0"><label for="pAddr">Exact address</label>
             <textarea id="pAddr" required style="min-height:64px" placeholder="Flat no., building, street, landmark"></textarea></div>
         </div>
-        <button class="btn btn-primary btn-block" type="submit">Post for free</button>
+        <button class="btn btn-primary btn-block" type="submit">Publish my listing</button>
       </form>
     </div>
   </section>
 
-  <!-- =========================================================== account -->
+  <!-- both: account -->
   <section id="view-account" hidden>
-    <div class="panel" id="signedOut">
-      <h2>Sign in</h2>
-      <p class="sub">Sign in with your mobile number to post a flat, unlock listings and book visits.</p>
-      <button class="btn btn-primary" data-action="signin">Sign in with OTP</button>
+    <div class="panel"><div class="profile"><span class="me" id="accAvatar"></span>
+      <div style="flex:1;min-width:0"><h2 id="accName"></h2><div class="sub" style="margin:0"><span id="accPhone"></span> · <span id="accRole"></span></div></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        <button class="btn btn-ghost btn-sm" id="accSwitch"></button>
+        <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button></div>
     </div>
-    <div id="signedIn" hidden>
-      <div class="panel">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
-          <div><h2 id="accName">My account</h2><p class="sub"><span id="accPhone"></span> · <span id="accRole"></span>
-            <button class="btn btn-ghost btn-sm" id="accSwitch"></button></p></div>
-          <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button>
-        </div>
-        <div class="stats" id="seekerStats">
-          <div class="stat"><b id="stCredits">0</b><span>unlocks left</span></div>
-          <div class="stat"><b id="stUnlocked">0</b><span>flats unlocked</span></div>
-          <div class="stat"><b id="stListings">0</b><span>my listings</span></div>
-        </div>
-        <button class="btn btn-accent" style="margin-top:14px" data-action="buy" id="buyBtn">Buy 5 unlocks for ₹500</button>
-      </div>
-      <div class="panel" id="vibePanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
-        <div><h2>My living style</h2><p class="sub">Used to show your match % with each household.</p></div>
-        <button class="btn btn-ghost btn-sm" data-vibe-open id="vibeEdit">Edit</button></div>
-        <div class="traits" id="vibeTraits"></div></div>
-      <div class="panel" id="unlockedPanel"><h2>Flats I unlocked</h2><p class="sub">Owner contact and address, plus visits you've booked.</p><div id="myUnlocked"></div></div>
-      <div class="panel" id="listingsPanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
-        <div><h2>My listings</h2><p class="sub">Visit requests from seekers show up here.</p></div>
-        <a class="btn btn-primary btn-sm" href="#post">Post a flat</a></div><div id="myListings"></div></div>
-    </div>
+    <div class="panel" id="vibePanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
+      <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
+      <button class="btn btn-ghost btn-sm" data-vibe-open>Edit answers</button></div>
+      <div class="traits" id="vibeTraits"></div></div>
+    <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
+      <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
   </section>
 
-  <footer>
-    Posting is always free. Seekers pay ₹500 for a pack of 5 unlocks; each unlock reveals one flat's owner phone and exact address and lets you book visits there. Once a flat is unlocked it stays unlocked. Never pay a deposit before visiting.
-    <div id="modeNote"></div>
-  </footer>
+  <footer class="foot" id="appFoot"></footer>
 </main>
 
-<!-- ================================================================ modals -->
+<!-- ================================================================ dialogs -->
 <dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="lBody"></div></dialog>
 
-<dialog id="dlgLogin"><div class="mhead"><h2>Sign in</h2><button class="x" data-close aria-label="Close">×</button></div>
+<dialog id="dlgPay"><div class="mhead"><h2>Contact this owner</h2><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
-    <form id="loginForm">
-      <label>What are you looking for?</label>
-      <div class="roles">
-        <label class="role"><input type="radio" name="role" value="owner" required>
-          <div><b>I have a flat, looking for a flatmate</b><span>Post your flat with photos. Free, always.</span></div></label>
-        <label class="role"><input type="radio" name="role" value="seeker" required>
-          <div><b>I'm looking for a room in a flat</b><span>Browse free. Unlock owner contact and visits: ₹500 for 5 flats.</span></div></label>
-      </div>
-      <div class="field"><label for="lgName">Your name</label><input type="text" id="lgName" required autocomplete="name"></div>
-      <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
-      <button class="btn btn-primary btn-block" type="submit">Send OTP</button>
-    </form>
-    <form id="otpForm" hidden>
-      <div class="demo" id="otpDemo" hidden></div>
-      <div class="field"><label for="lgOtp">Enter the 6-digit OTP sent to <span id="otpTo"></span></label>
-        <input type="text" class="otpbox" id="lgOtp" required pattern="[0-9]{6}" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
-      <button class="btn btn-primary btn-block" type="submit">Verify</button>
-    </form>
-  </div></dialog>
-
-<dialog id="dlgPay"><div class="mhead"><h2>Unlock pack</h2><button class="x" data-close aria-label="Close">×</button></div>
-  <div class="mbody">
-    <div class="pack"><b>₹500</b>5 flat unlocks · ₹100 per flat</div>
-    <p class="sub">Each unlock shows one owner's phone number and exact address, and lets you book visits to that flat. Unlocks don't expire.</p>
-    <div class="paym" id="payMethods">
+    <div class="pack"><b>₹500</b>for 5 flats · ₹100 each</div>
+    <p class="sub">This flat plus 4 more whenever you're ready. Each one gives you the owner's number, the exact address and visit booking. They never expire.</p>
+    <p class="sub"><b>Our promise:</b> if a flat turns out to be already rented, or the owner doesn't reply within 48 hours, you get that unlock back.</p>
+    <div class="paym">
       <label class="chip"><input type="radio" name="pm" value="upi" checked>UPI</label>
       <label class="chip"><input type="radio" name="pm" value="card">Card</label>
       <label class="chip"><input type="radio" name="pm" value="nb">Netbanking</label>
@@ -508,17 +593,17 @@ footer{color:var(--text-3); font-size:13px; padding:24px 0 40px; border-top:1px 
     <p class="hint" id="payNote"></p>
   </div></dialog>
 
-<dialog id="dlgVibe"><div class="mhead"><div><h2>Your vibe check</h2><div class="loc">8 questions, about 30 seconds. Change them any time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
+<dialog id="dlgVibe"><div class="mhead"><div><h2>How you live</h2><div class="loc">Change these any time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
     <form id="vibeForm"><div class="quiz" id="vQuiz"></div>
-      <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Show my matches</button></form>
+      <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Save</button></form>
   </div></dialog>
 
 <dialog id="dlgVisit"><div class="mhead"><h2>Book a visit</h2><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
     <form id="visitForm">
       <div class="field"><label for="vAt">Date and time</label><input type="datetime-local" id="vAt" required></div>
-      <div class="field"><label for="vNote">Note to owner (optional)</label><textarea id="vNote" maxlength="300" style="min-height:70px" placeholder="I work in Whitefield, looking to move in by the 1st."></textarea></div>
+      <div class="field"><label for="vNote">Note to the owner (optional)</label><textarea id="vNote" maxlength="300" style="min-height:70px" placeholder="I work in Whitefield and want to move in by the 1st."></textarea></div>
       <button class="btn btn-primary btn-block" type="submit">Send visit request</button>
       <p class="hint">The owner gets your request and can confirm it. You can also call them directly.</p>
     </form>
@@ -665,8 +750,9 @@ const blobToDataUrl = b => new Promise(res => { const r = new FileReader(); r.on
 function hue(id){ let h = 0; for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) % 360; return h; }
 
 /* ================================================================ state */
-// vibe and saved belong to the device, so they survive signing in and out.
-const freshState = () => ({ user:null, credits:0, unlocked:[], myListings:[], visits:[], vibe:{}, saved:[] });
+// Signing out keeps everything, so the same person signing back in picks up where they left off.
+const freshState = () => ({ user:null, credits:0, unlocked:[], myListings:[], visits:[], vibe:{}, saved:[],
+                            prefs:{}, onboarded:{}, homeDraft:{}, packs:0, refunds:{}, unlockedAt:{} });
 let state;
 function load(){
   try{ state = Object.assign(freshState(), JSON.parse(localStorage.getItem("fm_state") || "{}")); }
@@ -740,8 +826,8 @@ const demoApi = {
   async verifyOtp(code){
     if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
     if(!state.user || state.user.phone !== pendingOtp.phone){
-      state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits,
-                                             vibe: state.vibe, saved: state.saved });
+      // A different person: keep only the demo's shared listings and visits.
+      state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits });
     }
     state.user = { phone: pendingOtp.phone, name: pendingOtp.name, role: pendingOtp.role };
     pendingOtp = null; save();
@@ -760,7 +846,8 @@ const demoApi = {
   view(l){
     const mine = Boolean(state.user && l.owner_phone === state.user.phone);
     const { private: _p, ...pub } = l;
-    return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id) };
+    return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id),
+             unlocked_at: state.unlockedAt[l.id] || null, refunded: Boolean(state.refunds[l.id]) };
   },
   async get(id){ const l = this.all().find(x => x.id === id); return l && this.view(l); },
   async contact(id){
@@ -773,7 +860,7 @@ const demoApi = {
     if(!l.is_owner && state.user.role !== "seeker") throw new Error("seekers-only");
     if(l.unlocked) return { unlocked:true, charged:false, credits: state.credits };
     if(state.credits < 1) return { unlocked:false, charged:false, credits: 0 };
-    state.credits -= 1; state.unlocked.push(id); save();
+    state.credits -= 1; state.unlocked.push(id); state.unlockedAt[id] = new Date().toISOString(); save();
     return { unlocked:true, charged:true, credits: state.credits };
   },
   async uploadPhotos(files){
@@ -805,7 +892,17 @@ const demoApi = {
   async setListingStatus(id, status){
     const l = state.myListings.find(x => x.id === id); if(l){ l.status = status; save(); }
   },
-  async buyPack(){ state.credits += PACK_CREDITS; save(); return { credits: state.credits }; }
+  async buyPack(){ state.credits += PACK_CREDITS; state.packs += 1; save(); return { credits: state.credits }; },
+  // Same rules as fm_claim_refund in schema.sql.
+  async claimRefund(id, reason){
+    const at = state.unlockedAt[id];
+    if(!state.unlocked.includes(id)) return { refunded:false, error:"not-unlocked" };
+    if(state.refunds[id]) return { refunded:false, error:"already-refunded" };
+    if(reason === "no_reply" && Date.now() - new Date(at) < 48*36e5) return { refunded:false, error:"too-early" };
+    if(Object.keys(state.refunds).length >= 2 * state.packs) return { refunded:false, error:"limit-reached" };
+    state.refunds[id] = reason; state.credits += 1; save();
+    return { refunded:true, credits: state.credits };
+  }
 };
 
 function makeLiveApi(sb){
@@ -906,6 +1003,11 @@ function makeLiveApi(sb){
       await rpc("fm_request_visit", { p_listing:id, p_at:new Date(at).toISOString(), p_note:note });
     },
     async setVisitStatus(vid, status){ await rpc("fm_set_visit_status", { p_visit:vid, p_status:status }); },
+    async claimRefund(id, reason){
+      const r = (await rpc("fm_claim_refund", { p_listing:id, p_reason:reason }))[0];
+      if(r.refunded){ state.credits = r.credits; save(); }
+      return r;
+    },
     async setListingStatus(id, status){
       const { error } = await sb.from("fm_listings").update({ status }).eq("id", id);
       if(error) throw error;
@@ -944,46 +1046,104 @@ async function initApi(){
   if(data && data.session) await api.me(); else { state.user = null; state.credits = 0; save(); }
 }
 
-/* ============================================================== router */
-const VIEWS = ["browse","post","account"];
-function route(){
-  const h = location.hash.slice(1);
-  const v = VIEWS.includes(h) ? h : "browse";
-  VIEWS.forEach(n => $("view-"+n).hidden = n !== v);
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-current", t.dataset.view === v));
-  if(v === "browse") renderBrowse();
-  if(v === "post") renderPost();
-  if(v === "account") renderAccount();
-  if(h === "rooms") $("vibeCta").scrollIntoView({ block:"start" }); else window.scrollTo(0, 0);
-}
-function go(v){ if(location.hash === "#"+v) route(); else location.hash = v; }
 
+/* ===================================================== small components */
 const isOwner = () => Boolean(state.user && state.user.role === "owner");
-const isSeeker = () => Boolean(state.user && state.user.role === "seeker");
-function renderHeader(){
-  const c = state.credits;
-  $("creditPill").textContent = !state.user ? "Sign in" : isOwner() ? "Post free"
-    : (c + (c === 1 ? " unlock" : " unlocks") + " left");
+const isSeeker = () => Boolean(state.user && state.user.role !== "owner");
+const ringColor = p => p >= 80 ? "var(--ok)" : p >= 60 ? "var(--mid)" : "var(--text-3)";
+function ringSvg(pct, size, cls){
+  const sw = Math.max(3, Math.round(size / 11)), r = size/2 - sw/2 - 1, c = 2 * Math.PI * r;
+  return `<svg class="ring ${cls || ""}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${pct}% match">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="rgba(0,0,0,.45)"/>
+    <circle class="trk" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="${sw}"/>
+    <circle class="val" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${ringColor(pct)}" stroke-width="${sw}"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - pct/100)).toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${Math.round(size*.3)}">${pct}</text></svg>`;
 }
-async function switchRole(role){
-  try{
-    await api.setRole(role);
-    renderHeader(); toast(role === "owner" ? "Switched: you can post your flat now." : "Switched: you can unlock flats now.");
-  }catch(err){ console.error(err); toast("Couldn't switch. Please try again."); }
+const AV_COLORS = ["#E07A5F","#3D8B7D","#F2CC8F","#81B29A","#6D6875","#B5838D","#5E81AC","#D08770"];
+function avatars(n, seed){
+  let h = 0; for(const c of String(seed)) h = (h * 31 + c.charCodeAt(0)) | 0;
+  return `<span class="avs" aria-hidden="true">${Array.from({length: Math.min(n, 4)}, (_, i) =>
+    `<i style="background:${AV_COLORS[Math.abs(h + i * 3) % AV_COLORS.length]}"></i>`).join("")}</span>`;
+}
+const partOfDay = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
+const firstName = () => ((state.user && state.user.name) || "").split(" ")[0];
+const photosOf = l => (l.photos || []).map(safeImg).filter(Boolean);
+const isSaved = id => state.saved.includes(id);
+function toggleSaved(id){
+  state.saved = isSaved(id) ? state.saved.filter(x => x !== id) : state.saved.concat(id);
+  save(); return isSaved(id);
+}
+function picHtml(l){
+  const ph = photosOf(l);
+  return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : roomArt(l.id, l.kind);
 }
 
-/* ====================================================== auth guard ==== */
-let afterLogin = null;
-/* Sign-in always asks the role first. `hint` pre-selects the one that fits
-   what the person was doing (posting -> owner, unlocking -> seeker). */
-function requireLogin(then, hint){
-  if(state.user) return then();
-  afterLogin = then;
-  $("loginForm").reset();
-  if(hint) $("loginForm").querySelector(`[name=role][value=${hint}]`).checked = true;
-  $("loginForm").hidden = false; $("otpForm").hidden = true; $("otpDemo").hidden = true;
-  $("dlgLogin").showModal();
+/* ====================================================== screens + router */
+const ROLE_VIEWS = { seeker:["discover","saved","account"], owner:["mine","post","account"] };
+const TAB = {
+  discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
+  saved:["Saved",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'],
+  mine:["My flat",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>'],
+  post:["Post",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>'],
+  account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
+};
+function showScreen(name){
+  $("view-welcome").hidden = name !== "welcome";
+  $("view-onboard").hidden = name !== "onboard";
+  $("appHead").hidden = $("appMain").hidden = name !== "app";
+  document.body.classList.toggle("app", name === "app");
+  if(name === "welcome") startCity(); else stopCity();
 }
+function go(v){ if(location.hash === "#" + v) route(); else location.hash = v; }
+function route(){
+  if(!state.user){ showScreen("welcome"); return; }
+  const role = isOwner() ? "owner" : "seeker";
+  if(!state.onboarded[role]){ showScreen("onboard"); startOnboarding(role); return; }
+  const h = location.hash.slice(1), allowed = ROLE_VIEWS[role];
+  const v = allowed.includes(h) ? h : allowed[0];
+  showScreen("app");
+  ["discover","saved","mine","post","account"].forEach(n => $("view-" + n).hidden = n !== v);
+  $("nav").innerHTML = allowed.map(n => `<button class="tab" data-view="${n}" aria-current="${n === v}">${TAB[n][1]}<span>${TAB[n][0]}</span></button>`).join("");
+  $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
+  ({ discover:renderDiscover, saved:renderSaved, mine:renderMine, post:renderPost, account:renderAccount })[v]();
+  window.scrollTo(0, 0);
+}
+$("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
+$("meBtn").addEventListener("click", () => go("account"));
+
+/* ============================================================== welcome */
+let cityTimer = null;
+function buildCity(){
+  const towers = [[10,70,170],[88,92,240],[188,64,150],[260,110,270],[378,74,190],[460,96,230],[564,60,140]];
+  let wins = "", body = "";
+  towers.forEach(([x, w, h]) => {
+    const top = 300 - h;
+    body += `<rect class="tower" x="${x}" y="${top}" width="${w}" height="${h}" rx="3"/>`;
+    for(let y = top + 14; y < 290; y += 22) for(let wx = x + 10; wx < x + w - 14; wx += 18)
+      wins += `<rect class="win${Math.random() < .38 ? " on" : ""}" x="${wx}" y="${y}" width="9" height="12" rx="1.5"/>`;
+  });
+  $("city").innerHTML = `<svg viewBox="0 0 640 300" preserveAspectRatio="xMidYMax slice">${body}${wins}</svg>
+    <div class="float" style="left:4%;top:8%">${ringSvg(94, 30, "ring-sm")}Night owls, like you</div>
+    <div class="float" style="left:40%;top:-2%">${ringSvg(88, 30, "ring-sm")}Veg kitchen, tidy home</div>
+    <div class="float" style="right:3%;top:22%">${ringSvg(91, 30, "ring-sm")}Pet-friendly, WFH</div>`;
+  $("storyArt1").innerHTML = roomArt("story-home", "room");
+  $("storyArt2").innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;gap:16px;padding:0 20px;background:var(--band);color:var(--on-band)">
+      ${ringSvg(86, 96)}<ul class="reasons" style="margin:0"><li><span class="g">✓</span>Both night owls</li><li><span class="g">✓</span>Same food habits</li><li><span class="c">!</span>They have guests often</li></ul></div>`;
+  $("storyArt3").innerHTML = `<div style="position:absolute;inset:0;padding:18px 22px;display:flex;flex-direction:column;justify-content:center">
+      <div class="bill"><span class="muted">Rent</span><span>₹14,000</span><span class="muted">Maintenance</span><span>₹850</span>
+      <span class="muted">Electricity, Wi-Fi, cook</span><span>₹2,450</span><span class="tot">All-in per month</span><span class="tot">₹17,300</span></div></div>`;
+}
+function startCity(){
+  if(!$("city").firstChild) buildCity();
+  if(cityTimer || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  cityTimer = setInterval(() => {
+    const w = document.querySelectorAll("#city .win");
+    if(w.length) w[Math.floor(Math.random() * w.length)].classList.toggle("on");
+  }, 260);
+}
+function stopCity(){ clearInterval(cityTimer); cityTimer = null; }
+
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   const phone = $("lgPhone").value.trim(), name = $("lgName").value.trim();
@@ -991,113 +1151,216 @@ $("loginForm").addEventListener("submit", async e => {
   try{
     const r = await api.sendOtp(phone, name, role);
     $("otpTo").textContent = "+91 " + phone;
-    if(r.demoCode){ $("otpDemo").hidden = false; $("otpDemo").textContent = "Demo mode: your OTP is " + r.demoCode; }
+    $("otpDemo").hidden = !r.demoCode;
+    if(r.demoCode) $("otpDemo").textContent = "Demo mode: your code is " + r.demoCode;
     $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus();
-  }catch(err){ console.error(err); toast("Couldn't send OTP. Check the number and try again."); }
+  }catch(err){ console.error(err); toast("Couldn't send the code. Check the number and try again."); }
 });
+$("otpBack").addEventListener("click", () => { $("otpForm").hidden = true; $("loginForm").hidden = false; });
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
   try{
     await api.verifyOtp($("lgOtp").value.trim());
-    $("dlgLogin").close(); renderHeader(); toast("Signed in");
-    const next = afterLogin; afterLogin = null;
-    if(next) next(); else go(isOwner() ? "account" : "browse");
-  }catch(err){ toast("That OTP didn't match. Try again."); }
+    if(isSeeker() && answered(state.vibe) >= 4) state.onboarded.seeker = true;   // answered on another device
+    $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
+    location.hash = ""; route();
+  }catch(err){ toast("That code didn't match. Try again."); }
 });
 
-/* ============================================================== browse */
+/* =========================================================== onboarding */
+// Friendlier wording for the 8 living-style questions, per role. d = option subtitles.
+const OB_TEXT = {
+  sleep:  { s:"When do you usually go to bed?", o:"When does your home usually go quiet?",
+            why:"Night owls and early birds rarely make happy flatmates.", d:["Lights out early, quiet mornings","Late-ish, but not a night owl","Night owl, slow mornings"] },
+  clean:  { s:"How do you like the kitchen and common areas?", o:"How are the kitchen and common areas kept?",
+            why:"The most common reason flatmates fall out. Be honest.", d:["Dishes done, counters clear, always","Tidy most days, messy now and then","It gets cleaned when it gets cleaned"] },
+  food:   { s:"What do you cook or eat at home?", o:"What gets cooked in your kitchen?",
+            why:"Shared kitchens work best when this matches.", d:["Vegetarian only","Vegetarian, and eggs are fine","Non-veg too"] },
+  smoke:  { s:"Do you smoke?", o:"What's the rule on smoking?", why:"", d:["No, and I'd like a smoke-free home","Sometimes, always outside","Yes, indoors is fine for me"],
+            od:["No smoking anywhere","Outside or balcony only","Fine indoors"] },
+  drinks: { s:"Drinks at home?", o:"Drinks at home?", why:"", d:["Never","Now and then, with friends","Regularly, it's part of the weekend"] },
+  guests: { s:"How often do friends come over?", o:"How often do friends come over?", why:"", d:["Rarely, home is for resting","Mostly on weekends","Often, we like a full house"] },
+  work:   { s:"Where do you work from?", o:"Where do people in the flat work from?", why:"Decides who's home during the day, and who needs quiet.",
+            d:["Out at the office most days","A mix of office and home","From home, most days"] },
+  pets:   { s:"How do you feel about pets?", o:"Pets at home?", why:"", d:["I'd rather not live with pets","Happy to live with one","I have a pet who'd move with me"],
+            od:["No pets, please","Happy to have one","We already have a pet"] },
+};
+const LETTERS = ["A","B","C","D","E","F","G","H"];
+function obSteps(role){
+  const vibe = VIBE_QS.map(x => ({ k:x.k, vibe:true, q: role === "owner" ? OB_TEXT[x.k].o : OB_TEXT[x.k].s, why: OB_TEXT[x.k].why,
+    opts: x.o.map((t, i) => ({ v:i, t, s: (role === "owner" && OB_TEXT[x.k].od ? OB_TEXT[x.k].od : OB_TEXT[x.k].d)[i] })) }));
+  if(role === "owner") return [
+    { k:"residents", q:"Who lives in your flat right now?", why:"People looking for a room want to know who they'd share with.",
+      opts:[{v:1,t:"Just me"},{v:2,t:"Two of us"},{v:3,t:"Three of us"},{v:4,t:"Four or more"},{v:0,t:"Nobody",s:"It's a whole flat"}] },
+    ...vibe ];
+  return [
+    { k:"city", q:"Which city are you moving to?", why:"We'll show you flats there first.", cols:true, opts: CITIES.map(c => ({ v:c, t:c })) },
+    { k:"budget", q:"What can you spend each month, all-in?", why:"Rent plus your share of the bills. We do the maths for every flat.",
+      opts:[{v:12000,t:"Up to ₹12,000"},{v:18000,t:"Up to ₹18,000"},{v:25000,t:"Up to ₹25,000"},{v:40000,t:"Up to ₹40,000"},{v:0,t:"I'm flexible"}] },
+    { k:"when", q:"When are you hoping to move?", why:"",
+      opts:[{v:"now",t:"This month"},{v:"next",t:"Next month"},{v:"later",t:"Just exploring for now"}] },
+    ...vibe ];
+}
+let ob = null;
+function startOnboarding(role){
+  if(ob && ob.role === role) return renderOb();
+  const prev = role === "owner" ? state.homeDraft : Object.assign({}, state.prefs, state.vibe);
+  ob = { role, steps: obSteps(role), i: 0, a: Object.assign({}, prev) };
+  renderOb();
+}
+function renderOb(){
+  const st = ob.steps[ob.i];
+  $("obBar").style.width = (ob.i / ob.steps.length * 100) + "%";
+  $("obCount").textContent = `${ob.i + 1} / ${ob.steps.length}`;
+  $("obBack").style.visibility = ob.i ? "visible" : "hidden";
+  const intro = ob.i === 0 ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "a few quick questions"}</p>` : "";
+  $("obStage").innerHTML = `<div class="ob-q">${intro}<h1>${esc(st.q)}</h1>${st.why ? `<p class="why">${esc(st.why)}</p>` : `<p class="why"></p>`}
+    <div class="opts${st.cols ? " cols" : ""}">${st.opts.map((o, i) => `<button class="opt" type="button" data-i="${i}" aria-pressed="${ob.a[st.k] === o.v}">
+      ${st.cols ? "" : `<span class="dot" style="background:${AV_COLORS[(i * 2 + ob.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>`}
+      <span><b>${esc(o.t)}</b>${o.s ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div></div>`;
+}
+$("obStage").addEventListener("click", e => {
+  const b = e.target.closest(".opt[data-i]"); if(!b) return;
+  const st = ob.steps[ob.i]; ob.a[st.k] = st.opts[Number(b.dataset.i)].v;
+  b.parentElement.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
+  setTimeout(() => { if(ob.i < ob.steps.length - 1){ ob.i++; renderOb(); } else finishOnboarding(); }, 200);
+});
+$("obBack").addEventListener("click", () => { if(ob && ob.i > 0){ ob.i--; renderOb(); } });
+$("obSkip").addEventListener("click", () => finishOnboarding());
+async function finishOnboarding(){
+  const a = ob.a, role = ob.role;
+  const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
+  $("obBar").style.width = "100%"; $("obCount").textContent = ""; $("obBack").style.visibility = "hidden"; $("obSkip").hidden = true;
+  if(role === "owner"){
+    state.homeDraft = Object.assign({ residents: Number.isInteger(a.residents) ? a.residents : 1 }, vibe);
+    state.onboarded.owner = true; save();
+    $("obStage").innerHTML = `<div class="ob-q finale">${roomArtBox()}<h1>Lovely. Now, the room itself.</h1>
+      <p>Your home's living style is saved. Add the room, a few photos and the rent, and you're live.</p>
+      <button class="btn btn-primary" type="button" id="obDone">Describe the room</button></div>`;
+    $("obDone").onclick = () => { ob = null; $("obSkip").hidden = false; go("post"); };
+    return;
+  }
+  state.prefs = { city: a.city || "", budget: a.budget || 0, when: a.when || "" };
+  try{ if(answered(vibe)) await api.setVibe(vibe); }catch(err){ console.error(err); }
+  state.onboarded.seeker = true; save();
+  applyPrefs();
+  const rows = await api.search({ city: state.prefs.city, maxRent: state.prefs.budget });
+  const scores = rows.map(l => (vibeMatch(state.vibe, l.household) || { pct: 0 }).pct);
+  const best = Math.max(0, ...scores), strong = scores.filter(p => p >= 75).length;
+  const where = state.prefs.city || "your city";
+  $("obStage").innerHTML = `<div class="ob-q finale"><div class="ring-lg" id="obRing">${ringSvg(0, 180)}</div>
+    <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} fit your budget.` : `We're still filling up ${esc(where)}.`}</h1>
+    <p>${answered(state.vibe) >= 4 ? (strong ? `${strong} of them ${strong === 1 ? "is a" : "are"} strong ${strong === 1 ? "match" : "matches"} for how you live. Your best one is ${best}%.`
+        : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't.")
+        : "Answer the living-style questions any time from your account to see how well you'd fit."}</p>
+    <button class="btn btn-primary" type="button" id="obDone">Show me</button></div>`;
+  let n = 0; const target = answered(state.vibe) >= 4 ? best : 0;
+  const tick = () => { n = Math.min(target, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 180)); if(n < target) requestAnimationFrame(tick); };
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(target, 180); else tick();
+  $("obDone").onclick = () => { ob = null; $("obSkip").hidden = false; $("fSort").value = "match"; go("discover"); };
+}
+const roomArtBox = () => `<div style="position:relative;width:min(340px,100%);height:190px;margin:0 auto 20px;border-radius:20px;overflow:hidden">${roomArt("welcome-home", "room")}</div>`;
+function applyPrefs(){
+  if(state.prefs.city) $("fCity").value = state.prefs.city;
+  const b = Number(state.prefs.budget) || 0;
+  const opt = [...$("fRent").options].map(o => Number(o.value)).filter(v => v && v >= b).sort((x, y) => x - y)[0];
+  $("fRent").value = b ? String(opt || "") : "";
+}
+
+/* ============================================================= discover */
 function filters(){
   return { city:$("fCity").value, q:$("fQ").value.trim(), kind:$("fKind").value,
-           maxRent: Number($("fRent").value) || 0, gender:$("fGender").value,
-           sort:$("fSort").value, savedOnly:$("fSaved").checked };
+           maxRent: Number($("fRent").value) || 0, gender:$("fGender").value, sort:$("fSort").value };
 }
-const isSaved = id => state.saved.includes(id);
-function toggleSaved(id){
-  state.saved = isSaved(id) ? state.saved.filter(x => x !== id) : state.saved.concat(id);
-  save(); renderSavedCount();
-  return isSaved(id);
-}
-function renderSavedCount(){ $("savedCount").textContent = state.saved.length; }
-const photosOf = l => (l.photos || []).map(safeImg).filter(Boolean);
-
-function cardHtml(l){
-  const photos = photosOf(l);
-  const m = vibeMatch(state.vibe, l.household);
-  const bills = billsTotal(l);
-  return `<article class="card" tabindex="0" data-id="${esc(l.id)}">
-    <div class="thumb${photos.length ? " has-photo" : ""}">
-      ${photos.length ? `<img src="${esc(photos[0])}" alt="" loading="lazy">` : roomArt(l.id, l.kind)}
-      ${photos.length > 1 ? `<span class="count">${photos.length} photos</span>` : ""}
+function cardHtml(l, i){
+  const m = vibeMatch(state.vibe, l.household), hh = l.household || {}, bills = billsTotal(l), ph = photosOf(l);
+  return `<article class="card" tabindex="0" data-id="${esc(l.id)}" style="--i:${Math.min(i || 0, 12)}">
+    <div class="thumb">${picHtml(l)}
       <span class="tag">${esc(KIND_LABEL[l.kind])}</span>
-      ${m ? `<span class="match ${matchClass(m.pct)}" title="How well your living style fits this household">${m.pct}% match</span>` : ""}
-      ${l.is_owner ? '<span class="tag r">Your listing</span>' : l.unlocked ? '<span class="tag r ok">Unlocked</span>' : ""}
+      ${ph.length > 1 ? `<span class="count-ph">${ph.length} photos</span>` : ""}
+      ${m ? `<span class="ring-wrap" title="How well your living style fits this household">${ringSvg(m.pct, 46)}</span>` : ""}
+      ${l.is_owner ? '<span class="tag r">Your listing</span>' : l.unlocked ? '<span class="tag r ok">Contacted</span>' : ""}
       <button class="heart" type="button" data-save="${esc(l.id)}" aria-pressed="${isSaved(l.id)}" aria-label="Save this flat">♥</button>
     </div>
     <div class="body">
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}</div>
-      ${l.household && l.household.about ? `<div class="loc" style="color:var(--text)">${l.household.residents ? `Live with: ` : ""}${esc(l.household.about)}</div>` : ""}
+      ${hh.about ? `<div class="people">${hh.residents ? avatars(hh.residents, l.id) : ""}<span>${esc(hh.about)}</span></div>` : ""}
       <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
       <div class="price">${inr(allIn(l))}<small> /month all-in</small></div>
       <div class="allin">${inr(l.rent)} rent${bills ? ` + ${inr(bills)} bills` : ""} · deposit ${inr(l.deposit)}</div>
       <div class="fresh">Posted ${timeAgo(l.created_at)}</div>
     </div></article>`;
 }
+function spotlightHtml(l, m){
+  const hh = l.household || {};
+  return `<article class="spot" tabindex="0" data-id="${esc(l.id)}">
+    <div class="pic">${picHtml(l)}<span class="ring-wrap">${ringSvg(m.pct, 84)}</span></div>
+    <div class="txt"><p class="eyebrow">Your best match right now</p>
+      <h2>${esc(l.title)}</h2>
+      <div class="who">${esc(l.locality)}, ${esc(l.city)}${hh.about ? " · " + esc(hh.about) : ""}</div>
+      <ul class="reasons">${m.good.slice(0, 3).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
+        ${m.clash.slice(0, 1).map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
+      <div class="price">${inr(allIn(l))}<small> /month all-in</small></div></div></article>`;
+}
 let browseSeq = 0;
-async function renderBrowse(){
+async function renderDiscover(){
   const seq = ++browseSeq, f = filters();
   let rows = await api.search(f);
   if(seq !== browseSeq) return;
-  renderVibeCta(); renderSavedCount();
-  if(f.savedOnly) rows = rows.filter(l => isSaved(l.id));
   const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
   if(f.sort === "match" && answered(state.vibe)) rows.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
   else if(f.sort === "cost") rows.sort((a, b) => allIn(a) - allIn(b));
   else rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
-  $("count").textContent = rows.length + (rows.length === 1 ? " place" : " places") + " found";
-  $("cards").innerHTML = rows.length ? rows.map(cardHtml).join("")
-    : `<div class="empty">${f.savedOnly ? "No saved flats yet. Tap ♥ on any flat to keep it here, free." : "Nothing matches yet. Try another area or a higher budget."}</div>`;
+  const strong = rows.filter(l => score(l) >= 75).length;
+  $("greetTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
+  $("greetName").textContent = answered(state.vibe) ? "Here's who you'd get along with" : "Homes with good people in them";
+  $("greetSub").textContent = `${rows.length} ${rows.length === 1 ? "home" : "homes"}${f.city ? " in " + f.city : ""}`
+    + (answered(state.vibe) ? ` · ${strong} strong ${strong === 1 ? "match" : "matches"}` : "");
+  const top = answered(state.vibe) && rows.find(l => !l.unlocked && score(l) >= 0);
+  const tm = top && vibeMatch(state.vibe, top.household);
+  $("spotlight").innerHTML = tm ? spotlightHtml(top, tm) : "";
+  const rest = tm ? rows.filter(l => l !== top) : rows;
+  $("count").textContent = tm ? "More homes" : "";
+  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("")
+    : (tm ? "" : `<div class="empty"><h3>Nothing here yet</h3>Try another area, or raise the budget a little.</div>`);
 }
-function renderVibeCta(){
-  const n = answered(state.vibe);
-  $("vibeCtaTitle").textContent = n ? "Your vibe is set" : "See your match with every flat";
-  $("vibeCtaText").textContent = n
-    ? "Flats are sorted by how well you'd fit with the people already living there. Change your answers any time."
-    : "Answer 8 quick questions about how you live: bedtime, food, guests, smoking. Each flat then shows how well you'd fit with the people already there.";
-  $("vibeCtaBtn").textContent = n ? "Edit my answers" : "Take the vibe check";
+async function renderSaved(){
+  const all = await api.search({});
+  const rows = all.filter(l => isSaved(l.id));
+  $("savedCards").innerHTML = rows.length ? rows.map(cardHtml).join("")
+    : `<div class="empty"><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.</div>`;
 }
-$("filters").addEventListener("input", renderBrowse);
+$("filters").addEventListener("input", renderDiscover);
 $("filters").addEventListener("submit", e => e.preventDefault());
-$("cards").addEventListener("click", e => {
+$("moreF").addEventListener("click", () => {
+  const open = $("filters").classList.toggle("open");
+  $("moreF").setAttribute("aria-expanded", open);
+  $("moreF").textContent = open ? "Fewer filters" : "More filters: area, budget, type";
+});
+function onCardClick(e){
   const h = e.target.closest("[data-save]");
-  if(h){ e.stopPropagation(); const on = toggleSaved(h.dataset.save); h.setAttribute("aria-pressed", on);
-         toast(on ? "Saved. Find it under ♥ Saved." : "Removed from saved"); if($("fSaved").checked) renderBrowse(); return; }
-  const c = e.target.closest(".card"); if(c) openListing(c.dataset.id);
-});
-$("cards").addEventListener("keydown", e => {
-  if(e.target.closest("[data-save]")) return;
-  const c = e.target.closest(".card"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
-});
-
-/* ============================================================ vibe check */
-function openVibe(){
-  $("vQuiz").innerHTML = quizHtml("v", state.vibe);
-  $("dlgVibe").showModal();
+  if(h){
+    e.stopPropagation();
+    const on = toggleSaved(h.dataset.save);
+    h.setAttribute("aria-pressed", on); h.classList.remove("pop"); void h.offsetWidth; h.classList.add("pop");
+    toast(on ? "Saved to your shortlist" : "Removed from saved");
+    if(location.hash === "#saved") renderSaved();
+    return;
+  }
+  const c = e.target.closest("[data-id]"); if(c) openListing(c.dataset.id);
 }
-document.addEventListener("click", e => { if(e.target.closest("[data-vibe-open]")) openVibe(); });
-$("vibeForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const v = readQuiz(e.target, "v");
-  if(answered(v) < 4){ toast("Answer at least 4 questions to see matches."); return; }
-  try{ await api.setVibe(v); }catch(err){ console.error(err); }
-  $("dlgVibe").close(); toast("Done. Flats now show your match.");
-  $("fSort").value = "match";
-  if(location.hash === "#account") renderAccount(); else go("browse");
-  if($("dlgListing").open && currentId) openListing(currentId);
-});
+function onCardKey(e){
+  if(e.target.closest("[data-save]")) return;
+  const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
+}
+["cards","savedCards","spotlight"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
-/* ======================================================= listing modal */
+/* ======================================================= listing detail */
 let currentId = null;
+const REFUND_MSG = { "too-early":"You can ask for this one 48 hours after you unlocked it.",
+  "limit-reached":"You've used both returns for this pack. Each pack covers up to 2.",
+  "already-refunded":"This unlock was already returned.", "not-unlocked":"You haven't unlocked this flat." };
 async function openListing(id){
   currentId = id;
   const l = await api.get(id);
@@ -1105,9 +1368,11 @@ async function openListing(id){
   $("lTitle").textContent = l.title;
   $("lLoc").textContent = l.locality + ", " + l.city;
   const contact = l.unlocked ? await api.contact(id) : null;
-  const amen = (l.amenities || []).map(a => `<span>${esc(a)}</span>`).join("");
-  let lock;
+  const ph = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
+  let lock = "";
   if(contact){
+    const waitUntil = l.unlocked_at ? new Date(new Date(l.unlocked_at).getTime() + 48 * 36e5) : null;
+    const canNoReply = waitUntil && waitUntil <= new Date();
     lock = `<div class="lock open">
       <div class="kv" style="margin-top:0">
         <div><span>Owner</span><b>${esc(contact.contact_name)}</b> <span class="verified">✓ Phone verified</span></div>
@@ -1116,106 +1381,104 @@ async function openListing(id){
       <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div>
         <a class="hint" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact.address)}">Open in Maps</a></div>
       ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <a class="btn btn-ghost btn-sm" href="tel:+91${esc(contact.contact_phone)}">Call owner</a>
+        <a class="btn btn-ghost btn-sm" href="tel:+91${esc(contact.contact_phone)}">Call</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I saw your listing \"" + l.title + "\" on Navigate Me Flatmates. Is it still available?")}">WhatsApp</a>
-        <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>`}
+        <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>
+      <div class="guarantee">${l.refunded ? `<span class="hint">You got this unlock back. The contact stays visible.</span>` : `
+        <details><summary>Didn't work out?</summary>
+          <p class="hint">If the flat is already rented, or the owner hasn't replied 48 hours after you unlocked it, you get the unlock back.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <button class="btn btn-ghost btn-sm" data-refund="rented">It's already rented</button>
+            <button class="btn btn-ghost btn-sm" data-refund="no_reply"${canNoReply ? "" : " disabled"}>No reply in 48 hours</button></div>
+          ${canNoReply || !waitUntil ? "" : `<p class="hint">"No reply" opens ${fmtDateTime(waitUntil)}.</p>`}
+        </details>`}</div>`}
     </div>`;
-  }else if(state.user && !isSeeker()){
+  }else if(!l.is_owner && isSeeker()){
+    const c = state.credits;
     lock = `<div class="lock">
-      <b>Owner contact and exact address are locked</b>
-      <div class="notice"><p>You're signed in as a flat owner. Unlocking other flats is for people looking for a room.</p>
-        <button class="btn btn-primary btn-sm" data-action="become-seeker">I'm looking for a room, switch</button></div>
-    </div>`;
-  }else{
-    const c = state.user ? state.credits : 0;
-    lock = `<div class="lock">
-      <b>Owner contact and exact address are locked</b>
-      <div class="kv"><div><span>Owner</span><b class="blur">Xxxxxx</b> <span class="verified">✓ Phone verified</span></div><div><span>Phone</span><b class="blur">+91 98xxxxxx12</b></div></div>
-      <p class="hint" style="margin:0 0 10px">Unlock to get the owner's phone and address and book a visit. ${state.user && c > 0
-        ? `Uses 1 of your ${c} unlocks.` : `₹500 gets you 5 unlocks (₹100 per flat), and they never expire.`}</p>
-      <button class="btn btn-accent btn-block" data-action="unlock">${state.user && c > 0 ? "Unlock this flat (1 credit)" : "Unlock: ₹500 for 5 flats"}</button>
-      ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:8px" data-action="save">♥ Not sure yet? Save it free</button>`}
+      <h3>Like what you see?</h3>
+      <p>Get the owner's number and the exact address, and book a visit.</p>
+      <div class="blurred"><div><span>Owner</span><b>Xxxxxxx</b></div><div><span>Phone</span><b>+91 98xxxxxx12</b></div></div>
+      <button class="btn btn-accent btn-block" data-action="unlock">${c > 0 ? `Unlock this flat · ${c} ${c === 1 ? "unlock" : "unlocks"} left` : "Unlock this flat · ₹100"}</button>
+      ${c > 0 ? "" : `<p style="margin:8px 0 0;font-size:13px;text-align:center">Comes in a pack of 5 for ₹500. They never expire.</p>`}
+      <div class="promise-line"><b>✓</b><span>Already rented, or no reply within 48 hours? You get the unlock back.</span></div>
+      ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:12px" data-action="save">♥ Not sure yet? Save it</button>`}
     </div>`;
   }
-
-  const photos = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
   const traits = VIBE_QS.filter(x => Number.isInteger(hh[x.k])).map(x => `<span>${esc(x.t[hh[x.k]])}</span>`).join("");
   const people = hh.residents ? `${hh.residents === 4 ? "4+" : hh.residents} ${hh.residents === 1 ? "person lives" : "people live"} here` : "";
-  let matchBlock = "";
-  if(l.kind !== "flat" && traits){
-    matchBlock = m
-      ? `<div class="meter" aria-hidden="true"><i style="width:${m.pct}%"></i></div>
-         <b>${m.pct}% match with this household</b>
-         <ul class="reasons">${m.good.slice(0, 4).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
-           ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
-         <button class="btn btn-ghost btn-sm" style="margin-top:8px" data-vibe-open>Edit my answers</button>`
-      : `<p class="hint" style="margin:6px 0">Take the 30-second vibe check to see how well you'd fit with them.</p>
-         <button class="btn btn-primary btn-sm" data-vibe-open>Take the vibe check</button>`;
-  }
+  const matchBlock = l.kind === "flat" || !traits ? "" : m
+    ? `<ul class="reasons">${m.good.slice(0, 4).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
+        ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>`
+    : (isSeeker() ? `<p class="hint">Answer the living-style questions to see how well you'd fit. <button class="linkbtn" data-vibe-open>Answer now</button></p>` : "");
   const bill = BILLS.filter(([k]) => Number((l.costs || {})[k]) > 0)
     .map(([k, label]) => `<span class="muted">${label}</span><span>${inr(l.costs[k])}</span>`).join("");
-
   $("lBody").innerHTML = `
-    <div class="gallery">${photos.length
-      ? photos.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${photos.length}" loading="lazy">`).join("")
-      : roomArt(l.id, l.kind)}</div>
-    ${photos.length > 1 ? `<p class="hint" style="margin:0">${photos.length} photos · swipe to see more</p>`
-      : photos.length ? "" : `<p class="hint" style="margin:0">Illustration. The owner hasn't added photos yet.</p>`}
-
+    <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
+      ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
+    <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
     ${l.kind !== "flat" && (people || hh.about || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     <div class="household">
-      ${people || hh.about ? `<b>${esc(people)}${people && hh.about ? ": " : ""}${esc(hh.about || "")}</b>` : ""}
+      ${people || hh.about ? `<div class="people">${hh.residents ? avatars(hh.residents, l.id) : ""}<b>${esc(people)}${people && hh.about ? ": " : ""}${esc(hh.about || "")}</b></div>` : ""}
       ${traits ? `<div class="traits">${traits}</div>` : ""}
+      ${m ? `<p style="margin:12px 0 0;font-weight:800">${m.pct}% match with how you live</p>` : ""}
       ${matchBlock}
     </div>` : ""}
-
-    <h3 class="section-h">What it costs</h3>
+    <h3 class="section-h">What it costs each month</h3>
     <div class="bill">
-      <span class="muted">Rent</span><span>${inr(l.rent)}</span>
-      ${bill}
+      <span class="muted">Rent</span><span>${inr(l.rent)}</span>${bill}
       <span class="tot">All-in per month</span><span class="tot">${inr(allIn(l))}</span>
       <span class="muted">To move in (deposit + first month)</span><span>${inr(moveIn(l))}</span>
       <span class="muted">Brokerage</span><span>₹0</span>
     </div>
-
     <div class="kv">
       <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
       <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
     </div>
-    ${amen ? `<div class="meta">${amen}</div>` : ""}
+    ${(l.amenities || []).length ? `<div class="meta">${l.amenities.map(a => `<span>${esc(a)}</span>`).join("")}</div>` : ""}
     <p style="white-space:pre-line">${esc(l.description)}</p>
-    <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} unlocked this flat` : ""}</p>
+    <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} contacted this owner` : ""}</p>
     ${lock}`;
   if(!$("dlgListing").open) $("dlgListing").showModal();
 }
-$("lBody").addEventListener("click", e => {
+$("lBody").addEventListener("click", async e => {
+  const r = e.target.closest("[data-refund]");
+  if(r){
+    r.disabled = true;
+    try{
+      const res = await api.claimRefund(currentId, r.dataset.refund);
+      toast(res.refunded ? "Done. The unlock is back in your account." : (REFUND_MSG[res.error] || "Couldn't do that right now."));
+      await openListing(currentId);
+    }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); r.disabled = false; }
+    return;
+  }
   const a = e.target.closest("[data-action]"); if(!a) return;
-  if(a.dataset.action === "unlock") requireLogin(() => doUnlock(currentId), "seeker");
-  if(a.dataset.action === "become-seeker") switchRole("seeker").then(() => openListing(currentId));
+  if(a.dataset.action === "unlock") doUnlock(currentId);
   if(a.dataset.action === "visit") openVisit(currentId);
-  if(a.dataset.action === "save"){ toggleSaved(currentId); a.remove(); toast("Saved. Find it under ♥ Saved."); renderBrowse(); }
+  if(a.dataset.action === "save"){ toggleSaved(currentId); a.remove(); toast("Saved to your shortlist"); refreshCurrent(); }
 });
 async function doUnlock(id){
-  if(!isSeeker()) return openListing(id);   // shows the "switch to looking for a room" prompt
+  if(!isSeeker()) return;
   try{
     const r = await api.unlock(id);
-    renderHeader();
     if(r.unlocked){
       if(r.charged) toast("Unlocked. " + r.credits + (r.credits === 1 ? " unlock" : " unlocks") + " left.");
-      await openListing(id); renderBrowse();
-    }else{
-      openPay(() => doUnlock(id));
-    }
+      await openListing(id); refreshCurrent();
+    }else openPay(() => doUnlock(id));
   }catch(err){ console.error(err); toast("Couldn't unlock right now. Please try again."); }
+}
+function refreshCurrent(){
+  const v = location.hash.slice(1);
+  if(v === "saved") renderSaved(); else if(v === "account") renderAccount(); else if(isSeeker()) renderDiscover();
 }
 
 /* ============================================================= payment */
 let afterPay = null;
 function openPay(then){
   afterPay = then || null;
-  $("payNote").textContent = LIVE ? "Secure checkout by Razorpay. Credits are added as soon as payment is confirmed."
+  $("payNote").textContent = LIVE ? "Secure checkout by Razorpay. Unlocks are added as soon as payment is confirmed."
                                   : "Demo mode: no money is charged. Tapping Pay adds 5 unlocks.";
   $("dlgPay").showModal();
 }
@@ -1223,11 +1486,11 @@ $("payBtn").addEventListener("click", async () => {
   const b = $("payBtn"); b.disabled = true;
   try{
     await api.buyPack();
-    $("dlgPay").close(); renderHeader(); toast("Payment received. 5 unlocks added.");
+    $("dlgPay").close(); toast("Payment received. 5 unlocks added.");
     const next = afterPay; afterPay = null;
-    if(next) next(); else if(location.hash === "#account") renderAccount();
+    if(next) next();
   }catch(err){
-    if(err.message !== "cancelled"){ console.error(err); toast("Payment didn't go through. You weren't charged for unlocks."); }
+    if(err.message !== "cancelled"){ console.error(err); toast("Payment didn't go through, and you weren't charged."); }
   }finally{ b.disabled = false; }
 });
 
@@ -1249,7 +1512,62 @@ $("visitForm").addEventListener("submit", async e => {
   }catch(err){ toast(err.message === "visit-in-past" ? "Pick a time in the future." : "Couldn't book the visit. Try again."); }
 });
 
-/* ================================================================ post */
+/* ========================================================== vibe edit */
+document.addEventListener("click", e => {
+  if(!e.target.closest("[data-vibe-open]")) return;
+  $("vQuiz").innerHTML = quizHtml("v", state.vibe);
+  $("dlgVibe").showModal();
+});
+$("vibeForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const v = readQuiz(e.target, "v");
+  if(answered(v) < 4){ toast("Answer at least 4 questions to see matches."); return; }
+  try{ await api.setVibe(v); }catch(err){ console.error(err); }
+  $("dlgVibe").close(); toast("Saved. Your matches are updated.");
+  if($("dlgListing").open && currentId) openListing(currentId);
+  route();
+});
+
+/* ================================================== owner: my listings */
+async function renderMine(){
+  const [mine, incoming] = await Promise.all([api.myListings(), api.incomingVisits()]);
+  $("mineTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
+  $("mineName").textContent = mine.length ? (mine.length === 1 ? "Your flat is live" : "Your flats are live") : "Let's find your flatmate";
+  const interested = mine.reduce((t, l) => t + (l.unlock_count || 0), 0);
+  $("mineSub").textContent = mine.length
+    ? `${interested} ${interested === 1 ? "person has" : "people have"} asked for your number · ${incoming.filter(v => v.status === "requested").length} visit requests waiting`
+    : "Describe the room and add a few photos. People who fit your home will reach out.";
+  $("mineList").innerHTML = mine.length ? mine.map(l => {
+    const vs = incoming.filter(v => v.listing_id === l.id), closed = l.status === "closed";
+    return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
+      <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
+      <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${inr(allIn(l))}/month all-in</div>
+      <div class="stats" style="margin:12px 0">
+        <div class="stat"><b>${l.unlock_count || 0}</b><span>asked for your number</span></div>
+        <div class="stat"><b>${vs.length}</b><span>visit requests</span></div>
+        <div class="stat"><b>${photosOf(l).length}</b><span>photos</span></div></div>
+      ${vs.map(v => `<div class="row"><div><div class="t">Visit ${fmtDateTime(v.visit_at)}</div>${v.note ? `<div class="s">“${esc(v.note)}”</div>` : ""}</div>
+        <div><span class="status ${esc(v.status)}">${esc(v.status)}</span>
+        ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-confirm="${esc(v.id)}">Confirm</button>` : ""}</div></div>`).join("")}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button class="btn btn-ghost btn-sm" data-preview="${esc(l.id)}">See it as seekers do</button>
+        <button class="btn btn-ghost btn-sm" data-toggle="${esc(l.id)}" data-status="${closed ? "active" : "closed"}">${closed ? "Reopen" : "Mark as rented"}</button></div>
+    </div></div>`;
+  }).join("") + `<button class="btn btn-ghost" data-go="post" style="margin:4px 0 30px">+ Post another room</button>`
+  : `<div class="empty">${roomArtBox()}<h3>No listing yet</h3><p>It takes about two minutes.</p>
+      <button class="btn btn-primary" data-go="post">Describe the room</button></div>`;
+}
+$("mineList").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if(!b) return;
+  try{
+    if(b.dataset.go) return go(b.dataset.go);
+    if(b.dataset.preview) return openListing(b.dataset.preview);
+    if(b.dataset.confirm){ await api.setVisitStatus(b.dataset.confirm, "confirmed"); return renderMine(); }
+    if(b.dataset.toggle){ await api.setListingStatus(b.dataset.toggle, b.dataset.status); return renderMine(); }
+  }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
+});
+
+/* ======================================================= owner: post */
 let photoFiles = [];   // File objects picked for the listing being posted
 function renderPhotos(){
   photoFiles.forEach(f => f.preview = f.preview || URL.createObjectURL(f));
@@ -1276,115 +1594,82 @@ $("pPreviews").addEventListener("click", e => {
 $("pDrop").addEventListener("drop", e => addPhotos(e.dataTransfer.files));
 
 function renderPost(){
-  if(!$("hQuiz").children.length) $("hQuiz").innerHTML = quizHtml("h");
-  const blocked = Boolean(state.user) && !isOwner();
-  $("postBlocked").hidden = !blocked; $("postPanel").hidden = blocked;
+  const d = state.homeDraft || {};
+  $("hQuiz").innerHTML = quizHtml("h", d);
+  if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
-  if(state.user){
-    if(!$("pName").value) $("pName").value = state.user.name || "";
-    if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
-  }
+  if(!$("pName").value) $("pName").value = state.user.name || "";
+  if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
 }
-$("postBlocked").addEventListener("click", async e => {
-  if(e.target.closest("[data-switch]")){ await switchRole("owner"); renderPost(); }
-});
-$("postForm").addEventListener("submit", e => {
+$("postForm").addEventListener("submit", async e => {
   e.preventDefault();
-  requireLogin(async () => {
-    if(!isOwner()) return renderPost();       // signed in as a seeker: offer the switch
-    const f = e.target, btn = f.querySelector("[type=submit]");
-    const p = {
-      listing: {
-        kind: f.querySelector("[name=kind]:checked").value,
-        title: $("pTitle").value.trim(), city: $("pCity").value, locality: $("pLocality").value.trim(),
-        bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
-        available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value,
-        amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
-        description: $("pDesc").value.trim(),
-        household: Object.assign({ residents: Number($("hCount").value), about: $("hAbout").value.trim() },
-                                 readQuiz($("hQuiz"), "h")),
-        costs: { maintenance: Number($("cMaint").value) || 0, electricity: Number($("cElec").value) || 0,
-                 wifi: Number($("cWifi").value) || 0, help: Number($("cHelp").value) || 0 }
-      },
-      private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(), address: $("pAddr").value.trim() }
-    };
-    btn.disabled = true;
-    try{
-      if(photoFiles.length){ btn.textContent = "Uploading photos…"; p.listing.photos = await api.uploadPhotos(photoFiles); }
-      btn.textContent = "Posting…";
-      await api.post(p);
-      f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
-      toast("Your flat is live. It's free, always.");
-      go("account");
-    }catch(err){
-      console.error(err);
-      toast(err.message === "storage-full" ? "Demo storage is full. Try fewer photos."
-          : "Couldn't post the listing. Check the fields and try again.");
-    }finally{ btn.disabled = false; btn.textContent = "Post for free"; }
-  }, "owner");
+  if(!isOwner()) return;
+  const f = e.target, btn = f.querySelector("[type=submit]");
+  const p = {
+    listing: {
+      kind: f.querySelector("[name=kind]:checked").value,
+      title: $("pTitle").value.trim(), city: $("pCity").value, locality: $("pLocality").value.trim(),
+      bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
+      available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value,
+      amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
+      description: $("pDesc").value.trim(),
+      household: Object.assign({ residents: Number($("hCount").value), about: $("hAbout").value.trim() }, readQuiz($("hQuiz"), "h")),
+      costs: { maintenance: Number($("cMaint").value) || 0, electricity: Number($("cElec").value) || 0,
+               wifi: Number($("cWifi").value) || 0, help: Number($("cHelp").value) || 0 }
+    },
+    private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(), address: $("pAddr").value.trim() }
+  };
+  btn.disabled = true;
+  try{
+    if(photoFiles.length){ btn.textContent = "Uploading photos…"; p.listing.photos = await api.uploadPhotos(photoFiles); }
+    btn.textContent = "Publishing…";
+    await api.post(p);
+    state.homeDraft = Object.assign({}, p.listing.household); save();
+    f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+    toast("Your listing is live");
+    go("mine");
+  }catch(err){
+    console.error(err);
+    toast(err.message === "storage-full" ? "Demo storage is full. Try fewer photos." : "Couldn't publish. Check the fields and try again.");
+  }finally{ btn.disabled = false; btn.textContent = "Publish my listing"; }
 });
 
 /* ============================================================= account */
 async function renderAccount(){
-  $("signedOut").hidden = Boolean(state.user); $("signedIn").hidden = !state.user;
-  if(!state.user) return;
   if(LIVE) await api.me();
-  renderHeader();
-  $("accName").textContent = state.user.name ? "Hi, " + state.user.name : "My account";
+  $("accAvatar").textContent = (firstName()[0] || "?").toUpperCase();
+  $("accName").textContent = state.user.name || "Your account";
   $("accPhone").textContent = "+91 " + state.user.phone;
-  $("accRole").textContent = ROLE_LABEL[state.user.role] || "Role not set";
-  $("accSwitch").textContent = isOwner() ? "Switch to looking for a room" : "Switch to flat owner";
-  $("accSwitch").dataset.switch = isOwner() ? "seeker" : "owner";
-  $("seekerStats").hidden = $("buyBtn").hidden = $("unlockedPanel").hidden = isOwner();
-  $("listingsPanel").hidden = isSeeker();
-  $("vibePanel").hidden = isOwner();
+  $("accRole").textContent = isOwner() ? "Posting a flat" : "Looking for a room";
+  $("accSwitch").textContent = isOwner() ? "I'm looking for a room instead" : "I want to post a flat instead";
+  $("vibePanel").hidden = $("unlockedPanel").hidden = isOwner();
+  if(isOwner()) return;
   $("vibeTraits").innerHTML = answered(state.vibe)
-    ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.q)}: ${esc(x.o[state.vibe[x.k]])}</span>`).join("")
-    : `<p class="hint" style="margin:0">Not set yet. Take the 30-second vibe check to see who you'd get along with.</p>`;
-  $("vibeEdit").textContent = answered(state.vibe) ? "Edit" : "Take the vibe check";
-
-  const [unlocked, mine, visits, incoming] = await Promise.all(
-    [api.unlockedListings(), api.myListings(), api.visits(), api.incomingVisits()]);
-  $("stCredits").textContent = state.credits;
-  $("stUnlocked").textContent = unlocked.length;
-  $("stListings").textContent = mine.length;
-
+    ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")
+    : `<p class="hint" style="margin:0">Not answered yet.</p>`;
+  const [unlocked, visits] = await Promise.all([api.unlockedListings(), api.visits()]);
+  $("creditLine").textContent = unlocked.length || state.credits
+    ? `You have ${state.credits} ${state.credits === 1 ? "unlock" : "unlocks"} left. They never expire.`
+    : "When you contact an owner, the flat shows up here with their number and address.";
   const contacts = await Promise.all(unlocked.map(l => api.contact(l.id)));
-  $("myUnlocked").innerHTML = unlocked.length ? unlocked.map((l, i) => {
-    const c = contacts[i] || {};
-    const vs = visits.filter(v => v.listing_id === l.id);
-    return `<div class="row"><div>
+  $("myUnlocked").innerHTML = unlocked.map((l, i) => {
+    const c = contacts[i] || {}, vs = visits.filter(v => v.listing_id === l.id);
+    return `<div class="row"><span class="mini">${picHtml(l)}</span><div style="flex:1;min-width:0">
         <div class="t">${esc(l.title)}</div>
         <div class="s">${esc(c.contact_name)} · <a href="tel:+91${esc(c.contact_phone)}">+91 ${esc(c.contact_phone)}</a> · ${esc(c.address)}</div>
         ${vs.map(v => `<div class="s">Visit ${fmtDateTime(v.visit_at)} <span class="status ${esc(v.status)}">${esc(v.status)}</span>
           ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-cancel="${esc(v.id)}">Cancel</button>` : ""}</div>`).join("")}
+        ${l.refunded ? `<div class="s">Unlock returned</div>` : ""}
       </div><button class="btn btn-ghost btn-sm" data-open="${esc(l.id)}">Open</button></div>`;
-  }).join("") : `<p class="hint">You haven't unlocked any flats yet. <a href="#browse">Browse rooms</a></p>`;
-
-  $("myListings").innerHTML = mine.length ? mine.map(l => {
-    const vs = incoming.filter(v => v.listing_id === l.id);
-    const closed = l.status === "closed";
-    const cover = safeImg((l.photos || [])[0]);
-    return `<div class="row">${cover ? `<img class="mini" src="${esc(cover)}" alt="">` : ""}<div style="flex:1">
-        <div class="t">${esc(l.title)} ${closed ? '<span class="status cancelled">closed</span>' : ""}</div>
-        <div class="s">${inr(l.rent)}/mo · ${esc(l.locality)}, ${esc(l.city)} · ${l.unlock_count || 0} unlocks</div>
-        ${vs.map(v => `<div class="s">Visit request ${fmtDateTime(v.visit_at)}${v.note ? ": “" + esc(v.note) + "”" : ""}
-          <span class="status ${esc(v.status)}">${esc(v.status)}</span>
-          ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-confirm="${esc(v.id)}">Confirm</button>` : ""}</div>`).join("")}
-      </div><button class="btn btn-ghost btn-sm" data-toggle="${esc(l.id)}" data-status="${closed ? "active" : "closed"}">${closed ? "Reopen" : "Mark rented"}</button></div>`;
-  }).join("") : `<p class="hint">No listings yet. <a href="#post">Post your flat free</a></p>`;
+  }).join("");
 }
 $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
-    if(b.dataset.action === "signin") return requireLogin(renderAccount);
-    if(b.dataset.switch){ await switchRole(b.dataset.switch); return renderAccount(); }
-    if(b.dataset.action === "signout"){ await api.signOut(); renderHeader(); return renderAccount(); }
-    if(b.dataset.action === "buy") return openPay(renderAccount);
+    if(b.dataset.action === "signout"){ await api.signOut(); location.hash = ""; return route(); }
+    if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
-    if(b.dataset.confirm){ await api.setVisitStatus(b.dataset.confirm, "confirmed"); return renderAccount(); }
-    if(b.dataset.toggle){ await api.setListingStatus(b.dataset.toggle, b.dataset.status); return renderAccount(); }
   }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
 });
 
@@ -1392,11 +1677,7 @@ $("view-account").addEventListener("click", async e => {
 document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
 });
-document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.view)));
-$("creditPill").addEventListener("click", () =>
-  !state.user ? requireLogin(() => go(isOwner() ? "post" : "account")) : isOwner() ? go("post") : openPay());
 window.addEventListener("hashchange", route);
-
 for(const c of CITIES){
   $("fCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
   $("pCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
@@ -1407,9 +1688,12 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   load();
   try{ await initApi(); }
   catch(err){ console.error("Supabase failed to load; running in demo mode.", err); api = demoApi; }
-  $("modeNote").textContent = api.live ? "" : "Demo mode: sample listings, no real payments. Your data stays in this browser.";
-  renderHeader(); route();
-  // Installable app + offline. Skipped where service workers aren't allowed (file://, embedded previews).
+  // Seekers who already answered the living-style questions (e.g. on another device) skip onboarding.
+  if(state.user && isSeeker() && answered(state.vibe) >= 4) state.onboarded.seeker = true;
+  applyPrefs();
+  const note = api.live ? "" : "Demo mode: sample homes, and nothing you enter leaves this browser.";
+  $("modeNote").textContent = note; $("appFoot").textContent = note;
+  route();
   // The Android app ships its files inside the APK, so it doesn't need one.
   if("serviceWorker" in navigator && location.hostname !== "appassets.androidplatform.net" &&
      /^https:|^http:\/\/localhost|^http:\/\/127\./.test(location.href)){

@@ -1,12 +1,21 @@
 # Navigate Me Flatmates
 
-At sign-in everyone answers one question:
+## How it flows
 
-- **"I have a flat, looking for a flatmate"** (owner): posts their flat with up to 6 photos, free.
-- **"I'm looking for a room in a flat"** (seeker): browses free, pays to contact owners and visit.
+1. **Welcome page = sign-in.** A short write-up and the sign-in card. Nothing else is visible
+   until you're in. The card asks what you came for: *post my flat* or *looking for a room*,
+   then name, mobile and a one-time code.
+2. **Questions, one per screen.** Room seekers: city, all-in budget, when they're moving, then
+   8 living-style questions. Flat owners: who lives in the flat, then the same 8 questions about
+   their household. Skippable. Seekers end on a match summary; owners go straight to posting
+   with their answers prefilled.
+3. **The app.** Seekers get Discover (best match spotlighted, every flat with a match ring),
+   Saved and Account. Owners get My flat (interest, visit requests) and Post.
+4. **Money only inside a flat.** No prices on the welcome page or in Discover. The price shows
+   when someone opens a flat and decides to contact the owner.
 
 Only owners can post and only seekers can unlock; the database enforces both. Anyone can
-switch role from My account (or from the prompt they see when they try the other side's action).
+switch from their account page.
 
 ## What makes it different
 
@@ -30,6 +39,10 @@ switch role from My account (or from the prompt they see when they try the other
 
 An unlocked flat stays unlocked; opening it again doesn't use another credit.
 Unlocks don't expire. When all 5 are used, the next unlock asks for another ₹500 pack.
+
+**Unlock-back guarantee:** a seeker gets the unlock back if the flat was already rented, or the
+owner hasn't replied 48 hours after the unlock. Once per flat, up to 2 per pack bought, and the
+contact stays visible. When two seekers report a flat as already rented, it's taken down.
 
 ## Files
 

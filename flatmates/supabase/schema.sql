@@ -10,6 +10,10 @@
 --     A seeker sees them only after unlocking that listing.
 --   * Unlocking a listing costs 1 visit credit. After that it stays
 --     unlocked, and the seeker can book visits to it.
+--   * Unlock-back guarantee: a seeker gets the credit back if the flat was
+--     already rented, or the owner hasn't replied 48 hours after the unlock.
+--     Once per unlock, at most 2 per pack bought. Two "already rented"
+--     reports close the listing.
 --   * Credits are sold in packs: 5 unlocks for Rs 500. Only the payment
 --     webhook (service_role key) can add credits.
 --
@@ -89,6 +93,10 @@ create table if not exists public.fm_unlocks (
   created_at  timestamptz not null default now(),
   primary key (user_id, listing_id)
 );
+
+alter table public.fm_unlocks add column if not exists refunded_at timestamptz;
+alter table public.fm_unlocks add column if not exists refund_reason text
+  check (refund_reason in ('rented','no_reply'));
 
 create table if not exists public.fm_visits (
   id          uuid primary key default gen_random_uuid(),
@@ -194,7 +202,8 @@ returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
-  is_owner boolean, unlocked boolean, unlock_count bigint)
+  is_owner boolean, unlocked boolean, unlock_count bigint,
+  unlocked_at timestamptz, refunded boolean)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -202,8 +211,10 @@ language sql security definer set search_path = public stable as $$
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
-         (select count(*) from fm_unlocks u where u.listing_id = l.id)
+         (select count(*) from fm_unlocks u where u.listing_id = l.id),
+         mine.created_at, mine.refunded_at is not null
   from fm_listings l
+  left join fm_unlocks mine on mine.listing_id = l.id and mine.user_id = auth.uid()
   where (l.status = 'active' or l.owner_id = auth.uid())
     and (p_city is null or l.city = p_city)
     and (p_kind is null or l.kind = p_kind)
@@ -277,6 +288,37 @@ begin
   update fm_profiles set credits = fm_profiles.credits - 1 where id = auth.uid();
   insert into fm_unlocks (user_id, listing_id) values (auth.uid(), p_listing);
   return query select true, true, v_credits - 1;
+end $$;
+
+-- Unlock-back guarantee. Returns the new balance.
+create or replace function public.fm_claim_refund(p_listing uuid, p_reason text)
+returns table (refunded boolean, credits int, error text)
+language plpgsql security definer set search_path = public as $$
+declare v_unlock fm_unlocks%rowtype; v_used int; v_packs int; v_credits int;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if p_reason not in ('rented','no_reply') then raise exception 'bad-reason'; end if;
+  select * into v_unlock from fm_unlocks
+   where user_id = auth.uid() and listing_id = p_listing for update;
+  select p.credits into v_credits from fm_profiles p where p.id = auth.uid() for update;
+
+  if v_unlock.user_id is null then return query select false, v_credits, 'not-unlocked'; return; end if;
+  if v_unlock.refunded_at is not null then return query select false, v_credits, 'already-refunded'; return; end if;
+  if p_reason = 'no_reply' and v_unlock.created_at > now() - interval '48 hours' then
+    return query select false, v_credits, 'too-early'; return;
+  end if;
+  select count(*) into v_used from fm_unlocks where user_id = auth.uid() and refunded_at is not null;
+  select count(*) into v_packs from fm_orders where user_id = auth.uid() and status = 'paid';
+  if v_used >= 2 * v_packs then return query select false, v_credits, 'limit-reached'; return; end if;
+
+  update fm_unlocks set refunded_at = now(), refund_reason = p_reason
+   where user_id = auth.uid() and listing_id = p_listing;
+  update fm_profiles set credits = fm_profiles.credits + 1 where id = auth.uid();
+  if p_reason = 'rented' and (select count(*) from fm_unlocks
+        where listing_id = p_listing and refund_reason = 'rented') >= 2 then
+    update fm_listings set status = 'closed' where id = p_listing;
+  end if;
+  return query select true, v_credits + 1, null::text;
 end $$;
 
 -- Owner contact and exact address, only for the owner or an unlocker.
