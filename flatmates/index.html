@@ -419,6 +419,9 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 .ob-text{display:grid; gap:12px; max-width:520px}
 .ob-text input{font-size:18px; padding:14px}
 
+.form-err{color:var(--danger); font-weight:700; margin:0 0 10px}
+.bad{outline:2px solid var(--danger); outline-offset:2px; border-radius:12px}
+
 .foot{color:var(--text-3); font-size:13px; padding-block:24px 40px; border-top:1px solid var(--line); margin-top:16px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
@@ -440,7 +443,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
       </div>
       <div class="city" id="city" aria-hidden="true"></div>
       <div class="w-card">
-        <form id="loginForm">
+        <form id="loginForm" novalidate>
           <h2>Let's get you started</h2>
           <p class="sub">What brings you to Flatmates today?</p>
           <div class="roles">
@@ -457,7 +460,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
           <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.</p>
           <div class="gift-note"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M2 9h20v-1a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/><path d="M12 7v14"/><path d="M12 7c-2-4-6-4-6-1.5S10 7 12 7zM12 7c2-4 6-4 6-1.5S14 7 12 7z"/></svg><span><b>A welcome gift</b>Looking for a room? Your first 5 contacts with owners are on us.</span></div>
         </form>
-        <form id="otpForm" hidden>
+        <form id="otpForm" novalidate hidden>
           <h2>Check your messages</h2>
           <p class="sub">Enter the 6-digit code sent to <b id="otpTo"></b>.</p>
           <div class="demo" id="otpDemo" hidden></div>
@@ -559,7 +562,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
   <section id="view-post" hidden>
     <div class="page-h"><h1>Describe your room</h1><p>Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
     <div class="panel">
-      <form id="postForm" autocomplete="on">
+      <form id="postForm" novalidate autocomplete="on">
         <div class="field"><label>What are you offering?</label>
           <div class="chips">
             <label class="chip"><input type="radio" name="kind" value="room" checked>Room in my flat</label>
@@ -578,16 +581,16 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
             <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
           <div class="previews" id="pPreviews"></div></div>
         <div class="grid3">
-          <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="100" inputmode="numeric"></div>
-          <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="500" value="0" inputmode="numeric"></div>
+          <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="1" inputmode="numeric"></div>
+          <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="1" value="0" inputmode="numeric"></div>
           <div class="field"><label for="pBhk">Flat size</label><select id="pBhk"><option value="1">1 BHK</option><option value="2" selected>2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></div>
         </div>
         <div class="field"><label>Monthly bills on top of rent (₹, this room's share)</label>
           <div class="grid4">
-            <input type="number" id="cMaint" min="0" step="50" inputmode="numeric" placeholder="Maintenance" aria-label="Maintenance">
-            <input type="number" id="cElec" min="0" step="50" inputmode="numeric" placeholder="Electricity" aria-label="Electricity, average">
-            <input type="number" id="cWifi" min="0" step="50" inputmode="numeric" placeholder="Wi-Fi" aria-label="Wi-Fi">
-            <input type="number" id="cHelp" min="0" step="50" inputmode="numeric" placeholder="Cook / maid" aria-label="Cook or maid">
+            <input type="number" id="cMaint" min="0" step="1" inputmode="numeric" placeholder="Maintenance" aria-label="Maintenance">
+            <input type="number" id="cElec" min="0" step="1" inputmode="numeric" placeholder="Electricity" aria-label="Electricity, average">
+            <input type="number" id="cWifi" min="0" step="1" inputmode="numeric" placeholder="Wi-Fi" aria-label="Wi-Fi">
+            <input type="number" id="cHelp" min="0" step="1" inputmode="numeric" placeholder="Cook / maid" aria-label="Cook or maid">
           </div>
           <p class="hint">Seekers see the all-in monthly cost, so there are no surprises at the visit. Leave blank if included in rent.</p></div>
         <div class="grid3">
@@ -665,7 +668,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 
 <dialog id="dlgVisit"><div class="mhead"><h2>Book a visit</h2><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
-    <form id="visitForm">
+    <form id="visitForm" novalidate>
       <div class="field"><label for="vAt">Date and time</label><input type="datetime-local" id="vAt" required></div>
       <div class="field"><label for="vNote">Note to the owner (optional)</label><textarea id="vNote" maxlength="300" style="min-height:70px" placeholder="I work in Whitefield and want to move in by the 1st."></textarea></div>
       <button class="btn btn-primary btn-block" type="submit">Send visit request</button>
@@ -810,14 +813,29 @@ const safeImg = u => /^(https:\/\/|data:image\/(jpeg|png|webp);base64,)/.test(St
 const MAX_PHOTOS = 6;
 
 /* Shrink a camera photo to a sensible JPEG before upload. */
-async function resizeImage(file, maxSide, quality){
-  const bmp = await createImageBitmap(file);
-  const k = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+// Some Android WebViews can't use createImageBitmap on camera files; fall back to <img>.
+async function decodeImage(src){
+  if(src instanceof Blob){ try{ return await createImageBitmap(src); }catch(e){} }
+  const url = src instanceof Blob ? URL.createObjectURL(src) : src;
+  try{ const img = new Image(); img.src = url; await img.decode(); return img; }
+  finally{ if(src instanceof Blob) setTimeout(() => URL.revokeObjectURL(url), 0); }
+}
+async function resizeImage(src, maxSide, quality){
+  const img = await decodeImage(src);
+  const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  const k = Math.min(1, maxSide / Math.max(w, h));
   const c = document.createElement("canvas");
-  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
-  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
-  bmp.close && bmp.close();
-  return new Promise(res => c.toBlob(res, "image/jpeg", quality));
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  img.close && img.close();
+  const blob = await new Promise(res => c.toBlob(res, "image/jpeg", quality));
+  if(!blob) throw new Error("encode-failed");
+  return blob;
+}
+// Resize every photo; ones that can't be read are skipped rather than failing the post.
+async function resizeAll(files, maxSide, quality){
+  const out = await Promise.all(files.map(f => resizeImage(f, maxSide, quality).catch(() => null)));
+  return { blobs: out.filter(Boolean), skipped: out.filter(x => !x).length };
 }
 const blobToDataUrl = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
 
@@ -1041,17 +1059,26 @@ const demoApi = {
     save();
   },
   async uploadPhotos(files){
-    // Demo keeps photos in this browser, so they're kept small.
-    return Promise.all(files.map(async f => blobToDataUrl(await resizeImage(f, 960, 0.72))));
+    // Demo keeps photos on this device (about 5 MB in all), so they're kept small.
+    const { blobs, skipped } = await resizeAll(files, 800, 0.65);
+    return { urls: await Promise.all(blobs.map(blobToDataUrl)), skipped };
   },
   async post(p){
     if(state.user.role !== "owner") throw new Error("owners-only");
     const id = "mine-" + Date.now().toString(36);
-    state.myListings.push({ ...p.listing, id, owner_phone: state.user.phone, status:"active",
-      created_at: new Date().toISOString(), unlock_count:0, private: p.private });
+    const l = { ...p.listing, id, owner_phone: state.user.phone, status:"active",
+      created_at: new Date().toISOString(), unlock_count:0, private: p.private };
+    state.myListings.push(l);
     state.demoIncoming[id] = Date.now() + DEMO_INCOMING_MS;
+    let photos = "kept";
+    if(!save() && (l.photos || []).length){
+      // Device storage is full: try much smaller photos, then none, before giving up.
+      l.photos = (await Promise.all(l.photos.map(u => resizeImage(u, 480, 0.5).then(blobToDataUrl).catch(() => null)))).filter(Boolean);
+      photos = "shrunk";
+      if(!save()){ l.photos = []; photos = "dropped"; }
+    }
     if(!save()){ state.myListings.pop(); delete state.demoIncoming[id]; throw new Error("storage-full"); }
-    return id;
+    return { id, photos };
   },
   async myListings(){
     return state.myListings.filter(l => l.owner_phone === state.user.phone).map(l => this.view(l));
@@ -1143,21 +1170,23 @@ function makeLiveApi(sb){
     async markSeen(){ await rpc("fm_mark_seen"); },
     async uploadPhotos(files){
       const me = await uid();
-      return Promise.all(files.map(async f => {
-        const blob = await resizeImage(f, 1600, 0.82);
+      const { blobs, skipped } = await resizeAll(files, 1600, 0.82);
+      const urls = await Promise.all(blobs.map(async blob => {
         const path = me + "/" + crypto.randomUUID() + ".jpg";
         const { error } = await sb.storage.from("fm-photos").upload(path, blob, { contentType:"image/jpeg" });
         if(error) throw error;
         return sb.storage.from("fm-photos").getPublicUrl(path).data.publicUrl;
       }));
+      return { urls, skipped };
     },
     async post(p){
       const l = p.listing, pv = p.private;
-      return rpc("fm_post_listing", { p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
+      const id = await rpc("fm_post_listing", { p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address,
         p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {} });
+      return { id, photos:"kept" };
     },
     async myListings(){ return (await all()).filter(l => l.is_owner); },
     async unlockedListings(){ return (await all()).filter(l => l.unlocked && !l.is_owner); },
@@ -1255,6 +1284,34 @@ function matesOf(hh){
 function matesHtml(hh, seed){
   return `<div class="mates">${matesOf(hh).map((m, i) => `<div class="mate"><i style="background:${colorFor(seed, i)}">${m.type ? (OCC_SHORT[m.type] || "?")[0] : "•"}</i>
     <div><b>${esc(m.what || OCC[m.type] || "Flatmate")}</b><span>${[OCC[m.type], m.age].filter(Boolean).map(esc).join(" · ")}</span></div></div>`).join("")}</div>`;
+}
+
+// Forms use novalidate: the browser's own validation bubbles often don't show inside
+// the Android app, which made forms look like they did nothing. Show it on the page instead.
+const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocality:"Area / locality", pRent:"Rent (at least ₹500)",
+  pDeposit:"Deposit", cMaint:"Maintenance", cElec:"Electricity", cWifi:"Wi-Fi", cHelp:"Cook / maid", pFrom:"Available from",
+  pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)", pAddr:"Exact address",
+  lgName:"Your name", lgPhone:"Mobile number (10 digits, starting with 6–9)", lgOtp:"The 6-digit code",
+  obWhat:"A few words about what you do", vAt:"Date and time" };
+function showFormError(form, text){
+  let box = form.querySelector(".form-err");
+  if(!box){ box = document.createElement("p"); box.className = "form-err"; box.setAttribute("role", "alert");
+            const btn = form.querySelector("[type=submit]"); btn.parentNode.insertBefore(box, btn); }
+  box.hidden = !text; box.textContent = text || "";
+}
+function formOk(form){
+  form.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
+  const bad = [...form.elements].filter(el => el.willValidate && !el.checkValidity());
+  if(!bad.length){ showFormError(form, ""); return true; }
+  const label = el => el.type === "radio" ? (el.name === "role" ? "What brings you here" : "A choice") : FIELD_LABEL[el.id] || el.getAttribute("aria-label") || "A field";
+  const msg = "Please check: " + [...new Set(bad.map(label))].join(", ") + ".";
+  showFormError(form, msg);
+  const mark = el => el.type === "radio" ? el.closest(".roles, .chips") || el : el;
+  bad.forEach(el => mark(el).classList.add("bad"));
+  mark(bad[0]).scrollIntoView({ block:"center", behavior:"smooth" });
+  if(bad[0].type !== "radio") bad[0].focus({ preventScroll:true });
+  toast(msg);
+  return false;
 }
 
 /* ====================================================== screens + router */
@@ -1364,6 +1421,7 @@ function stopCity(){ clearInterval(cityTimer); cityTimer = null; }
 
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
+  if(!formOk(e.target)) return;
   const phone = $("lgPhone").value.trim(), name = $("lgName").value.trim();
   const role = e.target.querySelector("[name=role]:checked").value;
   try{
@@ -1377,6 +1435,7 @@ $("loginForm").addEventListener("submit", async e => {
 $("otpBack").addEventListener("click", () => { $("otpForm").hidden = true; $("loginForm").hidden = false; });
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
+  if(!formOk(e.target)) return;
   try{ await api.verifyOtp($("lgOtp").value.trim()); }
   catch(err){ toast("That code didn't match. Try again."); return; }
   // Answered on another device already: no need to ask again.
@@ -1444,14 +1503,14 @@ function obTextStep(){
   const q = t === "student" ? "Where do you study, and what?" : t === "self" ? "What's your line of work?" : t === "between" ? "What field are you in?" : "What do you do, and where?";
   const ph = t === "student" ? "e.g. MBA at Symbiosis, Pune" : t === "self" ? "e.g. Freelance photographer" : t === "between" ? "e.g. Marketing" : "e.g. Analyst at Deloitte";
   return `<h1>${esc(q)}</h1><p class="why">One line is enough. Owners see this when you ask to meet them.</p>
-    <form class="ob-text" id="obTextForm"><input type="text" id="obWhat" required minlength="2" maxlength="80" placeholder="${esc(ph)}" value="${esc(ob.a.occWhat || "")}">
+    <form class="ob-text" id="obTextForm" novalidate><input type="text" id="obWhat" required minlength="2" maxlength="80" placeholder="${esc(ph)}" value="${esc(ob.a.occWhat || "")}">
     <button class="btn btn-primary" type="submit">Continue</button></form>`;
 }
 function fmRowsHtml(list, n, prefix){
   return Array.from({ length: n }, (_, i) => {
     const m = list[i] || {};
     return `<div class="fm-row" data-i="${i}"><b>${i === 0 ? "You" : "Flatmate " + (i + 1)}</b>
-      <div class="chips">${["working","student","self"].map(t => `<label class="chip"><input type="radio" name="${prefix}type${i}" value="${t}"${m.type === t ? " checked" : ""} required>${OCC_SHORT[t]}</label>`).join("")}</div>
+      <div class="chips">${["working","student","self"].map(t => `<label class="chip"><input type="radio" name="${prefix}type${i}" value="${t}"${m.type === t ? " checked" : ""}>${OCC_SHORT[t]}</label>`).join("")}</div>
       <div class="grid2"><input type="text" name="${prefix}what${i}" maxlength="80" value="${esc(m.what || "")}" placeholder="${i === 0 ? "e.g. Designer at an agency" : "e.g. Final-year law student"}" aria-label="What they do">
         <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option${m.age === a ? " selected" : ""}>${a}</option>`).join("")}</select></div></div>`;
   }).join("");
@@ -1473,7 +1532,7 @@ function renderOb(){
   let inner;
   if(st.form === "text") inner = obTextStep();
   else if(st.form === "flatmates") inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why)}</p>
-    <form id="obFmForm">${fmRowsHtml(ob.a.flatmates || [], ob.a.residents, "o")}<button class="btn btn-primary" type="submit">Continue</button></form>`;
+    <form id="obFmForm" novalidate>${fmRowsHtml(ob.a.flatmates || [], ob.a.residents, "o")}<button class="btn btn-primary" type="submit">Continue</button></form>`;
   else inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why || "")}</p>
     <div class="opts${st.cols ? " cols" : ""}">${st.opts.map((o, i) => `<button class="opt" type="button" data-i="${i}" aria-pressed="${ob.a[st.k] === o.v}">
       ${st.cols ? "" : `<span class="dot" style="background:${AV_COLORS[(i * 2 + ob.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>`}
@@ -1490,7 +1549,7 @@ $("obStage").addEventListener("click", e => {
 });
 $("obStage").addEventListener("submit", e => {
   e.preventDefault();
-  if(e.target.id === "obTextForm"){ ob.a.occWhat = $("obWhat").value.trim(); obNext(); }
+  if(e.target.id === "obTextForm"){ if(!formOk(e.target)) return; ob.a.occWhat = $("obWhat").value.trim(); obNext(); }
   if(e.target.id === "obFmForm"){ ob.a.flatmates = readFmRows(e.target, ob.a.residents, "o"); obNext(); }
 });
 $("obBack").addEventListener("click", () => {
@@ -1847,6 +1906,7 @@ function openVisit(id){
 }
 $("visitForm").addEventListener("submit", async e => {
   e.preventDefault();
+  if(!formOk(e.target)) return;
   try{
     await api.requestVisit(visitFor, $("vAt").value, $("vNote").value.trim());
     $("dlgVisit").close(); toast("Visit requested for " + fmtDateTime($("vAt").value));
@@ -1953,7 +2013,8 @@ function renderPost(){
 }
 $("postForm").addEventListener("submit", async e => {
   e.preventDefault();
-  if(!isOwner()) return;
+  if(!isOwner()){ toast("Switch to posting a flat from your account first."); return; }
+  if(!formOk(e.target)) return;
   const f = e.target, btn = f.querySelector("[type=submit]");
   const residents = Number($("hCount").value);
   const p = {
@@ -1972,16 +2033,26 @@ $("postForm").addEventListener("submit", async e => {
   };
   btn.disabled = true;
   try{
-    if(photoFiles.length){ btn.textContent = "Uploading photos…"; p.listing.photos = await api.uploadPhotos(photoFiles); }
+    let skipped = 0;
+    if(photoFiles.length){
+      btn.textContent = "Preparing photos…";
+      const up = await api.uploadPhotos(photoFiles);
+      p.listing.photos = up.urls; skipped = up.skipped;
+    }
     btn.textContent = "Publishing…";
-    await api.post(p);
+    const res = await api.post(p);
     state.homeDraft = Object.assign({}, p.listing.household); save();
     f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
-    toast("Your listing is live. We'll notify you when someone asks to meet you.");
+    toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."
+      : res.photos === "shrunk" ? "Your listing is live. Photos were saved smaller to fit this phone's demo storage."
+      : skipped ? `Your listing is live. ${skipped} photo${skipped === 1 ? "" : "s"} couldn't be read and ${skipped === 1 ? "was" : "were"} left out.`
+      : "Your listing is live. We'll notify you when someone asks to meet you.");
     go("mine");
   }catch(err){
     console.error(err);
-    toast(err.message === "storage-full" ? "Demo storage is full. Try fewer photos." : "Couldn't publish. Check the fields and try again.");
+    const msg = err.message === "storage-full" ? "This phone's demo storage is full. Mark an old listing as rented or remove some photos, then try again."
+      : "Couldn't publish: " + (err.message || "please check your connection and try again.");
+    showFormError(f, msg); toast(msg);
   }finally{ btn.disabled = false; btn.textContent = "Publish my listing"; }
 });
 
