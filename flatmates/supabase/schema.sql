@@ -1,5 +1,5 @@
 -- =====================================================================
--- Navigate Me Flatmates: database schema
+-- FindMyFlatMate: database schema
 -- =====================================================================
 -- Business rules this file enforces (in the database, not the browser):
 --   * At sign-in everyone picks a role:

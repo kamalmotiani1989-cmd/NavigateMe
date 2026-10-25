@@ -1,4 +1,4 @@
-name: Flatmates Android APK
+name: FindMyFlatMate Android APK
 
 # Builds the Android app from flatmates/ on every change and publishes it as
 # the "flatmates-apk" release, so the download link never changes:

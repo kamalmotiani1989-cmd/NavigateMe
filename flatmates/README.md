@@ -1,4 +1,4 @@
-# Navigate Me Flatmates
+# FindMyFlatMate
 
 A flatmate app built around **vibe**: people who live the same way find each other first, and
 the room comes second.
@@ -116,6 +116,10 @@ full-screen with its own icon. The service worker loads the newest version whene
 connection, so changes show up on the next open.
 
 ## Android app (APK)
+
+The app is called **FindMyFlatMate** (logo: a house with a magnifier over three flatmates). The folder, Android
+package (`com.navigateme.flatmates`) and download link keep their old names so installed
+copies update in place.
 
 Download on the phone: https://github.com/kamalmotiani1989-cmd/NavigateMe/releases/download/flatmates-apk/flatmates.apk
 
