@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Status-bar icon: a house outline (Android shows it in white). -->
+<!-- Status-bar icon: the building logo (Android shows it in white; windows are cut out). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#FFFFFFFF" android:pathData="M3,12L12,4L21,12L21,21L15,21L15,15L9,15L9,21L3,21Z"/>
+    <path android:fillColor="#FFFFFFFF" android:fillType="evenOdd"
+        android:pathData="M2.5,10h5v11h-5zM8,3.5h8V21H8zM16.5,8h5v13h-5zM9.6,6h1.6v1.6H9.6zM12.8,6h1.6v1.6h-1.6zM9.6,9h1.6v1.6H9.6zM12.8,9h1.6v1.6h-1.6zM9.6,12h1.6v1.6H9.6zM12.8,12h1.6v1.6h-1.6zM9.6,15h1.6v1.6H9.6zM12.8,15h1.6v1.6h-1.6zM11,18h2v3h-2z"/>
 </vector>
