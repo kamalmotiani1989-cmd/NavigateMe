@@ -5,60 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Navigate Me Flatmates</title>
 <meta name="description" content="Find a room and the people worth sharing it with. Owners post their spare room free; seekers see who lives there, how they live and what it really costs.">
-<meta name="theme-color" content="#0B3B40">
+<meta name="theme-color" content="#0B3B23">
 <meta property="og:title" content="Navigate Me Flatmates">
 <meta property="og:description" content="Find a room, and the people worth sharing it with.">
 <meta property="og:locale" content="en_IN">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230D6E73'/%3E%3Cpath d='M5 12l7-6 7 6v7h-5v-4h-4v4H5z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2312813F'/%3E%3Cpath d='M5 12l7-6 7 6v7h-5v-4h-4v4H5z' fill='%23fff'/%3E%3Crect x='10.5' y='14' width='3' height='3' fill='%23F26B1D'/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Flatmates">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: a night-city welcome band (lit windows = rooms waiting for people),
    then a calm light app where every flat is a card with a match ring.     */
 :root{
   color-scheme:light;
-  --bg:#F5F4F0; --surface:#FFFFFF; --surface-2:#EFEEE9; --line:#E2E1DA; --line-2:#CDCCC4;
-  --text:#18181B; --text-2:#55555C; --text-3:#8A8A93;
-  --brand:#0D6E73; --brand-2:#0A5A5E; --brand-soft:#E1F0EF; --on-brand:#FFFFFF;
-  --accent:#C2581B; --accent-soft:#FBE9DD;
-  --ok:#1E7A3C; --ok-soft:#E1F2E6; --warn:#9A5B00; --danger:#B42318; --mid:#C98A0C;
-  --band:#0B3B40; --band-2:#0F4D53; --on-band:#F3F1EA; --on-band-2:#A9C7C6; --lit:#FFD27A; --unlit:#164E54;
-  --shadow:0 1px 2px rgba(20,20,20,.05),0 8px 24px rgba(20,20,20,.07);
+  /* White, India green and saffron orange. */
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F2F7F3; --line:#E1EAE4; --line-2:#C9D6CE;
+  --text:#13201A; --text-2:#4A5A51; --text-3:#82918A;
+  --brand:#12813F; --brand-2:#0C6B33; --brand-soft:#E5F4EA; --on-brand:#FFFFFF;
+  --accent:#F26B1D; --accent-soft:#FFF0E4; --on-accent:#FFFFFF;
+  --ok:#12813F; --ok-soft:#E5F4EA; --warn:#B45309; --danger:#C2261D; --mid:#E08A00;
+  --band:#0B3B23; --band-2:#0F4D2E; --on-band:#F6FBF7; --on-band-2:#A7CBB4; --lit:#FFB45A; --unlit:#14502F;
+  --shadow:0 1px 2px rgba(16,40,26,.06),0 10px 28px rgba(16,40,26,.08);
   --radius:16px;
-  --display:"Archivo",system-ui,sans-serif; --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#111314; --surface:#1A1D1E; --surface-2:#232729; --line:#2D3234; --line-2:#3B4144;
-    --text:#F1F1EE; --text-2:#B3B8B8; --text-3:#7F8586;
-    --brand:#46B8BC; --brand-2:#64C9CC; --brand-soft:#16393B; --on-brand:#06191A;
-    --accent:#F0915A; --accent-soft:#3A2418;
-    --ok:#5BCB7E; --ok-soft:#163222; --warn:#E3A44A; --danger:#F07367; --mid:#E3B44A;
-    --band:#071F22; --band-2:#0B2D31; --on-band:#EEF3F1; --on-band-2:#8FB3B2; --lit:#FFCF6E; --unlit:#103A3E;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    --bg:#0D1310; --surface:#151D18; --surface-2:#1C2620; --line:#26332B; --line-2:#34453B;
+    --text:#EEF4F0; --text-2:#AFBEB5; --text-3:#7E8D84;
+    --brand:#3DBB6E; --brand-2:#5CCB88; --brand-soft:#133823; --on-brand:#05170C;
+    --accent:#FF8A3D; --accent-soft:#3A2212; --on-accent:#1F0E02;
+    --ok:#4FCB7E; --ok-soft:#133021; --warn:#F0A54A; --danger:#F07367; --mid:#F0B43C;
+    --band:#06160D; --band-2:#0B2416; --on-band:#EEF6F0; --on-band-2:#93BBA2; --lit:#FFB45A; --unlit:#0F3A22;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 10px 28px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#111314; --surface:#1A1D1E; --surface-2:#232729; --line:#2D3234; --line-2:#3B4144;
-  --text:#F1F1EE; --text-2:#B3B8B8; --text-3:#7F8586;
-  --brand:#46B8BC; --brand-2:#64C9CC; --brand-soft:#16393B; --on-brand:#06191A;
-  --accent:#F0915A; --accent-soft:#3A2418;
-  --ok:#5BCB7E; --ok-soft:#163222; --warn:#E3A44A; --danger:#F07367; --mid:#E3B44A;
-  --band:#071F22; --band-2:#0B2D31; --on-band:#EEF3F1; --on-band-2:#8FB3B2; --lit:#FFCF6E; --unlit:#103A3E;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    color-scheme:dark;
+  --bg:#0D1310; --surface:#151D18; --surface-2:#1C2620; --line:#26332B; --line-2:#34453B;
+  --text:#EEF4F0; --text-2:#AFBEB5; --text-3:#7E8D84;
+  --brand:#3DBB6E; --brand-2:#5CCB88; --brand-soft:#133823; --on-brand:#05170C;
+  --accent:#FF8A3D; --accent-soft:#3A2212; --on-accent:#1F0E02;
+  --ok:#4FCB7E; --ok-soft:#133021; --warn:#F0A54A; --danger:#F07367; --mid:#F0B43C;
+  --band:#06160D; --band-2:#0B2416; --on-band:#EEF6F0; --on-band-2:#93BBA2; --lit:#FFB45A; --unlit:#0F3A22;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 10px 28px rgba(0,0,0,.35);
 }
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
-body{margin:0; background:var(--bg); color:var(--text); font:16px/1.5 var(--body)}
-h1,h2,h3{font-family:var(--display); font-stretch:90%; line-height:1.12; margin:0; text-wrap:balance}
+body{margin:0; background:var(--bg); color:var(--text); font:16px/1.55 var(--body); -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display); font-weight:700; letter-spacing:-.02em; line-height:1.08; margin:0; text-wrap:balance}
 a{color:var(--brand)}
 button,input,select,textarea{font:inherit; color:inherit}
 :focus-visible{outline:2px solid var(--brand); outline-offset:2px}
@@ -71,7 +72,7 @@ button,input,select,textarea{font:inherit; color:inherit}
 .btn:active{transform:scale(.98)}
 .btn-primary{background:var(--brand); color:var(--on-brand)}
 .btn-primary:hover{background:var(--brand-2)}
-.btn-accent{background:var(--accent); color:#fff}
+.btn-accent{background:var(--accent); color:var(--on-accent)}
 .btn-ghost{background:var(--surface); border-color:var(--line-2); color:var(--text)}
 .btn-sm{padding:7px 12px; font-size:14px; border-radius:10px}
 .btn-block{width:100%}
@@ -125,9 +126,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .w-top .logo small{color:var(--on-band-2)}
 .w-grid{display:grid; grid-template-columns:1.15fr .85fr; grid-template-areas:"copy card" "city card"; gap:0 40px; align-items:start; padding-block:20px 0}
 .w-copy{grid-area:copy} .w-card{grid-area:card} .city{grid-area:city}
-.w-copy h1{font-size:clamp(34px,5.6vw,62px); font-stretch:82%; letter-spacing:-.015em; color:var(--on-band)}
+.w-copy h1{font-size:clamp(36px,6vw,66px); font-weight:800; letter-spacing:-.035em; color:var(--on-band)}
 .w-copy h1 em{font-style:normal; color:var(--lit)}
 .w-copy .lede{color:var(--on-band-2); font-size:18px; max-width:52ch; margin:16px 0 0}
+.w-points{list-style:none; display:flex; flex-wrap:wrap; gap:8px 18px; padding:0; margin:18px 0 0; color:var(--on-band); font-weight:600; font-size:15px}
+.w-points li{display:flex; align-items:center; gap:7px}
+.w-points li::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--lit)}
 .city{position:relative; height:300px; margin-top:28px}
 .city > svg{position:absolute; inset:auto 0 0 0; width:100%; height:100%}
 .city .win{fill:var(--unlit); transition:fill .9s}
@@ -184,7 +188,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 .ob-stage{flex:1; display:flex; flex-direction:column; justify-content:center; max-width:720px; width:100%; margin:0 auto; padding-block:12px 40px}
 .ob-q{animation:slidein .35s ease both}
 @keyframes slidein{from{transform:translateX(24px)}to{transform:none}}
-.ob-q h1{font-size:clamp(28px,4.6vw,44px); font-stretch:84%}
+.ob-q h1{font-size:clamp(28px,4.6vw,44px); letter-spacing:-.03em}
 .ob-q .why{color:var(--text-2); margin:10px 0 22px; font-size:17px}
 .opts{display:grid; gap:10px}
 .opts.cols{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
@@ -208,7 +212,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 
 /* ---------- discover */
 .greet{padding-block:26px 6px}
-.greet h1{font-size:clamp(26px,4vw,38px); font-stretch:86%}
+.greet h1{font-size:clamp(26px,4vw,38px); letter-spacing:-.03em}
 .greet p{color:var(--text-2); margin:6px 0 0}
 .spot{display:grid; grid-template-columns:1.1fr 1fr; background:var(--band); color:var(--on-band); border-radius:24px; overflow:hidden; margin:18px 0 6px; cursor:pointer; box-shadow:var(--shadow)}
 .spot .pic{position:relative; min-height:260px}
@@ -267,7 +271,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--brand); outline-
 
 /* ---------- panels, account, owner home */
 .page-h{padding-block:26px 4px}
-.page-h h1{font-size:clamp(26px,4vw,36px); font-stretch:86%}
+.page-h h1{font-size:clamp(26px,4vw,36px); letter-spacing:-.03em}
 .page-h p{color:var(--text-2); margin:6px 0 0}
 .panel{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:20px; margin:16px 0}
 .panel h2{font-size:21px; margin-bottom:4px}
@@ -433,6 +437,39 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
 .map-box .map-links{display:flex; gap:12px; flex-wrap:wrap; padding:10px 12px; font-size:14px; font-weight:700}
 .map-box .map-q{padding:10px 12px 0; font-size:14px; color:var(--text-2)}
 
+/* ---------- discover controls */
+.d-controls{margin:18px 0 12px; display:grid; gap:10px}
+.d-row{display:flex; gap:8px; align-items:center}
+.d-row #fCity{flex:1; min-width:0; font-weight:700}
+.d-row #fSort{width:auto; flex:none}
+.d-row .btn{flex:none; height:44px}
+.area-chips{display:flex; gap:8px; overflow-x:auto; padding:2px 0 4px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.area-chips::-webkit-scrollbar{display:none}
+.area-chips button{flex:none; border:1px solid var(--line-2); background:var(--surface); color:var(--text); border-radius:999px; padding:7px 14px;
+  font:600 14px var(--body); cursor:pointer; white-space:nowrap}
+.area-chips button[aria-pressed="true"]{background:var(--brand); border-color:var(--brand); color:var(--on-brand)}
+.active-f{display:flex; flex-wrap:wrap; gap:6px}
+.active-f:empty{display:none}
+.active-f button{border:0; border-radius:999px; padding:4px 6px 4px 12px; background:var(--accent-soft); color:var(--text); font:600 13px var(--body); cursor:pointer}
+.active-f button span{display:inline-grid; place-items:center; width:18px; height:18px; margin-left:4px; border-radius:50%; background:var(--accent); color:var(--on-accent); font-size:12px}
+.f-actions{position:sticky; bottom:-22px; display:flex; gap:10px; justify-content:space-between; padding:14px 0 4px; margin-top:16px; background:var(--surface); border-top:1px solid var(--line)}
+.f-actions .btn-primary{flex:1}
+.suggest{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px}
+.ob-areas{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px}
+.ob-areas .chip{padding:10px 16px; font-size:15px}
+
+/* ---------- urgency */
+.urgent{display:grid; grid-template-columns:auto 1fr; gap:14px; margin:16px 0; padding:18px; border-radius:20px; color:var(--text);
+  background:linear-gradient(135deg, var(--accent-soft), var(--surface)); border:2px solid var(--accent)}
+.urgent h3{font-size:22px}
+.urgent p{margin:4px 0 0; color:var(--text-2)}
+.urgent .eyebrow{color:var(--accent); margin:0}
+.urgent .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.urgent-dot{width:14px; height:14px; margin-top:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 0 var(--accent); animation:ping 1.6s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 12px transparent} 100%{box-shadow:0 0 0 0 transparent}}
+.notif-ask{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+.notif-ask p{margin:0}
+
 .foot{color:var(--text-3); font-size:13px; padding-block:24px 40px; border-top:1px solid var(--line); margin-top:16px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
@@ -449,14 +486,15 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
     </div>
     <div class="wrap w-grid">
       <div class="w-copy">
-        <h1>Find a room, and <em>the people</em> worth sharing it with.</h1>
-        <p class="lede">Every lit window in this city has a spare room behind it, and someone hoping the next flatmate is a good one. Flatmates helps both sides find each other: owners show their home and the people in it, seekers show how they like to live.</p>
+        <h1>Find a room. <em>Find your people.</em></h1>
+        <p class="lede">Moving to a new city is hard enough. See who already lives in each flat, how they live and what you'll really pay each month, so you move in with people you'll actually get along with.</p>
+        <ul class="w-points"><li>No brokers</li><li>Every phone number verified</li><li>Owners choose who they meet</li></ul>
       </div>
       <div class="city" id="city" aria-hidden="true"></div>
       <div class="w-card">
         <form id="loginForm" novalidate>
-          <h2>Let's get you started</h2>
-          <p class="sub">What brings you to Flatmates today?</p>
+          <h2>Welcome! What brings you here?</h2>
+          <p class="sub">Pick one. You can switch any time from your account.</p>
           <div class="roles">
             <label class="role"><input type="radio" name="role" value="owner" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
@@ -485,26 +523,26 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
   </div>
 
   <div class="wrap story">
-    <p class="eyebrow">Why it feels different</p>
-    <h2 class="story-h">A flat is four walls. A home is who you share it with.</h2>
+    <p class="eyebrow">Why people choose Flatmates</p>
+    <h2 class="story-h">Four walls make a flat. The people inside make it home.</h2>
     <div class="story-grid">
       <article class="story-card"><div class="pic" id="storyArt1"></div><div class="txt">
-        <h3>Meet the household first</h3>
-        <p>Every listing tells you who already lives there: what they do, when they sleep, whether the kitchen is veg, how often friends drop by.</p></div></article>
+        <h3>Know who you'll live with</h3>
+        <p>A doctor on night shifts? Two MBA students? Every listing shows who's already there, what they do, and whether the kitchen is veg.</p></div></article>
       <article class="story-card"><div class="pic" id="storyArt2"></div><div class="txt">
-        <h3>See how well you'd fit</h3>
-        <p>Answer a few questions about how you live. Each flat then shows a match score and the reasons behind it, good and not so good.</p></div></article>
+        <h3>See how well you'll get along</h3>
+        <p>Bedtimes, guests, smoking, chores. Answer 12 quick questions and every flat shows a match score, with what fits and what might clash.</p></div></article>
       <article class="story-card"><div class="pic" id="storyArt3"></div><div class="txt">
         <h3>The real monthly number</h3>
-        <p>Rent plus maintenance, electricity, Wi-Fi and the cook, added up for you. No brokers, no surprise charges at the visit.</p></div></article>
+        <p>Rent plus your fair share of maintenance, electricity, Wi-Fi and the cook, worked out for you. No surprises when you visit.</p></div></article>
     </div>
     <div class="steps">
       <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate for your spare room</h3>
-        <ol><li><b>Tell us about your home</b> and the people in it.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
-          <li><b>Hear from people who fit.</b> Your number and address stay private until someone serious asks for them.</li></ol></div>
+        <ol><li><b>Describe your home</b> and the people in it. It takes about two minutes.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
+          <li><b>Get notified when someone who fits asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol></div>
       <div><p class="eyebrow">If you need a room</p><h3>Find a home that fits how you live</h3>
-        <ol><li><b>Answer a few quick questions</b> about your day and habits.</li><li><b>Browse flats ranked by fit</b>, with the all-in monthly cost.</li>
-          <li><b>Talk to the owner and visit.</b> Every owner's phone is verified.</li></ol></div>
+        <ol><li><b>Tell us how you live</b>, which areas you like and your budget.</li><li><b>Browse homes ranked by fit</b>, with the all-in monthly cost.</li>
+          <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol></div>
     </div>
     <p class="w-foot" id="modeNote"></p>
   </div>
@@ -535,18 +573,19 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
   <!-- seeker: discover -->
   <section id="view-discover" hidden>
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
+    <div id="urgent"></div>
+    <div class="d-controls">
+      <div class="d-row">
+        <select id="fCity" aria-label="City"></select>
+        <button class="btn btn-ghost btn-sm" type="button" id="filtersBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          Filters <i class="badge" id="fCount" hidden></i></button>
+        <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest all-in</option></select>
+      </div>
+      <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
+      <div class="active-f" id="activeF"></div>
+    </div>
     <div id="spotlight"></div>
-    <form class="filters" id="filters">
-      <div class="field"><label for="fCity">City</label><select id="fCity"><option value="">All cities</option></select></div>
-      <div class="field opt-f"><label for="fQ">Area</label><input type="text" id="fQ" placeholder="e.g. Koramangala"></div>
-      <div class="field opt-f"><label for="fKind">Looking for</label>
-        <select id="fKind"><option value="">Anything</option><option value="room">Room in a shared flat</option><option value="flatmate">Flatmate to share with</option><option value="flat">Whole flat (takeover)</option></select></div>
-      <div class="field opt-f"><label for="fRent">Max all-in / month</label>
-        <select id="fRent"><option value="">Any</option><option value="12000">₹12,000</option><option value="18000">₹18,000</option><option value="25000">₹25,000</option><option value="40000">₹40,000</option></select></div>
-      <div class="field opt-f"><label for="fGender">For</label><select id="fGender"><option value="">Anyone</option><option value="female">Women</option><option value="male">Men</option></select></div>
-      <div class="field"><label for="fSort">Sort</label><select id="fSort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest all-in</option></select></div>
-      <button class="more-f" type="button" id="moreF" aria-expanded="false">More filters: area, budget, type</button>
-    </form>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
   </section>
@@ -554,6 +593,8 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
   <!-- both: requests -->
   <section id="view-requests" hidden>
     <div class="page-h"><h1 id="reqTitle">Requests</h1><p id="reqSub"></p></div>
+    <div id="urgentReq"></div>
+    <div id="notifReq"></div>
     <div id="reqList"></div>
   </section>
 
@@ -584,7 +625,7 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
           <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
         <div class="grid2">
           <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
-          <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout"></div>
+          <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout" list="areaList" autocomplete="off"><datalist id="areaList"></datalist></div>
         </div>
         <div class="field"><label>Photos (up to 6)</label>
           <label class="drop" id="pDrop"><input type="file" id="pPhotos" accept="image/*" multiple>
@@ -686,6 +727,51 @@ dialog::backdrop{background:rgba(8,20,22,.6)}
     </div>
     <button class="btn btn-accent btn-block" id="payBtn">Pay ₹500</button>
     <p class="hint" id="payNote"></p>
+  </div></dialog>
+
+<dialog id="dlgFilters"><div class="mhead"><div><h2>Filters</h2><div class="loc">Saved for next time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody">
+    <form id="filterForm" novalidate>
+      <h3 class="section-h" style="margin-top:4px">Budget, all-in per month</h3>
+      <div class="chips" id="bandChips"></div>
+      <div class="grid2" style="margin-top:10px">
+        <div class="field"><label for="fMin">Min (₹)</label><input type="number" id="fMin" min="0" step="1" inputmode="numeric" placeholder="No minimum"></div>
+        <div class="field"><label for="fMax">Max (₹)</label><input type="number" id="fMax" min="0" step="1" inputmode="numeric" placeholder="No maximum"></div>
+      </div>
+      <h3 class="section-h">Looking for</h3>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="fKind" value="room">Room in a shared flat</label>
+        <label class="chip"><input type="checkbox" name="fKind" value="flatmate">Flatmate to share with</label>
+        <label class="chip"><input type="checkbox" name="fKind" value="flat">Whole flat</label></div>
+      <h3 class="section-h">Homes open to</h3>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="fGender" value="" checked>Anyone</label>
+        <label class="chip"><input type="radio" name="fGender" value="female">Women</label>
+        <label class="chip"><input type="radio" name="fGender" value="male">Men</label></div>
+      <h3 class="section-h">Furnishing</h3>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="fFurn" value="full">Fully furnished</label>
+        <label class="chip"><input type="checkbox" name="fFurn" value="semi">Semi furnished</label>
+        <label class="chip"><input type="checkbox" name="fFurn" value="none">Unfurnished</label></div>
+      <h3 class="section-h">Move in by</h3>
+      <input type="date" id="fMove" aria-label="Move in by">
+      <h3 class="section-h">Must-haves</h3>
+      <div class="chips" id="fMust"></div>
+      <h3 class="section-h">House rules that matter to you</h3>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="fRule" value="veg">Veg-only kitchen</label>
+        <label class="chip"><input type="checkbox" name="fRule" value="noSmoke">No smoking</label>
+        <label class="chip"><input type="checkbox" name="fRule" value="noDrinks">No alcohol</label>
+        <label class="chip"><input type="checkbox" name="fRule" value="pets">Pet-friendly</label></div>
+      <h3 class="section-h">Minimum match</h3>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="fMatch" value="0" checked>Any</label>
+        <label class="chip"><input type="radio" name="fMatch" value="60">60%+</label>
+        <label class="chip"><input type="radio" name="fMatch" value="75">75%+</label>
+        <label class="chip"><input type="radio" name="fMatch" value="85">85%+</label></div>
+      <div class="f-actions"><button class="btn btn-ghost" type="button" id="fReset">Reset</button>
+        <button class="btn btn-primary" type="submit" id="fApply">Show homes</button></div>
+    </form>
   </div></dialog>
 
 <dialog id="dlgVibe"><div class="mhead"><div><h2>How you live</h2><div class="loc">Change these any time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
@@ -829,7 +915,7 @@ function roomArt(id, kind){
   const r = rng(h), pick = a => a[Math.floor(r() * a.length)];
   const wall = pick(["#E8D5C4","#D7E3D3","#D9DDEB","#F0E2C8","#E6D0D6","#CFE1E2"]);
   const floor = pick(["#B98B62","#A7774F","#C9A27A","#8E6A4E"]);
-  const accent = pick(["#0D6E73","#C2581B","#5B5BAF","#B03A5B","#2F7D4F","#D19A1E"]);
+  const accent = pick(["#12813F","#F26B1D","#5B5BAF","#B03A5B","#0F6E8C","#D19A1E"]);
   const night = r() < .35, sky = night ? "#27315A" : pick(["#9FD3F0","#BFE3F5","#F6C9A0"]);
   const winX = 40 + Math.floor(r() * 150);
   const bed = kind === "room" || (kind !== "flatmate" && r() < .5);
@@ -1264,6 +1350,7 @@ function makeLiveApi(sb){
     async decide(rid, approve){ return one(await rpc("fm_decide", { p_request: rid, p_approve: approve })); },
     async inbox(){ return rpc("fm_inbox"); },
     async markSeen(){ await rpc("fm_mark_seen"); },
+    async savePushToken(token){ await rpc("fm_save_push_token", { p_token: token, p_platform: "android" }); },
     async uploadPhotos(files){
       const me = await uid();
       const { blobs, skipped } = await resizeAll(files, 1600, 0.82);
@@ -1310,7 +1397,7 @@ function makeLiveApi(sb){
           key: order.key_id, order_id: order.order_id, amount: order.amount, currency: "INR",
           name: "Navigate Me Flatmates", description: PACK_CREDITS + " contacts",
           prefill: { contact: "+91" + (state.user?.phone || ""), name: state.user?.name || "" },
-          theme: { color: "#0D6E73" },
+          theme: { color: "#12813F" },
           handler: resolve,
           modal: { ondismiss: () => reject(new Error("cancelled")) }
         });
@@ -1349,7 +1436,7 @@ function ringSvg(pct, size, cls){
       stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - pct/100)).toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})"/>
     <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${Math.round(size*.3)}">${pct}</text></svg>`;
 }
-const AV_COLORS = ["#E07A5F","#3D8B7D","#C98A0C","#81B29A","#6D6875","#B5838D","#5E81AC","#D08770"];
+const AV_COLORS = ["#F26B1D","#12813F","#D19A1E","#3E9E66","#6D6875","#C2410C","#0F6E8C","#B5838D"];
 const colorFor = (seed, i) => { let h = 0; for(const c of String(seed)) h = (h * 31 + c.charCodeAt(0)) | 0; return AV_COLORS[Math.abs(h + (i || 0) * 3) % AV_COLORS.length]; };
 function avatars(n, seed){
   return `<span class="avs" aria-hidden="true">${Array.from({length: Math.min(n, 4)}, (_, i) => `<i style="background:${colorFor(seed, i)}"></i>`).join("")}</span>`;
@@ -1455,8 +1542,47 @@ $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if
 $("meBtn").addEventListener("click", () => go("account"));
 
 /* ======================================================== notifications */
-// In-app notifications: new requests for owners, accepted/declined for seekers.
-let known = null;
+// System notifications: the Android app's native bridge when present (FlatmatesNative,
+// see MainActivity.java), otherwise the browser's Notification API via the service worker.
+const Notify = {
+  nativeOn: null,
+  native: () => typeof window.FlatmatesNative !== "undefined",
+  supported(){ return this.native() || "Notification" in window; },
+  on(){ return this.native() ? this.nativeOn !== false : ("Notification" in window && Notification.permission === "granted"); },
+  async ask(){
+    if(this.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"permission" })); return true; }
+    if(!("Notification" in window)) return false;
+    if(Notification.permission === "default") await Notification.requestPermission();
+    return Notification.permission === "granted";
+  },
+  show(title, body, open){
+    if(this.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"notify", title, body, open: open || "requests" })); return; }
+    if(!("Notification" in window) || Notification.permission !== "granted") return;
+    const opts = { body, icon:"icons/icon-192.png", tag: title, data:{ open: open || "requests" } };
+    (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
+      .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(() => {});
+  }
+};
+if(Notify.native()){
+  FlatmatesNative.onmessage = e => {
+    let m; try{ m = JSON.parse(e.data); }catch(err){ return; }
+    if(m.type === "status") Notify.nativeOn = Boolean(m.granted);
+    if(m.type === "token" && api.savePushToken) api.savePushToken(m.token).catch(() => {});
+    if(m.type === "open" && state.user) go(m.view || "requests");
+  };
+  FlatmatesNative.postMessage(JSON.stringify({ type:"hello" }));
+}
+const notifyCard = text => Notify.supported() && !Notify.on()
+  ? `<div class="notice notif-ask"><p>${esc(text)}</p><button class="btn btn-primary btn-sm" type="button" data-notify-on>Turn on notifications</button></div>` : "";
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-notify-on]"); if(!b) return;
+  const ok = await Notify.ask();
+  toast(ok ? "Notifications are on. We'll ping you the moment something happens." : "Notifications are blocked. You can allow them in your phone's settings.");
+  if(ok) b.closest(".notif-ask")?.remove();
+});
+
+// Reminder if a seeker hasn't called an owner who accepted them.
+const REMIND_MS = LIVE ? 2 * 36e5 : 60e3;
 async function checkInbox(){
   if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
   let rows;
@@ -1464,25 +1590,73 @@ async function checkInbox(){
   // Only the current role's side: someone who switched roles shouldn't see the other side's alerts.
   const side = isOwner() ? "incoming" : "outgoing";
   const fresh = rows.filter(r => r.unseen && r.direction === side);
-  if(known){
-    for(const r of fresh){
-      const key = r.id + r.status;
-      if(known.has(key)) continue;
-      if(r.direction === "incoming") toast(`${r.name || "Someone"} wants to meet you · ${r.match_pct != null ? r.match_pct + "% match" : "new request"}`);
-      else if(r.status === "approved") toast(`Accepted! You can now contact the owner of “${r.listing_title}”`);
-      else if(r.status === "declined") toast(`The owner of “${r.listing_title}” went with someone else. No contact used.`);
+  state.notified = state.notified || {};
+  for(const r of fresh){
+    const key = r.id + r.status;
+    if(state.notified[key]) continue;
+    state.notified[key] = Date.now();
+    if(r.direction === "incoming"){
+      const who = [r.name || "Someone", occLine(r.occupation)].filter(Boolean).join(", ");
+      Notify.show(`${r.name || "Someone"} wants to meet you${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
+        `${who} is interested in “${r.listing_title}”. Reply soon: people who fit usually find a room within days.`, "requests");
+      toast(`${r.name || "Someone"} wants to meet you · ${r.match_pct != null ? r.match_pct + "% match" : "new request"}`);
+    }else if(r.status === "approved"){
+      const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
+      const owner = (c && c.contact_name) || "The owner";
+      Notify.show(`${owner} said yes! Call now`,
+        `${othersLine(l)}Homes like “${r.listing_title}” get rented out fast. Call ${owner} before someone else does.`, "requests");
+      toast(`${owner} accepted! Call now before it's rented out.`);
+    }else if(r.status === "declined"){
+      Notify.show("Not this time", `The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact was used." : ""} Your other matches are waiting.`, "discover");
+      toast(`The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact used." : ""}`);
     }
   }
-  known = new Set(rows.map(r => r.id + r.status));
+  if(!isOwner()){
+    state.reminded = state.reminded || {};
+    for(const r of rows.filter(x => x.direction === "outgoing" && x.status === "approved")){
+      if(state.called && state.called[r.listing_id] || state.reminded[r.id] || Date.now() - new Date(r.decided_at) < REMIND_MS) continue;
+      state.reminded[r.id] = Date.now();
+      Notify.show("Don't lose this room", `You haven't called about “${r.listing_title}” yet. The owner said yes, so call today before it's rented out.`, "requests");
+    }
+  }
+  save();
   unseen = fresh.length;
   if(currentView){
     renderNav();
+    if(fresh.length && (currentView === "requests" || currentView === "discover")) renderUrgent();
     if(currentView === "requests" && fresh.length) renderRequests();
     if($("dlgListing").open && currentId && fresh.some(r => r.listing_id === currentId)) openListing(currentId);
   }
 }
 setInterval(checkInbox, LIVE ? 30000 : 2000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) checkInbox(); });
+const othersLine = l => l && l.unlock_count > 1 ? `${l.unlock_count - 1} other ${l.unlock_count - 1 === 1 ? "person has" : "people have"} asked about this home. ` : "";
+
+// Accepted but not yet called: a loud card at the top of Discover and Requests.
+async function renderUrgent(){
+  const boxes = [$("urgent"), $("urgentReq")];
+  if(isOwner()){ boxes.forEach(b => b.innerHTML = ""); return; }
+  const rows = (await api.inbox()).filter(r => r.direction === "outgoing" && r.status === "approved" && !(state.called || {})[r.listing_id]);
+  const cards = await Promise.all(rows.map(async r => {
+    const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
+    if(!c) return "";
+    const first = (c.contact_name || "the owner").split(" ")[0];
+    return `<article class="urgent"><div class="urgent-dot" aria-hidden="true"></div><div style="min-width:0">
+      <p class="eyebrow">${esc(c.contact_name || "The owner")} accepted ${timeAgo(r.decided_at)}</p>
+      <h3>Call ${esc(first)} now, before it's rented out</h3>
+      <p>${esc(othersLine(l))}“${esc(r.listing_title)}” · ${esc(l ? l.locality : "")}</p>
+      <div class="acts"><a class="btn btn-accent btn-sm" href="tel:+91${esc(c.contact_phone)}" data-called="${esc(r.listing_id)}">Call ${esc(first)} · +91 ${esc(c.contact_phone)}</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(r.listing_id)}"
+          href="https://wa.me/91${esc(c.contact_phone)}?text=${encodeURIComponent("Hi " + first + ", I'm " + (state.user.name || "") + " from Navigate Me Flatmates. Thanks for accepting! When can I come and see the room?")}">WhatsApp</a>
+        <button class="btn btn-ghost btn-sm" type="button" data-called="${esc(r.listing_id)}">I've called</button></div></div></article>`;
+  }));
+  boxes.forEach(b => b.innerHTML = cards.join(""));
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-called]"); if(!b) return;
+  state.called = state.called || {}; state.called[b.dataset.called] = Date.now(); save();
+  setTimeout(renderUrgent, 400);
+});
 
 /* ============================================================== welcome */
 let cityTimer = null;
@@ -1537,7 +1711,7 @@ $("otpForm").addEventListener("submit", async e => {
   catch(err){ toast("That code didn't match. Try again."); return; }
   // Answered on another device already: no need to ask again.
   if(isSeeker() && answered(state.vibe) >= 8 && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
-  save(); known = null;
+  save();
   $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
   location.hash = ""; route();
 });
@@ -1583,15 +1757,16 @@ function obSteps(role){
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
     { k:"occWhat", form:"text", q:"", why:"" },
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true, opts: CITIES.map(c => ({ v:c, t:c })) },
-    { k:"budget", q:"What can you spend each month, all-in?", why:"Rent plus your share of the bills. We do the maths for every flat.",
-      opts:[{v:12000,t:"Up to ₹12,000"},{v:18000,t:"Up to ₹18,000"},{v:25000,t:"Up to ₹25,000"},{v:40000,t:"Up to ₹40,000"},{v:0,t:"I'm flexible"}] },
+    { k:"areas", form:"areas", q:"", why:"" },
+    { k:"budget", q:"What can you spend each month, all-in?", why:"Rent plus your share of the bills. We do the maths for every home.",
+      opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
     ...vibe ];
 }
 let ob = null;
 function startOnboarding(role){
   if(ob && ob.role === role) return renderOb();
   const occ = (state.user && state.user.occupation) || {};
-  const prev = role === "owner" ? state.homeDraft : Object.assign({ occType: occ.type, occWhat: occ.what }, state.prefs, state.vibe);
+  const prev = role === "owner" ? state.homeDraft : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), state.vibe);
   ob = { role, steps: obSteps(role), i: 0, a: Object.assign({}, prev) };
   renderOb();
 }
@@ -1628,6 +1803,12 @@ function renderOb(){
   const intro = ob.i === 0 ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "let's set up your profile"}</p>` : "";
   let inner;
   if(st.form === "text") inner = obTextStep();
+  else if(st.form === "areas") inner = `<h1>Which areas of ${esc(ob.a.city || "the city")} work for you?</h1>
+    <p class="why">Pick as many as you like: near work, college or friends. You can change this any time.</p>
+    <form id="obAreaForm" novalidate><div class="ob-areas">${(CITY_AREAS[ob.a.city] || []).map(a =>
+      `<label class="chip"><input type="checkbox" value="${esc(a)}"${(ob.a.areas || []).includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("")}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" type="submit">Continue</button>
+      <button class="btn btn-ghost" type="button" id="obAnyArea">Anywhere in ${esc(ob.a.city || "the city")}</button></div></form>`;
   else if(st.form === "flatmates") inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why)}</p>
     <form id="obFmForm" novalidate>${fmRowsHtml(ob.a.flatmates || [], ob.a.residents, "o")}<button class="btn btn-primary" type="submit">Continue</button></form>`;
   else inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why || "")}</p>
@@ -1639,6 +1820,7 @@ function renderOb(){
 }
 function obNext(){ if(ob.i < ob.steps.length - 1){ ob.i++; renderOb(); } else finishOnboarding(); }
 $("obStage").addEventListener("click", e => {
+  if(e.target.id === "obAnyArea"){ ob.a.areas = []; return obNext(); }
   const b = e.target.closest(".opt[data-i]"); if(!b) return;
   const st = ob.steps[ob.i]; ob.a[st.k] = st.opts[Number(b.dataset.i)].v;
   b.parentElement.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
@@ -1648,6 +1830,7 @@ $("obStage").addEventListener("submit", e => {
   e.preventDefault();
   if(e.target.id === "obTextForm"){ if(!formOk(e.target)) return; ob.a.occWhat = $("obWhat").value.trim(); obNext(); }
   if(e.target.id === "obFmForm"){ ob.a.flatmates = readFmRows(e.target, ob.a.residents, "o"); obNext(); }
+  if(e.target.id === "obAreaForm"){ ob.a.areas = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
 });
 $("obBack").addEventListener("click", () => {
   if(!ob || ob.i === 0) return;
@@ -1669,7 +1852,7 @@ async function finishOnboarding(){
     $("obDone").onclick = () => { ob = null; go("post"); };
     return;
   }
-  state.prefs = { city: a.city || "", budget: a.budget || 0 };
+  setPrefs({ city: a.city || "", areas: a.areas || [], max: a.budget || 0 });
   try{
     await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
     await api.setVibe(vibe);
@@ -1677,17 +1860,17 @@ async function finishOnboarding(){
   state.onboarded.seeker = true; save();
   await api.me();
   applyPrefs();
-  const rows = await api.search({ city: state.prefs.city, maxRent: state.prefs.budget });
+  const rows = applyFilters(await api.search({ city: prefs().city }), prefs());
   const scores = rows.map(l => (vibeMatch(state.vibe, l.household) || { pct: 0 }).pct);
   const best = Math.max(0, ...scores), strong = scores.filter(p => p >= 75).length;
-  const where = state.prefs.city || "your city";
+  const where = prefs().areas.length === 1 ? prefs().areas[0] : prefs().city || "your city";
   const gift = CHARGES_ON && state.credits > 0 && onGift();
   $("obStage").innerHTML = `<div class="ob-q finale">
     ${gift ? `<div class="gift-card"><div class="giftbox" aria-hidden="true"><div class="box"></div><div class="rib"></div><div class="lid"></div><div class="bow"></div><div class="num">${state.credits}</div></div>
       <p class="eyebrow" style="color:var(--accent)">A welcome gift for you</p><h2>${state.credits} free contacts</h2>
       <p>Ask to meet any owner whose home fits you. A contact is only used when they say yes.</p></div>` : ""}
     <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
-    <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} fit your budget.` : `We're still filling up ${esc(where)}.`}</h1>
+    <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "is a" : "are"} strong ${strong === 1 ? "match" : "matches"} for how you live. Your best one is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}</p>
     <button class="btn btn-primary" type="button" id="obDone">Show me</button></div>`;
@@ -1696,18 +1879,59 @@ async function finishOnboarding(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
   $("obDone").onclick = () => { ob = null; $("fSort").value = "match"; go("discover"); };
 }
-function applyPrefs(){
-  if(state.prefs.city) $("fCity").value = state.prefs.city;
-  const b = Number(state.prefs.budget) || 0;
-  const opt = [...$("fRent").options].map(o => Number(o.value)).filter(v => v && v >= b).sort((x, y) => x - y)[0];
-  $("fRent").value = b ? String(opt || "") : "";
+/* ====================================================== search preferences */
+// A seeker's search, saved on the device: city, areas and everything in the Filters panel.
+const DEFAULT_PREFS = { city:"", areas:[], min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
+const prefs = () => Object.assign({}, DEFAULT_PREFS, state.prefs);
+function setPrefs(p){ state.prefs = Object.assign(prefs(), p); save(); }
+const CITY_AREAS = Object.fromEntries(Object.entries(DEMO_AREAS).map(([c, a]) => [c, a.map(x => x[0])]));
+// Known areas first, then any other area that has listings (live data).
+function areasFor(city, rows){
+  const known = CITY_AREAS[city] || [];
+  const extra = [...new Set((rows || []).filter(l => l.city === city).map(l => l.locality))].filter(a => !known.includes(a)).sort();
+  return known.concat(extra);
 }
+const RULES = { veg:["Veg-only kitchen", hh => hh.food === 0], noSmoke:["No smoking", hh => hh.smoke === 0],
+  noDrinks:["No alcohol", hh => hh.drinks === 0], pets:["Pet-friendly", hh => hh.pets >= 1] };
+function applyFilters(rows, f){
+  return rows.filter(l => {
+    const cost = allIn(l), hh = l.household || {}, shared = l.kind !== "flat" && (hh.residents || 0) > 0;
+    if(f.areas.length && !f.areas.includes(l.locality)) return false;
+    if(f.min && cost < f.min) return false;
+    if(f.max && cost > f.max) return false;
+    if(f.kinds.length && !f.kinds.includes(l.kind)) return false;
+    if(f.gender && l.gender !== "any" && l.gender !== f.gender) return false;
+    if(f.furn.length && !f.furn.includes(l.furnishing)) return false;
+    if(f.moveBy && l.available_from > f.moveBy) return false;
+    if(f.must.length && !f.must.every(a => (l.amenities || []).includes(a))) return false;
+    // House rules only apply where someone already lives; a whole flat is yours to set.
+    if(shared && f.rules.some(r => RULES[r] && !RULES[r][1](hh))) return false;
+    if(f.minMatch && shared){ const m = vibeMatch(state.vibe, hh); if(!m || m.pct < f.minMatch) return false; }
+    return true;
+  });
+}
+const BANDS = [[0,10000,"Under ₹10k"],[10000,15000,"₹10k–15k"],[15000,20000,"₹15k–20k"],[20000,30000,"₹20k–30k"],[30000,0,"₹30k+"]];
+const kfmt = n => "₹" + (n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + "k" : n);
+function activeFilters(f){
+  const out = [];
+  if(f.min || f.max) out.push(["budget", f.min && f.max ? `${kfmt(f.min)}–${kfmt(f.max)}` : f.max ? `Up to ${kfmt(f.max)}` : `From ${kfmt(f.min)}`]);
+  f.kinds.forEach(k => out.push(["kinds:" + k, KIND_LABEL[k]]));
+  if(f.gender) out.push(["gender", f.gender === "female" ? "Open to women" : "Open to men"]);
+  f.furn.forEach(k => out.push(["furn:" + k, FURN_LABEL[k]]));
+  if(f.moveBy) out.push(["moveBy", "Move in by " + fmtDate(f.moveBy)]);
+  f.must.forEach(a => out.push(["must:" + a, a]));
+  f.rules.forEach(r => RULES[r] && out.push(["rules:" + r, RULES[r][0]]));
+  if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
+  return out;
+}
+function removeFilter(key){
+  const [k, v] = key.split(":"), f = prefs();
+  if(k === "budget") setPrefs({ min:0, max:0 });
+  else if(v !== undefined) setPrefs({ [k]: f[k].filter(x => x !== v) });
+  else setPrefs({ [k]: DEFAULT_PREFS[k] });
+}
+function applyPrefs(){ $("fCity").value = prefs().city; }
 
-/* ============================================================= discover */
-function filters(){
-  return { city:$("fCity").value, q:$("fQ").value.trim(), kind:$("fKind").value,
-           maxRent: Number($("fRent").value) || 0, gender:$("fGender").value, sort:$("fSort").value };
-}
 const REQ_TAG = { pending:"Request sent", approved:"Accepted", declined:"Not this time" };
 function cardHtml(l, i){
   const m = vibeMatch(state.vibe, l.household), hh = l.household || {}, bills = billsTotal(l), ph = photosOf(l), mates = matesOf(hh);
@@ -1746,40 +1970,110 @@ function giftPillHtml(){
   const n = contactsLeft();
   return `<button class="gift-pill" type="button" data-gift>${GIFT_SVG}${n ? contactsLabel(n) : "Get more contacts"}</button>`;
 }
-let browseSeq = 0;
+let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
-  const seq = ++browseSeq, f = filters();
-  let rows = await api.search(f);
+  const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
+  const rows = await api.search({ city: f.city });
   if(seq !== browseSeq) return;
+  cityRows = rows;
+  // Area chips for the chosen city.
+  const areas = f.city ? areasFor(f.city, rows) : [];
+  $("areaChips").hidden = !f.city;
+  $("areaChips").innerHTML = `<button type="button" data-area="" aria-pressed="${!f.areas.length}">All areas</button>` +
+    areas.map(a => `<button type="button" data-area="${esc(a)}" aria-pressed="${f.areas.includes(a)}">${esc(a)}</button>`).join("");
+  const act = activeFilters(f);
+  $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">×</span></button>`).join("");
+  $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
+
+  let list = applyFilters(rows, f);
   const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
-  if(f.sort === "match") rows.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
-  else if(f.sort === "cost") rows.sort((a, b) => allIn(a) - allIn(b));
-  else rows.sort((a, b) => b.created_at.localeCompare(a.created_at));
-  const strong = rows.filter(l => score(l) >= 75).length;
+  if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
+  else if(sort === "cost") list.sort((a, b) => allIn(a) - allIn(b));
+  else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const strong = list.filter(l => score(l) >= 75).length;
+  const where = f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
   $("greetTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
   $("greetName").textContent = "Here's who you'd get along with";
-  $("greetSub").textContent = `${rows.length} ${rows.length === 1 ? "home" : "homes"}${f.city ? " in " + f.city : ""} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
+  $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} in ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
-  const top = rows.find(l => !l.request_status && score(l) >= 0);
+  renderUrgent();
+  const top = list.find(l => !l.request_status && score(l) >= 0);
   const tm = top && vibeMatch(state.vibe, top.household);
   $("spotlight").innerHTML = tm ? spotlightHtml(top, tm) : "";
-  const rest = tm ? rows.filter(l => l !== top) : rows;
+  const rest = tm ? list.filter(l => l !== top) : list;
   $("count").textContent = tm && rest.length ? "More homes" : "";
-  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("")
-    : (tm ? "" : `<div class="empty"><h3>Nothing here yet</h3>Try another area, or raise the budget a little.</div>`);
+  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : tm ? "" : emptyHtml(rows, f);
+}
+// When nothing matches, offer the changes that would bring homes back, with counts.
+let suggestions = [];
+function emptyHtml(rows, f){
+  const tries = [];
+  if(f.areas.length) tries.push([{ areas:[] }, `Show all of ${f.city}`]);
+  if(f.max){ const up = Math.ceil(f.max * 1.25 / 1000) * 1000; tries.push([{ max: up }, `Raise budget to ${inr(up)}`]); }
+  // Dropping one filter at a time shows which one is doing the damage.
+  for(const [key, label] of activeFilters(f)){
+    const [k, v] = key.split(":");
+    const p = k === "budget" ? { min:0, max:0 } : v !== undefined ? { [k]: f[k].filter(x => x !== v) } : { [k]: DEFAULT_PREFS[k] };
+    tries.push([p, `Remove “${label}”`]);
+  }
+  const opts = tries.map(([p, label]) => ({ p, label, n: applyFilters(rows, Object.assign({}, f, p)).length }))
+    .filter(o => o.n).sort((a, b) => b.n - a.n).slice(0, 4);
+  if(f.city) opts.push({ p:{ city:"", areas:[] }, label:"Look in all cities", n:0 });
+  suggestions = opts.map(o => o.p);
+  return `<div class="empty"><h3>No homes match all of that yet</h3><p>New homes are added every day. Meanwhile, try one of these:</p>
+    <div class="suggest">${opts.map((o, i) => `<button class="btn btn-ghost btn-sm" type="button" data-suggest="${i}">${esc(o.label)}${o.n ? ` (${o.n})` : ""}</button>`).join("")}</div></div>`;
 }
 async function renderSaved(){
   const rows = (await api.search({})).filter(l => isSaved(l.id));
   $("savedCards").innerHTML = rows.length ? rows.map(cardHtml).join("")
     : `<div class="empty"><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.</div>`;
 }
-$("filters").addEventListener("input", renderDiscover);
-$("filters").addEventListener("submit", e => e.preventDefault());
-$("moreF").addEventListener("click", () => {
-  const open = $("filters").classList.toggle("open");
-  $("moreF").setAttribute("aria-expanded", open);
-  $("moreF").textContent = open ? "Fewer filters" : "More filters: area, budget, type";
+$("fCity").addEventListener("change", () => { setPrefs({ city: $("fCity").value, areas: [] }); renderDiscover(); });
+$("fSort").addEventListener("change", renderDiscover);
+$("areaChips").addEventListener("click", e => {
+  const b = e.target.closest("[data-area]"); if(!b) return;
+  const a = b.dataset.area, cur = prefs().areas;
+  setPrefs({ areas: !a ? [] : cur.includes(a) ? cur.filter(x => x !== a) : cur.concat(a) });
+  renderDiscover();
 });
+$("activeF").addEventListener("click", e => { const b = e.target.closest("[data-unfilter]"); if(b){ removeFilter(b.dataset.unfilter); renderDiscover(); } });
+$("cards").addEventListener("click", e => {
+  const b = e.target.closest("[data-suggest]"); if(!b) return;
+  e.stopPropagation(); setPrefs(suggestions[Number(b.dataset.suggest)]); applyPrefs(); renderDiscover();
+});
+
+/* ------------------------------------------------------------ filters panel */
+function openFilters(){
+  const f = prefs(), form = $("filterForm");
+  $("bandChips").innerHTML = BANDS.map(([lo, hi, label], i) => `<label class="chip"><input type="radio" name="fBand" value="${i}"${f.min === lo && f.max === hi && (lo || hi) ? " checked" : ""}>${label}</label>`).join("");
+  $("fMust").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" name="fMust" value="${esc(a)}"${f.must.includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("");
+  $("fMin").value = f.min || ""; $("fMax").value = f.max || ""; $("fMove").value = f.moveBy || "";
+  form.querySelectorAll("[name=fKind]").forEach(x => x.checked = f.kinds.includes(x.value));
+  form.querySelectorAll("[name=fFurn]").forEach(x => x.checked = f.furn.includes(x.value));
+  form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
+  form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
+  form.querySelectorAll("[name=fMatch]").forEach(x => x.checked = Number(x.value) === f.minMatch);
+  updateFilterCount();
+  $("dlgFilters").showModal();
+}
+function readFilterForm(){
+  const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
+  return { min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
+    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, must: vals("fMust"), rules: vals("fRule"), minMatch: Number(vals("fMatch")[0]) || 0 };
+}
+function updateFilterCount(){
+  const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
+  $("fApply").textContent = n ? `Show ${n} ${n === 1 ? "home" : "homes"}` : "No homes match yet";
+}
+$("filtersBtn").addEventListener("click", openFilters);
+$("filterForm").addEventListener("change", e => {
+  if(e.target.name === "fBand"){ const [lo, hi] = BANDS[Number(e.target.value)]; $("fMin").value = lo || ""; $("fMax").value = hi || ""; }
+  if(e.target.id === "fMin" || e.target.id === "fMax") $("filterForm").querySelectorAll("[name=fBand]").forEach(x => x.checked = false);
+  updateFilterCount();
+});
+$("filterForm").addEventListener("input", updateFilterCount);
+$("fReset").addEventListener("click", () => { const { city, areas } = prefs(); setPrefs(Object.assign({}, DEFAULT_PREFS, { city, areas })); openFilters(); });
+$("filterForm").addEventListener("submit", e => { e.preventDefault(); setPrefs(readFilterForm()); $("dlgFilters").close(); renderDiscover(); });
 $("giftPill").addEventListener("click", e => { if(e.target.closest("[data-gift]")) { if(contactsLeft()) toast("Ask to meet an owner from any flat. A contact is only used if they accept."); else openPay(); } });
 function onCardClick(e){
   const h = e.target.closest("[data-save]");
@@ -1815,7 +2109,8 @@ async function openListing(id){
   let lock = "";
   if(contact){
     lock = `<div class="lock open">
-      ${l.is_owner ? "" : `<p style="margin:0 0 10px;font-weight:800;color:var(--ok)">✓ The owner accepted. Say hi!</p>`}
+      ${l.is_owner ? "" : `<p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ ${esc(contact.contact_name || "The owner")} accepted. Call now!</p>
+        <p class="hint" style="margin:0 0 10px">${esc(othersLine(l))}Good homes get rented out within days, so don't wait.</p>`}
       <div class="kv" style="margin-top:0">
         <div><span>Owner</span><b>${esc(contact.contact_name)}</b> <span class="verified">✓ Phone verified</span></div>
         <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
@@ -1824,14 +2119,15 @@ async function openListing(id){
       <div class="map-box" style="margin-top:10px">${mapHtml(contact.address_parts && contact.address_parts.building
         ? mapsQuery(contact.address_parts, l.locality, l.city) : contact.address, 16, "", !l.is_owner)}</div>
       ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <a class="btn btn-ghost btn-sm" href="tel:+91${esc(contact.contact_phone)}">Call</a>
-        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from Navigate Me Flatmates. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
+        <a class="btn btn-accent btn-sm" href="tel:+91${esc(contact.contact_phone)}" data-called="${esc(l.id)}">Call ${esc((contact.contact_name || "").split(" ")[0])}</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(l.id)}" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from Navigate Me Flatmates. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>`}
     </div>`;
   }else if(!l.is_owner && isSeeker()){
     if(l.request_status === "pending"){
       lock = `<div class="lock wait"><h3>Request sent</h3>
-        <p>The owner has your profile and your ${m ? m.pct + "% " : ""}match. You'll get a notification here as soon as they reply.${CHARGES_ON ? " No contact is used unless they accept." : ""}</p>
+        <p>The owner has your profile and your ${m ? m.pct + "% " : ""}match. You'll get a notification as soon as they reply.${CHARGES_ON ? " No contact is used unless they accept." : ""}</p>
+        ${notifyCard("Turn on notifications so you can call the moment they accept.")}
         <button class="btn btn-ghost btn-sm" data-action="withdraw">Withdraw request</button></div>`;
     }else if(l.request_status === "declined"){
       lock = `<div class="lock wait"><h3>Not this time</h3>
@@ -1924,6 +2220,9 @@ async function renderRequests(){
   const list = rows.filter(r => r.direction === (owner ? "incoming" : "outgoing"));
   const waiting = list.filter(r => r.status === "pending").length;
   $("reqTitle").textContent = owner ? "People who'd like to meet you" : "Your requests";
+  $("notifReq").innerHTML = notifyCard(owner ? "Get a notification the moment someone asks to meet you, even when the app is closed."
+    : "Get a notification the moment an owner says yes, so you can call before anyone else.");
+  renderUrgent();
   $("reqSub").textContent = owner
     ? (waiting ? `${waiting} waiting for your reply. Accepting shares your number and address with them, and theirs with you.` : "When someone who fits your home asks to meet you, they'll show up here.")
     : `${waiting ? waiting + " waiting for a reply. " : ""}${CHARGES_ON ? `You have ${contactsLabel(contactsLeft())}.` : ""}`;
@@ -2042,7 +2341,8 @@ async function renderMine(){
   $("mineSub").innerHTML = mine.length
     ? (waiting ? `<a href="#requests">${waiting} ${waiting === 1 ? "person wants" : "people want"} to meet you →</a>` : "No new requests right now. We'll notify you as soon as someone asks.")
     : "Describe the room and add a few photos. People who fit your home will ask to meet you.";
-  $("mineList").innerHTML = mine.length ? mine.map(l => {
+  const ask = mine.length ? notifyCard("Turn on notifications so you never miss someone who wants to meet you.") : "";
+  $("mineList").innerHTML = ask + (mine.length ? mine.map(l => {
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
       <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
@@ -2060,7 +2360,7 @@ async function renderMine(){
     </div></div>`;
   }).join("") + `<button class="btn btn-ghost" data-go="post" style="margin:4px 0 30px">+ Post another room</button>`
   : `<div class="empty">${roomArtBox()}<h3>No listing yet</h3><p>It takes about two minutes.</p>
-      <button class="btn btn-primary" data-go="post">Describe the room</button></div>`;
+      <button class="btn btn-primary" data-go="post">Describe the room</button></div>`);
 }
 $("mineList").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
@@ -2140,11 +2440,14 @@ function renderFmRows(){
   $("fmRows").innerHTML = fmRowsHtml(keep, n, "p");
 }
 $("hCount").addEventListener("change", renderFmRows);
+function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
+$("pCity").addEventListener("change", fillAreaList);
 function renderPost(){
   const d = state.homeDraft || {};
   $("hQuiz").innerHTML = quizHtml("h", d);
   if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
   $("fmRows").innerHTML = ""; renderFmRows();
+  fillAreaList();
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
   if(!$("pName").value) $("pName").value = state.user.name || "";
   if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
@@ -2228,8 +2531,8 @@ async function renderAccount(){
 $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
-    if(b.dataset.action === "signout"){ await api.signOut(); known = null; unseen = 0; location.hash = ""; return route(); }
-    if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); known = null; location.hash = ""; return route(); }
+    if(b.dataset.action === "signout"){ await api.signOut(); unseen = 0; location.hash = ""; return route(); }
+    if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
   }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
@@ -2240,6 +2543,7 @@ document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
 });
 window.addEventListener("hashchange", route);
+$("fCity").innerHTML = `<option value="">All cities</option>`;
 for(const c of CITIES){
   $("fCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
   $("pCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);

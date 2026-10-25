@@ -5,8 +5,8 @@
 1. **Welcome page = sign-in.** A short write-up and the sign-in card, which asks what you came
    for: *post my flat* or *looking for a room*, then name, mobile and a one-time code.
 2. **Questions at sign-in, one per screen, required.**
-   - Room seekers (16): what they do (working / student / self-employed / between jobs) and
-     where, city, all-in budget, then 12 living-style questions: bedtime, cleanliness, food,
+   - Room seekers (17): what they do (working / student / self-employed / between jobs) and
+     where, city, **the areas they like (pick several)**, all-in budget, then 12 living-style questions: bedtime, cleanliness, food,
      cooking, smoking, drinks, guests, noise, time together, groceries and chores, weekday
      routine, pets. Smoking, food and pets count double in the match.
    - Flat owners (14): how many live there, each flatmate's work or studies and age range, then
@@ -24,6 +24,30 @@ Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per nei
 realistic rents, flatmates and split bills (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
 after you post it.
+
+## Notifications and urgency
+
+- **Owner:** a notification the moment someone asks to meet ("Riya wants to meet you · 92% match").
+- **Seeker, when accepted:** "Asha said yes! Call now", with how many others asked about the home.
+  An orange **Call now, before it's rented out** card stays at the top of Discover and Requests
+  until they tap Call, WhatsApp or "I've called". If they haven't called after 2 hours (1 minute
+  in demo mode) they get a "Don't lose this room" reminder.
+- **Seeker, when declined:** a gentle "Not this time", pointing back to their other matches.
+
+How they're delivered:
+- **App open or in the background:** system notifications straight away, in the Android app
+  (native, Android 13+ asks for permission) and in browsers that allow notifications.
+- **App fully closed:** Firebase Cloud Messaging. This needs a one-time setup, see
+  "Push notifications" under Go live. Until then the Android app builds and works without it.
+
+## Search and filters
+
+City, then **any number of areas** as chips (set during onboarding, changeable any time), plus a
+**Filters** panel: budget band or exact min/max (all-in), room type, who it's open to,
+furnishing, move-in date, must-have amenities, house rules (veg-only kitchen, no smoking, no
+alcohol, pet-friendly) and minimum match. It shows a live count ("Show 7 homes"), active
+filters appear as removable chips, and everything is remembered. When nothing matches, the app
+suggests the single change that brings most homes back ("Remove “No smoking” (6)").
 
 ## What makes it different
 
@@ -60,6 +84,8 @@ database decides, so the app can't be tricked into free contacts while charges a
 - `supabase/schema.sql`: tables, row-level security and RPCs. Requests, approvals, contacts and
   the match score are enforced here, so a number or address never reaches someone who wasn't accepted.
 - `supabase/functions/fm-pay/index.ts`: Razorpay order creation, payment verification and webhook.
+- `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
+  is made, accepted or declined (called by a database trigger).
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
 
 ## Run it locally
@@ -117,4 +143,21 @@ Phones with the testing build must uninstall it once before installing the prope
 4. In the Razorpay dashboard add a webhook to
    `https://<project>.supabase.co/functions/v1/fm-pay/webhook` for `payment.captured`.
 5. Paste the project URL and **anon** key into `FM_CONFIG` at the top of the script in `index.html`.
+
+### Push notifications (when the app is closed)
+
+1. Create a Firebase project, add an **Android app** with package name `com.navigateme.flatmates`,
+   and download `google-services.json`. Add its contents as the GitHub secret
+   `GOOGLE_SERVICES_JSON`; the APK workflow picks it up automatically.
+2. In Firebase → Project settings → Service accounts, generate a private key (JSON) and set it as a
+   function secret, together with a random notify secret:
+   ```
+   supabase secrets set FCM_SERVICE_ACCOUNT="$(cat service-account.json)" NOTIFY_SECRET=<random>
+   supabase functions deploy fm-notify --no-verify-jwt
+   ```
+3. Tell the database where to send events (the `pg_net` extension must be enabled):
+   ```sql
+   update fm_settings set notify_url = 'https://<project>.supabase.co/functions/v1/fm-notify',
+                          notify_secret = '<same random value>';
+   ```
    Never put the service_role key in the page.

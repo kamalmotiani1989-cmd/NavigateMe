@@ -519,3 +519,57 @@ create policy fm_photos_insert on storage.objects for insert to authenticated
 drop policy if exists fm_photos_delete on storage.objects;
 create policy fm_photos_delete on storage.objects for delete to authenticated
   using (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- ------------------------------------------------------ push notifications --
+-- Device tokens for Firebase Cloud Messaging (Android app). One row per device.
+create table if not exists public.fm_push_tokens (
+  token      text primary key,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  platform   text not null default 'android',
+  updated_at timestamptz not null default now()
+);
+alter table public.fm_push_tokens enable row level security;   -- no policies: only fm-notify (service role) reads them
+
+create or replace function public.fm_save_push_token(p_token text, p_platform text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null or coalesce(p_token, '') = '' or length(p_token) > 4096 then return; end if;
+  insert into fm_push_tokens (token, user_id, platform, updated_at)
+  values (p_token, auth.uid(), coalesce(p_platform, 'android'), now())
+  on conflict (token) do update set user_id = excluded.user_id, updated_at = now();
+end $$;
+
+-- When a request is created, accepted or declined, ask the fm-notify function to push it.
+-- Off until fm_settings.notify_url / notify_secret are set (see README, "Push notifications").
+alter table public.fm_settings add column if not exists notify_url text;
+alter table public.fm_settings add column if not exists notify_secret text;
+revoke select on public.fm_settings from anon, authenticated;
+grant select (id, charges_enabled, welcome_credits) on public.fm_settings to anon, authenticated;
+
+do $$ begin
+  create extension if not exists pg_net;
+exception when others then
+  raise notice 'pg_net is not available here; push notifications from the database stay off';
+end $$;
+
+create or replace function public.fm_request_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if tg_op = 'UPDATE' and new.status is not distinct from old.status then return new; end if;
+  if new.status not in ('pending','approved','declined') then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(
+    url := v_url,
+    body := jsonb_build_object('request_id', new.id, 'status', new.status),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;   -- a failed push must never block the request itself
+end $$;
+
+drop trigger if exists fm_requests_notify on public.fm_requests;
+create trigger fm_requests_notify after insert or update of status on public.fm_requests
+  for each row execute function public.fm_request_notify();
+

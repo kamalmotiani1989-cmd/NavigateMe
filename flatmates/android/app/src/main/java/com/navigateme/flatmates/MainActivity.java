@@ -1,9 +1,11 @@
 package com.navigateme.flatmates;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
@@ -19,7 +21,17 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.webkit.JavaScriptReplyProxy;
+import androidx.webkit.WebMessageCompat;
 import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
+
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.json.JSONObject;
+
+import java.util.Collections;
 
 /**
  * Hosts the Flatmates web app (bundled in assets) in a WebView.
@@ -30,9 +42,12 @@ public class MainActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
     private static final String START_URL = "https://" + HOST + "/index.html";
     private static final int PICK_PHOTOS = 1;
+    private static final int ASK_NOTIFICATIONS = 2;
+    static final String EXTRA_OPEN = "open";
 
     private WebView web;
     private ValueCallback<Uri[]> pendingPick;
+    private JavaScriptReplyProxy page;   // lets native code message the web app
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -91,8 +106,95 @@ public class MainActivity extends Activity {
             }
         });
 
+        addNativeBridge();
+        Notifications.ensureChannel(this);
+        fetchPushToken();
+
+        String open = screenFrom(getIntent());
         if (saved != null) web.restoreState(saved);
-        else web.loadUrl(START_URL);
+        else web.loadUrl(START_URL + (open != null ? "#" + open : ""));
+    }
+
+    /**
+     * Exposes `FlatmatesNative` to the app's own pages only (not to embedded maps).
+     * Messages are JSON: {type: hello | permission | notify, ...}.
+     */
+    private void addNativeBridge() {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) return;
+        WebViewCompat.addWebMessageListener(web, "FlatmatesNative",
+                Collections.singleton("https://" + HOST),
+                (WebView view, WebMessageCompat message, Uri origin, boolean isMainFrame, JavaScriptReplyProxy reply) -> {
+                    if (!isMainFrame || message.getData() == null) return;
+                    page = reply;
+                    try {
+                        JSONObject m = new JSONObject(message.getData());
+                        switch (m.optString("type")) {
+                            case "hello":
+                                sendStatus();
+                                sendToken(getSharedPreferences("push", MODE_PRIVATE).getString("token", null));
+                                break;
+                            case "permission":
+                                askNotificationPermission();
+                                break;
+                            case "notify":
+                                Notifications.show(this, m.optString("title"), m.optString("body"), m.optString("open", "requests"));
+                                break;
+                        }
+                    } catch (Exception ignored) {
+                        // Malformed message from the page: nothing to do.
+                    }
+                });
+    }
+
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, ASK_NOTIFICATIONS);
+        } else {
+            sendStatus();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(requestCode, permissions, results);
+        if (requestCode == ASK_NOTIFICATIONS) sendStatus();
+    }
+
+    private void sendStatus() {
+        post("{\"type\":\"status\",\"granted\":" + Notifications.allowed(this) + "}");
+    }
+
+    private void sendToken(String token) {
+        if (token != null) post("{\"type\":\"token\",\"token\":" + JSONObject.quote(token) + "}");
+    }
+
+    private void post(String json) {
+        if (page != null) page.postMessage(json);
+    }
+
+    /** Firebase push for when the app is closed; skipped quietly if Firebase isn't configured. */
+    private void fetchPushToken() {
+        try {
+            FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
+                getSharedPreferences("push", MODE_PRIVATE).edit().putString("token", token).apply();
+                sendToken(token);
+            });
+        } catch (Exception notConfigured) {
+            // No google-services.json in this build: in-app notifications still work.
+        }
+    }
+
+    private static String screenFrom(Intent intent) {
+        String v = intent == null ? null : intent.getStringExtra(EXTRA_OPEN);
+        return v != null && v.matches("[a-z]{1,20}") ? v : null;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String open = screenFrom(intent);
+        if (open != null) web.evaluateJavascript("location.hash = '" + open + "'", null);
     }
 
     private void openOutside(Uri url) {
