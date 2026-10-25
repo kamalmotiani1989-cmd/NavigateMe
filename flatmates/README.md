@@ -2,58 +2,55 @@
 
 ## How it flows
 
-1. **Welcome page = sign-in.** A short write-up and the sign-in card. Nothing else is visible
-   until you're in. The card asks what you came for: *post my flat* or *looking for a room*,
-   then name, mobile and a one-time code.
-2. **Questions, one per screen.** Room seekers: city, all-in budget, when they're moving, then
-   8 living-style questions. Flat owners: who lives in the flat, then the same 8 questions about
-   their household. Skippable. Seekers end on a match summary; owners go straight to posting
-   with their answers prefilled.
-3. **The app.** Seekers get Discover (best match spotlighted, every flat with a match ring),
-   Saved and Account. Owners get My flat (interest, visit requests) and Post.
-4. **Money only inside a flat.** No prices on the welcome page or in Discover. The price shows
-   when someone opens a flat and decides to contact the owner.
+1. **Welcome page = sign-in.** A short write-up and the sign-in card, which asks what you came
+   for: *post my flat* or *looking for a room*, then name, mobile and a one-time code.
+2. **Questions at sign-in, one per screen, required.**
+   - Room seekers (16): what they do (working / student / self-employed / between jobs) and
+     where, city, all-in budget, then 12 living-style questions: bedtime, cleanliness, food,
+     cooking, smoking, drinks, guests, noise, time together, groceries and chores, weekday
+     routine, pets. Smoking, food and pets count double in the match.
+   - Flat owners (14): how many live there, each flatmate's work or studies and age range, then
+     the same 12 questions about the household. The posting form comes prefilled.
+3. **Welcome gift.** Every seeker gets **5 free contacts**, revealed as a gift after onboarding.
+4. **Ask to meet, owner approves.** A seeker opens a flat and sends a request: their name, what
+   they do, their answers and match %, plus an optional note. The owner gets an in-app
+   notification (badge on Requests) and sees the profile with each trait marked as matching or
+   clashing. Only when the owner **accepts** do both get each other's number, and the seeker
+   gets the address. Declined requests cost nothing.
+5. **Contacts are used only on acceptance**, so there are no refunds to manage. A pending request
+   holds a contact until the owner replies. After the 5 free ones: **10 contacts for ₹500**.
 
-Only owners can post and only seekers can unlock; the database enforces both. Anyone can
-switch from their account page.
+In demo mode the other side is simulated: sample owners reply about 6 seconds after a request
+(they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
+after you post it.
 
 ## What makes it different
 
-- **Vibe match.** Seekers answer 8 quick living-style questions (bedtime, cleanliness, food,
-  smoking, drinks, guests, work, pets). Owners describe their household with the same questions,
+- **Vibe match.** Seekers answer 12 living-style questions. Owners describe their household with the same questions,
   plus who lives there. Every flat shows a match %, what fits and what might clash, and seekers
   can sort by best match.
 - **All-in rent.** Owners add the room's share of maintenance, electricity, Wi-Fi and cook/maid.
   Cards lead with the all-in monthly figure; the detail shows the full bill and the move-in amount.
-- **Save before you spend.** A free ♥ shortlist, so seekers decide which flats are worth an unlock.
-- **Unlocks never expire.** ₹100 a flat, no plans, tiers or brokers.
+- **Save before you spend.** A free ♥ shortlist, so seekers decide which owners to ask.
+- **Owners choose who they meet.** Numbers are only shared after the owner accepts a request.
 - **Illustrated rooms.** Listings without photos get a drawn room in place of a blank tile.
 
 ## Pricing
 
-> **Charges are currently OFF.** Contacting an owner is free and no payment screen appears.
-> To switch charges on: set `CHARGES_ON = true` in `index.html` **and** run
-> `update fm_settings set charges_enabled = true;` in Supabase. The database decides, so the
-> free period can't be abused later: unlocks made while free never turn into refundable credits.
-
-When charges are on:
-
 | Who | What | Price |
 |---|---|---|
-| Owner / current tenant | Post a listing with photos (unlimited) | Free |
-| Seeker | Browse listings, rent, area, amenities, preferences | Free |
-| Seeker | Unlock pack: 5 flats (owner phone, exact address, book visits) | ₹500 (₹100 per flat) |
+| Owner | Post a listing with photos and flatmates (unlimited) | Free |
+| Seeker | Browse, see households, matches and all-in costs | Free |
+| Seeker | Welcome gift: first 5 accepted contacts | Free |
+| Seeker | After that: 10 accepted contacts | ₹500 (₹50 each) |
 
-An unlocked flat stays unlocked; opening it again doesn't use another credit.
-Unlocks don't expire. When all 5 are used, the next unlock asks for another ₹500 pack.
-
-**Unlock-back guarantee:** a seeker gets the unlock back if the flat was already rented, or the
-owner hasn't replied 48 hours after the unlock. Once per flat, up to 2 per pack bought, and the
-contact stays visible. When two seekers report a flat as already rented, it's taken down.
+Contacts never expire. To make everything free for a while: set `CHARGES_ON = false` in
+`index.html` **and** run `update fm_settings set charges_enabled = false;` in Supabase. The
+database decides, so the app can't be tricked into free contacts while charges are on.
 
 ## Files
 
-- `index.html`: the whole app (browse, post, unlock, pay, book visits, account). No build step.
+- `index.html`: the whole app (onboarding, browse, requests, approvals, post, pay, visits). No build step.
 - `supabase/schema.sql`: tables, row-level security and RPCs. The paywall is enforced here,
   so a locked phone number or address never reaches the browser.
 - `supabase/functions/fm-pay/index.ts`: Razorpay order creation, payment verification and webhook.

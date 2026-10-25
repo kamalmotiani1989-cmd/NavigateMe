@@ -1,6 +1,6 @@
 // Supabase Edge Function: Razorpay checkout for visit packs.
 //
-//   POST /fm-pay/order    (signed-in user)  -> creates a Rs 500 order for 5 unlocks
+//   POST /fm-pay/order    (signed-in user)  -> creates a Rs 500 order for 10 contacts
 //   POST /fm-pay/verify   (signed-in user)  -> checks the checkout signature, adds credits
 //   POST /fm-pay/webhook  (Razorpay)        -> same crediting, as a backstop
 //
@@ -14,7 +14,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const PACK_PRICE_PAISE = 500 * 100;
-const PACK_CREDITS = 5;
+const PACK_CREDITS = 10;
 
 const env = (k: string) => Deno.env.get(k) ?? "";
 const admin = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"));

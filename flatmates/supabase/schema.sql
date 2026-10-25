@@ -3,22 +3,19 @@
 -- =====================================================================
 -- Business rules this file enforces (in the database, not the browser):
 --   * At sign-in everyone picks a role:
---       'owner'  = has a flat, looking for a flatmate -> can post, free
---       'seeker' = looking for a room in a flat       -> pays to unlock
---   * Posting a flat is free (owners only), with up to 6 photos.
---   * The owner's name, phone number and exact address stay hidden.
---     A seeker sees them only after unlocking that listing.
---   * Unlocking a listing costs 1 visit credit. After that it stays
---     unlocked, and the seeker can book visits to it.
---   * Charges can be switched off: fm_settings.charges_enabled = false makes
---     unlocking free (no credits used) and turns off refunds. It starts off.
---   * Unlock-back guarantee: a seeker gets the credit back if the flat was
---     already rented, or the owner hasn't replied 48 hours after the unlock.
---     Once per unlock, at most 2 per pack bought. Two "already rented"
---     reports close the listing.
---   * Credits are sold in packs: 5 unlocks for Rs 500. Only the payment
---     webhook (service_role key) can add credits.
---
+--       'owner'  = has a flat, looking for a flatmate -> posts free
+--       'seeker' = looking for a room in a flat       -> asks to meet owners
+--   * Posting a flat is free (owners only), with up to 6 photos and a
+--     description of each flatmate (working/student, what they do, age).
+--   * Seekers fill in what they do and 12 living-style questions first.
+--   * A seeker never sees an owner's number or address directly. They send
+--     a request (their profile + match %), the owner is notified, and only
+--     if the owner accepts are the number and address shared both ways.
+--   * Contacts: every seeker gets 5 free as a welcome gift. One is used
+--     only when an owner ACCEPTS, so nothing ever needs refunding. After
+--     that, packs of 10 for Rs 500. Only the payment webhook adds credits.
+--   * fm_settings.charges_enabled = false makes accepted requests free.
+
 -- Run this once in the Supabase SQL editor. Turn on Phone auth under
 -- Authentication -> Providers, then paste the project URL and anon key
 -- into FM_CONFIG in flatmates/index.html.
@@ -39,6 +36,9 @@ alter table public.fm_profiles add column if not exists role text
   check (role in ('owner','seeker'));
 -- Seeker's living-style answers, used for the vibe match ({sleep:0..2, clean:0..2, ...}).
 alter table public.fm_profiles add column if not exists vibe jsonb not null default '{}';
+-- What they do: {type: working|student|self|between, what: "Analyst at Deloitte"}.
+alter table public.fm_profiles add column if not exists occupation jsonb not null default '{}';
+alter table public.fm_profiles add column if not exists gift_given boolean not null default false;
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -103,13 +103,30 @@ alter table public.fm_unlocks add column if not exists refund_reason text
 -- Free unlocks (made while charges were off) can never be refunded into credits.
 alter table public.fm_unlocks add column if not exists charged boolean not null default true;
 
--- One-row app settings. Flip charges on with:
---   update public.fm_settings set charges_enabled = true;
+-- One-row app settings. Turn charges off with:
+--   update public.fm_settings set charges_enabled = false;
 create table if not exists public.fm_settings (
   id boolean primary key default true check (id),
-  charges_enabled boolean not null default false
+  charges_enabled boolean not null default true
 );
+alter table public.fm_settings add column if not exists welcome_credits int not null default 5;
 insert into public.fm_settings (id) values (true) on conflict (id) do nothing;
+
+-- A seeker asking to meet an owner. The owner accepts or declines.
+create table if not exists public.fm_requests (
+  id            uuid primary key default gen_random_uuid(),
+  listing_id    uuid not null references public.fm_listings(id) on delete cascade,
+  seeker_id     uuid not null references auth.users(id) on delete cascade,
+  status        text not null default 'pending'
+                check (status in ('pending','approved','declined','withdrawn')),
+  message       text not null default '',
+  match_pct     int,
+  seen_by_owner boolean not null default false,
+  seen_by_seeker boolean not null default true,
+  created_at    timestamptz not null default now(),
+  decided_at    timestamptz,
+  unique (listing_id, seeker_id)
+);
 
 create table if not exists public.fm_visits (
   id          uuid primary key default gen_random_uuid(),
@@ -142,6 +159,14 @@ alter table public.fm_unlocks         enable row level security;
 alter table public.fm_visits          enable row level security;
 alter table public.fm_orders          enable row level security;
 alter table public.fm_settings        enable row level security;
+alter table public.fm_requests        enable row level security;
+
+drop policy if exists fm_requests_parties on public.fm_requests;
+create policy fm_requests_parties on public.fm_requests
+  for select using (
+    seeker_id = auth.uid()
+    or exists (select 1 from public.fm_listings l where l.id = listing_id and l.owner_id = auth.uid()));
+-- All writes go through fm_request / fm_withdraw / fm_decide.
 
 drop policy if exists fm_settings_read on public.fm_settings;
 create policy fm_settings_read on public.fm_settings for select using (true);
@@ -187,10 +212,17 @@ drop function if exists public.fm_post_listing(text, text, text, text, int, int,
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
   text, text, text[], text, text, text, text, text[]);
 
+drop function if exists public.fm_unlock(uuid);           -- contact now only via an accepted request
+drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund: contacts are used on acceptance
+
 create or replace function public.fm_me()
-returns table (credits int, full_name text, phone text, role text, vibe jsonb)
+returns table (credits int, full_name text, phone text, role text, vibe jsonb, occupation jsonb,
+               gift_given boolean, packs bigint, pending bigint)
 language sql security definer set search_path = public stable as $$
-  select p.credits, p.full_name, p.phone, p.role, p.vibe from fm_profiles p where p.id = auth.uid();
+  select p.credits, p.full_name, p.phone, p.role, p.vibe, p.occupation, p.gift_given,
+         (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid'),
+         (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending')
+  from fm_profiles p where p.id = auth.uid();
 $$;
 
 create or replace function public.fm_set_vibe(p_vibe jsonb) returns void
@@ -200,7 +232,18 @@ begin
   update fm_profiles set vibe = p_vibe where id = auth.uid();
 end $$;
 
--- Null arguments leave the current value alone.
+create or replace function public.fm_set_occupation(p_occ jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if jsonb_typeof(p_occ) <> 'object' or pg_column_size(p_occ) > 512
+     or coalesce(p_occ->>'type', '') not in ('working','student','self','between') then
+    raise exception 'bad-occupation';
+  end if;
+  update fm_profiles set occupation = p_occ where id = auth.uid();
+end $$;
+
+-- Null arguments leave the current value alone. The first time someone
+-- becomes a seeker they get the welcome gift of free contacts.
 create or replace function public.fm_set_profile(p_name text, p_role text) returns void
 language plpgsql security definer set search_path = public as $$
 begin
@@ -209,9 +252,27 @@ begin
      set full_name = coalesce(nullif(left(trim(p_name), 60), ''), full_name),
          role      = coalesce(p_role, role)
    where id = auth.uid();
+  if p_role = 'seeker' then
+    update fm_profiles
+       set credits = credits + (select welcome_credits from fm_settings), gift_given = true
+     where id = auth.uid() and not gift_given;
+  end if;
 end $$;
 
--- Listings with a flag for whether the caller has them unlocked.
+-- Weighted living-style match, 0..100. Same rules as vibeMatch() in index.html:
+-- each answer is 0..2, a question scores 1 - gap/2, smoking/food/pets count double,
+-- and at least 4 shared answers are needed.
+create or replace function public.fm_match(p_v jsonb, p_h jsonb) returns int
+language sql immutable as $$
+  with q as (
+    select (p_v->>k)::int a, (p_h->>k)::int b, case when k in ('smoke','food','pets') then 2 else 1 end w
+    from unnest(array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets']) k
+    where jsonb_typeof(p_v->k) = 'number' and jsonb_typeof(p_h->k) = 'number')
+  select case when count(*) < 4 then null
+              else round(100 * sum(w * (1 - abs(a - b) / 2.0)) / sum(w))::int end from q;
+$$;
+
+-- Listings, with whether the caller can see the contact and where their request stands.
 create or replace function public.fm_search(
   p_city text default null, p_kind text default null,
   p_max_rent int default null, p_gender text default null, p_q text default null)
@@ -219,8 +280,7 @@ returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
-  is_owner boolean, unlocked boolean, unlock_count bigint,
-  unlocked_at timestamptz, refunded boolean)
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -228,10 +288,10 @@ language sql security definer set search_path = public stable as $$
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
-         (select count(*) from fm_unlocks u where u.listing_id = l.id),
-         mine.created_at, mine.refunded_at is not null
+         (select count(*) from fm_requests r where r.listing_id = l.id),
+         mine.status
   from fm_listings l
-  left join fm_unlocks mine on mine.listing_id = l.id and mine.user_id = auth.uid()
+  left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where (l.status = 'active' or l.owner_id = auth.uid())
     and (p_city is null or l.city = p_city)
     and (p_kind is null or l.kind = p_kind)
@@ -280,71 +340,106 @@ begin
   return v_id;
 end $$;
 
--- Spend 1 credit to unlock a listing. Free if already unlocked or own listing.
-create or replace function public.fm_unlock(p_listing uuid)
-returns table (unlocked boolean, charged boolean, credits int)
+-- Seeker asks to meet an owner. Needs a filled profile and, when charges are
+-- on, a contact that isn't already reserved by another pending request.
+create or replace function public.fm_request(p_listing uuid, p_message text)
+returns table (status text, error text)
 language plpgsql security definer set search_path = public as $$
-declare v_owner uuid; v_credits int; v_role text;
+declare v_me fm_profiles%rowtype; v_l fm_listings%rowtype; v_req fm_requests%rowtype; v_pending int;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
-  select owner_id into v_owner from fm_listings where id = p_listing and status = 'active';
-  if v_owner is null then raise exception 'listing-not-found'; end if;
+  select * into v_me from fm_profiles where id = auth.uid() for update;
+  if v_me.role is distinct from 'seeker' then return query select null::text, 'seekers-only'; return; end if;
+  if (select count(*) from jsonb_object_keys(v_me.vibe)) < 8 then return query select null::text, 'vibe-required'; return; end if;
+  if coalesce(v_me.occupation->>'type', '') = '' then return query select null::text, 'profile-required'; return; end if;
+  select * into v_l from fm_listings where id = p_listing and fm_listings.status = 'active';
+  if v_l.id is null then return query select null::text, 'listing-not-found'; return; end if;
+  if v_l.owner_id = auth.uid() then return query select null::text, 'own-listing'; return; end if;
 
-  select p.credits, p.role into v_credits, v_role from fm_profiles p where p.id = auth.uid() for update;
-  if v_owner <> auth.uid() and v_role is distinct from 'seeker' then raise exception 'seekers-only'; end if;
+  select * into v_req from fm_requests where listing_id = p_listing and seeker_id = auth.uid();
+  if v_req.status in ('pending','approved') then return query select v_req.status, null::text; return; end if;
+  if v_req.status = 'declined' then return query select v_req.status, 'declined'; return; end if;
 
-  if v_owner = auth.uid() or exists (
-       select 1 from fm_unlocks u where u.user_id = auth.uid() and u.listing_id = p_listing) then
-    return query select true, false, v_credits; return;
+  if (select charges_enabled from fm_settings) then
+    select count(*) into v_pending from fm_requests r where r.seeker_id = auth.uid() and r.status = 'pending';
+    if v_me.credits - v_pending < 1 then return query select null::text, 'no-credits'; return; end if;
   end if;
 
-  if not coalesce((select charges_enabled from fm_settings), false) then
-    insert into fm_unlocks (user_id, listing_id, charged) values (auth.uid(), p_listing, false);
-    return query select true, false, coalesce(v_credits, 0); return;
-  end if;
-
-  if coalesce(v_credits, 0) < 1 then
-    return query select false, false, coalesce(v_credits, 0); return;
-  end if;
-
-  update fm_profiles set credits = fm_profiles.credits - 1 where id = auth.uid();
-  insert into fm_unlocks (user_id, listing_id) values (auth.uid(), p_listing);
-  return query select true, true, v_credits - 1;
+  insert into fm_requests (listing_id, seeker_id, message, match_pct)
+  values (p_listing, auth.uid(), left(coalesce(p_message, ''), 300), fm_match(v_me.vibe, v_l.household))
+  on conflict (listing_id, seeker_id) do update
+    set status = 'pending', message = excluded.message, match_pct = excluded.match_pct,
+        seen_by_owner = false, seen_by_seeker = true, created_at = now(), decided_at = null;
+  return query select 'pending'::text, null::text;
 end $$;
 
--- Unlock-back guarantee. Returns the new balance.
-create or replace function public.fm_claim_refund(p_listing uuid, p_reason text)
-returns table (refunded boolean, credits int, error text)
+create or replace function public.fm_withdraw(p_request uuid) returns void
+language sql security definer set search_path = public as $$
+  update fm_requests set status = 'withdrawn'
+   where id = p_request and seeker_id = auth.uid() and status = 'pending';
+$$;
+
+-- Owner accepts or declines. Accepting uses one of the seeker's contacts
+-- (when charges are on) and shares contact details both ways.
+create or replace function public.fm_decide(p_request uuid, p_approve boolean)
+returns table (status text, error text)
 language plpgsql security definer set search_path = public as $$
-declare v_unlock fm_unlocks%rowtype; v_used int; v_packs int; v_credits int;
+declare v_req fm_requests%rowtype; v_credits int; v_charges boolean;
 begin
-  if auth.uid() is null then raise exception 'not-signed-in'; end if;
-  if p_reason not in ('rented','no_reply') then raise exception 'bad-reason'; end if;
-  select * into v_unlock from fm_unlocks
-   where user_id = auth.uid() and listing_id = p_listing for update;
-  select p.credits into v_credits from fm_profiles p where p.id = auth.uid() for update;
+  select r.* into v_req from fm_requests r join fm_listings l on l.id = r.listing_id
+   where r.id = p_request and l.owner_id = auth.uid() for update of r;
+  if v_req.id is null then return query select null::text, 'not-found'; return; end if;
+  if v_req.status <> 'pending' then return query select v_req.status, 'already-decided'; return; end if;
 
-  if v_unlock.user_id is null then return query select false, v_credits, 'not-unlocked'; return; end if;
-  if v_unlock.refunded_at is not null then return query select false, v_credits, 'already-refunded'; return; end if;
-  if not v_unlock.charged then return query select false, v_credits, 'was-free'; return; end if;
-  if p_reason = 'no_reply' and v_unlock.created_at > now() - interval '48 hours' then
-    return query select false, v_credits, 'too-early'; return;
+  if not p_approve then
+    update fm_requests set status = 'declined', decided_at = now(), seen_by_seeker = false where id = p_request;
+    return query select 'declined'::text, null::text; return;
   end if;
-  select count(*) into v_used from fm_unlocks where user_id = auth.uid() and refunded_at is not null;
-  select count(*) into v_packs from fm_orders where user_id = auth.uid() and status = 'paid';
-  if v_used >= 2 * v_packs then return query select false, v_credits, 'limit-reached'; return; end if;
 
-  update fm_unlocks set refunded_at = now(), refund_reason = p_reason
-   where user_id = auth.uid() and listing_id = p_listing;
-  update fm_profiles set credits = fm_profiles.credits + 1 where id = auth.uid();
-  if p_reason = 'rented' and (select count(*) from fm_unlocks
-        where listing_id = p_listing and refund_reason = 'rented') >= 2 then
-    update fm_listings set status = 'closed' where id = p_listing;
+  v_charges := (select charges_enabled from fm_settings);
+  if v_charges then
+    select credits into v_credits from fm_profiles where id = v_req.seeker_id for update;
+    if v_credits < 1 then return query select 'pending'::text, 'seeker-out-of-contacts'; return; end if;
+    update fm_profiles set credits = credits - 1 where id = v_req.seeker_id;
   end if;
-  return query select true, v_credits + 1, null::text;
+  insert into fm_unlocks (user_id, listing_id, charged) values (v_req.seeker_id, v_req.listing_id, v_charges)
+  on conflict (user_id, listing_id) do nothing;
+  update fm_requests set status = 'approved', decided_at = now(), seen_by_seeker = false where id = p_request;
+  return query select 'approved'::text, null::text;
 end $$;
 
--- Owner contact and exact address, only for the owner or an unlocker.
+-- Both sides' requests in one list, newest first. 'incoming' = on my listing,
+-- 'outgoing' = mine as a seeker. The seeker's phone only appears once accepted.
+create or replace function public.fm_inbox()
+returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
+               match_pct int, message text, created_at timestamptz, decided_at timestamptz,
+               name text, occupation jsonb, vibe jsonb, phone text, unseen boolean)
+language sql security definer set search_path = public stable as $$
+  select r.id, r.listing_id, l.title,
+         case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
+         r.status, r.match_pct, r.message, r.created_at, r.decided_at,
+         case when l.owner_id = auth.uid() then sp.full_name end,
+         case when l.owner_id = auth.uid() then sp.occupation end,
+         case when l.owner_id = auth.uid() then sp.vibe end,
+         case when l.owner_id = auth.uid() and r.status = 'approved' then sp.phone end,
+         case when l.owner_id = auth.uid() then not r.seen_by_owner and r.status = 'pending'
+              else not r.seen_by_seeker end
+  from fm_requests r
+  join fm_listings l on l.id = r.listing_id
+  join fm_profiles sp on sp.id = r.seeker_id
+  where (l.owner_id = auth.uid() or r.seeker_id = auth.uid()) and r.status <> 'withdrawn'
+  order by r.created_at desc
+  limit 200;
+$$;
+
+create or replace function public.fm_mark_seen() returns void
+language sql security definer set search_path = public as $$
+  update fm_requests r set seen_by_owner = true
+   from fm_listings l where l.id = r.listing_id and l.owner_id = auth.uid() and not r.seen_by_owner;
+  update fm_requests set seen_by_seeker = true where seeker_id = auth.uid() and not seen_by_seeker;
+$$;
+
+-- Owner contact and exact address: only for the owner, or a seeker whose request was accepted.
 create or replace function public.fm_contact(p_listing uuid)
 returns table (contact_name text, contact_phone text, address text)
 language sql security definer set search_path = public stable as $$
