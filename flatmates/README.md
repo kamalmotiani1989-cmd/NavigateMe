@@ -175,9 +175,14 @@ Phones with the testing build must uninstall it once before installing the prope
 ## Live project
 
 The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
-The database is set up (schema.sql applied). Phone login is turned on in the Supabase dashboard under
-Authentication → Sign In / Providers → Phone, with test numbers until an SMS provider (Twilio or MSG91)
-is added. The supabase-js library ships inside the app (`vendor/`), so it never depends on a CDN; if the
+The database is set up (schema.sql applied).
+
+**Testing login (no SMS):** until phone login has an SMS provider, everyone signs in with their mobile
+number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It
+isn't secure: anyone with the code can sign in as any number. Before real users, add an SMS provider
+under Authentication → Sign In / Providers → Phone (Twilio, Vonage, MessageBird or Textlocal; Indian
+numbers need DLT registration), set `testLogin: false` in `FM_CONFIG`, and run
+`update fm_settings set test_login = false;`. The supabase-js library ships inside the app (`vendor/`), so it never depends on a CDN; if the
 server can't be reached the app shows "Can't connect" instead of falling back to demo data.
 Set `supabaseUrl` and `supabaseAnonKey` in `FM_CONFIG` back to "" to run the demo again.
 

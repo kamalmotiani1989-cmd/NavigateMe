@@ -1035,6 +1035,9 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
    The anon key is safe in the page; the service_role key never is.     */
 const FM_CONFIG = {
   supabaseUrl:     "https://tjgkcuzypstnanpsoogi.supabase.co",
+  // TESTING ONLY: sign in with any mobile number and the code 123456, no SMS (supabase/functions/fm-login).
+  // Set to false once Supabase phone login has an SMS provider, and run: update fm_settings set test_login = false;
+  testLogin:       true,
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqZ2tjdXp5cHN0bmFucHNvb2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NzU4OTksImV4cCI6MjEwODU1MTg5OX0.i50hd8s8umEngxNxGfizz-32PIkrzQzI87KM0Tix3WA",
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
@@ -1816,13 +1819,24 @@ function makeLiveApi(sb){
   return {
     live:true,
     async sendOtp(phone, name, role){
+      if(FM_CONFIG.testLogin){ pendingOtp = { phone, name, role }; return { testCode: "123456" }; }
       const { error } = await sb.auth.signInWithOtp({ phone: "+91" + phone });
       if(error) throw error;
       pendingOtp = { phone, name, role }; return {};
     },
     async verifyOtp(code){
-      const { error } = await sb.auth.verifyOtp({ phone: "+91" + pendingOtp.phone, token: code, type: "sms" });
-      if(error) throw new Error("bad-code");
+      if(FM_CONFIG.testLogin){
+        const res = await fetch(FM_CONFIG.supabaseUrl + "/functions/v1/fm-login", { method: "POST",
+          headers: { "Content-Type": "application/json", apikey: FM_CONFIG.supabaseAnonKey },
+          body: JSON.stringify({ phone: pendingOtp.phone, code }) });
+        const t = await res.json().catch(() => ({}));
+        if(!res.ok || !t.access_token) throw new Error(t.error || "bad-code");
+        const { error } = await sb.auth.setSession({ access_token: t.access_token, refresh_token: t.refresh_token });
+        if(error) throw error;
+      }else{
+        const { error } = await sb.auth.verifyOtp({ phone: "+91" + pendingOtp.phone, token: code, type: "sms" });
+        if(error) throw new Error("bad-code");
+      }
       await rpc("fm_set_profile", { p_name: pendingOtp.name || null, p_role: pendingOtp.role || null });
       pendingOtp = null; await this.me();
     },
@@ -2483,8 +2497,9 @@ $("loginForm").addEventListener("submit", async e => {
   try{
     const r = await api.sendOtp(phone, name, role);
     $("otpTo").textContent = "+91 " + phone;
-    $("otpDemo").hidden = !r.demoCode;
+    $("otpDemo").hidden = !r.demoCode && !r.testCode;
     if(r.demoCode) $("otpDemo").textContent = "Demo mode: your code is " + r.demoCode;
+    if(r.testCode) $("otpDemo").textContent = "Testing: no SMS is sent. Enter the code " + r.testCode + ".";
     $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus();
   }catch(err){ console.error(err); toast(`Couldn't send the code. Check the number and try again.${err && err.message ? ` (${err.message})` : ""}`); }
 });

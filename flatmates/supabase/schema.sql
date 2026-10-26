@@ -128,6 +128,9 @@ create table if not exists public.fm_settings (
   charges_enabled boolean not null default true
 );
 alter table public.fm_settings add column if not exists welcome_credits int not null default 5;
+-- TESTING ONLY: lets functions/fm-login sign people in with a shared code and no SMS.
+-- Turn it off before real users: update public.fm_settings set test_login = false;
+alter table public.fm_settings add column if not exists test_login boolean not null default true;
 insert into public.fm_settings (id) values (true) on conflict (id) do nothing;
 
 -- A seeker asking to meet an owner. The owner accepts or declines.
