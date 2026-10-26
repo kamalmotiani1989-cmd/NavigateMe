@@ -696,6 +696,141 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .report-box{margin-top:10px; padding:12px 14px; border-radius:14px; background:#FFF5F5}
 .report-box .hint{margin:4px 0 10px}
 .delisted{margin:8px 0 0; padding:10px 12px; border-radius:12px; background:#FDE8E9; color:#B42332; font-size:13.5px; font-weight:600}
+/* ---------- six tabs on phones: Account moves to the avatar in the header */
+@media (max-width:720px){
+  .tab[data-view="account"]{display:none}
+  .bar .me{display:block; margin-left:auto}
+  .tab{flex:1 1 0; min-width:0; padding:6px 2px}
+  .tab span{max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .tab .badge{right:calc(50% - 22px)}
+}
+/* ---------- Flatsplits + FlatMart shortcuts on Discover / My flat */
+.extras{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0 4px}
+.extras a{display:flex; gap:10px; align-items:center; padding:12px 14px; border-radius:16px; text-decoration:none; color:var(--text); background:var(--surface-2)}
+.extras i{font-style:normal; font-size:24px; flex:none}
+.extras b{display:block; font-size:14.5px; letter-spacing:-.01em} .extras small{display:block; color:var(--text-2); font-size:12.5px; line-height:1.35}
+@media (max-width:420px){ .extras{grid-template-columns:1fr} }
+/* ---------- Flatsplits */
+.fs-hero{margin:22px 0 4px; padding:22px 20px; border-radius:22px; color:#fff; background:linear-gradient(150deg,#0F9D74 0%,#0E9AA0 55%,#1F6CC4 100%)}
+.fs-hero .eyebrow{color:#C8FFE8; margin-bottom:4px}
+.fs-hero h1{font-size:clamp(26px,4vw,34px); color:#fff}
+.fs-hero p{color:rgba(255,255,255,.9); margin:8px 0 0; max-width:60ch}
+.fs-tot{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px}
+.fs-tot div{background:rgba(255,255,255,.15); border-radius:14px; padding:10px 12px}
+.fs-tot b{display:block; font-size:22px; font-weight:800; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.fs-tot span{font-size:12.5px; color:rgba(255,255,255,.88)}
+.fs-list{padding:10px 0 30px}
+.fs-group{display:grid; grid-template-columns:52px 1fr auto; gap:14px; align-items:center; width:100%; padding:16px 2px; border:0; background:none;
+  text-align:left; cursor:pointer; box-shadow:0 1px 0 var(--line); color:var(--text)}
+.fs-emoji{width:52px; height:52px; border-radius:16px; display:grid; place-items:center; font-size:26px; background:var(--surface-2); position:relative}
+.fs-emoji .badge{position:absolute; top:-4px; right:-4px}
+.fs-group .h{display:block; font-size:17px; font-weight:800; letter-spacing:-.015em}
+.fs-group .s{display:block}
+.fs-group .s{font-size:13.5px; color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fs-net{text-align:right; font-size:12.5px; color:var(--text-3); font-weight:600; line-height:1.3}
+.fs-net b{display:block; font-size:16px; font-weight:800; font-variant-numeric:tabular-nums}
+.pos{color:var(--ok)} .neg{color:var(--accent)} .zero{color:var(--text-3)}
+.fs-ghead{display:flex; gap:14px; align-items:center; margin:14px 0 0}
+.fs-ghead h1{font-size:clamp(24px,3.6vw,32px)}
+.fs-ghead p{margin:2px 0 0; color:var(--text-2); font-size:14px}
+.fs-ghead .linkbtn{padding:0; color:var(--brand); font-size:14px}
+.fs-bal{margin:18px 0 0; padding:18px; border-radius:18px; background:var(--surface-2)}
+.fs-bal.pos{background:var(--ok-soft)} .fs-bal.neg{background:var(--accent-soft)}
+.fs-bal small{display:block; font-size:13px; font-weight:700; color:var(--text-2)}
+.fs-bal b{display:block; font-size:30px; font-weight:800; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.fs-bal ul{list-style:none; margin:8px 0 0; padding:0; font-size:14px; color:var(--text-2)}
+.fs-bal li b{display:inline; font-size:inherit; letter-spacing:0; color:var(--text)}
+.fs-acts{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 6px}
+.fs-tabs{margin:14px 0 4px}
+.fs-month{font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); margin:20px 0 2px}
+.fs-row{display:grid; grid-template-columns:40px 40px 1fr auto; gap:12px; align-items:center; width:100%; padding:12px 0; border:0; background:none;
+  text-align:left; cursor:pointer; color:var(--text); box-shadow:0 1px 0 var(--line)}
+.fs-date{text-align:center; font-size:11px; font-weight:700; color:var(--text-3); line-height:1.1; text-transform:uppercase}
+.fs-date b{display:block; font-size:18px; color:var(--text-2)}
+.fs-ic{width:40px; height:40px; border-radius:12px; display:grid; place-items:center; font-size:20px; background:var(--surface-2)}
+.fs-ic.settle{background:var(--ok-soft)}
+.fs-row .t,.fs-row .s{display:block}
+.fs-row .t{font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fs-row .s{font-size:13px; color:var(--text-2)}
+.fs-row .r{text-align:right; font-size:12px; font-weight:600; line-height:1.3}
+.fs-row .r b{display:block; font-size:15px; font-variant-numeric:tabular-nums}
+.fs-pay{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:14px 0; box-shadow:0 1px 0 var(--line)}
+.fs-pay .who{font-weight:700} .fs-pay .who b{font-variant-numeric:tabular-nums}
+.fs-pay .acts{display:flex; gap:6px; flex-wrap:wrap}
+.fs-member{display:flex; gap:12px; align-items:center; padding:12px 0; box-shadow:0 1px 0 var(--line)}
+.fs-av{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; flex:none}
+.fs-member .grow{flex:1; min-width:0} .fs-member .s{font-size:13px; color:var(--text-2)}
+.fs-bars{display:grid; gap:10px; margin:10px 0 0}
+.fs-bar{display:grid; grid-template-columns:120px 1fr auto; gap:10px; align-items:center; font-size:14px}
+.fs-bar i{display:block; height:10px; border-radius:999px; background:var(--brand); min-width:4px}
+.fs-bar span:last-child{font-weight:700; font-variant-numeric:tabular-nums}
+.fs-amt{display:flex; align-items:center; gap:4px; justify-content:center; margin:6px 0 14px}
+.fs-amt span{font-size:34px; font-weight:800; color:var(--text-3)}
+.fs-amt input{width:min(240px,70%); font-size:40px; font-weight:800; text-align:center; letter-spacing:-.03em; padding:6px 10px}
+.fs-cats{display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:6px; margin:0 0 16px}
+.fs-cats button{border:0; border-radius:12px; padding:8px 4px; background:var(--surface-2); cursor:pointer; font-size:12.5px; font-weight:700; color:var(--text-2)}
+.fs-cats button i{display:block; font-style:normal; font-size:20px}
+.fs-cats button[aria-pressed="true"]{background:var(--text); color:#fff}
+.seg{display:flex; background:var(--surface-2); border-radius:12px; padding:3px; gap:3px}
+.seg button{flex:1; border:0; background:none; border-radius:9px; padding:8px 6px; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--text-2)}
+.seg button[aria-pressed="true"]{background:#fff; color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.fs-split{margin-top:6px}
+.fs-split .fs-member{padding:8px 0}
+.fs-split input[type=number]{width:110px; padding:8px 10px; text-align:right}
+.fs-split .share-v{font-weight:700; font-variant-numeric:tabular-nums; min-width:76px; text-align:right}
+.fs-split input[type=checkbox]{width:22px; height:22px; accent-color:var(--brand); margin:0}
+.step{display:flex; align-items:center; gap:6px}
+.step button{width:30px; height:30px; border-radius:50%; border:0; background:var(--surface-2); font-weight:800; cursor:pointer}
+.step b{min-width:18px; text-align:center}
+.fs-left{font-size:13px; font-weight:700; margin:8px 0 0}
+.fs-left.bad{color:var(--danger)} .fs-left.ok{color:var(--ok)}
+.fs-fab{position:fixed; right:18px; bottom:calc(88px + env(safe-area-inset-bottom,0px)); z-index:25; width:58px; height:58px; border-radius:50%; border:0;
+  background:var(--brand); color:#fff; font-size:30px; line-height:1; cursor:pointer; box-shadow:0 8px 24px rgba(14,154,160,.45)}
+@media (min-width:721px){ .fs-fab{display:none} }
+.fs-detail .kv{grid-template-columns:1fr 1fr}
+.fs-who{display:flex; justify-content:space-between; padding:9px 0; box-shadow:0 -1px 0 var(--line); font-size:14.5px}
+.fs-who b{font-variant-numeric:tabular-nums}
+/* ---------- FlatMart */
+.mk-hero{margin:22px 0 4px; padding:22px 20px; border-radius:22px; color:#fff; background:linear-gradient(150deg,#F26B1D 0%,#E8505B 55%,#B63BA8 100%)}
+.mk-hero .eyebrow{color:#FFE3B0; margin-bottom:4px}
+.mk-hero h1{font-size:clamp(26px,4vw,34px); color:#fff}
+.mk-hero p{color:rgba(255,255,255,.92); margin:8px 0 0; max-width:60ch}
+.mk-hero .btn{margin-top:16px; background:#fff; color:#B63BA8}
+.mk-tabs{margin:16px 0 0}
+.mk-tabs .badge{margin-left:4px}
+.mk-row{display:flex; gap:8px; align-items:center}
+.mk-row select{width:auto; flex:none; font-weight:700}
+.mk-row input{flex:1; min-width:0; padding:12px 14px; border:0; border-radius:10px; background:var(--surface-2); -webkit-appearance:none; appearance:none}
+@media (max-width:560px){ .mk-row{flex-wrap:wrap} .mk-row input{flex-basis:100%; order:-1} .mk-row select{flex:1 1 0; min-width:0} }
+.mk-art{position:absolute; inset:0; display:grid; place-items:center; font-size:64px}
+.mk-art.sm{font-size:28px}
+/* Two things side by side on phones, like any marketplace. */
+.mk-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:28px 18px}
+@media (max-width:560px){
+  .mk-grid{grid-template-columns:1fr 1fr; gap:22px 12px}
+  .mk-grid .mk-art{font-size:46px}
+  .mk-grid .card h3{font-size:14.5px}
+  .mk-grid .loc, .mk-grid .seller{font-size:12.5px}
+  .mk-grid .price{font-size:16px} .mk-grid .price small{display:block; font-size:12px}
+  .mk-grid .tag{top:8px; left:8px; font-size:11px; padding:3px 8px}
+  .mk-grid .tag.r{top:auto; bottom:8px}
+  .mk-grid .heart{width:30px; height:30px; bottom:8px; right:8px}
+  .mk-grid .mk-move{font-size:11px}
+}
+.mk-card .price .free, .free-tag{color:var(--ok)}
+.mk-card .seller{font-size:13px; color:var(--text-3)}
+.mk-move{display:inline-block; margin-top:4px; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px; background:#FFF4DE; color:#9A5B00}
+.tag.sold{background:var(--text); color:#fff}
+.mk-mini{position:relative; width:64px; height:64px; border-radius:12px; overflow:hidden; flex:none; background:var(--surface-2)}
+.mk-mini img{width:100%; height:100%; object-fit:cover}
+.mk-offer{display:grid; grid-template-columns:64px 1fr; gap:14px; padding:16px 0; box-shadow:0 1px 0 var(--line)}
+.mk-offer h3{font-size:16px}
+.mk-offer .s{font-size:13.5px; color:var(--text-2)}
+.mk-offer .msg{margin:8px 0 0; padding:8px 12px; background:var(--surface-2); border-radius:12px; font-size:14px}
+.mk-offer .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.mk-quick{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 0}
+.mk-quick button{border:0; border-radius:999px; padding:6px 12px; background:var(--surface-2); font-weight:700; font-size:13px; cursor:pointer}
+.mk-seller{display:flex; gap:12px; align-items:center; padding:14px 0; box-shadow:0 -1px 0 var(--line); margin-top:14px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -798,6 +933,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
   <section id="view-discover" hidden>
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
     <div id="urgent"></div>
+    <div id="extrasD"></div>
     <div class="d-controls">
       <div class="d-row">
         <select id="fCity" aria-label="City"></select>
@@ -853,6 +989,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
   <!-- owner: my listings -->
   <section id="view-mine" hidden>
     <div class="greet"><p class="eyebrow" id="mineTime"></p><h1 id="mineName"></h1><p id="mineSub"></p></div>
+    <div id="extrasM"></div>
     <div id="mineList"></div>
   </section>
 
@@ -972,6 +1109,47 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
   </section>
 
+  <!-- both: Flatsplits -->
+  <section id="view-splits" hidden>
+    <div id="fsHome">
+      <div class="fs-hero">
+        <p class="eyebrow">Flatsplits</p>
+        <h1>Split rent, bills and groceries. Stay friends.</h1>
+        <p>Add an expense in seconds and see who owes whom. Pay back over UPI in one tap. Rent, Wi-Fi and the maid can be added automatically every month.</p>
+        <div class="fs-tot" id="fsTot"></div>
+      </div>
+      <div class="fs-list" id="fsGroups"></div>
+    </div>
+    <div id="fsGroup" hidden></div>
+  </section>
+
+  <!-- both: FlatMart -->
+  <section id="view-market" hidden>
+    <div class="mk-hero">
+      <p class="eyebrow">FlatMart</p>
+      <h1>Buy and sell with people who live nearby.</h1>
+      <p>Moving in? Pick up a bed, a fridge or a study table for a fraction of the price. Moving out? Sell it to someone down the road.
+        No brokers, no delivery fees.</p>
+      <div class="esc-stats" id="mkStats"></div>
+      <button class="btn" type="button" data-mk="sell">+ Sell something</button>
+    </div>
+    <div class="area-chips mk-tabs" id="mkTabs" role="tablist" aria-label="FlatMart"></div>
+    <div id="mkBrowse">
+      <div class="d-controls">
+        <div class="mk-row">
+          <select id="mkCity" aria-label="City"></select>
+          <input type="search" id="mkQ" placeholder="Search sofa, fridge, cycle…" aria-label="Search FlatMart">
+          <select id="mkSort" aria-label="Sort"><option value="new">Newest</option><option value="low">Lowest price</option><option value="near">In my areas first</option></select>
+        </div>
+        <div class="area-chips" id="mkCats" role="group" aria-label="Categories"></div>
+      </div>
+      <p class="count" id="mkCount"></p>
+      <div class="cards mk-grid" id="mkCards"></div>
+    </div>
+    <div id="mkMine" hidden></div>
+    <div id="mkOffers" hidden></div>
+  </section>
+
   <footer class="foot" id="appFoot"></footer>
 </main>
 
@@ -1070,6 +1248,12 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
       <p class="hint">The owner gets your request and can confirm it. You can also call them directly.</p>
     </form>
   </div></dialog>
+
+<dialog id="dlgFs" aria-labelledby="fsdTitle"><div class="mhead"><div><h2 id="fsdTitle"></h2><div class="loc" id="fsdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="fsdBody"></div></dialog>
+
+<dialog id="dlgMk" aria-labelledby="mkdTitle"><div class="mhead"><div><h2 id="mkdTitle"></h2><div class="loc" id="mkdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="mkdBody"></div></dialog>
 
 <script>
 /* ==================================================================== */
@@ -1418,7 +1602,7 @@ function switchAccount(phone){
   try{ next = JSON.parse(localStorage.getItem("fm_state:" + phone) || "null"); }catch(e){}
   // Demo mode: listings, visits and requests are the demo's shared world on this device, so an owner
   // number and a seeker number can try the whole flow with each other. (Live: they're on the server.)
-  const shared = api.live ? {} : { myListings: state.myListings, visits: state.visits, requests: state.requests };
+  const shared = api.live ? {} : { myListings: state.myListings, visits: state.visits, requests: state.requests, splits: state.splits, market: state.market };
   state = Object.assign(freshState(), next || {}, shared, { account: phone });
   ob = null; save();
 }
@@ -2053,7 +2237,389 @@ function makeLiveApi(sb){
       });
       await callPay("verify", paid);
       return this.me();
+    },
+    ...liveExtras(rpc)
+  };
+}
+
+/* ============================================================ Flatsplits */
+// Splitting rent, bills and groceries with the people you live with. Amounts are in paise,
+// so a three-way split of ₹100 stays exact (₹33.34 + ₹33.33 + ₹33.33). Same rules as the
+// fm_split_* functions in schema.sql: a split names members of the group and adds up to the amount.
+const SPLIT_CATS = [["groceries","🛒","Groceries"],["rent","🏠","Rent"],["electricity","⚡","Electricity"],["wifi","📶","Wi-Fi"],
+  ["maid","🧹","Maid"],["cook","🍳","Cook"],["gas","🔥","Gas"],["water","💧","Water"],["food","🍕","Food order"],
+  ["outing","🎉","Outing"],["household","🧴","Household"],["other","📦","Other"]];
+const SPLIT_CAT = Object.fromEntries(SPLIT_CATS.map(c => [c[0], c]));
+const catIcon = k => (SPLIT_CAT[k] || SPLIT_CAT.other)[1];
+const GROUP_EMOJI = ["🏠","🏢","🌿","🌇","🎉","🍕","🐾","☕"];
+const rupees = p => { const r = Math.abs(p) / 100; return "₹" + r.toLocaleString("en-IN", { minimumFractionDigits: r % 1 ? 2 : 0, maximumFractionDigits: 2 }); };
+const toPaise = v => Math.round(Number(String(v ?? "").replace(/[^0-9.]/g, "")) * 100) || 0;
+const ten = p => String(p || "").replace(/\D/g, "").slice(-10);
+const validPhone = p => /^[6-9][0-9]{9}$/.test(p);
+const APK_LINK = "https://github.com/kamalmotiani1989-cmd/NavigateMe/releases/download/flatmates-apk/flatmates.apk";
+const appLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : APK_LINK;
+const waLink = (phone, text) => `https://wa.me/91${ten(phone)}?text=${encodeURIComponent(text)}`;
+const upiLink = (upi, name, paise, note) =>
+  `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(name)}&am=${(paise / 100).toFixed(2)}&cu=INR&tn=${encodeURIComponent(note)}`;
+// Equal shares that add up exactly: the first people in the list take the leftover paise.
+function equalSplit(amount, ids){
+  const base = Math.floor(amount / ids.length), extra = amount - base * ids.length;
+  return Object.fromEntries(ids.map((id, i) => [id, base + (i < extra ? 1 : 0)]));
+}
+// shares: {member id: n}, e.g. the bigger room pays 2 shares.
+function sharesSplit(amount, shares){
+  const ids = Object.keys(shares).filter(id => shares[id] > 0), total = ids.reduce((t, id) => t + shares[id], 0), out = {};
+  let given = 0;
+  for(const id of ids){ out[id] = Math.floor(amount * shares[id] / total); given += out[id]; }
+  for(let i = 0; given < amount; i = (i + 1) % ids.length){ out[ids[i]]++; given++; }
+  return out;
+}
+// What each member paid minus their share. Positive = they get money back.
+function splitNets(members, expenses){
+  const net = Object.fromEntries(members.map(m => [m.id, 0]));
+  for(const e of expenses){
+    net[e.paid_by] = (net[e.paid_by] || 0) + Number(e.amount);
+    for(const [id, v] of Object.entries(e.splits)) net[id] = (net[id] || 0) - Number(v);
+  }
+  return net;
+}
+// The fewest payments that settle everyone: the biggest debtor pays the biggest creditor, repeat.
+function simplifyDebts(net){
+  const owe = Object.entries(net).filter(([, v]) => v < 0).map(([id, v]) => ({ id, v: -v }));
+  const get = Object.entries(net).filter(([, v]) => v > 0).map(([id, v]) => ({ id, v }));
+  const out = [];
+  while(owe.length && get.length){
+    owe.sort((a, b) => b.v - a.v); get.sort((a, b) => b.v - a.v);
+    const a = owe[0], b = get[0], x = Math.min(a.v, b.v);
+    out.push({ from: a.id, to: b.id, amount: x });
+    a.v -= x; b.v -= x;
+    if(!a.v) owe.shift();
+    if(!b.v) get.shift();
+  }
+  return out;
+}
+
+/* ============================================================== FlatMart */
+const MK_CATS = [["furniture","🛋️","Furniture"],["beds","🛏️","Beds & mattresses"],["appliances","❄️","Appliances"],["kitchen","🍳","Kitchen"],
+  ["electronics","📺","Electronics"],["decor","🪴","Decor & plants"],["bikes","🚲","Bikes & cycles"],["books","📚","Books & study"],["other","📦","Other"]];
+const MK_CAT = Object.fromEntries(MK_CATS.map(c => [c[0], c]));
+// Placeholder colour per category, for things posted without photos.
+const MK_HUE = { furniture:28, beds:265, appliances:195, kitchen:12, electronics:225, decor:130, bikes:48, books:330, other:170 };
+const MK_COND = { new:"Like new", good:"Good condition", used:"Well used" };
+const MK_MAX_PHOTOS = 4;
+// Sample things for sale in demo mode: [title, category, condition, price (0 = free), description].
+const MK_SAMPLE = [
+  ["3-seater fabric sofa","furniture","good",9500,"Grey fabric, no stains or tears. Selling because we're moving out."],
+  ["Queen bed with storage","beds","good",8000,"Sheesham wood with hydraulic storage. Mattress not included."],
+  ["Sleepwell single mattress","beds","new",3500,"Six months old, always used with a cover."],
+  ["Study table and chair","furniture","good",2800,"Engineered wood table and an ergonomic chair. Great for WFH."],
+  ["LG 190 L single-door fridge","appliances","good",7500,"Works perfectly, 3-star rating. Pick up only."],
+  ["Front-load washing machine, 6 kg","appliances","used",9000,"Four years old, serviced last month."],
+  ["Induction cooktop","kitchen","good",1200,"Comes with a flat-bottom kadhai."],
+  ["Microwave oven, 20 L","kitchen","good",2500,"Solo microwave, cleaned and ready to go."],
+  ["Mixer grinder with 3 jars","kitchen","used",900,"500 W, all jars and lids included."],
+  ["32-inch smart TV","electronics","good",8500,"Remote included, wall mount available."],
+  ["Dual-band Wi-Fi router","electronics","new",800,"Barely used, box and charger included."],
+  ["24-inch monitor","electronics","good",4500,"Full HD IPS. Perfect second screen for WFH."],
+  ["Indoor plants, set of 5","decor","good",600,"Money plant, snake plant, pothos and two succulents, with pots."],
+  ["Floor lamp","decor","good",1100,"Warm light, tripod stand."],
+  ["Blackout curtains, 2 pairs","decor","good",0,"Free to whoever picks them up."],
+  ["Geared cycle","bikes","used",3200,"21 gears, new tyres last year."],
+  ["Scooter helmet","bikes","good",700,"ISI marked, medium size."],
+  ["GATE and CAT prep books","books","used",0,"Free, a full shelf. Take them all."],
+  ["Five-tier bookshelf","furniture","good",1800,"Comes apart easily for moving."],
+  ["Shoe rack","furniture","good",700,"Holds 12 pairs."],
+  ["XXL bean bag","furniture","used",900,"Beans refilled last month."],
+  ["RO water purifier","appliances","good",4000,"Filter changed in August."],
+  ["Air cooler, 35 L","appliances","good",3500,"Kept us cool all summer."],
+  ["Four-seater dining table","furniture","good",6500,"Glass top with four chairs."],
+  ["Pressure cooker and pans","kitchen","used",800,"3 L cooker and two non-stick pans."],
+  ["Ironing board and iron","other","good",900,"Dry iron, works fine."],
+  ["Yoga mat and dumbbells","other","good",1200,"Mat and two 5 kg dumbbells."],
+  ["Two-door steel wardrobe","furniture","used",4500,"With a locker. Heavy, so bring a friend."],
+  ["Mesh office chair","furniture","new",3800,"Lumbar support. Bought for WFH, used two months."],
+  ["Electric kettle","kitchen","good",0,"Free. Works fine, we have two."],
+];
+let mkDemoCache = null;
+function demoMarketItems(){
+  if(mkDemoCache) return mkDemoCache;
+  const r = rng(20261027), pick = a => a[Math.floor(r() * a.length)], now = Date.now(), out = [];
+  let n = 0;
+  for(const [city, areas] of Object.entries(DEMO_AREAS)){
+    for(let i = 0; i < 10; i++){
+      n++;
+      const [title, category, condition, base, description] = MK_SAMPLE[(n * 7 + i) % MK_SAMPLE.length];
+      const price = base ? Math.round(base * (.8 + r() * .4) / 50) * 50 : 0;
+      const at = new Date(now - Math.floor(r() * 9 * 24 + 1) * 36e5).toISOString();
+      out.push({ id:"mk-" + n, title, category, condition, price, negotiable: r() < .7, city, locality: pick(areas)[0], description,
+        photos:[], moving_by: r() < .3 ? new Date(now + Math.floor(5 + r() * 20) * 864e5).toISOString().slice(0, 10) : null,
+        status:"active", created_at:at, bumped_at:at, seller_name: pick(DEMO_SEEKER_NAMES),
+        seller_phone: "97" + String(10000000 + Math.floor(r() * 89999999)), interested: Math.floor(r() * 4) });
     }
+  }
+  return mkDemoCache = out;
+}
+
+/* ------------------------------------------------- demo: Flatsplits + FlatMart */
+// Same interface as the live functions below. Groups, items and offers are the demo's shared
+// world on this device (like listings), so two numbers on one phone can split and trade.
+const DEMO_FLATMATES = [["Riya", "9811100001", "riya@okaxis"], ["Kabir", "9811100002", "kabir@ybl"]];
+Object.assign(demoApi, {
+  splitAll(){ return state.splits || (state.splits = []); },
+  splitMine(){ const me = this.me_(); return this.splitAll().filter(g => g.members.some(m => m.phone === me)); },
+  splitFind(id){ const g = this.splitMine().find(x => x.id === id); if(!g) throw new Error("not-a-member"); return g; },
+  splitMeIn(g){ return g.members.find(m => m.phone === this.me_()); },
+  splitLive(g){ return g.expenses.filter(e => !e.deleted_at); },
+  splitCheck(g, p){
+    const ids = new Set(g.members.map(m => m.id)), keys = Object.keys(p.splits || {});
+    if(!(p.amount > 0) || !ids.has(p.paid_by) || !keys.length || keys.some(k => !ids.has(k) || !Number.isInteger(p.splits[k]) || p.splits[k] < 0)) throw new Error("bad-splits");
+    if(keys.reduce((t, k) => t + p.splits[k], 0) !== p.amount) throw new Error("splits-dont-add-up");
+  },
+  newId(prefix){ return prefix + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); },
+  // A sample flatmate adds an expense a little while after the sample group is made.
+  splitTick(){
+    const now = Date.now();
+    for(const g of this.splitAll()) if(g.demoNext && now >= g.demoNext.at){
+      const e = g.demoNext.e; delete g.demoNext;
+      g.expenses.push(Object.assign(e, { created_at: new Date().toISOString() }));
+    }
+    save();
+  },
+  async splitGroups(){
+    this.splitTick();
+    return this.splitMine().map(g => {
+      const me = this.splitMeIn(g), ex = this.splitLive(g), net = splitNets(g.members, ex);
+      return { id:g.id, name:g.name, emoji:g.emoji, members:g.members.length, names:g.members.filter(m => m.id !== me.id).map(m => m.name),
+        my_net: net[me.id] || 0, unseen: ex.filter(e => e.created_by !== me.id && e.created_at > me.seen_at).length,
+        last_at: ex.reduce((t, e) => e.created_at > t ? e.created_at : t, g.created_at) };
+    }).sort((a, b) => b.last_at.localeCompare(a.last_at));
+  },
+  async splitGet(id){
+    this.splitTick();
+    const g = this.splitFind(id), me = this.splitMeIn(g), month = new Date().toISOString().slice(0, 7), today = new Date().getDate();
+    // Monthly bills that are due this month (same as fm_split_get).
+    for(const b of g.bills) if((!b.last_month || b.last_month < month) && today >= b.day_of_month){
+      g.expenses.push({ id:this.newId("e"), kind:"expense", title:b.title, category:b.category, amount:b.amount, paid_by:b.paid_by,
+        splits:Object.assign({}, b.splits), spent_on: month + "-" + String(b.day_of_month).padStart(2, "0"), created_by:null, bill_id:b.id,
+        created_at:new Date().toISOString() });
+      b.last_month = month;
+    }
+    me.seen_at = new Date().toISOString(); save();
+    const onApp = phone => phone === this.me_() || DEMO_FLATMATES.some(f => f[1] === phone) || (() => { try{ return Boolean(localStorage.getItem("fm_state:" + phone)); }catch(e){ return false; } })();
+    return JSON.parse(JSON.stringify({ group:{ id:g.id, name:g.name, emoji:g.emoji, created_at:g.created_at }, me:me.id,
+      members: g.members.map(m => Object.assign({}, m, { on_app: onApp(m.phone) })),
+      expenses: this.splitLive(g).sort((a, b) => b.spent_on.localeCompare(a.spent_on) || b.created_at.localeCompare(a.created_at)),
+      bills: g.bills }));
+  },
+  async splitCreate(name, emoji, members){
+    const me = this.me_(), now = new Date().toISOString();
+    if(this.splitMine().length >= 20) throw new Error("too-many-groups");
+    const upi = (this.splitMine().flatMap(g => g.members).find(m => m.phone === me && m.upi) || {}).upi || null;
+    const list = [{ name: firstName() || "Me", phone: me }].concat(members.map(m => ({ name: m.name.trim().slice(0, 40), phone: ten(m.phone) })));
+    const seen = new Set(), mem = [];
+    for(const m of list){
+      if(seen.has(m.phone)) continue;
+      seen.add(m.phone);
+      mem.push({ id:this.newId("m"), name:m.name, phone:m.phone, upi: m.phone === me ? upi : null, seen_at:now, created_at:now });
+    }
+    if(mem.length > 12) throw new Error("too-many-members");
+    const id = this.newId("g");
+    this.splitAll().push({ id, name:name.trim().slice(0, 60), emoji, created_at:now, members:mem, expenses:[], bills:[] });
+    save(); return id;
+  },
+  async splitUpdate(gid, name, emoji){ const g = this.splitFind(gid); g.name = name.trim().slice(0, 60) || g.name; g.emoji = emoji || g.emoji; save(); },
+  async splitAddMember(gid, name, phone){
+    const g = this.splitFind(gid), p = ten(phone);
+    const had = g.members.find(m => m.phone === p);
+    if(had){ had.name = name.trim().slice(0, 40); save(); return had.id; }
+    if(g.members.length >= 12) throw new Error("too-many-members");
+    const now = new Date().toISOString(), id = this.newId("m");
+    g.members.push({ id, name:name.trim().slice(0, 40), phone:p, upi:null, seen_at:now, created_at:now });
+    save(); return id;
+  },
+  async splitRemoveMember(gid, mid){
+    const g = this.splitFind(gid);
+    if(splitNets(g.members, this.splitLive(g))[mid]) return "not-settled";
+    g.members = g.members.filter(m => m.id !== mid);
+    if(!g.members.length) state.splits = this.splitAll().filter(x => x !== g);
+    save(); return "removed";
+  },
+  async splitAdd(gid, p){
+    const g = this.splitFind(gid); this.splitCheck(g, p);
+    const id = this.newId("e");
+    g.expenses.push({ id, kind:p.kind || "expense", title:(p.title || "Expense").slice(0, 80), category:p.category || "other", amount:p.amount,
+      paid_by:p.paid_by, splits:p.splits, spent_on:p.spent_on || new Date().toISOString().slice(0, 10), created_by:this.splitMeIn(g).id,
+      bill_id:null, created_at:new Date().toISOString() });
+    this.splitMeIn(g).seen_at = new Date().toISOString();
+    save(); return id;
+  },
+  async splitDelete(gid, eid){ const e = this.splitFind(gid).expenses.find(x => x.id === eid); if(e){ e.deleted_at = new Date().toISOString(); save(); } },
+  async splitBillSave(gid, p){
+    const g = this.splitFind(gid); this.splitCheck(g, p);
+    if(g.bills.length >= 15) throw new Error("too-many-bills");
+    const id = this.newId("b");
+    g.bills.push({ id, title:(p.title || "Monthly bill").slice(0, 80), category:p.category || "other", amount:p.amount, paid_by:p.paid_by,
+      splits:p.splits, day_of_month:Math.min(28, Math.max(1, p.day || 1)), last_month:p.last_month || null, created_at:new Date().toISOString() });
+    save(); return id;
+  },
+  async splitBillDelete(gid, bid){ const g = this.splitFind(gid); g.bills = g.bills.filter(b => b.id !== bid); save(); },
+  async splitSetUpi(upi){
+    if(upi && !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upi)) throw new Error("bad-upi");
+    for(const g of this.splitMine()) for(const m of g.members) if(m.phone === this.me_()) m.upi = upi || null;
+    save();
+  },
+  // Demo only: a sample flat with two flatmates and a month of expenses, so there's something to play with.
+  async splitDemoSeed(){
+    const id = await this.splitCreate("Our flat (sample)", "🏢", DEMO_FLATMATES.map(([name, phone]) => ({ name, phone })));
+    const g = this.splitFind(id), [me, riya, kabir] = g.members;
+    riya.upi = DEMO_FLATMATES[0][2]; kabir.upi = DEMO_FLATMATES[1][2];
+    const all = [me.id, riya.id, kabir.id], day = n => { const d = new Date(); d.setDate(Math.max(1, d.getDate() - n)); return d.toISOString().slice(0, 10); };
+    const add = (title, category, amount, by, n, who) => g.expenses.push({ id:this.newId("e"), kind:"expense", title, category, amount, paid_by:by.id,
+      splits: equalSplit(amount, who || all), spent_on: day(n), created_by: by.id, bill_id:null, created_at: new Date(Date.now() - n * 864e5 - 36e5).toISOString() });
+    add("Rent", "rent", 4200000, me, 9);
+    add("Groceries from the market", "groceries", 234000, riya, 6);
+    add("Wi-Fi bill", "wifi", 99900, kabir, 5);
+    add("Electricity", "electricity", 315000, me, 3);
+    add("Pizza night", "food", 128000, riya, 1, [riya.id, kabir.id]);
+    g.bills.push({ id:this.newId("b"), title:"Rent", category:"rent", amount:4200000, paid_by:me.id, splits:equalSplit(4200000, all),
+      day_of_month:1, last_month:new Date().toISOString().slice(0, 7), created_at:new Date().toISOString() });
+    g.demoNext = { at: Date.now() + 15000, e: { id:this.newId("e"), kind:"expense", title:"Milk, bread and eggs", category:"groceries", amount:42000,
+      paid_by:kabir.id, splits:equalSplit(42000, all), spent_on:day(0), created_by:kabir.id, bill_id:null } };
+    save(); return id;
+  },
+
+  mk(){ return state.market || (state.market = { items:[], offers:[], status:{}, incoming:{} }); },
+  mkAll(){ return demoMarketItems().concat(this.mk().items); },
+  mkView(i){
+    const me = this.me_(), m = this.mk(), o = m.offers.find(x => x.item_id === i.id && x.buyer_phone === me && x.status !== "withdrawn");
+    const live = m.offers.filter(x => x.item_id === i.id && ["pending", "accepted"].includes(x.status)).length;
+    return Object.assign({}, i, { status: m.status[i.id] || i.status, is_mine: i.seller_phone === me,
+      my_offer_status: o ? o.status : null, my_offer: o ? o.offer : null, offer_count: live + (i.interested || 0) });
+  },
+  async marketSearch(f){
+    this.marketTick();
+    const q = (f.q || "").toLowerCase();
+    return this.mkAll().map(i => this.mkView(i)).filter(i => (["active", "reserved"].includes(i.status) || (i.is_mine && i.status !== "removed"))
+      && (!f.mine || i.is_mine) && (!f.city || i.city === f.city) && (!q || (i.title + " " + i.description).toLowerCase().includes(q)))
+      .sort((a, b) => b.bumped_at.localeCompare(a.bumped_at));
+  },
+  async marketGet(id){ const i = this.mkAll().find(x => x.id === id); return i && this.mkView(i); },
+  async marketPost(p){
+    const m = this.mk(), me = this.me_();
+    if(m.items.filter(i => i.seller_phone === me && ["active", "reserved"].includes(this.mkView(i).status)).length >= 25) throw new Error("too-many-items");
+    const now = new Date().toISOString(), id = this.newId("mine-mk-");
+    m.items.push(Object.assign({}, p, { id, status:"active", created_at:now, bumped_at:now, seller_name: firstName(), seller_phone: me }));
+    m.incoming[id] = Date.now() + DEMO_INCOMING_MS;
+    let photos = "kept";
+    if(!save()){ m.items[m.items.length - 1].photos = []; photos = "dropped"; if(!save()){ m.items.pop(); delete m.incoming[id]; throw new Error("storage-full"); } }
+    return { id, photos };
+  },
+  async marketOffer(id, offer, message){
+    const i = this.mkAll().find(x => x.id === id), m = this.mk(), me = this.me_();
+    if(!i || this.mkView(i).status !== "active") return { error:"item-not-available" };
+    if(i.seller_phone === me) return { error:"own-item" };
+    const had = m.offers.find(o => o.item_id === id && o.buyer_phone === me);
+    if(had && ["pending", "accepted"].includes(had.status)) return { status: had.status };
+    const o = { id: had ? had.id : this.newId("o"), item_id:id, buyer_phone:me, buyer_name:firstName(), offer, message:(message || "").slice(0, 300),
+      status:"pending", seen_seller:false, seen_buyer:true, created_at:new Date().toISOString(), decided_at:null };
+    if(had) Object.assign(had, o); else m.offers.push(o);
+    save(); return { status:"pending" };
+  },
+  async marketWithdraw(oid){ const o = this.mk().offers.find(x => x.id === oid && x.buyer_phone === this.me_()); if(o && o.status === "pending"){ o.status = "withdrawn"; save(); } },
+  mkDecide(o, accept){
+    o.status = accept ? "accepted" : "declined"; o.decided_at = new Date().toISOString(); o.seen_buyer = false; o.seen_seller = true;
+    const m = this.mk(), i = this.mkAll().find(x => x.id === o.item_id);
+    if(accept && i && (m.status[i.id] || i.status) === "active") m.status[i.id] = "reserved";
+  },
+  async marketDecide(oid, accept){
+    const o = this.mk().offers.find(x => x.id === oid), i = o && this.mkAll().find(x => x.id === o.item_id);
+    if(!o || !i || i.seller_phone !== this.me_()) return "not-found";
+    if(o.status !== "pending") return o.status;
+    this.mkDecide(o, accept); save(); return o.status;
+  },
+  async marketSetStatus(id, status){ const i = this.mk().items.find(x => x.id === id && x.seller_phone === this.me_()); if(i){ this.mk().status[id] = status; save(); } },
+  async marketSetPrice(id, price){
+    const i = this.mk().items.find(x => x.id === id && x.seller_phone === this.me_());
+    if(i){ if(price < i.price) i.bumped_at = new Date().toISOString(); i.price = price; save(); }
+  },
+  // Plays the other side: sample sellers answer offers, and a sample buyer makes an offer on what you post.
+  marketTick(){
+    const now = Date.now(), m = this.mk();
+    for(const o of m.offers){
+      if(o.status !== "pending" || !String(o.item_id).startsWith("mk-") || now - new Date(o.created_at) < DEMO_REPLY_MS) continue;
+      const i = this.mkAll().find(x => x.id === o.item_id);
+      if(i) this.mkDecide(o, !i.price || o.offer >= i.price * .8);
+    }
+    for(const [id, at] of Object.entries(m.incoming)){
+      if(now < at) continue;
+      delete m.incoming[id];
+      const i = m.items.find(x => x.id === id); if(!i) continue;
+      const s = DEMO_SEEKERS[m.items.indexOf(i) % DEMO_SEEKERS.length];
+      m.offers.push({ id:this.newId("o"), item_id:id, buyer_phone:s.phone, buyer_name:s.name, offer: i.price ? Math.round(i.price * .85 / 50) * 50 : 0,
+        message: i.price ? "Hi! Is this still available? I can pick it up this weekend." : "Hi! I'd love to take this. When can I come by?",
+        status:"pending", seen_seller:false, seen_buyer:true, created_at:new Date().toISOString(), decided_at:null });
+    }
+    save();
+  },
+  async marketInbox(){
+    this.marketTick();
+    const me = this.me_(), items = new Map(this.mkAll().map(i => [i.id, i]));
+    return this.mk().offers.filter(o => o.status !== "withdrawn").map(o => {
+      const i = items.get(o.item_id); if(!i) return null;
+      const incoming = i.seller_phone === me; if(!incoming && o.buyer_phone !== me) return null;
+      return { id:o.id, item_id:i.id, item_title:i.title, item_photo:(i.photos || [])[0] || null, item_price:i.price, item_status:this.mkView(i).status,
+        category:i.category, direction: incoming ? "incoming" : "outgoing", status:o.status, offer:o.offer, message:o.message,
+        name: incoming ? o.buyer_name : i.seller_name, phone: o.status === "accepted" ? (incoming ? o.buyer_phone : i.seller_phone) : null,
+        unseen: incoming ? !o.seen_seller : !o.seen_buyer, created_at:o.created_at, decided_at:o.decided_at };
+    }).filter(Boolean).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  },
+  async marketSeen(){
+    const me = this.me_(), mine = new Set(this.mk().items.filter(i => i.seller_phone === me).map(i => i.id));
+    for(const o of this.mk().offers){ if(mine.has(o.item_id)) o.seen_seller = true; if(o.buyer_phone === me) o.seen_buyer = true; }
+    save();
+  },
+});
+
+/* ------------------------------------------------- live: Flatsplits + FlatMart */
+function liveExtras(rpc){
+  const num = x => Object.assign(x, { amount: Number(x.amount) });
+  return {
+    async splitGroups(){
+      return (await rpc("fm_split_groups")).map(g => Object.assign(g, { my_net:Number(g.my_net), unseen:Number(g.unseen), members:Number(g.members), names:g.names || [] }));
+    },
+    async splitGet(id){ const d = await rpc("fm_split_get", { p_group:id }); d.expenses.forEach(num); d.bills.forEach(num); return d; },
+    async splitCreate(name, emoji, members){
+      return rpc("fm_split_create", { p_name:name, p_emoji:emoji, p_members:members.map(m => ({ name:m.name.trim(), phone:ten(m.phone) })) });
+    },
+    async splitUpdate(gid, name, emoji){ await rpc("fm_split_update", { p_group:gid, p_name:name, p_emoji:emoji }); },
+    async splitAddMember(gid, name, phone){ return rpc("fm_split_add_member", { p_group:gid, p_name:name.trim(), p_phone:ten(phone) }); },
+    async splitRemoveMember(gid, mid){ return rpc("fm_split_remove_member", { p_member:mid }); },
+    async splitAdd(gid, p){ return rpc("fm_split_add", { p_group:gid, p }); },
+    async splitDelete(gid, eid){ await rpc("fm_split_delete", { p_expense:eid }); },
+    async splitBillSave(gid, p){ return rpc("fm_split_bill_save", { p_group:gid, p }); },
+    async splitBillDelete(gid, bid){ await rpc("fm_split_bill_delete", { p_bill:bid }); },
+    async splitSetUpi(upi){ await rpc("fm_split_set_upi", { p_upi:upi || "" }); },
+    splitDemoSeed: null,
+    async marketSearch(f){
+      return rpc("fm_market_search", { p_city:f.city || null, p_category:null, p_q:f.q || null, p_mine:Boolean(f.mine) });
+    },
+    async marketGet(id){
+      const rows = await rpc("fm_market_search", { p_city:null, p_category:null, p_q:null, p_mine:false });
+      return rows.find(i => i.id === id) || (await rpc("fm_market_search", { p_city:null, p_category:null, p_q:null, p_mine:true })).find(i => i.id === id);
+    },
+    async marketPost(p){
+      const id = await rpc("fm_market_post", { p_title:p.title, p_category:p.category, p_condition:p.condition, p_price:p.price, p_negotiable:p.negotiable,
+        p_city:p.city, p_locality:p.locality, p_description:p.description, p_photos:p.photos || [], p_moving_by:p.moving_by || null });
+      return { id, photos:"kept" };
+    },
+    async marketOffer(id, offer, message){ return (await rpc("fm_market_offer", { p_item:id, p_offer:offer, p_message:message }))[0] || {}; },
+    async marketWithdraw(oid){ await rpc("fm_market_withdraw", { p_offer:oid }); },
+    async marketDecide(oid, accept){ return rpc("fm_market_decide", { p_offer:oid, p_accept:accept }); },
+    async marketSetStatus(id, status){ await rpc("fm_market_set_status", { p_item:id, p_status:status }); },
+    async marketSetPrice(id, price){ await rpc("fm_market_set_price", { p_item:id, p_price:price }); },
+    // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
+    async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
+    async marketSeen(){ await rpc("fm_market_seen"); },
   };
 }
 
@@ -2140,7 +2706,8 @@ const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocali
   pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)",
   aFlat:"Flat / house no.", aBuilding:"Building or society", aPin:"PIN code (6 digits)",
   obName:"Your first name", lgPhone:"Mobile number (10 digits, starting with 6–9)", lgOtp:"The 6-digit code",
-  obWhat:"A few words about what you do", vAt:"Date and time" };
+  obWhat:"A few words about what you do", vAt:"Date and time",
+  mkTitle:"What you're selling (at least 3 letters)", mkArea:"Area", mkSCity:"City" };
 function showFormError(form, text){
   let box = form.querySelector(".form-err");
   if(!box){ box = document.createElement("p"); box.className = "form-err"; box.setAttribute("role", "alert");
@@ -2163,7 +2730,7 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","account"], owner:["mine","escape","requests","post","account"] };
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","account"], owner:["mine","escape","requests","post","splits","market","account"] };
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
@@ -2172,9 +2739,11 @@ const TAB = {
   mine:["My flat",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>'],
   escape:["Escape",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h9v17"/><path d="M13 7h4v14"/><circle cx="10.5" cy="12.5" r=".6" fill="currentColor"/><path d="M17 12h4m-2-2l2 2-2 2"/></svg>'],
   post:["Post",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>'],
+  splits:["Splits",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'],
+  market:["Market",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v10h16V10"/><path d="M2.5 10L5 4h14l2.5 6z"/><path d="M2.5 10a3.2 3.2 0 0 0 6.3 0 3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.3 0"/><path d="M10 20v-5h4v5"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","account"];
+const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","account"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-onboard").hidden = name !== "onboard";
@@ -2183,19 +2752,21 @@ function showScreen(name){
   if(name === "welcome") startCity(); else stopCity();
 }
 function go(v){ if(location.hash === "#" + v) route(); else location.hash = v; }
-let currentView = null;
+// "#splits/<group id>": the part after the slash is routeArg.
+let currentView = null, routeArg = "";
 function route(){
   if(!state.user){ currentView = null; showScreen("welcome"); return; }
   const role = isOwner() ? "owner" : "seeker";
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
-  const h = location.hash.slice(1), allowed = ROLE_VIEWS[role];
+  const [h, arg] = location.hash.slice(1).split("/"), allowed = ROLE_VIEWS[role];
   const v = allowed.includes(h) ? h : allowed[0];
+  routeArg = v === h ? decodeURIComponent(arg || "") : "";
   currentView = v;
   showScreen("app");
   VIEWS.forEach(n => $("view-" + n).hidden = n !== v);
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
-  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, account:renderAccount })[v]();
+  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, account:renderAccount })[v]();
   window.scrollTo(0, 0);
 }
 let unseen = 0, tribeUnseen = 0;
@@ -2203,7 +2774,9 @@ function renderNav(){
   const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"];
   $("nav").innerHTML = allowed.map(n => `<button class="tab" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
     n === "requests" && unseen ? `<i class="badge" aria-label="${unseen} new">${unseen}</i>` : n === "tribe" && tribeUnseen
-      ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : ""}</button>`).join("");
+      ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : n === "splits" && splitsUnseen
+      ? `<i class="badge" aria-label="${splitsUnseen} new">${splitsUnseen}</i>` : n === "market" && marketUnseen
+      ? `<i class="badge" aria-label="${marketUnseen} new">${marketUnseen}</i>` : ""}</button>`).join("");
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
 $("meBtn").addEventListener("click", () => go("account"));
@@ -3026,6 +3599,7 @@ async function renderDiscover(){
   $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} in ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
   renderUrgent();
+  extrasHtml().then(h => $("extrasD").innerHTML = h);
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
   const vibes = rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
   $("vibeRow").hidden = !vibes.length;
@@ -3513,6 +4087,7 @@ async function renderMine(){
   $("mineSub").innerHTML = mine.length
     ? (waiting ? `<a href="#requests">${waiting} ${waiting === 1 ? "person wants" : "people want"} to meet you →</a>` : "No new requests right now. We'll notify you as soon as someone asks.")
     : "Describe the room and add a few photos. People who fit your home will ask to meet you.";
+  extrasHtml().then(h => $("extrasM").innerHTML = h);
   const ask = mine.length ? notifyCard("Turn on notifications so you never miss someone who wants to meet you.") : "";
   const live = mine.filter(l => l.status !== "closed");
   const looking = live.length ? await api.findSeekers(live[0].id) : [];
@@ -3696,6 +4271,797 @@ $("postForm").addEventListener("submit", async e => {
   }finally{ btn.disabled = false; btn.textContent = "Publish my listing"; }
 });
 
+/* ============================================================ Flatsplits */
+let fsData = null, fsTab = "activity", fsx = null, fsDel = null;
+const fsNetHtml = n => n > 0 ? `<span class="fs-net pos">you get back<b>${rupees(n)}</b></span>`
+  : n < 0 ? `<span class="fs-net neg">you owe<b>${rupees(n)}</b></span>` : `<span class="fs-net zero">settled up<b>✓</b></span>`;
+const fsMember = id => (fsData && fsData.members.find(m => m.id === id)) || { id, name:"Someone", phone:"" };
+const fsName = id => fsData && id === fsData.me ? "You" : fsMember(id).name;
+const fsAv = m => `<span class="fs-av" style="background:${colorFor(m.phone || m.id)}">${esc((m.name || "?")[0].toUpperCase())}</span>`;
+const fsMe = () => fsMember(fsData.me);
+const SPLIT_ERR = { "splits-dont-add-up":"The split doesn't add up to the amount.", "too-many-members":"A group can have up to 12 people.",
+  "too-many-groups":"You can be in up to 20 groups.", "too-many-bills":"Up to 15 monthly bills per group.", "bad-upi":"That doesn't look like a UPI ID (name@bank).",
+  "not-a-member":"You're not in this group any more." };
+const splitErr = err => SPLIT_ERR[(String(err && err.message || "").match(/[a-z-]+$/) || [""])[0]] || "Couldn't save that. Please try again.";
+
+// People you already know through the app: tribe members, owners who accepted you, seekers you accepted.
+async function knownPeople(){
+  const out = new Map(), mine = ten(state.user.phone);
+  const add = (name, phone) => { const p = ten(phone); if(validPhone(p) && p !== mine && !out.has(p)) out.set(p, { name: String(name || "Flatmate").split(" ")[0], phone: p }); };
+  try{
+    const inbox = await api.inbox();
+    if(isOwner()) inbox.filter(r => r.direction === "incoming" && r.status === "approved" && r.phone).forEach(r => add(r.name, r.phone));
+    else{
+      (await api.tribeList()).filter(t => t.status === "bonded" && t.phone).forEach(t => add(t.name, t.phone));
+      for(const r of inbox.filter(x => x.direction === "outgoing" && x.status === "approved").slice(0, 6)){
+        const c = await api.contact(r.listing_id); if(c) add(c.contact_name, c.contact_phone);
+      }
+    }
+  }catch(err){}
+  return [...out.values()];
+}
+
+async function renderSplits(){
+  if(routeArg) return renderSplitGroup(routeArg);
+  $("fsHome").hidden = false; $("fsGroup").hidden = true;
+  let groups = [];
+  try{ groups = await api.splitGroups(); }catch(err){ console.error(err); }
+  if(currentView !== "splits" || routeArg) return;
+  const owed = groups.reduce((t, g) => t + Math.max(0, g.my_net), 0), owe = groups.reduce((t, g) => t + Math.max(0, -g.my_net), 0);
+  $("fsTot").innerHTML = groups.length ? `<div><b>${rupees(owed)}</b><span>you get back in all</span></div><div><b>${rupees(owe)}</b><span>you owe in all</span></div>` : "";
+  $("fsGroups").innerHTML = groups.length ? groups.map(g => `<button class="fs-group" type="button" data-fs-open="${esc(g.id)}">
+      <span class="fs-emoji">${esc(g.emoji)}${g.unseen ? `<i class="badge" aria-label="${g.unseen} new">${g.unseen}</i>` : ""}</span>
+      <span style="min-width:0"><b class="h">${esc(g.name)}</b><span class="s">${g.names.length ? "You, " + esc(g.names.join(", ")) : "Just you so far: add your flatmates"}</span></span>
+      ${fsNetHtml(g.my_net)}</button>`).join("") + `<button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:18px">+ New group</button>`
+    : `<div class="empty"><div style="font-size:56px;line-height:1.2" aria-hidden="true">🧾</div><h3>Living with people? Split it fairly.</h3>
+       <p>Make a group for your flat, add your flatmates by mobile number, and add the first expense. Everyone sees the same balance.</p>
+       <button class="btn btn-primary" type="button" data-fs="new">Create your flat's group</button>
+       ${api.splitDemoSeed ? `<p style="margin-top:6px"><button class="linkbtn" type="button" data-fs="sample">Or try it with a sample flat</button></p>` : ""}</div>`;
+}
+
+async function renderSplitGroup(id){
+  $("fsHome").hidden = true; $("fsGroup").hidden = false;
+  try{ fsData = await api.splitGet(id); }
+  catch(err){ console.error(err); toast("This group isn't available."); return go("splits"); }
+  if(currentView === "splits" && routeArg === id) drawSplitGroup();
+}
+function drawSplitGroup(){
+  const d = fsData, net = splitNets(d.members, d.expenses), mine = net[d.me] || 0, pays = simplifyDebts(net);
+  const others = d.members.filter(m => m.id !== d.me);
+  const lines = pays.filter(p => p.from === d.me || p.to === d.me).map(p => p.from === d.me
+    ? `You owe ${esc(fsMember(p.to).name)} <b>${rupees(p.amount)}</b>` : `${esc(fsMember(p.from).name)} owes you <b>${rupees(p.amount)}</b>`);
+  const tabs = [["activity", "Activity"], ["balances", "Balances"], ["bills", "Monthly bills"], ["month", "This month"]];
+  $("fsGroup").innerHTML = `
+    <button class="linkbtn" type="button" data-fs="back" style="margin-top:14px;padding-left:0">← All groups</button>
+    <div class="fs-ghead"><span class="fs-emoji">${esc(d.group.emoji)}</span><div style="min-width:0"><h1>${esc(d.group.name)}</h1>
+      <p>${others.length ? "You, " + esc(others.map(m => m.name).join(", ")) : "Just you so far"} ·
+        <button class="linkbtn" type="button" data-fs="members">${others.length ? "Members" : "Add flatmates"}</button></p></div></div>
+    <div class="fs-bal ${mine > 0 ? "pos" : mine < 0 ? "neg" : ""}"><small>${mine > 0 ? "Overall, you get back" : mine < 0 ? "Overall, you owe" : "Your balance"}</small>
+      <b>${mine ? rupees(mine) : "All settled up 🎉"}</b>${lines.length ? `<ul>${lines.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
+    <div class="fs-acts"><button class="btn btn-primary" type="button" data-fs="add">+ Add expense</button>
+      ${pays.length ? `<button class="btn btn-ghost" type="button" data-fs="settle">Settle up</button>` : ""}</div>
+    <div class="area-chips fs-tabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-fs-tab="${k}" aria-pressed="${fsTab === k}">${t}${
+      k === "bills" && d.bills.length ? ` · ${d.bills.length}` : ""}</button>`).join("")}</div>
+    <div id="fsPanel">${fsPanel(net, pays)}</div>
+    <button class="fs-fab" type="button" data-fs="add" aria-label="Add expense">+</button>`;
+}
+function fsRowHtml(e){
+  const d = fsData, dt = new Date(e.spent_on + "T00:00:00"), mon = dt.toLocaleDateString("en-IN", { month:"short" }), share = Number(e.splits[d.me] || 0);
+  let title = e.title, sub, right;
+  if(e.kind === "settle"){
+    const to = Object.keys(e.splits)[0];
+    title = `${fsName(e.paid_by)} paid ${to === d.me ? "you" : fsName(to)}`;
+    sub = "Settled up";
+    right = `<span class="r ${e.paid_by === d.me ? "neg" : to === d.me ? "pos" : "zero"}">${e.paid_by === d.me ? "you paid" : to === d.me ? "you got" : "payment"}<b>${rupees(e.amount)}</b></span>`;
+  }else{
+    sub = `${fsName(e.paid_by)} paid ${rupees(e.amount)}${e.bill_id ? " · monthly bill" : ""}`;
+    const lent = (e.paid_by === d.me ? e.amount : 0) - share;
+    right = e.paid_by === d.me ? (lent > 0 ? `<span class="r pos">you lent<b>${rupees(lent)}</b></span>` : `<span class="r zero">just you<b>${rupees(e.amount)}</b></span>`)
+      : share ? `<span class="r neg">you owe<b>${rupees(share)}</b></span>` : `<span class="r zero">not involved</span>`;
+  }
+  return `<button class="fs-row" type="button" data-fs-exp="${esc(e.id)}"><span class="fs-date">${esc(mon)}<b>${dt.getDate()}</b></span>
+    <span class="fs-ic${e.kind === "settle" ? " settle" : ""}" aria-hidden="true">${e.kind === "settle" ? "🤝" : catIcon(e.category)}</span>
+    <span style="min-width:0"><span class="t">${esc(title)}</span><span class="s">${esc(sub)}</span></span>${right}</button>`;
+}
+function fsPanel(net, pays){
+  const d = fsData, me = fsMe();
+  if(fsTab === "balances"){
+    const payRow = p => {
+      const to = fsMember(p.to), from = fsMember(p.from), rec = `${esc(p.from)}|${esc(p.to)}|${p.amount}`;
+      const acts = p.from === d.me
+        ? (to.upi ? `<a class="btn btn-accent btn-sm" href="${esc(upiLink(to.upi, to.name, p.amount, "Flatsplits · " + d.group.name))}" data-fs-upi="${rec}">Pay ${rupees(p.amount)} by UPI</a>` : "")
+          + `<button class="btn btn-ghost btn-sm" type="button" data-fs-record="${rec}">Mark as paid</button>`
+        : p.to === d.me
+        ? `<a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${esc(waLink(from.phone, `Hi ${from.name}, a quick Flatsplits reminder for ${d.group.name}: you owe me ${rupees(p.amount)}.${me.upi ? " My UPI ID is " + me.upi + "." : ""} Thanks!`))}">Remind on WhatsApp</a>
+           <button class="btn btn-ghost btn-sm" type="button" data-fs-record="${rec}">Got it</button>`
+        : `<button class="btn btn-ghost btn-sm" type="button" data-fs-record="${rec}">Record payment</button>`;
+      return `<div class="fs-pay"><span class="who">${esc(fsName(p.from))} → ${esc(fsName(p.to))} · <b>${rupees(p.amount)}</b></span><span class="acts">${acts}</span></div>`;
+    };
+    return `<h3 class="section-h">Who pays whom</h3>
+      ${pays.length ? `<p class="hint" style="margin:0 0 4px">The fewest payments that settle everyone.</p>${pays.map(payRow).join("")}` : `<p class="sub">Everyone's settled up. 🎉</p>`}
+      <h3 class="section-h">Everyone's balance</h3>
+      ${d.members.map(m => `<div class="fs-member">${fsAv(m)}<span class="grow"><b>${esc(fsName(m.id))}</b></span>${fsNetHtml(net[m.id] || 0)
+        .replace(/you get back/, m.id === d.me ? "you get back" : "gets back").replace(/you owe/, m.id === d.me ? "you owe" : "owes")}</div>`).join("")}
+      <h3 class="section-h">Your UPI ID</h3>
+      <p class="hint" style="margin:0 0 8px">Add it once and flatmates can pay you back in one tap. It's saved on all your groups.</p>
+      <form class="mk-row" id="fsUpiForm" novalidate><input type="text" id="fsUpi" value="${esc(me.upi || "")}" placeholder="yourname@okaxis" autocomplete="off" aria-label="Your UPI ID">
+        <button class="btn btn-ghost" type="submit">Save</button></form>`;
+  }
+  if(fsTab === "bills"){
+    return `<p class="hint" style="margin:14px 0 4px">Rent, Wi-Fi, the maid or the cook: set it once and Flatsplits adds it on that day every month, split the same way.</p>
+      ${d.bills.map(b => `<div class="fs-member"><span class="fs-ic" aria-hidden="true">${catIcon(b.category)}</span><span class="grow"><b>${esc(b.title)} · ${rupees(b.amount)}</b>
+        <span class="s" style="display:block">Day ${b.day_of_month} of every month · ${esc(fsName(b.paid_by))} ${b.paid_by === d.me ? "pay" : "pays"} · split ${Object.keys(b.splits).length} ways</span></span>
+        <button class="btn btn-ghost btn-sm" type="button" data-fs-bill-del="${esc(b.id)}">Stop</button></div>`).join("")}
+      <button class="btn btn-ghost" type="button" data-fs="bill" style="margin:14px 0 30px">+ Add a monthly bill</button>`;
+  }
+  if(fsTab === "month"){
+    const ym = new Date().toISOString().slice(0, 7), last = new Date(); last.setDate(1); last.setMonth(last.getMonth() - 1);
+    const lym = last.toISOString().slice(0, 7), spend = d.expenses.filter(e => e.kind === "expense");
+    const now = spend.filter(e => e.spent_on.startsWith(ym)), before = spend.filter(e => e.spent_on.startsWith(lym));
+    const total = now.reduce((t, e) => t + e.amount, 0), prev = before.reduce((t, e) => t + e.amount, 0);
+    const myShare = now.reduce((t, e) => t + Number(e.splits[d.me] || 0), 0);
+    if(!now.length) return `<div class="empty"><h3>Nothing spent this month yet</h3><p>Expenses you add show up here, by category.</p></div>`;
+    const byCat = {}, byWho = {};
+    now.forEach(e => { byCat[e.category] = (byCat[e.category] || 0) + e.amount; byWho[e.paid_by] = (byWho[e.paid_by] || 0) + e.amount; });
+    const bars = (obj, label) => { const top = Math.max(...Object.values(obj));
+      return Object.entries(obj).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="fs-bar"><span>${label(k)}</span><span><i style="width:${Math.round(v / top * 100)}%"></i></span><span>${rupees(v)}</span></div>`).join(""); };
+    return `<div class="stats" style="margin:16px 0 4px"><div class="stat"><b>${rupees(total)}</b><span>spent by the flat</span></div>
+        <div class="stat"><b>${rupees(myShare)}</b><span>your share</span></div>
+        <div class="stat"><b>${prev ? (total >= prev ? "+" : "−") + Math.round(Math.abs(total - prev) / prev * 100) + "%" : "–"}</b><span>vs last month</span></div></div>
+      <h3 class="section-h">By category</h3><div class="fs-bars">${bars(byCat, k => catIcon(k) + " " + esc((SPLIT_CAT[k] || SPLIT_CAT.other)[2]))}</div>
+      <h3 class="section-h">Who paid</h3><div class="fs-bars" style="margin-bottom:30px">${bars(byWho, k => esc(fsName(k)))}</div>`;
+  }
+  if(!d.expenses.length) return `<div class="empty"><h3>No expenses yet</h3><p>Add the first one: rent, groceries, the Wi-Fi bill…</p></div>`;
+  let html = "", month = "";
+  for(const e of d.expenses){
+    const m = e.spent_on.slice(0, 7);
+    if(m !== month){ month = m; html += `<p class="fs-month">${new Date(m + "-01T00:00:00").toLocaleDateString("en-IN", { month:"long", year:"numeric" })}</p>`; }
+    html += fsRowHtml(e);
+  }
+  return html + `<div style="height:30px"></div>`;
+}
+
+function openFs(title, sub, html){
+  $("fsdTitle").textContent = title; $("fsdSub").textContent = sub || ""; $("fsdBody").innerHTML = html;
+  if(!$("dlgFs").open) $("dlgFs").showModal();
+}
+function memberRowsHtml(rows){
+  return rows.map((r, i) => `<div class="grid2 fs-new-row"><div class="field"><label for="fsN${i}">Name</label><input type="text" id="fsN${i}" maxlength="40" value="${esc(r.name)}" placeholder="Riya"></div>
+    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" maxlength="10" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
+}
+function readMemberRows(root){
+  return [...root.querySelectorAll(".fs-new-row")].map(r => ({ name: r.querySelector("[id^=fsN]").value.trim(), phone: ten(r.querySelector("[id^=fsP]").value) }))
+    .filter(r => r.name || r.phone);
+}
+async function openNewGroup(){
+  const people = await knownPeople();
+  fsx = { emoji: "🏠", rows: [{ name:"", phone:"" }] };
+  openFs("New group", "For your flat, or a trip with flatmates", `<form id="fsNewForm" novalidate>
+    <div class="field"><label for="fsGName">Group name</label><input type="text" id="fsGName" maxlength="60" required placeholder="Flat B-304, Koramangala"></div>
+    <div class="field"><label>Icon</label><div class="chips">${GROUP_EMOJI.map((e, i) => `<label class="chip"><input type="radio" name="fsEmoji" value="${e}"${i ? "" : " checked"}>${e}</label>`).join("")}</div></div>
+    <h3 class="section-h" style="margin-top:6px">Your flatmates</h3>
+    ${people.length ? `<p class="hint" style="margin:0 0 8px">People you've connected with on FindMyFlatMate:</p>
+      <div class="chips" style="margin-bottom:12px">${people.map(p => `<button class="chip" type="button" data-fs-known="${esc(p.name)}|${esc(p.phone)}">+ ${esc(p.name)}</button>`).join("")}</div>` : ""}
+    <div id="fsNewRows">${memberRowsHtml(fsx.rows)}</div>
+    <button class="linkbtn" type="button" data-fs="row" style="padding-left:0">+ Add another person</button>
+    <p class="hint">They'll see the group when they sign in with that number. You can add people later too.</p>
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:12px">Create group</button></form>`);
+}
+async function openMembers(){
+  const d = fsData, net = splitNets(d.members, d.expenses), people = (await knownPeople()).filter(p => !d.members.some(m => m.phone === p.phone));
+  const invite = m => waLink(m.phone, `Hi ${m.name}! I've added you to “${d.group.name}” on Flatsplits in FindMyFlatMate, so we can split rent and bills without the maths. Get the app and sign in with this number: ${appLink()}`);
+  openFs("Members", d.group.name, `
+    ${d.members.map(m => `<div class="fs-member">${fsAv(m)}<span class="grow"><b>${esc(m.id === d.me ? m.name + " (you)" : m.name)}</b>
+        <span class="s" style="display:block">+91 ${esc(m.phone)} · ${m.on_app ? "on FindMyFlatMate" : `<a href="${esc(invite(m))}" target="_blank" rel="noopener">invite on WhatsApp</a>`}</span></span>
+        ${net[m.id] ? `<span class="hint" style="margin:0">${net[m.id] > 0 ? "gets back" : "owes"} ${rupees(net[m.id])}</span>`
+          : `<button class="btn btn-ghost btn-sm" type="button" data-fs-rm="${esc(m.id)}">${m.id === d.me ? "Leave" : "Remove"}</button>`}</div>`).join("")}
+    <p class="hint">Only people who are settled up can be removed.</p>
+    <h3 class="section-h">Add someone</h3>
+    ${people.length ? `<div class="chips" style="margin-bottom:12px">${people.map(p => `<button class="chip" type="button" data-fs-add="${esc(p.name)}|${esc(p.phone)}">+ ${esc(p.name)}</button>`).join("")}</div>` : ""}
+    <form id="fsMemForm" novalidate>${memberRowsHtml([{ name:"", phone:"" }])}<button class="btn btn-ghost btn-block" type="submit">Add to the group</button></form>
+    <h3 class="section-h">Group name and icon</h3>
+    <form id="fsRenameForm" novalidate><div class="field"><input type="text" id="fsRename" maxlength="60" value="${esc(d.group.name)}" aria-label="Group name"></div>
+      <div class="chips" style="margin-bottom:12px">${GROUP_EMOJI.map(e => `<label class="chip"><input type="radio" name="fsREmoji" value="${e}"${e === d.group.emoji ? " checked" : ""}>${e}</label>`).join("")}</div>
+      <button class="btn btn-ghost btn-block" type="submit">Save</button></form>`);
+}
+
+// Add an expense, or (bill: true) a monthly bill. Amount first, then what for, who paid and how to split.
+function openExpense(bill){
+  const d = fsData;
+  if(d.members.length < 2){ toast("Add your flatmates first."); return openMembers(); }
+  fsx = { bill, cat:"groceries", how:"equal", incl:new Set(d.members.map(m => m.id)), exact:{}, shares:Object.fromEntries(d.members.map(m => [m.id, 1])) };
+  const today = new Date().toISOString().slice(0, 10), dom = Math.min(28, new Date().getDate());
+  openFs(bill ? "Add a monthly bill" : "Add an expense", d.group.name, `<form id="fsAddForm" novalidate>
+    <div class="fs-amt"><span>₹</span><input type="text" id="fsAmt" inputmode="decimal" placeholder="0" aria-label="Amount" autocomplete="off"></div>
+    <div class="fs-cats" id="fsCats">${SPLIT_CATS.map(([k, ic, t]) => `<button type="button" data-cat="${k}" aria-pressed="${k === fsx.cat}"><i aria-hidden="true">${ic}</i>${t}</button>`).join("")}</div>
+    <div class="field"><label for="fsTitle">What for</label><input type="text" id="fsTitle" maxlength="80" placeholder="Groceries"></div>
+    <div class="field"><label>Paid by</label><div class="chips">${d.members.map(m => `<label class="chip"><input type="radio" name="fsPaid" value="${esc(m.id)}"${
+      m.id === d.me ? " checked" : ""}>${esc(fsName(m.id))}</label>`).join("")}</div></div>
+    <div class="field"><label>Split</label><div class="seg">${[["equal", "Equally"], ["exact", "Exact amounts"], ["shares", "By shares"]].map(([k, t]) =>
+      `<button type="button" data-how="${k}" aria-pressed="${k === "equal"}">${t}</button>`).join("")}</div>
+      <div class="fs-split" id="fsSplit"></div><p class="fs-left" id="fsLeft" aria-live="polite"></p></div>
+    ${bill ? `<div class="field"><label for="fsDay">Add it on this day every month</label><select id="fsDay">${Array.from({ length:28 }, (_, i) =>
+        `<option value="${i + 1}"${i + 1 === dom ? " selected" : ""}>${i + 1}</option>`).join("")}</select>
+        <p class="hint">Starts this month if that day has already passed.</p></div>`
+      : `<div class="grid2"><div class="field"><label for="fsDate">Date</label><input type="date" id="fsDate" value="${today}"></div>
+        <div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="fsRepeat"><span>Repeats monthly</span></label></div></div>`}
+    <button class="btn btn-primary btn-block" type="submit">${bill ? "Save monthly bill" : "Add expense"}</button></form>`);
+  drawSplitRows();
+  setTimeout(() => $("fsAmt") && $("fsAmt").focus(), 60);
+}
+function fsSplits(){
+  const amt = toPaise($("fsAmt").value), ids = fsData.members.map(m => m.id);
+  if(fsx.how === "equal"){
+    const inc = ids.filter(id => fsx.incl.has(id));
+    return { amt, splits: inc.length && amt ? equalSplit(amt, inc) : {}, left: 0, none: !inc.length };
+  }
+  if(fsx.how === "exact"){
+    const s = {}; let t = 0;
+    for(const id of ids){ const v = toPaise(fsx.exact[id]); if(v){ s[id] = v; t += v; } }
+    return { amt, splits: s, left: amt - t, none: !t };
+  }
+  const sh = Object.fromEntries(ids.filter(id => fsx.shares[id] > 0).map(id => [id, fsx.shares[id]]));
+  return { amt, splits: amt && Object.keys(sh).length ? sharesSplit(amt, sh) : {}, left: 0, none: !Object.keys(sh).length };
+}
+function drawSplitRows(){
+  const d = fsData, { splits } = fsSplits();
+  $("fsSplit").innerHTML = d.members.map(m => {
+    const nm = esc(fsName(m.id)), ctl = fsx.how === "equal"
+      ? `<input type="checkbox" data-incl="${esc(m.id)}"${fsx.incl.has(m.id) ? " checked" : ""} aria-label="Include ${nm}">`
+      : fsx.how === "exact"
+      ? `<input type="number" min="0" step="0.01" inputmode="decimal" data-exact="${esc(m.id)}" value="${esc(fsx.exact[m.id] || "")}" placeholder="0" aria-label="${nm}'s amount">`
+      : `<span class="step"><button type="button" data-sh="${esc(m.id)}" data-d="-1" aria-label="One share less">−</button><b>${fsx.shares[m.id] || 0}</b>
+         <button type="button" data-sh="${esc(m.id)}" data-d="1" aria-label="One share more">+</button></span>`;
+    return `<div class="fs-member">${fsAv(m)}<span class="grow">${nm}</span>${fsx.how === "exact" ? "" : `<span class="share-v" data-v="${esc(m.id)}">${splits[m.id] ? rupees(splits[m.id]) : "–"}</span>`}${ctl}</div>`;
+  }).join("");
+  updateSplitInfo();
+}
+function updateSplitInfo(){
+  const { amt, splits, left, none } = fsSplits(), n = Object.keys(splits).length, box = $("fsLeft");
+  document.querySelectorAll("#fsSplit [data-v]").forEach(el => el.textContent = splits[el.dataset.v] ? rupees(splits[el.dataset.v]) : "–");
+  let text = "", cls = "";
+  if(fsx.how === "equal") [text, cls] = none ? ["Pick at least one person.", "bad"] : amt ? [`${rupees(Math.floor(amt / n))}${amt % n ? " or so" : ""} each · ${n} ${n === 1 ? "person" : "people"}`, "ok"] : ["", ""];
+  else if(fsx.how === "exact") [text, cls] = !amt ? ["Enter the amount first.", ""] : left > 0 ? [`${rupees(left)} still to assign`, "bad"]
+    : left < 0 ? [`${rupees(left)} more than the total`, "bad"] : ["✓ Adds up", "ok"];
+  else { const t = Object.values(fsx.shares).reduce((a, b) => a + b, 0); [text, cls] = none ? ["Give at least one person a share.", "bad"] : [`${t} shares${amt ? ` · ${rupees(Math.floor(amt / t))} a share` : ""}`, "ok"]; }
+  box.textContent = text; box.className = "fs-left " + cls;
+}
+function openSettle(from, to, amount){
+  const d = fsData, pays = simplifyDebts(splitNets(d.members, d.expenses));
+  const s = from ? { from, to, amount } : pays.find(p => p.from === d.me) || pays.find(p => p.to === d.me) || pays[0]
+    || { from: d.me, to: (d.members.find(m => m.id !== d.me) || {}).id, amount: 0 };
+  const chips = (name, sel) => d.members.map(m => `<label class="chip"><input type="radio" name="${name}" value="${esc(m.id)}"${m.id === sel ? " checked" : ""}>${esc(fsName(m.id))}</label>`).join("");
+  openFs("Record a payment", d.group.name, `<form id="fsSettleForm" novalidate>
+    <div class="field"><label>Who paid</label><div class="chips">${chips("fsFrom", s.from)}</div></div>
+    <div class="field"><label>To</label><div class="chips">${chips("fsTo", s.to)}</div></div>
+    <div class="fs-amt"><span>₹</span><input type="text" id="fsSAmt" inputmode="decimal" value="${s.amount ? (s.amount / 100).toFixed(s.amount % 100 ? 2 : 0) : ""}" aria-label="Amount"></div>
+    <div id="fsUpiPay"></div>
+    <button class="btn btn-primary btn-block" type="submit">Record payment</button>
+    <p class="hint">This only records it in Flatsplits. Pay by UPI, cash or a bank transfer as usual.</p></form>`);
+  updateUpiPay();
+}
+function updateUpiPay(){
+  const f = $("fsSettleForm"); if(!f) return;
+  const from = (f.querySelector("[name=fsFrom]:checked") || {}).value, to = fsMember((f.querySelector("[name=fsTo]:checked") || {}).value), amt = toPaise($("fsSAmt").value);
+  $("fsUpiPay").innerHTML = from === fsData.me && to.upi && amt && to.id !== from
+    ? `<a class="btn btn-accent btn-block" style="margin-bottom:10px" href="${esc(upiLink(to.upi, to.name, amt, "Flatsplits · " + fsData.group.name))}">Pay ${esc(to.name)} ${rupees(amt)} by UPI</a>` : "";
+}
+function openExpenseDetail(id){
+  const d = fsData, e = d.expenses.find(x => x.id === id); if(!e) return;
+  fsDel = null;
+  const settle = e.kind === "settle";
+  openFs(settle ? "Payment" : e.title, new Date(e.spent_on + "T00:00:00").toLocaleDateString("en-IN", { weekday:"short", day:"numeric", month:"long" }), `<div class="fs-detail">
+    <div class="fs-amt"><b style="font-size:38px;letter-spacing:-.03em">${rupees(e.amount)}</b></div>
+    <p class="sub" style="text-align:center;margin:-6px 0 14px">${settle ? "" : catIcon(e.category) + " "}${esc(fsName(e.paid_by))} paid${settle ? " " + esc(fsName(Object.keys(e.splits)[0])) : ""}${e.bill_id ? " · monthly bill" : ""}</p>
+    ${settle ? "" : Object.entries(e.splits).map(([mid, v]) => `<div class="fs-who"><span>${esc(fsName(mid))}</span><b>${rupees(v)}</b></div>`).join("")}
+    <p class="hint">${e.created_by ? `Added by ${esc(fsName(e.created_by))} ` + timeAgo(e.created_at) : "Added automatically " + timeAgo(e.created_at)}.</p>
+    <button class="btn btn-ghost btn-block" type="button" data-fs-del="${esc(e.id)}" style="margin-top:12px;color:var(--danger)">Delete</button></div>`);
+}
+function fsChanged(){ $("dlgFs").close(); renderSplitGroup(fsData.group.id); checkExtras(); }
+
+$("view-splits").addEventListener("click", async e => {
+  const b = e.target.closest("[data-fs],[data-fs-open],[data-fs-tab],[data-fs-exp],[data-fs-record],[data-fs-upi],[data-fs-bill-del]"); if(!b) return;
+  try{
+    if(b.dataset.fsOpen){ fsTab = "activity"; return go("splits/" + b.dataset.fsOpen); }
+    if(b.dataset.fsTab){ fsTab = b.dataset.fsTab; return drawSplitGroup(); }
+    if(b.dataset.fsExp) return openExpenseDetail(b.dataset.fsExp);
+    if(b.dataset.fsUpi){ const [f, t, a] = b.dataset.fsUpi.split("|"); setTimeout(() => openSettle(f, t, Number(a)), 1200); return; }   // the UPI app opens; then confirm
+    if(b.dataset.fsRecord){ const [f, t, a] = b.dataset.fsRecord.split("|"); return openSettle(f, t, Number(a)); }
+    if(b.dataset.fsBillDel){
+      if(!confirm("Stop adding this bill every month? Expenses already added stay.")) return;
+      await api.splitBillDelete(fsData.group.id, b.dataset.fsBillDel); toast("Monthly bill stopped."); return renderSplitGroup(fsData.group.id);
+    }
+    const a = b.dataset.fs;
+    if(a === "back") return go("splits");
+    if(a === "new") return openNewGroup();
+    if(a === "sample"){ const id = await api.splitDemoSeed(); return go("splits/" + id); }
+    if(a === "add") return openExpense(false);
+    if(a === "bill") return openExpense(true);
+    if(a === "settle") return openSettle();
+    if(a === "members") return openMembers();
+  }catch(err){ console.error(err); toast(splitErr(err)); }
+});
+$("view-splits").addEventListener("submit", async e => {
+  if(e.target.id !== "fsUpiForm") return;
+  e.preventDefault();
+  const v = $("fsUpi").value.trim();
+  try{ await api.splitSetUpi(v); toast(v ? "Saved. Flatmates can now pay you by UPI in one tap." : "UPI ID removed."); renderSplitGroup(fsData.group.id); }
+  catch(err){ toast(splitErr(err)); }
+});
+$("dlgFs").addEventListener("click", async e => {
+  const t = e.target;
+  const cat = t.closest("[data-cat]");
+  if(cat){
+    fsx.cat = cat.dataset.cat;
+    $("fsCats").querySelectorAll("[data-cat]").forEach(x => x.setAttribute("aria-pressed", x === cat));
+    $("fsTitle").placeholder = SPLIT_CAT[fsx.cat][2];
+    if(fsx.cat === "rent" && fsx.how === "equal") toast("Rooms of different sizes? Try “By shares”.");
+    return;
+  }
+  const how = t.closest("[data-how]");
+  if(how){ fsx.how = how.dataset.how; how.parentNode.querySelectorAll("[data-how]").forEach(x => x.setAttribute("aria-pressed", x === how)); return drawSplitRows(); }
+  const sh = t.closest("[data-sh]");
+  if(sh){ const id = sh.dataset.sh; fsx.shares[id] = Math.max(0, Math.min(20, (fsx.shares[id] || 0) + Number(sh.dataset.d))); return drawSplitRows(); }
+  const known = t.closest("[data-fs-known]");
+  if(known){
+    const [name, phone] = known.dataset.fsKnown.split("|"), rows = readMemberRows($("fsNewForm"));
+    if(!rows.some(r => r.phone === phone)) rows.push({ name, phone });
+    $("fsNewRows").innerHTML = memberRowsHtml(rows.concat({ name:"", phone:"" })); known.remove(); return;
+  }
+  if(t.closest("[data-fs=row]")){ $("fsNewRows").insertAdjacentHTML("beforeend", memberRowsHtml([{ name:"", phone:"" }]).replace(/fs([NP])0/g, `fs$1${$("fsNewRows").children.length}`)); return; }
+  const add = t.closest("[data-fs-add]");
+  try{
+    if(add){ const [name, phone] = add.dataset.fsAdd.split("|"); await api.splitAddMember(fsData.group.id, name, phone); toast(`${name} added.`); fsData = await api.splitGet(fsData.group.id); drawSplitGroup(); return openMembers(); }
+    const rm = t.closest("[data-fs-rm]");
+    if(rm){
+      const me = rm.dataset.fsRm === fsData.me;
+      if(!confirm(me ? "Leave this group?" : `Remove ${fsMember(rm.dataset.fsRm).name} from the group?`)) return;
+      const r = await api.splitRemoveMember(fsData.group.id, rm.dataset.fsRm);
+      if(r === "not-settled"){ toast("They need to settle up first."); return; }
+      if(me){ $("dlgFs").close(); toast("You left the group."); return go("splits"); }
+      toast("Removed."); fsData = await api.splitGet(fsData.group.id); drawSplitGroup(); return openMembers();
+    }
+    const del = t.closest("[data-fs-del]");
+    if(del){
+      if(fsDel !== del.dataset.fsDel){ fsDel = del.dataset.fsDel; del.textContent = "Tap again to delete for everyone"; return; }
+      await api.splitDelete(fsData.group.id, del.dataset.fsDel); toast("Deleted."); return fsChanged();
+    }
+  }catch(err){ console.error(err); toast(splitErr(err)); }
+});
+$("dlgFs").addEventListener("change", e => {
+  const t = e.target;
+  if(t.dataset.incl){ if(t.checked) fsx.incl.add(t.dataset.incl); else fsx.incl.delete(t.dataset.incl); return drawSplitRows(); }
+  if(t.name === "fsFrom" || t.name === "fsTo") updateUpiPay();
+});
+$("dlgFs").addEventListener("input", e => {
+  const t = e.target;
+  if(t.id === "fsAmt"){ t.value = t.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1").replace(/(\.\d{2}).+/, "$1"); return updateSplitInfo(); }
+  if(t.dataset.exact){ fsx.exact[t.dataset.exact] = t.value; return updateSplitInfo(); }
+  if(t.id === "fsSAmt") updateUpiPay();
+});
+$("dlgFs").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector("[type=submit]");
+  const bad = msg => { showFormError(f, msg); toast(msg); };
+  try{
+    if(f.id === "fsNewForm"){
+      const name = $("fsGName").value.trim(), rows = readMemberRows(f);
+      if(!name) return bad("Give the group a name.");
+      const wrong = rows.find(r => !r.name || !validPhone(r.phone));
+      if(wrong) return bad(`Please check ${wrong.name || "each person"}: a name and a 10-digit mobile number starting with 6–9.`);
+      btn.disabled = true;
+      const id = await api.splitCreate(name, f.querySelector("[name=fsEmoji]:checked").value, rows);
+      $("dlgFs").close(); toast(rows.length ? "Group created. Now add the first expense." : "Group created. Add your flatmates from Members.");
+      fsTab = "activity"; return go("splits/" + id);
+    }
+    if(f.id === "fsMemForm"){
+      const rows = readMemberRows(f);
+      if(!rows.length || rows.some(r => !r.name || !validPhone(r.phone))) return bad("Add a name and a 10-digit mobile number starting with 6–9.");
+      btn.disabled = true;
+      for(const r of rows) await api.splitAddMember(fsData.group.id, r.name, r.phone);
+      toast(`${rows[0].name} added.`); fsData = await api.splitGet(fsData.group.id); drawSplitGroup(); return openMembers();
+    }
+    if(f.id === "fsRenameForm"){
+      await api.splitUpdate(fsData.group.id, $("fsRename").value, (f.querySelector("[name=fsREmoji]:checked") || {}).value);
+      toast("Saved."); return fsChanged();
+    }
+    if(f.id === "fsSettleForm"){
+      const from = (f.querySelector("[name=fsFrom]:checked") || {}).value, to = (f.querySelector("[name=fsTo]:checked") || {}).value, amt = toPaise($("fsSAmt").value);
+      if(!from || !to || from === to) return bad("Pick two different people.");
+      if(!amt) return bad("Enter the amount.");
+      btn.disabled = true;
+      await api.splitAdd(fsData.group.id, { kind:"settle", title:"Settle up", category:"other", amount:amt, paid_by:from, splits:{ [to]: amt },
+        spent_on: new Date().toISOString().slice(0, 10) });
+      toast(`Recorded: ${fsName(from)} paid ${to === fsData.me ? "you" : fsName(to)} ${rupees(amt)}.`); return fsChanged();
+    }
+    if(f.id === "fsAddForm"){
+      const { amt, splits, left, none } = fsSplits();
+      if(!amt) return bad("Enter the amount.");
+      if(none || left) return bad(fsx.how === "exact" ? "The amounts need to add up to the total." : "Pick who it's split between.");
+      const p = { kind:"expense", title: $("fsTitle").value.trim() || SPLIT_CAT[fsx.cat][2], category: fsx.cat, amount: amt,
+        paid_by: f.querySelector("[name=fsPaid]:checked").value, splits };
+      btn.disabled = true;
+      if(fsx.bill){
+        await api.splitBillSave(fsData.group.id, Object.assign(p, { day: Number($("fsDay").value) }));
+        toast(`Saved. ${p.title} is added on day ${$("fsDay").value} every month.`); fsTab = "bills";
+      }else{
+        p.spent_on = $("fsDate").value || new Date().toISOString().slice(0, 10);
+        await api.splitAdd(fsData.group.id, p);
+        if($("fsRepeat").checked) await api.splitBillSave(fsData.group.id, Object.assign({}, p, { day: Math.min(28, Number(p.spent_on.slice(8, 10))), last_month: p.spent_on.slice(0, 7) }));
+        const mine = splits[fsData.me] || 0, paidMe = p.paid_by === fsData.me;
+        toast(`Added ${p.title}. ${paidMe ? (amt - mine ? `You lent ${rupees(amt - mine)}.` : "") : mine ? `Your share: ${rupees(mine)}.` : ""}${$("fsRepeat").checked ? " Repeats monthly." : ""}`);
+        fsTab = "activity";
+      }
+      return fsChanged();
+    }
+  }catch(err){ console.error(err); bad(splitErr(err)); }
+  finally{ if(btn) btn.disabled = false; }
+});
+
+/* ============================================================== FlatMart */
+let mkTab = "browse", mkCat = "", mkSeq = 0, mkFiles = [], mkCurrent = null;
+const MK_OFFER_TXT = { pending:"Offer sent", accepted:"Accepted", declined:"Not accepted" };
+const mkPrice = i => i.price ? inr(i.price) : `<span class="free">Free</span>`;
+const mkSaved = id => (state.mkSaved || []).includes(id);
+const mkCityPref = () => state.mkCity != null ? state.mkCity : (prefs().city || "");
+function mkArt(i, small){
+  const h = MK_HUE[i.category] ?? 170;
+  return `<div class="mk-art${small ? " sm" : ""}" style="background:linear-gradient(135deg,hsl(${h} 80% 93%),hsl(${(h + 25) % 360} 70% 80%))" aria-hidden="true">${(MK_CAT[i.category] || MK_CAT.other)[1]}</div>`;
+}
+const mkPhotos = i => (i.photos || []).map(safeImg).filter(Boolean);
+function mkPic(i, small){ const ph = mkPhotos(i); return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : mkArt(i, small); }
+function mkCardHtml(i, n){
+  const st = i.status === "reserved" ? "Reserved" : i.status === "sold" ? "Sold" : "";
+  const tag = st || (i.is_mine ? "Yours" : MK_OFFER_TXT[i.my_offer_status] || "");
+  return `<article class="card mk-card" tabindex="0" data-item="${esc(i.id)}" style="--i:${Math.min(n || 0, 12)}">
+    <div class="thumb">${mkPic(i)}<span class="tag">${esc(MK_COND[i.condition] || "")}</span>
+      ${tag ? `<span class="tag r ${i.status === "sold" ? "sold" : "ok"}">${esc(tag)}</span>` : ""}
+      <button class="heart" type="button" data-mk-save="${esc(i.id)}" aria-pressed="${mkSaved(i.id)}" aria-label="Save this item">♥</button></div>
+    <div class="body"><h3>${esc(i.title)}</h3><div class="loc">${esc(i.locality)}, ${esc(i.city)}</div>
+      <div class="price">${mkPrice(i)}${i.price && i.negotiable ? "<small> open to offers</small>" : ""}</div>
+      ${i.moving_by ? `<div><span class="mk-move">📦 Moving out by ${fmtDate(i.moving_by)}</span></div>` : ""}
+      <div class="seller">${i.is_mine ? "You" : esc(i.seller_name || "A flatmate")} · ${timeAgo(i.bumped_at || i.created_at)}${i.offer_count ? ` · ${i.offer_count} interested` : ""}</div></div></article>`;
+}
+async function renderMarket(){
+  const inbox = await api.marketInbox().catch(() => []);
+  marketUnseen = inbox.filter(r => r.unseen).length;
+  $("mkTabs").innerHTML = [["browse", "Browse"], ["mine", "My items"], ["offers", "Offers"]].map(([k, t]) => `<button type="button" role="tab" data-mk-tab="${k}" aria-pressed="${mkTab === k}">${t}${
+    k === "offers" && marketUnseen ? `<i class="badge" aria-label="${marketUnseen} new">${marketUnseen}</i>` : ""}</button>`).join("");
+  $("mkBrowse").hidden = mkTab !== "browse"; $("mkMine").hidden = mkTab !== "mine"; $("mkOffers").hidden = mkTab !== "offers";
+  if(!$("mkCity").options.length) $("mkCity").innerHTML = `<option value="">All cities</option>` + CITIES.map(c => `<option>${c}</option>`).join("");
+  $("mkCity").value = mkCityPref();
+  if(mkTab === "mine") return renderMkMine();
+  if(mkTab === "offers") return renderMkOffers(inbox);
+  return renderMkBrowse();
+}
+async function renderMkBrowse(){
+  const seq = ++mkSeq, city = $("mkCity").value, q = $("mkQ").value.trim();
+  const rows = await api.marketSearch({ city, q });
+  if(seq !== mkSeq) return;
+  const forSale = rows.filter(i => i.status === "active" && !i.is_mine), week = forSale.filter(i => Date.now() - new Date(i.bumped_at || i.created_at) < 7 * 864e5).length;
+  $("mkStats").innerHTML = `<div><b>${forSale.length}</b><span>for sale${city ? " in " + esc(city) : ""}</span></div>
+    <div><b>${forSale.filter(i => !i.price).length}</b><span>free to pick up</span></div><div><b>${week}</b><span>new this week</span></div>`;
+  const count = k => forSale.filter(i => i.category === k).length;
+  const cats = [["", "All"], ["free", "🎁 Free"], ["saved", "♥ Saved"]].concat(MK_CATS.filter(([k]) => count(k) || mkCat === k).map(([k, ic, t]) => [k, `${ic} ${t}`]));
+  $("mkCats").innerHTML = cats.map(([k, t]) => `<button type="button" data-mk-cat="${k}" aria-pressed="${mkCat === k}">${esc(t)}</button>`).join("");
+  let list = rows.filter(i => i.status !== "sold");
+  if(mkCat === "free") list = list.filter(i => !i.price);
+  else if(mkCat === "saved") list = list.filter(i => mkSaved(i.id));
+  else if(mkCat) list = list.filter(i => i.category === mkCat);
+  const sort = $("mkSort").value, areas = prefs().areas || [], near = i => areas.includes(i.locality) ? 1 : 0;
+  const when = i => i.bumped_at || i.created_at;
+  if(sort === "low") list.sort((a, b) => a.price - b.price);
+  else if(sort === "near") list.sort((a, b) => near(b) - near(a) || when(b).localeCompare(when(a)));
+  else list.sort((a, b) => when(b).localeCompare(when(a)));
+  list.sort((a, b) => (a.status === "reserved") - (b.status === "reserved"));
+  $("mkCount").textContent = list.length ? `${list.length} ${list.length === 1 ? "item" : "items"}${city ? " in " + city : ""}` : "";
+  $("mkCards").innerHTML = list.length ? list.map(mkCardHtml).join("")
+    : `<div class="empty"><div style="font-size:52px;line-height:1.2" aria-hidden="true">🛋️</div><h3>${mkCat === "saved" ? "Nothing saved yet" : q ? `Nothing matches “${esc(q)}” yet` : "Nothing here yet"}</h3>
+       <p>${mkCat === "saved" ? "Tap ♥ on anything to keep it here." : `Be the first to sell something${city ? " in " + esc(city) : ""}. Moving out soon? List the things you won't take with you.`}</p>
+       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`;
+}
+async function renderMkMine(){
+  const mine = await api.marketSearch({ mine: true }), inbox = await api.marketInbox().catch(() => []);
+  $("mkMine").innerHTML = mine.length ? mine.map(i => {
+    const offers = inbox.filter(r => r.item_id === i.id && r.direction === "incoming" && r.status === "pending").length;
+    return `<div class="mk-offer"><div class="mk-mini">${mkPic(i, true)}</div><div style="min-width:0">
+      <h3>${esc(i.title)}</h3><div class="s">${mkPrice(i)} · ${esc(i.status === "active" ? "for sale" : i.status)} · posted ${timeAgo(i.created_at)}${offers ? ` · <b>${offers} new ${offers === 1 ? "offer" : "offers"}</b>` : ""}</div>
+      <div class="acts"><button class="btn btn-ghost btn-sm" type="button" data-item="${esc(i.id)}">${offers ? "See offers" : "Open"}</button>
+        ${i.status === "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|active">Relist</button>`
+          : `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|sold">Mark as sold</button>`}
+        <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed">Remove</button></div></div></div>`;
+  }).join("") + `<button class="btn btn-ghost" type="button" data-mk="sell" style="margin:16px 0 30px">+ Sell something else</button>`
+  : `<div class="empty"><div style="font-size:52px;line-height:1.2" aria-hidden="true">📦</div><h3>Sell what you won't take with you</h3>
+      <p>A spare mattress, the fridge, a cycle you never ride. Someone a few streets away is looking for it.</p>
+      <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`;
+}
+function mkContactActs(r, text){
+  return `<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
+    <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${esc(waLink(r.phone, text))}">WhatsApp</a>`;
+}
+function mkOfferHtml(r){
+  const img = safeImg(r.item_photo);
+  const head = `<div class="mk-mini" data-item="${esc(r.item_id)}" style="cursor:pointer">${img ? `<img src="${esc(img)}" alt="">` : mkArt(r, true)}</div>`;
+  const offer = r.offer ? inr(r.offer) : "free";
+  if(r.direction === "incoming"){
+    const acts = r.status === "pending" ? `<button class="btn btn-primary btn-sm" type="button" data-mk-accept="${esc(r.id)}">Accept · share numbers</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-mk-decline="${esc(r.id)}">Decline</button>`
+      : r.status === "accepted" ? mkContactActs(r, `Hi ${r.name}, it's ${firstName()} from FlatMart. “${r.item_title}” is yours for ${offer}. When would you like to pick it up?`)
+        + (r.item_status !== "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(r.item_id)}|sold">Mark as sold</button>` : "")
+      : `<span class="hint" style="margin:0">You declined this offer.</span>`;
+    return `<div class="mk-offer">${head}<div style="min-width:0"><h3>${esc(r.name || "Someone")} offered ${r.offer ? inr(r.offer) : "to take it"}${r.item_price && r.offer < r.item_price ? ` <small class="hint">(you asked ${inr(r.item_price)})</small>` : ""}</h3>
+      <div class="s">For “${esc(r.item_title)}” · ${timeAgo(r.created_at)}</div>${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}<div class="acts">${acts}</div></div></div>`;
+  }
+  const line = r.status === "pending" ? `Waiting for ${esc(r.name || "the seller")} to reply.` : r.status === "accepted"
+    ? `<b style="color:var(--ok)">✓ ${esc(r.name || "The seller")} accepted! Call now to fix a pickup time.</b>` : `${esc(r.name || "The seller")} passed on this offer.`;
+  return `<div class="mk-offer">${head}<div style="min-width:0"><h3>Your offer: ${offer} for “${esc(r.item_title)}”</h3><div class="s">${line}</div>
+    <div class="acts">${r.status === "accepted" ? mkContactActs(r, `Hi ${r.name}, it's ${firstName()} from FlatMart. Thanks for accepting my offer for “${r.item_title}”! When can I pick it up?`)
+      : r.status === "pending" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-withdraw="${esc(r.id)}">Withdraw</button>` : ""}</div></div></div>`;
+}
+async function renderMkOffers(inbox){
+  const inc = inbox.filter(r => r.direction === "incoming"), out = inbox.filter(r => r.direction === "outgoing");
+  $("mkOffers").innerHTML = (inc.length ? `<h3 class="section-h">Offers on your items</h3>${inc.map(mkOfferHtml).join("")}` : "")
+    + (out.length ? `<h3 class="section-h">Your offers</h3>${out.map(mkOfferHtml).join("")}` : "")
+    + (inbox.length ? `<div style="height:30px"></div>` : `<div class="empty"><h3>No offers yet</h3><p>Offers you make, and offers on things you sell, show up here.
+      Numbers are shared only when the seller accepts.</p></div>`)
+    + notifyCard("Turn on notifications so you hear the moment someone wants your stuff.");
+  if(inbox.some(r => r.unseen)){ await api.marketSeen().catch(() => {}); marketUnseen = 0; renderNav(); }
+}
+
+async function openItem(id){
+  const i = await api.marketGet(id);
+  if(!i){ toast("This item is no longer available."); return; }
+  mkCurrent = i;
+  const inbox = i.is_mine || i.my_offer_status ? await api.marketInbox() : [];
+  const ph = mkPhotos(i);
+  $("mkdTitle").textContent = i.title; $("mkdSub").textContent = `${i.locality}, ${i.city}`;
+  let act;
+  if(i.is_mine){
+    const offers = inbox.filter(r => r.item_id === i.id && r.direction === "incoming");
+    act = `<h3 class="section-h">Offers</h3>${offers.length ? offers.map(mkOfferHtml).join("") : `<p class="sub">No offers yet. We'll notify you as soon as someone's interested.</p>`}
+      ${i.status !== "sold" ? `<h3 class="section-h">Drop the price</h3><p class="hint" style="margin:0 0 8px">A lower price moves it back to the top for everyone nearby.</p>
+      <form class="mk-row" id="mkPriceForm" novalidate><input type="number" id="mkNewPrice" min="0" step="50" inputmode="numeric" value="${i.price}" aria-label="New price">
+        <button class="btn btn-ghost" type="submit">Update</button></form>` : ""}
+      <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0">
+        ${i.status === "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|active">Relist</button>`
+          : `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|sold">Mark as sold</button>`}
+        ${i.status === "reserved" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|active">Back on sale</button>` : ""}
+        <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed" style="color:var(--danger)">Remove</button></div>`;
+  }else{
+    const mine = inbox.find(r => r.item_id === i.id && r.direction === "outgoing");
+    if(mine && mine.status === "accepted"){
+      act = `<div class="lock open"><p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ ${esc(mine.name || "The seller")} accepted your offer of ${mine.offer ? inr(mine.offer) : "free"}!</p>
+        <p class="hint" style="margin:0 0 10px">Call to fix a pickup time. Check it works before you pay.</p>
+        <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap">${mkContactActs(mine, `Hi ${mine.name}, it's ${firstName()} from FlatMart. Thanks for accepting my offer for “${i.title}”! When can I pick it up?`)}</div></div>`;
+    }else if(mine && mine.status === "pending"){
+      act = `<div class="lock wait"><h3>Offer sent: ${mine.offer ? inr(mine.offer) : "free"}</h3><p>${esc(i.seller_name || "The seller")} has your first name and offer. You'll get a notification when they reply.</p>
+        ${notifyCard("Turn on notifications so you hear the moment they accept.")}
+        <button class="btn btn-ghost btn-sm" type="button" data-mk-withdraw="${esc(mine.id)}">Withdraw offer</button></div>`;
+    }else if(i.status !== "active"){
+      act = `<div class="lock wait"><h3>${i.status === "sold" ? "Sold" : "Reserved"}</h3><p>${i.status === "sold" ? "This one's gone." : "The seller is talking to someone about this. Save it in case the deal falls through."}</p></div>`;
+    }else{
+      const fixed = i.price && !i.negotiable;
+      act = `<form id="mkOfferForm" class="lock" novalidate>
+        ${mine && mine.status === "declined" ? `<p class="hint" style="margin:0 0 8px">Your last offer of ${inr(mine.offer)} wasn't accepted. You can try again.</p>` : ""}
+        <h3>${i.price ? (fixed ? "Want it? Ask the seller" : "Make an offer") : "It's free. Ask for it"}</h3>
+        ${i.price ? `<div class="fs-amt"><span>₹</span><input type="text" id="mkOffer" inputmode="numeric" value="${i.price}" aria-label="Your offer"${fixed ? " readonly" : ""}></div>
+          ${fixed ? `<p class="hint" style="text-align:center;margin:-8px 0 8px">Fixed price</p>` : `<div class="mk-quick" style="justify-content:center">${[[1, "Full price"], [.9, "−10%"], [.8, "−20%"]].map(([f, t]) =>
+            `<button type="button" data-mk-quick="${Math.round(i.price * f / 50) * 50}">${t} · ${inr(Math.round(i.price * f / 50) * 50)}</button>`).join("")}</div>`}` : ""}
+        <textarea id="mkMsg" maxlength="300" style="margin-top:12px" placeholder="When can you pick it up? Anything you'd like to ask?"></textarea>
+        <button class="btn btn-accent btn-block" type="submit" style="margin-top:10px">${i.price ? "Send offer" : "Ask for it"}</button>
+        <div class="promise-line"><b>✓</b><span>Free, always. ${esc(i.seller_name || "The seller")} sees your first name and offer. Numbers are shared only if they accept.</span></div></form>`;
+    }
+  }
+  $("mkdBody").innerHTML = `
+    <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, n) => `<img src="${esc(u)}" alt="Photo ${n + 1} of ${ph.length}" loading="lazy">`).join("")}</div>` : mkArt(i)}</div>
+    <div class="price" style="font-size:28px">${mkPrice(i)}${i.price && i.negotiable ? "<small> · open to offers</small>" : ""}</div>
+    <div class="traits"><span>${esc(MK_COND[i.condition] || "")}</span><span>${(MK_CAT[i.category] || MK_CAT.other)[1]} ${esc((MK_CAT[i.category] || MK_CAT.other)[2])}</span>
+      ${i.moving_by ? `<span class="mk-move" style="margin:0">📦 Moving out by ${fmtDate(i.moving_by)}</span>` : ""}${i.offer_count && !i.is_mine ? `<span>${i.offer_count} interested</span>` : ""}</div>
+    ${i.description ? `<p style="white-space:pre-line">${esc(i.description)}</p>` : ""}
+    <div class="mk-seller">${fsAv({ name: i.is_mine ? firstName() : i.seller_name, id: i.id })}<div><b>${i.is_mine ? "You're selling this" : "Sold by " + esc(i.seller_name || "a flatmate")}</b>
+      <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div></div></div>
+    ${act}`;
+  if(!$("dlgMk").open) $("dlgMk").showModal();
+}
+
+function mkPhotosHtml(){
+  return mkFiles.map((f, n) => `<figure><img src="${f.preview}" alt="Photo ${n + 1}"><button type="button" data-mk-rm="${n}" aria-label="Remove photo">×</button></figure>`).join("");
+}
+function openSell(){
+  mkFiles.forEach(f => URL.revokeObjectURL(f.preview)); mkFiles = [];
+  const city = mkCityPref() || prefs().city || "";
+  $("mkdTitle").textContent = "Sell something"; $("mkdSub").textContent = "Free to post. People nearby see it straight away.";
+  $("mkdBody").innerHTML = `<form id="mkSellForm" novalidate>
+    <div class="field"><label>Photos (up to ${MK_MAX_PHOTOS})</label>
+      <label class="drop" id="mkDrop"><input type="file" id="mkPhotos" accept="image/*" multiple>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
+        <b>Add photos</b><span class="hint" style="margin:0">Things with photos sell much faster.</span></label>
+      <div class="previews" id="mkPreviews"></div></div>
+    <div class="field"><label for="mkTitle">What are you selling?</label><input type="text" id="mkTitle" required minlength="3" maxlength="80" placeholder="Queen bed with storage"></div>
+    <div class="field"><label>Category</label><div class="chips">${MK_CATS.map(([k, ic, t], n) => `<label class="chip"><input type="radio" name="mkCat" value="${k}"${n ? "" : " checked"}>${ic} ${t}</label>`).join("")}</div></div>
+    <div class="field"><label>Condition</label><div class="chips">${Object.entries(MK_COND).map(([k, t]) => `<label class="chip"><input type="radio" name="mkCond" value="${k}"${k === "good" ? " checked" : ""}>${t}</label>`).join("")}</div></div>
+    <div class="grid2"><div class="field"><label for="mkPrice">Price (₹)</label><input type="number" id="mkPrice" min="0" max="10000000" step="50" inputmode="numeric" placeholder="e.g. 2500"></div>
+      <div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="mkFree"><span>Give it away free</span></label></div></div>
+    <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="mkNeg" checked><span>Open to offers</span></label>
+    <div class="grid2"><div class="field"><label for="mkSCity">City</label><select id="mkSCity" required>${CITIES.map(c => `<option${c === city ? " selected" : ""}>${c}</option>`).join("")}</select></div>
+      <div class="field"><label for="mkArea">Area</label><input type="text" id="mkArea" required maxlength="60" list="mkAreaList" autocomplete="off" placeholder="e.g. HSR Layout"
+        value="${esc((prefs().areas || [])[0] || "")}"><datalist id="mkAreaList"></datalist></div></div>
+    <div class="field"><label for="mkDesc">Details</label><textarea id="mkDesc" maxlength="1000" placeholder="How old it is, any marks, size, why you're selling…"></textarea></div>
+    <div class="field"><label for="mkMove">Moving out? Sell by (optional)</label><input type="date" id="mkMove" min="${new Date().toISOString().slice(0, 10)}"></div>
+    <button class="btn btn-primary btn-block" type="submit">Post it on FlatMart</button>
+    <p class="hint">Your number stays private. Buyers send an offer, and numbers are shared only when you accept one.</p></form>`;
+  fillMkAreas();
+  if(!$("dlgMk").open) $("dlgMk").showModal();
+}
+const fillMkAreas = () => { if($("mkAreaList")) $("mkAreaList").innerHTML = (CITY_AREAS[$("mkSCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); };
+function addMkPhotos(list){
+  const imgs = [...list].filter(f => f.type.startsWith("image/") && f.size < 20e6);
+  if(imgs.length < list.length) toast("Some files were skipped. Use images under 20 MB.");
+  imgs.forEach(f => f.preview = URL.createObjectURL(f));
+  mkFiles = mkFiles.concat(imgs).slice(0, MK_MAX_PHOTOS);
+  $("mkPreviews").innerHTML = mkPhotosHtml(); $("mkDrop").hidden = mkFiles.length >= MK_MAX_PHOTOS;
+}
+
+$("view-market").addEventListener("click", async e => {
+  const t = e.target;
+  const heart = t.closest("[data-mk-save]");
+  if(heart){
+    e.stopPropagation();
+    const id = heart.dataset.mkSave, on = !mkSaved(id);
+    state.mkSaved = on ? (state.mkSaved || []).concat(id) : state.mkSaved.filter(x => x !== id); save();
+    heart.setAttribute("aria-pressed", on); heart.classList.remove("pop"); void heart.offsetWidth; heart.classList.add("pop");
+    toast(on ? "Saved. Find it under ♥ Saved." : "Removed from saved");
+    if(mkCat === "saved") renderMkBrowse();
+    return;
+  }
+  const tab = t.closest("[data-mk-tab]"); if(tab){ mkTab = tab.dataset.mkTab; return renderMarket(); }
+  const cat = t.closest("[data-mk-cat]"); if(cat){ mkCat = cat.dataset.mkCat; return renderMkBrowse(); }
+  if(t.closest("[data-mk=sell]")) return openSell();
+  if(await mkAction(t)) return;
+  const card = t.closest("[data-item]"); if(card) return openItem(card.dataset.item);
+});
+$("view-market").addEventListener("keydown", e => {
+  const c = e.target.closest(".mk-card"); if(c && e.target === c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openItem(c.dataset.item); }
+});
+// Accept / decline / withdraw / status changes, from the Offers tab or an item's dialog. True if handled.
+async function mkAction(t){
+  const b = t.closest("[data-mk-accept],[data-mk-decline],[data-mk-withdraw],[data-mk-status]"); if(!b) return false;
+  b.disabled = true;
+  try{
+    if(b.dataset.mkAccept){ await api.marketDecide(b.dataset.mkAccept, true); toast("Accepted. You can call each other now, and the item is marked reserved."); }
+    else if(b.dataset.mkDecline){ await api.marketDecide(b.dataset.mkDecline, false); toast("Declined."); }
+    else if(b.dataset.mkWithdraw){ await api.marketWithdraw(b.dataset.mkWithdraw); toast("Offer withdrawn."); }
+    else{
+      const [id, status] = b.dataset.mkStatus.split("|");
+      if(status === "removed" && !confirm("Remove this item from FlatMart?")) { b.disabled = false; return true; }
+      await api.marketSetStatus(id, status);
+      toast(status === "sold" ? "Marked as sold. Nice one! 🎉" : status === "removed" ? "Removed." : "It's back on sale.");
+      if(status === "removed" && $("dlgMk").open) $("dlgMk").close();
+    }
+  }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); b.disabled = false; return true; }
+  if($("dlgMk").open && mkCurrent) await openItem(mkCurrent.id);
+  if(currentView === "market") renderMarket();
+  checkExtras();
+  return true;
+}
+$("mkCity").addEventListener("change", () => { state.mkCity = $("mkCity").value; save(); mkCat = ""; renderMkBrowse(); });
+$("mkSort").addEventListener("change", renderMkBrowse);
+let mkQTimer = null;
+$("mkQ").addEventListener("input", () => { clearTimeout(mkQTimer); mkQTimer = setTimeout(renderMkBrowse, 250); });
+$("dlgMk").addEventListener("click", async e => {
+  const t = e.target;
+  const q = t.closest("[data-mk-quick]"); if(q){ $("mkOffer").value = q.dataset.mkQuick; return; }
+  const rm = t.closest("[data-mk-rm]");
+  if(rm){ const [gone] = mkFiles.splice(Number(rm.dataset.mkRm), 1); if(gone) URL.revokeObjectURL(gone.preview); $("mkPreviews").innerHTML = mkPhotosHtml(); $("mkDrop").hidden = false; return; }
+  if(await mkAction(t)) return;
+  const img = t.closest(".mk-mini[data-item]"); if(img && mkCurrent && img.dataset.item !== mkCurrent.id) openItem(img.dataset.item);
+});
+$("dlgMk").addEventListener("change", e => {
+  const t = e.target;
+  if(t.id === "mkPhotos"){ addMkPhotos(t.files); t.value = ""; }
+  if(t.id === "mkSCity") fillMkAreas();
+  if(t.id === "mkFree"){ $("mkPrice").disabled = $("mkNeg").disabled = t.checked; if(t.checked) $("mkPrice").value = ""; }
+});
+$("dlgMk").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector("[type=submit]");
+  const bad = msg => { showFormError(f, msg); toast(msg); };
+  try{
+    if(f.id === "mkOfferForm"){
+      const offer = mkCurrent.price ? Math.round(Number(String($("mkOffer").value).replace(/\D/g, ""))) : 0;
+      if(mkCurrent.price && !(offer > 0)) return bad("Enter your offer.");
+      if(offer > mkCurrent.price) return bad(`No need to pay more than the asking price of ${inr(mkCurrent.price)}.`);
+      btn.disabled = true;
+      const r = await api.marketOffer(mkCurrent.id, offer, $("mkMsg").value.trim());
+      if(r.error) return bad(r.error === "item-not-available" ? "Someone got there first: this isn't available any more." : r.error === "daily-limit" ? "That's a lot of offers today. Try again tomorrow." : "Couldn't send that offer.");
+      toast(`Offer sent to ${mkCurrent.seller_name || "the seller"}. We'll notify you when they reply.`);
+      await openItem(mkCurrent.id); if(currentView === "market") renderMarket(); return;
+    }
+    if(f.id === "mkPriceForm"){
+      const p = Math.round(Number($("mkNewPrice").value));
+      if(!(p >= 0)) return bad("Enter a price.");
+      await api.marketSetPrice(mkCurrent.id, p);
+      toast(p < mkCurrent.price ? "Price dropped. It's back at the top for people nearby." : "Price updated.");
+      await openItem(mkCurrent.id); if(currentView === "market") renderMarket(); return;
+    }
+    if(f.id === "mkSellForm"){
+      if(!formOk(f)) return;
+      const free = $("mkFree").checked, price = free ? 0 : Math.round(Number($("mkPrice").value));
+      if(!free && !(price > 0)) return bad("Add a price, or switch on “Give it away free”.");
+      const p = { title: $("mkTitle").value.trim(), category: f.querySelector("[name=mkCat]:checked").value, condition: f.querySelector("[name=mkCond]:checked").value,
+        price, negotiable: !free && $("mkNeg").checked, city: $("mkSCity").value, locality: $("mkArea").value.trim(),
+        description: $("mkDesc").value.trim(), moving_by: $("mkMove").value || null, photos: [] };
+      btn.disabled = true;
+      if(mkFiles.length){ btn.textContent = "Preparing photos…"; p.photos = (await api.uploadPhotos(mkFiles)).urls; }
+      btn.textContent = "Posting…";
+      const res = await api.marketPost(p);
+      mkFiles.forEach(x => URL.revokeObjectURL(x.preview)); mkFiles = [];
+      $("dlgMk").close();
+      toast(res.photos === "dropped" ? "Posted, but this phone's demo storage is full, so the photos weren't kept." : `Posted! People in ${p.locality} can see it now.`);
+      state.mkCity = p.city; save(); mkTab = "mine"; mkCat = "";
+      return currentView === "market" ? renderMarket() : go("market");
+    }
+  }catch(err){
+    console.error(err);
+    bad(/too-many-items/.test(err.message || "") ? "You have 25 things for sale already. Mark some as sold first."
+      : err.message === "storage-full" ? "This phone's demo storage is full. Remove an old item or post without photos."
+      : "Couldn't save that. Please check your connection and try again.");
+  }finally{ if(btn){ btn.disabled = false; if(f.id === "mkSellForm") btn.textContent = "Post it on FlatMart"; } }
+});
+
+/* --------------------------------------- shortcuts, badges and notifications */
+async function extrasHtml(){
+  const [groups, items] = await Promise.all([api.splitGroups().catch(() => []), api.marketSearch({ city: mkCityPref() }).catch(() => [])]);
+  const net = groups.reduce((t, g) => t + g.my_net, 0), unseenN = groups.reduce((t, g) => t + (g.unseen || 0), 0);
+  const week = items.filter(i => !i.is_mine && i.status === "active" && Date.now() - new Date(i.bumped_at || i.created_at) < 7 * 864e5).length;
+  const fs = !groups.length ? "Split rent and bills with flatmates" : unseenN ? `${unseenN} new ${unseenN === 1 ? "expense" : "expenses"}`
+    : net > 0 ? `You get back ${rupees(net)}` : net < 0 ? `You owe ${rupees(net)}` : "All settled up";
+  return `<div class="extras"><a href="#splits"><i aria-hidden="true">🧾</i><span><b>Flatsplits</b><small>${esc(fs)}</small></span></a>
+    <a href="#market"><i aria-hidden="true">🛋️</i><span><b>FlatMart</b><small>${week ? `${week} new ${week === 1 ? "thing" : "things"} for sale near you this week` : "Buy and sell with flatmates nearby"}</small></span></a></div>`;
+}
+let splitsUnseen = 0, marketUnseen = 0;
+async function checkExtras(){
+  if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
+  state.notified = state.notified || {};
+  let changed = false;
+  try{
+    const groups = await api.splitGroups();
+    splitsUnseen = groups.reduce((t, g) => t + (g.unseen || 0), 0);
+    for(const g of groups.filter(x => x.unseen)){
+      const key = "fs" + g.id + g.last_at; if(state.notified[key]) continue;
+      state.notified[key] = Date.now(); changed = true;
+      const bal = g.my_net > 0 ? `you get back ${rupees(g.my_net)}` : g.my_net < 0 ? `you owe ${rupees(g.my_net)}` : "you're settled up";
+      Notify.show(`${g.emoji} New in ${g.name}`, `${g.unseen} new ${g.unseen === 1 ? "expense" : "expenses"}. Overall, ${bal}.`, "splits");
+      if(!(currentView === "splits" && routeArg === g.id)) toast(`${g.emoji} New expense in ${g.name}. Overall, ${bal}.`);
+    }
+  }catch(err){}
+  try{
+    const rows = await api.marketInbox(), fresh = rows.filter(r => r.unseen);
+    marketUnseen = fresh.length;
+    for(const r of fresh){
+      const key = "mk" + r.id + r.status; if(state.notified[key]) continue;
+      state.notified[key] = Date.now(); changed = true;
+      if(r.direction === "incoming" && r.status === "pending"){
+        Notify.show(`${r.name || "Someone"} wants your ${r.item_title}`, `${r.offer ? "Offer: " + inr(r.offer) + ". " : ""}Accept to share numbers and fix a pickup time.`, "market");
+        toast(`🛋️ ${r.name || "Someone"} offered ${r.offer ? inr(r.offer) : "to take"} your ${r.item_title}`);
+      }else if(r.direction === "outgoing" && r.status === "accepted"){
+        Notify.show(`${r.name || "The seller"} accepted your offer!`, `Call now to pick up “${r.item_title}” before someone else does.`, "market");
+        toast(`✓ ${r.name || "The seller"} accepted your offer for ${r.item_title}. Call now!`);
+      }else if(r.direction === "outgoing" && r.status === "declined"){
+        Notify.show("Offer not accepted", `The seller of “${r.item_title}” passed. There's plenty more on FlatMart.`, "market");
+      }
+    }
+  }catch(err){}
+  save();
+  if(!currentView) return;
+  renderNav();
+  if(changed && currentView === "market") renderMarket();
+  if(changed && currentView === "splits" && !routeArg) renderSplits();
+  if(changed && $("dlgMk").open && mkCurrent) openItem(mkCurrent.id);
+}
+setInterval(checkExtras, LIVE ? 30000 : 3000);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) checkExtras(); });
+
 /* ============================================================= account */
 async function renderAccount(){
   await api.me();
@@ -3778,6 +5144,7 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   $("modeNote").textContent = note; $("appFoot").textContent = note;
   route();
   checkInbox();
+  checkExtras();
   // The Android app ships its files inside the APK, so it doesn't need one.
   if("serviceWorker" in navigator && location.hostname !== "appassets.androidplatform.net" &&
      /^https:|^http:\/\/localhost|^http:\/\/127\./.test(location.href)){

@@ -81,13 +81,42 @@ the room comes second.
     A seeker whose request the owner accepted can **report a broker** from the contact section; the
     listing is delisted straight away and the owner sees why.
 
+15. **Flatsplits (everyone).** Split rent, bills and groceries with the people you live with, like
+    Splitwise but built for a flat. Make a group, add flatmates by mobile number (or in one tap from
+    your tribe and the people you've connected with), and add an expense: amount, a category (rent,
+    groceries, electricity, Wi-Fi, maid, cook…), who paid, and how to split it: **equally** (tick who's in),
+    **exact amounts**, or **by shares** (the bigger room pays 2 shares). Amounts are kept to the paisa, so
+    ₹100 three ways is ₹33.34 + ₹33.33 + ₹33.33. Every group shows your balance, "Riya owes you ₹1,240",
+    and **who pays whom** in the fewest payments. **Settle up** records a payment; if the other person has
+    added their UPI ID, **Pay by UPI** opens your UPI app with the amount filled in, and the person you're
+    owed can **remind on WhatsApp**. **Monthly bills** (rent, Wi-Fi, the maid) are set once and added
+    automatically on that day every month ("Repeats monthly" on any expense does the same). **This month**
+    shows spending by category and who paid, against last month. Anyone in the group can delete an
+    expense; people can only be removed once they're settled up. New expenses from others show as a badge
+    on Splits and a notification. People who aren't on the app yet get a WhatsApp invite, and they see
+    the group as soon as they sign in with that number.
+16. **FlatMart (everyone).** An OLX for flatmates: buy and sell furniture, beds, appliances, kitchen
+    things, electronics, bikes and books with people nearby, so nobody pays full price to furnish a room
+    and nobody dumps a fridge when they move out. Post in a minute: up to 4 photos, category, condition,
+    price (or **give it away free**), "open to offers", area, and an optional **moving out by** date.
+    Browse by city, category, free stuff or saved (♥) items, search, and sort by newest, price or your areas.
+    Buyers **make an offer** (full price, −10% or −20% in one tap, plus a note). Same privacy rule as rooms:
+    **numbers are shared only when the seller accepts**, then both get Call and WhatsApp; the item is marked
+    reserved, then sold. Sellers can **drop the price**, which moves the item back to the top. Offers have
+    their own tab and badge, with a notification for every new offer, acceptance or decline.
+    Discover and My flat show a shortcut to both ("You get back ₹1,240", "8 new things for sale near you this week").
+    On phones the bottom bar now has six tabs, and Account moved to the avatar at the top right.
+
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
 after you post it. Sample seekers (24 per city) answer an owner's invite after a few seconds: yes to a
 strong match, no to a weak one, and no reply in between. Build your tribe: up to 6 sample seekers who
 match your vibe 70%+ appear about 5 seconds after onboarding; a third of them say yes first, and the
-rest answer your yes within seconds (yes to a 74%+ match). Two sample owners also invite a new seeker about 12 seconds after onboarding.
+rest answer your yes within seconds (yes to a 74%+ match). Two sample owners also invite a new seeker about 12 seconds after onboarding. Flatsplits has a "try it with a sample
+flat" button (two flatmates and a month of expenses; one of them adds another expense 15 seconds later), and FlatMart has
+80 sample things for sale across the cities. Sample sellers accept an offer of 80% of the price or more after about
+6 seconds, and a sample buyer makes an offer about 8 seconds after you post something.
 
 ## Notifications and urgency
 
@@ -147,7 +176,7 @@ database decides, so the app can't be tricked into free contacts while charges a
 ## Files
 
 - `index.html`: the whole app (onboarding, browse, requests, approvals, post, pay, visits). No build step.
-- `supabase/schema.sql`: tables, row-level security and RPCs. Requests, approvals, contacts and
+- `supabase/schema.sql`: tables, row-level security and RPCs (including `fm_split_*` for Flatsplits and `fm_market_*` for FlatMart). Requests, approvals, contacts and
   the match score are enforced here, so a number or address never reaches someone who wasn't accepted.
 - `supabase/functions/fm-pay/index.ts`: Razorpay order creation, payment verification and webhook.
 - `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
@@ -202,7 +231,8 @@ Phones with the testing build must uninstall it once before installing the prope
 ## Live project
 
 The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
-The database is set up (schema.sql applied).
+The database is set up, except for Flatsplits and FlatMart: run the current `schema.sql` again
+(it's safe to re-run) before using them in live mode.
 
 **Testing login (no SMS):** until phone login has an SMS provider, everyone signs in with their mobile
 number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It

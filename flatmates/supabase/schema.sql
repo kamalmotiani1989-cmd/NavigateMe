@@ -936,17 +936,441 @@ drop trigger if exists fm_tribe_links_notify on public.fm_tribe_links;
 create trigger fm_tribe_links_notify after insert or update on public.fm_tribe_links
   for each row execute function public.fm_tribe_notify();
 
+-- ------------------------------------------------------------ Flatsplits --
+-- Splitting rent, bills and groceries inside a flat. A group's members are people (name +
+-- mobile number); anyone who signs in with that number sees the group. Money is stored in
+-- paise so a three-way split of Rs 100 stays exact. All reads and writes go through the
+-- fm_split_* functions below; the tables have RLS on and no policies.
+create table if not exists public.fm_split_groups (
+  id          uuid primary key default gen_random_uuid(),
+  name        text not null check (char_length(name) between 1 and 60),
+  emoji       text not null default '🏠' check (char_length(emoji) <= 8),
+  created_by  uuid references auth.users(id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+create table if not exists public.fm_split_members (
+  id        uuid primary key default gen_random_uuid(),
+  group_id  uuid not null references public.fm_split_groups(id) on delete cascade,
+  name      text not null check (char_length(name) between 1 and 40),
+  phone     text not null check (phone ~ '^[6-9][0-9]{9}$'),
+  upi       text,
+  seen_at   timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  unique (group_id, phone)
+);
+-- kind 'expense': paid_by paid amount, splits says who owes what ({member_id: paise}, sums to amount).
+-- kind 'settle': paid_by paid the one member in splits back.
+create table if not exists public.fm_split_expenses (
+  id          uuid primary key default gen_random_uuid(),
+  group_id    uuid not null references public.fm_split_groups(id) on delete cascade,
+  kind        text not null default 'expense' check (kind in ('expense','settle')),
+  title       text not null check (char_length(title) between 1 and 80),
+  category    text not null default 'other',
+  amount      bigint not null check (amount > 0 and amount <= 100000000000),
+  paid_by     uuid not null references public.fm_split_members(id) on delete cascade,
+  splits      jsonb not null,
+  spent_on    date not null default current_date,
+  created_by  uuid references public.fm_split_members(id) on delete set null,
+  bill_id     uuid,
+  created_at  timestamptz not null default now(),
+  deleted_at  timestamptz
+);
+create index if not exists fm_split_expenses_group on public.fm_split_expenses (group_id, spent_on desc);
+-- Monthly bills (rent, Wi-Fi, maid...): added to the group automatically on day_of_month.
+create table if not exists public.fm_split_bills (
+  id           uuid primary key default gen_random_uuid(),
+  group_id     uuid not null references public.fm_split_groups(id) on delete cascade,
+  title        text not null check (char_length(title) between 1 and 80),
+  category     text not null default 'other',
+  amount       bigint not null check (amount > 0 and amount <= 100000000000),
+  paid_by      uuid not null references public.fm_split_members(id) on delete cascade,
+  splits       jsonb not null,
+  day_of_month int not null default 1 check (day_of_month between 1 and 28),
+  last_month   text,
+  created_at   timestamptz not null default now()
+);
+alter table public.fm_split_groups   enable row level security;
+alter table public.fm_split_members  enable row level security;
+alter table public.fm_split_expenses enable row level security;
+alter table public.fm_split_bills    enable row level security;
+
+-- The caller's 10-digit mobile number (profiles store it as 91XXXXXXXXXX).
+create or replace function public.fm_my_phone() returns text
+language sql stable security definer set search_path = public as $$
+  select right(regexp_replace(coalesce(phone, ''), '\D', '', 'g'), 10) from fm_profiles where id = auth.uid();
+$$;
+
+create or replace function public.fm_split_me(p_group uuid) returns uuid
+language sql stable security definer set search_path = public as $$
+  select id from fm_split_members where group_id = p_group and phone = fm_my_phone();
+$$;
+
+-- splits must name members of the group with positive paise that add up to the amount.
+create or replace function public.fm_split_check(p_group uuid, p_amount bigint, p_paid_by uuid, p_splits jsonb) returns void
+language plpgsql stable security definer set search_path = public as $$
+declare k text; v_sum bigint := 0;
+begin
+  if not exists (select 1 from fm_split_members where id = p_paid_by and group_id = p_group) then raise exception 'bad-payer'; end if;
+  if jsonb_typeof(p_splits) <> 'object' or (select count(*) from jsonb_object_keys(p_splits)) = 0 then raise exception 'bad-splits'; end if;
+  for k in select jsonb_object_keys(p_splits) loop
+    if k !~ '^[0-9a-f-]{36}$' or not exists (select 1 from fm_split_members where id = k::uuid and group_id = p_group)
+       or jsonb_typeof(p_splits->k) <> 'number' or (p_splits->>k)::numeric < 0 or (p_splits->>k)::numeric <> floor((p_splits->>k)::numeric) then
+      raise exception 'bad-splits';
+    end if;
+    v_sum := v_sum + (p_splits->>k)::bigint;
+  end loop;
+  if v_sum <> p_amount then raise exception 'splits-dont-add-up'; end if;
+end $$;
+
+create or replace function public.fm_split_create(p_name text, p_emoji text, p_members jsonb) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_phone text := fm_my_phone(); v_name text; m jsonb;
+begin
+  if auth.uid() is null or coalesce(v_phone, '') = '' then raise exception 'not-signed-in'; end if;
+  if (select count(*) from fm_split_members where phone = v_phone) >= 20 then raise exception 'too-many-groups'; end if;
+  select coalesce(nullif(split_part(full_name, ' ', 1), ''), 'Me') into v_name from fm_profiles where id = auth.uid();
+  insert into fm_split_groups (name, emoji, created_by)
+  values (left(trim(p_name), 60), coalesce(nullif(left(p_emoji, 8), ''), '🏠'), auth.uid()) returning id into v_id;
+  insert into fm_split_members (group_id, name, phone, upi)
+  values (v_id, left(v_name, 40), v_phone, (select upi from fm_split_members where phone = v_phone and upi is not null limit 1));
+  for m in select * from jsonb_array_elements(case when jsonb_typeof(p_members) = 'array' then p_members else '[]' end) loop
+    insert into fm_split_members (group_id, name, phone, upi)
+    select v_id, left(trim(m->>'name'), 40), x.phone, (select upi from fm_split_members where phone = x.phone and upi is not null limit 1)
+    from (select right(regexp_replace(coalesce(m->>'phone', ''), '\D', '', 'g'), 10) as phone) x
+    on conflict (group_id, phone) do nothing;
+  end loop;
+  if (select count(*) from fm_split_members where group_id = v_id) > 12 then raise exception 'too-many-members'; end if;
+  return v_id;
+end $$;
+
+create or replace function public.fm_split_update(p_group uuid, p_name text, p_emoji text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
+  update fm_split_groups set name = coalesce(nullif(left(trim(p_name), 60), ''), name),
+         emoji = coalesce(nullif(left(p_emoji, 8), ''), emoji) where id = p_group;
+end $$;
+
+create or replace function public.fm_split_add_member(p_group uuid, p_name text, p_phone text) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 10);
+begin
+  if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
+  if (select count(*) from fm_split_members where group_id = p_group) >= 12 then raise exception 'too-many-members'; end if;
+  insert into fm_split_members (group_id, name, phone, upi)
+  values (p_group, left(trim(p_name), 40), v_phone, (select upi from fm_split_members where phone = v_phone and upi is not null limit 1))
+  on conflict (group_id, phone) do update set name = excluded.name returning id into v_id;
+  return v_id;
+end $$;
+
+-- Each member's balance in paise: what they paid minus their share. Positive = they're owed.
+create or replace function public.fm_split_net(p_member uuid) returns bigint
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum(case when e.paid_by = p_member then e.amount else 0 end
+                      - coalesce((e.splits->>p_member::text)::bigint, 0)), 0)::bigint
+  from fm_split_expenses e join fm_split_members m on m.id = p_member and m.group_id = e.group_id
+  where e.deleted_at is null;
+$$;
+
+-- Only someone who is all settled up can be removed (or leave).
+create or replace function public.fm_split_remove_member(p_member uuid) returns text
+language plpgsql security definer set search_path = public as $$
+declare v_group uuid;
+begin
+  select group_id into v_group from fm_split_members where id = p_member;
+  if v_group is null or fm_split_me(v_group) is null then return 'not-found'; end if;
+  if fm_split_net(p_member) <> 0 then return 'not-settled'; end if;
+  delete from fm_split_members where id = p_member;
+  if not exists (select 1 from fm_split_members where group_id = v_group) then delete from fm_split_groups where id = v_group; end if;
+  return 'removed';
+end $$;
+
+create or replace function public.fm_split_add(p_group uuid, p jsonb) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_me uuid := fm_split_me(p_group); v_id uuid; v_amount bigint;
+begin
+  if v_me is null then raise exception 'not-a-member'; end if;
+  if jsonb_typeof(p->'amount') <> 'number' then raise exception 'bad-amount'; end if;
+  v_amount := (p->>'amount')::bigint;
+  perform fm_split_check(p_group, v_amount, (p->>'paid_by')::uuid, p->'splits');
+  insert into fm_split_expenses (group_id, kind, title, category, amount, paid_by, splits, spent_on, created_by)
+  values (p_group, coalesce(nullif(p->>'kind', ''), 'expense'), left(coalesce(nullif(trim(p->>'title'), ''), 'Expense'), 80),
+          left(coalesce(nullif(p->>'category', ''), 'other'), 20), v_amount, (p->>'paid_by')::uuid, p->'splits',
+          coalesce((p->>'spent_on')::date, current_date), v_me)
+  returning id into v_id;
+  update fm_split_members set seen_at = now() where id = v_me;
+  return v_id;
+end $$;
+
+create or replace function public.fm_split_delete(p_expense uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_group uuid;
+begin
+  select group_id into v_group from fm_split_expenses where id = p_expense;
+  if v_group is null or fm_split_me(v_group) is null then raise exception 'not-found'; end if;
+  update fm_split_expenses set deleted_at = now() where id = p_expense and deleted_at is null;
+end $$;
+
+create or replace function public.fm_split_bill_save(p_group uuid, p jsonb) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_amount bigint;
+begin
+  if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
+  if jsonb_typeof(p->'amount') <> 'number' then raise exception 'bad-amount'; end if;
+  v_amount := (p->>'amount')::bigint;
+  perform fm_split_check(p_group, v_amount, (p->>'paid_by')::uuid, p->'splits');
+  if (select count(*) from fm_split_bills where group_id = p_group) >= 15 then raise exception 'too-many-bills'; end if;
+  insert into fm_split_bills (group_id, title, category, amount, paid_by, splits, day_of_month, last_month)
+  values (p_group, left(coalesce(nullif(trim(p->>'title'), ''), 'Monthly bill'), 80), left(coalesce(nullif(p->>'category', ''), 'other'), 20),
+          v_amount, (p->>'paid_by')::uuid, p->'splits', least(28, greatest(1, coalesce((p->>'day')::int, 1))),
+          nullif(p->>'last_month', ''))
+  returning id into v_id;
+  return v_id;
+end $$;
+
+create or replace function public.fm_split_bill_delete(p_bill uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_group uuid;
+begin
+  select group_id into v_group from fm_split_bills where id = p_bill;
+  if v_group is null or fm_split_me(v_group) is null then raise exception 'not-found'; end if;
+  delete from fm_split_bills where id = p_bill;
+end $$;
+
+-- UPI ID so flatmates can pay you in one tap. Saved on every group you're in.
+create or replace function public.fm_split_set_upi(p_upi text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if coalesce(p_upi, '') <> '' and p_upi !~ '^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$' then raise exception 'bad-upi'; end if;
+  update fm_split_members set upi = nullif(trim(p_upi), '') where phone = fm_my_phone();
+end $$;
+
+-- My groups with my balance and how many new expenses others have added.
+create or replace function public.fm_split_groups()
+returns table (id uuid, name text, emoji text, members bigint, names text[], my_net bigint, unseen bigint, last_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select g.id, g.name, g.emoji,
+         (select count(*) from fm_split_members x where x.group_id = g.id),
+         (select array_agg(x.name order by x.created_at) from fm_split_members x where x.group_id = g.id and x.id <> m.id),
+         fm_split_net(m.id),
+         (select count(*) from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null
+            and e.created_at > m.seen_at and e.created_by is distinct from m.id),
+         coalesce((select max(e.created_at) from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null), g.created_at)
+  from fm_split_members m join fm_split_groups g on g.id = m.group_id
+  where m.phone = fm_my_phone()
+  order by 8 desc;
+$$;
+
+-- One group, everything the screen needs. Adds this month's monthly bills that are due first.
+create or replace function public.fm_split_get(p_group uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_me uuid := fm_split_me(p_group); b fm_split_bills%rowtype; v_month text := to_char(current_date, 'YYYY-MM');
+begin
+  if v_me is null then raise exception 'not-a-member'; end if;
+  for b in select * from fm_split_bills where group_id = p_group and (last_month is null or last_month < v_month)
+           and extract(day from current_date) >= day_of_month for update loop
+    insert into fm_split_expenses (group_id, kind, title, category, amount, paid_by, splits, spent_on, created_by, bill_id)
+    values (p_group, 'expense', b.title, b.category, b.amount, b.paid_by, b.splits,
+            make_date(extract(year from current_date)::int, extract(month from current_date)::int, b.day_of_month), null, b.id);
+    update fm_split_bills set last_month = v_month where id = b.id;
+  end loop;
+  update fm_split_members set seen_at = now() where id = v_me;
+  return jsonb_build_object(
+    'group', (select to_jsonb(g) - 'created_by' from fm_split_groups g where g.id = p_group),
+    'me', v_me,
+    'members', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'name', m.name, 'phone', m.phone, 'upi', m.upi,
+                 'on_app', exists (select 1 from fm_profiles p where right(regexp_replace(coalesce(p.phone, ''), '\D', '', 'g'), 10) = m.phone))
+                 order by m.created_at) from fm_split_members m where m.group_id = p_group), '[]'),
+    'expenses', coalesce((select jsonb_agg(to_jsonb(e) - 'deleted_at' - 'group_id' order by e.spent_on desc, e.created_at desc)
+                 from (select * from fm_split_expenses where group_id = p_group and deleted_at is null
+                       order by spent_on desc, created_at desc limit 500) e), '[]'),
+    'bills', coalesce((select jsonb_agg(to_jsonb(x) - 'group_id' order by x.day_of_month) from fm_split_bills x where x.group_id = p_group), '[]'));
+end $$;
+
+-- -------------------------------------------------------------- FlatMart --
+-- Flatmates selling furniture, appliances and the rest to each other. Same rule as rooms:
+-- the seller's number is only shared once they accept an offer, and then both ways.
+create table if not exists public.fm_market_items (
+  id          uuid primary key default gen_random_uuid(),
+  seller_id   uuid not null references auth.users(id) on delete cascade,
+  title       text not null check (char_length(title) between 3 and 80),
+  category    text not null check (category in ('furniture','beds','appliances','kitchen','electronics','decor','bikes','books','other')),
+  condition   text not null default 'good' check (condition in ('new','good','used')),
+  price       int  not null check (price between 0 and 10000000),
+  negotiable  boolean not null default true,
+  city        text not null,
+  locality    text not null,
+  description text not null default '' check (char_length(description) <= 1000),
+  photos      text[] not null default '{}',
+  moving_by   date,
+  status      text not null default 'active' check (status in ('active','reserved','sold','removed')),
+  created_at  timestamptz not null default now(),
+  bumped_at   timestamptz not null default now()
+);
+create index if not exists fm_market_items_city on public.fm_market_items (city, status, bumped_at desc);
+create table if not exists public.fm_market_offers (
+  id          uuid primary key default gen_random_uuid(),
+  item_id     uuid not null references public.fm_market_items(id) on delete cascade,
+  buyer_id    uuid not null references auth.users(id) on delete cascade,
+  offer       int  not null check (offer between 0 and 10000000),
+  message     text not null default '',
+  status      text not null default 'pending' check (status in ('pending','accepted','declined','withdrawn')),
+  seen_seller boolean not null default false,
+  seen_buyer  boolean not null default true,
+  created_at  timestamptz not null default now(),
+  decided_at  timestamptz,
+  unique (item_id, buyer_id)
+);
+alter table public.fm_market_items  enable row level security;
+alter table public.fm_market_offers enable row level security;
+
+drop function if exists public.fm_market_search(text, text, text);
+create or replace function public.fm_market_search(p_city text default null, p_category text default null, p_q text default null,
+                                                   p_mine boolean default false)
+returns table (id uuid, title text, category text, condition text, price int, negotiable boolean, city text, locality text,
+               description text, photos text[], moving_by date, status text, created_at timestamptz, bumped_at timestamptz,
+               seller_name text, is_mine boolean, my_offer_status text, my_offer int, offer_count bigint)
+language sql stable security definer set search_path = public as $$
+  select i.id, i.title, i.category, i.condition, i.price, i.negotiable, i.city, i.locality, i.description, i.photos,
+         i.moving_by, i.status, i.created_at, i.bumped_at,
+         split_part(coalesce(p.full_name, ''), ' ', 1), i.seller_id = auth.uid(), o.status, o.offer,
+         (select count(*) from fm_market_offers x where x.item_id = i.id and x.status in ('pending','accepted'))
+  from fm_market_items i
+  left join fm_profiles p on p.id = i.seller_id
+  left join fm_market_offers o on o.item_id = i.id and o.buyer_id = auth.uid()
+  where (i.status in ('active','reserved') or (i.seller_id = auth.uid() and i.status <> 'removed'))
+    and (not coalesce(p_mine, false) or i.seller_id = auth.uid())
+    and (p_city is null or i.city = p_city)
+    and (p_category is null or i.category = p_category or (p_category = 'free' and i.price = 0))
+    and (p_q is null or i.title ilike '%' || p_q || '%' or i.description ilike '%' || p_q || '%')
+  order by i.bumped_at desc
+  limit 300;
+$$;
+
+create or replace function public.fm_market_post(
+  p_title text, p_category text, p_condition text, p_price int, p_negotiable boolean, p_city text, p_locality text,
+  p_description text, p_photos text[] default '{}', p_moving_by date default null)
+returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_photo text;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if (select count(*) from fm_market_items where seller_id = auth.uid() and status in ('active','reserved')) >= 25 then
+    raise exception 'too-many-items';
+  end if;
+  if coalesce(array_length(p_photos, 1), 0) > 4 then raise exception 'too-many-photos'; end if;
+  foreach v_photo in array coalesce(p_photos, '{}') loop
+    if position('/storage/v1/object/public/fm-photos/' || auth.uid()::text || '/' in v_photo) = 0 then
+      raise exception 'bad-photo-url';
+    end if;
+  end loop;
+  insert into fm_market_items (seller_id, title, category, condition, price, negotiable, city, locality, description, photos, moving_by)
+  values (auth.uid(), trim(p_title), p_category, p_condition, p_price, coalesce(p_negotiable, true), p_city, trim(p_locality),
+          left(coalesce(p_description, ''), 1000), coalesce(p_photos, '{}'), p_moving_by)
+  returning id into v_id;
+  return v_id;
+end $$;
+
+-- Seller: reserve, mark sold, relist or remove. Dropping the price bumps the item to the top.
+create or replace function public.fm_market_set_status(p_item uuid, p_status text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_status not in ('active','reserved','sold','removed') then raise exception 'bad-status'; end if;
+  update fm_market_items set status = p_status where id = p_item and seller_id = auth.uid();
+end $$;
+
+create or replace function public.fm_market_set_price(p_item uuid, p_price int) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_price is null or p_price < 0 or p_price > 10000000 then raise exception 'bad-price'; end if;
+  update fm_market_items set bumped_at = case when p_price < price then now() else bumped_at end, price = p_price
+   where id = p_item and seller_id = auth.uid();
+end $$;
+
+create or replace function public.fm_market_offer(p_item uuid, p_offer int, p_message text)
+returns table (status text, error text)
+language plpgsql security definer set search_path = public as $$
+declare v_i fm_market_items%rowtype; v_o fm_market_offers%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  select * into v_i from fm_market_items where id = p_item and fm_market_items.status = 'active';
+  if v_i.id is null then return query select null::text, 'item-not-available'; return; end if;
+  if v_i.seller_id = auth.uid() then return query select null::text, 'own-item'; return; end if;
+  if p_offer is null or p_offer < 0 or p_offer > 10000000 then return query select null::text, 'bad-offer'; return; end if;
+  select * into v_o from fm_market_offers where item_id = p_item and buyer_id = auth.uid();
+  if v_o.status in ('pending','accepted') then return query select v_o.status, null::text; return; end if;
+  if (select count(*) from fm_market_offers o where o.buyer_id = auth.uid() and o.created_at > now() - interval '1 day') >= 30 then
+    return query select null::text, 'daily-limit'; return;
+  end if;
+  insert into fm_market_offers (item_id, buyer_id, offer, message)
+  values (p_item, auth.uid(), p_offer, left(coalesce(p_message, ''), 300))
+  on conflict (item_id, buyer_id) do update
+    set status = 'pending', offer = excluded.offer, message = excluded.message, seen_seller = false, seen_buyer = true,
+        created_at = now(), decided_at = null;
+  return query select 'pending'::text, null::text;
+end $$;
+
+create or replace function public.fm_market_withdraw(p_offer uuid) returns void
+language sql security definer set search_path = public as $$
+  update fm_market_offers set status = 'withdrawn' where id = p_offer and buyer_id = auth.uid() and status = 'pending';
+$$;
+
+-- Accepting shares both numbers and reserves the item for that buyer.
+create or replace function public.fm_market_decide(p_offer uuid, p_accept boolean) returns text
+language plpgsql security definer set search_path = public as $$
+declare v_o fm_market_offers%rowtype;
+begin
+  select o.* into v_o from fm_market_offers o join fm_market_items i on i.id = o.item_id
+   where o.id = p_offer and i.seller_id = auth.uid() for update of o;
+  if v_o.id is null then return 'not-found'; end if;
+  if v_o.status <> 'pending' then return v_o.status; end if;
+  update fm_market_offers set status = case when p_accept then 'accepted' else 'declined' end, decided_at = now(),
+         seen_buyer = false, seen_seller = true where id = p_offer;
+  if p_accept then update fm_market_items set status = 'reserved' where id = v_o.item_id and status = 'active'; end if;
+  return case when p_accept then 'accepted' else 'declined' end;
+end $$;
+
+-- Offers on my items ('incoming') and my offers ('outgoing'). Numbers only once accepted.
+create or replace function public.fm_market_inbox()
+returns table (id uuid, item_id uuid, item_title text, item_photo text, item_price int, item_status text, category text,
+               direction text, status text, offer int, message text, name text, phone text, unseen boolean,
+               created_at timestamptz, decided_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select o.id, i.id, i.title, i.photos[1], i.price, i.status, i.category,
+         case when i.seller_id = auth.uid() then 'incoming' else 'outgoing' end,
+         o.status, o.offer, o.message,
+         split_part(coalesce(case when i.seller_id = auth.uid() then b.full_name else s.full_name end, ''), ' ', 1),
+         case when o.status = 'accepted' then (case when i.seller_id = auth.uid() then b.phone else s.phone end) end,
+         case when i.seller_id = auth.uid() then not o.seen_seller else not o.seen_buyer end,
+         o.created_at, o.decided_at
+  from fm_market_offers o
+  join fm_market_items i on i.id = o.item_id
+  left join fm_profiles b on b.id = o.buyer_id
+  left join fm_profiles s on s.id = i.seller_id
+  where (i.seller_id = auth.uid() or o.buyer_id = auth.uid()) and o.status <> 'withdrawn'
+  order by o.created_at desc
+  limit 200;
+$$;
+
+create or replace function public.fm_market_seen() returns void
+language sql security definer set search_path = public as $$
+  update fm_market_offers o set seen_seller = true
+   from fm_market_items i where i.id = o.item_id and i.seller_id = auth.uid() and not o.seen_seller;
+  update fm_market_offers set seen_buyer = true where buyer_id = auth.uid() and not seen_buyer;
+$$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me and fm_search also answer signed-out callers, with nothing private).
--- Trigger functions and the payment webhook's fm_credit_order can't be called at all.
+-- Trigger functions, the payment webhook's fm_credit_order and the Flatsplits helpers can't be called at all.
 do $$
 declare f record;
 begin
   for f in select p.oid::regprocedure as sig, p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
            where n.nspname = 'public' and p.proname like 'fm\_%' loop
     execute format('revoke execute on function %s from public, anon', f.sig);
-    if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order') then
+    if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order',
+                     'fm_my_phone','fm_split_me','fm_split_check','fm_split_net') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
