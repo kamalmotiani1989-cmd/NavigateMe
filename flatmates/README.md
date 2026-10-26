@@ -54,6 +54,16 @@ the room comes second.
 9. **Bachelors welcome.** Owners mark each listing (on by default). Cards show "Bachelors welcome ·
    no brokers", the listing shows it, and Filters has a "Bachelors welcome" option.
 
+10. **Gen Z and millennials.** Seekers say which generation they are; owners say which generation
+    their household mostly is (both editable later). The match score is nudged: **Gen Z + Gen Z gets
+    +10 when the score is under 80**, and **Gen Z + millennial (either way) gets −10**. It applies
+    everywhere a match is shown (homes, requests, invites, tribes) and the compatibility analysis says
+    so ("Gen Z + Gen Z: +10 on the score").
+11. **Several numbers on one phone.** Each mobile number keeps its own answers, drafts and shortlist on
+    the device, so signing in with a new number always starts from the beginning. In live mode the
+    server's copy of a seeker's answers wins; a seeker with no answers on the server is sent through
+    the questions (otherwise the server would refuse their requests).
+
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds

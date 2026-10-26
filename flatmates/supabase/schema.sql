@@ -312,17 +312,24 @@ begin
   end if;
 end $$;
 
--- Weighted living-style match, 0..100. Same rules as vibeMatch() in index.html:
--- each answer is 0..2, a question scores 1 - gap/2, smoking/food/pets count double,
--- and at least 4 shared answers are needed.
+-- Weighted living-style match, 0..100, then the generation nudge (same as vibeMatch/genAdjust in
+-- index.html): each answer is 0..2, a question scores 1 - gap/2, smoking/food/pets count double,
+-- at least 4 shared answers are needed; Gen Z + Gen Z gets +10 when under 80, Gen Z + millennial -10.
 create or replace function public.fm_match(p_v jsonb, p_h jsonb) returns int
-language sql immutable as $$
+language sql immutable set search_path = public as $$
   with q as (
     select (p_v->>k)::int a, (p_h->>k)::int b, case when k in ('smoke','food','pets') then 2 else 1 end w
     from unnest(array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets']) k
-    where jsonb_typeof(p_v->k) = 'number' and jsonb_typeof(p_h->k) = 'number')
-  select case when count(*) < 4 then null
-              else round(100 * sum(w * (1 - abs(a - b) / 2.0)) / sum(w))::int end from q;
+    where jsonb_typeof(p_v->k) = 'number' and jsonb_typeof(p_h->k) = 'number'),
+  base as (
+    select case when count(*) < 4 then null
+                else round(100 * sum(w * (1 - abs(a - b) / 2.0)) / sum(w))::int end s from q)
+  select case
+    when s is null then null
+    when p_v->>'gen' = 'z' and p_h->>'gen' = 'z' and s < 80 then least(100, s + 10)
+    when (p_v->>'gen', p_h->>'gen') in (('z','m'), ('m','z')) then greatest(0, s - 10)
+    else s end
+  from base;
 $$;
 
 -- Listings, with whether the caller can see the contact and where their request stands.

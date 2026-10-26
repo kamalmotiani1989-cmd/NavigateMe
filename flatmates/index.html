@@ -509,6 +509,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 @keyframes grow{from{transform:scale(.4); opacity:0}}
 .compat-top{display:grid; justify-items:center; gap:6px; text-align:center}
 .compat-sum{margin:6px 0 0; color:var(--text-2); max-width:44ch}
+.gen-note{margin:4px 0 0; padding:4px 12px; border-radius:999px; font-size:13px; font-weight:700}
+.gen-note.up{background:var(--ok-soft); color:var(--ok)} .gen-note.down{background:#FDE8E9; color:#B42332}
 .compat-tabs{display:flex; gap:8px; overflow-x:auto; margin:18px -20px 0; padding:4px 20px 10px; scrollbar-width:none}
 .compat-tabs::-webkit-scrollbar{display:none}
 .compat-tabs button{flex:none; display:flex; align-items:center; gap:8px; border:0; border-radius:999px; padding:9px 14px; background:var(--surface-2);
@@ -1082,13 +1084,27 @@ const VIBE_QS = [
   {k:"work",    w:1, q:"Weekday routine",             o:["Out all day","Mixed","Home most days"],                   t:["Out at work or college","Mixed routine","Home most days"]},
   {k:"pets",    w:2, q:"Pets",                        o:["No pets, please","Fine with pets","Have a pet"],          t:["No pets","Pet-friendly","Has a pet"]},
 ];
+// Generation nudges the match: Gen Z + Gen Z gets +10 (when under 80), Gen Z + millennial -10.
+// Stored as vibe.gen (seekers) and household.gen (owners): "z", "m" or "x" (neither / mixed).
+const GENS = [["z", "Gen Z", "born 1997 or later"], ["m", "Millennial", "born 1981–1996"], ["x", "Neither", "or a mix"]];
+const GEN_LABEL = { z: "Gen Z", m: "Millennial" };
+function genAdjust(a, b, pct){
+  if(a === "z" && b === "z") return pct < 80 ? Math.min(100, pct + 10) : pct;
+  if((a === "z" && b === "m") || (a === "m" && b === "z")) return Math.max(0, pct - 10);
+  return pct;
+}
+function genHtml(prefix, value, legend){
+  return `<fieldset><legend>${esc(legend)}</legend><div class="chips">${GENS.map(([v, t, sub]) =>
+    `<label class="chip"><input type="radio" name="${prefix}_gen" value="${v}"${value === v ? " checked" : ""}>${t} <span class="hint" style="margin:0">${sub}</span></label>`).join("")}</div></fieldset>`;
+}
 function quizHtml(prefix, values){
   return VIBE_QS.map(x => `<fieldset><legend>${esc(x.q)}</legend><div class="chips">${x.o.map((o, i) =>
     `<label class="chip"><input type="radio" name="${prefix}_${x.k}" value="${i}"${values && values[x.k] === i ? " checked" : ""}>${esc(o)}</label>`
   ).join("")}</div></fieldset>`).join("");
 }
 function readQuiz(root, prefix){
-  const out = {};
+  const out = {}, g = root.querySelector(`[name=${prefix}_gen]:checked`);
+  if(g) out.gen = g.value;
   for(const x of VIBE_QS){
     const el = root.querySelector(`[name=${prefix}_${x.k}]:checked`);
     if(el) out[x.k] = Number(el.value);
@@ -1118,7 +1134,8 @@ function interestsHtml(theirs, mine){
   const both = new Set(sharedInterests(mine, theirs));
   return `<div class="traits likes">${all.map(v => `<span class="${both.has(v) ? "g" : ""}">${both.has(v) ? "♥ " : ""}${esc(v)}</span>`).join("")}</div>`;
 }
-// Same formula as fm_match() in schema.sql: weighted 1 - gap/2, needs 4 shared answers.
+// Same formula as fm_match() in schema.sql: weighted 1 - gap/2, needs 4 shared answers,
+// then the generation nudge (genAdjust).
 function vibeMatch(me, home){
   let sum = 0, tot = 0, n = 0; const good = [], clash = [];
   for(const x of VIBE_QS){
@@ -1129,7 +1146,8 @@ function vibeMatch(me, home){
     if(d === 2) clash.push(`${x.q}: they say ${x.o[b].toLowerCase()}, you say ${x.o[a].toLowerCase()}`);
   }
   if(n < 4) return null;
-  return { pct: Math.round(sum / tot * 100), good, clash };
+  const base = Math.round(sum / tot * 100), pct = genAdjust(me && me.gen, home && home.gen, base);
+  return { pct, base, gen: pct - base, good, clash };
 }
 const matchClass = p => p >= 80 ? "hi" : p >= 60 ? "mid" : "lo";
 
@@ -1160,7 +1178,7 @@ function compatOf(me, them){
     });
     return { ...g, rows, pct: t ? Math.round(s / t * 100) : null };
   });
-  return { pct: m.pct, groups };
+  return { pct: m.pct, base: m.base, gen: m.gen, gens: [me && me.gen, them && them.gen], groups };
 }
 // Annular sector between radii r0..r1 and angles a0..a1 (radians, clockwise from 12 o'clock).
 function sectorPath(c, r0, r1, a0, a1){
@@ -1202,6 +1220,8 @@ function openCompat(ctx, tab){
   $("cSub").textContent = ctx.title || "";
   $("cBody").innerHTML = `
     <div class="compat-top">${compatWheel(cp, 280, tab && g ? g.k : null)}
+      ${cp.gen ? `<p class="gen-note ${cp.gen > 0 ? "up" : "down"}">${GEN_LABEL[cp.gens[0]]} + ${GEN_LABEL[cp.gens[1]]}: ${cp.gen > 0 ? "+" : "−"}${Math.abs(cp.gen)} on the score
+        (${cp.base}% from your answers)</p>` : ""}
       <p class="compat-sum"><b>${cp.pct}% vibe match.</b> Strongest on <b style="color:${best.color}">${esc(best.name)}</b>${worst.pct < best.pct ? `; talk about <b style="color:${worst.color}">${esc(worst.name)}</b> before moving in` : ""}.</p></div>
     <div class="compat-tabs" role="tablist">${cp.groups.map(x => `<button role="tab" data-ctab="${x.k}" aria-selected="${g && g.k === x.k}">
         <i style="background:${x.color}"></i><span>${esc(x.name)}</span><b>${x.pct == null ? "–" : x.pct + "%"}</b></button>`).join("")}
@@ -1341,15 +1361,30 @@ function load(){
   catch(e){ state = freshState(); }
 }
 function save(){ try{ localStorage.setItem("fm_state", JSON.stringify(state)); return true; }catch(e){ return false; } }
+// Several people can sign in on the same phone. Each number keeps its own answers, drafts and
+// shortlist, so a new number always starts from the beginning instead of inheriting someone
+// else's onboarding. state.account says whose data is loaded.
+function switchAccount(phone){
+  const cur = state.account || (state.user && state.user.phone);
+  if(cur === phone) return;
+  if(cur) try{ localStorage.setItem("fm_state:" + cur, JSON.stringify(state)); }catch(e){}
+  let next = null;
+  try{ next = JSON.parse(localStorage.getItem("fm_state:" + phone) || "null"); }catch(e){}
+  // Demo mode: listings, visits and requests are the demo's shared world on this device, so an owner
+  // number and a seeker number can try the whole flow with each other. (Live: they're on the server.)
+  const shared = api.live ? {} : { myListings: state.myListings, visits: state.visits, requests: state.requests };
+  state = Object.assign(freshState(), next || {}, shared, { account: phone });
+  ob = null; save();
+}
 
 /* ============================================================ demo data */
-const digitsToVibe = d => Object.fromEntries([...d].map((c, j) => [VIBE_QS[j].k, Number(c)]));
+const digitsToVibe = (d, gen) => Object.assign(Object.fromEntries([...d].map((c, j) => [VIBE_QS[j].k, Number(c)])), gen ? { gen } : {});
 // Sample seekers who ask to meet a flat you post in demo mode, so owners can try the inbox.
 const DEMO_SEEKERS = [
-  { name:"Riya", phone:"9822011223", occupation:{ type:"student", what:"MBA student at a Pune business school" }, v:"101001111111",
+  { name:"Riya", gen:"z", phone:"9822011223", occupation:{ type:"student", what:"MBA student at a Pune business school" }, v:"101001111111",
     message:"Hi! I'm starting my second year in November and looking for a calm place close to college.",
     interests:{ music:["Bollywood","Punjabi","Lo-fi"], hobbies:["Cricket","Movies & series","Cooking"] } },
-  { name:"Arjun", phone:"9822033445", occupation:{ type:"working", what:"Product manager at an e-commerce company" }, v:"112101111112",
+  { name:"Arjun", gen:"m", phone:"9822033445", occupation:{ type:"working", what:"Product manager at an e-commerce company" }, v:"112101111112",
     message:"Hey, I work hybrid and keep things tidy. Would love to see the room this weekend.",
     interests:{ music:["Indie","Lo-fi"], hobbies:["Cricket","Gym","Cooking"] } },
 ];
@@ -1427,6 +1462,9 @@ function demoListings(){
         return { type, what, age: type === "student" ? pick(["18–24","18–24","25–30"]) : pick(["25–30","25–30","31–40","18–24"]) };
       });
       const vibe = {}; if(residents) VIBE_QS.forEach(x => vibe[x.k] = r() < .5 ? 1 : r() < .5 ? 0 : 2);
+      // Household generation from the flatmates' ages: mostly under 31 = Gen Z, otherwise millennials.
+      if(residents) vibe.gen = flatmates.filter(f => f.age === "18–24" || f.age === "25–30").length * 2 > flatmates.length ? "z"
+        : flatmates.filter(f => f.age === "31–40").length * 2 > flatmates.length ? "m" : "x";
       const amenities = DEMO_AMEN.filter(() => r() < .45);
       // This room's monthly expenses, separate from rent; not every home charges every one.
       const costs = {};
@@ -1481,6 +1519,7 @@ function demoSeekerPool(){
       const want = r() < .25 ? 0 : 1 + Math.floor(r() * 3), mine = [];
       while(mine.length < want){ const a = pick(areas)[0]; if(!mine.includes(a)) mine.push(a); }
       const vibe = {}; VIBE_QS.forEach(x => vibe[x.k] = r() < .5 ? 1 : r() < .5 ? 0 : 2);
+      vibe.gen = type === "student" || hue("gen" + n) % 3 ? "z" : "m";
       out.push({ id: "seeker-" + n, name: DEMO_SEEKER_NAMES[i], phone: "98" + String(10000000 + Math.floor(r() * 89999999)),
         occupation: { type, what: pick(DEMO_JOBS[type]) }, city, areas: mine,
         budget: Math.round((lo * .85 + r() * (hi * 1.15 - lo * .85)) / 500) * 500, vibe,
@@ -1509,10 +1548,6 @@ const demoApi = {
   },
   async verifyOtp(code){
     if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
-    if(!state.user || state.user.phone !== pendingOtp.phone){
-      // A different person: keep only the demo's shared world (listings, visits, requests).
-      state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits, requests: state.requests });
-    }
     state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: pendingOtp.name });
     const role = pendingOtp.role;
     pendingOtp = null;
@@ -1684,7 +1719,7 @@ const demoApi = {
       const l = state.myListings.find(x => x.id === lid);
       delete state.demoIncoming[lid];
       if(!l) continue;
-      const s = DEMO_SEEKERS[state.myListings.indexOf(l) % DEMO_SEEKERS.length], v = digitsToVibe(s.v);
+      const s = DEMO_SEEKERS[state.myListings.indexOf(l) % DEMO_SEEKERS.length], v = digitsToVibe(s.v, s.gen);
       const m = vibeMatch(v, l.household);
       state.requests.push({ id:"r" + now + lid, by:"seeker", listing_id:lid, listing_title:l.title, seeker_phone:s.phone,
         seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {} }, status:"pending", message:s.message,
@@ -1844,10 +1879,15 @@ function makeLiveApi(sb){
     async me(){
       const r = one(await rpc("fm_me"));
       if(!r.phone){ state.user = null; state.credits = 0; save(); return state; }
-      state.user = { phone: r.phone.replace(/^\+?91/, ""), name: r.full_name || "", role: r.role || null, occupation: r.occupation || {} };
+      const phone = r.phone.replace(/^\+?91/, "");
+      if((state.account || (state.user && state.user.phone)) !== phone) switchAccount(phone);
+      state.user = { phone, name: r.full_name || "", role: r.role || null, occupation: r.occupation || {} };
       Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given });
-      if(answered(r.vibe)) state.vibe = r.vibe;
-      if(r.interests && allInterests(r.interests).length) state.interests = r.interests;
+      // The server's copy wins, even when it's empty: answers left on this phone may be someone else's.
+      state.vibe = r.vibe || {};
+      state.interests = r.interests || {};
+      // A seeker the server has no answers for goes through the questions, whatever this phone remembers.
+      if(r.role === "seeker" && (answered(state.vibe) < 8 || !(r.occupation && r.occupation.type))) state.onboarded.seeker = false;
       state.discoverable = r.discoverable !== false;
       state.tribeOpen = r.tribe_open !== false;
       save(); return state;
@@ -2507,10 +2547,12 @@ $("otpBack").addEventListener("click", () => { $("otpForm").hidden = true; $("lo
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
+  switchAccount($("lgPhone").value.trim());
   try{ await api.verifyOtp($("lgOtp").value.trim()); }
   catch(err){ toast("That code didn't match. Try again."); return; }
-  // Answered on another device already: no need to ask again.
+  // Answered on another device already: no need to ask again. (Live: these come from the server.)
   if(isSeeker() && answered(state.vibe) >= 8 && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
+  if(api.live && isOwner() && (await api.myListings()).length) state.onboarded.owner = true;
   save();
   $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
   location.hash = ""; route();
@@ -2551,6 +2593,8 @@ function obSteps(role){
     { k:"residents", q:"How many people live in your flat right now?", why:"Including you. People looking for a room want to know who they'd share with.",
       opts:[{v:1,t:"Just me"},{v:2,t:"Two of us"},{v:3,t:"Three of us"},{v:4,t:"Four of us"},{v:0,t:"Nobody",s:"I'm letting out the whole flat"}] },
     { k:"flatmates", form:"flatmates", q:"Tell us a little about everyone who lives there", why:"What they do and their age range. It's the first thing people look for." },
+    { k:"gen", q:"Which generation is your household?", why:"Gen Z flatmates tend to click with Gen Z. It nudges your match with each person.",
+      opts:[{v:"z",t:"Mostly Gen Z",s:"Born 1997 or later"},{v:"m",t:"Mostly millennials",s:"Born 1981–1996"},{v:"x",t:"Mixed, or neither"}] },
     ...vibe,
     { k:"music", form:"music", q:"What music plays in your flat?", why:"Just for fun, it doesn't change the vibe score. People love finding a flatmate with the same playlist." },
     { k:"hobbies", form:"hobbies", q:"What are you all into?", why:"Shown on your listing, so people with the same interests notice you." } ];
@@ -2558,6 +2602,8 @@ function obSteps(role){
     { k:"occType", q:"First, what do you do?", why:"Owners like to know who they'd be living with.",
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
     { k:"occWhat", form:"text", q:"", why:"" },
+    { k:"gen", q:"Which generation are you?", why:"Gen Z tends to click with Gen Z. It nudges your match with each home.",
+      opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"x",t:"Neither",s:"Born before 1981"}] },
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true, opts: CITIES.map(c => ({ v:c, t:c })) },
     { k:"areas", form:"areas", q:"", why:"" },
     { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
@@ -2652,6 +2698,7 @@ const roomArtBox = () => `<div style="position:relative;width:min(340px,100%);he
 async function finishOnboarding(){
   const a = ob.a, role = ob.role;
   const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
+  if(a.gen) vibe.gen = a.gen;
   $("obBar").style.width = "100%"; $("obCount").textContent = ""; $("obBack").style.visibility = "hidden";
   if(role === "owner"){
     state.homeDraft = Object.assign({ residents: Number.isInteger(a.residents) ? a.residents : 1, flatmates: a.flatmates || [],
@@ -3046,6 +3093,10 @@ async function sendRequest(id, message){
   try{
     const r = await api.sendRequest(id, message.trim());
     if(r.error === "no-credits") return openPay(() => sendRequest(id, message));
+    if(r.error === "vibe-required" || r.error === "profile-required"){
+      toast("First, a few quick questions about how you live. Then you can send your request.");
+      state.onboarded.seeker = false; save(); $("dlgListing").close(); route(); return;
+    }
     if(r.error){ toast(REQ_ERR[r.error] || "Couldn't send the request right now."); return; }
     toast("Request sent. We'll let you know when they reply.");
     await openListing(id); refreshCurrent();
@@ -3233,7 +3284,7 @@ $("visitForm").addEventListener("submit", async e => {
 /* ========================================================== vibe edit */
 document.addEventListener("click", e => {
   if(!e.target.closest("[data-vibe-open]")) return;
-  $("vQuiz").innerHTML = quizHtml("v", state.vibe) + `<h3 class="section-h">Music and hobbies <span class="hint">(not scored)</span></h3>` + interestChips("vi", state.interests);
+  $("vQuiz").innerHTML = genHtml("v", state.vibe.gen, "Your generation") + quizHtml("v", state.vibe) + `<h3 class="section-h">Music and hobbies <span class="hint">(not scored)</span></h3>` + interestChips("vi", state.interests);
   $("dlgVibe").showModal();
 });
 $("vibeForm").addEventListener("submit", async e => {
@@ -3381,7 +3432,7 @@ function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value]
 $("pCity").addEventListener("change", fillAreaList);
 function renderPost(){
   const d = state.homeDraft || {};
-  $("hQuiz").innerHTML = quizHtml("h", d);
+  $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
   $("hInt").innerHTML = interestChips("hi", d.interests);
   if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
   $("fmRows").innerHTML = ""; renderFmRows();
