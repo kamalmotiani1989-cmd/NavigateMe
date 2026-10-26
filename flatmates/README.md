@@ -6,7 +6,7 @@ the room comes second.
 ## How it flows
 
 1. **Welcome page = sign-in.** A short write-up and the sign-in card, which asks what you came
-   for: *post my flat* or *looking for a room*, then name, mobile and a one-time code.
+   for: *post my flat* or *looking for a room*, then their mobile number and a one-time code. Their first name is the first question after sign-in (only asked once per number).
 2. **Questions at sign-in, one per screen, required.**
    - Room seekers (19): what they do (working / student / self-employed / between jobs) and
      where, city, the areas they like (pick several), monthly rent budget, 12 living-style

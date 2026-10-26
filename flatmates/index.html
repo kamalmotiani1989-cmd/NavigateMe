@@ -484,11 +484,15 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .ob{color:#fff}
 .ob .ob-progress{background:rgba(255,255,255,.25)} .ob .ob-progress i{background:linear-gradient(90deg,#FF8A4C,#FF5E62)}
 .ob .ob-count, .ob .linkbtn{color:rgba(255,255,255,.85)}
+.ob .eyebrow{color:#FFD08A}
 .ob .why, .ob .hint, .ob .opt span{color:rgba(255,255,255,.82)}
 .ob .opts{box-shadow:none; gap:10px}
 .ob .opt{background:rgba(255,255,255,.13); border-radius:14px; padding:15px 16px; box-shadow:none; color:#fff}
 .ob .opt:hover{background:rgba(255,255,255,.22)}
-.ob .opt[aria-pressed="true"]{background:#fff; color:var(--brand-2)} .ob .opt[aria-pressed="true"] span{color:var(--text-2)}
+.ob .opt[aria-pressed="true"]{background:#fff; color:var(--brand-2)}
+.ob .opts.cols .opt{background:rgba(255,255,255,.13); color:#fff; font-weight:700}
+.ob .opts.cols .opt:hover{background:rgba(255,255,255,.22)}
+.ob .opts.cols .opt[aria-pressed="true"]{background:#fff; color:var(--brand-2)} .ob .opt[aria-pressed="true"] span{color:var(--text-2)}
 .ob label, .ob legend{color:#fff}
 .ob input[type=text], .ob input[type=tel], .ob input[type=number], .ob select, .ob textarea{background:#fff; color:var(--text)}
 .ob .chip{background:rgba(255,255,255,.16); color:#fff}
@@ -704,7 +708,6 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/><path d="M8.5 12.5V10l2.5-2 2.5 2v2.5"/></svg></span>
               <span><b>I'm looking for a room</b><span>A private or shared room, with people who match my vibe</span></span></label>
           </div>
-          <div class="field"><label for="lgName">Your name</label><input type="text" id="lgName" required autocomplete="name" placeholder="First name is fine"></div>
           <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <button class="btn btn-primary btn-block" type="submit">Send me a code</button>
           <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.</p>
@@ -1566,12 +1569,12 @@ const demoApi = {
   },
   async verifyOtp(code){
     if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
-    state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: pendingOtp.name });
+    state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: pendingOtp.name || (state.user && state.user.name) || state.lastName || "" });
     const role = pendingOtp.role;
     pendingOtp = null;
     await this.setRole(role);
   },
-  async signOut(){ state.user = null; save(); },
+  async signOut(){ state.lastName = state.user && state.user.name; state.user = null; save(); },
   async me(){
     this.tick();
     state.pending = state.requests.filter(r => r.seeker_phone === this.me_() && r.status === "pending" && r.by !== "owner").length;
@@ -1583,6 +1586,7 @@ const demoApi = {
     save();
   },
   async setVibe(v){ state.vibe = v; save(); },
+  async setName(n){ state.user.name = n; save(); },
   async setInterests(i){ state.interests = i; save(); },
   async setOccupation(o){ state.user.occupation = o; save(); },
   reqFor(id){ return state.requests.find(r => r.listing_id === id && r.seeker_phone === this.me_()); },
@@ -1911,6 +1915,7 @@ function makeLiveApi(sb){
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
+    async setName(n){ await rpc("fm_set_profile", { p_name:n, p_role:null }); state.user.name = n; save(); },
     async setVibe(v){ state.vibe = v; save(); await rpc("fm_set_vibe", { p_vibe: v }); },
     async setInterests(i){ state.interests = i; save(); await rpc("fm_set_interests", { p_interests: i }); },
     async setOccupation(o){ await rpc("fm_set_occupation", { p_occ: o }); state.user.occupation = o; save(); },
@@ -2073,7 +2078,7 @@ const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocali
   pDeposit:"Deposit", cMaint:"Maintenance", cElec:"Electricity", cWifi:"Wi-Fi", cHelp:"Cook / maid", pFrom:"Available from",
   pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)",
   aFlat:"Flat / house no.", aBuilding:"Building or society", aPin:"PIN code (6 digits)",
-  lgName:"Your name", lgPhone:"Mobile number (10 digits, starting with 6–9)", lgOtp:"The 6-digit code",
+  obName:"Your first name", lgPhone:"Mobile number (10 digits, starting with 6–9)", lgOtp:"The 6-digit code",
   obWhat:"A few words about what you do", vAt:"Date and time" };
 function showFormError(form, text){
   let box = form.querySelector(".form-err");
@@ -2563,7 +2568,7 @@ function stopCity(){ clearInterval(cityTimer); cityTimer = null; }
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
-  const phone = $("lgPhone").value.trim(), name = $("lgName").value.trim();
+  const phone = $("lgPhone").value.trim(), name = "";   // the name is asked right after sign-in
   const role = e.target.querySelector("[name=role]:checked").value;
   try{
     const r = await api.sendOtp(phone, name, role);
@@ -2617,7 +2622,12 @@ const OB_TEXT = {
              d:["I'd rather not live with pets","Happy to live with one","I have a pet who'd move with me"], od:["No pets, please","Happy to have one","We already have a pet"] },
 };
 const LETTERS = ["A","B","C","D","E","F","G","H"];
+const NAME_STEP = { k:"name", form:"name" };
 function obSteps(role){
+  const steps = obStepsFor(role);
+  return state.user && state.user.name ? steps : [NAME_STEP].concat(steps);
+}
+function obStepsFor(role){
   const vibe = VIBE_QS.map(x => ({ k:x.k, q: role === "owner" ? OB_TEXT[x.k].o : OB_TEXT[x.k].s, why: OB_TEXT[x.k].why,
     opts: x.o.map((t, i) => ({ v:i, t, s: (role === "owner" && OB_TEXT[x.k].od ? OB_TEXT[x.k].od : OB_TEXT[x.k].d)[i] })) }));
   if(role === "owner") return [
@@ -2630,7 +2640,7 @@ function obSteps(role){
     { k:"music", form:"music", q:"What music plays in your flat?", why:"Just for fun, it doesn't change the vibe score. People love finding a flatmate with the same playlist." },
     { k:"hobbies", form:"hobbies", q:"What are you all into?", why:"Shown on your listing, so people with the same interests notice you." } ];
   return [
-    { k:"occType", q:"First, what do you do?", why:"Owners like to know who they'd be living with.",
+    { k:"occType", q:"What do you do?", why:"Owners like to know who they'd be living with.",
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
     { k:"occWhat", form:"text", q:"", why:"" },
     { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
@@ -2682,9 +2692,14 @@ function renderOb(){
   $("obBar").style.width = (ob.i / ob.steps.length * 100) + "%";
   $("obCount").textContent = `${ob.i + 1} / ${ob.steps.length}`;
   $("obBack").style.visibility = ob.i ? "visible" : "hidden";
-  const intro = ob.i === 0 ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "let's set up your profile"}</p>` : "";
+  const intro = ob.i === 0 && ob.steps[0].form !== "name" || ob.i === 1 && ob.steps[0].form === "name" ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "let's set up your profile"}</p>` : "";
   let inner;
-  if(st.form === "text") inner = obTextStep();
+  if(st.form === "name") inner = `<h1>Welcome! What should we call you?</h1>
+    <p class="why">Your first name is what owners and flatmates see. Your number stays private.</p>
+    <form class="ob-text" id="obNameForm" novalidate><input type="text" id="obName" required minlength="2" maxlength="40"
+      autocomplete="given-name" placeholder="First name" value="${esc(ob.a.name || "")}">
+      <button class="btn btn-primary" type="submit">Continue</button></form>`;
+  else if(st.form === "text") inner = obTextStep();
   else if(st.form === "music" || st.form === "hobbies") inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why)}</p>
     <form id="obIntForm" novalidate><div class="ob-areas">${INTERESTS[st.form].map(v =>
       `<label class="chip"><input type="checkbox" value="${esc(v)}"${(ob.a[st.form] || []).includes(v) ? " checked" : ""}>${esc(v)}</label>`).join("")}</div>
@@ -2712,9 +2727,15 @@ $("obStage").addEventListener("click", e => {
   b.parentElement.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
   setTimeout(obNext, 200);
 });
-$("obStage").addEventListener("submit", e => {
+$("obStage").addEventListener("submit", async e => {
   e.preventDefault();
   if(e.target.id === "obTextForm"){ if(!formOk(e.target)) return; ob.a.occWhat = $("obWhat").value.trim(); obNext(); }
+  if(e.target.id === "obNameForm"){
+    if(!formOk(e.target)) return;
+    ob.a.name = $("obName").value.trim();
+    try{ await api.setName(ob.a.name); }catch(err){ console.error(err); }   // saved straight away
+    obNext();
+  }
   if(e.target.id === "obFmForm"){ ob.a.flatmates = readFmRows(e.target, ob.a.residents, "o"); obNext(); }
   if(e.target.id === "obIntForm"){ ob.a[ob.steps[ob.i].k] = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
   if(e.target.id === "obAreaForm"){ ob.a.areas = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
