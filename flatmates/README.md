@@ -117,7 +117,7 @@ connection, so changes show up on the next open.
 
 ## Android app (APK)
 
-The app is called **FindMyFlatMate** (logo: a house with a magnifier over three flatmates). The folder, Android
+The app is called **FindMyFlatMate** (logo: three smiling flatmates in a house; tagline "Find your vibe. Find your flatmate."). The folder, Android
 package (`com.navigateme.flatmates`) and download link keep their old names so installed
 copies update in place.
 

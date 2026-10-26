@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Status-bar icon: the house with a magnifier over three flatmates (Android shows it in white). -->
+<!-- Status-bar icon: the house with three flatmates and a smile (Android shows it in white). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp" android:height="24dp" android:viewportWidth="100" android:viewportHeight="100">
-    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="9.5" android:strokeLineJoin="round" android:strokeLineCap="round"
-        android:pathData="M14,45L50,15L86,45"/>
-    <path android:fillColor="#FFFFFFFF" android:pathData="M67,12h9.5v20h-9.5z"/>
-    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="8" android:strokeLineCap="round"
-        android:pathData="M27.4,47.2A24.5,24.5 0,1 0,72.6 47.2M70.5,78.5L84,92"/>
-    <path android:fillColor="#FFFFFFFF" android:pathData="M50,50m-7.4,0a7.4,7.4 0,1 1,14.8 0a7.4,7.4 0,1 1,-14.8 0M38,76v-5.5a12,12 0,0 1,24 0v5.5z"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="8" android:strokeLineJoin="round" android:strokeLineCap="round"
+        android:pathData="M19,62V40L50,13.5L81,40V62"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M67.5,12h9.5v20h-9.5z"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="7" android:strokeLineCap="round" android:pathData="M26,76Q50,91 74,76"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M34,47m-7.5,0a7.5,7.5 0,1 1,15 0a7.5,7.5 0,1 1,-15 0M66,47m-7.5,0a7.5,7.5 0,1 1,15 0a7.5,7.5 0,1 1,-15 0M50,44m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M38,70V67a12,10 0,0 1,24 0V70z"/>
 </vector>
