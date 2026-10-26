@@ -41,6 +41,11 @@ alter table public.fm_profiles add column if not exists occupation jsonb not nul
 alter table public.fm_profiles add column if not exists gift_given boolean not null default false;
 -- Music and hobbies: shown to owners and as "you both like", never part of the match score.
 alter table public.fm_profiles add column if not exists interests jsonb not null default '{}';
+-- A seeker's search, so owners can find them (The Empty Room Escape): {city, areas: [...], budget}.
+alter table public.fm_profiles add column if not exists search jsonb not null default '{}';
+alter table public.fm_profiles add column if not exists search_at timestamptz;
+-- Seekers can hide from owners' searches; invites need it on.
+alter table public.fm_profiles add column if not exists discoverable boolean not null default true;
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -136,6 +141,11 @@ create table if not exists public.fm_requests (
   decided_at    timestamptz,
   unique (listing_id, seeker_id)
 );
+-- 'seeker': the seeker asked, the owner decides. 'owner': the owner invited a seeker
+-- (The Empty Room Escape), the seeker decides; after 2 hours without a reply the owner
+-- gets the seeker's number (see fm_inbox).
+alter table public.fm_requests add column if not exists initiated_by text not null default 'seeker'
+  check (initiated_by in ('seeker','owner'));
 
 create table if not exists public.fm_visits (
   id          uuid primary key default gen_random_uuid(),
@@ -230,13 +240,25 @@ drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund
 
 create or replace function public.fm_me()
 returns table (credits int, full_name text, phone text, role text, vibe jsonb, occupation jsonb,
-               gift_given boolean, packs bigint, pending bigint, interests jsonb)
+               gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean)
 language sql security definer set search_path = public stable as $$
   select p.credits, p.full_name, p.phone, p.role, p.vibe, p.occupation, p.gift_given,
          (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid'),
-         (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending'),
-         p.interests
+         (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending' and r.initiated_by = 'seeker'),
+         p.interests, p.discoverable
   from fm_profiles p where p.id = auth.uid();
+$$;
+
+-- A seeker's city, areas and budget, so owners in those areas can find and invite them.
+create or replace function public.fm_set_search(p_search jsonb, p_discoverable boolean) returns void
+language sql security definer set search_path = public as $$
+  update fm_profiles set
+    search = jsonb_build_object('city', p_search->>'city',
+                                'areas', case when jsonb_typeof(p_search->'areas') = 'array' then p_search->'areas' else '[]'::jsonb end,
+                                'budget', case when p_search->>'budget' ~ '^[0-9]{1,7}$' then (p_search->>'budget')::int end),
+    search_at = now(),
+    discoverable = coalesce(p_discoverable, discoverable)
+  where id = auth.uid();
 $$;
 
 create or replace function public.fm_set_interests(p_interests jsonb) returns void
@@ -401,27 +423,32 @@ end $$;
 create or replace function public.fm_withdraw(p_request uuid) returns void
 language sql security definer set search_path = public as $$
   update fm_requests set status = 'withdrawn'
-   where id = p_request and seeker_id = auth.uid() and status = 'pending';
+   where id = p_request and seeker_id = auth.uid() and status = 'pending' and initiated_by = 'seeker';
 $$;
 
--- Owner accepts or declines. Accepting uses one of the seeker's contacts
--- (when charges are on) and shares contact details both ways.
+-- The other side accepts or declines: the owner for a seeker's request, the seeker for an
+-- owner's invite. Accepting shares contact details both ways. It uses one of the seeker's
+-- contacts (when charges are on) only when the seeker asked; owners' invites are free.
 create or replace function public.fm_decide(p_request uuid, p_approve boolean)
 returns table (status text, error text)
 language plpgsql security definer set search_path = public as $$
 declare v_req fm_requests%rowtype; v_credits int; v_charges boolean;
 begin
   select r.* into v_req from fm_requests r join fm_listings l on l.id = r.listing_id
-   where r.id = p_request and l.owner_id = auth.uid() for update of r;
+   where r.id = p_request
+     and ((r.initiated_by = 'seeker' and l.owner_id = auth.uid()) or (r.initiated_by = 'owner' and r.seeker_id = auth.uid()))
+   for update of r;
   if v_req.id is null then return query select null::text, 'not-found'; return; end if;
   if v_req.status <> 'pending' then return query select v_req.status, 'already-decided'; return; end if;
 
   if not p_approve then
-    update fm_requests set status = 'declined', decided_at = now(), seen_by_seeker = false where id = p_request;
+    update fm_requests set status = 'declined', decided_at = now(),
+           seen_by_seeker = (v_req.initiated_by = 'owner'), seen_by_owner = (v_req.initiated_by = 'seeker')
+     where id = p_request;
     return query select 'declined'::text, null::text; return;
   end if;
 
-  v_charges := (select charges_enabled from fm_settings);
+  v_charges := (select charges_enabled from fm_settings) and v_req.initiated_by = 'seeker';
   if v_charges then
     select credits into v_credits from fm_profiles where id = v_req.seeker_id for update;
     if v_credits < 1 then return query select 'pending'::text, 'seeker-out-of-contacts'; return; end if;
@@ -429,30 +456,85 @@ begin
   end if;
   insert into fm_unlocks (user_id, listing_id, charged) values (v_req.seeker_id, v_req.listing_id, v_charges)
   on conflict (user_id, listing_id) do nothing;
-  update fm_requests set status = 'approved', decided_at = now(), seen_by_seeker = false where id = p_request;
+  update fm_requests set status = 'approved', decided_at = now(),
+         seen_by_seeker = (v_req.initiated_by = 'owner'), seen_by_owner = (v_req.initiated_by = 'seeker')
+   where id = p_request;
   return query select 'approved'::text, null::text;
 end $$;
 
+-- The Empty Room Escape: seekers looking in this listing's city (and area, if they picked
+-- areas), with their budget and vibe match. Only the listing's owner can ask.
+create or replace function public.fm_find_seekers(p_listing uuid)
+returns table (seeker_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
+               interests jsonb, vibe jsonb, active_at timestamptz, invite_status text, invite_by text)
+language sql security definer set search_path = public stable as $$
+  select p.id, split_part(coalesce(p.full_name, ''), ' ', 1), p.occupation,
+         coalesce(p.search->'areas', '[]'::jsonb), (p.search->>'budget')::int,
+         fm_match(p.vibe, l.household), p.interests, p.vibe, coalesce(p.search_at, p.created_at),
+         r.status, r.initiated_by
+  from fm_listings l
+  join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
+   and lower(p.search->>'city') = lower(l.city)
+   and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
+  left join fm_requests r on r.listing_id = l.id and r.seeker_id = p.id
+  where l.id = p_listing and l.owner_id = auth.uid()
+    and (select count(*) from jsonb_object_keys(p.vibe)) >= 8
+  order by fm_match(p.vibe, l.household) desc nulls last, coalesce(p.search_at, p.created_at) desc
+  limit 100;
+$$;
+
+-- An owner invites a seeker to their listing. Up to 30 invites a day.
+create or replace function public.fm_invite(p_listing uuid, p_seeker uuid, p_message text)
+returns table (status text, error text)
+language plpgsql security definer set search_path = public as $$
+declare v_l fm_listings%rowtype; v_s fm_profiles%rowtype; v_req fm_requests%rowtype;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  select * into v_l from fm_listings where id = p_listing and owner_id = auth.uid() and fm_listings.status = 'active';
+  if v_l.id is null then return query select null::text, 'listing-not-found'; return; end if;
+  select * into v_s from fm_profiles where id = p_seeker and role = 'seeker' and discoverable;
+  if v_s.id is null then return query select null::text, 'seeker-not-found'; return; end if;
+  select * into v_req from fm_requests where listing_id = p_listing and seeker_id = p_seeker;
+  if v_req.status in ('pending','approved','declined') then return query select v_req.status, null::text; return; end if;
+  if (select count(*) from fm_requests r join fm_listings l on l.id = r.listing_id
+       where l.owner_id = auth.uid() and r.initiated_by = 'owner' and r.created_at > now() - interval '1 day') >= 30 then
+    return query select null::text, 'daily-limit'; return;
+  end if;
+  insert into fm_requests (listing_id, seeker_id, message, match_pct, initiated_by, seen_by_owner, seen_by_seeker)
+  values (p_listing, p_seeker, left(coalesce(p_message, ''), 300), fm_match(v_s.vibe, v_l.household), 'owner', true, false)
+  on conflict (listing_id, seeker_id) do update
+    set status = 'pending', message = excluded.message, match_pct = excluded.match_pct, initiated_by = 'owner',
+        seen_by_owner = true, seen_by_seeker = false, created_at = now(), decided_at = null;
+  return query select 'pending'::text, null::text;
+end $$;
+
 -- Both sides' requests in one list, newest first. 'incoming' = on my listing,
--- 'outgoing' = mine as a seeker. The seeker's phone only appears once accepted.
+-- 'outgoing' = mine as a seeker; 'by' says who started it. The seeker's phone reaches the
+-- owner once accepted, or when the seeker leaves an owner's invite unanswered for 2 hours.
 create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
-               name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb)
+               name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb,
+               by text, auto_shared boolean)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
          r.status, r.match_pct, r.message, r.created_at, r.decided_at,
-         case when l.owner_id = auth.uid() then sp.full_name end,
+         case when l.owner_id = auth.uid() then sp.full_name
+              when r.initiated_by = 'owner' then split_part(coalesce(pv.contact_name, ''), ' ', 1) end,
          case when l.owner_id = auth.uid() then sp.occupation end,
          case when l.owner_id = auth.uid() then sp.vibe end,
-         case when l.owner_id = auth.uid() and r.status = 'approved' then sp.phone end,
-         case when l.owner_id = auth.uid() then not r.seen_by_owner and r.status = 'pending'
+         case when l.owner_id = auth.uid() and (r.status = 'approved' or (r.initiated_by = 'owner'
+                   and r.status = 'pending' and r.created_at < now() - interval '2 hours')) then sp.phone end,
+         case when l.owner_id = auth.uid() then not r.seen_by_owner and (r.status = 'pending') = (r.initiated_by = 'seeker')
               else not r.seen_by_seeker end,
-         case when l.owner_id = auth.uid() then sp.interests end
+         case when l.owner_id = auth.uid() then sp.interests end,
+         r.initiated_by,
+         r.initiated_by = 'owner' and r.status = 'pending' and r.created_at < now() - interval '2 hours'
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
+  left join fm_listing_private pv on pv.listing_id = r.listing_id
   where (l.owner_id = auth.uid() or r.seeker_id = auth.uid()) and r.status <> 'withdrawn'
   order by r.created_at desc
   limit 200;

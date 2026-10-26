@@ -4,6 +4,9 @@
 //   pending  -> the owner: "Riya wants to meet you · 92% match"
 //   approved -> the seeker: "Asha said yes! Call now" (urgent: others are interested)
 //   declined -> the seeker: "Not this time"
+// Owner invites (The Empty Room Escape) go the other way:
+//   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
+//   approved / declined -> the owner
 //
 // Secrets (supabase secrets set ...):
 //   NOTIFY_SECRET          same value as fm_settings.notify_secret
@@ -70,9 +73,30 @@ Deno.serve(async (req) => {
   try {
     const { request_id } = await req.json();
     const { data: r } = await admin.from("fm_requests")
-      .select("id, status, match_pct, seeker_id, listing_id, fm_listings(title, owner_id)").eq("id", request_id).single();
+      .select("id, status, match_pct, seeker_id, listing_id, initiated_by, fm_listings(title, owner_id)").eq("id", request_id).single();
     if (!r) return json({ error: "not-found" }, 404);
     const listing = (r as any).fm_listings;
+
+    if (r.initiated_by === "owner") {
+      if (r.status === "pending") {
+        const { data: pv } = await admin.from("fm_listing_private").select("contact_name").eq("listing_id", r.listing_id).single();
+        const owner = (pv?.contact_name || "An owner").split(" ")[0];
+        const sent = await pushTo(r.seeker_id, `${owner} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
+          `See the photos of “${listing.title}” and reply within 2 hours. If you don't reply, ${owner} gets your number.`, "requests");
+        return json({ sent });
+      }
+      if (r.status === "approved" || r.status === "declined") {
+        const { data: s } = await admin.from("fm_profiles").select("full_name").eq("id", r.seeker_id).single();
+        const name = (s?.full_name || "They").split(" ")[0];
+        const sent = r.status === "approved"
+          ? await pushTo(listing.owner_id, `${name} accepted your invite! Call now`,
+              `${name} wants to see “${listing.title}”. Your numbers are shared, so call while they're keen.`, "requests")
+          : await pushTo(listing.owner_id, `${name} passed this time`,
+              `Find more people looking in your area in The Empty Room Escape.`, "escape");
+        return json({ sent });
+      }
+      return json({ skipped: r.status });
+    }
 
     if (r.status === "pending") {
       const { data: s } = await admin.from("fm_profiles").select("full_name, occupation").eq("id", r.seeker_id).single();

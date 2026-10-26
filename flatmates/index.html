@@ -531,6 +531,54 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .compat-mini .reasons{margin-top:8px}
 .compat-wheel-btn{border:0; background:none; padding:0; cursor:pointer; flex:none}
 @media (max-width:420px){ .compat-mini{flex-direction:column; align-items:flex-start} }
+/* ---------- The Empty Room Escape + invites */
+.esc-hero{margin:22px 0 4px; padding:22px 20px; border-radius:22px; background:var(--grad); color:#fff; position:relative; overflow:hidden}
+.esc-hero::after{content:""; position:absolute; right:-40px; top:-40px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.08)}
+.esc-hero .eyebrow{color:#FFD08A; margin-bottom:4px}
+.esc-hero h1{font-size:clamp(26px,4vw,34px); color:#fff}
+.esc-hero p{color:rgba(255,255,255,.88); margin:8px 0 0; max-width:60ch}
+.esc-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px}
+.esc-stats div{background:rgba(255,255,255,.14); border-radius:14px; padding:10px 12px}
+.esc-stats b{display:block; font-size:24px; font-weight:800; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.esc-stats span{font-size:12.5px; color:rgba(255,255,255,.85); line-height:1.3; display:block}
+#escRule{margin:0 0 6px}
+.seekers{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; padding:8px 0 40px}
+.seek-card{padding:16px; border-radius:18px; background:#fff; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(16,20,24,.06); animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 30ms)}
+.seek-top{display:flex; gap:12px; align-items:center}
+.seek-top .av{width:48px; height:48px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; font-size:19px; flex:none}
+.seek-top h3{font-size:17px}
+.seek-ring{border:0; background:none; padding:0; cursor:pointer; flex:none}
+.seek-facts{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 4px; padding-top:12px; box-shadow:0 -1px 0 var(--line)}
+.seek-facts span{display:block; font-size:12px; color:var(--text-3)}
+.seek-facts b{font-size:15px; display:block} .seek-facts strong{color:var(--brand)}
+.fit{display:inline-block; margin-top:4px; font-style:normal; font-size:12px; font-weight:700; padding:2px 8px; border-radius:999px}
+.fit.ok{background:var(--ok-soft); color:var(--ok)} .fit.low{background:#FFF4DE; color:#9A5B00}
+.seek-card .acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px}
+.seek-card .req-pill{text-decoration:none}
+.inv-timer{margin:10px 0 0; padding:9px 12px; border-radius:12px; background:var(--accent-soft); color:#8A3A00; font-size:13.5px}
+.invite{display:grid; grid-template-columns:200px 1fr; gap:16px; padding:16px; margin:10px 0 16px; border-radius:20px;
+  background:linear-gradient(135deg,#E9F8F8,#EEF3FD); box-shadow:inset 0 0 0 1px rgba(14,154,160,.15)}
+.inv-pic{position:relative; border:0; padding:0; border-radius:14px; overflow:hidden; min-height:150px; cursor:pointer; background:var(--surface-2)}
+.inv-pic > img, .inv-pic > .art{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.inv-pic .ring-wrap{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.35); border-radius:50%; padding:3px}
+.inv-body .eyebrow{color:var(--brand); margin:0 0 4px}
+.inv-body h3{font-size:18px}
+.inv-body .msg{margin:10px 0 0; padding:10px 12px; background:#fff; border-radius:12px; font-size:14.5px}
+.invite .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+@media (max-width:560px){ .invite{grid-template-columns:1fr} .inv-pic{min-height:180px} }
+.inv-banner{display:flex; gap:12px; align-items:flex-start; margin:16px 0 4px; padding:14px 16px; border-radius:16px; background:var(--grad); color:#fff; text-decoration:none}
+.inv-banner .urgent-dot{background:#FFC24D; box-shadow:0 0 0 0 #FFC24D; flex:none}
+.inv-banner b{display:block} .inv-banner small{color:rgba(255,255,255,.88); font-size:13px}
+.lock.invited{padding:18px; border-radius:18px; background:linear-gradient(135deg,#E9F8F8,#EEF3FD); box-shadow:none}
+.lock.invited .eyebrow{color:var(--brand); margin:0}
+.lock.invited .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
+.esc-promo{display:block; margin:16px 0 4px; padding:16px 18px; border-radius:18px; background:var(--grad); color:rgba(255,255,255,.9); text-decoration:none; font-size:14px}
+.esc-promo small{display:block; font-size:11.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:#FFD08A}
+.esc-promo b{display:block; color:#fff; font-size:18px; letter-spacing:-.02em; margin:2px 0 4px}
+.switch{display:flex; gap:12px; align-items:center; margin-top:8px; font-size:15px; font-weight:700; color:var(--text); cursor:pointer}
+.switch input{appearance:none; -webkit-appearance:none; width:46px; height:28px; border-radius:999px; background:var(--line-2); position:relative; cursor:pointer; transition:background .2s; flex:none; margin:0}
+.switch input::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s}
+.switch input:checked{background:var(--brand)} .switch input:checked::after{transform:translateX(18px)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -673,6 +721,23 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
     <div id="mineList"></div>
   </section>
 
+  <!-- owner: The Empty Room Escape -->
+  <section id="view-escape" hidden>
+    <div class="esc-hero">
+      <p class="eyebrow">Don't wait for them to find you</p>
+      <h1>The Empty Room Escape</h1>
+      <p id="escLead">People already looking for a room in your area, with their budget and how well they'd fit your home.
+        Invite the ones you like: they see your photos and can say yes in one tap.</p>
+      <div class="esc-stats" id="escStats"></div>
+    </div>
+    <div class="d-controls">
+      <div class="d-row"><select id="escPick" aria-label="Which room"></select></div>
+      <div class="area-chips" id="escFilters" role="group" aria-label="Show"></div>
+    </div>
+    <p class="hint" id="escRule">If someone doesn't reply to your invite within 2 hours, you get their number so you can call them.</p>
+    <div id="escList" class="seekers"></div>
+  </section>
+
   <!-- owner: post -->
   <section id="view-post" hidden>
     <div class="page-h"><h1>Describe your room</h1><p>Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
@@ -760,6 +825,10 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
       <button class="btn btn-ghost btn-sm" data-vibe-open>Edit answers</button></div>
       <div class="traits" id="vibeTraits"></div><div id="myInterests"></div></div>
+    <div class="panel" id="discPanel"><h2>Let owners invite you</h2>
+      <p class="sub">With The Empty Room Escape, owners with a room in your areas can find you (first name, what you do, budget and vibe match)
+        and invite you to see their flat. If you don't reply to an invite within 2 hours, that owner gets your number.</p>
+      <label class="switch"><input type="checkbox" id="discToggle"><span>Show me to owners in my areas</span></label></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
   </section>
@@ -1290,6 +1359,33 @@ function demoListings(){
   }
   return demoCache = out;
 }
+// ---------------------------------------------------------------- sample seekers
+// People looking for a room, for The Empty Room Escape in demo mode: 24 per city, a
+// quarter happy with any area. Same fixed-seed idea as the sample homes.
+const DEMO_SEEKER_NAMES = ["Riya","Arjun","Sana","Kabir","Meher","Rohan","Zoya","Aditi","Varun","Nisha","Ishaan","Tara","Yash","Fatima",
+  "Siddharth","Ira","Manav","Anika","Kunal","Leela","Omar","Pallavi","Reuben","Shruti"];
+let demoSeekerCache = null;
+function demoSeekerPool(){
+  if(demoSeekerCache) return demoSeekerCache;
+  const r = rng(20261026), pick = a => a[Math.floor(r() * a.length)], out = [];
+  let n = 0;
+  for(const [city, areas] of Object.entries(DEMO_AREAS)){
+    const [lo, hi] = DEMO_RENT[city];
+    for(let i = 0; i < 24; i++){
+      n++;
+      const t = r(), type = t < .65 ? "working" : t < .9 ? "student" : "self";
+      const want = r() < .25 ? 0 : 1 + Math.floor(r() * 3), mine = [];
+      while(mine.length < want){ const a = pick(areas)[0]; if(!mine.includes(a)) mine.push(a); }
+      const vibe = {}; VIBE_QS.forEach(x => vibe[x.k] = r() < .5 ? 1 : r() < .5 ? 0 : 2);
+      out.push({ id: "seeker-" + n, name: DEMO_SEEKER_NAMES[i], phone: "98" + String(10000000 + Math.floor(r() * 89999999)),
+        occupation: { type, what: pick(DEMO_JOBS[type]) }, city, areas: mine,
+        budget: Math.round((lo * .85 + r() * (hi * 1.15 - lo * .85)) / 500) * 500, vibe,
+        interests: { music: INTERESTS.music.filter(() => r() < .2).slice(0, 3), hobbies: INTERESTS.hobbies.filter(() => r() < .18).slice(0, 4) },
+        active_at: new Date(Date.now() - Math.floor(r() * 72) * 36e5 - 6e5).toISOString() });
+    }
+  }
+  return demoSeekerCache = out;
+}
 
 /* ========================================================== data layer */
 /* Two implementations, one interface. Screens only call api.*          */
@@ -1297,7 +1393,7 @@ let pendingOtp = null;
 
 // Demo stand-ins for the other side: sample owners reply ~6 s after a request,
 // and a sample seeker asks to meet a flat ~8 s after you post it.
-const DEMO_REPLY_MS = 6000, DEMO_INCOMING_MS = 8000;
+const DEMO_REPLY_MS = 6000, DEMO_INCOMING_MS = 8000, DEMO_INVITE_MS = 12000;
 
 const demoApi = {
   live:false,
@@ -1321,7 +1417,7 @@ const demoApi = {
   async signOut(){ state.user = null; save(); },
   async me(){
     this.tick();
-    state.pending = state.requests.filter(r => r.seeker_phone === this.me_() && r.status === "pending").length;
+    state.pending = state.requests.filter(r => r.seeker_phone === this.me_() && r.status === "pending" && r.by !== "owner").length;
     return state;
   },
   async setRole(role){
@@ -1374,7 +1470,7 @@ const demoApi = {
     save(); await this.me(); return { status:"pending" };
   },
   async withdraw(rid){
-    const r = state.requests.find(x => x.id === rid && x.seeker_phone === this.me_() && x.status === "pending");
+    const r = state.requests.find(x => x.id === rid && x.seeker_phone === this.me_() && x.status === "pending" && x.by !== "owner");
     if(r){ r.status = "withdrawn"; save(); }
   },
   // Same rules as fm_decide: accepting uses one of the seeker's contacts.
@@ -1382,25 +1478,63 @@ const demoApi = {
     if(r.status !== "pending") return { status:r.status, error:"already-decided" };
     if(approve){
       const isMe = r.seeker_phone === this.me_();
-      if(CHARGES_ON && isMe){
+      if(CHARGES_ON && isMe && r.by !== "owner"){
         if(state.credits < 1) return { status:"pending", error:"seeker-out-of-contacts" };
         state.credits -= 1;
       }
       if(isMe && !state.unlocked.includes(r.listing_id)) state.unlocked.push(r.listing_id);
     }
-    r.status = approve ? "approved" : "declined"; r.decided_at = new Date().toISOString(); r.seen_seeker = false;
+    r.status = approve ? "approved" : "declined"; r.decided_at = new Date().toISOString();
+    if(r.by === "owner") r.seen_owner = false; else r.seen_seeker = false;
     save(); return { status:r.status };
   },
+  // The other side decides: the owner for a seeker's request, the seeker for an owner's invite.
   async decide(rid, approve){
     const r = state.requests.find(x => x.id === rid);
     const l = r && this.all().find(x => x.id === r.listing_id);
-    if(!l || l.owner_phone !== this.me_()) return { error:"not-found" };
+    const mine = r && (r.by === "owner" ? r.seeker_phone === this.me_() : l && l.owner_phone === this.me_());
+    if(!mine) return { error:"not-found" };
     return this.decideRaw(r, approve);
   },
+  // Same filters as fm_find_seekers in schema.sql.
+  async findSeekers(lid){
+    const l = this.all().find(x => x.id === lid); if(!l) return [];
+    const reqs = new Map(state.requests.filter(r => r.listing_id === lid && r.status !== "withdrawn").map(r => [r.seeker_phone, r]));
+    return demoSeekerPool().filter(x => x.city === l.city && (!x.areas.length || x.areas.includes(l.locality))).map(x => {
+      const m = vibeMatch(x.vibe, l.household), r = reqs.get(x.phone);
+      return { seeker_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct: m ? m.pct : null,
+        interests:x.interests, vibe:x.vibe, active_at:x.active_at, invite_status: r ? r.status : null, invite_by: r ? r.by || "seeker" : null };
+    }).sort((a, b) => (b.match_pct ?? -1) - (a.match_pct ?? -1) || b.active_at.localeCompare(a.active_at));
+  },
+  // Same checks as fm_invite.
+  async invite(lid, sid, message){
+    const l = state.myListings.find(x => x.id === lid && x.owner_phone === this.me_()), x = demoSeekerPool().find(y => y.id === sid);
+    if(!l) return { error:"listing-not-found" };
+    if(!x) return { error:"seeker-not-found" };
+    const r = state.requests.find(y => y.listing_id === lid && y.seeker_phone === x.phone && y.status !== "withdrawn");
+    if(r) return { status:r.status };
+    const m = vibeMatch(x.vibe, l.household);
+    state.requests.push({ id:"i" + Date.now() + sid, by:"owner", listing_id:lid, listing_title:l.title, seeker_phone:x.phone,
+      seeker:{ name:x.name, occupation:x.occupation, vibe:x.vibe, phone:x.phone, interests:x.interests }, status:"pending",
+      message:(message || "").slice(0, 300), match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null,
+      seen_owner:true, seen_seeker:false });
+    save(); return { status:"pending" };
+  },
+  async setSearch(){},  // demo: the search lives in state.prefs on this device
   // Plays the other side in demo mode.
   tick(){
     const now = Date.now();
     for(const r of state.requests){
+      if(r.by === "owner"){
+        // Sample seekers answer an owner's invite: yes to a strong match, no to a poor one,
+        // and the ones in between never reply (so the owner gets their number after the wait).
+        const me = state.user && state.user.phone;
+        if(r.status === "pending" && !r.demoDone && r.seeker_phone !== me && now - new Date(r.created_at) > DEMO_REPLY_MS + 2000){
+          r.demoDone = true;
+          if((r.match_pct || 0) >= 75) this.decideRaw(r, true); else if((r.match_pct || 0) < 55) this.decideRaw(r, false);
+        }
+        continue;
+      }
       if(r.status === "pending" && String(r.listing_id).startsWith("demo-") && now - new Date(r.created_at) > DEMO_REPLY_MS){
         const owner = state.user && r.seeker_phone === state.user.phone;
         if(owner || !state.user) this.decideRaw(r, (r.match_pct || 0) >= 60);
@@ -1413,9 +1547,24 @@ const demoApi = {
       if(!l) continue;
       const s = DEMO_SEEKERS[state.myListings.indexOf(l) % DEMO_SEEKERS.length], v = digitsToVibe(s.v);
       const m = vibeMatch(v, l.household);
-      state.requests.push({ id:"r" + now + lid, listing_id:lid, listing_title:l.title, seeker_phone:s.phone,
+      state.requests.push({ id:"r" + now + lid, by:"seeker", listing_id:lid, listing_title:l.title, seeker_phone:s.phone,
         seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {} }, status:"pending", message:s.message,
         match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true });
+    }
+    // Sample owners invite a new seeker to their two best-matching homes, ~12 s after onboarding.
+    if(state.user && state.user.role === "seeker" && state.onboarded.seeker && state.discoverable !== false && state.demoInvites !== "done"){
+      if(!state.demoInvites) state.demoInvites = now + DEMO_INVITE_MS;
+      else if(now >= state.demoInvites){
+        state.demoInvites = "done";
+        const f = prefs(), asked = new Set(state.requests.filter(r => r.seeker_phone === state.user.phone).map(r => r.listing_id));
+        demoListings().filter(l => l.city === f.city && (!f.areas.length || f.areas.includes(l.locality)) && !asked.has(l.id))
+          .map(l => ({ l, m: vibeMatch(state.vibe, l.household) })).filter(x => x.m && x.m.pct >= 60)
+          .sort((a, b) => b.m.pct - a.m.pct).slice(0, 2).forEach(({ l, m }, i) => state.requests.push({
+            id:"i" + now + i, by:"owner", listing_id:l.id, listing_title:l.title, seeker_phone:state.user.phone,
+            seeker:{ name:state.user.name, occupation:state.user.occupation, vibe:state.vibe, phone:state.user.phone, interests:state.interests || {} },
+            status:"pending", message:`Hi! Your vibe matches our home ${m.pct}%. Want to come and see the room?`, match_pct:m.pct,
+            created_at:new Date(now - i * 15000).toISOString(), decided_at:null, seen_owner:true, seen_seeker:false }));
+      }
     }
     save();
   },
@@ -1423,13 +1572,16 @@ const demoApi = {
     this.tick();
     const me = this.me_(), mine = new Set(state.myListings.filter(l => l.owner_phone === me).map(l => l.id));
     return state.requests.filter(r => r.status !== "withdrawn" && (mine.has(r.listing_id) || r.seeker_phone === me)).map(r => {
-      const incoming = mine.has(r.listing_id);
+      const incoming = mine.has(r.listing_id), by = r.by || "seeker";
+      const auto = by === "owner" && r.status === "pending" && Date.now() - new Date(r.created_at) > INVITE_SHARE_MS;
+      const l = by === "owner" && !incoming ? this.all().find(x => x.id === r.listing_id) : null;
       return { id:r.id, listing_id:r.listing_id, listing_title:r.listing_title, direction: incoming ? "incoming" : "outgoing",
-        status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at,
-        name: incoming ? r.seeker.name : null, occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
+        status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at, by, auto_shared:auto,
+        name: incoming ? r.seeker.name : l && l.private ? l.private.contact_name.split(" ")[0] : null,
+        occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
         interests: incoming ? r.seeker.interests || {} : null,
-        phone: incoming && r.status === "approved" ? "+91" + r.seeker.phone : null,
-        unseen: incoming ? !r.seen_owner && r.status === "pending" : !r.seen_seeker };
+        phone: incoming && (r.status === "approved" || auto) ? "+91" + r.seeker.phone : null,
+        unseen: incoming ? !r.seen_owner && (r.status === "pending") === (by === "seeker") : !r.seen_seeker };
     }).sort((a, b) => b.created_at.localeCompare(a.created_at));
   },
   async markSeen(){
@@ -1531,6 +1683,7 @@ function makeLiveApi(sb){
       Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given });
       if(answered(r.vibe)) state.vibe = r.vibe;
       if(r.interests && allInterests(r.interests).length) state.interests = r.interests;
+      state.discoverable = r.discoverable !== false;
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
@@ -1548,6 +1701,9 @@ function makeLiveApi(sb){
     async withdraw(rid){ await rpc("fm_withdraw", { p_request: rid }); await this.me(); },
     async decide(rid, approve){ return one(await rpc("fm_decide", { p_request: rid, p_approve: approve })); },
     async inbox(){ return rpc("fm_inbox"); },
+    async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
+    async invite(lid, sid, message){ return one(await rpc("fm_invite", { p_listing:lid, p_seeker:sid, p_message:message })); },
+    async setSearch(search, discoverable){ await rpc("fm_set_search", { p_search: search, p_discoverable: discoverable }); },
     async markSeen(){ await rpc("fm_mark_seen"); },
     async savePushToken(token){ await rpc("fm_save_push_token", { p_token: token, p_platform: "android" }); },
     async uploadPhotos(files){
@@ -1698,16 +1854,17 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","requests","saved","account"], owner:["mine","requests","post","account"] };
+const ROLE_VIEWS = { seeker:["discover","requests","saved","account"], owner:["mine","escape","requests","post","account"] };
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
   saved:["Saved",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'],
   mine:["My flat",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>'],
+  escape:["Escape",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h9v17"/><path d="M13 7h4v14"/><circle cx="10.5" cy="12.5" r=".6" fill="currentColor"/><path d="M17 12h4m-2-2l2 2-2 2"/></svg>'],
   post:["Post",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","requests","saved","mine","post","account"];
+const VIEWS = ["discover","requests","saved","mine","escape","post","account"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-onboard").hidden = name !== "onboard";
@@ -1728,7 +1885,7 @@ function route(){
   VIEWS.forEach(n => $("view-" + n).hidden = n !== v);
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
-  ({ discover:renderDiscover, requests:renderRequests, saved:renderSaved, mine:renderMine, post:renderPost, account:renderAccount })[v]();
+  ({ discover:renderDiscover, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, account:renderAccount })[v]();
   window.scrollTo(0, 0);
 }
 let unseen = 0;
@@ -1739,7 +1896,96 @@ function renderNav(){
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
 $("meBtn").addEventListener("click", () => go("account"));
+$("discToggle").addEventListener("change", e => {
+  state.discoverable = e.target.checked; save(); syncSearch();
+  toast(e.target.checked ? "Owners in your areas can now find and invite you." : "You're hidden. Owners can't find or invite you.");
+});
 
+/* ================================================= The Empty Room Escape */
+// Owners turn the search around: people already looking in their area, ranked by vibe,
+// with their budget. An invite lets the seeker see the photos and say yes in one tap;
+// left unanswered for 2 hours (INVITE_SHARE_MS), the owner gets the seeker's number.
+const ESC_FILTERS = [["all", "Everyone"], ["fit", "Budget fits my rent"], ["vibe", "80%+ vibe"], ["new", "Not invited yet"]];
+let escSeekers = [], escListing = null;
+const leftLabel = ms => { const m = Math.max(1, Math.ceil(ms / 6e4)); return m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m} min`; };
+async function renderEscape(){
+  const listings = (await api.myListings()).filter(l => l.status !== "closed");
+  if(!listings.length){
+    $("escStats").innerHTML = ""; $("escPick").hidden = true; $("escFilters").innerHTML = "";
+    $("escList").innerHTML = `<div class="empty"><h3>Post your room first</h3><p>Then we'll show you everyone looking in your area.</p>
+      <a class="btn btn-primary" href="#post">Post my room</a></div>`;
+    return;
+  }
+  if(!listings.some(l => l.id === state.escListing)) state.escListing = listings[0].id;
+  escListing = listings.find(l => l.id === state.escListing);
+  $("escPick").hidden = listings.length < 2;
+  $("escPick").innerHTML = listings.map(l => `<option value="${esc(l.id)}"${l.id === escListing.id ? " selected" : ""}>${esc(l.title)}</option>`).join("");
+  escSeekers = await api.findSeekers(escListing.id);
+  const fit = escSeekers.filter(x => x.budget && x.budget >= escListing.rent).length, hi = escSeekers.filter(x => x.match_pct >= 80).length;
+  $("escStats").innerHTML = `<div><b>${escSeekers.length}</b><span>looking in ${esc(escListing.locality)}</span></div>
+    <div><b>${hi}</b><span>80%+ vibe</span></div><div><b>${fit}</b><span>budget fits your rent</span></div>`;
+  const f = state.escFilter || "all";
+  $("escFilters").innerHTML = ESC_FILTERS.map(([k, label]) => `<button type="button" data-ef="${k}" aria-pressed="${f === k}">${label}</button>`).join("");
+  drawSeekers();
+}
+function drawSeekers(){
+  const l = escListing, f = state.escFilter || "all";
+  const rows = escSeekers.filter(x => f === "fit" ? x.budget && x.budget >= l.rent : f === "vibe" ? x.match_pct >= 80 : f === "new" ? !x.invite_status : true);
+  $("escList").innerHTML = rows.length ? rows.map((x, i) => seekerHtml(x, l, i)).join("")
+    : `<div class="empty"><h3>No one here yet</h3><p>${escSeekers.length ? "Try another filter." : `Nobody is searching in ${esc(l.locality)} right now. New people sign up every day, so check back soon.`}</p></div>`;
+}
+function seekerHtml(x, l, i){
+  const hh = l.household || {}, shared = sharedInterests(hh.interests, x.interests), first = (x.name || "Someone").split(" ")[0];
+  const gap = x.budget ? x.budget - l.rent : null;
+  const fit = gap == null ? "" : gap >= 0 ? `<em class="fit ok">Fits your ${inr(l.rent)} rent</em>` : `<em class="fit low">${inr(-gap)} under your rent</em>`;
+  const areas = (x.areas || []).length ? x.areas.map(a => a === l.locality ? `<strong>${esc(a)}</strong>` : esc(a)).join(", ") : `Anywhere in ${esc(l.city)}`;
+  const st = x.invite_status, by = x.invite_by;
+  const action = !st || st === "withdrawn" ? `<button class="btn btn-accent btn-sm" data-invite="${esc(x.seeker_id)}">Invite ${esc(first)}</button>`
+    : st === "pending" && by === "owner" ? `<span class="req-pill pending">Invite sent · waiting</span>`
+    : st === "pending" ? `<a class="req-pill pending" href="#requests">${esc(first)} asked to meet you →</a>`
+    : st === "approved" ? `<a class="req-pill approved" href="#requests">${by === "owner" ? "Accepted your invite" : "You accepted"} · call →</a>`
+    : `<span class="req-pill">${by === "owner" ? "Passed this time" : "Declined"}</span>`;
+  return `<article class="seek-card" style="--i:${i}">
+    <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
+      <div style="min-width:0;flex:1"><h3>${esc(first)}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
+        <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
+      ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="Compatibility with ${esc(first)}">${ringSvg(x.match_pct, 58)}</button>` : ""}</div>
+    <div class="seek-facts">
+      <div><span>Budget</span><b>${x.budget ? "Up to " + inr(x.budget) : "Not set"}</b>${fit}</div>
+      <div><span>Looking in</span><b style="font-weight:600">${areas}</b></div>
+    </div>
+    ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
+    <div class="acts">${action}${x.match_pct != null ? `<button class="btn btn-ghost btn-sm" data-scompat="${esc(x.seeker_id)}">Compatibility</button>` : ""}</div>
+  </article>`;
+}
+$("escPick").addEventListener("change", e => { state.escListing = e.target.value; save(); renderEscape(); });
+$("escFilters").addEventListener("click", e => {
+  const b = e.target.closest("[data-ef]"); if(!b) return;
+  state.escFilter = b.dataset.ef; save();
+  $("escFilters").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  drawSeekers();
+});
+$("escList").addEventListener("click", async e => {
+  const c = e.target.closest("[data-scompat]");
+  if(c){
+    const x = escSeekers.find(y => y.seeker_id === c.dataset.scompat), hh = escListing.household || {};
+    if(x) openCompat({ me: hh, them: x.vibe, meName: "Your home", themName: (x.name || "Them").split(" ")[0],
+      myInts: hh.interests, theirInts: x.interests, title: (x.name || "") + " · " + escListing.title });
+    return;
+  }
+  const b = e.target.closest("[data-invite]"); if(!b) return;
+  const x = escSeekers.find(y => y.seeker_id === b.dataset.invite); if(!x) return;
+  b.disabled = true;
+  const first = (x.name || "They").split(" ")[0];
+  try{
+    const r = await api.invite(escListing.id, x.seeker_id,
+      `Hi ${first}! ${x.match_pct != null ? `Your vibe matches our home ${x.match_pct}%. ` : ""}Would you like to come and see the room?`);
+    toast(r.error === "daily-limit" ? "That's 30 invites today. You can send more tomorrow."
+      : r.error ? "Couldn't send that invite. Please try again."
+      : `Invite sent. ${first} sees your photos and can say yes in one tap. No reply in 2 hours? You'll get their number.`);
+  }catch(err){ console.error(err); toast("Couldn't send that invite. Please try again."); }
+  renderEscape();
+});
 /* ======================================================== notifications */
 // System notifications: the Android app's native bridge when present (FlatmatesNative,
 // see MainActivity.java), otherwise the browser's Notification API via the service worker.
@@ -1782,6 +2028,9 @@ document.addEventListener("click", async e => {
 
 // Reminder if a seeker hasn't called an owner who accepted them.
 const REMIND_MS = LIVE ? 2 * 36e5 : 60e3;
+// An owner's invite left unanswered this long shares the seeker's number with the owner
+// (enforced by fm_inbox in schema.sql). One minute in demo mode, so it can be tried.
+const INVITE_SHARE_MS = LIVE ? 2 * 36e5 : 60e3;
 async function checkInbox(){
   if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
   let rows;
@@ -1794,11 +2043,26 @@ async function checkInbox(){
     const key = r.id + r.status;
     if(state.notified[key]) continue;
     state.notified[key] = Date.now();
-    if(r.direction === "incoming"){
+    const first = (r.name || "They").split(" ")[0];
+    if(r.direction === "incoming" && r.by === "owner"){
+      if(r.status === "approved"){
+        Notify.show(`${first} accepted your invite! Call now`, `${first} wants to see “${r.listing_title}”. Your numbers are shared, so call while they're keen.`, "requests");
+        toast(`${first} accepted your invite! Call now.`);
+      }else if(r.status === "declined"){
+        Notify.show(`${first} passed this time`, "Find more people looking in your area in The Empty Room Escape.", "escape");
+        toast(`${first} passed on your invite.`);
+      }
+    }else if(r.direction === "incoming"){
       const who = [r.name || "Someone", occLine(r.occupation)].filter(Boolean).join(", ");
       Notify.show(`${r.name || "Someone"} wants to meet you${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
         `${who} is interested in “${r.listing_title}”. Reply soon: people who fit usually find a room within days.`, "requests");
       toast(`${r.name || "Someone"} wants to meet you · ${r.match_pct != null ? r.match_pct + "% match" : "new request"}`);
+    }else if(r.by === "owner"){
+      if(r.status === "pending"){
+        Notify.show(`${r.name || "An owner"} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
+          `See the photos of “${r.listing_title}” and reply within 2 hours. If you don't, ${r.name || "they"} gets your number.`, "requests");
+        toast(`${r.name || "An owner"} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`);
+      }
     }else if(r.status === "approved"){
       const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
       const owner = (c && c.contact_name) || "The owner";
@@ -1808,6 +2072,17 @@ async function checkInbox(){
     }else if(r.status === "declined"){
       Notify.show("Not this time", `The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact was used." : ""} Your other matches are waiting.`, "discover");
       toast(`The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact used." : ""}`);
+    }
+  }
+  // An invite left unanswered for 2 hours: the owner now has the seeker's number.
+  if(isOwner()){
+    for(const r of rows.filter(x => x.direction === "incoming" && x.auto_shared && x.phone)){
+      if(state.notified[r.id + "auto"]) continue;
+      state.notified[r.id + "auto"] = Date.now();
+      const first = (r.name || "They").split(" ")[0];
+      Notify.show(`No reply from ${first}, so here's their number`, `${first} hasn't answered your invite to “${r.listing_title}” in 2 hours. Call ${r.phone}.`, "requests");
+      toast(`No reply from ${first} in 2 hours. Their number is in Requests.`);
+      if(currentView === "requests") renderRequests();
     }
   }
   if(!isOwner()){
@@ -1835,7 +2110,13 @@ const othersLine = l => l && l.unlock_count > 1 ? `${l.unlock_count - 1} other $
 async function renderUrgent(){
   const boxes = [$("urgent"), $("urgentReq")];
   if(isOwner()){ boxes.forEach(b => b.innerHTML = ""); return; }
-  const rows = (await api.inbox()).filter(r => r.direction === "outgoing" && r.status === "approved" && !(state.called || {})[r.listing_id]);
+  const inbox = await api.inbox();
+  const invites = inbox.filter(r => r.direction === "outgoing" && r.by === "owner" && r.status === "pending");
+  const rows = inbox.filter(r => r.direction === "outgoing" && r.status === "approved" && !(state.called || {})[r.listing_id]);
+  const soonest = invites.reduce((m, r) => Math.min(m, INVITE_SHARE_MS - (Date.now() - new Date(r.created_at))), Infinity);
+  const inviteCard = invites.length ? `<a class="inv-banner" href="#requests"><span class="urgent-dot" aria-hidden="true"></span><span>
+      <b>${invites.length === 1 ? `${esc(invites[0].name || "An owner")} invited you to see their flat` : `${invites.length} owners invited you to see their flats`}</b>
+      <small>${soonest > 0 ? `Reply within ${leftLabel(soonest)}, or they get your number` : "They have your number now. You can still reply"} →</small></span></a>` : "";
   const cards = await Promise.all(rows.map(async r => {
     const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
     if(!c) return "";
@@ -1849,7 +2130,8 @@ async function renderUrgent(){
           href="https://wa.me/91${esc(c.contact_phone)}?text=${encodeURIComponent("Hi " + first + ", I'm " + (state.user.name || "") + " from FindMyFlatMate. Thanks for accepting! When can I come and see the room?")}">WhatsApp</a>
         <button class="btn btn-ghost btn-sm" type="button" data-called="${esc(r.listing_id)}">I've called</button></div></div></article>`;
   }));
-  boxes.forEach(b => b.innerHTML = cards.join(""));
+  $("urgent").innerHTML = inviteCard + cards.join("");
+  $("urgentReq").innerHTML = cards.join("");
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-called]"); if(!b) return;
@@ -2080,7 +2362,8 @@ async function finishOnboarding(){
     <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
-        : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}</p>
+        : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}
+      Owners in ${esc(where)} can also invite you, so watch for notifications.</p>
     <button class="btn btn-primary" type="button" id="obDone">Show me</button></div>`;
   let n = 0;
   const tick = () => { n = Math.min(best, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 140)); if(n < best) requestAnimationFrame(tick); };
@@ -2091,7 +2374,17 @@ async function finishOnboarding(){
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
 const DEFAULT_PREFS = { city:"", areas:[], min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
 const prefs = () => Object.assign({}, DEFAULT_PREFS, state.prefs);
-function setPrefs(p){ state.prefs = Object.assign(prefs(), p); save(); }
+function setPrefs(p){ state.prefs = Object.assign(prefs(), p); save(); syncSearch(); }
+// Owners find seekers by city, areas and budget (The Empty Room Escape), so keep the server's copy current.
+let searchTimer = null;
+function syncSearch(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    if(!state.user || isOwner()) return;
+    const f = prefs();
+    api.setSearch({ city: f.city, areas: f.areas, budget: f.max || null }, state.discoverable !== false).catch(err => console.error(err));
+  }, 800);
+}
 const CITY_AREAS = Object.fromEntries(Object.entries(DEMO_AREAS).map(([c, a]) => [c, a.map(x => x[0])]));
 // Known areas first, then any other area that has listings (live data).
 function areasFor(city, rows){
@@ -2324,7 +2617,17 @@ async function openListing(id){
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>`}
     </div>`;
   }else if(!l.is_owner && isSeeker()){
-    if(l.request_status === "pending"){
+    const inv = (await api.inbox()).find(r => r.listing_id === id && r.by === "owner" && r.status === "pending");
+    if(inv){
+      const owner = inv.name || "The owner", left = INVITE_SHARE_MS - (Date.now() - new Date(inv.created_at));
+      lock = `<div class="lock invited"><p class="eyebrow">You're invited</p><h3>${esc(owner)} would like you to see this home</h3>
+        ${inv.message ? `<p>“${esc(inv.message)}”</p>` : ""}
+        <p class="inv-timer">${inv.auto_shared || left <= 0 ? `You didn't reply within 2 hours, so ${esc(owner)} now has your number. You can still say yes or no.`
+          : `Reply within <b>${leftLabel(left)}</b>. After that, ${esc(owner)} gets your number.`}</p>
+        <div class="acts"><button class="btn btn-primary" data-action="inv-yes" data-rid="${esc(inv.id)}">Yes, let's meet</button>
+          <button class="btn btn-ghost" data-action="inv-no" data-rid="${esc(inv.id)}">Not for me</button></div>
+        <div class="promise-line"><b>✓</b><span>Free: invites from owners never use your contacts. Saying yes shares numbers and the address both ways.</span></div></div>`;
+    }else if(l.request_status === "pending"){
       lock = `<div class="lock wait"><h3>Request sent</h3>
         <p>The owner has your profile and your ${m ? m.pct + "% " : ""}match. You'll get a notification as soon as they reply.${CHARGES_ON ? " No contact is used unless they accept." : ""}</p>
         ${notifyCard("Turn on notifications so you can call the moment they accept.")}
@@ -2398,6 +2701,7 @@ $("lBody").addEventListener("click", async e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
   const act = a.dataset.action;
   if(act === "visit") return openVisit(currentId);
+  if(act === "inv-yes" || act === "inv-no"){ a.disabled = true; return answerInvite(a.dataset.rid, act === "inv-yes"); }
   if(act === "compat"){
     const l = await api.get(currentId), hh = (l && l.household) || {};
     return openCompat({ me: state.vibe, them: hh, meName: "You", themName: "This home", myInts: state.interests, theirInts: hh.interests, title: l ? l.title : "" });
@@ -2429,11 +2733,13 @@ function refreshCurrent(){
 
 /* ============================================================== requests */
 const STATUS_TXT = { pending:"Waiting for reply", approved:"Accepted", declined:"Declined" };
+const INVITE_TXT = { pending:"Invite sent", approved:"Accepted your invite", declined:"Passed" };
 async function renderRequests(){
   const rows = await api.inbox();
   const owner = isOwner();
   const list = rows.filter(r => r.direction === (owner ? "incoming" : "outgoing"));
-  const waiting = list.filter(r => r.status === "pending").length;
+  const waiting = list.filter(r => r.status === "pending" && r.by !== "owner").length;
+  const invites = owner ? [] : list.filter(r => r.by === "owner" && r.status === "pending");
   $("reqTitle").textContent = owner ? "People who'd like to meet you" : "Your requests";
   $("notifReq").innerHTML = notifyCard(owner ? "Get a notification the moment someone asks to meet you, even when the app is closed."
     : "Get a notification the moment an owner says yes, so you can call before anyone else.");
@@ -2442,10 +2748,36 @@ async function renderRequests(){
     ? (waiting ? `${waiting} waiting for your reply. Accepting shares your number and address with them, and theirs with you.` : "When someone who fits your home asks to meet you, they'll show up here.")
     : `${waiting ? waiting + " waiting for a reply. " : ""}${CHARGES_ON ? `You have ${contactsLabel(contactsLeft())}.` : ""}`;
   const listings = owner ? await api.myListings() : [];
-  $("reqList").innerHTML = list.length ? list.map(r => owner ? incomingHtml(r, listings.find(l => l.id === r.listing_id)) : outgoingHtml(r)).join("")
-    : `<div class="empty"><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification."
-        : "Open a flat you like and tap “Send request”."}</div>`;
+  const invHomes = await Promise.all(invites.map(r => api.get(r.listing_id)));
+  const rest = list.filter(r => !invites.includes(r));
+  const empty = `<div class="empty"><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
+      : "Open a flat you like and tap “Send request”."}</div>`;
+  $("reqList").innerHTML = !list.length ? empty
+    : (invites.length ? `<h2 class="section-h" style="margin-top:8px">Owners who invited you</h2>` + invites.map((r, i) => inviteHtml(r, invHomes[i])).join("")
+        + (rest.length ? `<h2 class="section-h">Your requests</h2>` : "") : "")
+      + rest.map(r => owner ? incomingHtml(r, listings.find(l => l.id === r.listing_id)) : outgoingHtml(r)).join("");
   if(rows.some(r => r.unseen)){ await api.markSeen(); unseen = 0; renderNav(); }
+}
+// A seeker's view of an owner's invite: the home's photo, one-tap yes/no and the 2-hour clock.
+function inviteHtml(r, l){
+  const owner = r.name || "The owner", left = INVITE_SHARE_MS - (Date.now() - new Date(r.created_at));
+  const ph = l ? photosOf(l).length : 0;
+  return `<article class="invite">
+    <button class="inv-pic" type="button" data-open="${esc(r.listing_id)}" aria-label="See photos of ${esc(r.listing_title)}">${l ? picHtml(l) : ""}
+      <span class="tag">${ph ? `${ph} photo${ph === 1 ? "" : "s"}` : "See the home"}</span>
+      ${r.match_pct != null ? `<span class="ring-wrap">${ringSvg(r.match_pct, 52)}</span>` : ""}</button>
+    <div class="inv-body">
+      <p class="eyebrow">${esc(owner)} invited you · ${timeAgo(r.created_at)}</p>
+      <h3>${esc(r.listing_title)}</h3>
+      ${l ? `<div class="loc">${esc(l.locality)}, ${esc(l.city)} · <b>${inr(l.rent)}</b>/month rent</div>` : ""}
+      ${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
+      <p class="inv-timer">${r.auto_shared || left <= 0
+        ? `You didn't reply within 2 hours, so ${esc(owner)} now has your number. You can still say yes or no.`
+        : `Reply within <b>${leftLabel(left)}</b>. After that, ${esc(owner)} gets your number.`}</p>
+      <div class="acts"><button class="btn btn-primary btn-sm" data-inv-yes="${esc(r.id)}">Yes, let's meet</button>
+        <button class="btn btn-ghost btn-sm" data-inv-no="${esc(r.id)}">Not for me</button>
+        <button class="btn btn-ghost btn-sm" data-open="${esc(r.listing_id)}">Photos and details</button></div>
+    </div></article>`;
 }
 const reqCompat = new Map();
 function incomingHtml(r, l){
@@ -2454,33 +2786,57 @@ function incomingHtml(r, l){
     const d = Number.isInteger(hh[x.k]) ? Math.abs(v[x.k] - hh[x.k]) : 1;
     return `<span class="${d === 0 ? "g" : d === 2 ? "c" : ""}">${d === 0 ? "✓ " : d === 2 ? "! " : ""}${esc(x.t[v[x.k]])}</span>`;
   }).join("");
+  const first = (r.name || "They").split(" ")[0];
   reqCompat.set(String(r.id), { me: hh, them: v, meName: "Your home", themName: (r.name || "Them").split(" ")[0],
     myInts: hh.interests, theirInts: r.interests, title: (r.name || "Someone") + " · " + (r.listing_title || "") });
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3><span class="req-pill ${esc(r.status)}">${esc(STATUS_TXT[r.status] || r.status)}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3><span class="req-pill ${esc(r.status)}">${esc(r.auto_shared ? "No reply · number shared"
+        : (r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
-      ${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
+      ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? `${esc(first)} accepted your invite. Call now while they're keen.`
+        : r.status === "declined" ? `${esc(first)} passed this time. <a href="#escape">Find more people →</a>`
+        : r.auto_shared ? `No reply in 2 hours, so here's ${esc(first)}'s number. Give them a call.`
+        : `You invited ${esc(first)}. If there's no reply in <b>${leftLabel(INVITE_SHARE_MS - (Date.now() - new Date(r.created_at)))}</b>, you'll get their number.`}</p>`
+        : r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <div class="traits">${traits}</div>
       ${allInterests(r.interests).length ? `<p class="occ" style="margin:8px 0 0">Into (♥ = same as your home):</p>${interestsHtml(r.interests, hh.interests)}` : ""}
       <div class="acts">${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
-        ${r.status === "pending" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
+        ${r.status === "pending" && r.by !== "owner" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
-        : r.status === "approved" && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
+        : (r.status === "approved" || r.auto_shared) && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
           <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc(r.phone.replace(/^\+/, ""))}">WhatsApp</a>` : ""}</div>
     </div></article>`;
+}
+// A seeker says yes or no to an owner's invite (from Requests or the home's page).
+async function answerInvite(rid, yes){
+  try{
+    const row = (await api.inbox()).find(r => r.id === rid);
+    const res = await api.decide(rid, yes);
+    if(res.error && res.error !== "already-decided") throw new Error(res.error);
+    const owner = (row && row.name) || "The owner";
+    toast(yes ? `You and ${owner} now have each other's numbers. Give them a call!` : `Done. ${owner} won't get your number.`);
+    if(yes && row) await openListing(row.listing_id);
+    else if($("dlgListing").open && row && row.listing_id === currentId) await openListing(currentId);
+  }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
+  renderUrgent();
+  if(currentView === "requests") renderRequests();
 }
 function outgoingHtml(r){
   return `<article class="req${r.unseen ? " new" : ""}" data-open="${esc(r.listing_id)}" style="cursor:pointer">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 56) : ""}</div>
     <div style="min-width:0"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.listing_title)}</h3>
       <span class="req-pill ${esc(r.status)}">${esc(STATUS_TXT[r.status] || r.status)}</span></div>
-      <div class="occ">${r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined"
+      <div class="occ">${r.by === "owner" ? (r.status === "approved" ? `You accepted ${esc(r.name || "the owner")}'s invite. Tap to see their number and address.`
+          : `You passed on ${esc(r.name || "the owner")}'s invite.`)
+        : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined"
         ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div></div></article>`;
 }
 $("reqList").addEventListener("click", async e => {
+  const inv = e.target.closest("[data-inv-yes],[data-inv-no]");
+  if(inv){ inv.disabled = true; return answerInvite(inv.dataset.invYes || inv.dataset.invNo, Boolean(inv.dataset.invYes)); }
   const b = e.target.closest("[data-accept],[data-decline]");
   if(b){
     b.disabled = true;
@@ -2580,7 +2936,12 @@ async function renderMine(){
     ? (waiting ? `<a href="#requests">${waiting} ${waiting === 1 ? "person wants" : "people want"} to meet you →</a>` : "No new requests right now. We'll notify you as soon as someone asks.")
     : "Describe the room and add a few photos. People who fit your home will ask to meet you.";
   const ask = mine.length ? notifyCard("Turn on notifications so you never miss someone who wants to meet you.") : "";
-  $("mineList").innerHTML = ask + (mine.length ? mine.map(l => {
+  const live = mine.filter(l => l.status !== "closed");
+  const looking = live.length ? await api.findSeekers(live[0].id) : [];
+  const promo = looking.length ? `<a class="esc-promo" href="#escape"><span><small>The Empty Room Escape</small>
+      <b>${looking.length} ${looking.length === 1 ? "person is" : "people are"} looking for a room in ${esc(live[0].locality)} right now</b>
+      ${looking.filter(x => x.match_pct >= 80).length ? `${looking.filter(x => x.match_pct >= 80).length} match your home's vibe 80%+. ` : ""}Invite them before someone else does →</span></a>` : "";
+  $("mineList").innerHTML = promo + ask + (mine.length ? mine.map(l => {
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
       <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
@@ -2764,7 +3125,8 @@ async function renderAccount(){
   const occ = state.user.occupation || {};
   $("accRole").textContent = isOwner() ? "Posting a flat" : ["Looking for a room", occLine(occ)].filter(Boolean).join(" · ");
   $("accSwitch").textContent = isOwner() ? "I'm looking for a room instead" : "I want to post a flat instead";
-  $("vibePanel").hidden = $("unlockedPanel").hidden = isOwner();
+  $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner();
+  $("discToggle").checked = state.discoverable !== false;
   if(isOwner()) return;
   $("vibeTraits").innerHTML = answered(state.vibe)
     ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")

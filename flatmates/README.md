@@ -31,10 +31,22 @@ the room comes second.
 6. **Contacts are used only on acceptance**, so there are no refunds to manage. A pending request
    holds a contact until the owner replies. After the 5 free ones: **10 contacts for ₹500**.
 
+7. **The Empty Room Escape (owners).** Owners don't have to wait. A tab lists everyone already
+   looking for a room in the listing's area (or anywhere in the city), with their first name, what
+   they do, budget (and whether it fits the rent) and vibe match, best match first. Filters: budget
+   fits, 80%+ vibe, not invited yet. **Invite** sends them the home: the seeker gets a notification,
+   sees the photos and details and answers **Yes, let's meet** or **Not for me** in one tap. Yes shares
+   numbers and the address both ways and is free for the seeker (no contact used). **If the seeker
+   doesn't answer within 2 hours, the owner gets their number** (they can still answer after that).
+   Seekers are told this when they're shown to owners, and can hide themselves in Account
+   ("Show me to owners in my areas"). Up to 30 invites per owner per day.
+
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
-after you post it.
+after you post it. Sample seekers (24 per city) answer an owner's invite after a few seconds: yes to a
+strong match, no to a weak one, and no reply in between, so the number unlocks (after 1 minute in
+demo mode instead of 2 hours). Two sample owners also invite a new seeker about 12 seconds after onboarding.
 
 ## Notifications and urgency
 
