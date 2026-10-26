@@ -675,6 +675,27 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .mate span .gen{margin-left:2px}
 .req h3 + .gen, .seek-top h3 .gen, .tribe-card h3 .gen{margin-left:4px}
 .gen-note .gen{font-size:11px}
+/* ---------- compromise, broker reports */
+.cm-cta{display:grid; gap:6px; margin-top:12px; padding:14px; border-radius:16px; background:linear-gradient(135deg,#FFF4E8,#FFE9F0)}
+.cm-cta span{font-size:14px; color:var(--text-2)}
+.cm-cta .btn{justify-self:start; margin-top:4px}
+.cm-score{display:flex; align-items:center; justify-content:center; gap:16px; margin:4px 0 8px}
+.cm-score > div{display:grid; justify-items:center; gap:4px; font-size:12.5px; color:var(--text-3); font-weight:700}
+.cm-score > div.up{color:var(--ok)}
+.cm-score > b{font-size:26px; color:var(--text-3)}
+.cm-list{display:grid; margin:8px 0 14px}
+.cm-q{padding:12px 0; box-shadow:0 -1px 0 var(--line)}
+.cm-q .q{font-weight:800} .cm-q .theirs{font-size:13px; color:var(--text-2); margin:2px 0 8px}
+.cm-q .x2{font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:1px 7px; border-radius:999px}
+.cm-q .chip.home{box-shadow:inset 0 0 0 2px var(--ok)}
+.cm-banner{margin:10px 0 0; padding:12px 14px; border-radius:14px; background:linear-gradient(135deg,#FFF4E8,#EAF7EF)}
+.cm-banner b{display:block; color:#B45309} .cm-banner span{font-size:13.5px; color:var(--text-2)}
+.cm-banner ul{margin:6px 0 0; padding-left:18px; font-size:14px} .cm-banner s{color:var(--text-3)}
+.req .traits span.cm{background:#FFF4E8; color:#B45309; font-weight:700}
+.report-link{margin-top:12px; color:var(--text-3); font-size:13px}
+.report-box{margin-top:10px; padding:12px 14px; border-radius:14px; background:#FFF5F5}
+.report-box .hint{margin:4px 0 10px}
+.delisted{margin:8px 0 0; padding:10px 12px; border-radius:12px; background:#FDE8E9; color:#B42332; font-size:13.5px; font-weight:600}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -819,7 +840,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
     <div id="tribeBonded"></div>
     <div id="tribeMatches"></div>
     <div class="cards" id="tribeHunt"></div>
-    <p class="hint" style="margin:18px 0 28px">Only people looking in your city with a 70%+ vibe match see you here. Numbers are shared only when
+    <p class="hint" style="margin:18px 0 28px">A tribe is up to 3 people. Only people looking in your city with a 70%+ vibe match see you here. Numbers are shared only when
       both of you say yes. You can hide from tribe matches in Account.</p>
   </section>
 
@@ -960,6 +981,10 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 
 <dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="cBody"></div></dialog>
+
+<dialog id="dlgCompromise" aria-labelledby="cmTitle"><div class="mhead"><div><h2 id="cmTitle">Meet them halfway</h2>
+    <div class="loc" id="cmSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="cmBody"></div></dialog>
 
 <dialog id="dlgBond"><div class="mbody bond-card"><div id="bondBody"></div>
     <button class="btn btn-ghost btn-block" type="button" data-close style="margin-top:10px">Let's find our flat</button></div></dialog>
@@ -1562,7 +1587,7 @@ const DEMO_REPLY_MS = 6000, DEMO_INCOMING_MS = 8000, DEMO_INVITE_MS = 12000, DEM
 const demoApi = {
   live:false,
   me_(){ return state.user && state.user.phone; },
-  all(){ return demoListings().concat(state.myListings); },
+  all(){ const gone = new Set(state.delisted || []); return demoListings().concat(state.myListings).filter(l => !gone.has(l.id)); },
   async sendOtp(phone, name, role){
     pendingOtp = { phone, name, role, code: String(Math.floor(100000 + Math.random()*900000)) };
     return { demoCode: pendingOtp.code };
@@ -1681,7 +1706,28 @@ const demoApi = {
       seen_owner:true, seen_seeker:false });
     save(); return { status:"pending" };
   },
-  async setSearch(){ if(state.demoTribeAt === "done") await this.tribeRefresh(); },  // demo: the search lives in state.prefs
+  async setSearch(){ if(state.demoTribeAt === "done") await this.tribeRefresh(); },
+  // Same rules as fm_compromise: once, after a decline, only lifestyle answers, and the score must go up.
+  async compromise(rid, changes, message){
+    const r = state.requests.find(x => x.id === rid && x.seeker_phone === this.me_() && (x.by || "seeker") === "seeker");
+    if(!r) return { error:"not-found" };
+    if(r.status !== "declined") return { status:r.status, error:"not-declined" };
+    if(r.compromise) return { error:"already-compromised" };
+    const keys = Object.keys(changes || {});
+    if(!keys.length) return { error:"no-changes" };
+    if(keys.some(k => !VIBE_BY_KEY[k] || ![0, 1, 2].includes(changes[k]))) return { error:"bad-changes" };
+    const l = this.all().find(x => x.id === r.listing_id), m = l && vibeMatch(Object.assign({}, state.vibe, changes), l.household);
+    if(!m || m.pct <= (r.match_pct || 0)) return { error:"no-better", match_pct: m && m.pct };
+    Object.assign(r, { status:"pending", compromise:changes, orig_match_pct:r.match_pct, match_pct:m.pct,
+      message:(message || r.message || "").slice(0, 300), created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true });
+    save(); return { status:"pending", match_pct:m.pct };
+  },
+  // Same rule as fm_report_broker: only someone the owner accepted can report, and the home comes down.
+  async reportBroker(lid){
+    if(!state.unlocked.includes(lid)) return "not-connected";
+    state.delisted = Array.from(new Set((state.delisted || []).concat(lid))); save();
+    return "delisted";
+  },  // demo: the search lives in state.prefs
   // ---- Build your tribe. Same rules as fm_tribe_refresh / fm_tribe_list / fm_tribe_answer.
   async tribeRefresh(){
     const f = prefs();
@@ -1703,7 +1749,8 @@ const demoApi = {
       const x = pool.get(t.sid);
       return { id:t.id, other_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct:t.match_pct,
         interests:x.interests, vibe:x.vibe, my_yes:t.my_yes, their_yes:t.their_yes, status:t.status,
-        phone: t.status === "bonded" ? "+91" + x.phone : null, created_at:t.created_at, bonded_at:t.bonded_at, unseen:!t.seen };
+        phone: t.status === "bonded" ? "+91" + x.phone : null, created_at:t.created_at, bonded_at:t.bonded_at, unseen:!t.seen,
+        kind:"match", my_size:this.tribeSize(), their_size:1 };
     }).sort((a, b) => (b.status === "bonded") - (a.status === "bonded") || b.match_pct - a.match_pct);
   },
   async tribeAnswer(id, yes){
@@ -1711,11 +1758,13 @@ const demoApi = {
     if(!t) return "not-found";
     if(t.status !== "open") return t.status;
     if(!yes){ t.my_yes = false; t.status = "closed"; save(); return "closed"; }
+    if(this.tribeSize() >= 3) return "full";   // tribes are 3 people at most
     t.my_yes = true; t.yesAt = Date.now();
     if(t.their_yes){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); t.seen = false; }
     save(); return t.status;
   },
   async tribeSeen(){ (state.tribe || []).forEach(t => t.seen = true); save(); },
+  tribeSize(){ return 1 + (state.tribe || []).filter(t => t.status === "bonded").length; },
   async setTribeOpen(v){ state.tribeOpen = v; save(); },
   // Plays the other side in demo mode.
   tick(){
@@ -1759,7 +1808,8 @@ const demoApi = {
         t.their_yes = true; t.seen = false;
       }else if(t.my_yes && t.their_yes == null && now - t.yesAt > DEMO_REPLY_MS){
         t.their_yes = t.match_pct >= 74; t.seen = false;
-        if(t.their_yes){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); } else t.status = "closed";
+        if(t.their_yes && this.tribeSize() < 3){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); }
+        else if(!t.their_yes) t.status = "closed";
       }
     }
     // Sample owners invite a new seeker to their two best-matching homes, ~12 s after onboarding.
@@ -1787,6 +1837,7 @@ const demoApi = {
       const l = by === "owner" && !incoming ? this.all().find(x => x.id === r.listing_id) : null;
       return { id:r.id, listing_id:r.listing_id, listing_title:r.listing_title, direction: incoming ? "incoming" : "outgoing",
         status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at, by,
+        compromise:r.compromise || null, orig_match_pct:r.orig_match_pct ?? null,
         name: incoming ? r.seeker.name : l && l.private ? l.private.contact_name.split(" ")[0] : null,
         occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
         interests: incoming ? r.seeker.interests || {} : null,
@@ -1806,6 +1857,11 @@ const demoApi = {
   },
   async post(p){
     if(state.user.role !== "owner") throw new Error("owners-only");
+    // Same rule as fm_post_listing: at most two different addresses per owner (rooms in one flat count once).
+    const key = addressKey(p.private.address_parts, p.private.address);
+    const keys = new Set(state.myListings.filter(l => l.owner_phone === this.me_()).map(l => addressKey(l.private.address_parts, l.private.address)));
+    keys.delete(key);
+    if(keys.size >= 2) throw new Error("address-limit");
     const id = "mine-" + Date.now().toString(36);
     const l = { ...p.listing, id, owner_phone: state.user.phone, status:"active",
       created_at: new Date().toISOString(), unlock_count:0, private: p.private };
@@ -1932,6 +1988,8 @@ function makeLiveApi(sb){
     // Supabase stores phone numbers without the "+" (919876543210); Call/WhatsApp need +91...
     async inbox(){ return (await rpc("fm_inbox")).map(r => Object.assign(r, { phone: plusPhone(r.phone) })); },
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
+    async compromise(rid, changes, message){ return one(await rpc("fm_compromise", { p_request: rid, p_changes: changes, p_message: message })); },
+    async reportBroker(lid, reason){ return rpc("fm_report_broker", { p_listing: lid, p_reason: reason }); },
     async invite(lid, sid, message){ return one(await rpc("fm_invite", { p_listing:lid, p_seeker:sid, p_message:message })); },
     async setSearch(search, discoverable){ await rpc("fm_set_search", { p_search: search, p_discoverable: discoverable }); },
     async tribeRefresh(){ return rpc("fm_tribe_refresh"); },
@@ -2015,6 +2073,9 @@ async function initApi(){
 
 /* ===================================================== small components */
 const isOwner = () => Boolean(state.user && state.user.role === "owner");
+// Same normalisation as fm_post_listing's address_key: flat + building + PIN, letters and digits only.
+const addressKey = (parts, address) => ((parts && parts.flat || "") + "|" + (parts && parts.building || address || "") + "|" + (parts && parts.pin || ""))
+  .replace(/[^a-zA-Z0-9|]/g, "").toLowerCase();
 const isSeeker = () => Boolean(state.user && state.user.role !== "owner");
 const ringColor = p => p >= 80 ? "var(--ok)" : p >= 60 ? "var(--mid)" : "var(--text-3)";
 function ringSvg(pct, size, cls){
@@ -2239,6 +2300,54 @@ $("escList").addEventListener("click", async e => {
   }catch(err){ console.error(err); toast("Couldn't send that invite. Please try again."); }
   renderEscape();
 });
+/* ============================================================ compromise */
+// After an owner declines, the seeker can change the answers that clash with the household, for this
+// home only, and ask once more. Same rules as fm_compromise in schema.sql.
+const compromiseOptions = hh => VIBE_QS.filter(x => Number.isInteger(hh[x.k]) && Number.isInteger(state.vibe[x.k]) && hh[x.k] !== state.vibe[x.k]);
+let cmCtx = null;
+async function openCompromise(rid, lid){
+  const l = await api.get(lid), hh = (l && l.household) || {};
+  const row = (await api.inbox()).find(r => r.id === rid);
+  if(!l || !row){ toast("This home isn't available any more."); return; }
+  cmCtx = { rid, l, hh, before: row.match_pct, changes: {} };
+  $("cmSub").textContent = l.title;
+  drawCompromise();
+  if(!$("dlgCompromise").open) $("dlgCompromise").showModal();
+}
+function drawCompromise(){
+  const { l, hh, before, changes } = cmCtx, merged = Object.assign({}, state.vibe, changes);
+  const now = (vibeMatch(merged, hh) || { pct: before || 0 }).pct, better = now > (before || 0);
+  const qs = compromiseOptions(hh);
+  const lines = Object.keys(changes).map(k => `${VIBE_BY_KEY[k].q}: ${VIBE_BY_KEY[k].o[changes[k]].toLowerCase()}`);
+  $("cmBody").innerHTML = `
+    <div class="cm-score"><div>${ringSvg(before || 0, 64)}<span>Before</span></div><b aria-hidden="true">→</b>
+      <div class="${better ? "up" : ""}">${ringSvg(now, 84)}<span>${better ? `+${now - (before || 0)} with your changes` : "Change an answer below"}</span></div></div>
+    <p class="hint" style="text-align:center">These changes are only for this home. Your profile, and your match with every other home, stay the same.</p>
+    <div class="cm-list">${qs.map(x => `<div class="cm-q"><div class="q">${esc(x.q)}${x.w > 1 ? ' <span class="x2">counts double</span>' : ""}</div>
+      <div class="theirs">This home: <b>${esc(x.o[hh[x.k]])}</b></div>
+      <div class="chips">${x.o.map((o, i) => `<label class="chip${i === hh[x.k] ? " home" : ""}"><input type="radio" name="cm_${x.k}" value="${i}"
+        ${(changes[x.k] ?? state.vibe[x.k]) === i ? "checked" : ""}>${esc(o)}${i === state.vibe[x.k] ? " (you)" : ""}</label>`).join("")}</div></div>`).join("")}</div>
+    <textarea id="cmMsg" maxlength="300" placeholder="Add a note for the owner (optional)">${esc(lines.length ? "For your home I'm happy to adjust: " + lines.join("; ") + "." : "")}</textarea>
+    <button class="btn btn-accent btn-block" id="cmSend" style="margin-top:10px"${better ? "" : " disabled"}>${better ? `Send my request again at ${now}%` : "Change at least one answer to raise the score"}</button>
+    <p class="hint" style="text-align:center">You can do this once per home.</p>`;
+}
+$("cmBody").addEventListener("change", e => {
+  const r = e.target.closest("input[type=radio]"); if(!r || !cmCtx) return;
+  const k = r.name.slice(3), v = Number(r.value);
+  if(v === state.vibe[k]) delete cmCtx.changes[k]; else cmCtx.changes[k] = v;
+  const y = $("cmBody").scrollTop; drawCompromise(); $("cmBody").scrollTop = y;
+});
+$("cmBody").addEventListener("click", async e => {
+  if(!e.target.closest("#cmSend") || !cmCtx) return;
+  e.target.disabled = true;
+  try{
+    const r = await api.compromise(cmCtx.rid, cmCtx.changes, $("cmMsg").value.trim());
+    if(r.error === "no-credits"){ $("dlgCompromise").close(); return openPay(() => {}); }
+    if(r.error){ toast(r.error === "no-better" ? "That doesn't raise your score. Try changing another answer." : "Couldn't send it right now."); e.target.disabled = false; return; }
+    toast(`Sent! The owner now sees a ${r.match_pct}% match and what you're willing to adjust.`);
+    $("dlgCompromise").close(); await openListing(cmCtx.l.id); refreshCurrent();
+  }catch(err){ console.error(err); toast("Couldn't send it right now. Please try again."); e.target.disabled = false; }
+});
 /* ===================================================== Build your tribe */
 // Seekers looking in the same areas whose vibes match 70%+ can team up, hunt for a whole
 // flat together and split the rent. Numbers are shared only when both say yes.
@@ -2283,11 +2392,14 @@ function tribeCardHtml(t){
   const f = prefs(), shared = sharedInterests(state.interests, t.interests), same = sameAnswers(state.vibe, t.vibe).slice(0, 3);
   const areas = (t.areas || []).length ? t.areas.map(a => f.areas.includes(a) ? `<strong>${esc(a)}</strong>` : esc(a)).join(", ") : `Anywhere in ${esc(f.city || "the city")}`;
   const first = esc(t.name || "Someone");
-  const acts = t.my_yes ? `<span class="req-pill pending">You said yes · waiting for ${first}</span>`
+  const full = t.kind !== "complete" && ((t.my_size || 1) + (t.their_size || 1) > 3);
+  const acts = full ? `<span class="req-pill">${(t.my_size || 1) >= 3 ? "Your tribe is full (3 of 3)" : `${first}'s tribe is full`}</span>`
+    : t.my_yes ? `<span class="req-pill pending">You said yes · waiting for ${first}</span>`
     : t.their_yes ? `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Yes, let's team up</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not for me</button>`
     : `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Team up with ${first}</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not now</button>`;
   return `<article class="tribe-card${t.their_yes && !t.my_yes ? " wants" : ""}">
-    ${t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
+    ${t.kind === "complete" ? `<p class="wants-line">✨ Complete your tribe of 3: you're both teaming up with the same person. Say yes to each other to share numbers.</p>`
+      : t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
     <div class="seek-top"><span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>
       <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
@@ -2309,7 +2421,7 @@ async function renderTribe(){
   $("tribeWants").innerHTML = wants.length ? `<h2 class="section-h">They want to team up with you</h2>${wants.map(tribeCardHtml).join("")}` : "";
   const f = prefs(), size = bonded.length + 1, budget = (f.max || 0) + bonded.reduce((a, t) => a + (t.budget || 0), 0);
   $("tribeBonded").innerHTML = bonded.length ? `<div class="tribe-bond">
-      <p class="eyebrow">Your tribe · ${size} people</p>
+      <p class="eyebrow">Your tribe · ${size} of 3 people</p>
       <div class="bond-avs"><span class="av" style="background:var(--brand)">${esc((firstName()[0] || "Y").toUpperCase())}</span>${bonded.map(t =>
         `<span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>`).join("")}</div>
       <h2>You${bonded.map(t => " + " + esc(t.name)).join("")}</h2>
@@ -2347,7 +2459,8 @@ $("view-tribe").addEventListener("click", async e => {
   const id = b.dataset.ty || b.dataset.tn, yes = Boolean(b.dataset.ty), t = tribeRows.find(x => x.id === id);
   try{
     const st = await api.tribeAnswer(id, yes);
-    if(st === "bonded" && t) celebrateTribe(Object.assign({}, t, { status: "bonded" }));
+    if(st === "full") toast("Tribes are 3 people at most, and this one would be bigger.");
+    else if(st === "bonded" && t) celebrateTribe(Object.assign({}, t, { status: "bonded" }));
     else toast(yes ? `You said yes! If ${t ? t.name : "they"} says yes too, you'll both get each other's numbers.` : "Okay. We won't show you to each other again.");
   }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
   renderTribe();
@@ -2418,7 +2531,7 @@ async function checkInbox(){
   const fresh = rows.filter(r => r.unseen && r.direction === side);
   state.notified = state.notified || {};
   for(const r of fresh){
-    const key = r.id + r.status;
+    const key = r.id + r.status + (r.compromise ? "-compromise" : "");
     if(state.notified[key]) continue;
     state.notified[key] = Date.now();
     const first = (r.name || "They").split(" ")[0];
@@ -2432,9 +2545,12 @@ async function checkInbox(){
       }
     }else if(r.direction === "incoming"){
       const who = [r.name || "Someone", occLine(r.occupation)].filter(Boolean).join(", ");
-      Notify.show(`${r.name || "Someone"} wants to meet you${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
+      if(r.compromise) Notify.show(`🤝 ${r.name || "Someone"} is ready to compromise · ${r.orig_match_pct}% → ${r.match_pct}%`,
+        `They'll adjust a few habits for “${r.listing_title}”. See what they'd change and decide again.`, "requests");
+      else Notify.show(`${r.name || "Someone"} wants to meet you${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
         `${who} is interested in “${r.listing_title}”. Reply soon: people who fit usually find a room within days.`, "requests");
-      toast(`${r.name || "Someone"} wants to meet you · ${r.match_pct != null ? r.match_pct + "% match" : "new request"}`);
+      toast(r.compromise ? `🤝 ${r.name || "Someone"} is ready to compromise · now ${r.match_pct}%`
+        : `${r.name || "Someone"} wants to meet you · ${r.match_pct != null ? r.match_pct + "% match" : "new request"}`);
     }else if(r.by === "owner"){
       if(r.status === "pending"){
         Notify.show(`${r.name || "An owner"} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
@@ -3036,7 +3152,13 @@ async function openListing(id){
       ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <a class="btn btn-accent btn-sm" href="tel:+91${esc(contact.contact_phone)}" data-called="${esc(l.id)}">Call ${esc((contact.contact_name || "").split(" ")[0])}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(l.id)}" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from FindMyFlatMate. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
-        <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>`}
+        <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>
+      <button class="linkbtn report-link" type="button" data-action="report-open">🚩 Is this a broker? Report it</button>
+      <div class="report-box" id="reportBox" hidden><b>Report a broker</b>
+        <p class="hint">FindMyFlatMate is for owners renting out their own home, with no brokerage. If this is a broker, the listing comes down straight away.</p>
+        <div class="chips">${["Asked me for brokerage", "Isn't the owner or a flatmate", "Showed me a different flat", "Something else"].map(t =>
+          `<label class="chip"><input type="radio" name="rr" value="${esc(t)}">${esc(t)}</label>`).join("")}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px;color:var(--danger)" data-action="report">Report and take it down</button></div>`}
     </div>`;
   }else if(!l.is_owner && isSeeker()){
     const inv = (await api.inbox()).find(r => r.listing_id === id && r.by === "owner" && r.status === "pending");
@@ -3054,8 +3176,15 @@ async function openListing(id){
         ${notifyCard("Turn on notifications so you can call the moment they accept.")}
         <button class="btn btn-ghost btn-sm" data-action="withdraw">Withdraw request</button></div>`;
     }else if(l.request_status === "declined"){
+      const mine = (await api.inbox()).find(r => r.listing_id === id && r.direction === "outgoing" && r.by !== "owner");
+      const can = mine && !mine.compromise && compromiseOptions(hh).length;
       lock = `<div class="lock wait"><h3>Not this time</h3>
-        <p>The owner went with someone who's a closer fit for their home.${CHARGES_ON ? " Your contact wasn't used." : ""} Your best matches are on Discover.</p></div>`;
+        <p>The owner went with someone who's a closer fit for their home.${CHARGES_ON ? " Your contact wasn't used." : ""}</p>
+        ${can ? `<div class="cm-cta"><b>🤝 Really like this home?</b><span>Show them you're ready to adjust a few habits for this home.
+          Your vibe score goes up and they see exactly what you'd change. Only here, not on your profile.</span>
+          <button class="btn btn-accent" data-action="compromise" data-rid="${esc(mine.id)}">Compromise and ask again</button></div>`
+          : mine && mine.compromise ? `<p class="hint">You already offered a compromise for this home. Your best matches are on Discover.</p>`
+          : `<p class="hint">Your best matches are on Discover.</p>`}</div>`;
     }else{
       const left = contactsLeft();
       const tribe = l.kind === "flat" ? (await api.tribeList()).filter(t => t.status === "bonded") : [];
@@ -3127,6 +3256,20 @@ $("lBody").addEventListener("click", async e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
   const act = a.dataset.action;
   if(act === "visit") return openVisit(currentId);
+  if(act === "compromise") return openCompromise(a.dataset.rid, currentId);
+  if(act === "report-open"){ $("reportBox").hidden = false; a.hidden = true; return; }
+  if(act === "report"){
+    const reason = ($("reportBox").querySelector("[name=rr]:checked") || {}).value || "";
+    if(!reason){ toast("Pick a reason first."); return; }
+    a.disabled = true;
+    try{
+      const r = await api.reportBroker(currentId, reason);
+      if(r !== "delisted"){ toast("Only people the owner accepted can report a listing."); a.disabled = false; return; }
+      toast("Thanks for reporting. This listing has been taken down.");
+      $("dlgListing").close(); refreshCurrent();
+    }catch(err){ console.error(err); toast("Couldn't send the report. Please try again."); a.disabled = false; }
+    return;
+  }
   if(act === "inv-yes" || act === "inv-no"){ a.disabled = true; return answerInvite(a.dataset.rid, act === "inv-yes"); }
   if(act === "compat"){
     const l = await api.get(currentId), hh = (l && l.household) || {};
@@ -3209,10 +3352,12 @@ function inviteHtml(r, l){
 }
 const reqCompat = new Map();
 function incomingHtml(r, l){
-  const hh = (l && l.household) || {}, v = r.vibe || {}, occ = r.occupation || {};
+  // A compromise changes some answers for this home only: show the household those answers.
+  const hh = (l && l.household) || {}, v = Object.assign({}, r.vibe || {}, r.compromise || {}), occ = r.occupation || {};
   const traits = VIBE_QS.filter(x => Number.isInteger(v[x.k])).map(x => {
     const d = Number.isInteger(hh[x.k]) ? Math.abs(v[x.k] - hh[x.k]) : 1;
-    return `<span class="${d === 0 ? "g" : d === 2 ? "c" : ""}">${d === 0 ? "✓ " : d === 2 ? "! " : ""}${esc(x.t[v[x.k]])}</span>`;
+    const changed = r.compromise && Number.isInteger(r.compromise[x.k]);
+    return `<span class="${d === 0 ? "g" : d === 2 ? "c" : ""}${changed ? " cm" : ""}">${changed ? "🤝 " : d === 0 ? "✓ " : d === 2 ? "! " : ""}${esc(x.t[v[x.k]])}</span>`;
   }).join("");
   const first = (r.name || "They").split(" ")[0];
   reqCompat.set(String(r.id), { me: hh, them: v, meName: "Your home", themName: (r.name || "Them").split(" ")[0],
@@ -3223,6 +3368,9 @@ function incomingHtml(r, l){
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
+      ${r.compromise ? `<div class="cm-banner"><b>🤝 Ready to compromise · ${r.orig_match_pct ?? "?"}% → ${r.match_pct}%</b>
+        <span>${esc((r.name || "They").split(" ")[0])} asked again and will adjust for your home:</span>
+        <ul>${Object.keys(r.compromise).filter(k => VIBE_BY_KEY[k]).map(k => `<li>${esc(VIBE_BY_KEY[k].q)}: <s>${esc(VIBE_BY_KEY[k].o[(r.vibe || {})[k]] || "?")}</s> → <b>${esc(VIBE_BY_KEY[k].o[r.compromise[k]])}</b></li>`).join("")}</ul></div>` : ""}
       ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? `${esc(first)} accepted your invite. Call now while they're keen.`
         : r.status === "declined" ? `${esc(first)} passed this time. <a href="#escape">Find more people →</a>`
         : `You invited ${esc(first)}. You'll both get each other's numbers as soon as ${esc(first)} says yes.`}</p>`
@@ -3257,10 +3405,14 @@ function outgoingHtml(r){
       <span class="req-pill ${esc(r.status)}">${esc(STATUS_TXT[r.status] || r.status)}</span></div>
       <div class="occ">${r.by === "owner" ? (r.status === "approved" ? `You accepted ${esc(r.name || "the owner")}'s invite. Tap to see their number and address.`
           : `You passed on ${esc(r.name || "the owner")}'s invite.`)
-        : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined"
+        : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined" && !r.compromise
+        ? `Declined.${CHARGES_ON ? " No contact used." : ""} <button class="btn btn-accent btn-sm" style="margin-top:8px" data-cm="${esc(r.id)}" data-cml="${esc(r.listing_id)}">🤝 Compromise and ask again</button>`
+        : r.status === "declined"
         ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div></div></article>`;
 }
 $("reqList").addEventListener("click", async e => {
+  const cmb = e.target.closest("[data-cm]");
+  if(cmb){ e.stopPropagation(); return openCompromise(cmb.dataset.cm, cmb.dataset.cml); }
   const inv = e.target.closest("[data-inv-yes],[data-inv-no]");
   if(inv){ inv.disabled = true; return answerInvite(inv.dataset.invYes || inv.dataset.invNo, Boolean(inv.dataset.invYes)); }
   const b = e.target.closest("[data-accept],[data-decline]");
@@ -3371,6 +3523,7 @@ async function renderMine(){
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
       <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
+      ${l.status === "delisted" ? `<p class="delisted">🚩 Taken down: a person you accepted reported this as a broker listing. If that's a mistake, write to us from your account and we'll look into it.</p>` : ""}
       <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${inr(l.rent)}/month rent</div>
       <div class="stats" style="margin:12px 0">
         <div class="stat"><b>${reqs.filter(r => r.status === "pending").length}</b><span>waiting for you</span></div>
@@ -3536,7 +3689,8 @@ $("postForm").addEventListener("submit", async e => {
     go("mine");
   }catch(err){
     console.error(err);
-    const msg = err.message === "storage-full" ? "This phone's demo storage is full. Mark an old listing as rented or remove some photos, then try again."
+    const msg = /address-limit/.test(err.message || "") ? "You can list up to two different addresses. FindMyFlatMate is for people renting out their own home, so brokers can't post here."
+      : err.message === "storage-full" ? "This phone's demo storage is full. Mark an old listing as rented or remove some photos, then try again."
       : "Couldn't publish: " + (err.message || "please check your connection and try again.");
     showFormError(f, msg); toast(msg);
   }finally{ btn.disabled = false; btn.textContent = "Publish my listing"; }

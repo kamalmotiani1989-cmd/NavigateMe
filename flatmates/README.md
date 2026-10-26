@@ -68,6 +68,19 @@ the room comes second.
     server's copy of a seeker's answers wins; a seeker with no answers on the server is sent through
     the questions (otherwise the server would refuse their requests).
 
+12. **Compromise.** When an owner declines, the seeker can tap **Compromise and ask again**. They see
+    only the answers that clash with that household, can switch any of them for **this home only**
+    (their profile and every other match stay the same), and watch the score go up live. Sending is
+    allowed once per home and only if the score rises. The owner gets "🤝 Ready to compromise ·
+    43% → 80%" with each change listed (was → now), and decides again.
+13. **Tribes of up to 3.** Each person can bond with at most two others. When a third person bonds
+    with one member, the other two get a "complete your tribe" match and must say yes to each other
+    before their numbers are shared. A tribe can never go above 3; full tribes are marked.
+14. **No brokers.** An owner can list at most **two different addresses** (several rooms in the same
+    flat count once), and a contact number can't front for more than two addresses from any account.
+    A seeker whose request the owner accepted can **report a broker** from the contact section; the
+    listing is delisted straight away and the owner sees why.
+
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds

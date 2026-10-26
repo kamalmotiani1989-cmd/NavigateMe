@@ -82,6 +82,9 @@ create table if not exists public.fm_listings (
   status        text not null default 'active' check (status in ('active','closed')),
   created_at    timestamptz not null default now()
 );
+-- 'delisted': taken down after a seeker who connected with the owner reported a broker.
+alter table public.fm_listings drop constraint if exists fm_listings_status_check;
+alter table public.fm_listings add constraint fm_listings_status_check check (status in ('active','closed','delisted'));
 alter table public.fm_listings add column if not exists photos text[] not null default '{}';
 -- The household: same living-style answers as seekers, plus who lives there.
 alter table public.fm_listings add column if not exists household jsonb not null default '{}';
@@ -105,6 +108,12 @@ create table if not exists public.fm_listing_private (
 
 -- Structured address: {flat, building, street, landmark, pin}. Area and city are public on the listing.
 alter table public.fm_listing_private add column if not exists address_parts jsonb not null default '{}';
+-- Normalised address (flat + building + PIN) so an owner can list at most two different addresses.
+alter table public.fm_listing_private add column if not exists address_key text;
+update public.fm_listing_private set address_key =
+  lower(regexp_replace(coalesce(address_parts->>'flat', '') || '|' || coalesce(address_parts->>'building', address, '')
+                       || '|' || coalesce(address_parts->>'pin', ''), '[^a-zA-Z0-9|]', '', 'g'))
+where address_key is null;
 
 -- ----------------------------------------------------- unlocks/visits --
 create table if not exists public.fm_unlocks (
@@ -152,6 +161,19 @@ create table if not exists public.fm_requests (
 -- (The Empty Room Escape), the seeker decides. Numbers are shared only on acceptance.
 alter table public.fm_requests add column if not exists initiated_by text not null default 'seeker'
   check (initiated_by in ('seeker','owner'));
+-- Compromise: after a decline the seeker may change some answers for this home only and ask once more.
+-- compromise holds just the changed answers ({smoke: 1, ...}); orig_match_pct the score before.
+alter table public.fm_requests add column if not exists compromise jsonb;
+alter table public.fm_requests add column if not exists orig_match_pct int;
+
+-- Broker reports, one per listing per reporter.
+create table if not exists public.fm_reports (
+  listing_id  uuid not null references public.fm_listings(id) on delete cascade,
+  reporter_id uuid not null references auth.users(id) on delete cascade,
+  reason      text not null default '',
+  created_at  timestamptz not null default now(),
+  primary key (listing_id, reporter_id)
+);
 
 create table if not exists public.fm_visits (
   id          uuid primary key default gen_random_uuid(),
@@ -185,6 +207,7 @@ alter table public.fm_visits          enable row level security;
 alter table public.fm_orders          enable row level security;
 alter table public.fm_settings        enable row level security;
 alter table public.fm_requests        enable row level security;
+alter table public.fm_reports         enable row level security;   -- no policies: written by fm_report_broker only
 
 drop policy if exists fm_requests_parties on public.fm_requests;
 create policy fm_requests_parties on public.fm_requests
@@ -231,6 +254,8 @@ create policy fm_orders_self on public.fm_orders
 -- Return types and signatures changed since the first version; drop the old ones.
 drop function if exists public.fm_me();
 drop function if exists public.fm_inbox();
+drop function if exists public.fm_tribe_list();
+drop function if exists public.fm_tribe_answer(uuid, boolean);
 drop function if exists public.fm_set_name(text);
 drop function if exists public.fm_search(text, text, int, text, text);
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
@@ -341,7 +366,7 @@ returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
-  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean)
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -350,7 +375,7 @@ language sql security definer set search_path = public stable as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors
+         mine.status, l.bachelors, l.status
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where (l.status = 'active' or l.owner_id = auth.uid())
@@ -372,7 +397,7 @@ create or replace function public.fm_post_listing(
   p_bachelors boolean default true)
 returns uuid
 language plpgsql security definer set search_path = public as $$
-declare v_id uuid; v_photo text;
+declare v_id uuid; v_photo text; v_key text;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   if (select role from fm_profiles where id = auth.uid()) is distinct from 'owner' then
@@ -388,6 +413,17 @@ begin
     raise exception 'bad-address';
   end if;
   -- Photos must be the caller's own uploads in the fm-photos bucket.
+  -- Owners rent out their own home: at most two different addresses per account, and a contact
+  -- number can't front for more than two addresses either. Rooms in the same flat share an address.
+  v_key := lower(regexp_replace(coalesce(p_address_parts->>'flat', '') || '|' || coalesce(p_address_parts->>'building', p_address, '')
+                                || '|' || coalesce(p_address_parts->>'pin', ''), '[^a-zA-Z0-9|]', '', 'g'));
+  if (select count(distinct pv.address_key) from fm_listing_private pv join fm_listings l on l.id = pv.listing_id
+       where l.owner_id = auth.uid() and pv.address_key is distinct from v_key) >= 2
+     or (select count(distinct pv.address_key) from fm_listing_private pv
+          where regexp_replace(pv.contact_phone, '\D', '', 'g') = regexp_replace(coalesce(p_contact_phone, ''), '\D', '', 'g')
+            and pv.address_key is distinct from v_key) >= 2 then
+    raise exception 'address-limit';
+  end if;
   foreach v_photo in array coalesce(p_photos, '{}') loop
     if position('/storage/v1/object/public/fm-photos/' || auth.uid()::text || '/' in v_photo) = 0 then
       raise exception 'bad-photo-url';
@@ -401,8 +437,8 @@ begin
           coalesce(p_description, ''), coalesce(p_photos, '{}'),
           coalesce(p_household, '{}'), coalesce(p_costs, '{}'), coalesce(p_bachelors, true))
   returning id into v_id;
-  insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts)
-  values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'));
+  insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts, address_key)
+  values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'), v_key);
   return v_id;
 end $$;
 
@@ -527,6 +563,56 @@ begin
   return query select 'pending'::text, null::text;
 end $$;
 
+-- Compromise: after an owner declines, the seeker may change the answers that clashed, for this home
+-- only, and send the request once more. The new score must be higher than before.
+create or replace function public.fm_compromise(p_request uuid, p_changes jsonb, p_message text)
+returns table (status text, error text, match_pct int)
+language plpgsql security definer set search_path = public as $$
+declare v_req fm_requests%rowtype; v_me fm_profiles%rowtype; v_l fm_listings%rowtype; v_new int; v_pending int; k text;
+begin
+  select * into v_req from fm_requests r where r.id = p_request and r.seeker_id = auth.uid() and r.initiated_by = 'seeker' for update;
+  if v_req.id is null then return query select null::text, 'not-found', null::int; return; end if;
+  if v_req.status <> 'declined' then return query select v_req.status, 'not-declined', null::int; return; end if;
+  if v_req.compromise is not null then return query select v_req.status, 'already-compromised', null::int; return; end if;
+  if jsonb_typeof(p_changes) <> 'object' or (select count(*) from jsonb_object_keys(p_changes)) = 0 then
+    return query select null::text, 'no-changes', null::int; return;
+  end if;
+  for k in select jsonb_object_keys(p_changes) loop
+    if k not in ('sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets')
+       or jsonb_typeof(p_changes->k) <> 'number' or (p_changes->>k)::int not between 0 and 2 then
+      return query select null::text, 'bad-changes', null::int; return;
+    end if;
+  end loop;
+  select * into v_me from fm_profiles where id = auth.uid();
+  select * into v_l from fm_listings where id = v_req.listing_id and fm_listings.status = 'active';
+  if v_l.id is null then return query select null::text, 'listing-not-found', null::int; return; end if;
+  v_new := fm_match(v_me.vibe || p_changes, v_l.household);
+  if v_new is null or v_new <= coalesce(v_req.match_pct, 0) then return query select null::text, 'no-better', v_new; return; end if;
+  if (select charges_enabled from fm_settings) then
+    select count(*) into v_pending from fm_requests r where r.seeker_id = auth.uid() and r.status = 'pending' and r.initiated_by = 'seeker';
+    if v_me.credits - v_pending < 1 then return query select null::text, 'no-credits', null::int; return; end if;
+  end if;
+  update fm_requests set status = 'pending', compromise = p_changes, orig_match_pct = v_req.match_pct, match_pct = v_new,
+         message = left(coalesce(nullif(p_message, ''), message), 300), seen_by_owner = false, seen_by_seeker = true,
+         created_at = now(), decided_at = null
+   where id = p_request;
+  return query select 'pending'::text, null::text, v_new;
+end $$;
+
+-- A seeker the owner accepted reports a broker: the listing is taken down straight away.
+create or replace function public.fm_report_broker(p_listing uuid, p_reason text) returns text
+language plpgsql security definer set search_path = public as $$
+begin
+  if not exists (select 1 from fm_unlocks u join fm_listings l on l.id = u.listing_id
+                  where u.listing_id = p_listing and u.user_id = auth.uid() and l.owner_id <> auth.uid()) then
+    return 'not-connected';
+  end if;
+  insert into fm_reports (listing_id, reporter_id, reason) values (p_listing, auth.uid(), left(coalesce(p_reason, ''), 300))
+  on conflict (listing_id, reporter_id) do nothing;
+  update fm_listings set status = 'delisted' where id = p_listing and status = 'active';
+  return 'delisted';
+end $$;
+
 -- ------------------------------------------------------- build your tribe --
 -- Two seekers looking in the same area whose vibes match 70%+ are suggested to each other
 -- as a tribe: hunt together, rent a whole flat, split it. Each says yes or no; numbers are
@@ -539,6 +625,7 @@ create table if not exists public.fm_tribe_links (
   a_yes      boolean,
   b_yes      boolean,
   status     text not null default 'open' check (status in ('open','bonded','closed')),
+  kind       text not null default 'match',   -- 'complete': the third person joining, to be bonded with the other two
   seen_a     boolean not null default false,
   seen_b     boolean not null default false,
   created_at timestamptz not null default now(),
@@ -549,6 +636,18 @@ create table if not exists public.fm_tribe_links (
 alter table public.fm_tribe_links enable row level security;
 drop policy if exists fm_tribe_parties on public.fm_tribe_links;
 create policy fm_tribe_parties on public.fm_tribe_links for select using (a = auth.uid() or b = auth.uid());
+alter table public.fm_tribe_links add column if not exists kind text not null default 'match';
+
+-- Everyone in a person's tribe (bonded links, followed through), the person included. Max 3.
+create or replace function public.fm_tribe_members(p_user uuid) returns uuid[]
+language sql stable security definer set search_path = public as $$
+  with recursive m(id) as (
+    select p_user
+    union
+    select case when t.a = m.id then t.b else t.a end
+    from fm_tribe_links t join m on (t.a = m.id or t.b = m.id) and t.status = 'bonded')
+  select array_agg(id) from m;
+$$;
 -- All writes go through the functions below.
 
 create or replace function public.fm_set_tribe_open(p_open boolean) returns void
@@ -585,7 +684,8 @@ end $$;
 create or replace function public.fm_tribe_list()
 returns table (id uuid, other_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
                interests jsonb, vibe jsonb, my_yes boolean, their_yes boolean, status text, phone text,
-               created_at timestamptz, bonded_at timestamptz, unseen boolean)
+               created_at timestamptz, bonded_at timestamptz, unseen boolean,
+               kind text, my_size int, their_size int)
 language sql security definer set search_path = public stable as $$
   select t.id, o.id, split_part(coalesce(o.full_name, ''), ' ', 1), o.occupation,
          coalesce(o.search->'areas', '[]'::jsonb), (o.search->>'budget')::int, t.match_pct, o.interests, o.vibe,
@@ -594,7 +694,8 @@ language sql security definer set search_path = public stable as $$
          t.status,
          case when t.status = 'bonded' then o.phone end,
          t.created_at, t.bonded_at,
-         case when t.a = auth.uid() then not t.seen_a else not t.seen_b end
+         case when t.a = auth.uid() then not t.seen_a else not t.seen_b end,
+         t.kind, cardinality(fm_tribe_members(auth.uid())), cardinality(fm_tribe_members(o.id))
   from fm_tribe_links t
   join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
   where (t.a = auth.uid() or t.b = auth.uid()) and t.status <> 'closed'
@@ -606,7 +707,7 @@ $$;
 -- Say yes or no to a tribe match. Both yes = bonded (numbers shared). Any no closes it quietly.
 create or replace function public.fm_tribe_answer(p_link uuid, p_yes boolean) returns text
 language plpgsql security definer set search_path = public as $$
-declare t fm_tribe_links%rowtype;
+declare t fm_tribe_links%rowtype; v_all uuid[]; x uuid; y uuid;
 begin
   select * into t from fm_tribe_links where fm_tribe_links.id = p_link and (a = auth.uid() or b = auth.uid()) for update;
   if t.id is null then return 'not-found'; end if;
@@ -618,6 +719,9 @@ begin
      where fm_tribe_links.id = p_link;
     return 'closed';
   end if;
+  -- A tribe is at most 3 people: joining two groups mustn't go over that.
+  select array_agg(distinct m) into v_all from unnest(fm_tribe_members(t.a) || fm_tribe_members(t.b)) m;
+  if cardinality(v_all) > 3 then return 'full'; end if;
   if t.a = auth.uid() then
     update fm_tribe_links set a_yes = true, seen_b = false where fm_tribe_links.id = p_link returning * into t;
   else
@@ -625,6 +729,18 @@ begin
   end if;
   if t.a_yes and t.b_yes then
     update fm_tribe_links set status = 'bonded', bonded_at = now(), seen_a = false, seen_b = false where fm_tribe_links.id = p_link;
+    -- A group of three: everyone in it should agree to everyone else, so open the missing links.
+    foreach x in array v_all loop
+      foreach y in array v_all loop
+        if x < y and not exists (select 1 from fm_tribe_links l where l.a = x and l.b = y and l.status = 'bonded') then
+          insert into fm_tribe_links (a, b, match_pct, kind)
+          values (x, y, fm_match((select vibe from fm_profiles where id = x), (select vibe from fm_profiles where id = y)), 'complete')
+          on conflict (a, b) do update set status = 'open', kind = 'complete', a_yes = null, b_yes = null,
+                                           seen_a = false, seen_b = false
+            where fm_tribe_links.status <> 'bonded';
+        end if;
+      end loop;
+    end loop;
     return 'bonded';
   end if;
   return 'open';
@@ -643,7 +759,7 @@ create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
                name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb,
-               by text)
+               by text, compromise jsonb, orig_match_pct int)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
@@ -656,7 +772,7 @@ language sql security definer set search_path = public stable as $$
          case when l.owner_id = auth.uid() then not r.seen_by_owner and (r.status = 'pending') = (r.initiated_by = 'seeker')
               else not r.seen_by_seeker end,
          case when l.owner_id = auth.uid() then sp.interests end,
-         r.initiated_by
+         r.initiated_by, r.compromise, r.orig_match_pct
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
