@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>FindMyFlatMate</title>
 <meta name="description" content="Find a room and the people worth sharing it with. Owners post their spare room free; seekers see who lives there, how they live and what it really costs.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#0E9AA0">
 <meta property="og:title" content="FindMyFlatMate">
 <meta property="og:description" content="Find a room, and the people worth sharing it with.">
 <meta property="og:locale" content="en_IN">
@@ -26,12 +26,13 @@
   color-scheme:light;
   --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F5F7; --line:#ECEEF1; --line-2:#DADEE3;
   --text:#101418; --text-2:#4A5260; --text-3:#8A919C;
-  --brand:#12813F; --brand-2:#0E6B34; --brand-soft:#EAF5EE; --on-brand:#FFFFFF;
+  --brand:#0E9AA0; --brand-2:#0B7C82; --brand-soft:#E2F5F5; --on-brand:#FFFFFF;
   --accent:#F26B1D; --accent-soft:#FFF2E8; --on-accent:#FFFFFF;
-  --ok:#12813F; --ok-soft:#EAF5EE; --warn:#B45309; --danger:#C2261D; --mid:#E08A00;
+  --ok:#0E9F7E; --ok-soft:#E3F6F0; --warn:#B45309; --danger:#C2261D; --mid:#E08A00;
   /* Used by the welcome illustration and a few inline panels. */
   --band:#F4F5F7; --band-2:#E9ECF0; --on-band:#101418; --on-band-2:#4A5260; --lit:#F7A35C; --unlit:#FFFFFF;
   --shadow:0 8px 28px rgba(16,20,24,.08);
+  --teal:#0E9AA0; --grad:linear-gradient(172deg,#0E9AA0 0%,#0F8EA6 45%,#1F6CC4 100%);
   --radius:14px;
   --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -461,6 +462,75 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .both{font-size:13px; font-weight:700; color:var(--accent)}
 .traits.likes span.g{background:var(--accent-soft); color:var(--accent); font-weight:700}
 .foot{color:var(--text-3); font-size:13px; padding-block:28px 40px; box-shadow:0 -1px 0 var(--line); margin-top:16px}
+/* ---------- vibrant layer: teal-to-blue gradients on the welcome, onboarding and
+   app bars, white content below. Status bar colour (#0E9AA0) is the gradient's top. */
+.chip:has(input:checked), .area-chips button[aria-pressed="true"]{background:var(--brand); color:#fff}
+.section-h{font-size:13px; letter-spacing:.09em; text-transform:uppercase; color:var(--brand)}
+.logo i{background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(5,40,60,.18)}
+.app-head, .w-band, .ob{background:var(--grad)}
+.app-head{box-shadow:none}
+.app-head .wordmark b, .w-band .wordmark b{color:#fff; -webkit-text-fill-color:#fff; background:none}
+.me{background:#fff; color:var(--brand-2)}
+@media (min-width:721px){
+  .app-head .tab{color:rgba(255,255,255,.78)} .app-head .tab:hover{color:#fff}
+  .app-head .tab[aria-current="true"]{color:#fff; background:rgba(255,255,255,.18)}
+}
+@media (max-width:720px){ .app-head{background:var(--teal)} }
+.w-band{color:#fff; --band-2:rgba(255,255,255,.14); --unlit:rgba(255,255,255,.3); --lit:#FFC24D}
+.w-copy h1{color:#fff} .w-copy h1 em{color:#FFC86B}
+.w-copy .lede{color:rgba(255,255,255,.88)} .w-points{color:#fff} .w-points li::before{background:#FFC24D}
+.tagline{color:rgba(255,255,255,.82)}
+.w-card{background:#fff; color:var(--text); border-radius:24px; padding:24px 20px 20px; box-shadow:0 24px 60px rgba(4,40,70,.28)}
+.ob{color:#fff}
+.ob .ob-progress{background:rgba(255,255,255,.25)} .ob .ob-progress i{background:linear-gradient(90deg,#FF8A4C,#FF5E62)}
+.ob .ob-count, .ob .linkbtn{color:rgba(255,255,255,.85)}
+.ob .why, .ob .hint, .ob .opt span{color:rgba(255,255,255,.82)}
+.ob .opts{box-shadow:none; gap:10px}
+.ob .opt{background:rgba(255,255,255,.13); border-radius:14px; padding:15px 16px; box-shadow:none; color:#fff}
+.ob .opt:hover{background:rgba(255,255,255,.22)}
+.ob .opt[aria-pressed="true"]{background:#fff; color:var(--brand-2)} .ob .opt[aria-pressed="true"] span{color:var(--text-2)}
+.ob label, .ob legend{color:#fff}
+.ob input[type=text], .ob input[type=tel], .ob input[type=number], .ob select, .ob textarea{background:#fff; color:var(--text)}
+.ob .chip{background:rgba(255,255,255,.16); color:#fff}
+.ob .chip:has(input:checked){background:#fff; color:var(--brand-2)}
+.ob .btn-primary{background:#fff; color:var(--brand-2)} .ob .btn-primary:hover{background:#EFFAFA}
+.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff}
+.ob .form-err{color:#FFE1DC} .ob .fm-row{box-shadow:0 -1px 0 rgba(255,255,255,.2)}
+.ob .finale p{color:rgba(255,255,255,.88)}
+.mhead{background:var(--teal); color:#fff; padding-bottom:16px; margin-bottom:14px}
+.mhead h2{color:#fff} .mhead .loc{color:rgba(255,255,255,.85)}
+.mhead .x{background:rgba(255,255,255,.2); color:#fff}
+
+/* ---------- compatibility analysis */
+.wheel{display:block; max-width:100%; height:auto}
+.wheel .trk{fill:#F1F3F5}
+.wheel .bar{stroke:#fff; stroke-width:2; cursor:pointer; transform-box:view-box; transform-origin:50% 50%; animation:grow .7s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i) * 35ms); transition:opacity .2s}
+.wheel .bar.dim{opacity:.4}
+@keyframes grow{from{transform:scale(.4); opacity:0}}
+.compat-top{display:grid; justify-items:center; gap:6px; text-align:center}
+.compat-sum{margin:6px 0 0; color:var(--text-2); max-width:44ch}
+.compat-tabs{display:flex; gap:8px; overflow-x:auto; margin:18px -20px 0; padding:4px 20px 10px; scrollbar-width:none}
+.compat-tabs::-webkit-scrollbar{display:none}
+.compat-tabs button{flex:none; display:flex; align-items:center; gap:8px; border:0; border-radius:999px; padding:9px 14px; background:var(--surface-2);
+  font:600 14px var(--body); color:var(--text); cursor:pointer}
+.compat-tabs button i{width:10px; height:10px; border-radius:50%}
+.compat-tabs button .heart-dot{width:auto; height:auto; font-style:normal; color:var(--accent)}
+.compat-tabs button b{font-weight:800}
+.compat-tabs button[aria-selected="true"]{background:var(--text); color:#fff}
+.compat-panel{padding-top:10px; box-shadow:0 -1px 0 var(--line)}
+.compat-panel h3{font-size:13px; letter-spacing:.09em; text-transform:uppercase; margin:14px 0 4px}
+.compat-rows{display:grid; margin-top:10px}
+.compat-row{display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; padding:12px 0; box-shadow:0 -1px 0 var(--line)}
+.compat-row .q{font-weight:700; grid-column:1 / -1}
+.compat-row .x2{font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:1px 7px; border-radius:999px; margin-left:4px}
+.compat-row .ans{display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:14px}
+.compat-row .ans small{display:block; font-size:11.5px; color:var(--text-3); font-weight:600}
+.verdict{font-size:12.5px; font-weight:800; padding:4px 10px; border-radius:999px; background:var(--surface-2); color:var(--text-2); white-space:nowrap}
+.verdict.g{background:var(--ok-soft); color:var(--ok)} .verdict.m{background:#FFF4DE; color:#9A5B00} .verdict.c{background:#FDE8E9; color:#B42332}
+.compat-mini{display:flex; gap:16px; align-items:center; margin-top:16px; padding:14px; border-radius:16px; background:linear-gradient(135deg,#E9F8F8,#EEF3FD)}
+.compat-mini .reasons{margin-top:8px}
+.compat-wheel-btn{border:0; background:none; padding:0; cursor:pointer; flex:none}
+@media (max-width:420px){ .compat-mini{flex-direction:column; align-items:flex-start} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -701,6 +771,9 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 <dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="lBody"></div></dialog>
 
+<dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="cBody"></div></dialog>
+
 <dialog id="dlgGift"><div class="mbody gift-card" style="border:0;margin:0;max-width:none;padding:28px 22px 22px">
     <div id="giftBody"></div>
     <button class="btn btn-accent btn-block" type="button" id="giftGo" style="margin-top:16px">Use 1 to send my request</button>
@@ -887,6 +960,100 @@ function vibeMatch(me, home){
   return { pct: Math.round(sum / tot * 100), good, clash };
 }
 const matchClass = p => p >= 80 ? "hi" : p >= 60 ? "mid" : "lo";
+
+/* ---- compatibility analysis: the same vibe score, broken down by area of life.
+   Each of the 12 answers becomes one bar of a radial chart, grouped and coloured
+   by area; a bar's length is how close the two answers are (same, close, different). */
+const COMPAT_GROUPS = [
+  {k:"rhythm",  name:"Daily rhythm",      color:"#F28C18", qs:["sleep","work","noise"],
+   about:"Bedtimes, when you're home and how loud home gets. Friction here shows up every single day."},
+  {k:"home",    name:"Home & chores",     color:"#0E9AA0", qs:["clean","cook","sharing"],
+   about:"How tidy the kitchen stays, who cooks, and how groceries and chores are split."},
+  {k:"choices", name:"Lifestyle choices", color:"#E8505B", qs:["food","smoke","drinks","pets"],
+   about:"Food, smoking, drinks and pets. Food, smoking and pets count double: they're dealbreakers for many people."},
+  {k:"social",  name:"Social life",       color:"#3D6BE0", qs:["guests","social"],
+   about:"Guests, overnight stays and how much time you like to spend together at home."},
+];
+const VIBE_BY_KEY = Object.fromEntries(VIBE_QS.map(x => [x.k, x]));
+const VERDICT = [["Same", "✓", "g"], ["Close", "≈", "m"], ["Different", "!", "c"]];
+function compatOf(me, them){
+  const m = vibeMatch(me, them); if(!m) return null;
+  const groups = COMPAT_GROUPS.map(g => {
+    let s = 0, t = 0;
+    const rows = g.qs.map(k => {
+      const x = VIBE_BY_KEY[k], a = me && me[k], b = them && them[k];
+      const d = Number.isInteger(a) && Number.isInteger(b) ? Math.abs(a - b) : null;
+      if(d != null){ s += x.w * (1 - d/2); t += x.w; }
+      return { x, a, b, d };
+    });
+    return { ...g, rows, pct: t ? Math.round(s / t * 100) : null };
+  });
+  return { pct: m.pct, groups };
+}
+// Annular sector between radii r0..r1 and angles a0..a1 (radians, clockwise from 12 o'clock).
+function sectorPath(c, r0, r1, a0, a1){
+  const p = (r, a) => (c + r * Math.sin(a)).toFixed(1) + " " + (c - r * Math.cos(a)).toFixed(1);
+  const big = a1 - a0 > Math.PI ? 1 : 0;
+  return `M${p(r1, a0)}A${r1} ${r1} 0 ${big} 1 ${p(r1, a1)}L${p(r0, a1)}A${r0} ${r0} 0 ${big} 0 ${p(r0, a0)}Z`;
+}
+function compatWheel(cp, size, active){
+  const c = size / 2, R = c - 10, r0 = size * .2, slots = VIBE_QS.length + COMPAT_GROUPS.length, step = 2 * Math.PI / slots;
+  let i = 0, bars = "", rims = "";
+  for(const g of cp.groups){
+    const start = i * step;
+    for(const r of g.rows){
+      const a0 = i * step + step * .08, a1 = (i + 1) * step - step * .08, len = r.d == null ? 0 : 1 - r.d / 2;
+      const tip = `${r.x.q}: ${r.d == null ? "not answered" : VERDICT[r.d][0].toLowerCase()}`;
+      bars += `<path class="trk" d="${sectorPath(c, r0, R - 8, a0, a1)}"/>`;
+      bars += `<path class="bar${active && active !== g.k ? " dim" : ""}" data-g="${g.k}" fill="${g.color}"${len ? "" : ' fill-opacity=".35"'}
+        d="${sectorPath(c, r0, r0 + (R - 8 - r0) * Math.max(len, .12), a0, a1)}" style="--i:${i}"><title>${esc(tip)}</title></path>`;
+      i++;
+    }
+    rims += `<path fill="${g.color}" d="${sectorPath(c, R - 3, R, start + step * .1, i * step - step * .1)}"/>`;
+    i++;  // gap between areas
+  }
+  return `<svg class="wheel" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="Vibe score ${cp.pct}%">
+    ${rims}${bars}<circle cx="${c}" cy="${c}" r="${r0 - 4}" fill="#fff"/>
+    <text x="${c}" y="${c - size * .015}" text-anchor="middle" font-size="${Math.round(size * .13)}" font-weight="800" fill="#101418">${cp.pct}%</text>
+    <text x="${c}" y="${c + size * .07}" text-anchor="middle" font-size="${Math.round(size * .042)}" font-weight="700" fill="#4A5260">vibe score</text></svg>`;
+}
+let compatCtx = null;
+// ctx: {me, them, meName, themName, myInts, theirInts, title}
+function openCompat(ctx, tab){
+  const cp = compatOf(ctx.me, ctx.them);
+  if(!cp){ toast("Not enough answers yet to compare."); return; }
+  compatCtx = ctx;
+  const scored = cp.groups.filter(g => g.pct != null);
+  const best = scored.reduce((a, b) => b.pct > a.pct ? b : a), worst = scored.reduce((a, b) => b.pct < a.pct ? b : a);
+  const shared = sharedInterests(ctx.myInts, ctx.theirInts);
+  const g = cp.groups.find(x => x.k === tab) || (tab === "likes" ? null : best);
+  $("cSub").textContent = ctx.title || "";
+  $("cBody").innerHTML = `
+    <div class="compat-top">${compatWheel(cp, 280, tab && g ? g.k : null)}
+      <p class="compat-sum"><b>${cp.pct}% vibe match.</b> Strongest on <b style="color:${best.color}">${esc(best.name)}</b>${worst.pct < best.pct ? `; talk about <b style="color:${worst.color}">${esc(worst.name)}</b> before moving in` : ""}.</p></div>
+    <div class="compat-tabs" role="tablist">${cp.groups.map(x => `<button role="tab" data-ctab="${x.k}" aria-selected="${g && g.k === x.k}">
+        <i style="background:${x.color}"></i><span>${esc(x.name)}</span><b>${x.pct == null ? "–" : x.pct + "%"}</b></button>`).join("")}
+      <button role="tab" data-ctab="likes" aria-selected="${!g}"><i class="heart-dot">♥</i><span>Shared interests</span><b>${shared.length}</b></button></div>
+    <div class="compat-panel" role="tabpanel">${g ? `
+      <h3 style="color:${g.color}">${esc(g.name)} · ${g.pct == null ? "not answered" : g.pct + "%"}</h3>
+      <p class="hint">${esc(g.about)}</p>
+      <div class="compat-rows">${g.rows.map(r => `<div class="compat-row">
+        <div class="q">${esc(r.x.q)}${r.x.w > 1 ? ' <span class="x2">counts double</span>' : ""}</div>
+        <div class="ans"><span><small>${esc(ctx.meName)}</small>${Number.isInteger(r.a) ? esc(r.x.o[r.a]) : "–"}</span>
+          <span><small>${esc(ctx.themName)}</small>${Number.isInteger(r.b) ? esc(r.x.o[r.b]) : "–"}</span></div>
+        ${r.d == null ? `<span class="verdict">Not answered</span>` : `<span class="verdict ${VERDICT[r.d][2]}">${VERDICT[r.d][1]} ${VERDICT[r.d][0]}</span>`}</div>`).join("")}</div>`
+      : `<h3 style="color:var(--accent)">Shared interests · ${shared.length}</h3>
+      <p class="hint">Music and hobbies you have in common. Nice to have, so they're not part of the score.</p>
+      ${allInterests(ctx.theirInts).length ? interestsHtml(ctx.theirInts, ctx.myInts) : `<p>${esc(ctx.themName)} hasn't added interests yet.</p>`}`}
+    </div>`;
+  if(!$("dlgCompat").open) $("dlgCompat").showModal();
+}
+$("cBody").addEventListener("click", e => {
+  const t = e.target.closest("[data-ctab]") || e.target.closest(".wheel .bar");
+  if(!t || !compatCtx) return;
+  openCompat(compatCtx, t.dataset.ctab || t.dataset.g);
+  const tab = $("cBody").querySelector(`[data-ctab="${t.dataset.ctab || t.dataset.g}"]`); if(tab) tab.focus();
+});
 
 /* ---- money: rent plus this room's share of the bills */
 // Rent is the price. Expenses are listed per room, separately, and never added to rent.
@@ -2184,9 +2351,12 @@ async function openListing(id){
   }
   const traits = VIBE_QS.filter(x => Number.isInteger(hh[x.k])).map(x => `<span>${esc(x.t[hh[x.k]])}</span>`).join("");
   const mates = matesOf(hh);
-  const matchBlock = !m ? "" : `<p style="margin:12px 0 0;font-weight:800">${m.pct}% match with how you live</p>
-    <ul class="reasons">${m.good.slice(0, 4).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
-      ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>`;
+  const cp = isSeeker() && !l.is_owner ? compatOf(state.vibe, hh) : null;
+  const matchBlock = !m ? "" : `<div class="compat-mini">${cp ? `<button class="compat-wheel-btn" data-action="compat" aria-label="Open compatibility analysis">${compatWheel(cp, 132)}</button>` : ""}
+    <div><p style="margin:0;font-weight:800">${m.pct}% match with how you live</p>
+    <ul class="reasons">${m.good.slice(0, 3).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
+      ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
+    ${cp ? `<button class="btn btn-primary btn-sm" style="margin-top:12px" data-action="compat">See compatibility analysis</button>` : ""}</div></div>`;
   const items = expenseItems(l);
   const bill = items.map(([k, label]) => `<span class="muted">${label}</span><span>${l.costs[k] === "usage" ? "As per use" : inr(l.costs[k])}</span>`).join("");
   $("lBody").innerHTML = `
@@ -2228,6 +2398,10 @@ $("lBody").addEventListener("click", async e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
   const act = a.dataset.action;
   if(act === "visit") return openVisit(currentId);
+  if(act === "compat"){
+    const l = await api.get(currentId), hh = (l && l.household) || {};
+    return openCompat({ me: state.vibe, them: hh, meName: "You", themName: "This home", myInts: state.interests, theirInts: hh.interests, title: l ? l.title : "" });
+  }
   if(act === "save"){ toggleSaved(currentId); a.remove(); toast("Saved to your shortlist"); return refreshCurrent(); }
   if(act === "withdraw"){
     const r = (await api.inbox()).find(x => x.listing_id === currentId && x.direction === "outgoing" && x.status === "pending");
@@ -2273,12 +2447,15 @@ async function renderRequests(){
         : "Open a flat you like and tap “Send request”."}</div>`;
   if(rows.some(r => r.unseen)){ await api.markSeen(); unseen = 0; renderNav(); }
 }
+const reqCompat = new Map();
 function incomingHtml(r, l){
   const hh = (l && l.household) || {}, v = r.vibe || {}, occ = r.occupation || {};
   const traits = VIBE_QS.filter(x => Number.isInteger(v[x.k])).map(x => {
     const d = Number.isInteger(hh[x.k]) ? Math.abs(v[x.k] - hh[x.k]) : 1;
     return `<span class="${d === 0 ? "g" : d === 2 ? "c" : ""}">${d === 0 ? "✓ " : d === 2 ? "! " : ""}${esc(x.t[v[x.k]])}</span>`;
   }).join("");
+  reqCompat.set(String(r.id), { me: hh, them: v, meName: "Your home", themName: (r.name || "Them").split(" ")[0],
+    myInts: hh.interests, theirInts: r.interests, title: (r.name || "Someone") + " · " + (r.listing_title || "") });
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
@@ -2288,7 +2465,8 @@ function incomingHtml(r, l){
       ${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <div class="traits">${traits}</div>
       ${allInterests(r.interests).length ? `<p class="occ" style="margin:8px 0 0">Into (♥ = same as your home):</p>${interestsHtml(r.interests, hh.interests)}` : ""}
-      <div class="acts">${r.status === "pending" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
+      <div class="acts">${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
+        ${r.status === "pending" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
         : r.status === "approved" && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
           <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc(r.phone.replace(/^\+/, ""))}">WhatsApp</a>` : ""}</div>
@@ -2314,6 +2492,8 @@ $("reqList").addEventListener("click", async e => {
     }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
     return renderRequests();
   }
+  const cb = e.target.closest("[data-compat]");
+  if(cb){ const ctx = reqCompat.get(cb.dataset.compat); if(ctx) openCompat(ctx); return; }
   const o = e.target.closest("[data-open]"); if(o) openListing(o.dataset.open);
 });
 

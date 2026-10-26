@@ -10,6 +10,7 @@ import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.webkit.ValueCallback;
@@ -206,15 +207,26 @@ public class MainActivity extends Activity {
         }
     }
 
-    /** Android 15 draws apps edge to edge; pad the page so it doesn't sit under the bars. */
+    /**
+     * Android 15 draws apps edge to edge: keep the page clear of the bars, paint a teal
+     * strip behind the status bar (the top of the app's gradient) and leave the
+     * navigation bar white.
+     */
     private void keepClearOfSystemBars(FrameLayout root) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
-        // Dark icons on the white bars (the theme sets this too; edge to edge needs it explicitly).
-        int light = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
-        getWindow().getInsetsController().setSystemBarsAppearance(light, light);
+        int lightNav = WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+        getWindow().getInsetsController().setSystemBarsAppearance(lightNav,
+                lightNav | WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+        View statusStrip = new View(this);
+        statusStrip.setBackgroundColor(getColor(R.color.teal));
+        root.addView(statusStrip, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 0));
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            v.setPadding(bars.left, 0, bars.right, bars.bottom);
+            statusStrip.getLayoutParams().height = bars.top;
+            ((FrameLayout.LayoutParams) web.getLayoutParams()).topMargin = bars.top;
+            statusStrip.requestLayout();
+            web.requestLayout();
             return WindowInsets.CONSUMED;
         });
     }

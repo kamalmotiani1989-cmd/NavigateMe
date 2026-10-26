@@ -17,6 +17,10 @@ the room comes second.
      same 12 questions and music/hobbies for the household. The posting form comes prefilled.
 3. **Vibe matches.** Discover opens with a "Your vibe matches" row: every home in the city with an
    80%+ match, whatever the area or budget filters say, so a great fit is never missed.
+   **Compatibility analysis:** tap the wheel (or "See compatibility analysis") on any home to see
+   the score broken down by area of life: daily rhythm, home and chores, lifestyle choices and
+   social life. Each of the 12 answers is one bar of a radial chart, with "You" vs "This home" side
+   by side and a Same / Close / Different verdict. Owners get the same view for every request.
 4. **Welcome gift, on the first request.** Nothing about money on the sign-in page or during
    onboarding. The first time a seeker asks to meet an owner, a gift opens: **5 free contacts**.
 5. **Ask to meet, owner approves.** A seeker opens a flat and sends a request: their name, what
