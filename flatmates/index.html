@@ -649,6 +649,9 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .confetti i{position:absolute; top:-12px; left:var(--x); width:8px; height:14px; border-radius:2px; background:var(--c); animation:fall 2.4s var(--d) ease-in both}
 @keyframes fall{0%{transform:translateY(0) rotate(0); opacity:1} 100%{transform:translateY(520px) rotate(540deg); opacity:0}}
 @media (max-width:420px){ .tribe-save{grid-template-columns:1fr 1fr} .tribe-save .win{grid-column:1 / -1} .journey li span{display:none} }
+.offline{position:fixed; inset:0; z-index:200; display:grid; place-items:center; padding:24px; background:var(--grad); color:#fff; text-align:center}
+.offline h2{color:#fff; font-size:26px} .offline p{color:rgba(255,255,255,.88); max-width:36ch; margin:10px auto 18px}
+.offline .btn-primary{background:#fff; color:var(--brand-2)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1031,8 +1034,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
    screens run on real data, with the paywall enforced in the database.
    The anon key is safe in the page; the service_role key never is.     */
 const FM_CONFIG = {
-  supabaseUrl:     "",   // e.g. "https://abcdefgh.supabase.co"
-  supabaseAnonKey: "",
+  supabaseUrl:     "https://tjgkcuzypstnanpsoogi.supabase.co",
+  supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqZ2tjdXp5cHN0bmFucHNvb2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NzU4OTksImV4cCI6MjEwODU1MTg5OX0.i50hd8s8umEngxNxGfizz-32PIkrzQzI87KM0Tix3WA",
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
 
@@ -1788,6 +1791,7 @@ function makeLiveApi(sb){
     return data;
   };
   const one = rows => (rows && rows[0]) || {};
+  const plusPhone = p => p && !String(p).startsWith("+") ? "+" + p : p;
   const uid = async () => (await sb.auth.getUser()).data.user?.id;
   const fnUrl = path => FM_CONFIG.supabaseUrl + "/functions/v1/fm-pay/" + path;
   async function callPay(path, body){
@@ -1848,12 +1852,13 @@ function makeLiveApi(sb){
     async sendRequest(id, message){ const r = one(await rpc("fm_request", { p_listing:id, p_message:message })); await this.me(); return r; },
     async withdraw(rid){ await rpc("fm_withdraw", { p_request: rid }); await this.me(); },
     async decide(rid, approve){ return one(await rpc("fm_decide", { p_request: rid, p_approve: approve })); },
-    async inbox(){ return rpc("fm_inbox"); },
+    // Supabase stores phone numbers without the "+" (919876543210); Call/WhatsApp need +91...
+    async inbox(){ return (await rpc("fm_inbox")).map(r => Object.assign(r, { phone: plusPhone(r.phone) })); },
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
     async invite(lid, sid, message){ return one(await rpc("fm_invite", { p_listing:lid, p_seeker:sid, p_message:message })); },
     async setSearch(search, discoverable){ await rpc("fm_set_search", { p_search: search, p_discoverable: discoverable }); },
     async tribeRefresh(){ return rpc("fm_tribe_refresh"); },
-    async tribeList(){ return rpc("fm_tribe_list"); },
+    async tribeList(){ return (await rpc("fm_tribe_list")).map(t => Object.assign(t, { phone: plusPhone(t.phone) })); },
     async tribeAnswer(id, yes){ return rpc("fm_tribe_answer", { p_link:id, p_yes:yes }); },
     async tribeSeen(){ await rpc("fm_tribe_seen"); },
     async setTribeOpen(v){ state.tribeOpen = v; save(); await rpc("fm_set_tribe_open", { p_open:v }); },
@@ -1922,7 +1927,7 @@ async function initApi(){
   if(!LIVE) return;
   await new Promise((res, rej) => {
     const s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+    s.src = "vendor/supabase-2.45.4.js";   // bundled, so the app never depends on a CDN
     s.onload = res; s.onerror = rej; document.head.appendChild(s);
   });
   const sb = window.supabase.createClient(FM_CONFIG.supabaseUrl, FM_CONFIG.supabaseAnonKey);
@@ -2481,7 +2486,7 @@ $("loginForm").addEventListener("submit", async e => {
     $("otpDemo").hidden = !r.demoCode;
     if(r.demoCode) $("otpDemo").textContent = "Demo mode: your code is " + r.demoCode;
     $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus();
-  }catch(err){ console.error(err); toast("Couldn't send the code. Check the number and try again."); }
+  }catch(err){ console.error(err); toast(`Couldn't send the code. Check the number and try again.${err && err.message ? ` (${err.message})` : ""}`); }
 });
 $("otpBack").addEventListener("click", () => { $("otpForm").hidden = true; $("loginForm").hidden = false; });
 $("otpForm").addEventListener("submit", async e => {
@@ -3460,6 +3465,17 @@ $("view-account").addEventListener("click", async e => {
   }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
 });
 
+// Shown when the live server can't be reached; resolves when the person taps Try again.
+function offlineWait(){
+  return new Promise(res => {
+    const box = document.createElement("div");
+    box.className = "offline";
+    box.innerHTML = `<div><h2>Can't connect right now</h2><p>FindMyFlatMate needs the internet to show real flats and people.
+      Check your connection and try again.</p><button class="btn btn-primary" type="button">Try again</button></div>`;
+    document.body.appendChild(box);
+    box.querySelector("button").onclick = () => { box.remove(); res(); };
+  });
+}
 /* ================================================================ boot */
 document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
@@ -3474,9 +3490,15 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
 
 (async function boot(){
   load();
-  try{ await initApi(); }
-  catch(err){ console.error("Supabase failed to load; running in demo mode.", err); api = demoApi; }
-  if(state.user) await api.me();
+  // Live mode never falls back to demo data: that would let someone post a listing nobody else can see.
+  for(;;){
+    try{ await initApi(); if(state.user) await api.me(); break; }
+    catch(err){
+      console.error("Couldn't reach the server.", err);
+      if(!LIVE){ api = demoApi; break; }
+      await offlineWait();
+    }
+  }
   applyPrefs();
   const note = api.live ? "" : "Demo mode: sample homes, and nothing you enter leaves this browser. Sample owners reply to requests within a few seconds.";
   $("modeNote").textContent = note; $("appFoot").textContent = note;

@@ -707,6 +707,7 @@ returns int
 language plpgsql security definer set search_path = public as $$
 declare v_order fm_orders%rowtype;
 begin
+  if auth.role() is distinct from 'service_role' then raise exception 'forbidden'; end if;
   select * into v_order from fm_orders where razorpay_order_id = p_razorpay_order for update;
   if v_order.id is null then raise exception 'order-not-found'; end if;
   if v_order.status = 'paid' then return 0; end if;     -- webhook retries are harmless
@@ -807,3 +808,24 @@ end $$;
 drop trigger if exists fm_tribe_links_notify on public.fm_tribe_links;
 create trigger fm_tribe_links_notify after insert or update on public.fm_tribe_links
   for each row execute function public.fm_tribe_notify();
+
+-- ------------------------------------------------------- function access --
+-- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
+-- call them (fm_me and fm_search also answer signed-out callers, with nothing private).
+-- Trigger functions and the payment webhook's fm_credit_order can't be called at all.
+do $$
+declare f record;
+begin
+  for f in select p.oid::regprocedure as sig, p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+           where n.nspname = 'public' and p.proname like 'fm\_%' loop
+    execute format('revoke execute on function %s from public, anon', f.sig);
+    if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order') then
+      execute format('revoke execute on function %s from authenticated', f.sig);
+    else
+      execute format('grant execute on function %s to authenticated', f.sig);
+    end if;
+  end loop;
+end $$;
+grant execute on function public.fm_search(text, text, int, text, text) to anon;
+grant execute on function public.fm_me() to anon;
+alter function public.fm_match(jsonb, jsonb) set search_path = public;

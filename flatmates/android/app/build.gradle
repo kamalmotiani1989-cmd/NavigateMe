@@ -12,7 +12,7 @@ def webDir = file("$rootDir/..")
 def webOut = layout.buildDirectory.dir("generated/web")
 def copyWeb = tasks.register("copyWeb", Sync) {
     from(webDir) {
-        include "index.html", "manifest.webmanifest", "icons/**"
+        include "index.html", "manifest.webmanifest", "icons/**", "vendor/**"
     }
     into webOut
 }

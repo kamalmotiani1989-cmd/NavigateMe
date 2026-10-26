@@ -172,6 +172,15 @@ and add these repository secrets: `ANDROID_KEYSTORE_BASE64` (the file, base64-en
 them automatically. Keep that keystore safe: Play only accepts updates signed with it.
 Phones with the testing build must uninstall it once before installing the properly signed one.
 
+## Live project
+
+The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
+The database is set up (schema.sql applied). Phone login is turned on in the Supabase dashboard under
+Authentication → Sign In / Providers → Phone, with test numbers until an SMS provider (Twilio or MSG91)
+is added. The supabase-js library ships inside the app (`vendor/`), so it never depends on a CDN; if the
+server can't be reached the app shows "Can't connect" instead of falling back to demo data.
+Set `supabaseUrl` and `supabaseAnonKey` in `FM_CONFIG` back to "" to run the demo again.
+
 ## Go live
 
 1. Create a Supabase project. Under Authentication → Providers enable **Phone** (needs an SMS
