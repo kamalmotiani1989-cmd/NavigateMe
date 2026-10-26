@@ -1084,12 +1084,13 @@ const VIBE_QS = [
   {k:"work",    w:1, q:"Weekday routine",             o:["Out all day","Mixed","Home most days"],                   t:["Out at work or college","Mixed routine","Home most days"]},
   {k:"pets",    w:2, q:"Pets",                        o:["No pets, please","Fine with pets","Have a pet"],          t:["No pets","Pet-friendly","Has a pet"]},
 ];
-// Generation nudges the match: Gen Z + Gen Z gets +10 (when under 80), Gen Z + millennial -10.
+// Generation nudges the match: same generation (Gen Z + Gen Z, millennial + millennial) gets +10
+// when under 80; Gen Z + millennial gets -10.
 // Stored as vibe.gen (seekers) and household.gen (owners): "z", "m" or "x" (neither / mixed).
 const GENS = [["z", "Gen Z", "born 1997 or later"], ["m", "Millennial", "born 1981–1996"], ["x", "Neither", "or a mix"]];
 const GEN_LABEL = { z: "Gen Z", m: "Millennial" };
 function genAdjust(a, b, pct){
-  if(a === "z" && b === "z") return pct < 80 ? Math.min(100, pct + 10) : pct;
+  if((a === "z" || a === "m") && a === b) return pct < 80 ? Math.min(100, pct + 10) : pct;
   if((a === "z" && b === "m") || (a === "m" && b === "z")) return Math.max(0, pct - 10);
   return pct;
 }
@@ -2593,7 +2594,7 @@ function obSteps(role){
     { k:"residents", q:"How many people live in your flat right now?", why:"Including you. People looking for a room want to know who they'd share with.",
       opts:[{v:1,t:"Just me"},{v:2,t:"Two of us"},{v:3,t:"Three of us"},{v:4,t:"Four of us"},{v:0,t:"Nobody",s:"I'm letting out the whole flat"}] },
     { k:"flatmates", form:"flatmates", q:"Tell us a little about everyone who lives there", why:"What they do and their age range. It's the first thing people look for." },
-    { k:"gen", q:"Which generation is your household?", why:"Gen Z flatmates tend to click with Gen Z. It nudges your match with each person.",
+    { k:"gen", q:"Which generation is your household?", why:"People tend to click with their own generation. It nudges your match with each person.",
       opts:[{v:"z",t:"Mostly Gen Z",s:"Born 1997 or later"},{v:"m",t:"Mostly millennials",s:"Born 1981–1996"},{v:"x",t:"Mixed, or neither"}] },
     ...vibe,
     { k:"music", form:"music", q:"What music plays in your flat?", why:"Just for fun, it doesn't change the vibe score. People love finding a flatmate with the same playlist." },
@@ -2602,7 +2603,7 @@ function obSteps(role){
     { k:"occType", q:"First, what do you do?", why:"Owners like to know who they'd be living with.",
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
     { k:"occWhat", form:"text", q:"", why:"" },
-    { k:"gen", q:"Which generation are you?", why:"Gen Z tends to click with Gen Z. It nudges your match with each home.",
+    { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
       opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"x",t:"Neither",s:"Born before 1981"}] },
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true, opts: CITIES.map(c => ({ v:c, t:c })) },
     { k:"areas", form:"areas", q:"", why:"" },

@@ -314,7 +314,8 @@ end $$;
 
 -- Weighted living-style match, 0..100, then the generation nudge (same as vibeMatch/genAdjust in
 -- index.html): each answer is 0..2, a question scores 1 - gap/2, smoking/food/pets count double,
--- at least 4 shared answers are needed; Gen Z + Gen Z gets +10 when under 80, Gen Z + millennial -10.
+-- at least 4 shared answers are needed; the same generation (Gen Z + Gen Z, millennial + millennial)
+-- gets +10 when under 80, Gen Z + millennial -10.
 create or replace function public.fm_match(p_v jsonb, p_h jsonb) returns int
 language sql immutable set search_path = public as $$
   with q as (
@@ -326,7 +327,7 @@ language sql immutable set search_path = public as $$
                 else round(100 * sum(w * (1 - abs(a - b) / 2.0)) / sum(w))::int end s from q)
   select case
     when s is null then null
-    when p_v->>'gen' = 'z' and p_h->>'gen' = 'z' and s < 80 then least(100, s + 10)
+    when p_v->>'gen' in ('z','m') and p_h->>'gen' = p_v->>'gen' and s < 80 then least(100, s + 10)
     when (p_v->>'gen', p_h->>'gen') in (('z','m'), ('m','z')) then greatest(0, s - 10)
     else s end
   from base;

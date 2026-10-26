@@ -55,8 +55,8 @@ the room comes second.
    no brokers", the listing shows it, and Filters has a "Bachelors welcome" option.
 
 10. **Gen Z and millennials.** Seekers say which generation they are; owners say which generation
-    their household mostly is (both editable later). The match score is nudged: **Gen Z + Gen Z gets
-    +10 when the score is under 80**, and **Gen Z + millennial (either way) gets −10**. It applies
+    their household mostly is (both editable later). The match score is nudged: **the same generation
+    (Gen Z + Gen Z, or millennial + millennial) gets +10 when the score is under 80**, and **Gen Z + millennial (either way) gets −10**. It applies
     everywhere a match is shown (homes, requests, invites, tribes) and the compatibility analysis says
     so ("Gen Z + Gen Z: +10 on the score").
 11. **Several numbers on one phone.** Each mobile number keeps its own answers, drafts and shortlist on
