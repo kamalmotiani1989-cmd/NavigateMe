@@ -54,13 +54,14 @@ the room comes second.
 9. **Bachelors welcome.** Owners mark each listing (on by default). Cards show "Bachelors welcome ·
    no brokers", the listing shows it, and Filters has a "Bachelors welcome" option.
 
-10. **Gen Z and millennials.** Seekers say which generation they are; owners say which generation
-    their household mostly is (both editable later). The match score is nudged: **the same generation
-    (Gen Z + Gen Z, or millennial + millennial) gets +10 when the score is under 80**, and **Gen Z + millennial (either way) gets −10**. It applies
+10. **Gen Z, millennials and Gen X.** Seekers say which generation they are; owners say which
+    generation their household mostly is (both editable later; "none of these" / "mixed" are options).
+    The match score is nudged: **the same generation (Gen Z, millennial or Gen X on both sides) gets
+    +10 when the score is under 80**, and **two different generations get −10**. It applies
     everywhere a match is shown (homes, requests, invites, tribes) and the compatibility analysis says
     so ("Gen Z + Gen Z: +10 on the score").
     Ages are still captured as brackets (18–24, 25–30, 31–40, 41–45, 46+) but shown as generations
-    everywhere: an electric "⚡ GEN Z" badge, a warm "🥑 Millennial" one, or "📻 Gen X", on each
+    everywhere: an electric "⚡ GEN Z" badge, a warm "🥑 Millennial" one, or a retro "📻 Gen X", on each
     flatmate, as "⚡ Gen Z household" on home cards, and next to people in requests, Escape and Tribe.
 11. **Several numbers on one phone.** Each mobile number keeps its own answers, drafts and shortlist on
     the device, so signing in with a new number always starts from the beginning. In live mode the
