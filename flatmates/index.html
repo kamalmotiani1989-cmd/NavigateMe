@@ -654,6 +654,23 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .offline{position:fixed; inset:0; z-index:200; display:grid; place-items:center; padding:24px; background:var(--grad); color:#fff; text-align:center}
 .offline h2{color:#fff; font-size:26px} .offline p{color:rgba(255,255,255,.88); max-width:36ch; margin:10px auto 18px}
 .offline .btn-primary{background:#fff; color:var(--brand-2)}
+/* ---------- generation badges: Gen Z electric, millennials avocado-toast warm */
+.gen{display:inline-flex; align-items:center; gap:4px; padding:2px 10px 2px 7px; border-radius:999px; font-size:11.5px; font-weight:800;
+  line-height:1.6; white-space:nowrap; vertical-align:middle; font-style:normal}
+.gen em{font-style:normal; font-size:12px}
+.gen.gen-z, .gen.gen-m, .gen.gen-x{font-size:11.5px; display:inline-flex}
+.gen.gen-z{color:#fff; text-transform:uppercase; letter-spacing:.07em; background:linear-gradient(100deg,#7C3AED,#EC4899 50%,#06B6D4);
+  background-size:200% 100%; animation:genshine 4s ease-in-out infinite alternate; box-shadow:0 2px 10px rgba(124,58,237,.28)}
+.gen-z em{filter:drop-shadow(0 0 3px rgba(255,255,255,.8))}
+@keyframes genshine{to{background-position:100% 0}}
+.gen.gen-m{color:#5B3A0A; font-style:italic; letter-spacing:.01em; background:linear-gradient(100deg,#D9F99D,#FDE68A 55%,#FDBA74);
+  box-shadow:inset 0 0 0 1px rgba(133,77,14,.15)}
+.gen.gen-x{color:#374151; background:#E5E7EB}
+.gen-line{margin-top:4px}
+.gen-intro{margin:-2px 0 10px; font-weight:700; color:var(--text-2)}
+.mate span .gen{margin-left:2px}
+.req h3 + .gen, .seek-top h3 .gen, .tribe-card h3 .gen{margin-left:4px}
+.gen-note .gen{font-size:11px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1221,7 +1238,7 @@ function openCompat(ctx, tab){
   $("cSub").textContent = ctx.title || "";
   $("cBody").innerHTML = `
     <div class="compat-top">${compatWheel(cp, 280, tab && g ? g.k : null)}
-      ${cp.gen ? `<p class="gen-note ${cp.gen > 0 ? "up" : "down"}">${GEN_LABEL[cp.gens[0]]} + ${GEN_LABEL[cp.gens[1]]}: ${cp.gen > 0 ? "+" : "−"}${Math.abs(cp.gen)} on the score
+      ${cp.gen ? `<p class="gen-note ${cp.gen > 0 ? "up" : "down"}">${genBadge(cp.gens[0])} + ${genBadge(cp.gens[1])} ${cp.gen > 0 ? "+" : "−"}${Math.abs(cp.gen)} on the score
         (${cp.base}% from your answers)</p>` : ""}
       <p class="compat-sum"><b>${cp.pct}% vibe match.</b> Strongest on <b style="color:${best.color}">${esc(best.name)}</b>${worst.pct < best.pct ? `; talk about <b style="color:${worst.color}">${esc(worst.name)}</b> before moving in` : ""}.</p></div>
     <div class="compat-tabs" role="tablist">${cp.groups.map(x => `<button role="tab" data-ctab="${x.k}" aria-selected="${g && g.k === x.k}">
@@ -2012,7 +2029,20 @@ function avatars(n, seed){
 const OCC = { working:"Working professional", student:"Student", self:"Self-employed", between:"Between jobs" };
 const OCC_SHORT = { working:"Working", student:"Student", self:"Self-employed", between:"Between jobs" };
 const occLine = o => o && o.type ? (o.what ? `${o.what}` : OCC[o.type]) : "";
-const AGES = ["18–24","25–30","31–40","40+"];
+// Age brackets are still what owners pick; everywhere else they're shown as a generation (2026:
+// Gen Z = born 1997+, so up to ~29-30; millennials = 1981-1996). "40+" is kept for older listings.
+const AGES = ["18–24","25–30","31–40","41–45","46+"];
+const AGE_GEN = { "18–24":"z", "25–30":"z", "31–40":"m", "41–45":"m", "40+":"m", "46+":"x" };
+const GEN_BADGE = { z: ["⚡", "Gen Z"], m: ["🥑", "Millennial"], x: ["📻", "Gen X"] };
+const genBadge = (g, suffix) => GEN_BADGE[g] ? `<span class="gen gen-${g}"><em aria-hidden="true">${GEN_BADGE[g][0]}</em>${GEN_BADGE[g][1]}${suffix || ""}</span>` : "";
+// A household's generation: what the owner said, else the most common one among the flatmates' ages.
+function householdGen(hh){
+  if(hh && (hh.gen === "z" || hh.gen === "m")) return hh.gen;
+  if(hh && hh.gen === "x") return null;   // the owner said mixed / neither
+  const gens = matesOf(hh || {}).map(m => AGE_GEN[m.age]).filter(Boolean);
+  const z = gens.filter(g => g === "z").length, m = gens.filter(g => g === "m").length;
+  return z > m ? "z" : m > z ? "m" : gens[0] === "x" && gens.every(g => g === "x") ? "x" : null;
+}
 const GIFT_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M2 9h20v-1a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/><path d="M12 7v14"/><path d="M12 7c-2-4-6-4-6-1.5S10 7 12 7zM12 7c2-4 6-4 6-1.5S14 7 12 7z"/></svg>';
 const partOfDay = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
 const firstName = () => ((state.user && state.user.name) || "").split(" ")[0];
@@ -2034,7 +2064,7 @@ function matesOf(hh){
 }
 function matesHtml(hh, seed){
   return `<div class="mates">${matesOf(hh).map((m, i) => `<div class="mate"><i style="background:${colorFor(seed, i)}">${m.type ? (OCC_SHORT[m.type] || "?")[0] : "•"}</i>
-    <div><b>${esc(m.what || OCC[m.type] || "Flatmate")}</b><span>${[OCC[m.type], m.age].filter(Boolean).map(esc).join(" · ")}</span></div></div>`).join("")}</div>`;
+    <div><b>${esc(m.what || OCC[m.type] || "Flatmate")}</b><span>${esc(OCC[m.type] || "")} ${genBadge(AGE_GEN[m.age])}</span></div></div>`).join("")}</div>`;
 }
 
 // Forms use novalidate: the browser's own validation bubbles often don't show inside
@@ -2165,7 +2195,7 @@ function seekerHtml(x, l, i){
     : `<span class="req-pill">${by === "owner" ? "Passed this time" : "Declined"}</span>`;
   return `<article class="seek-card" style="--i:${i}">
     <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
-      <div style="min-width:0;flex:1"><h3>${esc(first)}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
+      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
         <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
       ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="Compatibility with ${esc(first)}">${ringSvg(x.match_pct, 58)}</button>` : ""}</div>
     <div class="seek-facts">
@@ -2254,7 +2284,7 @@ function tribeCardHtml(t){
   return `<article class="tribe-card${t.their_yes && !t.my_yes ? " wants" : ""}">
     ${t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
     <div class="seek-top"><span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>
-      <div style="min-width:0;flex:1"><h3>${first}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
+      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
     <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
     ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
@@ -2636,7 +2666,7 @@ function fmRowsHtml(list, n, prefix){
     return `<div class="fm-row" data-i="${i}"><b>${i === 0 ? "You" : "Flatmate " + (i + 1)}</b>
       <div class="chips">${["working","student","self"].map(t => `<label class="chip"><input type="radio" name="${prefix}type${i}" value="${t}"${m.type === t ? " checked" : ""}>${OCC_SHORT[t]}</label>`).join("")}</div>
       <div class="grid2"><input type="text" name="${prefix}what${i}" maxlength="80" value="${esc(m.what || "")}" placeholder="${i === 0 ? "e.g. Designer at an agency" : "e.g. Final-year law student"}" aria-label="What they do">
-        <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option${m.age === a ? " selected" : ""}>${a}</option>`).join("")}</select></div></div>`;
+        <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option value="${a}"${m.age === a ? " selected" : ""}>${a} · ${GEN_BADGE[AGE_GEN[a]][1]} ${GEN_BADGE[AGE_GEN[a]][0]}</option>`).join("")}</select></div></div>`;
   }).join("");
 }
 function readFmRows(root, n, prefix){
@@ -2818,6 +2848,7 @@ function cardHtml(l, i){
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}</div>
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span></div>` : ""}
+      ${householdGen(hh) ? `<div class="gen-line">${genBadge(householdGen(hh), " household")}</div>` : ""}
       ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
       <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
       ${l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome · no brokers</div>` : ""}
@@ -3038,6 +3069,7 @@ async function openListing(id){
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
+    ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
     <div class="household">${mates.length ? matesHtml(hh, l.id) : ""}
       ${traits ? `<div class="traits">${traits}</div>` : ""}${matchBlock}
       ${allInterests(hh.interests).length ? `<p style="margin:12px 0 0;font-weight:800">What they're into${sharedInterests(state.interests, hh.interests).length
@@ -3167,7 +3199,7 @@ function incomingHtml(r, l){
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3><span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
       ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? `${esc(first)} accepted your invite. Call now while they're keen.`

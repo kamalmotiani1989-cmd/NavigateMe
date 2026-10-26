@@ -59,6 +59,9 @@ the room comes second.
     (Gen Z + Gen Z, or millennial + millennial) gets +10 when the score is under 80**, and **Gen Z + millennial (either way) gets −10**. It applies
     everywhere a match is shown (homes, requests, invites, tribes) and the compatibility analysis says
     so ("Gen Z + Gen Z: +10 on the score").
+    Ages are still captured as brackets (18–24, 25–30, 31–40, 41–45, 46+) but shown as generations
+    everywhere: an electric "⚡ GEN Z" badge, a warm "🥑 Millennial" one, or "📻 Gen X", on each
+    flatmate, as "⚡ Gen Z household" on home cards, and next to people in requests, Escape and Tribe.
 11. **Several numbers on one phone.** Each mobile number keeps its own answers, drafts and shortlist on
     the device, so signing in with a new number always starts from the beginning. In live mode the
     server's copy of a seeker's answers wins; a seeker with no answers on the server is sent through
