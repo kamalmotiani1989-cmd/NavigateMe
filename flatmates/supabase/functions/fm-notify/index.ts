@@ -4,6 +4,7 @@
 //   pending  -> the owner: "Riya wants to meet you · 92% match"
 //   approved -> the seeker: "Asha said yes! Call now" (urgent: others are interested)
 //   declined -> the seeker: "Not this time"
+// Tribe events ({tribe_id, event}) are handled by tribeEvent below.
 // Owner invites (The Empty Room Escape) go the other way:
 //   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
 //   approved / declined -> the owner
@@ -68,10 +69,36 @@ async function pushTo(userId: string, title: string, body: string, open: string)
   return sent;
 }
 
+// Build your tribe (fm_tribe_links trigger): a new 70%+ match goes to both people, a "yes"
+// goes to the other person, and a bond (both said yes) goes to both.
+async function tribeEvent(id: string, event: string) {
+  const { data: t } = await admin.from("fm_tribe_links").select("*").eq("id", id).single();
+  if (!t || t.status === "closed") return { skipped: true };
+  const { data: people } = await admin.from("fm_profiles").select("id, full_name").in("id", [t.a, t.b]);
+  const first = (uid: string) => ((people || []).find((p: any) => p.id === uid)?.full_name || "Someone").split(" ")[0];
+  const pct = t.match_pct != null ? ` · ${t.match_pct}% vibe` : "";
+  if (t.status === "bonded") {
+    await pushTo(t.a, `You and ${first(t.b)} are a tribe!`, `Numbers are shared. Call ${first(t.b)} and start hunting for a whole flat together.`, "tribe");
+    await pushTo(t.b, `You and ${first(t.a)} are a tribe!`, `Numbers are shared. Call ${first(t.a)} and start hunting for a whole flat together.`, "tribe");
+    return { sent: "bonded" };
+  }
+  if (event === "insert") {
+    const body = "Build a tribe, hunt for a whole flat together and split the rent.";
+    await pushTo(t.a, `${first(t.b)} could be your flatmate${pct}`, body, "tribe");
+    await pushTo(t.b, `${first(t.a)} could be your flatmate${pct}`, body, "tribe");
+    return { sent: "match" };
+  }
+  if (t.a_yes && t.b_yes == null) await pushTo(t.b, `${first(t.a)} wants to build a tribe with you`, "Say yes and you'll both get each other's numbers.", "tribe");
+  if (t.b_yes && t.a_yes == null) await pushTo(t.a, `${first(t.b)} wants to build a tribe with you`, "Say yes and you'll both get each other's numbers.", "tribe");
+  return { sent: "yes" };
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get("x-notify-secret") !== env("NOTIFY_SECRET") || !env("NOTIFY_SECRET")) return json({ error: "forbidden" }, 403);
   try {
-    const { request_id } = await req.json();
+    const payload = await req.json();
+    if (payload.tribe_id) return json(await tribeEvent(payload.tribe_id, payload.event));
+    const { request_id } = payload;
     const { data: r } = await admin.from("fm_requests")
       .select("id, status, match_pct, seeker_id, listing_id, initiated_by, fm_listings(title, owner_id)").eq("id", request_id).single();
     if (!r) return json({ error: "not-found" }, 404);
@@ -82,7 +109,7 @@ Deno.serve(async (req) => {
         const { data: pv } = await admin.from("fm_listing_private").select("contact_name").eq("listing_id", r.listing_id).single();
         const owner = (pv?.contact_name || "An owner").split(" ")[0];
         const sent = await pushTo(r.seeker_id, `${owner} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
-          `See the photos of “${listing.title}” and reply within 2 hours. If you don't reply, ${owner} gets your number.`, "requests");
+          `See the photos of “${listing.title}” and say yes or no in one tap. Your number stays private unless you say yes.`, "requests");
         return json({ sent });
       }
       if (r.status === "approved" || r.status === "declined") {

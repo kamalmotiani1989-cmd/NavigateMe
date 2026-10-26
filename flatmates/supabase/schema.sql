@@ -46,6 +46,8 @@ alter table public.fm_profiles add column if not exists search jsonb not null de
 alter table public.fm_profiles add column if not exists search_at timestamptz;
 -- Seekers can hide from owners' searches; invites need it on.
 alter table public.fm_profiles add column if not exists discoverable boolean not null default true;
+-- Seekers can also hide from other seekers' tribe matches (Build your tribe).
+alter table public.fm_profiles add column if not exists tribe_open boolean not null default true;
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -86,6 +88,8 @@ alter table public.fm_listings add column if not exists household jsonb not null
 -- Monthly expenses for the room, NOT included in rent: {maintenance: 1200, electricity: "usage", ...}.
 -- Only the expenses that apply are present; "usage" means paid as per meter/usage.
 alter table public.fm_listings add column if not exists costs jsonb not null default '{}';
+-- "Bachelors welcome": singles or a group of friends (a tribe) may rent it.
+alter table public.fm_listings add column if not exists bachelors boolean not null default true;
 -- 'shared' (a bed in a twin-sharing room) was added later; widen the check on existing databases.
 alter table public.fm_listings drop constraint if exists fm_listings_kind_check;
 alter table public.fm_listings add constraint fm_listings_kind_check check (kind in ('room','shared','flatmate','flat'));
@@ -142,8 +146,7 @@ create table if not exists public.fm_requests (
   unique (listing_id, seeker_id)
 );
 -- 'seeker': the seeker asked, the owner decides. 'owner': the owner invited a seeker
--- (The Empty Room Escape), the seeker decides; after 2 hours without a reply the owner
--- gets the seeker's number (see fm_inbox).
+-- (The Empty Room Escape), the seeker decides. Numbers are shared only on acceptance.
 alter table public.fm_requests add column if not exists initiated_by text not null default 'seeker'
   check (initiated_by in ('seeker','owner'));
 
@@ -234,24 +237,27 @@ drop function if exists public.fm_post_listing(text, text, text, text, int, int,
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
   text, text, text[], text, text, text, text, text[], jsonb, jsonb);
 drop function if exists public.fm_contact(uuid);
+drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
+  text, text, text[], text, text, text, text, text[], jsonb, jsonb, jsonb);
 
 drop function if exists public.fm_unlock(uuid);           -- contact now only via an accepted request
 drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund: contacts are used on acceptance
 
 create or replace function public.fm_me()
 returns table (credits int, full_name text, phone text, role text, vibe jsonb, occupation jsonb,
-               gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean)
+               gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean, tribe_open boolean)
 language sql security definer set search_path = public stable as $$
   select p.credits, p.full_name, p.phone, p.role, p.vibe, p.occupation, p.gift_given,
          (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid'),
          (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending' and r.initiated_by = 'seeker'),
-         p.interests, p.discoverable
+         p.interests, p.discoverable, p.tribe_open
   from fm_profiles p where p.id = auth.uid();
 $$;
 
 -- A seeker's city, areas and budget, so owners in those areas can find and invite them.
 create or replace function public.fm_set_search(p_search jsonb, p_discoverable boolean) returns void
-language sql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public as $$
+begin
   update fm_profiles set
     search = jsonb_build_object('city', p_search->>'city',
                                 'areas', case when jsonb_typeof(p_search->'areas') = 'array' then p_search->'areas' else '[]'::jsonb end,
@@ -259,7 +265,8 @@ language sql security definer set search_path = public as $$
     search_at = now(),
     discoverable = coalesce(p_discoverable, discoverable)
   where id = auth.uid();
-$$;
+  perform fm_tribe_refresh();
+end $$;
 
 create or replace function public.fm_set_interests(p_interests jsonb) returns void
 language plpgsql security definer set search_path = public as $$
@@ -323,7 +330,7 @@ returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
-  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text)
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -332,7 +339,7 @@ language sql security definer set search_path = public stable as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status
+         mine.status, l.bachelors
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where (l.status = 'active' or l.owner_id = auth.uid())
@@ -350,7 +357,8 @@ create or replace function public.fm_post_listing(
   p_rent int, p_deposit int, p_available_from date, p_gender text,
   p_furnishing text, p_amenities text[], p_description text,
   p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}',
-  p_household jsonb default '{}', p_costs jsonb default '{}', p_address_parts jsonb default '{}')
+  p_household jsonb default '{}', p_costs jsonb default '{}', p_address_parts jsonb default '{}',
+  p_bachelors boolean default true)
 returns uuid
 language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_photo text;
@@ -376,11 +384,11 @@ begin
   end loop;
   insert into fm_listings (owner_id, kind, title, city, locality, bhk, rent, deposit,
                            available_from, gender, furnishing, amenities, description, photos,
-                           household, costs)
+                           household, costs, bachelors)
   values (auth.uid(), p_kind, p_title, p_city, p_locality, p_bhk, p_rent, p_deposit,
           p_available_from, p_gender, p_furnishing, coalesce(p_amenities, '{}'),
           coalesce(p_description, ''), coalesce(p_photos, '{}'),
-          coalesce(p_household, '{}'), coalesce(p_costs, '{}'))
+          coalesce(p_household, '{}'), coalesce(p_costs, '{}'), coalesce(p_bachelors, true))
   returning id into v_id;
   insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts)
   values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'));
@@ -508,14 +516,123 @@ begin
   return query select 'pending'::text, null::text;
 end $$;
 
+-- ------------------------------------------------------- build your tribe --
+-- Two seekers looking in the same area whose vibes match 70%+ are suggested to each other
+-- as a tribe: hunt together, rent a whole flat, split it. Each says yes or no; numbers are
+-- shared only when both say yes. One row per pair, a < b.
+create table if not exists public.fm_tribe_links (
+  id         uuid primary key default gen_random_uuid(),
+  a          uuid not null references auth.users(id) on delete cascade,
+  b          uuid not null references auth.users(id) on delete cascade,
+  match_pct  int,
+  a_yes      boolean,
+  b_yes      boolean,
+  status     text not null default 'open' check (status in ('open','bonded','closed')),
+  seen_a     boolean not null default false,
+  seen_b     boolean not null default false,
+  created_at timestamptz not null default now(),
+  bonded_at  timestamptz,
+  check (a < b),
+  unique (a, b)
+);
+alter table public.fm_tribe_links enable row level security;
+drop policy if exists fm_tribe_parties on public.fm_tribe_links;
+create policy fm_tribe_parties on public.fm_tribe_links for select using (a = auth.uid() or b = auth.uid());
+-- All writes go through the functions below.
+
+create or replace function public.fm_set_tribe_open(p_open boolean) returns void
+language sql security definer set search_path = public as $$
+  update fm_profiles set tribe_open = coalesce(p_open, tribe_open) where id = auth.uid();
+$$;
+
+-- Find new 70%+ matches for the caller: same city, overlapping areas (or either open to any area).
+create or replace function public.fm_tribe_refresh() returns int
+language plpgsql security definer set search_path = public as $$
+declare v_me fm_profiles%rowtype; v_n int;
+begin
+  select * into v_me from fm_profiles where id = auth.uid();
+  if v_me.id is null or v_me.role is distinct from 'seeker' or not v_me.tribe_open
+     or coalesce(v_me.search->>'city', '') = '' or (select count(*) from jsonb_object_keys(v_me.vibe)) < 8 then
+    return 0;
+  end if;
+  insert into fm_tribe_links (a, b, match_pct)
+  select least(v_me.id, p.id), greatest(v_me.id, p.id), fm_match(v_me.vibe, p.vibe)
+  from fm_profiles p
+  where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open
+    and lower(p.search->>'city') = lower(v_me.search->>'city')
+    and (select count(*) from jsonb_object_keys(p.vibe)) >= 8
+    and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0
+         or jsonb_array_length(coalesce(v_me.search->'areas', '[]'::jsonb)) = 0
+         or exists (select 1 from jsonb_array_elements_text(p.search->'areas') x where v_me.search->'areas' ? x))
+    and fm_match(v_me.vibe, p.vibe) >= 70
+  on conflict (a, b) do nothing;
+  get diagnostics v_n = row_count;
+  return v_n;
+end $$;
+
+-- My tribe matches and bonds. The other person's number only once both said yes.
+create or replace function public.fm_tribe_list()
+returns table (id uuid, other_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
+               interests jsonb, vibe jsonb, my_yes boolean, their_yes boolean, status text, phone text,
+               created_at timestamptz, bonded_at timestamptz, unseen boolean)
+language sql security definer set search_path = public stable as $$
+  select t.id, o.id, split_part(coalesce(o.full_name, ''), ' ', 1), o.occupation,
+         coalesce(o.search->'areas', '[]'::jsonb), (o.search->>'budget')::int, t.match_pct, o.interests, o.vibe,
+         case when t.a = auth.uid() then t.a_yes else t.b_yes end,
+         case when t.a = auth.uid() then t.b_yes else t.a_yes end,
+         t.status,
+         case when t.status = 'bonded' then o.phone end,
+         t.created_at, t.bonded_at,
+         case when t.a = auth.uid() then not t.seen_a else not t.seen_b end
+  from fm_tribe_links t
+  join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
+  where (t.a = auth.uid() or t.b = auth.uid()) and t.status <> 'closed'
+    and (t.status = 'bonded' or o.tribe_open)
+  order by (t.status = 'bonded') desc, t.match_pct desc
+  limit 100;
+$$;
+
+-- Say yes or no to a tribe match. Both yes = bonded (numbers shared). Any no closes it quietly.
+create or replace function public.fm_tribe_answer(p_link uuid, p_yes boolean) returns text
+language plpgsql security definer set search_path = public as $$
+declare t fm_tribe_links%rowtype;
+begin
+  select * into t from fm_tribe_links where fm_tribe_links.id = p_link and (a = auth.uid() or b = auth.uid()) for update;
+  if t.id is null then return 'not-found'; end if;
+  if t.status <> 'open' then return t.status; end if;
+  if not p_yes then
+    update fm_tribe_links set status = 'closed',
+           a_yes = case when a = auth.uid() then false else a_yes end,
+           b_yes = case when b = auth.uid() then false else b_yes end
+     where fm_tribe_links.id = p_link;
+    return 'closed';
+  end if;
+  if t.a = auth.uid() then
+    update fm_tribe_links set a_yes = true, seen_b = false where fm_tribe_links.id = p_link returning * into t;
+  else
+    update fm_tribe_links set b_yes = true, seen_a = false where fm_tribe_links.id = p_link returning * into t;
+  end if;
+  if t.a_yes and t.b_yes then
+    update fm_tribe_links set status = 'bonded', bonded_at = now(), seen_a = false, seen_b = false where fm_tribe_links.id = p_link;
+    return 'bonded';
+  end if;
+  return 'open';
+end $$;
+
+create or replace function public.fm_tribe_seen() returns void
+language sql security definer set search_path = public as $$
+  update fm_tribe_links set seen_a = true where a = auth.uid() and not seen_a;
+  update fm_tribe_links set seen_b = true where b = auth.uid() and not seen_b;
+$$;
+
 -- Both sides' requests in one list, newest first. 'incoming' = on my listing,
 -- 'outgoing' = mine as a seeker; 'by' says who started it. The seeker's phone reaches the
--- owner once accepted, or when the seeker leaves an owner's invite unanswered for 2 hours.
+-- owner only once the request or invite is accepted.
 create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
                name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb,
-               by text, auto_shared boolean)
+               by text)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
@@ -524,13 +641,11 @@ language sql security definer set search_path = public stable as $$
               when r.initiated_by = 'owner' then split_part(coalesce(pv.contact_name, ''), ' ', 1) end,
          case when l.owner_id = auth.uid() then sp.occupation end,
          case when l.owner_id = auth.uid() then sp.vibe end,
-         case when l.owner_id = auth.uid() and (r.status = 'approved' or (r.initiated_by = 'owner'
-                   and r.status = 'pending' and r.created_at < now() - interval '2 hours')) then sp.phone end,
+         case when l.owner_id = auth.uid() and r.status = 'approved' then sp.phone end,
          case when l.owner_id = auth.uid() then not r.seen_by_owner and (r.status = 'pending') = (r.initiated_by = 'seeker')
               else not r.seen_by_seeker end,
          case when l.owner_id = auth.uid() then sp.interests end,
-         r.initiated_by,
-         r.initiated_by = 'owner' and r.status = 'pending' and r.created_at < now() - interval '2 hours'
+         r.initiated_by
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
@@ -670,3 +785,25 @@ drop trigger if exists fm_requests_notify on public.fm_requests;
 create trigger fm_requests_notify after insert or update of status on public.fm_requests
   for each row execute function public.fm_request_notify();
 
+-- Tribe matches: tell both people about a new match, a "yes" and a bond (fm-notify).
+create or replace function public.fm_tribe_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if tg_op = 'UPDATE' and new.status is not distinct from old.status and new.a_yes is not distinct from old.a_yes
+     and new.b_yes is not distinct from old.b_yes then return new; end if;
+  if new.status = 'closed' then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(
+    url := v_url,
+    body := jsonb_build_object('tribe_id', new.id, 'event', lower(tg_op)),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+
+drop trigger if exists fm_tribe_links_notify on public.fm_tribe_links;
+create trigger fm_tribe_links_notify after insert or update on public.fm_tribe_links
+  for each row execute function public.fm_tribe_notify();

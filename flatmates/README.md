@@ -36,17 +36,31 @@ the room comes second.
    they do, budget (and whether it fits the rent) and vibe match, best match first. Filters: budget
    fits, 80%+ vibe, not invited yet. **Invite** sends them the home: the seeker gets a notification,
    sees the photos and details and answers **Yes, let's meet** or **Not for me** in one tap. Yes shares
-   numbers and the address both ways and is free for the seeker (no contact used). **If the seeker
-   doesn't answer within 2 hours, the owner gets their number** (they can still answer after that).
-   Seekers are told this when they're shown to owners, and can hide themselves in Account
+   numbers and the address both ways and is free for the seeker (no contact used). **Numbers are
+   shared only when the seeker accepts.** Seekers can hide themselves in Account
    ("Show me to owners in my areas"). Up to 30 invites per owner per day.
+
+8. **Build your tribe (seekers).** Two people looking in the same city and areas whose vibes
+   match **70%+** are suggested to each other, and both get a notification ("Riya could be your
+   flatmate · 82% vibe"). The Tribe tab is the build-up page: a live constellation of your matches
+   around you (lines light up as people say yes), a 4-step journey (Match → Team up → Bond → Hunt),
+   what a tribe could save in your city, and a card per match with budget, areas, the habits you
+   share, interests in common and the compatibility analysis. **Team up** is a yes; the other
+   person sees "Riya wants to build a tribe with you". **Numbers are shared only when both say
+   yes**, with a celebration screen. A bonded tribe sees its joint budget and **Hunt together**:
+   whole flats that welcome bachelors, in any of the tribe's areas, with the rent per person. Asking
+   to meet a whole flat pre-fills a note saying you're a tribe. A "no" closes the match quietly for
+   both. Seekers can hide from tribe matches in Account.
+9. **Bachelors welcome.** Owners mark each listing (on by default). Cards show "Bachelors welcome ·
+   no brokers", the listing shows it, and Filters has a "Bachelors welcome" option.
 
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
 after you post it. Sample seekers (24 per city) answer an owner's invite after a few seconds: yes to a
-strong match, no to a weak one, and no reply in between, so the number unlocks (after 1 minute in
-demo mode instead of 2 hours). Two sample owners also invite a new seeker about 12 seconds after onboarding.
+strong match, no to a weak one, and no reply in between. Build your tribe: up to 6 sample seekers who
+match your vibe 70%+ appear about 5 seconds after onboarding; a third of them say yes first, and the
+rest answer your yes within seconds (yes to a 74%+ match). Two sample owners also invite a new seeker about 12 seconds after onboarding.
 
 ## Notifications and urgency
 

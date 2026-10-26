@@ -359,7 +359,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .gift-card{text-align:center}
 .gift-card h2{font-size:26px}
 .gift-card p{color:var(--text-2); margin:8px 0 0}
-#dlgGift{width:min(440px,calc(100vw - 32px)); height:auto; border-radius:20px; margin:auto}
+#dlgGift{width:min(440px,calc(100vw - 32px)); height:fit-content; border-radius:20px; margin:auto}
 
 /* ---------- requests */
 .badge{display:inline-grid; place-items:center; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--accent); color:#fff;
@@ -579,6 +579,76 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .switch input{appearance:none; -webkit-appearance:none; width:46px; height:28px; border-radius:999px; background:var(--line-2); position:relative; cursor:pointer; transition:background .2s; flex:none; margin:0}
 .switch input::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s}
 .switch input:checked{background:var(--brand)} .switch input:checked::after{transform:translateX(18px)}
+/* ---------- Build your tribe */
+.tribe-hero{margin:22px 0 4px; padding:20px 20px 22px; border-radius:24px; color:#fff; overflow:hidden; position:relative;
+  background:radial-gradient(120% 90% at 50% 0%, #1FB5B0 0%, #0E8FA6 45%, #2A4FC0 100%)}
+.tribe-hero .eyebrow{color:#FFD08A; margin:4px 0 4px}
+.tribe-hero h1{font-size:clamp(26px,4.4vw,36px); color:#fff}
+.tribe-hero .lede{color:rgba(255,255,255,.9); margin:8px 0 0; max-width:58ch}
+.orbit{margin:-6px -10px 0}
+.orbit svg{display:block; overflow:visible}
+.orbit line{stroke-linecap:round; animation:draw 1s ease both; animation-delay:calc(var(--i) * 120ms + .2s); stroke-dasharray:200; stroke-dashoffset:0}
+.orbit line.faint{stroke:rgba(255,255,255,.35); stroke-width:1.5; stroke-dasharray:2 5}
+.orbit line.half{stroke:#FFC24D; stroke-width:2.5; stroke-dasharray:6 6; animation:march 1.2s linear infinite}
+.orbit line.bond{stroke:#FFC24D; stroke-width:4; filter:drop-shadow(0 0 6px rgba(255,194,77,.9))}
+@keyframes draw{from{stroke-dashoffset:200; opacity:0}}
+@keyframes march{to{stroke-dashoffset:-24}}
+.orbit .node{animation:popin .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay:calc(var(--i) * 120ms + .3s)}
+.orbit .node > circle{stroke:#fff; stroke-width:3}
+.orbit .node.wants > circle{stroke:#FFC24D; stroke-width:4}
+.orbit .node.on > circle{stroke:#FFC24D; stroke-width:4; filter:drop-shadow(0 0 8px rgba(255,194,77,.9))}
+@keyframes popin{from{opacity:0; transform:scale(.2)}}
+.orbit .node{transform-box:fill-box; transform-origin:center}
+.orbit .pulse{transform-box:fill-box; transform-origin:center; animation:halo 2.4s ease-out infinite}
+@keyframes halo{0%{opacity:.9; transform:scale(1)} 100%{opacity:0; transform:scale(1.6)}}
+.tribe-save{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px}
+.tribe-save p{grid-column:1 / -1; margin:0; color:rgba(255,255,255,.9)}
+.tribe-save div{background:rgba(255,255,255,.14); border-radius:14px; padding:10px 12px}
+.tribe-save span{display:block; font-size:12px; color:rgba(255,255,255,.85); line-height:1.3}
+.tribe-save b{display:block; font-size:19px; font-weight:800; letter-spacing:-.02em; margin-top:2px}
+.tribe-save .win{background:#FFC24D; color:#3A2600} .tribe-save .win span{color:#5A3D00}
+.journey{list-style:none; display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:0; margin:18px 0 6px; counter-reset:j}
+.journey li{position:relative; text-align:center; font-size:12px; color:var(--text-3)}
+.journey li i{display:grid; place-items:center; width:30px; height:30px; margin:0 auto 6px; border-radius:50%; background:var(--surface-2); font-style:normal; font-weight:800; color:var(--text-3); position:relative; z-index:1}
+.journey li::before{content:""; position:absolute; top:15px; left:-50%; width:100%; height:3px; background:var(--surface-2)}
+.journey li:first-child::before{display:none}
+.journey li b{display:block; color:var(--text-2); font-size:13px}
+.journey li span{display:block; line-height:1.3}
+.journey li.done i{background:var(--brand); color:#fff} .journey li.done::before, .journey li.now::before{background:var(--brand)}
+.journey li.now i{background:var(--accent); color:#fff; box-shadow:0 0 0 5px var(--accent-soft)} .journey li.now b{color:var(--text)}
+.tribe-card{padding:16px; border-radius:18px; background:#fff; margin:10px 0; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(16,20,24,.06); animation:rise .4s ease both}
+.tribe-card.wants{box-shadow:0 0 0 2px #FFC24D, 0 10px 30px rgba(242,107,29,.18); background:linear-gradient(180deg,#FFF8EC,#fff 60%)}
+.tribe-card .wants-line{margin:0 0 10px; font-weight:800; color:var(--accent)}
+.tribe-card .acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px}
+.tribe-card .seek-facts strong, .seek-facts strong{color:var(--brand)}
+.tribe-bond{margin:16px 0; padding:20px; border-radius:22px; color:#fff; background:linear-gradient(135deg,#F26B1D,#E8505B 55%,#B63BA8)}
+.tribe-bond .eyebrow{color:rgba(255,255,255,.85); margin:0}
+.tribe-bond h2{color:#fff; font-size:24px; margin:8px 0 4px}
+.tribe-bond p{margin:0 0 10px; color:rgba(255,255,255,.92)}
+.bond-avs{display:flex; margin-top:10px}
+.bond-avs .av{width:46px; height:46px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; font-size:18px; border:3px solid #fff; margin-left:-10px}
+.bond-avs .av:first-child{margin-left:0}
+.bond-row{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 0 2px; box-shadow:0 -1px 0 rgba(255,255,255,.25)}
+.bond-row small{display:block; color:rgba(255,255,255,.8)}
+.bond-row .acts{display:flex; gap:8px; flex-wrap:wrap}
+.tribe-bond .btn-accent{background:#fff; color:#C2410C} .tribe-bond .btn-ghost{background:rgba(255,255,255,.2); color:#fff}
+.each{display:inline-block; margin-left:4px; font-size:12.5px; font-weight:800; color:#fff; background:var(--accent); padding:2px 8px; border-radius:999px; letter-spacing:0}
+#tribeHunt{margin-top:8px}
+.inv-banner.tribe{background:linear-gradient(135deg,#F26B1D,#E8505B 60%,#B63BA8)}
+.bach{font-size:12.5px; font-weight:700; color:var(--brand)}
+.bond-card{position:relative; text-align:center; overflow:hidden; padding:30px 22px 22px}
+.bond-card h2{font-size:26px; margin:6px 0 8px}
+.bond-card p{color:var(--text-2)}
+.bond-card .eyebrow{color:var(--accent); margin:14px 0 0}
+.bond-avs.big{justify-content:center; align-items:center; gap:4px}
+.bond-avs.big .av{width:74px; height:74px; font-size:30px; margin:0; border:4px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,.15); animation:popin .6s cubic-bezier(.2,1.4,.4,1) both}
+.bond-avs.big .av:last-child{animation-delay:.25s}
+.bond-avs.big .spark{font-size:30px; color:#FFC24D; animation:popin .6s .45s both}
+#dlgBond{width:min(420px,calc(100vw - 32px)); height:fit-content; border-radius:24px; margin:auto}
+.confetti{position:absolute; inset:0; pointer-events:none}
+.confetti i{position:absolute; top:-12px; left:var(--x); width:8px; height:14px; border-radius:2px; background:var(--c); animation:fall 2.4s var(--d) ease-in both}
+@keyframes fall{0%{transform:translateY(0) rotate(0); opacity:1} 100%{transform:translateY(520px) rotate(540deg); opacity:0}}
+@media (max-width:420px){ .tribe-save{grid-template-columns:1fr 1fr} .tribe-save .win{grid-column:1 / -1} .journey li span{display:none} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -709,6 +779,25 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
     <div id="reqList"></div>
   </section>
 
+  <!-- seeker: Build your tribe -->
+  <section id="view-tribe" hidden>
+    <div class="tribe-hero">
+      <div class="orbit" id="tribeOrbit" aria-hidden="true"></div>
+      <p class="eyebrow">Build your tribe</p>
+      <h1>Find your people first. Then the flat.</h1>
+      <p class="lede">Team up with someone looking in your areas who lives like you. Hunt for a whole flat together,
+        split the rent, and move in with a friend instead of a stranger.</p>
+      <div class="tribe-save" id="tribeSave"></div>
+    </div>
+    <ol class="journey" id="tribeJourney"></ol>
+    <div id="tribeWants"></div>
+    <div id="tribeBonded"></div>
+    <div id="tribeMatches"></div>
+    <div class="cards" id="tribeHunt"></div>
+    <p class="hint" style="margin:18px 0 28px">Only people looking in your city with a 70%+ vibe match see you here. Numbers are shared only when
+      both of you say yes. You can hide from tribe matches in Account.</p>
+  </section>
+
   <!-- seeker: saved -->
   <section id="view-saved" hidden>
     <div class="page-h"><h1>Saved flats</h1><p>Your shortlist. Compare them here before you decide which ones to contact.</p></div>
@@ -734,7 +823,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
       <div class="d-row"><select id="escPick" aria-label="Which room"></select></div>
       <div class="area-chips" id="escFilters" role="group" aria-label="Show"></div>
     </div>
-    <p class="hint" id="escRule">If someone doesn't reply to your invite within 2 hours, you get their number so you can call them.</p>
+    <p class="hint" id="escRule">Numbers stay private until they say yes to your invite.</p>
     <div id="escList" class="seekers"></div>
   </section>
 
@@ -775,6 +864,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
           <div class="field"><label for="pFurn">Furnishing</label><select id="pFurn"><option value="full">Fully furnished</option><option value="semi" selected>Semi furnished</option><option value="none">Unfurnished</option></select></div>
         </div>
+        <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="pBach" checked><span>Bachelors welcome
+          <small class="hint" style="display:block;margin:0;font-weight:500">Singles, or a group of friends renting together (a tribe). No brokers either way.</small></span></label>
         <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
         <div class="household" style="margin-bottom:14px">
           <h3 class="section-h" style="margin-top:0">Your household</h3>
@@ -825,10 +916,12 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
       <button class="btn btn-ghost btn-sm" data-vibe-open>Edit answers</button></div>
       <div class="traits" id="vibeTraits"></div><div id="myInterests"></div></div>
-    <div class="panel" id="discPanel"><h2>Let owners invite you</h2>
+    <div class="panel" id="discPanel"><h2>Who can find you</h2>
       <p class="sub">With The Empty Room Escape, owners with a room in your areas can find you (first name, what you do, budget and vibe match)
-        and invite you to see their flat. If you don't reply to an invite within 2 hours, that owner gets your number.</p>
-      <label class="switch"><input type="checkbox" id="discToggle"><span>Show me to owners in my areas</span></label></div>
+        and invite you to see their flat. Your number is only shared if you say yes.</p>
+      <label class="switch"><input type="checkbox" id="discToggle"><span>Show me to owners in my areas</span></label>
+      <label class="switch" style="margin-top:14px"><input type="checkbox" id="tribeToggle"><span>Show me in Build your tribe
+        <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
   </section>
@@ -842,6 +935,9 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 
 <dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="cBody"></div></dialog>
+
+<dialog id="dlgBond"><div class="mbody bond-card"><div id="bondBody"></div>
+    <button class="btn btn-ghost btn-block" type="button" data-close style="margin-top:10px">Let's find our flat</button></div></dialog>
 
 <dialog id="dlgGift"><div class="mbody gift-card" style="border:0;margin:0;max-width:none;padding:28px 22px 22px">
     <div id="giftBody"></div>
@@ -896,7 +992,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
         <label class="chip"><input type="checkbox" name="fRule" value="veg">Veg-only kitchen</label>
         <label class="chip"><input type="checkbox" name="fRule" value="noSmoke">No smoking</label>
         <label class="chip"><input type="checkbox" name="fRule" value="noDrinks">No alcohol</label>
-        <label class="chip"><input type="checkbox" name="fRule" value="pets">Pet-friendly</label></div>
+        <label class="chip"><input type="checkbox" name="fRule" value="pets">Pet-friendly</label>
+        <label class="chip"><input type="checkbox" name="fRule" value="bach">Bachelors welcome</label></div>
       <h3 class="section-h">Minimum match</h3>
       <div class="chips">
         <label class="chip"><input type="radio" name="fMatch" value="0" checked>Any</label>
@@ -1310,10 +1407,10 @@ function demoListings(){
   for(const [city, areas] of Object.entries(DEMO_AREAS)){
     for(const [area, pin] of areas){
       n++;
-      const roll = r(), kind = roll < .5 ? "room" : roll < .65 ? "shared" : roll < .88 ? "flatmate" : "flat";
-      const bhk = kind === "flat" ? pick([1, 1, 2, 2, 3]) : pick([2, 2, 2, 3, 3, 4]);
+      const roll = r(), kind = roll < .4 ? "room" : roll < .55 ? "shared" : roll < .7 ? "flatmate" : "flat";
+      const bhk = kind === "flat" ? pick([2, 2, 2, 3, 1]) : pick([2, 2, 2, 3, 3, 4]);
       const [lo, hi] = DEMO_RENT[city];
-      const rent = kind === "flat" ? between(lo * 1.8 * bhk * .7, hi * 1.8 * bhk * .7, 500) : kind === "shared" ? between(lo * .55, hi * .6, 250) : between(lo, hi, 250);
+      const rent = kind === "flat" ? between(lo * .85 * bhk, hi * .8 * bhk, 500) : kind === "shared" ? between(lo * .55, hi * .6, 250) : between(lo, hi, 250);
       const g = r(), gender = g < .6 ? "any" : g < .82 ? "female" : "male";
       const residents = kind === "flat" ? 0 : Math.min(bhk, pick([1, 1, 2, 2, 3]));
       const used = new Set();
@@ -1344,6 +1441,7 @@ function demoListings(){
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
       out.push({
         id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        bachelors: hue("bach" + n) % 10 < 9,
         furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
         description: who + `${near[0].toUpperCase() + near.slice(1)}. ${pick(["Owner is friendly and lives nearby.",
           "Society has 24/7 security.", "Water supply is reliable round the clock.", "Move-in ready, freshly painted.", "Ideal for working professionals."])}`,
@@ -1393,7 +1491,7 @@ let pendingOtp = null;
 
 // Demo stand-ins for the other side: sample owners reply ~6 s after a request,
 // and a sample seeker asks to meet a flat ~8 s after you post it.
-const DEMO_REPLY_MS = 6000, DEMO_INCOMING_MS = 8000, DEMO_INVITE_MS = 12000;
+const DEMO_REPLY_MS = 6000, DEMO_INCOMING_MS = 8000, DEMO_INVITE_MS = 12000, DEMO_TRIBE_MS = 5000;
 
 const demoApi = {
   live:false,
@@ -1520,14 +1618,49 @@ const demoApi = {
       seen_owner:true, seen_seeker:false });
     save(); return { status:"pending" };
   },
-  async setSearch(){},  // demo: the search lives in state.prefs on this device
+  async setSearch(){ if(state.demoTribeAt === "done") await this.tribeRefresh(); },  // demo: the search lives in state.prefs
+  // ---- Build your tribe. Same rules as fm_tribe_refresh / fm_tribe_list / fm_tribe_answer.
+  async tribeRefresh(){
+    const f = prefs();
+    if(!state.user || state.user.role !== "seeker" || state.tribeOpen === false || !f.city || answered(state.vibe) < 8) return 0;
+    state.tribe = state.tribe || [];
+    const have = new Set(state.tribe.map(t => t.sid));
+    const fresh = demoSeekerPool().filter(x => x.city === f.city && !have.has(x.id)
+        && (!f.areas.length || !x.areas.length || x.areas.some(a => f.areas.includes(a))))
+      .map(x => ({ x, m: vibeMatch(state.vibe, x.vibe) })).filter(c => c.m && c.m.pct >= 70)
+      .sort((a, b) => b.m.pct - a.m.pct).slice(0, Math.max(0, 6 - state.tribe.length));
+    for(const { x, m } of fresh) state.tribe.push({ id:"t-" + x.id, sid:x.id, match_pct:m.pct, my_yes:null, their_yes:null,
+      status:"open", created_at:new Date().toISOString(), bonded_at:null, seen:false });
+    save(); return fresh.length;
+  },
+  async tribeList(){
+    this.tick();
+    const pool = new Map(demoSeekerPool().map(x => [x.id, x]));
+    return (state.tribe || []).filter(t => t.status !== "closed").map(t => {
+      const x = pool.get(t.sid);
+      return { id:t.id, other_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct:t.match_pct,
+        interests:x.interests, vibe:x.vibe, my_yes:t.my_yes, their_yes:t.their_yes, status:t.status,
+        phone: t.status === "bonded" ? "+91" + x.phone : null, created_at:t.created_at, bonded_at:t.bonded_at, unseen:!t.seen };
+    }).sort((a, b) => (b.status === "bonded") - (a.status === "bonded") || b.match_pct - a.match_pct);
+  },
+  async tribeAnswer(id, yes){
+    const t = (state.tribe || []).find(x => x.id === id);
+    if(!t) return "not-found";
+    if(t.status !== "open") return t.status;
+    if(!yes){ t.my_yes = false; t.status = "closed"; save(); return "closed"; }
+    t.my_yes = true; t.yesAt = Date.now();
+    if(t.their_yes){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); t.seen = false; }
+    save(); return t.status;
+  },
+  async tribeSeen(){ (state.tribe || []).forEach(t => t.seen = true); save(); },
+  async setTribeOpen(v){ state.tribeOpen = v; save(); },
   // Plays the other side in demo mode.
   tick(){
     const now = Date.now();
     for(const r of state.requests){
       if(r.by === "owner"){
         // Sample seekers answer an owner's invite: yes to a strong match, no to a poor one,
-        // and the ones in between never reply (so the owner gets their number after the wait).
+        // and the ones in between don't reply.
         const me = state.user && state.user.phone;
         if(r.status === "pending" && !r.demoDone && r.seeker_phone !== me && now - new Date(r.created_at) > DEMO_REPLY_MS + 2000){
           r.demoDone = true;
@@ -1551,6 +1684,21 @@ const demoApi = {
         seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {} }, status:"pending", message:s.message,
         match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true });
     }
+    // Build your tribe: matches appear ~5 s after onboarding; a third of sample seekers say yes
+    // first, and the rest answer your yes after a few seconds (yes to a 74%+ match).
+    if(state.user && state.user.role === "seeker" && state.onboarded.seeker && state.demoTribeAt !== "done"){
+      if(!state.demoTribeAt) state.demoTribeAt = now + DEMO_TRIBE_MS;
+      else if(now >= state.demoTribeAt){ state.demoTribeAt = "done"; this.tribeRefresh(); }
+    }
+    for(const t of state.tribe || []){
+      if(t.status !== "open") continue;
+      if(t.their_yes == null && t.my_yes == null && hue(t.id) % 3 === 0 && now - new Date(t.created_at) > DEMO_REPLY_MS + 3000){
+        t.their_yes = true; t.seen = false;
+      }else if(t.my_yes && t.their_yes == null && now - t.yesAt > DEMO_REPLY_MS){
+        t.their_yes = t.match_pct >= 74; t.seen = false;
+        if(t.their_yes){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); } else t.status = "closed";
+      }
+    }
     // Sample owners invite a new seeker to their two best-matching homes, ~12 s after onboarding.
     if(state.user && state.user.role === "seeker" && state.onboarded.seeker && state.discoverable !== false && state.demoInvites !== "done"){
       if(!state.demoInvites) state.demoInvites = now + DEMO_INVITE_MS;
@@ -1573,14 +1721,13 @@ const demoApi = {
     const me = this.me_(), mine = new Set(state.myListings.filter(l => l.owner_phone === me).map(l => l.id));
     return state.requests.filter(r => r.status !== "withdrawn" && (mine.has(r.listing_id) || r.seeker_phone === me)).map(r => {
       const incoming = mine.has(r.listing_id), by = r.by || "seeker";
-      const auto = by === "owner" && r.status === "pending" && Date.now() - new Date(r.created_at) > INVITE_SHARE_MS;
       const l = by === "owner" && !incoming ? this.all().find(x => x.id === r.listing_id) : null;
       return { id:r.id, listing_id:r.listing_id, listing_title:r.listing_title, direction: incoming ? "incoming" : "outgoing",
-        status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at, by, auto_shared:auto,
+        status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at, by,
         name: incoming ? r.seeker.name : l && l.private ? l.private.contact_name.split(" ")[0] : null,
         occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
         interests: incoming ? r.seeker.interests || {} : null,
-        phone: incoming && (r.status === "approved" || auto) ? "+91" + r.seeker.phone : null,
+        phone: incoming && r.status === "approved" ? "+91" + r.seeker.phone : null,
         unseen: incoming ? !r.seen_owner && (r.status === "pending") === (by === "seeker") : !r.seen_seeker };
     }).sort((a, b) => b.created_at.localeCompare(a.created_at));
   },
@@ -1684,6 +1831,7 @@ function makeLiveApi(sb){
       if(answered(r.vibe)) state.vibe = r.vibe;
       if(r.interests && allInterests(r.interests).length) state.interests = r.interests;
       state.discoverable = r.discoverable !== false;
+      state.tribeOpen = r.tribe_open !== false;
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
@@ -1704,6 +1852,11 @@ function makeLiveApi(sb){
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
     async invite(lid, sid, message){ return one(await rpc("fm_invite", { p_listing:lid, p_seeker:sid, p_message:message })); },
     async setSearch(search, discoverable){ await rpc("fm_set_search", { p_search: search, p_discoverable: discoverable }); },
+    async tribeRefresh(){ return rpc("fm_tribe_refresh"); },
+    async tribeList(){ return rpc("fm_tribe_list"); },
+    async tribeAnswer(id, yes){ return rpc("fm_tribe_answer", { p_link:id, p_yes:yes }); },
+    async tribeSeen(){ await rpc("fm_tribe_seen"); },
+    async setTribeOpen(v){ state.tribeOpen = v; save(); await rpc("fm_set_tribe_open", { p_open:v }); },
     async markSeen(){ await rpc("fm_mark_seen"); },
     async savePushToken(token){ await rpc("fm_save_push_token", { p_token: token, p_platform: "android" }); },
     async uploadPhotos(files){
@@ -1723,7 +1876,7 @@ function makeLiveApi(sb){
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
-        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {} });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await all()).filter(l => l.is_owner); },
@@ -1854,17 +2007,18 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","requests","saved","account"], owner:["mine","escape","requests","post","account"] };
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","account"], owner:["mine","escape","requests","post","account"] };
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
+  tribe:["Tribe",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 20c.8-3.6 3-5.5 5.5-5.5s4.7 1.9 5.5 5.5"/><path d="M14 14.6c.8-.4 1.6-.6 2.5-.6 2.2 0 4 1.6 4.8 4.5"/></svg>'],
   saved:["Saved",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>'],
   mine:["My flat",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>'],
   escape:["Escape",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4h9v17"/><path d="M13 7h4v14"/><circle cx="10.5" cy="12.5" r=".6" fill="currentColor"/><path d="M17 12h4m-2-2l2 2-2 2"/></svg>'],
   post:["Post",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","requests","saved","mine","escape","post","account"];
+const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","account"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-onboard").hidden = name !== "onboard";
@@ -1885,17 +2039,22 @@ function route(){
   VIEWS.forEach(n => $("view-" + n).hidden = n !== v);
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
-  ({ discover:renderDiscover, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, account:renderAccount })[v]();
+  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, account:renderAccount })[v]();
   window.scrollTo(0, 0);
 }
-let unseen = 0;
+let unseen = 0, tribeUnseen = 0;
 function renderNav(){
   const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"];
   $("nav").innerHTML = allowed.map(n => `<button class="tab" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
-    n === "requests" && unseen ? `<i class="badge" aria-label="${unseen} new">${unseen}</i>` : ""}</button>`).join("");
+    n === "requests" && unseen ? `<i class="badge" aria-label="${unseen} new">${unseen}</i>` : n === "tribe" && tribeUnseen
+      ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : ""}</button>`).join("");
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
 $("meBtn").addEventListener("click", () => go("account"));
+$("tribeToggle").addEventListener("change", async e => {
+  try{ await api.setTribeOpen(e.target.checked); }catch(err){ console.error(err); }
+  toast(e.target.checked ? "You're back in Build your tribe." : "You're hidden from tribe matches.");
+});
 $("discToggle").addEventListener("change", e => {
   state.discoverable = e.target.checked; save(); syncSearch();
   toast(e.target.checked ? "Owners in your areas can now find and invite you." : "You're hidden. Owners can't find or invite you.");
@@ -1903,11 +2062,10 @@ $("discToggle").addEventListener("change", e => {
 
 /* ================================================= The Empty Room Escape */
 // Owners turn the search around: people already looking in their area, ranked by vibe,
-// with their budget. An invite lets the seeker see the photos and say yes in one tap;
-// left unanswered for 2 hours (INVITE_SHARE_MS), the owner gets the seeker's number.
+// with their budget. An invite lets the seeker see the photos and say yes in one tap.
+// Numbers are shared only when the seeker accepts.
 const ESC_FILTERS = [["all", "Everyone"], ["fit", "Budget fits my rent"], ["vibe", "80%+ vibe"], ["new", "Not invited yet"]];
 let escSeekers = [], escListing = null;
-const leftLabel = ms => { const m = Math.max(1, Math.ceil(ms / 6e4)); return m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m} min`; };
 async function renderEscape(){
   const listings = (await api.myListings()).filter(l => l.status !== "closed");
   if(!listings.length){
@@ -1982,10 +2140,138 @@ $("escList").addEventListener("click", async e => {
       `Hi ${first}! ${x.match_pct != null ? `Your vibe matches our home ${x.match_pct}%. ` : ""}Would you like to come and see the room?`);
     toast(r.error === "daily-limit" ? "That's 30 invites today. You can send more tomorrow."
       : r.error ? "Couldn't send that invite. Please try again."
-      : `Invite sent. ${first} sees your photos and can say yes in one tap. No reply in 2 hours? You'll get their number.`);
+      : `Invite sent. ${first} sees your photos and can say yes in one tap. Numbers are shared only if they accept.`);
   }catch(err){ console.error(err); toast("Couldn't send that invite. Please try again."); }
   renderEscape();
 });
+/* ===================================================== Build your tribe */
+// Seekers looking in the same areas whose vibes match 70%+ can team up, hunt for a whole
+// flat together and split the rent. Numbers are shared only when both say yes.
+let tribeRows = [];
+const TRIBE_STEPS = [["Match", "70%+ vibe, same areas"], ["Team up", "You both say yes"], ["Bond", "Numbers shared"], ["Hunt", "A whole flat, split"]];
+const median = a => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : 0; };
+const sameAnswers = (a, b) => VIBE_QS.filter(x => Number.isInteger(a && a[x.k]) && a[x.k] === (b && b[x.k])).map(x => x.t[a[x.k]]);
+// You in the middle, matches around you; lines show where each one stands.
+function orbitSvg(rows){
+  const W = 340, H = 220, cx = W / 2, cy = H / 2 + 4, people = rows.slice(0, 6), n = people.length;
+  const me = (firstName()[0] || "Y").toUpperCase();
+  const nodes = people.map((t, i) => {
+    const a = -Math.PI / 2 + (n === 1 ? Math.PI / 2 : (i / n) * 2 * Math.PI) + .35, rx = 128, ry = 78;
+    return { t, x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) };
+  });
+  const line = ({ t, x, y }, i) => {
+    const cls = t.status === "bonded" ? "bond" : t.my_yes && t.their_yes ? "bond" : t.my_yes || t.their_yes ? "half" : "faint";
+    return `<line class="${cls}" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--i:${i}"/>`;
+  };
+  const node = ({ t, x, y }, i) => `<g class="node${t.status === "bonded" ? " on" : t.their_yes ? " wants" : ""}" style="--i:${i}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">
+      <circle r="21" fill="${colorFor(t.other_id)}"/><text y="6" text-anchor="middle" font-size="16" font-weight="800" fill="#fff">${esc((t.name || "?")[0])}</text>
+      <rect x="-24" y="25" width="48" height="17" rx="8.5" fill="rgba(255,255,255,.95)"/><text y="37.5" text-anchor="middle" font-size="10.5" font-weight="800" fill="#0B7C82">${t.match_pct}%</text></g>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+    <ellipse cx="${cx}" cy="${cy}" rx="128" ry="78" fill="none" stroke="rgba(255,255,255,.18)" stroke-dasharray="3 6"/>
+    ${nodes.map(line).join("")}
+    <g class="me"><circle cx="${cx}" cy="${cy}" r="30" fill="#fff"/><circle cx="${cx}" cy="${cy}" r="30" fill="none" stroke="#FFC24D" stroke-width="3" class="pulse"/>
+      <text x="${cx}" y="${cy + 7}" text-anchor="middle" font-size="20" font-weight="800" fill="#0B7C82">${esc(me)}</text></g>
+    ${nodes.map(node).join("")}
+    ${n ? "" : `<text x="${cx}" y="${cy + 58}" text-anchor="middle" font-size="12.5" fill="rgba(255,255,255,.85)">Your matches will appear around you</text>`}</svg>`;
+}
+async function tribeSavings(){
+  const city = prefs().city; if(!city) return "";
+  const rows = await api.search({ city });
+  const alone = median(rows.filter(l => l.kind === "room").map(l => l.rent));
+  // Per person = a whole flat's rent split per bedroom (median across the city's whole flats).
+  const each = median(rows.filter(l => l.kind === "flat" && l.bhk >= 2).map(l => l.rent / l.bhk));
+  if(!alone || !each || each >= alone) return `<p>Whole flats are often cheaper per person than single rooms. Team up and see.</p>`;
+  return `<div><span>A room on your own in ${esc(city)}</span><b>${inr(alone)}</b></div><div><span>A whole flat, split per bedroom</span><b>${inr(Math.round(each / 50) * 50)}</b></div>
+    <div class="win"><span>Your tribe could save</span><b>${inr(Math.round((alone - each) / 50) * 50)}/month each</b></div>`;
+}
+function tribeCardHtml(t){
+  const f = prefs(), shared = sharedInterests(state.interests, t.interests), same = sameAnswers(state.vibe, t.vibe).slice(0, 3);
+  const areas = (t.areas || []).length ? t.areas.map(a => f.areas.includes(a) ? `<strong>${esc(a)}</strong>` : esc(a)).join(", ") : `Anywhere in ${esc(f.city || "the city")}`;
+  const first = esc(t.name || "Someone");
+  const acts = t.my_yes ? `<span class="req-pill pending">You said yes · waiting for ${first}</span>`
+    : t.their_yes ? `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Yes, let's team up</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not for me</button>`
+    : `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Team up with ${first}</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not now</button>`;
+  return `<article class="tribe-card${t.their_yes && !t.my_yes ? " wants" : ""}">
+    ${t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
+    <div class="seek-top"><span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>
+      <div style="min-width:0;flex:1"><h3>${first}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
+      <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
+    <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
+    ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
+    ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
+    <div class="acts">${acts}<button class="btn btn-ghost btn-sm" data-tcompat="${esc(t.id)}">Compatibility</button></div></article>`;
+}
+async function renderTribe(){
+  await api.tribeRefresh().catch(() => 0);
+  tribeRows = await api.tribeList();
+  const bonded = tribeRows.filter(t => t.status === "bonded");
+  const wants = tribeRows.filter(t => t.status === "open" && t.their_yes && !t.my_yes);
+  const open = tribeRows.filter(t => t.status === "open" && !wants.includes(t));
+  const step = bonded.length ? 3 : tribeRows.some(t => t.my_yes) || wants.length ? 1 : tribeRows.length ? 0 : -1;
+  $("tribeOrbit").innerHTML = orbitSvg(tribeRows);
+  $("tribeSave").innerHTML = await tribeSavings();
+  $("tribeJourney").innerHTML = TRIBE_STEPS.map(([h, sub], i) => `<li class="${i < step ? "done" : i === step ? "now" : ""}"><i>${i < step ? "✓" : i + 1}</i><b>${h}</b><span>${sub}</span></li>`).join("");
+  $("tribeWants").innerHTML = wants.length ? `<h2 class="section-h">They want to team up with you</h2>${wants.map(tribeCardHtml).join("")}` : "";
+  const f = prefs(), size = bonded.length + 1, budget = (f.max || 0) + bonded.reduce((a, t) => a + (t.budget || 0), 0);
+  $("tribeBonded").innerHTML = bonded.length ? `<div class="tribe-bond">
+      <p class="eyebrow">Your tribe · ${size} people</p>
+      <div class="bond-avs"><span class="av" style="background:var(--brand)">${esc((firstName()[0] || "Y").toUpperCase())}</span>${bonded.map(t =>
+        `<span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>`).join("")}</div>
+      <h2>You${bonded.map(t => " + " + esc(t.name)).join("")}</h2>
+      <p>${budget ? `Together you can spend up to <b>${inr(budget)}</b> a month. ` : ""}Hunt for a whole flat and split it ${size} ways.</p>
+      ${bonded.map(t => `<div class="bond-row"><span><b>${esc(t.name)}</b> · ${esc(occLine(t.occupation))}<small>Bonded ${timeAgo(t.bonded_at)} · ${t.match_pct}% vibe</small></span>
+        <span class="acts"><a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMyFlatMate. Let's find our flat!`)}">WhatsApp</a></span></div>`).join("")}
+    </div>` : "";
+  $("tribeMatches").innerHTML = open.length ? `<h2 class="section-h">Vibe matches near you · 70%+</h2>${open.map(tribeCardHtml).join("")}`
+    : tribeRows.length ? "" : `<div class="empty"><h3>No matches yet</h3><p>${f.city ? `As more people looking in ${esc(f.areas.length ? f.areas.join(", ") : f.city)} join, anyone who matches your vibe 70%+ shows up here, and we'll notify you both.`
+      : "Pick your city and areas on Discover first."}</p></div>`;
+  // Hunt together: whole flats that welcome bachelors, in any of the tribe's areas, within the joint budget.
+  if(bonded.length){
+    const areas = new Set(f.areas.concat(...bonded.map(t => t.areas || []))), anyArea = !f.areas.length || bonded.some(t => !(t.areas || []).length);
+    const all = (await api.search({ city: f.city })).filter(l => l.kind === "flat" && l.bachelors !== false && l.bhk >= size
+      && (anyArea || areas.has(l.locality))).sort((a, b) => a.rent - b.rent);
+    const fits = all.filter(l => !budget || l.rent <= budget * 1.1), flats = fits.length ? fits : all.slice(0, 4);
+    $("tribeHunt").innerHTML = `<h2 class="section-h" style="grid-column:1 / -1">Hunt together · whole flats for ${size}</h2>`
+      + (!fits.length && flats.length ? `<p class="hint" style="grid-column:1 / -1;margin:-4px 0 0">Nothing within your joint budget yet. These are the closest.</p>` : "") + (flats.length
+      ? flats.map((l, i) => cardHtml(l, i).replace("<small> /month rent</small>", `<small> /month rent</small> <span class="each">${inr(Math.round(l.rent / size / 50) * 50)} each</span>`)).join("")
+      : `<div class="empty" style="grid-column:1 / -1"><p>No whole flats in your areas within your joint budget right now. New ones are posted every day.</p></div>`);
+  }else $("tribeHunt").innerHTML = "";
+  if(tribeRows.some(t => t.unseen)){ await api.tribeSeen(); tribeUnseen = 0; renderNav(); }
+}
+$("view-tribe").addEventListener("click", async e => {
+  const c = e.target.closest("[data-tcompat]");
+  if(c){
+    const t = tribeRows.find(x => x.id === c.dataset.tcompat);
+    if(t) openCompat({ me: state.vibe, them: t.vibe, meName: "You", themName: t.name || "Them", myInts: state.interests, theirInts: t.interests,
+      title: "You + " + (t.name || "") + " · Build your tribe" });
+    return;
+  }
+  const b = e.target.closest("[data-ty],[data-tn]"); if(!b) return;
+  b.disabled = true;
+  const id = b.dataset.ty || b.dataset.tn, yes = Boolean(b.dataset.ty), t = tribeRows.find(x => x.id === id);
+  try{
+    const st = await api.tribeAnswer(id, yes);
+    if(st === "bonded" && t) celebrateTribe(Object.assign({}, t, { status: "bonded" }));
+    else toast(yes ? `You said yes! If ${t ? t.name : "they"} says yes too, you'll both get each other's numbers.` : "Okay. We won't show you to each other again.");
+  }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
+  renderTribe();
+});
+// The bonding moment: both said yes.
+async function celebrateTribe(t){
+  state.notified = state.notified || {}; state.notified["tribe" + t.id + "bondedy"] = Date.now(); save();
+  Notify.show(`You and ${t.name} are a tribe!`, `Numbers are shared. Call ${t.name} and start hunting for a whole flat together.`, "tribe");
+  const row = (await api.tribeList()).find(x => x.id === t.id) || t;
+  $("bondBody").innerHTML = `<div class="confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, i) =>
+      `<i style="--x:${(i * 37) % 100}%;--d:${(i % 7) * .12}s;--c:${["#FFC24D", "#F26B1D", "#0E9AA0", "#3D6BE0", "#E8505B"][i % 5]}"></i>`).join("")}</div>
+    <div class="bond-avs big"><span class="av" style="background:var(--brand)">${esc((firstName()[0] || "Y").toUpperCase())}</span>
+      <span class="spark">✦</span><span class="av" style="background:${colorFor(row.other_id)}">${esc((row.name || "?")[0])}</span></div>
+    <p class="eyebrow">${row.match_pct}% vibe match</p>
+    <h2>You and ${esc(row.name)} are a tribe!</h2>
+    <p>You both said yes, so your numbers are shared. Call ${esc(row.name)}, pick your areas and start hunting for a whole flat together.</p>
+    ${row.phone ? `<a class="btn btn-accent btn-block" href="tel:${esc(row.phone)}">Call ${esc(row.name)} · ${esc(row.phone)}</a>` : ""}`;
+  if(!$("dlgBond").open) $("dlgBond").showModal();
+}
 /* ======================================================== notifications */
 // System notifications: the Android app's native bridge when present (FlatmatesNative,
 // see MainActivity.java), otherwise the browser's Notification API via the service worker.
@@ -2028,9 +2314,6 @@ document.addEventListener("click", async e => {
 
 // Reminder if a seeker hasn't called an owner who accepted them.
 const REMIND_MS = LIVE ? 2 * 36e5 : 60e3;
-// An owner's invite left unanswered this long shares the seeker's number with the owner
-// (enforced by fm_inbox in schema.sql). One minute in demo mode, so it can be tried.
-const INVITE_SHARE_MS = LIVE ? 2 * 36e5 : 60e3;
 async function checkInbox(){
   if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
   let rows;
@@ -2060,7 +2343,7 @@ async function checkInbox(){
     }else if(r.by === "owner"){
       if(r.status === "pending"){
         Notify.show(`${r.name || "An owner"} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
-          `See the photos of “${r.listing_title}” and reply within 2 hours. If you don't, ${r.name || "they"} gets your number.`, "requests");
+          `See the photos of “${r.listing_title}” and say yes or no in one tap. Your number stays private unless you say yes.`, "requests");
         toast(`${r.name || "An owner"} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`);
       }
     }else if(r.status === "approved"){
@@ -2074,17 +2357,6 @@ async function checkInbox(){
       toast(`The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact used." : ""}`);
     }
   }
-  // An invite left unanswered for 2 hours: the owner now has the seeker's number.
-  if(isOwner()){
-    for(const r of rows.filter(x => x.direction === "incoming" && x.auto_shared && x.phone)){
-      if(state.notified[r.id + "auto"]) continue;
-      state.notified[r.id + "auto"] = Date.now();
-      const first = (r.name || "They").split(" ")[0];
-      Notify.show(`No reply from ${first}, so here's their number`, `${first} hasn't answered your invite to “${r.listing_title}” in 2 hours. Call ${r.phone}.`, "requests");
-      toast(`No reply from ${first} in 2 hours. Their number is in Requests.`);
-      if(currentView === "requests") renderRequests();
-    }
-  }
   if(!isOwner()){
     state.reminded = state.reminded || {};
     for(const r of rows.filter(x => x.direction === "outgoing" && x.status === "approved")){
@@ -2092,6 +2364,29 @@ async function checkInbox(){
       state.reminded[r.id] = Date.now();
       Notify.show("Don't lose this room", `You haven't called about “${r.listing_title}” yet. The owner said yes, so call today before it's rented out.`, "requests");
     }
+    // Build your tribe: new 70%+ matches, someone saying yes, and bonds.
+    let trows = [];
+    try{ trows = await api.tribeList(); }catch(err){}
+    const tf = trows.filter(t => t.unseen), news = [];
+    for(const t of tf){
+      const key = "tribe" + t.id + t.status + (t.their_yes ? "y" : "");
+      if(state.notified[key]) continue;
+      state.notified[key] = Date.now();
+      if(t.status === "bonded") celebrateTribe(t);
+      else if(t.their_yes && !t.my_yes){
+        Notify.show(`${t.name} wants to build a tribe with you`, "Say yes and you'll both get each other's numbers.", "tribe");
+        toast(`✨ ${t.name} wants to build a tribe with you`);
+      }else if(t.my_yes == null && t.their_yes == null) news.push(t);
+    }
+    if(news.length){
+      const top = news[0];
+      Notify.show(news.length === 1 ? `${top.name} could be your flatmate · ${top.match_pct}% vibe` : `${news.length} people near you match your vibe 70%+`,
+        "Build a tribe: hunt for a whole flat together and split the rent.", "tribe");
+      toast(news.length === 1 ? `${top.name} matches your vibe ${top.match_pct}%. Build a tribe?` : `${news.length} people near you match your vibe 70%+. Build your tribe!`);
+    }
+    tribeUnseen = tf.length;
+    if(tf.length && currentView === "tribe") renderTribe();
+    if(tf.length && currentView === "discover") renderUrgent();
   }
   save();
   unseen = fresh.length;
@@ -2113,10 +2408,14 @@ async function renderUrgent(){
   const inbox = await api.inbox();
   const invites = inbox.filter(r => r.direction === "outgoing" && r.by === "owner" && r.status === "pending");
   const rows = inbox.filter(r => r.direction === "outgoing" && r.status === "approved" && !(state.called || {})[r.listing_id]);
-  const soonest = invites.reduce((m, r) => Math.min(m, INVITE_SHARE_MS - (Date.now() - new Date(r.created_at))), Infinity);
   const inviteCard = invites.length ? `<a class="inv-banner" href="#requests"><span class="urgent-dot" aria-hidden="true"></span><span>
       <b>${invites.length === 1 ? `${esc(invites[0].name || "An owner")} invited you to see their flat` : `${invites.length} owners invited you to see their flats`}</b>
-      <small>${soonest > 0 ? `Reply within ${leftLabel(soonest)}, or they get your number` : "They have your number now. You can still reply"} →</small></span></a>` : "";
+      <small>See the photos and say yes or no in one tap →</small></span></a>` : "";
+  const trows = await api.tribeList().catch(() => []);
+  const tw = trows.filter(t => t.status === "open" && t.their_yes && !t.my_yes), tn = trows.filter(t => t.status === "open" && t.my_yes == null);
+  const tribeCard = tw.length || tn.length ? `<a class="inv-banner tribe" href="#tribe"><span class="urgent-dot" aria-hidden="true"></span><span>
+      <b>${tw.length ? `✨ ${esc(tw[0].name)} wants to build a tribe with you` : `${tn.length} ${tn.length === 1 ? "person" : "people"} looking in your areas ${tn.length === 1 ? "matches" : "match"} your vibe 70%+`}</b>
+      <small>Team up, rent a whole flat together and split it →</small></span></a>` : "";
   const cards = await Promise.all(rows.map(async r => {
     const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
     if(!c) return "";
@@ -2130,7 +2429,7 @@ async function renderUrgent(){
           href="https://wa.me/91${esc(c.contact_phone)}?text=${encodeURIComponent("Hi " + first + ", I'm " + (state.user.name || "") + " from FindMyFlatMate. Thanks for accepting! When can I come and see the room?")}">WhatsApp</a>
         <button class="btn btn-ghost btn-sm" type="button" data-called="${esc(r.listing_id)}">I've called</button></div></div></article>`;
   }));
-  $("urgent").innerHTML = inviteCard + cards.join("");
+  $("urgent").innerHTML = inviteCard + tribeCard + cards.join("");
   $("urgentReq").innerHTML = cards.join("");
 }
 document.addEventListener("click", e => {
@@ -2393,7 +2692,8 @@ function areasFor(city, rows){
   return known.concat(extra);
 }
 const RULES = { veg:["Veg-only kitchen", hh => hh.food === 0], noSmoke:["No smoking", hh => hh.smoke === 0],
-  noDrinks:["No alcohol", hh => hh.drinks === 0], pets:["Pet-friendly", hh => hh.pets >= 1] };
+  noDrinks:["No alcohol", hh => hh.drinks === 0], pets:["Pet-friendly", hh => hh.pets >= 1],
+  bach:["Bachelors welcome", () => true] };  // checked for every kind of home in applyFilters
 function applyFilters(rows, f){
   return rows.filter(l => {
     const cost = l.rent, hh = l.household || {}, shared = l.kind !== "flat" && (hh.residents || 0) > 0;
@@ -2407,6 +2707,7 @@ function applyFilters(rows, f){
     if(f.must.length && !f.must.every(a => (l.amenities || []).includes(a))) return false;
     // House rules only apply where someone already lives; a whole flat is yours to set.
     if(shared && f.rules.some(r => RULES[r] && !RULES[r][1](hh))) return false;
+    if(f.rules.includes("bach") && l.bachelors === false) return false;
     if(f.minMatch && shared){ const m = vibeMatch(state.vibe, hh); if(!m || m.pct < f.minMatch) return false; }
     return true;
   });
@@ -2451,6 +2752,7 @@ function cardHtml(l, i){
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span></div>` : ""}
       ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
       <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
+      ${l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome · no brokers</div>` : ""}
       <div class="price">${inr(l.rent)}<small> /month rent</small></div>
       <div class="allin">${esc(expensesLine(l))} · deposit ${inr(l.deposit)}</div>
       <div class="fresh">Posted ${timeAgo(l.created_at)}</div>
@@ -2584,7 +2886,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","vibeCards"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","savedCards","vibeCards","tribeHunt"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null;
@@ -2619,11 +2921,10 @@ async function openListing(id){
   }else if(!l.is_owner && isSeeker()){
     const inv = (await api.inbox()).find(r => r.listing_id === id && r.by === "owner" && r.status === "pending");
     if(inv){
-      const owner = inv.name || "The owner", left = INVITE_SHARE_MS - (Date.now() - new Date(inv.created_at));
+      const owner = inv.name || "The owner";
       lock = `<div class="lock invited"><p class="eyebrow">You're invited</p><h3>${esc(owner)} would like you to see this home</h3>
         ${inv.message ? `<p>“${esc(inv.message)}”</p>` : ""}
-        <p class="inv-timer">${inv.auto_shared || left <= 0 ? `You didn't reply within 2 hours, so ${esc(owner)} now has your number. You can still say yes or no.`
-          : `Reply within <b>${leftLabel(left)}</b>. After that, ${esc(owner)} gets your number.`}</p>
+        <p class="inv-timer">Your number stays private. ${esc(owner)} only gets it if you say yes.</p>
         <div class="acts"><button class="btn btn-primary" data-action="inv-yes" data-rid="${esc(inv.id)}">Yes, let's meet</button>
           <button class="btn btn-ghost" data-action="inv-no" data-rid="${esc(inv.id)}">Not for me</button></div>
         <div class="promise-line"><b>✓</b><span>Free: invites from owners never use your contacts. Saying yes shares numbers and the address both ways.</span></div></div>`;
@@ -2637,12 +2938,14 @@ async function openListing(id){
         <p>The owner went with someone who's a closer fit for their home.${CHARGES_ON ? " Your contact wasn't used." : ""} Your best matches are on Discover.</p></div>`;
     }else{
       const left = contactsLeft();
+      const tribe = l.kind === "flat" ? (await api.tribeList()).filter(t => t.status === "bonded") : [];
+      const note = tribe.length ? `We're a tribe of ${tribe.length + 1} (${[firstName() || "me"].concat(tribe.map(t => t.name)).join(", ")}) looking for a whole flat together. We match each other's vibe ${tribe[0].match_pct}%.` : "";
       lock = `<div class="lock">
         <h3>Feel the vibe? Ask to meet them</h3>
         <p>We'll send the owner your vibe profile. If they feel it too, they accept, and you both get each other's number and the address.</p>
         <div class="share"><span>${esc(state.user.name || "You")}</span>${state.user.occupation && state.user.occupation.type ? `<span>${esc(occLine(state.user.occupation))}</span>` : ""}
           <span>Your 12 living-style answers</span>${m ? `<span>${m.pct}% match</span>` : ""}</div>
-        <textarea id="reqMsg" maxlength="300" placeholder="Say hello (optional): when you'd like to move, anything they should know"></textarea>
+        <textarea id="reqMsg" maxlength="300" placeholder="Say hello (optional): when you'd like to move, anything they should know">${esc(note)}</textarea>
         <button class="btn btn-accent btn-block" style="margin-top:10px" data-action="request">${CHARGES_ON && !left ? `Get ${PACK_CREDITS} more contacts · ₹${PACK_PRICE}` : "Send request"}</button>
         ${!CHARGES_ON || !state.giftSeen ? `<div class="promise-line"><b>✓</b><span>The owner sees your vibe profile and decides. Your number is only shared if they accept.</span></div>`
           : `<div class="promise-line"><b>${GIFT_SVG.replace("<svg", '<svg width="16" height="16"')}</b><span>${left
@@ -2688,6 +2991,8 @@ async function openListing(id){
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
       <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
+      <div><span>Bachelors</span><b>${l.bachelors === false ? "Not allowed" : "Welcome"}</b></div>
+      <div><span>Brokerage</span><b>None, ever</b></div>
     </div>
     ${(l.amenities || []).length ? `<div class="meta">${l.amenities.map(a => `<span>${esc(a)}</span>`).join("")}</div>` : ""}
     <p style="white-space:pre-line">${esc(l.description)}</p>
@@ -2758,9 +3063,9 @@ async function renderRequests(){
       + rest.map(r => owner ? incomingHtml(r, listings.find(l => l.id === r.listing_id)) : outgoingHtml(r)).join("");
   if(rows.some(r => r.unseen)){ await api.markSeen(); unseen = 0; renderNav(); }
 }
-// A seeker's view of an owner's invite: the home's photo, one-tap yes/no and the 2-hour clock.
+// A seeker's view of an owner's invite: the home's photo and a one-tap yes or no.
 function inviteHtml(r, l){
-  const owner = r.name || "The owner", left = INVITE_SHARE_MS - (Date.now() - new Date(r.created_at));
+  const owner = r.name || "The owner";
   const ph = l ? photosOf(l).length : 0;
   return `<article class="invite">
     <button class="inv-pic" type="button" data-open="${esc(r.listing_id)}" aria-label="See photos of ${esc(r.listing_title)}">${l ? picHtml(l) : ""}
@@ -2771,9 +3076,7 @@ function inviteHtml(r, l){
       <h3>${esc(r.listing_title)}</h3>
       ${l ? `<div class="loc">${esc(l.locality)}, ${esc(l.city)} · <b>${inr(l.rent)}</b>/month rent</div>` : ""}
       ${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
-      <p class="inv-timer">${r.auto_shared || left <= 0
-        ? `You didn't reply within 2 hours, so ${esc(owner)} now has your number. You can still say yes or no.`
-        : `Reply within <b>${leftLabel(left)}</b>. After that, ${esc(owner)} gets your number.`}</p>
+      <p class="inv-timer">Your number stays private. ${esc(owner)} only gets it if you say yes.</p>
       <div class="acts"><button class="btn btn-primary btn-sm" data-inv-yes="${esc(r.id)}">Yes, let's meet</button>
         <button class="btn btn-ghost btn-sm" data-inv-no="${esc(r.id)}">Not for me</button>
         <button class="btn btn-ghost btn-sm" data-open="${esc(r.listing_id)}">Photos and details</button></div>
@@ -2792,21 +3095,19 @@ function incomingHtml(r, l){
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3><span class="req-pill ${esc(r.status)}">${esc(r.auto_shared ? "No reply · number shared"
-        : (r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3><span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
       ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? `${esc(first)} accepted your invite. Call now while they're keen.`
         : r.status === "declined" ? `${esc(first)} passed this time. <a href="#escape">Find more people →</a>`
-        : r.auto_shared ? `No reply in 2 hours, so here's ${esc(first)}'s number. Give them a call.`
-        : `You invited ${esc(first)}. If there's no reply in <b>${leftLabel(INVITE_SHARE_MS - (Date.now() - new Date(r.created_at)))}</b>, you'll get their number.`}</p>`
+        : `You invited ${esc(first)}. You'll both get each other's numbers as soon as ${esc(first)} says yes.`}</p>`
         : r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <div class="traits">${traits}</div>
       ${allInterests(r.interests).length ? `<p class="occ" style="margin:8px 0 0">Into (♥ = same as your home):</p>${interestsHtml(r.interests, hh.interests)}` : ""}
       <div class="acts">${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
         ${r.status === "pending" && r.by !== "owner" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
-        : (r.status === "approved" || r.auto_shared) && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
+        : r.status === "approved" && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
           <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc(r.phone.replace(/^\+/, ""))}">WhatsApp</a>` : ""}</div>
     </div></article>`;
 }
@@ -3081,7 +3382,7 @@ $("postForm").addEventListener("submit", async e => {
       kind: f.querySelector("[name=kind]:checked").value,
       title: $("pTitle").value.trim(), city: $("pCity").value, locality: $("pLocality").value.trim(),
       bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
-      available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value,
+      available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value, bachelors: $("pBach").checked,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") }, readQuiz($("hQuiz"), "h")),
@@ -3127,6 +3428,7 @@ async function renderAccount(){
   $("accSwitch").textContent = isOwner() ? "I'm looking for a room instead" : "I want to post a flat instead";
   $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner();
   $("discToggle").checked = state.discoverable !== false;
+  $("tribeToggle").checked = state.tribeOpen !== false;
   if(isOwner()) return;
   $("vibeTraits").innerHTML = answered(state.vibe)
     ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")
