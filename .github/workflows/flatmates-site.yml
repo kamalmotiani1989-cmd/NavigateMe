@@ -53,7 +53,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if info=$(gh api "repos/${{ github.repository }}/pages" 2>/dev/null); then
-            echo "$info" | jq -r '"Pages is on: \(.html_url) (source: \(.source.branch // .build_type) \(.source.path // ""))"'
+            echo "$info" | jq -r '"Pages is on: \(.html_url) (build type: \(.build_type), branch: \(.source.branch // "-") \(.source.path // ""), status: \(.status // "-"))"'
             echo "App: $(echo "$info" | jq -r .html_url)flatmates/" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "::notice::GitHub Pages is not switched on yet. Settings -> Pages -> Source: Deploy from a branch -> gh-pages / (root)."
