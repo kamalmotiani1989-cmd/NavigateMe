@@ -1,0 +1,82 @@
+plugins {
+    id "com.android.application"
+}
+// Firebase push turns on when app/google-services.json exists (locally, or written by CI from a secret).
+if (file("google-services.json").exists()) {
+    apply plugin: "com.google.gms.google-services"
+}
+
+// The web app lives one folder up (flatmates/). Copy it into the APK's assets
+// at build time so there is only ever one copy of the app to edit.
+def webDir = file("$rootDir/..")
+def webOut = layout.buildDirectory.dir("generated/web")
+def copyWeb = tasks.register("copyWeb", Sync) {
+    from(webDir) {
+        include "index.html", "manifest.webmanifest", "icons/**", "vendor/**"
+    }
+    into webOut
+}
+preBuild.dependsOn copyWeb
+
+// Release signing: real keys come from CI secrets (see README). Without them
+// the APK is signed with the testing key in this folder so it still installs.
+def env = System.getenv()
+def hasUploadKey = env.ANDROID_KEYSTORE_FILE && file(env.ANDROID_KEYSTORE_FILE).exists()
+
+android {
+    namespace "com.navigateme.flatmates"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.navigateme.flatmates"
+        minSdk 24
+        targetSdk 35
+        versionCode((env.VERSION_CODE ?: "1") as int)
+        versionName "1.0." + (env.VERSION_CODE ?: "0")
+    }
+
+    signingConfigs {
+        release {
+            if (hasUploadKey) {
+                storeFile file(env.ANDROID_KEYSTORE_FILE)
+                storePassword env.ANDROID_KEYSTORE_PASSWORD
+                keyAlias env.ANDROID_KEY_ALIAS
+                keyPassword env.ANDROID_KEY_PASSWORD
+            } else {
+                storeFile file("$rootDir/testing.keystore")
+                storePassword "flatmates-testing"
+                keyAlias "flatmates-testing"
+                keyPassword "flatmates-testing"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    sourceSets {
+        main.assets.srcDirs += webOut
+    }
+
+    lint {
+        // Release builds shouldn't fail on lint warnings in CI.
+        abortOnError false
+        checkReleaseBuilds false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "androidx.webkit:webkit:1.12.1"
+    implementation "androidx.core:core:1.13.1"
+    implementation platform("com.google.firebase:firebase-bom:33.5.1")
+    implementation "com.google.firebase:firebase-messaging"
+}
