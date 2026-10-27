@@ -1030,6 +1030,52 @@ body.app .foot{box-shadow:none}
   font-size:12.5px; color:rgba(255,255,255,.55)}
 .w-foot-bottom span{display:inline; padding:0}
 @media (max-width:760px){ .w-foot-grid{grid-template-columns:1fr 1fr} .w-foot-brand{grid-column:1/-1} }
+
+/* ---------- account: profile header, settings rows, sign out */
+#view-account{max-width:720px; margin:0 auto}
+.acc-hero{position:relative; overflow:hidden; display:flex; align-items:center; gap:16px; margin:16px 0 14px; padding:22px 20px;
+  border-radius:var(--r-card); background:var(--grad); color:#fff; box-shadow:0 10px 28px rgba(14,120,150,.25)}
+.acc-hero::after{content:""; position:absolute; right:-50px; top:-70px; width:190px; height:190px; border-radius:50%; background:rgba(255,255,255,.08)}
+.acc-av{flex:none; width:64px; height:64px; border-radius:50%; display:grid; place-items:center; background:#fff; color:var(--brand-2);
+  font:800 26px var(--display); box-shadow:0 0 0 4px rgba(255,255,255,.25)}
+.acc-id{min-width:0; position:relative; z-index:1}
+.acc-id h1{font-size:22px; color:#fff; overflow-wrap:anywhere}
+.acc-role{display:inline-block; margin-top:6px; padding:3px 10px; border-radius:999px; background:rgba(255,255,255,.18); font-size:13px; font-weight:700; line-height:1.4}
+.acc-phone{display:block; margin-top:6px; font-size:14px; font-weight:600; color:rgba(255,255,255,.85)}
+.panel-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+.panel-top .btn{flex:none}
+.acc-h{margin:24px 4px 8px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3)}
+.acc-list{background:var(--card); border-radius:var(--r-card); box-shadow:var(--card-shadow); overflow:hidden; margin-bottom:14px}
+.acc-row{display:flex; align-items:center; gap:14px; width:100%; padding:14px 16px; border:0; background:none; text-align:left; color:var(--text);
+  text-decoration:none; cursor:pointer; font:inherit; position:relative}
+.acc-row + .acc-row::before{content:""; position:absolute; top:0; left:70px; right:0; height:1px; background:var(--line)}
+.acc-row:hover{background:#F7F9FB} .acc-row:active{background:var(--surface-2)}
+.acc-row > span{flex:1; min-width:0}
+.acc-row b{display:block; font-size:15.5px}
+.acc-row small{display:block; margin-top:1px; font-size:13px; font-weight:500; line-height:1.35; color:var(--text-2)}
+.acc-ic{flex:none; width:40px; height:40px; border-radius:12px; display:grid; place-items:center; font-style:normal;
+  background:var(--ic,var(--brand-soft)); color:var(--icc,var(--brand-2))}
+.acc-chev{flex:none; color:var(--text-3)}
+.acc-out b{color:var(--danger)} .acc-out .acc-ic{background:#FDECEA; color:var(--danger)}
+
+/* sign-out confirmation: a small card, a bottom sheet on phones */
+.btn-danger{background:var(--danger); color:#fff} .btn-danger:hover{filter:brightness(.94)}
+dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-height:calc(100dvh - 48px)}
+.confirm-body{padding:28px 24px 22px; text-align:center}
+.confirm-ic{width:60px; height:60px; margin:0 auto 14px; border-radius:50%; display:grid; place-items:center; background:#FDECEA; color:var(--danger)}
+.confirm-body h2{font-size:22px}
+.confirm-body p{color:var(--text-2); margin:8px 0 20px}
+.confirm-body .btn + .btn{margin-top:10px}
+@media (max-width:640px){
+  dialog.confirm{width:100vw; max-width:100vw; height:fit-content; max-height:100dvh; margin:auto 0 0; border-radius:24px 24px 0 0;
+    padding-top:0; padding-bottom:env(safe-area-inset-bottom,0px); animation:sheetUp .25s ease}
+}
+@keyframes sheetUp{from{transform:translateY(40px); opacity:.6}}
+
+/* the light app background reaches the bottom of short pages */
+body.app{min-height:100vh; min-height:100dvh}
+body:not(.app) .toast{bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+html:has(> body.app){background:var(--app-bg)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1381,16 +1427,13 @@ body.app .foot{box-shadow:none}
 
   <!-- both: account -->
   <section id="view-account" hidden>
-    <div class="panel"><div class="profile"><span class="me" id="accAvatar"></span>
-      <div style="flex:1;min-width:0"><h2 id="accName"></h2><div class="sub" style="margin:0"><span id="accPhone"></span> · <span id="accRole"></span></div></div></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-        <button class="btn btn-ghost btn-sm" id="accSwitch"></button>
-        <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button>
-        <a class="btn btn-ghost btn-sm web-only" data-apk>Get the Android app</a></div>
+    <div class="acc-hero">
+      <span class="acc-av" id="accAvatar"></span>
+      <div class="acc-id"><h1 id="accName"></h1><span class="acc-role" id="accRole"></span><span class="acc-phone" id="accPhone"></span></div>
     </div>
-    <div class="panel" id="vibePanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
+    <div class="panel" id="vibePanel"><div class="panel-top">
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
-      <button class="btn btn-ghost btn-sm" data-vibe-open>Edit answers</button></div>
+      <button class="btn btn-ghost btn-sm" data-vibe-open>Edit</button></div>
       <div class="traits" id="vibeTraits"></div><div id="myInterests"></div></div>
     <div class="panel" id="discPanel"><h2>Who can find you</h2>
       <p class="sub">With The Empty Room Escape, owners with a room in your areas can find you (first name, what you do, budget and vibe match)
@@ -1400,6 +1443,20 @@ body.app .foot{box-shadow:none}
         <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
+
+    <p class="acc-h">Settings</p>
+    <div class="acc-list">
+      <button class="acc-row" id="accSwitch" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-4-4M20 16H7l4 4"/></svg></i>
+        <span><b id="accSwitchT"></b><small id="accSwitchS"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      <a class="acc-row" id="accInvite" target="_blank" rel="noopener"><i class="acc-ic" style="--ic:#E7F7EF;--icc:#0E9F7E"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></svg></i>
+        <span><b>Invite a friend</b><small>Know someone looking for a room or a flatmate?</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+      <a class="acc-row web-only" data-apk><i class="acc-ic" style="--ic:#FFEFE4;--icc:#EE5A12"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></i>
+        <span><b>Get the Android app</b><small>Know the moment an owner says yes</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+    </div>
+    <div class="acc-list">
+      <button class="acc-row acc-out" type="button" data-action="signout"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></i>
+        <span><b>Sign out</b><small id="accOutSub"></small></span></button>
+    </div>
   </section>
 
   <!-- both: Flatsplits -->
@@ -1547,6 +1604,14 @@ body.app .foot{box-shadow:none}
     <div class="field"><input type="search" id="areaQ" placeholder="Type an area, e.g. Wakad or Salt Lake" autocomplete="off" aria-label="Area"></div>
     <div class="chips" id="areaSugg"></div>
     <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Add area</button></form></div></dialog>
+
+<dialog id="dlgSignOut" class="confirm" aria-labelledby="soTitle"><div class="confirm-body">
+  <span class="confirm-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></span>
+  <h2 id="soTitle">Sign out?</h2>
+  <p>Your matches, requests and splits stay saved. Sign back in any time with <b id="soPhone"></b>.</p>
+  <button class="btn btn-danger btn-block" type="button" id="soYes">Sign out</button>
+  <button class="btn btn-ghost btn-block" type="button" data-close>Stay signed in</button>
+</div></dialog>
 
 <dialog id="dlgFs" aria-labelledby="fsdTitle"><div class="mhead"><div><h2 id="fsdTitle"></h2><div class="loc" id="fsdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="fsdBody"></div></dialog>
@@ -5693,10 +5758,14 @@ async function renderAccount(){
   await api.me();
   $("accAvatar").textContent = (firstName()[0] || "?").toUpperCase();
   $("accName").textContent = state.user.name || "Your account";
-  $("accPhone").textContent = "+91 " + state.user.phone;
+  const phone = "+91 " + String(state.user.phone).replace(/^(\d{5})(\d{5})$/, "$1 $2");
+  $("accPhone").textContent = $("accOutSub").textContent = $("soPhone").textContent = phone;
   const occ = state.user.occupation || {};
-  $("accRole").textContent = isOwner() ? "Posting a flat" : ["Looking for a room", occLine(occ)].filter(Boolean).join(" · ");
-  $("accSwitch").textContent = isOwner() ? "I'm looking for a room instead" : "I want to post a flat instead";
+  $("accRole").textContent = isOwner() ? "Posting a flat" : "Looking for a room";
+  $("accPhone").textContent = [!isOwner() && occLine(occ), phone].filter(Boolean).join(" · ");
+  $("accSwitchT").textContent = isOwner() ? "Look for a room instead" : "Post a flat instead";
+  $("accSwitchS").textContent = isOwner() ? "Find a room in a shared flat" : "List your spare room or bed, free";
+  $("accInvite").href = `https://wa.me/?text=${encodeURIComponent("I'm using FindMyFlatMate to find flatmates who match my vibe. No brokers. Try it: " + appLink())}`;
   $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner();
   $("discToggle").checked = state.discoverable !== false;
   $("tribeToggle").checked = state.tribeOpen !== false;
@@ -5724,7 +5793,7 @@ async function renderAccount(){
 $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
-    if(b.dataset.action === "signout"){ await api.signOut(); unseen = 0; location.hash = ""; return route(); }
+    if(b.dataset.action === "signout") return $("dlgSignOut").showModal();
     if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
@@ -5742,6 +5811,19 @@ function offlineWait(){
     box.querySelector("button").onclick = () => { box.remove(); res(); };
   });
 }
+$("accInvite").addEventListener("click", e => {
+  // The browser's own share sheet where there is one; otherwise the WhatsApp link opens.
+  if(!navigator.share) return;
+  e.preventDefault();
+  navigator.share({ title: "FindMyFlatMate", text: "Find flatmates who match your vibe. No brokers.", url: appLink() }).catch(() => {});
+});
+$("soYes").addEventListener("click", async () => {
+  try{
+    await api.signOut(); unseen = 0; $("dlgSignOut").close();
+    location.hash = ""; await route();
+    toast("You're signed out. See you soon!");
+  }catch(err){ toast(err.message || "Couldn't sign out. Try again."); }
+});
 /* ================================================================ boot */
 document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
