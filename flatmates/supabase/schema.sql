@@ -93,6 +93,9 @@ alter table public.fm_listings add column if not exists household jsonb not null
 alter table public.fm_listings add column if not exists costs jsonb not null default '{}';
 -- "Bachelors welcome": singles or a group of friends (a tribe) may rent it.
 alter table public.fm_listings add column if not exists bachelors boolean not null default true;
+-- Where it is on the map, rounded to about a kilometre ({lat, lng}). The exact pin is in
+-- fm_listing_private.address_parts and only reaches people the owner accepts.
+alter table public.fm_listings add column if not exists geo jsonb;
 -- 'shared' (a bed in a twin-sharing room) was added later; widen the check on existing databases.
 alter table public.fm_listings drop constraint if exists fm_listings_kind_check;
 alter table public.fm_listings add constraint fm_listings_kind_check check (kind in ('room','shared','flatmate','flat'));
@@ -267,6 +270,8 @@ drop function if exists public.fm_post_listing(text, text, text, text, int, int,
 drop function if exists public.fm_contact(uuid);
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
   text, text, text[], text, text, text, text, text[], jsonb, jsonb, jsonb);
+drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
+  text, text, text[], text, text, text, text, text[], jsonb, jsonb, jsonb, boolean);
 
 drop function if exists public.fm_unlock(uuid);           -- contact now only via an accepted request
 drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund: contacts are used on acceptance
@@ -366,7 +371,7 @@ returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
-  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text)
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -375,7 +380,7 @@ language sql security definer set search_path = public stable as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors, l.status
+         mine.status, l.bachelors, l.status, l.geo
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where (l.status = 'active' or l.owner_id = auth.uid())
@@ -394,10 +399,10 @@ create or replace function public.fm_post_listing(
   p_furnishing text, p_amenities text[], p_description text,
   p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}',
   p_household jsonb default '{}', p_costs jsonb default '{}', p_address_parts jsonb default '{}',
-  p_bachelors boolean default true)
+  p_bachelors boolean default true, p_geo jsonb default null)
 returns uuid
 language plpgsql security definer set search_path = public as $$
-declare v_id uuid; v_photo text; v_key text;
+declare v_id uuid; v_photo text; v_key text; v_geo jsonb;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   if (select role from fm_profiles where id = auth.uid()) is distinct from 'owner' then
@@ -411,6 +416,14 @@ begin
   if jsonb_typeof(coalesce(p_address_parts, '{}')) <> 'object' or pg_column_size(p_address_parts) > 1024
      or coalesce(p_address_parts->>'pin', '') !~ '^([1-9][0-9]{5})?$' then
     raise exception 'bad-address';
+  end if;
+  -- The map pin must be in India. Only a rounded copy is public.
+  if p_geo is not null then
+    if jsonb_typeof(p_geo->'lat') <> 'number' or jsonb_typeof(p_geo->'lng') <> 'number'
+       or (p_geo->>'lat')::numeric not between 6 and 37 or (p_geo->>'lng')::numeric not between 68 and 98 then
+      raise exception 'bad-location';
+    end if;
+    v_geo := jsonb_build_object('lat', round((p_geo->>'lat')::numeric, 2), 'lng', round((p_geo->>'lng')::numeric, 2));
   end if;
   -- Photos must be the caller's own uploads in the fm-photos bucket.
   -- Owners rent out their own home: at most two different addresses per account, and a contact
@@ -431,11 +444,11 @@ begin
   end loop;
   insert into fm_listings (owner_id, kind, title, city, locality, bhk, rent, deposit,
                            available_from, gender, furnishing, amenities, description, photos,
-                           household, costs, bachelors)
+                           household, costs, bachelors, geo)
   values (auth.uid(), p_kind, p_title, p_city, p_locality, p_bhk, p_rent, p_deposit,
           p_available_from, p_gender, p_furnishing, coalesce(p_amenities, '{}'),
           coalesce(p_description, ''), coalesce(p_photos, '{}'),
-          coalesce(p_household, '{}'), coalesce(p_costs, '{}'), coalesce(p_bachelors, true))
+          coalesce(p_household, '{}'), coalesce(p_costs, '{}'), coalesce(p_bachelors, true), v_geo)
   returning id into v_id;
   insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts, address_key)
   values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'), v_key);
@@ -935,6 +948,44 @@ end $$;
 drop trigger if exists fm_tribe_links_notify on public.fm_tribe_links;
 create trigger fm_tribe_links_notify after insert or update on public.fm_tribe_links
   for each row execute function public.fm_tribe_notify();
+
+-- ------------------------------------------------- shortlist (shared in a tribe) --
+-- The ♥ shortlist lives on the server, so everyone in a tribe (up to 3 people) sees the homes
+-- the others saved, with who saved them.
+create table if not exists public.fm_saves (
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  listing_id uuid not null references public.fm_listings(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, listing_id)
+);
+alter table public.fm_saves enable row level security;   -- no policies: fm_save / fm_tribe_saves only
+
+create or replace function public.fm_save(p_listing uuid, p_on boolean) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if not coalesce(p_on, false) then
+    delete from fm_saves where user_id = auth.uid() and listing_id = p_listing;
+    return;
+  end if;
+  if (select count(*) from fm_saves where user_id = auth.uid()) >= 300 then raise exception 'too-many-saves'; end if;
+  insert into fm_saves (user_id, listing_id) values (auth.uid(), p_listing) on conflict do nothing;
+end $$;
+
+-- Homes saved by me or anyone in my tribe: who saved each one, and when the others last did.
+create or replace function public.fm_tribe_saves()
+returns table (listing_id uuid, saved_by text[], mine boolean, others_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select s.listing_id,
+         array_agg(case when s.user_id = auth.uid() then 'You' else coalesce(nullif(split_part(p.full_name, ' ', 1), ''), 'Your tribe') end
+                   order by s.created_at),
+         bool_or(s.user_id = auth.uid()),
+         max(s.created_at) filter (where s.user_id <> auth.uid())
+  from fm_saves s
+  join fm_profiles p on p.id = s.user_id
+  where s.user_id = any (coalesce(fm_tribe_members(auth.uid()), array[auth.uid()]))
+  group by s.listing_id;
+$$;
 
 -- ------------------------------------------------------------ Flatsplits --
 -- Splitting rent, bills and groceries inside a flat. A group's members are people (name +

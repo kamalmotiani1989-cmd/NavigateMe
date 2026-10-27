@@ -107,6 +107,21 @@ the room comes second.
     Discover and My flat show a shortcut to both ("You get back ₹1,240", "8 new things for sale near you this week").
     On phones the bottom bar now has six tabs, and Account moved to the avatar at the top right.
 
+17. **Search together as a tribe.** The ♥ shortlist is saved to the server and shared inside a tribe (up to 3
+    people). When anyone in the tribe taps ♥, the others see it in Saved under "Shortlisted by Riya", on the
+    home's card ("♥ Riya shortlisted this") and in "Your tribe's shortlist" on the Tribe tab, and get a
+    notification. **Search together** sets Discover to every tribe member's areas at once.
+18. **PAN India.** City pickers list the 8 big cities first, then 47 more under "Other cities", and "Another
+    city…" takes any name. Onboarding has an "Other city" option. Areas aren't limited to the built-in lists:
+    "+ Add area" (Discover and onboarding) and the area boxes on the post and FlatMart forms search any
+    neighbourhood through OpenStreetMap.
+19. **Maps with a precise pin.** Owners tap **📍 Pin it on the map** and drag the pin onto their building
+    (or search, tap the map, or use "I'm there now"). The exact pin is private: people the owner accepts get
+    it with directions in Google Maps. Everyone else sees a circle about a kilometre wide around a rounded
+    location. Maps use OpenStreetMap with Leaflet, bundled in `vendor/leaflet` (no API key).
+20. **Back button.** The phone's back button closes an open listing or panel first, and on phones the close
+    button is a back arrow at the top left.
+
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
@@ -231,7 +246,8 @@ Phones with the testing build must uninstall it once before installing the prope
 ## Live project
 
 The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
-The database is set up, including Flatsplits and FlatMart (schema.sql applied 27 Oct 2026).
+The database is set up, including Flatsplits and FlatMart (schema.sql applied 27 Oct 2026). The shared tribe
+shortlist and map locations need the current `schema.sql` run once more (it's safe to re-run).
 
 **Testing login (no SMS):** until phone login has an SMS provider, everyone signs in with their mobile
 number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It

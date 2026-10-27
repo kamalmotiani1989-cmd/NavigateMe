@@ -831,6 +831,23 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .mk-quick{display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 0}
 .mk-quick button{border:0; border-radius:999px; padding:6px 12px; background:var(--surface-2); font-weight:700; font-size:13px; cursor:pointer}
 .mk-seller{display:flex; gap:12px; align-items:center; padding:14px 0; box-shadow:0 -1px 0 var(--line); margin-top:14px}
+/* ---------- maps, areas, tribe shortlist, back button */
+.pin-map{height:300px; background:var(--surface-2)}
+.pin-map.sm{height:220px}
+.pin-tools{display:flex; gap:6px; flex-wrap:wrap; padding:10px}
+.pin-tools input{flex:1 1 180px; min-width:0; padding:10px 12px; border:0; border-radius:10px; background:#fff; -webkit-appearance:none; appearance:none}
+.pin-ic span{display:block; width:30px; height:30px; border-radius:50% 50% 50% 0; background:var(--accent); transform:rotate(-45deg); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.leaflet-container{font:inherit; z-index:0}
+.tribe-saved{font-size:13px; font-weight:700; color:#B63BA8}
+.area-chips button[data-area-add]{background:none; box-shadow:inset 0 0 0 1.5px var(--line-2); color:var(--brand)}
+.ob-other{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0}
+.x .x-back{display:none}
+@media (max-width:640px){
+  .mhead{justify-content:flex-start; align-items:center}
+  .mhead > div{flex:1; min-width:0; order:2}
+  .mhead .x{order:1; width:40px; height:40px; background:rgba(255,255,255,.18)}
+  .x .x-back{display:block; margin:auto} .x .x-x{display:none}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -974,6 +991,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
     <ol class="journey" id="tribeJourney"></ol>
     <div id="tribeWants"></div>
     <div id="tribeBonded"></div>
+    <div class="cards" id="tribeShort"></div>
     <div id="tribeMatches"></div>
     <div class="cards" id="tribeHunt"></div>
     <p class="hint" style="margin:18px 0 28px">A tribe is up to 3 people. Only people looking in your city with a 70%+ vibe match see you here. Numbers are shared only when
@@ -982,7 +1000,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 
   <!-- seeker: saved -->
   <section id="view-saved" hidden>
-    <div class="page-h"><h1>Saved flats</h1><p>Your shortlist. Compare them here before you decide which ones to contact.</p></div>
+    <div class="page-h"><h1>Saved flats</h1><p id="savedSub">Your shortlist. Compare them here before you decide which ones to contact.</p></div>
     <div class="cards" id="savedCards" style="margin-top:18px"></div>
   </section>
 
@@ -1077,10 +1095,10 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
           </div>
           <div class="grid2">
             <div class="field"><label for="aPin">PIN code</label><input type="text" id="aPin" required pattern="[1-9][0-9]{5}" maxlength="6" inputmode="numeric" placeholder="6 digits"></div>
-            <div class="field"><label>&nbsp;</label><button class="btn btn-ghost btn-block" type="button" id="mapCheck">Check on Google Maps</button></div>
+            <div class="field"><label>&nbsp;</label><button class="btn btn-ghost btn-block" type="button" id="mapCheck">📍 Pin it on the map</button></div>
           </div>
           <div class="map-box" id="mapBox" hidden></div>
-          <p class="hint" style="margin:0">Area and city come from above. The full address is only shared with people you accept.</p>
+          <p class="hint" style="margin:0">Area and city come from above. Pin your building so people you accept get exact directions; everyone else only sees the area.</p>
         </div>
         <button class="btn btn-primary btn-block" type="submit">Publish my listing</button>
       </form>
@@ -1248,6 +1266,12 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
       <p class="hint">The owner gets your request and can confirm it. You can also call them directly.</p>
     </form>
   </div></dialog>
+
+<dialog id="dlgArea" aria-labelledby="areaTitle"><div class="mhead"><div><h2 id="areaTitle">Add an area</h2><div class="loc" id="areaCityLbl"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody"><form id="areaForm" novalidate>
+    <div class="field"><input type="search" id="areaQ" placeholder="Type an area, e.g. Wakad or Salt Lake" autocomplete="off" aria-label="Area"></div>
+    <div class="chips" id="areaSugg"></div>
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Add area</button></form></div></dialog>
 
 <dialog id="dlgFs" aria-labelledby="fsdTitle"><div class="mhead"><div><h2 id="fsdTitle"></h2><div class="loc" id="fsdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="fsdBody"></div></dialog>
@@ -2200,7 +2224,7 @@ function makeLiveApi(sb){
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
-        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await all()).filter(l => l.is_owner); },
@@ -2580,6 +2604,36 @@ Object.assign(demoApi, {
   },
 });
 
+// Demo: bonded sample flatmates shortlist homes too, about 8 s after you bond and 10 s after each ♥ you tap.
+Object.assign(demoApi, {
+  async saveListing(id, on){
+    if(on && (state.tribe || []).some(t => t.status === "bonded") && !(state.demoTribeSaveAt > Date.now())){ state.demoTribeSaveAt = Date.now() + 10000; save(); }
+  },
+  async tribeSaves(){
+    const pool = new Map(demoSeekerPool().map(x => [x.id, x]));
+    const bonded = (state.tribe || []).filter(t => t.status === "bonded").map(t => pool.get(t.sid)).filter(Boolean);
+    state.demoTribeSaves = state.demoTribeSaves || [];
+    if(bonded.length && state.demoTribeSaveAt == null) state.demoTribeSaveAt = Date.now() + 8000;
+    if(bonded.length && state.demoTribeSaveAt && Date.now() >= state.demoTribeSaveAt && state.demoTribeSaves.length < 6){
+      state.demoTribeSaveAt = 0;   // 0: wait for your next ♥
+      const f = prefs(), who = bonded[state.demoTribeSaves.length % bonded.length];
+      const taken = new Set(state.saved.concat(state.demoTribeSaves.map(x => x.listing_id))), areas = new Set(f.areas.concat(who.areas || []));
+      const free = demoListings().filter(l => l.city === f.city && !taken.has(l.id)), near = free.filter(l => areas.has(l.locality));
+      const best = (near.length ? near : free).map(l => ({ l, pct: (vibeMatch(state.vibe, l.household) || { pct: 0 }).pct })).sort((a, b) => b.pct - a.pct)[0];
+      if(best) state.demoTribeSaves.push({ listing_id: best.l.id, sid: who.id, name: who.name, at: new Date().toISOString() });
+      save();
+    }
+    const rows = new Map(state.saved.map(id => [id, { listing_id: id, saved_by: ["You"], mine: true, others_at: null }]));
+    for(const x of state.demoTribeSaves){
+      if(!bonded.some(b => b.id === x.sid)) continue;
+      const r = rows.get(x.listing_id) || { listing_id: x.listing_id, saved_by: [], mine: false, others_at: null };
+      r.saved_by.push(x.name); if(!r.others_at || x.at > r.others_at) r.others_at = x.at;
+      rows.set(x.listing_id, r);
+    }
+    return [...rows.values()];
+  },
+});
+
 /* ------------------------------------------------- live: Flatsplits + FlatMart */
 function liveExtras(rpc){
   const num = x => Object.assign(x, { amount: Number(x.amount) });
@@ -2620,6 +2674,9 @@ function liveExtras(rpc){
     // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
     async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
     async marketSeen(){ await rpc("fm_market_seen"); },
+    // The ♥ shortlist, shared inside a tribe (fm_saves).
+    async saveListing(id, on){ await rpc("fm_save", { p_listing:id, p_on:on }); },
+    async tribeSaves(){ return rpc("fm_tribe_saves"); },
   };
 }
 
@@ -2682,7 +2739,9 @@ const photosOf = l => (l.photos || []).map(safeImg).filter(Boolean);
 const isSaved = id => state.saved.includes(id);
 function toggleSaved(id){
   state.saved = isSaved(id) ? state.saved.filter(x => x !== id) : state.saved.concat(id);
-  save(); return isSaved(id);
+  save();
+  api.saveListing(id, isSaved(id)).catch(() => {});   // shared with your tribe
+  return isSaved(id);
 }
 function picHtml(l){ const ph = photosOf(l); return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : roomArt(l.id, l.kind); }
 // Contacts a seeker can still use: total minus those held by requests waiting on an owner.
@@ -3017,6 +3076,15 @@ async function renderTribe(){
       ? flats.map((l, i) => cardHtml(l, i).replace("<small> /month rent</small>", `<small> /month rent</small> <span class="each">${inr(Math.round(l.rent / size / 50) * 50)} each</span>`)).join("")
       : `<div class="empty" style="grid-column:1 / -1"><p>No whole flats in your areas within your joint budget right now. New ones are posted every day.</p></div>`);
   }else $("tribeHunt").innerHTML = "";
+  // The tribe's shortlist: every ♥ any of you taps, with who saved it.
+  if(bonded.length){
+    await syncSaves();
+    const list = (await api.search({})).filter(l => isSaved(l.id) || tribeSaved.has(l.id));
+    $("tribeShort").innerHTML = `<h2 class="section-h" style="grid-column:1 / -1">Your tribe's shortlist · ${list.length} ${list.length === 1 ? "home" : "homes"}</h2>
+      <p class="hint" style="grid-column:1 / -1;margin:-4px 0 4px">Search together: when any of you taps ♥ on a home, all ${size} of you see it here, with who saved it.</p>
+      <div style="grid-column:1 / -1"><button class="btn btn-primary" type="button" data-together>🔎 Search together in all your areas</button></div>`
+      + (list.length ? list.map(cardHtml).join("") : `<div class="empty" style="grid-column:1 / -1"><p>Nothing shortlisted yet. Tap ♥ on homes you like and ${esc(bonded.map(t => t.name).join(" & "))} will see them.</p></div>`);
+  }else $("tribeShort").innerHTML = "";
   if(tribeRows.some(t => t.unseen)){ await api.tribeSeen(); tribeUnseen = 0; renderNav(); }
 }
 $("view-tribe").addEventListener("click", async e => {
@@ -3169,6 +3237,20 @@ async function checkInbox(){
       toast(news.length === 1 ? `${top.name} matches your vibe ${top.match_pct}%. Build a tribe?` : `${news.length} people near you match your vibe 70%+. Build your tribe!`);
     }
     tribeUnseen = tf.length;
+    // Tribe shortlist: someone in my tribe saved a home.
+    if(trows.some(t => t.status === "bonded")){
+      const rows = await syncSaves(), ms = x => new Date(x).getTime();
+      if(!state.tribeSaveSeen) state.tribeSaveSeen = Date.now();
+      const fresh = rows.filter(r => r.others_at && ms(r.others_at) > state.tribeSaveSeen);
+      if(fresh.length){
+        state.tribeSaveSeen = Math.max(...fresh.map(r => ms(r.others_at)));
+        const names = [...new Set(fresh.flatMap(r => r.saved_by.filter(n => n !== "You")))].join(" & ") || "Your tribe";
+        Notify.show(`♥ ${names} shortlisted ${fresh.length === 1 ? "a home" : fresh.length + " homes"} for your tribe`, "Have a look in Saved, and tap ♥ if you like it too.", "saved");
+        toast(`♥ ${names} shortlisted ${fresh.length === 1 ? "a home" : fresh.length + " homes"} for your tribe`);
+        if(currentView === "saved") renderSaved();
+        if(currentView === "tribe") renderTribe();
+      }
+    }
     if(tf.length && currentView === "tribe") renderTribe();
     if(tf.length && currentView === "discover") renderUrgent();
   }
@@ -3334,7 +3416,8 @@ function obStepsFor(role){
     { k:"occWhat", form:"text", q:"", why:"" },
     { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
       opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] },
-    { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true, opts: CITIES.map(c => ({ v:c, t:c })) },
+    { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true,
+      opts: CITIES.map(c => ({ v:c, t:c })).concat({ v:"__other", t:"Other city", s:"Anywhere else in India" }) },
     { k:"areas", form:"areas", q:"", why:"" },
     { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
       opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
@@ -3395,10 +3478,18 @@ function renderOb(){
     <button class="btn btn-primary" type="submit">Continue</button></form>`;
   else if(st.form === "areas") inner = `<h1>Which areas of ${esc(ob.a.city || "the city")} work for you?</h1>
     <p class="why">Pick as many as you like: near work, college or friends. You can change this any time.</p>
-    <form id="obAreaForm" novalidate><div class="ob-areas">${(CITY_AREAS[ob.a.city] || []).map(a =>
+    <form id="obAreaForm" novalidate><div class="ob-areas">${[...new Set((CITY_AREAS[ob.a.city] || []).concat(ob.a.areas || []))].map(a =>
       `<label class="chip"><input type="checkbox" value="${esc(a)}"${(ob.a.areas || []).includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("")}</div>
+    <button class="btn btn-ghost btn-sm" type="button" id="obMoreArea" style="margin:0 0 16px">+ ${(CITY_AREAS[ob.a.city] || []).length ? "Another area" : "Search for an area"}</button>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" type="submit">Continue</button>
       <button class="btn btn-ghost" type="button" id="obAnyArea">Anywhere in ${esc(ob.a.city || "the city")}</button></div></form>`;
+  else if(st.k === "city" && ob.otherCity) inner = `<h1>Which city?</h1><p class="why">Homes anywhere in India. Pick one or type your city.</p>
+    <form id="obCityForm" novalidate><input type="text" id="obCity" list="obCityList" required minlength="2" maxlength="40" placeholder="City name"
+      autocomplete="off" value="${esc(ob.a.city && !CITIES.includes(ob.a.city) && ob.a.city !== "__other" ? ob.a.city : "")}">
+      <datalist id="obCityList">${OTHER_CITIES.map(c => `<option value="${c}">`).join("")}</datalist>
+      <div class="ob-other">${OTHER_CITIES.slice(0, 18).map(c => `<button class="chip" type="button" data-ob-city="${c}">${c}</button>`).join("")}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" type="submit">Continue</button>
+        <button class="btn btn-ghost" type="button" id="obCityBack">Back to the big cities</button></div></form>`;
   else if(st.form === "flatmates") inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why)}</p>
     <form id="obFmForm" novalidate>${fmRowsHtml(ob.a.flatmates || [], ob.a.residents, "o")}<button class="btn btn-primary" type="submit">Continue</button></form>`;
   else inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why || "")}</p>
@@ -3411,8 +3502,16 @@ function renderOb(){
 function obNext(){ if(ob.i < ob.steps.length - 1){ ob.i++; renderOb(); } else finishOnboarding(); }
 $("obStage").addEventListener("click", e => {
   if(e.target.id === "obAnyArea"){ ob.a.areas = []; return obNext(); }
+  if(e.target.id === "obMoreArea"){
+    const keep = [...$("obAreaForm").querySelectorAll("input:checked")].map(x => x.value);
+    return openAreaPicker(ob.a.city, a => { ob.a.areas = [...new Set(keep.concat(a))]; renderOb(); });
+  }
+  if(e.target.id === "obCityBack"){ ob.otherCity = false; ob.a.city = ""; return renderOb(); }
+  const oc = e.target.closest("[data-ob-city]");
+  if(oc){ ob.a.city = oc.dataset.obCity; ob.otherCity = false; return obNext(); }
   const b = e.target.closest(".opt[data-i]"); if(!b) return;
   const st = ob.steps[ob.i]; ob.a[st.k] = st.opts[Number(b.dataset.i)].v;
+  if(ob.a[st.k] === "__other"){ ob.otherCity = true; return renderOb(); }
   b.parentElement.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
   setTimeout(obNext, 200);
 });
@@ -3427,6 +3526,7 @@ $("obStage").addEventListener("submit", async e => {
   }
   if(e.target.id === "obFmForm"){ ob.a.flatmates = readFmRows(e.target, ob.a.residents, "o"); obNext(); }
   if(e.target.id === "obIntForm"){ ob.a[ob.steps[ob.i].k] = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
+  if(e.target.id === "obCityForm"){ if(!formOk(e.target)) return; ob.a.city = titleCase($("obCity").value); ob.otherCity = false; obNext(); }
   if(e.target.id === "obAreaForm"){ ob.a.areas = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
 });
 $("obBack").addEventListener("click", () => {
@@ -3540,7 +3640,7 @@ function removeFilter(key){
   else if(v !== undefined) setPrefs({ [k]: f[k].filter(x => x !== v) });
   else setPrefs({ [k]: DEFAULT_PREFS[k] });
 }
-function applyPrefs(){ $("fCity").value = prefs().city; }
+function applyPrefs(){ if(![...$("fCity").options].some(o => o.value === prefs().city)) setCitySelect($("fCity"), prefs().city, "All cities"); $("fCity").value = prefs().city; }
 
 const REQ_TAG = { pending:"Request sent", approved:"Accepted", declined:"Not this time" };
 function cardHtml(l, i){
@@ -3562,6 +3662,7 @@ function cardHtml(l, i){
       ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
       <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
       ${l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome · no brokers</div>` : ""}
+      ${tribeSavedLine(l)}
       <div class="price">${inr(l.rent)}<small> /month rent</small></div>
       <div class="allin">${esc(expensesLine(l))} · deposit ${inr(l.deposit)}</div>
       <div class="fresh">Posted ${timeAgo(l.created_at)}</div>
@@ -3575,14 +3676,15 @@ function giftPillHtml(){
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
-  const rows = await api.search({ city: f.city });
+  const [rows] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null]);
   if(seq !== browseSeq) return;
   cityRows = rows;
   // Area chips for the chosen city.
-  const areas = f.city ? areasFor(f.city, rows) : [];
+  const areas = f.city ? [...new Set(areasFor(f.city, rows).concat(f.areas))] : [];
   $("areaChips").hidden = !f.city;
   $("areaChips").innerHTML = `<button type="button" data-area="" aria-pressed="${!f.areas.length}">All areas</button>` +
-    areas.map(a => `<button type="button" data-area="${esc(a)}" aria-pressed="${f.areas.includes(a)}">${esc(a)}</button>`).join("");
+    areas.map(a => `<button type="button" data-area="${esc(a)}" aria-pressed="${f.areas.includes(a)}">${esc(a)}</button>`).join("") +
+    `<button type="button" data-area-add>+ Add area</button>`;
   const act = activeFilters(f);
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">×</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
@@ -3629,13 +3731,26 @@ function emptyHtml(rows, f){
     <div class="suggest">${opts.map((o, i) => `<button class="btn btn-ghost btn-sm" type="button" data-suggest="${i}">${esc(o.label)}${o.n ? ` (${o.n})` : ""}</button>`).join("")}</div></div>`;
 }
 async function renderSaved(){
-  const rows = (await api.search({})).filter(l => isSaved(l.id));
-  $("savedCards").innerHTML = rows.length ? rows.map(cardHtml).join("")
-    : `<div class="empty"><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.</div>`;
+  const [rows, bonded] = await Promise.all([api.search({}), bondedTribe()]);
+  await syncSaves();
+  const mine = rows.filter(l => isSaved(l.id)), theirs = rows.filter(l => !isSaved(l.id) && tribeSaved.has(l.id));
+  const names = bonded.map(t => t.name).join(" & ");
+  $("savedSub").textContent = bonded.length ? `Shared with ${names}. Every ♥ any of you taps shows up here for the whole tribe.`
+    : "Your shortlist. Compare them here before you decide which ones to contact.";
+  const h = t => `<h2 class="section-h" style="grid-column:1 / -1;margin:6px 0 0">${t}</h2>`;
+  $("savedCards").innerHTML = (theirs.length ? h(`Shortlisted by ${esc(names || "your tribe")}`) + theirs.map(cardHtml).join("") : "")
+    + (mine.length ? (theirs.length ? h("Saved by you") : "") + mine.map(cardHtml).join("") : "")
+    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.${
+      bonded.length ? ` ${esc(names)} will see it too.` : ""}</div>`)
+    + (bonded.length ? `<div style="grid-column:1 / -1;margin-bottom:24px"><button class="btn btn-primary" type="button" data-together>🔎 Search together with ${esc(names)}</button></div>` : "");
 }
-$("fCity").addEventListener("change", () => { setPrefs({ city: $("fCity").value, areas: [] }); renderDiscover(); });
+$("fCity").addEventListener("change", () => { if(!pickOtherCity($("fCity"))) return; setPrefs({ city: $("fCity").value, areas: [] }); renderDiscover(); });
 $("fSort").addEventListener("change", renderDiscover);
 $("areaChips").addEventListener("click", e => {
+  if(e.target.closest("[data-area-add]")){
+    if(!prefs().city){ toast("Pick a city first."); return; }
+    return openAreaPicker(prefs().city, a => { setPrefs({ areas: [...new Set(prefs().areas.concat(a))] }); renderDiscover(); });
+  }
   const b = e.target.closest("[data-area]"); if(!b) return;
   const a = b.dataset.area, cur = prefs().areas;
   setPrefs({ areas: !a ? [] : cur.includes(a) ? cur.filter(x => x !== a) : cur.concat(a) });
@@ -3696,7 +3811,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","vibeCards","tribeHunt"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","savedCards","vibeCards","tribeHunt","tribeShort"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null;
@@ -3721,8 +3836,8 @@ async function openListing(id){
         <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
       </div>
       <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div></div>
-      <div class="map-box" style="margin-top:10px">${mapHtml(contact.address_parts && contact.address_parts.building
-        ? mapsQuery(contact.address_parts, l.locality, l.city) : contact.address, 16, "", !l.is_owner)}</div>
+      <div class="map-box" style="margin-top:10px">${(cp => cp.lat ? mapHtml(cp.lat + "," + cp.lng, 17, "📍 The owner's exact pin", !l.is_owner)
+        : mapHtml(cp.building ? mapsQuery(cp, l.locality, l.city) : contact.address, 16, "", !l.is_owner))(contact.address_parts || {})}</div>
       ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <a class="btn btn-accent btn-sm" href="tel:+91${esc(contact.contact_phone)}" data-called="${esc(l.id)}">Call ${esc((contact.contact_name || "").split(" ")[0])}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(l.id)}" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from FindMyFlatMate. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
@@ -3820,11 +3935,14 @@ async function openListing(id){
     </div>
     ${(l.amenities || []).length ? `<div class="meta">${l.amenities.map(a => `<span>${esc(a)}</span>`).join("")}</div>` : ""}
     <p style="white-space:pre-line">${esc(l.description)}</p>
-    ${contact ? "" : `<h3 class="section-h">Where it is</h3><div class="map-box">${mapHtml(l.locality + ", " + l.city, 14,
-      "Approximate area. The exact address is shared once the owner accepts.", false)}</div>`}
+    ${contact ? "" : `<h3 class="section-h">Where it is</h3><div class="map-box">${l.geo
+      ? `<div class="pin-map sm" id="approxMap" role="img" aria-label="Map of the area around this home"></div>
+         <div class="map-q">It's within this circle in ${esc(l.locality)}. The exact address and pin are shared once the owner accepts.</div>`
+      : mapHtml(l.locality + ", " + l.city, 14, "Approximate area. The exact address is shared once the owner accepts.", false)}</div>`}
     <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} asked to meet` : ""}</p>
     ${lock}`;
   if(!$("dlgListing").open) $("dlgListing").showModal();
+  if(!contact && l.geo) drawApproxMap("approxMap", l.geo);
 }
 $("lBody").addEventListener("click", async e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
@@ -4197,12 +4315,7 @@ $("expList").addEventListener("input", renderExpenseSum);
 
 const addressFromForm = () => ({ flat:$("aFlat").value.trim(), building:$("aBuilding").value.trim(), street:$("aStreet").value.trim(),
   landmark:$("aLandmark").value.trim(), pin:$("aPin").value.trim() });
-$("mapCheck").addEventListener("click", () => {
-  const a = addressFromForm(), area = $("pLocality").value.trim(), city = $("pCity").value;
-  if(!a.building && !area){ toast("Fill in the building and area first."); return; }
-  $("mapBox").hidden = false;
-  $("mapBox").innerHTML = mapHtml(mapsQuery(a, area, city), 16, "Check the pin is on your building: " + addressLine(a, area, city), false);
-});
+$("mapCheck").addEventListener("click", openPinPicker);
 
 function renderFmRows(){
   const n = Number($("hCount").value);
@@ -4211,7 +4324,8 @@ function renderFmRows(){
 }
 $("hCount").addEventListener("change", renderFmRows);
 function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
-$("pCity").addEventListener("change", fillAreaList);
+$("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
+attachAreaSuggest($("pLocality"), () => $("pCity").value);
 function renderPost(){
   const d = state.homeDraft || {};
   $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
@@ -4239,10 +4353,12 @@ $("postForm").addEventListener("submit", async e => {
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") }, readQuiz($("hQuiz"), "h")),
-      costs: expensesFromForm()
+      costs: expensesFromForm(),
+      // Public: rounded to about a kilometre. The exact pin stays in the private part below.
+      geo: pinGeo ? { lat: Math.round(pinGeo.lat * 100) / 100, lng: Math.round(pinGeo.lng * 100) / 100 } : null
     },
     private: { contact_name: $("pName").value.trim(), contact_phone: $("pPhone").value.trim(),
-               address: addressLine(addressFromForm(), $("pLocality").value, $("pCity").value), address_parts: addressFromForm() }
+               address: addressLine(addressFromForm(), $("pLocality").value, $("pCity").value), address_parts: Object.assign(addressFromForm(), pinGeo || {}) }
   };
   btn.disabled = true;
   try{
@@ -4256,6 +4372,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     state.homeDraft = Object.assign({}, p.listing.household); save();
     f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+    if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null;
     $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderExpenseRows();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."
       : res.photos === "shrunk" ? "Your listing is live. Photos were saved smaller to fit this phone's demo storage."
@@ -4728,7 +4845,7 @@ async function renderMarket(){
   $("mkTabs").innerHTML = [["browse", "Browse"], ["mine", "My items"], ["offers", "Offers"]].map(([k, t]) => `<button type="button" role="tab" data-mk-tab="${k}" aria-pressed="${mkTab === k}">${t}${
     k === "offers" && marketUnseen ? `<i class="badge" aria-label="${marketUnseen} new">${marketUnseen}</i>` : ""}</button>`).join("");
   $("mkBrowse").hidden = mkTab !== "browse"; $("mkMine").hidden = mkTab !== "mine"; $("mkOffers").hidden = mkTab !== "offers";
-  if(!$("mkCity").options.length) $("mkCity").innerHTML = `<option value="">All cities</option>` + CITIES.map(c => `<option>${c}</option>`).join("");
+  if(!$("mkCity").options.length || ![...$("mkCity").options].some(o => o.value === mkCityPref())) setCitySelect($("mkCity"), mkCityPref(), "All cities");
   $("mkCity").value = mkCityPref();
   if(mkTab === "mine") return renderMkMine();
   if(mkTab === "offers") return renderMkOffers(inbox);
@@ -4883,7 +5000,7 @@ function openSell(){
     <div class="grid2"><div class="field"><label for="mkPrice">Price (₹)</label><input type="number" id="mkPrice" min="0" max="10000000" step="50" inputmode="numeric" placeholder="e.g. 2500"></div>
       <div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="mkFree"><span>Give it away free</span></label></div></div>
     <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="mkNeg" checked><span>Open to offers</span></label>
-    <div class="grid2"><div class="field"><label for="mkSCity">City</label><select id="mkSCity" required>${CITIES.map(c => `<option${c === city ? " selected" : ""}>${c}</option>`).join("")}</select></div>
+    <div class="grid2"><div class="field"><label for="mkSCity">City</label><select id="mkSCity" required>${cityOptions(city || CITIES[0])}</select></div>
       <div class="field"><label for="mkArea">Area</label><input type="text" id="mkArea" required maxlength="60" list="mkAreaList" autocomplete="off" placeholder="e.g. HSR Layout"
         value="${esc((prefs().areas || [])[0] || "")}"><datalist id="mkAreaList"></datalist></div></div>
     <div class="field"><label for="mkDesc">Details</label><textarea id="mkDesc" maxlength="1000" placeholder="How old it is, any marks, size, why you're selling…"></textarea></div>
@@ -4891,6 +5008,8 @@ function openSell(){
     <button class="btn btn-primary btn-block" type="submit">Post it on FlatMart</button>
     <p class="hint">Your number stays private. Buyers send an offer, and numbers are shared only when you accept one.</p></form>`;
   fillMkAreas();
+  $("mkSCity").dataset.prev = $("mkSCity").value;
+  attachAreaSuggest($("mkArea"), () => $("mkSCity").value);
   if(!$("dlgMk").open) $("dlgMk").showModal();
 }
 const fillMkAreas = () => { if($("mkAreaList")) $("mkAreaList").innerHTML = (CITY_AREAS[$("mkSCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); };
@@ -4944,7 +5063,7 @@ async function mkAction(t){
   checkExtras();
   return true;
 }
-$("mkCity").addEventListener("change", () => { state.mkCity = $("mkCity").value; save(); mkCat = ""; renderMkBrowse(); });
+$("mkCity").addEventListener("change", () => { if(!pickOtherCity($("mkCity"))) return; state.mkCity = $("mkCity").value; save(); mkCat = ""; renderMkBrowse(); });
 $("mkSort").addEventListener("change", renderMkBrowse);
 let mkQTimer = null;
 $("mkQ").addEventListener("input", () => { clearTimeout(mkQTimer); mkQTimer = setTimeout(renderMkBrowse, 250); });
@@ -4959,7 +5078,7 @@ $("dlgMk").addEventListener("click", async e => {
 $("dlgMk").addEventListener("change", e => {
   const t = e.target;
   if(t.id === "mkPhotos"){ addMkPhotos(t.files); t.value = ""; }
-  if(t.id === "mkSCity") fillMkAreas();
+  if(t.id === "mkSCity"){ pickOtherCity(t); fillMkAreas(); }
   if(t.id === "mkFree"){ $("mkPrice").disabled = $("mkNeg").disabled = t.checked; if(t.checked) $("mkPrice").value = ""; }
 });
 $("dlgMk").addEventListener("submit", async e => {
@@ -5062,6 +5181,223 @@ async function checkExtras(){
 setInterval(checkExtras, LIVE ? 30000 : 3000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) checkExtras(); });
 
+/* ============================================================ PAN India */
+// The 8 big cities first; every other city sits under "Other cities", and "Another city…"
+// takes any name, so homes anywhere in India can be listed and searched.
+const OTHER_CITIES = ["Agra","Amritsar","Aurangabad","Belagavi","Bhopal","Bhubaneswar","Chandigarh","Coimbatore","Dehradun","Durgapur",
+  "Gandhinagar","Goa","Guwahati","Gwalior","Hubballi","Indore","Jaipur","Jammu","Jamshedpur","Jodhpur","Kanpur","Kochi","Kota","Kozhikode",
+  "Lucknow","Ludhiana","Madurai","Mangaluru","Mysuru","Nagpur","Nashik","Patna","Puducherry","Raipur","Rajkot","Ranchi","Shimla","Siliguri",
+  "Srinagar","Surat","Thiruvananthapuram","Tiruchirappalli","Udaipur","Vadodara","Varanasi","Vijayawada","Visakhapatnam"];
+const ALL_CITIES = CITIES.concat(OTHER_CITIES);
+const titleCase = s => String(s || "").trim().replace(/\s+/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+function cityOptions(sel, allLabel){
+  const extra = sel && !ALL_CITIES.includes(sel) ? `<option selected>${esc(sel)}</option>` : "";
+  return (allLabel ? `<option value=""${sel ? "" : " selected"}>${esc(allLabel)}</option>` : "")
+    + CITIES.map(c => `<option${c === sel ? " selected" : ""}>${c}</option>`).join("")
+    + `<optgroup label="Other cities">${OTHER_CITIES.map(c => `<option${c === sel ? " selected" : ""}>${c}</option>`).join("")}${extra}</optgroup>`
+    + `<option value="__other">Another city…</option>`;
+}
+// A city select's "Another city…": ask for the name and add it. False if they cancelled.
+function pickOtherCity(sel){
+  if(sel.value !== "__other") { sel.dataset.prev = sel.value; return true; }
+  const c = titleCase(prompt("Which city? Type its name.") || "");
+  if(!c){ sel.value = sel.dataset.prev || ""; return false; }
+  if(![...sel.options].some(o => o.value === c)) sel.querySelector("optgroup").insertAdjacentHTML("beforeend", `<option>${esc(c)}</option>`);
+  sel.value = c; sel.dataset.prev = c;
+  return true;
+}
+function setCitySelect(sel, city, allLabel){ sel.innerHTML = cityOptions(city, allLabel); sel.dataset.prev = sel.value; }
+
+/* ========================================================= areas + maps */
+// Areas and the map pin come from OpenStreetMap: Photon for search, OSM tiles for the map.
+// The known areas of the 8 big cities still show up first, and work offline.
+const PHOTON = "https://photon.komoot.io/api/";
+const OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const OSM_ATTR = '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+const AREA_KINDS = new Set(["suburb","neighbourhood","quarter","locality","village","hamlet","residential","city_district","borough","town","district"]);
+async function photon(q, limit){
+  const r = await fetch(`${PHOTON}?q=${encodeURIComponent(q)}&limit=${limit || 8}&lang=en&bbox=68,6,98,37`);
+  if(!r.ok) throw new Error("search");
+  return ((await r.json()).features || []).filter(f => f.properties && f.properties.countrycode === "IN");
+}
+async function geocode(q){
+  try{ const f = (await photon(q, 1))[0]; return f ? { lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0] } : null; }catch(e){ return null; }
+}
+async function areaSuggestions(q, city){
+  const s = q.toLowerCase(), local = areasFor(city, cityRows).filter(a => a.toLowerCase().includes(s));
+  let remote = [];
+  try{
+    remote = (await photon(q + (city ? ", " + city : ""), 12)).filter(f => AREA_KINDS.has(f.properties.osm_value) || AREA_KINDS.has(f.properties.type))
+      .filter(f => !city || [f.properties.city, f.properties.county, f.properties.state, f.properties.district].some(x => x && x.toLowerCase().includes(city.split(" ")[0].toLowerCase())))
+      .map(f => f.properties.name).filter(Boolean);
+  }catch(e){}
+  return [...new Set(local.concat(remote))].slice(0, 12);
+}
+// Type-ahead for an area text box: known areas and OpenStreetMap names in its datalist.
+function attachAreaSuggest(input, getCity){
+  let list = document.getElementById(input.getAttribute("list") || "");
+  if(!list){ list = document.createElement("datalist"); list.id = input.id + "Sugg"; input.after(list); input.setAttribute("list", list.id); }
+  let timer = null;
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    const q = input.value.trim(); if(q.length < 2) return;
+    timer = setTimeout(async () => {
+      const have = [...list.options].map(o => o.value), s = await areaSuggestions(q, getCity());
+      list.innerHTML = [...new Set(s.concat(have))].slice(0, 30).map(a => `<option value="${esc(a)}">`).join("");
+    }, 300);
+  });
+}
+// "+ Add area": search any area of the city and pick it.
+let areaPick = null;
+function openAreaPicker(city, onPick){
+  areaPick = { city, onPick };
+  $("areaCityLbl").textContent = city ? `In ${city}` : "Pick a city first for better results";
+  $("areaQ").value = ""; $("areaSugg").innerHTML = areaChipsHtml(areasFor(city, cityRows).slice(0, 12));
+  $("dlgArea").showModal(); setTimeout(() => $("areaQ").focus(), 60);
+}
+const areaChipsHtml = list => list.map(a => `<button class="chip" type="button" data-pick-area="${esc(a)}">${esc(a)}</button>`).join("");
+let areaTimer = null;
+$("areaQ").addEventListener("input", () => {
+  clearTimeout(areaTimer);
+  const q = $("areaQ").value.trim();
+  areaTimer = setTimeout(async () => {
+    const s = q.length < 2 ? areasFor(areaPick.city, cityRows).slice(0, 12) : await areaSuggestions(q, areaPick.city);
+    if($("areaQ").value.trim() === q) $("areaSugg").innerHTML = areaChipsHtml(s) || `<p class="hint" style="margin:0">No match yet. Tap Add to use “${esc(q)}”.</p>`;
+  }, 250);
+});
+function chooseArea(a){
+  a = titleCase(a); if(!a) return;
+  $("dlgArea").close();
+  if(areaPick && areaPick.onPick) areaPick.onPick(a);
+}
+$("areaSugg").addEventListener("click", e => { const b = e.target.closest("[data-pick-area]"); if(b) chooseArea(b.dataset.pickArea); });
+$("areaForm").addEventListener("submit", e => { e.preventDefault(); chooseArea($("areaQ").value); });
+
+let leafletLoad = null;
+function loadLeaflet(){
+  if(window.L) return Promise.resolve();
+  return leafletLoad || (leafletLoad = new Promise((res, rej) => {
+    const css = document.createElement("link"); css.rel = "stylesheet"; css.href = "vendor/leaflet/leaflet.css"; document.head.appendChild(css);
+    const s = document.createElement("script"); s.src = "vendor/leaflet/leaflet.js";   // bundled, like supabase-js
+    s.onload = res; s.onerror = () => { leafletLoad = null; rej(new Error("map")); };
+    document.head.appendChild(s);
+  }));
+}
+const pinIcon = () => L.divIcon({ className: "pin-ic", html: "<span></span>", iconSize: [30, 42], iconAnchor: [15, 40] });
+function baseMap(el, lat, lng, zoom, interactive){
+  const m = L.map(el, { scrollWheelZoom: false, dragging: interactive || !L.Browser.mobile, tap: false, zoomControl: true }).setView([lat, lng], zoom);
+  m.attributionControl.setPrefix(false);
+  L.tileLayer(OSM_TILES, { maxZoom: 19, attribution: OSM_ATTR }).addTo(m);
+  setTimeout(() => m.invalidateSize(), 250);   // maps inside dialogs measure late
+  return m;
+}
+// Owner: drag a pin onto the building. The exact spot only reaches people they accept.
+let pinGeo = null, pinMap = null, pinMarker = null;
+function setPin(ll, note){
+  pinGeo = { lat: +ll.lat.toFixed(6), lng: +ll.lng.toFixed(6) };
+  pinMarker.setLatLng(ll);
+  $("pinNote").innerHTML = note || `<b style="color:var(--ok)">✓ Pinned.</b> People you accept get this exact spot with directions. Everyone else only sees the area.`;
+}
+async function openPinPicker(){
+  const a = addressFromForm(), area = $("pLocality").value.trim(), city = $("pCity").value;
+  $("mapBox").hidden = false;
+  $("mapBox").innerHTML = `<div class="pin-tools"><input type="search" id="pinQ" placeholder="Search a building, street or landmark" autocomplete="off"
+      value="${esc([a.building, a.street].filter(Boolean).join(", "))}"><button class="btn btn-ghost btn-sm" type="button" id="pinFind">Search</button>
+      <button class="btn btn-ghost btn-sm" type="button" id="pinMe">📍 I'm there now</button></div>
+    <div class="pin-map" id="pinMap"></div><p class="map-q" id="pinNote">Loading the map…</p>`;
+  try{ await loadLeaflet(); }catch(e){ $("pinNote").textContent = "Couldn't load the map. Check your connection and try again."; return; }
+  const guess = pinGeo || await geocode([a.building, a.street, area, city, a.pin].filter(Boolean).join(", "))
+    || await geocode([area, city].filter(Boolean).join(", ")) || await geocode(city);
+  const at = guess || { lat: 22.5, lng: 79 };
+  if(pinMap){ pinMap.remove(); pinMap = null; }
+  pinMap = baseMap("pinMap", at.lat, at.lng, guess ? (pinGeo ? 18 : 16) : 5, true);
+  pinMarker = L.marker([at.lat, at.lng], { draggable: true, icon: pinIcon() }).addTo(pinMap);
+  pinMarker.on("dragend", () => setPin(pinMarker.getLatLng()));
+  pinMap.on("click", e => setPin(e.latlng));
+  if(pinGeo) setPin(pinGeo);
+  else if(guess) setPin(at, "We've placed the pin near your address. <b>Drag it onto your building</b> or tap the map, so people who visit find the right gate.");
+  else $("pinNote").textContent = "Search for your building above, or tap the map where it is.";
+}
+$("mapBox").addEventListener("click", async e => {
+  if(e.target.id === "pinFind"){
+    const q = $("pinQ").value.trim(); if(!q) return;
+    const g = await geocode(q + ", " + ($("pLocality").value.trim() ? $("pLocality").value.trim() + ", " : "") + $("pCity").value) || await geocode(q);
+    if(!g){ toast("Couldn't find that. Try a landmark nearby, or tap the map."); return; }
+    pinMap.setView([g.lat, g.lng], 17); setPin(g, "Found it. <b>Drag the pin onto your building</b> if it's a little off.");
+  }
+  if(e.target.id === "pinMe"){
+    if(!navigator.geolocation){ toast("This phone can't share its location here."); return; }
+    e.target.disabled = true;
+    navigator.geolocation.getCurrentPosition(p => {
+      e.target.disabled = false;
+      const g = { lat: p.coords.latitude, lng: p.coords.longitude };
+      pinMap.setView([g.lat, g.lng], 18); setPin(g);
+    }, () => { e.target.disabled = false; toast("Couldn't get your location. Allow location for the app, or drag the pin."); },
+    { enableHighAccuracy: true, timeout: 15000 });
+  }
+});
+document.addEventListener("keydown", e => { if(e.target.id === "pinQ" && e.key === "Enter"){ e.preventDefault(); $("pinFind").click(); } });
+// Seekers: the area on a map, as a circle about a kilometre wide around the rounded spot.
+async function drawApproxMap(id, geo){
+  try{ await loadLeaflet(); }catch(e){ return; }
+  const el = $(id); if(!el || el._leaflet_id) return;
+  const m = baseMap(el, geo.lat, geo.lng, 14, false);
+  L.circle([geo.lat, geo.lng], { radius: 700, color: "#0E9AA0", weight: 2, fillOpacity: .15 }).addTo(m);
+}
+
+/* ================================================ shortlist shared in a tribe */
+// The ♥ shortlist is saved to the server, so a tribe (up to 3 people) shares it: everyone sees
+// what the others saved, and who saved it.
+let tribeSaved = new Map(), tribeSaveRows = [];   // listing id -> first names of the tribe members (not you) who saved it
+async function syncSaves(){
+  let rows;
+  try{ rows = await api.tribeSaves(); }catch(e){ return tribeSaveRows; }
+  if(api.live){
+    // Hearts tapped before the shortlist moved to the server are sent up once.
+    if(!state.savesSynced){
+      const server = new Set(rows.filter(r => r.mine).map(r => r.listing_id));
+      for(const id of state.saved) if(!server.has(id)) await api.saveListing(id, true).catch(() => {});
+      state.savesSynced = true;
+      rows = await api.tribeSaves().catch(() => rows);
+    }
+    state.saved = rows.filter(r => r.mine).map(r => r.listing_id);
+  }
+  tribeSaveRows = rows;
+  tribeSaved = new Map(rows.map(r => [r.listing_id, (r.saved_by || []).filter(n => n !== "You")]).filter(([, n]) => n.length));
+  save(); return rows;
+}
+const tribeSavedLine = l => { const n = tribeSaved.get(l.id); return n && n.length ? `<div class="tribe-saved">♥ ${esc(n.join(" & "))} shortlisted this</div>` : ""; };
+const bondedTribe = async () => isSeeker() ? (await api.tribeList().catch(() => [])).filter(t => t.status === "bonded") : [];
+// Search together: Discover shows homes in every tribe member's areas.
+async function searchTogether(){
+  const bonded = await bondedTribe(), f = prefs();
+  const anyArea = !f.areas.length || bonded.some(t => !(t.areas || []).length);
+  const areas = anyArea ? [] : [...new Set(f.areas.concat(...bonded.map(t => t.areas || [])))];
+  setPrefs({ areas }); applyPrefs(); go("discover");
+  toast(`Searching with ${bonded.map(t => t.name).join(" & ") || "your tribe"}: ${areas.length ? "all your areas" : "all of " + (f.city || "the city")}. Tap ♥ and they'll see it.`);
+}
+
+/* =================================================== back button + dialogs */
+// The phone's back button (Android app) closes the top dialog first: MainActivity calls fmBack()
+// and only goes back a screen when it returns false.
+const openDialogs = [];
+document.querySelectorAll("dialog").forEach(d => new MutationObserver(() => {
+  const i = openDialogs.indexOf(d);
+  if(d.open && i < 0) openDialogs.push(d);
+  else if(!d.open && i >= 0) openDialogs.splice(i, 1);
+}).observe(d, { attributes: true, attributeFilter: ["open"] }));
+window.fmBack = () => {
+  const d = openDialogs.filter(x => x.open).pop() || document.querySelector("dialog[open]");
+  if(d){ d.close(); return true; }
+  if(!$("view-onboard").hidden && ob && ob.i > 0){ $("obBack").click(); return true; }
+  return false;
+};
+// The close button: a back arrow on phones (dialogs are full screen there), a cross on bigger screens.
+const BACK_SVG = '<svg class="x-back" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+document.querySelectorAll(".mhead .x").forEach(b => { b.innerHTML = BACK_SVG + '<span class="x-x" aria-hidden="true">×</span>'; b.setAttribute("aria-label", "Back"); });
+
+document.addEventListener("click", e => { if(e.target.closest("[data-together]")) searchTogether(); });
+
 /* ============================================================= account */
 async function renderAccount(){
   await api.me();
@@ -5121,11 +5457,8 @@ document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
 });
 window.addEventListener("hashchange", route);
-$("fCity").innerHTML = `<option value="">All cities</option>`;
-for(const c of CITIES){
-  $("fCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
-  $("pCity").insertAdjacentHTML("beforeend", `<option>${c}</option>`);
-}
+setCitySelect($("fCity"), "", "All cities");
+setCitySelect($("pCity"), CITIES[0]);
 $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" value="${esc(a)}">${esc(a)}</label>`).join("");
 
 (async function boot(){

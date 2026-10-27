@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -45,10 +46,13 @@ public class MainActivity extends Activity {
     private static final String START_URL = "https://" + HOST + "/index.html";
     private static final int PICK_PHOTOS = 1;
     private static final int ASK_NOTIFICATIONS = 2;
+    private static final int ASK_LOCATION = 3;
     static final String EXTRA_OPEN = "open";
 
     private WebView web;
     private ValueCallback<Uri[]> pendingPick;
+    private GeolocationPermissions.Callback pendingGeo;   // the map's "use my location", waiting on Android's permission
+    private String pendingGeoOrigin;
     private JavaScriptReplyProxy page;   // lets native code message the web app
 
     @Override
@@ -88,6 +92,21 @@ public class MainActivity extends Activity {
         });
 
         web.setWebChromeClient(new WebChromeClient() {
+            // Only the app's own page may ask for the location, and Android asks the person first.
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if (!origin.startsWith("https://" + HOST)) { callback.invoke(origin, false, false); return; }
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    callback.invoke(origin, true, false);
+                    return;
+                }
+                pendingGeo = callback;
+                pendingGeoOrigin = origin;
+                requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION }, ASK_LOCATION);
+            }
+
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                                              FileChooserParams params) {
@@ -161,6 +180,12 @@ public class MainActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
         if (requestCode == ASK_NOTIFICATIONS) sendStatus();
+        if (requestCode == ASK_LOCATION && pendingGeo != null) {
+            boolean granted = false;
+            for (int r : results) granted |= r == PackageManager.PERMISSION_GRANTED;
+            pendingGeo.invoke(pendingGeoOrigin, granted, false);
+            pendingGeo = null;
+        }
     }
 
     private void sendStatus() {
@@ -251,9 +276,13 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        // Screens are #hash routes, so the back button walks back through them.
-        if (web.canGoBack()) web.goBack();
-        else super.onBackPressed();
+        // An open listing or panel closes first (the page's fmBack answers true when it closed one).
+        // Otherwise screens are #hash routes, so the back button walks back through them.
+        web.evaluateJavascript("typeof fmBack === 'function' && fmBack()", handled -> {
+            if ("true".equals(handled)) return;
+            if (web.canGoBack()) web.goBack();
+            else finish();
+        });
     }
 
     @Override
