@@ -217,11 +217,14 @@ The same `index.html` is the website: https://kamalmotiani1989-cmd.github.io/Nav
 app** band and a footer. Anything marked `web-only` (the download links) is hidden inside the
 Android app, which loads the page from `appassets.androidplatform.net`.
 
-Every push that changes `flatmates/` runs `.github/workflows/flatmates-site.yml`, which copies the
-app (without `android/`, `supabase/` and this README) next to main's `index.html` and pushes it to
-the `gh-pages` branch. **One-time setup:** Settings → Pages → Build and deployment → Source
-**Deploy from a branch**, branch **gh-pages**, folder **/ (root)**. Sign-in and payments work from
-there as is: the Supabase functions allow any origin.
+GitHub Pages publishes the `main` branch (Settings → Pages: Deploy from a branch, `main`, `/ (root)`),
+so a change goes live a minute after it reaches `main`. `.nojekyll` at the repo root makes Pages
+serve the files as they are. Sign-in and payments work from there as is: the Supabase functions allow
+any origin.
+
+`.github/workflows/flatmates-site.yml` also keeps a `gh-pages` branch with just the website (the app
+without `android/`, `supabase/` and this README, next to main's `index.html`), updated on every push
+that changes `flatmates/`. To publish that instead, pick branch **gh-pages** in the same setting.
 
 ## Install as an app
 
