@@ -9,7 +9,7 @@ name: FindMyFlatMate website
 # "Deploy from a branch", Branch: gh-pages, folder: / (root).
 on:
   push:
-    branches: [main, "claude/rental-flat-roommate-app-*"]
+    branches: [main, "claude/rental-flat-roommate-app-*", "claude/flatmates-*"]
     paths: ["flatmates/**", "index.html", ".github/workflows/flatmates-site.yml"]
   workflow_dispatch:
 
