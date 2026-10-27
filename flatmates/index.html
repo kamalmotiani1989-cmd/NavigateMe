@@ -848,6 +848,103 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
   .mhead .x{order:1; width:40px; height:40px; background:rgba(255,255,255,.18)}
   .x .x-back{display:block; margin:auto} .x .x-x{display:none}
 }
+/* ---------- polish: soft white cards on a light, cool background (signed-in app only; the
+   welcome page stays white). Inputs, chips and secondary buttons get a hairline so they read on
+   both the background and the cards. */
+:root{
+  --app-bg:#F3F6F9; --card:#FFFFFF; --hair:#E1E6EC;
+  --card-shadow:0 1px 2px rgba(16,30,50,.05), 0 6px 18px rgba(16,30,50,.06);
+  --card-shadow-hi:0 2px 4px rgba(16,30,50,.06), 0 14px 32px rgba(16,30,50,.12);
+  --r-card:20px;
+}
+body.app{background:var(--app-bg)}
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],input[type=search],select,textarea{
+  background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
+input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--brand), 0 0 0 4px rgba(14,154,160,.12)}
+.chip, .area-chips button{background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
+.chip:has(input:checked), .area-chips button[aria-pressed="true"]{box-shadow:0 4px 12px rgba(14,154,160,.28)}
+.btn-ghost{background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
+.btn-ghost:hover{background:#F7F9FB}
+.btn-primary{background:linear-gradient(135deg,#12A9AE,#0B858B); box-shadow:0 6px 16px rgba(14,154,160,.28)}
+.btn-primary:hover{background:linear-gradient(135deg,#0F9DA2,#0A777C)}
+.btn-accent{background:linear-gradient(135deg,#FF7E2E,#EE5A12); box-shadow:0 6px 16px rgba(242,107,29,.28)}
+.ob .btn-primary, .ob .btn-ghost{box-shadow:none}
+.ob .btn-primary{background:#fff}
+
+/* cards */
+.cards{gap:20px 16px}
+.card{background:var(--card); border-radius:var(--r-card); box-shadow:var(--card-shadow); overflow:hidden; transition:transform .2s, box-shadow .2s}
+.card .thumb{border-radius:0}
+.card .body{padding:12px 14px 16px}
+.card:active{transform:scale(.985)}
+@media (hover:hover){ .card:hover{transform:translateY(-3px); box-shadow:var(--card-shadow-hi)} }
+.vrow{padding:12px 4px 18px; gap:14px}
+.mine-card, .req, .panel, .mk-offer, .empty, #fsGroups, #fsPanel, .extras a, .notice{background:var(--card); border-radius:var(--r-card); box-shadow:var(--card-shadow)}
+.mine-card{padding:14px; margin:14px 0; gap:16px}
+.mine-card:first-child{box-shadow:var(--card-shadow)}
+.req{padding:18px; margin:12px 0}
+.req.new{margin-left:0; padding-left:18px; box-shadow:var(--card-shadow), inset 4px 0 0 var(--accent);
+  background:linear-gradient(90deg, #FFF6EF, #fff 60%)}
+.panel{padding:20px; margin:14px 0}
+.panel:first-child{box-shadow:var(--card-shadow)}
+.mk-offer{padding:14px; margin:12px 0}
+.empty{padding:36px 20px; margin:12px 0}
+.empty-ic{width:68px; height:68px; margin:0 auto 12px; border-radius:50%; display:grid; place-items:center; font-size:30px;
+  background:linear-gradient(135deg,var(--brand-soft),#EEF3FD)}
+#fsGroups{padding:2px 16px; margin-top:14px}
+#fsGroups:empty{display:none}
+#fsGroups .fs-group:last-of-type{box-shadow:none}
+#fsGroups > .empty{box-shadow:none; margin:0}
+#fsGroups > .btn{margin:6px 0 16px!important}
+#fsPanel{padding:4px 16px 8px; margin-top:12px}
+#fsPanel > .empty{box-shadow:none; margin:0}
+.notice{background:linear-gradient(135deg,#E8F7F7,#EEF3FD); box-shadow:none}
+.lock .notice{background:var(--brand-soft)}
+.seek-card{box-shadow:var(--card-shadow); border-radius:var(--r-card)}
+
+/* Discover shortcuts: two tiles side by side, even on small phones */
+.extras{grid-template-columns:1fr 1fr; gap:12px}
+.extras a{padding:14px; align-items:flex-start; transition:transform .2s, box-shadow .2s}
+.extras a:active{transform:scale(.98)}
+.extras i{width:42px; height:42px; border-radius:14px; display:grid; place-items:center; font-size:22px; background:#E7F7EF}
+.extras a + a i{background:#FFEFE4}
+@media (max-width:420px){ .extras a{flex-direction:column; gap:8px} }
+
+/* greeting + page titles */
+.greet h1, .page-h h1{letter-spacing:-.04em}
+.greet .eyebrow{color:var(--brand)}
+
+/* bottom bar: a soft pill behind the current tab's icon */
+@media (max-width:720px){
+  .nav{background:#fff; box-shadow:0 -1px 0 var(--line), 0 -8px 24px rgba(16,30,50,.06)}
+  .tab svg{position:relative; z-index:1; transition:transform .2s}
+  .tab[aria-current="true"]::before{content:""; position:absolute; top:3px; left:50%; width:54px; height:30px; transform:translateX(-50%);
+    border-radius:999px; background:var(--brand-soft); animation:pillIn .25s ease}
+  .tab[aria-current="true"] svg{transform:translateY(-1px)}
+  .tab[aria-current="true"] span{font-weight:800}
+  .tab .badge{z-index:2}
+}
+@keyframes pillIn{from{transform:translateX(-50%) scaleX(.4); opacity:0}}
+
+/* screens fade in; toasts slide up above the bottom bar */
+#appMain > section:not([hidden]){animation:screenIn .28s ease both}
+@keyframes screenIn{from{opacity:0; transform:translateY(6px)}}
+.toast{bottom:calc(92px + env(safe-area-inset-bottom,0px)); max-width:min(92vw,460px); width:max-content; border-radius:16px; padding:12px 16px;
+  font-size:14.5px; line-height:1.4; box-shadow:0 12px 32px rgba(16,20,24,.28); background:rgba(16,20,24,.94); animation:toastIn .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes toastIn{from{opacity:0; transform:translate(-50%, 14px)}}
+@media (min-width:721px){ .toast{bottom:28px} }
+
+/* account: a real avatar */
+.profile .me{display:grid; place-items:center; flex:none; background:var(--grad); color:#fff; box-shadow:0 6px 16px rgba(14,154,160,.3)}
+
+/* listing dialog: details sit on soft panels */
+.kv div{box-shadow:none; background:var(--surface-2); border-radius:12px; padding:10px 12px; margin:4px 0}
+.kv{gap:4px 8px}
+.hero-pic{border-radius:18px; box-shadow:var(--card-shadow)}
+dialog{background:#fff}
+
+/* dark text on the light page for the demo footer */
+body.app .foot{box-shadow:none}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -3740,7 +3837,7 @@ async function renderSaved(){
   const h = t => `<h2 class="section-h" style="grid-column:1 / -1;margin:6px 0 0">${t}</h2>`;
   $("savedCards").innerHTML = (theirs.length ? h(`Shortlisted by ${esc(names || "your tribe")}`) + theirs.map(cardHtml).join("") : "")
     + (mine.length ? (theirs.length ? h("Saved by you") : "") + mine.map(cardHtml).join("") : "")
-    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.${
+    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><div class="empty-ic" aria-hidden="true">♥</div><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.${
       bonded.length ? ` ${esc(names)} will see it too.` : ""}</div>`)
     + (bonded.length ? `<div style="grid-column:1 / -1;margin-bottom:24px"><button class="btn btn-primary" type="button" data-together>🔎 Search together with ${esc(names)}</button></div>` : "");
 }
@@ -4015,7 +4112,7 @@ async function renderRequests(){
   const listings = owner ? await api.myListings() : [];
   const invHomes = await Promise.all(invites.map(r => api.get(r.listing_id)));
   const rest = list.filter(r => !invites.includes(r));
-  const empty = `<div class="empty"><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
+  const empty = `<div class="empty"><div class="empty-ic" aria-hidden="true">🔔</div><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
       : "Open a flat you like and tap “Send request”."}</div>`;
   $("reqList").innerHTML = !list.length ? empty
     : (invites.length ? `<h2 class="section-h" style="margin-top:8px">Owners who invited you</h2>` + invites.map((r, i) => inviteHtml(r, invHomes[i])).join("")
@@ -4430,7 +4527,7 @@ async function renderSplits(){
       <span class="fs-emoji">${esc(g.emoji)}${g.unseen ? `<i class="badge" aria-label="${g.unseen} new">${g.unseen}</i>` : ""}</span>
       <span style="min-width:0"><b class="h">${esc(g.name)}</b><span class="s">${g.names.length ? "You, " + esc(g.names.join(", ")) : "Just you so far: add your flatmates"}</span></span>
       ${fsNetHtml(g.my_net)}</button>`).join("") + `<button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:18px">+ New group</button>`
-    : `<div class="empty"><div style="font-size:56px;line-height:1.2" aria-hidden="true">🧾</div><h3>Living with people? Split it fairly.</h3>
+    : `<div class="empty"><div class="empty-ic" aria-hidden="true">🧾</div><h3>Living with people? Split it fairly.</h3>
        <p>Make a group for your flat, add your flatmates by mobile number, and add the first expense. Everyone sees the same balance.</p>
        <button class="btn btn-primary" type="button" data-fs="new">Create your flat's group</button>
        ${api.splitDemoSeed ? `<p style="margin-top:6px"><button class="linkbtn" type="button" data-fs="sample">Or try it with a sample flat</button></p>` : ""}</div>`;
@@ -4873,7 +4970,7 @@ async function renderMkBrowse(){
   list.sort((a, b) => (a.status === "reserved") - (b.status === "reserved"));
   $("mkCount").textContent = list.length ? `${list.length} ${list.length === 1 ? "item" : "items"}${city ? " in " + city : ""}` : "";
   $("mkCards").innerHTML = list.length ? list.map(mkCardHtml).join("")
-    : `<div class="empty"><div style="font-size:52px;line-height:1.2" aria-hidden="true">🛋️</div><h3>${mkCat === "saved" ? "Nothing saved yet" : q ? `Nothing matches “${esc(q)}” yet` : "Nothing here yet"}</h3>
+    : `<div class="empty"><div class="empty-ic" aria-hidden="true">🛋️</div><h3>${mkCat === "saved" ? "Nothing saved yet" : q ? `Nothing matches “${esc(q)}” yet` : "Nothing here yet"}</h3>
        <p>${mkCat === "saved" ? "Tap ♥ on anything to keep it here." : `Be the first to sell something${city ? " in " + esc(city) : ""}. Moving out soon? List the things you won't take with you.`}</p>
        <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`;
 }
@@ -4888,7 +4985,7 @@ async function renderMkMine(){
           : `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|sold">Mark as sold</button>`}
         <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed">Remove</button></div></div></div>`;
   }).join("") + `<button class="btn btn-ghost" type="button" data-mk="sell" style="margin:16px 0 30px">+ Sell something else</button>`
-  : `<div class="empty"><div style="font-size:52px;line-height:1.2" aria-hidden="true">📦</div><h3>Sell what you won't take with you</h3>
+  : `<div class="empty"><div class="empty-ic" aria-hidden="true">📦</div><h3>Sell what you won't take with you</h3>
       <p>A spare mattress, the fridge, a cycle you never ride. Someone a few streets away is looking for it.</p>
       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`;
 }
@@ -4919,7 +5016,7 @@ async function renderMkOffers(inbox){
   const inc = inbox.filter(r => r.direction === "incoming"), out = inbox.filter(r => r.direction === "outgoing");
   $("mkOffers").innerHTML = (inc.length ? `<h3 class="section-h">Offers on your items</h3>${inc.map(mkOfferHtml).join("")}` : "")
     + (out.length ? `<h3 class="section-h">Your offers</h3>${out.map(mkOfferHtml).join("")}` : "")
-    + (inbox.length ? `<div style="height:30px"></div>` : `<div class="empty"><h3>No offers yet</h3><p>Offers you make, and offers on things you sell, show up here.
+    + (inbox.length ? `<div style="height:30px"></div>` : `<div class="empty"><div class="empty-ic" aria-hidden="true">🤝</div><h3>No offers yet</h3><p>Offers you make, and offers on things you sell, show up here.
       Numbers are shared only when the seller accepts.</p></div>`)
     + notifyCard("Turn on notifications so you hear the moment someone wants your stuff.");
   if(inbox.some(r => r.unseen)){ await api.marketSeen().catch(() => {}); marketUnseen = 0; renderNav(); }
