@@ -9,6 +9,14 @@
 <meta property="og:title" content="FindMyFlatMate">
 <meta property="og:description" content="Find a room, and the people worth sharing it with.">
 <meta property="og:locale" content="en_IN">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FindMyFlatMate">
+<meta property="og:url" content="https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/">
+<meta property="og:image" content="https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/">
+<!-- Inside the Android app the page is served from appassets; web-only bits (download the app) hide there. -->
+<script>if(location.hostname === "appassets.androidplatform.net") document.documentElement.classList.add("in-apk");</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23F26B1D'/%3E%3Cpath d='M3.5 10.5h4.5V20H3.5zM8.5 4.5h7V20h-7zM16 8.5h4.5V20H16z' fill='%23fff'/%3E%3Cpath d='M10 7h1.5v1.5H10zM12.5 7H14v1.5h-1.5zM10 10h1.5v1.5H10zM12.5 10H14v1.5h-1.5zM10 13h1.5v1.5H10zM12.5 13H14v1.5h-1.5zM11.2 17h1.6v3h-1.6z' fill='%23F26B1D'/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -164,7 +172,6 @@ textarea{min-height:96px; resize:vertical}
 .steps li::marker{color:var(--accent); font-weight:800}
 .steps li b{color:var(--text)}
 @media (max-width:700px){ .steps{grid-template-columns:1fr; gap:36px} }
-.w-foot{color:var(--text-3); font-size:13px; padding-block:32px 40px}
 
 /* ---------- onboarding */
 .ob{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; background:var(--bg)}
@@ -945,6 +952,84 @@ dialog{background:#fff}
 
 /* dark text on the light page for the demo footer */
 body.app .foot{box-shadow:none}
+
+/* ---------- website: top links, "more than a room", get-the-app band, footer.
+   .web-only bits (downloading the app) are hidden inside the Android app itself. */
+.in-apk .web-only{display:none!important}
+.w-nav{display:flex; align-items:center; gap:6px}
+.w-link{border:0; background:none; color:rgba(255,255,255,.86); font-weight:700; font-size:14.5px; padding:8px 12px; border-radius:10px; cursor:pointer}
+.w-link:hover{color:#fff; background:rgba(255,255,255,.14)}
+.w-get{background:#fff; color:var(--brand-2); box-shadow:0 6px 18px rgba(4,40,70,.18)}
+.w-get:hover{background:#EFFAFA}
+.w-nav .w-get{margin-left:6px}
+@media (max-width:720px){ .w-link{display:none} }
+
+.w-more{padding-block:72px 8px}
+.more-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:32px}
+.more-card{background:var(--surface-2); border-radius:24px; padding:20px 20px 24px}
+.more-card h3{font-size:20px; margin:18px 0 6px}
+.more-card p{margin:0; color:var(--text-2)}
+.wm{position:relative; height:206px; border-radius:18px; overflow:hidden; background:#fff; box-shadow:var(--card-shadow)}
+.wm-fs{padding:14px 16px; display:flex; flex-direction:column}
+.wm-fs-top{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:13.5px; font-weight:700; color:var(--text-2)}
+.wm-fs-top b{color:var(--ok); font-size:15px}
+.wm-rows{list-style:none; margin:8px 0 0; padding:0; flex:1}
+.wm-rows li{display:grid; grid-template-columns:30px 1fr auto; gap:10px; align-items:center; padding:6px 0; box-shadow:0 1px 0 var(--line); font-size:14px; font-weight:700}
+.wm-rows li:last-child{box-shadow:none}
+.wm-rows i{font-style:normal; width:30px; height:30px; border-radius:10px; display:grid; place-items:center; background:var(--surface-2); font-size:15px}
+.wm-rows small{display:block; font-weight:500; font-size:12px; color:var(--text-3); line-height:1.3}
+.wm-upi{position:absolute; right:14px; bottom:12px; background:var(--grad); color:#fff; font-size:12.5px; font-weight:800; padding:6px 12px; border-radius:999px}
+.wm-mart{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:14px; background:linear-gradient(135deg,#FFF7F0,#F2F8FF)}
+.wm-item{background:#fff; border-radius:14px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 2px rgba(16,30,50,.06); font-size:13px}
+.wm-item i{font-style:normal; display:grid; place-items:center; height:84px; font-size:34px; background:var(--h)}
+.wm-item b{padding:8px 10px 0; line-height:1.2} .wm-item span{padding:0 10px 8px; color:var(--brand-2); font-weight:800}
+.wm-deal{position:absolute; left:14px; bottom:14px; background:var(--ok-soft); color:var(--ok); font-weight:800; font-size:12.5px; padding:6px 12px; border-radius:999px}
+.wm-tribe{padding:16px; display:flex; flex-direction:column; justify-content:center; gap:14px; background:linear-gradient(135deg,#EEF6FF,#F4FBF8)}
+.wm-home{display:flex; gap:12px; align-items:center; background:#fff; border-radius:14px; padding:10px; box-shadow:0 1px 2px rgba(16,30,50,.06)}
+.wm-home-pic{flex:none; width:74px; height:60px; border-radius:10px; background:linear-gradient(180deg,#F6D9B8 0 58%,#B07A52 58% 66%,#E9EEF3 66%)}
+.wm-home b{display:block; font-size:15px} .wm-home span{font-size:13px; color:var(--text-2)}
+.wm-saved{display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:700; color:#C2261D}
+.wm-faces{display:flex} .wm-faces i{font-style:normal; width:32px; height:32px; border-radius:50%; display:grid; place-items:center; color:#fff;
+  font-size:11px; font-weight:800; box-shadow:0 0 0 2px #fff; margin-left:-8px} .wm-faces i:first-child{margin-left:0}
+.wm-map{background:
+  linear-gradient(90deg, transparent 47%, #fff 47% 53%, transparent 53%) 0 0/120px 120px,
+  linear-gradient(0deg, transparent 46%, #fff 46% 54%, transparent 54%) 0 0/96px 96px,
+  linear-gradient(28deg, transparent 49%, #FFE9A8 49% 52%, transparent 52%),
+  #E7EEE3}
+.wm-area{position:absolute; left:50%; top:44%; width:130px; height:130px; transform:translate(-50%,-50%); border-radius:50%;
+  background:rgba(14,154,160,.16); box-shadow:inset 0 0 0 2px rgba(14,154,160,.6)}
+.wm-pin{position:absolute; left:50%; top:44%; transform:translate(-50%,-100%); filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.wm-cities{position:absolute; left:12px; right:12px; bottom:12px; display:flex; flex-wrap:wrap; gap:6px}
+.wm-cities span{background:#fff; border-radius:999px; padding:4px 10px; font-size:12.5px; font-weight:700; box-shadow:0 1px 3px rgba(16,30,50,.12)}
+@media (max-width:760px){ .more-grid{grid-template-columns:1fr} .w-more{padding-top:56px} }
+
+.w-app{display:grid; grid-template-columns:1.4fr .6fr; gap:32px; align-items:center; margin:72px 0 0; padding:40px 44px; border-radius:28px;
+  background:var(--grad); color:#fff; overflow:hidden}
+.w-app .eyebrow{color:#FFD08A}
+.w-app h2{font-size:clamp(26px,3.4vw,38px)}
+.w-app-copy > p{color:rgba(255,255,255,.88); max-width:52ch; margin:12px 0 0}
+.w-app-cta{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px}
+.w-ghost{background:rgba(255,255,255,.16); color:#fff} .w-ghost:hover{background:rgba(255,255,255,.26)}
+.w-app .w-app-note{font-size:13.5px; color:rgba(255,255,255,.75); margin-top:14px}
+.w-phone{justify-self:center; width:190px; height:330px; border-radius:34px; padding:10px; background:#0D2233; box-shadow:0 24px 50px rgba(4,30,50,.4); transform:rotate(4deg)}
+.w-phone-scr{height:100%; border-radius:26px; background:#fff; color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; text-align:center; padding:16px}
+.w-phone-scr img{border-radius:18px; box-shadow:0 6px 16px rgba(16,30,50,.16); margin-bottom:8px}
+.w-phone-scr b{font-size:16px} .w-phone-scr span{font-size:12px; color:var(--text-2)}
+@media (max-width:760px){ .w-app{grid-template-columns:1fr; padding:28px 22px; margin-top:56px} .w-phone{display:none} }
+
+.w-footer{margin-top:72px; background:#0D2233; color:rgba(255,255,255,.72); font-size:14px; padding-bottom:env(safe-area-inset-bottom,0px)}
+.w-foot-grid{display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:28px; padding-block:44px 28px}
+.w-foot-logo{display:flex; align-items:center; gap:10px; color:#fff; font-size:17px}
+.w-foot-logo img{border-radius:10px}
+.w-foot-brand p{margin:12px 0 0; max-width:34ch}
+.w-footer h4{margin:0 0 10px; color:#fff; font-size:13px; letter-spacing:.08em; text-transform:uppercase}
+.w-footer button, .w-footer a, .w-footer span{display:block; border:0; background:none; padding:4px 0; color:inherit; font:inherit; text-align:left; text-decoration:none}
+.w-footer button, .w-footer a{cursor:pointer} .w-footer button:hover, .w-footer a:hover{color:#fff}
+.w-foot-bottom{display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px 24px; padding-block:18px 28px; box-shadow:0 -1px 0 rgba(255,255,255,.1);
+  font-size:12.5px; color:rgba(255,255,255,.55)}
+.w-foot-bottom span{display:inline; padding:0}
+@media (max-width:760px){ .w-foot-grid{grid-template-columns:1fr 1fr} .w-foot-brand{grid-column:1/-1} }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -957,6 +1042,11 @@ body.app .foot{box-shadow:none}
   <div class="w-band">
     <div class="wrap w-top">
       <span class="logo"><i><svg width="42" height="42" viewBox="0 0 100 100" aria-hidden="true"><defs> <linearGradient id="fmRoof" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F80F0"/><stop offset="1" stop-color="#0A4FC4"/></linearGradient> <linearGradient id="fmSmile" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E6FD9"/><stop offset="1" stop-color="#14C08A"/></linearGradient> <clipPath id="fmIn"><path d="M23.5 10H76.5V70Q50 84 23.5 70Z"/></clipPath> </defs> <rect x="67.5" y="12" width="9.5" height="20" rx="1.5" fill="#0A4FC4"/> <path d="M19 62V40L50 13.5L81 40V62" fill="none" stroke="url(#fmRoof)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/> <path d="M50 21.5v5M43.2 23.6l2.4 4.2M56.8 23.6l-2.4 4.2" stroke="#F5A623" stroke-width="2.6" stroke-linecap="round"/> <g clip-path="url(#fmIn)"> <path d="M23.5 84V69.5a11 9.5 0 0 1 22 0V84z" fill="#1E6FD9"/> <path d="M54.5 84V69.5a11 9.5 0 0 1 22 0V84z" fill="#F0645A"/> <path d="M38 84V68a12 10 0 0 1 24 0V84z" fill="#F7B53B" stroke="#fff" stroke-width="2" paint-order="stroke"/> <circle cx="34" cy="47" r="8.3" fill="#F9C9A0"/> <path d="M25.6 47.5a8.5 8.5 0 0 1 14-7.4c-2.6.4-6.2 2.6-8.6 2.5c-1.6 1.6-3 3.3-5.4 4.9z" fill="#10264F"/> <path d="M25.7 46.2c-.6-5.6 3.4-9.6 8.6-9.6c3.4 0 6 1.4 7.2 3.4c-3 0-5.2 1.8-8.4 2.2c-2.4.3-4.5 1.6-7.4 4z" fill="#10264F"/> <circle cx="50" cy="44.5" r="8.6" fill="#F9C9A0" stroke="#fff" stroke-width="1.6" paint-order="stroke"/> <path d="M41.4 44c-.4-5.4 3.6-9.2 8.6-9.2s9 3.8 8.6 9.2c-1.6-2.8-4-4.2-6.6-4.6c-1 1.4-3 2.2-5.2 2.2c-2.3 0-4.1 1-5.4 2.4z" fill="#10264F"/> <path d="M70.5 44.5c4.6 1 6.4 6 4.6 11.5c-1-3-2.6-4.4-4.6-5z" fill="#10264F"/> <circle cx="66" cy="47" r="8.3" fill="#F9C9A0"/> <path d="M57.7 46.6c-.3-5.4 3.6-9.6 8.6-9.6c4.4 0 8.2 3.4 8.2 8.4c-2.2-1.6-4.4-3.8-6-5.6c-2.6 3-6.2 5.6-10.8 6.8z" fill="#10264F"/> <circle cx="72.6" cy="38.6" r="2.6" fill="#F0645A"/> <g fill="none" stroke="#10264F" stroke-width="1.3" stroke-linecap="round"> <path d="M30.2 48.4q1.3-1.4 2.6 0M35.6 48.4q1.3-1.4 2.6 0M32.4 51.6q1.6 1.4 3.2 0"/> <path d="M45.9 46q1.3-1.4 2.6 0M51.5 46q1.3-1.4 2.6 0M48.3 49.2q1.7 1.5 3.4 0"/> <path d="M61.8 48.4q1.3-1.4 2.6 0M67.2 48.4q1.3-1.4 2.6 0M64.4 51.6q1.6 1.4 3.2 0"/> </g> </g> <path d="M26 76Q50 91 74 76" fill="none" stroke="url(#fmSmile)" stroke-width="6" stroke-linecap="round"/> <circle cx="20" cy="69.5" r="3.6" fill="#1E6FD9"/> <circle cx="80" cy="69.5" r="3.6" fill="#14C08A"/></svg></i><span class="wordmark"><b>FindMy</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></span>
+      <nav class="w-nav" aria-label="On this page">
+        <button class="w-link" type="button" data-scroll="w-how">How it works</button>
+        <button class="w-link" type="button" data-scroll="w-more">Flatsplits &amp; FlatMart</button>
+        <a class="btn btn-sm w-get web-only" data-apk><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Get the app</a>
+      </nav>
     </div>
     <div class="wrap w-grid">
       <div class="w-copy">
@@ -1009,7 +1099,7 @@ body.app .foot{box-shadow:none}
         <h3>Your room, your way</h3>
         <p>A private room, a shared room or a whole flat. Rent is shown on its own, and every extra like maintenance or electricity is listed for the room. No surprises.</p></div></article>
     </div>
-    <div class="steps">
+    <div class="steps" id="w-how">
       <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate who fits in</h3>
         <ol><li><b>Describe your home</b> and the people in it. It takes about two minutes.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
           <li><b>Get a notification when someone with your vibe asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol></div>
@@ -1017,8 +1107,95 @@ body.app .foot{box-shadow:none}
         <ol><li><b>Tell us how you live</b>, what you're into, which areas you like and your budget.</li><li><b>See your vibe matches first</b>, then every other home ranked by fit.</li>
           <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol></div>
     </div>
-    <p class="w-foot" id="modeNote"></p>
   </div>
+
+  <div class="wrap w-more" id="w-more">
+    <p class="eyebrow">Life after you move in</p>
+    <h2 class="story-h">More than a room. Everything flat life needs.</h2>
+    <div class="more-grid">
+      <article class="more-card">
+        <div class="wm wm-fs" aria-hidden="true">
+          <div class="wm-fs-top"><span>🏠 Flat 402</span><b>You get back ₹2,450</b></div>
+          <ul class="wm-rows">
+            <li><i>⚡</i><span>Electricity<small>You paid · split 3 ways</small></span><b>₹3,600</b></li>
+            <li><i>🛒</i><span>Groceries<small>Rahul paid</small></span><b>₹1,140</b></li>
+            <li><i>🏠</i><span>Rent<small>Adds itself on the 1st</small></span><b>₹42,000</b></li>
+          </ul>
+          <span class="wm-upi">Pay back on UPI</span>
+        </div>
+        <h3>Flatsplits</h3>
+        <p>Split rent, bills and groceries without the awkward maths. See who owes whom, pay back over UPI in one tap, and let rent and Wi-Fi add themselves every month.</p>
+      </article>
+      <article class="more-card">
+        <div class="wm wm-mart" aria-hidden="true">
+          <div class="wm-item" style="--h:#E8F1FD"><i>🛏️</i><b>Single bed</b><span>₹2,500</span></div>
+          <div class="wm-item" style="--h:#FFF0E3"><i>🪑</i><b>Study table</b><span>₹1,800</span></div>
+          <div class="wm-item" style="--h:#E5F6EF"><i>❄️</i><b>Cooler</b><span>₹3,200</span></div>
+          <span class="wm-deal">Offer ₹1,500 · Accepted ✓</span>
+        </div>
+        <h3>FlatMart</h3>
+        <p>Moving out? Sell your bed, cooler or study table to flatmates nearby. Moving in? Furnish your room for a fraction of the price. Make an offer and the seller decides.</p>
+      </article>
+      <article class="more-card">
+        <div class="wm wm-tribe" aria-hidden="true">
+          <div class="wm-home"><div class="wm-home-pic"></div>
+            <div><b>2 BHK, Koramangala</b><span>₹14,000 a room · 91% match</span></div></div>
+          <div class="wm-saved"><span class="wm-faces"><i style="background:#1E6FD9">P</i><i style="background:#F0645A">A</i><i style="background:#0E9F7E">You</i></span>
+            ♥ Shortlisted by Priya and Arjun</div>
+        </div>
+        <h3>Search together</h3>
+        <p>Team up with up to two people who match your vibe. Every flat one of you shortlists shows up for the others, so you can decide together.</p>
+      </article>
+      <article class="more-card">
+        <div class="wm wm-map" aria-hidden="true">
+          <span class="wm-area"></span>
+          <svg class="wm-pin" width="34" height="44" viewBox="0 0 24 32"><path d="M12 31s10-11.2 10-19A10 10 0 0 0 2 12c0 7.8 10 19 10 19z" fill="#F26B1D"/><circle cx="12" cy="12" r="4" fill="#fff"/></svg>
+          <div class="wm-cities"><span>Pune</span><span>Jaipur</span><span>Kochi</span><span>Indore</span><span>+ any city</span></div>
+        </div>
+        <h3>All of India, on the map</h3>
+        <p>From the metros to your hometown: any city, any area. Owners drop an exact pin. You see roughly where the flat is, and the exact spot once they say yes.</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="wrap web-only">
+    <div class="w-app">
+      <div class="w-app-copy">
+        <p class="eyebrow">Get the app</p>
+        <h2>Your flat, in your pocket.</h2>
+        <p>The same FindMyFlatMate, as an Android app. Know the moment an owner says yes, split a bill in two taps and keep your matches one tap away.</p>
+        <div class="w-app-cta">
+          <a class="btn w-get" data-apk><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Download for Android</a>
+          <button class="btn w-ghost" type="button" data-role-pick="">Use it in your browser</button>
+        </div>
+        <p class="w-app-note">On iPhone? Open this page in Safari, tap Share, then Add to Home Screen.</p>
+      </div>
+      <div class="w-phone" aria-hidden="true"><div class="w-phone-scr">
+        <img src="icons/icon-192.png" alt="" width="72" height="72">
+        <b>FindMyFlatMate</b><span>Find your vibe. Find your flatmate.</span>
+      </div></div>
+    </div>
+  </div>
+
+  <footer class="w-footer">
+    <div class="wrap w-foot-grid">
+      <div class="w-foot-brand">
+        <div class="w-foot-logo"><img src="icons/icon-192.png" alt="" width="36" height="36"><b>FindMyFlatMate</b></div>
+        <p>Find a room, and the people worth sharing it with. No brokers, ever.</p>
+      </div>
+      <div><h4>Get started</h4>
+        <button type="button" data-role-pick="seeker">Find a room</button>
+        <button type="button" data-role-pick="owner">Find a flatmate</button></div>
+      <div><h4>Flat life</h4>
+        <button type="button" data-scroll="w-more">Flatsplits</button>
+        <button type="button" data-scroll="w-more">FlatMart</button>
+        <button type="button" data-scroll="w-more">Search together</button></div>
+      <div class="web-only"><h4>Get the app</h4>
+        <a data-apk>Android app</a>
+        <span>iPhone: Add to Home Screen</span></div>
+    </div>
+    <div class="wrap w-foot-bottom"><span>© 2026 FindMyFlatMate · Made in India</span><span id="modeNote"></span></div>
+  </footer>
 </section>
 
 <!-- ============================================================= onboarding -->
@@ -1208,7 +1385,8 @@ body.app .foot{box-shadow:none}
       <div style="flex:1;min-width:0"><h2 id="accName"></h2><div class="sub" style="margin:0"><span id="accPhone"></span> · <span id="accRole"></span></div></div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
         <button class="btn btn-ghost btn-sm" id="accSwitch"></button>
-        <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button></div>
+        <button class="btn btn-ghost btn-sm" data-action="signout">Sign out</button>
+        <a class="btn btn-ghost btn-sm web-only" data-apk>Get the Android app</a></div>
     </div>
     <div class="panel" id="vibePanel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap">
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
@@ -3448,6 +3626,21 @@ $("loginForm").addEventListener("submit", async e => {
   }catch(err){ console.error(err); toast(`Couldn't send the code. Check the number and try again.${err && err.message ? ` (${err.message})` : ""}`); }
 });
 $("otpBack").addEventListener("click", () => { $("otpForm").hidden = true; $("loginForm").hidden = false; });
+
+// Website bits on the welcome page: in-page links, "Find a room" / "Find a flatmate" shortcuts
+// that pick the role and jump to the sign-in card, and the Android download links.
+document.querySelectorAll("[data-apk]").forEach(a => { a.href = APK_LINK; a.rel = "noopener"; });
+$("view-welcome").addEventListener("click", e => {
+  const go = e.target.closest("[data-scroll]");
+  if(go){ $(go.dataset.scroll).scrollIntoView({ behavior:"smooth", block:"start" }); return; }
+  const pick = e.target.closest("[data-role-pick]");
+  if(!pick) return;
+  const role = pick.dataset.rolePick, radio = role && document.querySelector(`#loginForm input[name=role][value="${role}"]`);
+  if(radio) radio.checked = true;
+  $("loginForm").hidden = false; $("otpForm").hidden = true;
+  document.querySelector(".w-card").scrollIntoView({ behavior:"smooth", block:"center" });
+  $("lgPhone").focus({ preventScroll:true });
+});
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;

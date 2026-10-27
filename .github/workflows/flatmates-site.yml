@@ -1,0 +1,61 @@
+name: FindMyFlatMate website
+
+# Publishes the web app to GitHub Pages on every change, next to the repo's
+# own home page:
+#   https://<owner>.github.io/<repo>/            the root index.html (from main)
+#   https://<owner>.github.io/<repo>/flatmates/  FindMyFlatMate
+# The site is pushed to the gh-pages branch, so it deploys from any branch.
+# One-time setup: Settings -> Pages -> Build and deployment -> Source:
+# "Deploy from a branch", Branch: gh-pages, folder: / (root).
+on:
+  push:
+    branches: [main, "claude/rental-flat-roommate-app-*"]
+    paths: ["flatmates/**", "index.html", ".github/workflows/flatmates-site.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: flatmates-site
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the site
+        run: |
+          mkdir -p _site/flatmates
+          # Keep the repo's home page as it is on main; fall back to this branch's copy.
+          git fetch --depth=1 origin main && git show FETCH_HEAD:index.html > _site/index.html || cp index.html _site/index.html
+          # The app, without the Android project, the database scripts or docs.
+          (cd flatmates && tar --exclude=./android --exclude=./supabase --exclude=./README.md -cf - .) | tar -xf - -C _site/flatmates
+          touch _site/.nojekyll
+          find _site -type f | sort
+
+      - name: Push to gh-pages
+        run: |
+          cd _site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Publish site from ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages
+
+      # Pages can only be switched on by a repo admin, so this just reports where things stand.
+      - name: Pages status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if info=$(gh api "repos/${{ github.repository }}/pages" 2>/dev/null); then
+            echo "$info" | jq -r '"Pages is on: \(.html_url) (source: \(.source.branch // .build_type) \(.source.path // ""))"'
+            echo "App: $(echo "$info" | jq -r .html_url)flatmates/" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::notice::GitHub Pages is not switched on yet. Settings -> Pages -> Source: Deploy from a branch -> gh-pages / (root)."
+            echo "GitHub Pages is not switched on yet: Settings → Pages → Deploy from a branch → **gh-pages** / (root)." >> "$GITHUB_STEP_SUMMARY"
+          fi

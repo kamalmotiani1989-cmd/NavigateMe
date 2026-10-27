@@ -209,6 +209,20 @@ Open http://localhost:8080. On a phone on the same Wi-Fi, open `http://<your-com
 With no config it runs in **demo mode**: sample listings, OTP shown on screen, no real payment,
 data (including photos) stored in that browser.
 
+## Website
+
+The same `index.html` is the website: https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/
+(the repo's own home page stays at `/NavigateMe/`). In a browser the welcome page also shows
+"How it works", the Flatsplits / FlatMart / search-together / map features, a **Get the Android
+app** band and a footer. Anything marked `web-only` (the download links) is hidden inside the
+Android app, which loads the page from `appassets.androidplatform.net`.
+
+Every push that changes `flatmates/` runs `.github/workflows/flatmates-site.yml`, which copies the
+app (without `android/`, `supabase/` and this README) next to main's `index.html` and pushes it to
+the `gh-pages` branch. **One-time setup:** Settings → Pages → Build and deployment → Source
+**Deploy from a branch**, branch **gh-pages**, folder **/ (root)**. Sign-in and payments work from
+there as is: the Supabase functions allow any origin.
+
 ## Install as an app
 
 Once it's served over HTTPS (GitHub Pages at `/flatmates/` works), open it on the phone:
