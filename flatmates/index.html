@@ -1076,6 +1076,13 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 body.app{min-height:100vh; min-height:100dvh}
 body:not(.app) .toast{bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 html:has(> body.app){background:var(--app-bg)}
+
+/* sample homes and people (testing) */
+.smp{display:inline-block; vertical-align:middle; margin-left:6px; padding:2px 8px; border-radius:999px; background:#FFF1CC; color:#8A5A00;
+  font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; line-height:1.5}
+.smp-note{display:flex; gap:10px; align-items:flex-start; margin:0 0 12px; padding:10px 12px; border-radius:12px; background:#FFF8E6;
+  font-size:13.5px; line-height:1.45; color:var(--text-2)}
+.smp-note .smp{margin:1px 0 0; flex:none}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1642,11 +1649,14 @@ const PACK_PRICE = 500, PACK_CREDITS = 10, WELCOME_CREDITS = 5;
 // owner accepts. To make everything free, set this to false AND run
 // `update fm_settings set charges_enabled = false;` in Supabase (the database decides).
 const CHARGES_ON = true;
-const CITIES = ["Bengaluru","Mumbai","Pune","Delhi NCR","Hyderabad","Chennai","Kolkata","Ahmedabad"];
+const CITIES = ["Bengaluru","Mumbai","Pune","Delhi NCR","Hyderabad","Chennai","Kolkata","Ahmedabad","Jaipur","Chandigarh"];
 const AMENITIES = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking","Power backup","Gym","Lift","Balcony"];
 const KIND_LABEL = {room:"Private room", shared:"Shared room", flatmate:"Flatmate wanted", flat:"Whole flat"};
 const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurnished"};
 const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
+// Sample homes and people (supabase/samples.sql) for testing: they answer straight away and have no real number.
+const isSample = x => Boolean(x && ((x.household && x.household.sample) || (x.occupation && x.occupation.sample)));
+const SAMPLE_TAG = `<span class="smp" title="A sample for testing. It answers straight away and has no real number.">Sample</span>`;
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2010,10 +2020,15 @@ const DEMO_AREAS = {
   "Ahmedabad": [["Prahlad Nagar","380015"],["Satellite","380015"],["Bodakdev","380054"],["SG Highway","380059"],["Vastrapur","380015"],
     ["Navrangpura","380009"],["Thaltej","380059"],["Gota","382481"],["Maninagar","380008"],["Chandkheda","382424"],["Bopal","380058"],
     ["Ellisbridge","380006"]],
+  "Jaipur": [["Malviya Nagar","302017"],["Vaishali Nagar","302021"],["Mansarovar","302020"],["C-Scheme","302001"],["Jagatpura","302017"],
+    ["Raja Park","302004"],["Tonk Road","302018"],["Bani Park","302016"],["Sodala","302006"],["Jawahar Nagar","302004"]],
+  "Chandigarh": [["Sector 15","160015"],["Sector 22","160022"],["Sector 35","160022"],["Sector 43","160043"],["Sector 8","160009"],
+    ["Sector 17","160017"],["Manimajra","160101"],["Mohali Phase 7","160062"],["Panchkula Sector 20","134116"],["Zirakpur","140603"]],
 };
 // Typical rent for a single room in a shared flat, per city (low, high).
 const DEMO_RENT = { "Mumbai":[17000,30000], "Bengaluru":[11000,22000], "Delhi NCR":[12000,24000], "Pune":[9000,17000],
-  "Hyderabad":[9000,17000], "Chennai":[8000,15000], "Kolkata":[7000,13000], "Ahmedabad":[7000,12500] };
+  "Hyderabad":[9000,17000], "Chennai":[8000,15000], "Kolkata":[7000,13000], "Ahmedabad":[7000,12500],
+  "Jaipur":[6000,11000], "Chandigarh":[8000,15000] };
 const DEMO_JOBS = { working:["Software engineer at a product company","Data analyst at a bank","UX designer at a startup","Chartered accountant",
     "Marketing manager at an FMCG brand","Resident doctor at a city hospital","Nurse at a private hospital","Consultant at a Big Four firm",
     "Teacher at an international school","Journalist at a news website","Architect","Corporate lawyer","HR executive at an IT firm",
@@ -3233,7 +3248,7 @@ function seekerHtml(x, l, i){
     : `<span class="req-pill">${by === "owner" ? "Passed this time" : "Declined"}</span>`;
   return `<article class="seek-card" style="--i:${i}">
     <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
-      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
+      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${isSample(x) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
         <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
       ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="Compatibility with ${esc(first)}">${ringSvg(x.match_pct, 58)}</button>` : ""}</div>
     <div class="seek-facts">
@@ -3373,7 +3388,7 @@ function tribeCardHtml(t){
     ${t.kind === "complete" ? `<p class="wants-line">✨ Complete your tribe of 3: you're both teaming up with the same person. Say yes to each other to share numbers.</p>`
       : t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
     <div class="seek-top"><span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>
-      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
+      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}${isSample(t) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
     <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
     ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
@@ -3399,8 +3414,8 @@ async function renderTribe(){
       <h2>You${bonded.map(t => " + " + esc(t.name)).join("")}</h2>
       <p>${budget ? `Together you can spend up to <b>${inr(budget)}</b> a month. ` : ""}Hunt for a whole flat and split it ${size} ways.</p>
       ${bonded.map(t => `<div class="bond-row"><span><b>${esc(t.name)}</b> · ${esc(occLine(t.occupation))}<small>Bonded ${timeAgo(t.bonded_at)} · ${t.match_pct}% vibe</small></span>
-        <span class="acts"><a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
-        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMyFlatMate. Let's find our flat!`)}">WhatsApp</a></span></div>`).join("")}
+        <span class="acts">${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMyFlatMate. Let's find our flat!`)}">WhatsApp</a>`}</span></div>`).join("")}
     </div>` : "";
   $("tribeMatches").innerHTML = open.length ? `<h2 class="section-h">Vibe matches near you · 70%+</h2>${open.map(tribeCardHtml).join("")}`
     : tribeRows.length ? "" : `<div class="empty"><h3>No matches yet</h3><p>${f.city ? `As more people looking in ${esc(f.areas.length ? f.areas.join(", ") : f.city)} join, anyone who matches your vibe 70%+ shows up here, and we'll notify you both.`
@@ -3449,15 +3464,16 @@ $("view-tribe").addEventListener("click", async e => {
 // The bonding moment: both said yes.
 async function celebrateTribe(t){
   state.notified = state.notified || {}; state.notified["tribe" + t.id + "bondedy"] = Date.now(); save();
-  Notify.show(`You and ${t.name} are a tribe!`, `Numbers are shared. Call ${t.name} and start hunting for a whole flat together.`, "tribe");
   const row = (await api.tribeList()).find(x => x.id === t.id) || t;
+  if(!isSample(row)) Notify.show(`You and ${t.name} are a tribe!`, `Numbers are shared. Call ${t.name} and start hunting for a whole flat together.`, "tribe");
   $("bondBody").innerHTML = `<div class="confetti" aria-hidden="true">${Array.from({ length: 28 }, (_, i) =>
       `<i style="--x:${(i * 37) % 100}%;--d:${(i % 7) * .12}s;--c:${["#FFC24D", "#F26B1D", "#0E9AA0", "#3D6BE0", "#E8505B"][i % 5]}"></i>`).join("")}</div>
     <div class="bond-avs big"><span class="av" style="background:var(--brand)">${esc((firstName()[0] || "Y").toUpperCase())}</span>
       <span class="spark">✦</span><span class="av" style="background:${colorFor(row.other_id)}">${esc((row.name || "?")[0])}</span></div>
     <p class="eyebrow">${row.match_pct}% vibe match</p>
     <h2>You and ${esc(row.name)} are a tribe!</h2>
-    <p>You both said yes, so your numbers are shared. Call ${esc(row.name)}, pick your areas and start hunting for a whole flat together.</p>
+    <p>${isSample(row) ? `${esc(row.name)} is a sample person for testing, so there's no number to share. With a real match you'd both get each other's numbers now.`
+      : `You both said yes, so your numbers are shared. Call ${esc(row.name)}, pick your areas and start hunting for a whole flat together.`}</p>
     ${row.phone ? `<a class="btn btn-accent btn-block" href="tel:${esc(row.phone)}">Call ${esc(row.name)} · ${esc(row.phone)}</a>` : ""}`;
   if(!$("dlgBond").open) $("dlgBond").showModal();
 }
@@ -3517,7 +3533,8 @@ async function checkInbox(){
     state.notified[key] = Date.now();
     const first = (r.name || "They").split(" ")[0];
     if(r.direction === "incoming" && r.by === "owner"){
-      if(r.status === "approved"){
+      if(r.status === "approved" && isSample(r)) toast(`${first} (a sample person) accepted your invite.`);
+      else if(r.status === "approved"){
         Notify.show(`${first} accepted your invite! Call now`, `${first} wants to see “${r.listing_title}”. Your numbers are shared, so call while they're keen.`, "requests");
         toast(`${first} accepted your invite! Call now.`);
       }else if(r.status === "declined"){
@@ -3540,6 +3557,11 @@ async function checkInbox(){
       }
     }else if(r.status === "approved"){
       const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
+      if(isSample(l)){
+        (state.called = state.called || {})[r.listing_id] = Date.now();
+        toast(`The owner of sample home “${r.listing_title}” accepted.`);
+        continue;
+      }
       const owner = (c && c.contact_name) || "The owner";
       Notify.show(`${owner} said yes! Call now`,
         `${othersLine(l)}Homes like “${r.listing_title}” get rented out fast. Call ${owner} before someone else does.`, "requests");
@@ -4011,7 +4033,7 @@ function cardHtml(l, i){
     </div>
     <div class="body">
       <h3>${esc(l.title)}</h3>
-      <div class="loc">${esc(l.locality)}, ${esc(l.city)}</div>
+      <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span></div>` : ""}
       ${householdGen(hh) ? `<div class="gen-line">${genBadge(householdGen(hh), " household")}</div>` : ""}
       ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
@@ -4204,6 +4226,11 @@ async function openListing(id){
           `<label class="chip"><input type="radio" name="rr" value="${esc(t)}">${esc(t)}</label>`).join("")}</div>
         <button class="btn btn-ghost btn-sm" style="margin-top:10px;color:var(--danger)" data-action="report">Report and take it down</button></div>`}
     </div>`;
+  }else if(l.unlocked && !l.is_owner && isSample(l)){
+    lock = `<div class="lock open"><p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ The owner accepted</p>
+      <p class="hint" style="margin:0">With a real home you'd now see the owner's number, the exact address and their map pin, and could call or
+        WhatsApp them. This is a sample, so there's nobody to call, but you can try booking a visit.</p>
+      <div style="margin-top:12px"><button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div></div>`;
   }else if(!l.is_owner && isSeeker()){
     const inv = (await api.inbox()).find(r => r.listing_id === id && r.by === "owner" && r.status === "pending");
     if(inv){
@@ -4259,6 +4286,8 @@ async function openListing(id){
   const items = expenseItems(l);
   const bill = items.map(([k, label]) => `<span class="muted">${label}</span><span>${l.costs[k] === "usage" ? "As per use" : inr(l.costs[k])}</span>`).join("");
   $("lBody").innerHTML = `
+    ${isSample(l) ? `<p class="smp-note">${SAMPLE_TAG}<span>A sample home for testing. Ask to meet and the owner accepts straight away, without using a contact.
+      There's no real owner, number or address.</span></p>` : ""}
     <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
@@ -4412,13 +4441,14 @@ function incomingHtml(r, l){
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}${isSample(r) ? SAMPLE_TAG : ""}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
       ${r.compromise ? `<div class="cm-banner"><b>🤝 Ready to compromise · ${r.orig_match_pct ?? "?"}% → ${r.match_pct}%</b>
         <span>${esc((r.name || "They").split(" ")[0])} asked again and will adjust for your home:</span>
         <ul>${Object.keys(r.compromise).filter(k => VIBE_BY_KEY[k]).map(k => `<li>${esc(VIBE_BY_KEY[k].q)}: <s>${esc(VIBE_BY_KEY[k].o[(r.vibe || {})[k]] || "?")}</s> → <b>${esc(VIBE_BY_KEY[k].o[r.compromise[k]])}</b></li>`).join("")}</ul></div>` : ""}
-      ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? `${esc(first)} accepted your invite. Call now while they're keen.`
+      ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? (isSample(r) ? `${esc(first)} accepted straight away. Sample people have no number to call.`
+          : `${esc(first)} accepted your invite. Call now while they're keen.`)
         : r.status === "declined" ? `${esc(first)} passed this time. <a href="#escape">Find more people →</a>`
         : `You invited ${esc(first)}. You'll both get each other's numbers as soon as ${esc(first)} says yes.`}</p>`
         : r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
@@ -5539,8 +5569,8 @@ document.addEventListener("visibilitychange", () => { if(!document.hidden) check
 /* ============================================================ PAN India */
 // The 8 big cities first; every other city sits under "Other cities", and "Another city…"
 // takes any name, so homes anywhere in India can be listed and searched.
-const OTHER_CITIES = ["Agra","Amritsar","Aurangabad","Belagavi","Bhopal","Bhubaneswar","Chandigarh","Coimbatore","Dehradun","Durgapur",
-  "Gandhinagar","Goa","Guwahati","Gwalior","Hubballi","Indore","Jaipur","Jammu","Jamshedpur","Jodhpur","Kanpur","Kochi","Kota","Kozhikode",
+const OTHER_CITIES = ["Agra","Amritsar","Aurangabad","Belagavi","Bhopal","Bhubaneswar","Coimbatore","Dehradun","Durgapur",
+  "Gandhinagar","Goa","Guwahati","Gwalior","Hubballi","Indore","Jammu","Jamshedpur","Jodhpur","Kanpur","Kochi","Kota","Kozhikode",
   "Lucknow","Ludhiana","Madurai","Mangaluru","Mysuru","Nagpur","Nashik","Patna","Puducherry","Raipur","Rajkot","Ranchi","Shimla","Siliguri",
   "Srinagar","Surat","Thiruvananthapuram","Tiruchirappalli","Udaipur","Vadodara","Varanasi","Vijayawada","Visakhapatnam"];
 const ALL_CITIES = CITIES.concat(OTHER_CITIES);

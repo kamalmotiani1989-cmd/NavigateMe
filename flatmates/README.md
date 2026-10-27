@@ -260,8 +260,19 @@ Phones with the testing build must uninstall it once before installing the prope
 ## Live project
 
 The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
-The database is set up, including Flatsplits and FlatMart (schema.sql applied 27 Oct 2026). The shared tribe
-shortlist and map locations need the current `schema.sql` run once more (it's safe to re-run).
+The database runs the current `schema.sql` (Flatsplits, FlatMart, the shared tribe shortlist, map
+locations and sample people). It's safe to re-run after any change.
+
+**Sample data for testing:** `supabase/samples.sql` adds 10 sample homes in each of the top 10 cities
+(Bengaluru, Mumbai, Pune, Delhi NCR, Hyderabad, Chennai, Kolkata, Ahmedabad, Jaipur, Chandigarh), each
+with its own sample owner, and 10 sample people looking for a room per city, who show up in Build your
+tribe and The Empty Room Escape. They're accounts marked `fm_profiles.sample`, with no phone or email,
+so nobody can sign in as them, and the app tags them **Sample**. They answer straight away: a request to
+a sample home or an invite to a sample person is accepted without using a contact, a visit is
+confirmed, and a sample person says yes to a tribe match (two of each tester's best matches already
+have). There's no real number or address to share, and the app says so. Running the file again
+replaces them. Before real users, remove them all:
+`delete from auth.users where id in (select id from public.fm_profiles where sample);`
 
 **Testing login (no SMS):** until phone login has an SMS provider, everyone signs in with their mobile
 number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It

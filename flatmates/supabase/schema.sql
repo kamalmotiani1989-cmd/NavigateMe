@@ -1410,10 +1410,72 @@ language sql security definer set search_path = public as $$
   update fm_market_offers set seen_buyer = true where buyer_id = auth.uid() and not seen_buyer;
 $$;
 
+-- ------------------------------------------------------ sample people (testing) --
+-- samples.sql loads sample owners, homes and seekers so a test install feels lived-in. They are
+-- accounts with fm_profiles.sample = true and no phone or email, so nobody can sign in as them.
+-- They answer straight away: a request to a sample home or an invite to a sample seeker is
+-- accepted, a visit is confirmed, and a sample seeker says yes to a tribe match. Accepting never
+-- uses a contact, and there is no real number or address to share (the app says so).
+-- Remove them all: delete from auth.users where id in (select id from public.fm_profiles where sample);
+alter table public.fm_profiles add column if not exists sample boolean not null default false;
+
+create or replace function public.fm_is_sample(p_user uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select sample from fm_profiles where id = p_user), false);
+$$;
+
+create or replace function public.fm_sample_request() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.status <> 'pending' then return new; end if;
+  if (new.initiated_by = 'seeker' and fm_is_sample((select owner_id from fm_listings where id = new.listing_id)))
+     or (new.initiated_by = 'owner' and fm_is_sample(new.seeker_id)) then
+    -- Same as fm_decide accepting, without using one of the seeker's contacts.
+    new.status := 'approved';
+    new.decided_at := now();
+    new.seen_by_seeker := new.initiated_by = 'owner';
+    new.seen_by_owner := new.initiated_by = 'seeker';
+    insert into fm_unlocks (user_id, listing_id, charged) values (new.seeker_id, new.listing_id, false)
+    on conflict (user_id, listing_id) do nothing;
+  end if;
+  return new;
+end $$;
+drop trigger if exists fm_requests_sample on public.fm_requests;
+create trigger fm_requests_sample before insert or update of status on public.fm_requests
+  for each row execute function public.fm_sample_request();
+
+-- A sample seeker says yes as soon as the other person does; two samples (the third person
+-- completing a tribe) are bonded at once.
+create or replace function public.fm_sample_tribe() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare sa boolean := fm_is_sample(new.a); sb boolean := fm_is_sample(new.b);
+begin
+  if new.status <> 'open' or not (sa or sb) then return new; end if;
+  if sa and (sb or new.b_yes) then new.a_yes := true; end if;
+  if sb and (sa or new.a_yes) then new.b_yes := true; end if;
+  if sa and sb then new.status := 'bonded'; new.bonded_at := now(); end if;
+  return new;
+end $$;
+drop trigger if exists fm_tribe_links_sample on public.fm_tribe_links;
+create trigger fm_tribe_links_sample before insert or update on public.fm_tribe_links
+  for each row execute function public.fm_sample_tribe();
+
+create or replace function public.fm_sample_visit() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.status = 'requested' and fm_is_sample((select owner_id from fm_listings where id = new.listing_id)) then
+    new.status := 'confirmed';
+  end if;
+  return new;
+end $$;
+drop trigger if exists fm_visits_sample on public.fm_visits;
+create trigger fm_visits_sample before insert on public.fm_visits
+  for each row execute function public.fm_sample_visit();
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me and fm_search also answer signed-out callers, with nothing private).
--- Trigger functions, the payment webhook's fm_credit_order and the Flatsplits helpers can't be called at all.
+-- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers and fm_is_sample can't be called at all.
 do $$
 declare f record;
 begin
@@ -1421,7 +1483,8 @@ begin
            where n.nspname = 'public' and p.proname like 'fm\_%' loop
     execute format('revoke execute on function %s from public, anon', f.sig);
     if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order',
-                     'fm_my_phone','fm_split_me','fm_split_check','fm_split_net') then
+                     'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
+                     'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
