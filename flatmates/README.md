@@ -231,8 +231,7 @@ Phones with the testing build must uninstall it once before installing the prope
 ## Live project
 
 The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
-The database is set up, except for Flatsplits and FlatMart: run the current `schema.sql` again
-(it's safe to re-run) before using them in live mode.
+The database is set up, including Flatsplits and FlatMart (schema.sql applied 27 Oct 2026).
 
 **Testing login (no SMS):** until phone login has an SMS provider, everyone signs in with their mobile
 number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It
