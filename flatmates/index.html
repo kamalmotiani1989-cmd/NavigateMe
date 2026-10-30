@@ -1083,6 +1083,47 @@ html:has(> body.app){background:var(--app-bg)}
 .smp-note{display:flex; gap:10px; align-items:flex-start; margin:0 0 12px; padding:10px 12px; border-radius:12px; background:#FFF8E6;
   font-size:13.5px; line-height:1.45; color:var(--text-2)}
 .smp-note .smp{margin:1px 0 0; flex:none}
+
+/* ---------- vibe card: the quiz, the card dialog and where the type shows up */
+.w-quiz{display:flex; align-items:center; gap:12px; margin-top:22px; padding:12px 18px 12px 14px; border:0; border-radius:16px; cursor:pointer; text-align:left;
+  background:rgba(255,255,255,.16); color:#fff; font:inherit; box-shadow:inset 0 0 0 1px rgba(255,255,255,.28); transition:background .15s}
+.w-quiz:hover{background:rgba(255,255,255,.24)}
+.w-quiz > span:first-child{font-size:26px}
+.w-quiz b{display:block; color:#FFD08A; font-size:15.5px}
+.w-invite{display:flex; gap:12px; align-items:center; margin-top:22px; padding:12px 16px; border-radius:16px; background:#fff; color:var(--text);
+  box-shadow:0 12px 30px rgba(4,40,70,.22); font-size:15px; line-height:1.45}
+.w-invite + .w-quiz{margin-top:12px}
+.wi-emoji{font-size:30px; flex:none}
+.w-invite .linkbtn{color:var(--brand); padding:0 4px}
+.qz-bar{height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin:2px 0 18px}
+.qz-bar i{display:block; height:100%; background:linear-gradient(90deg,#FF8A4C,#FF5E62); border-radius:inherit; transition:width .3s}
+.qz-intro{background:var(--brand-soft); color:var(--brand-2); font-weight:700; border-radius:12px; padding:10px 14px; margin:0 0 14px; font-size:14.5px}
+.qz-q{font-size:22px; margin:0 0 6px}
+.vibe-dlg .mbody{display:flex; flex-direction:column; align-items:center}
+.vc-img{display:block; width:min(300px, 72vw); aspect-ratio:9/16; height:auto; border-radius:22px; box-shadow:0 18px 40px rgba(16,30,50,.25); margin:6px auto 16px}
+@media (max-height:760px){ .vc-img{width:min(240px, 60vw)} }
+.vc-match{display:flex; gap:12px; align-items:center; width:100%; max-width:420px; padding:12px 14px; margin:0 0 14px; border-radius:16px; background:var(--brand-soft)}
+.vc-match b{display:block; font-size:16px} .vc-match span{font-size:13.5px; color:var(--text-2)}
+.vc-acts{display:grid; gap:10px; width:100%; max-width:420px}
+.vc-acts.row{display:flex; flex-wrap:wrap; justify-content:center}
+.vc-more{width:100%; max-width:420px; margin-top:14px; text-align:center}
+.vt-line{display:flex; align-items:center; gap:12px; width:100%; margin:12px 0 2px; padding:12px 14px; border:0; border-radius:14px; cursor:pointer; text-align:left;
+  background:linear-gradient(135deg,#E8F7F7,#EEF3FD); color:var(--text); font:inherit}
+.vt-line > span:first-child{font-size:28px}
+.vt-line span{flex:1} .vt-line small{display:block; font-size:12px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em}
+.vt-line b{font-size:16.5px} .vt-line em{font-style:normal; font-weight:800; color:var(--brand)}
+.vibe-promo{position:relative; display:flex; gap:12px; align-items:center; margin:16px 0 4px; padding:14px 40px 14px 16px; border-radius:18px;
+  background:linear-gradient(135deg,#FFF6E5,#FFEFE4); box-shadow:inset 0 0 0 1px #FFE2C2}
+.vp-emoji{font-size:34px; flex:none}
+.vp-main{border:0; background:none; padding:0; text-align:left; cursor:pointer; font:inherit; color:var(--text)}
+.vp-main small{display:block; font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#B45309}
+.vp-main b{display:block; font-size:17px} .vp-main span{font-size:13.5px; color:var(--text-2)}
+.vp-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(0,0,0,.05); cursor:pointer; font-size:16px; color:var(--text-2)}
+.finale .ob-type{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:19px; margin:4px auto 16px; color:#fff}
+.ob-type span{font-size:44px; line-height:1.1}
+.ob-type b{font-size:24px; color:#FFC86B}
+.ob-type small{font-size:14px; opacity:.85}
+.ob-finale-acts{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1107,6 +1148,8 @@ html:has(> body.app){background:var(--app-bg)}
         <h1>Find flatmates who <em>match your vibe.</em></h1>
         <p class="lede">Night owl or early bird? Veg kitchen or biryani Sundays? Gym at 6 or Netflix till 2? Tell us how you live, and we'll match you with flatmates who live the same way.</p>
         <ul class="w-points"><li>Matched on 12 lifestyle questions</li><li>Meet the people before the room</li><li>No brokers, ever</li></ul>
+        <div class="w-invite" id="wInvite" hidden></div>
+        <button class="w-quiz" type="button" data-quiz><span aria-hidden="true">✨</span><span>What's your flatmate type?<b>Take the 1-minute quiz →</b></span></button>
       </div>
       <div class="city" id="city" aria-hidden="true"></div>
       <div class="w-card">
@@ -1277,6 +1320,7 @@ html:has(> body.app){background:var(--app-bg)}
   <section id="view-discover" hidden>
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
     <div id="urgent"></div>
+    <div id="vibePromo"></div>
     <div id="extrasD"></div>
     <div class="d-controls">
       <div class="d-row">
@@ -1441,6 +1485,7 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="panel" id="vibePanel"><div class="panel-top">
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
       <button class="btn btn-ghost btn-sm" data-vibe-open>Edit</button></div>
+      <div id="vibeType"></div>
       <div class="traits" id="vibeTraits"></div><div id="myInterests"></div></div>
     <div class="panel" id="discPanel"><h2>Who can find you</h2>
       <p class="sub">With The Empty Room Escape, owners with a room in your areas can find you (first name, what you do, budget and vibe match)
@@ -1455,6 +1500,8 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="acc-list">
       <button class="acc-row" id="accSwitch" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-4-4M20 16H7l4 4"/></svg></i>
         <span><b id="accSwitchT"></b><small id="accSwitchS"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="acc-row" type="button" data-quiz><i class="acc-ic" style="--ic:#FFF1CC;--icc:#8A5A00;font-size:20px">✨</i>
+        <span><b>My Vibe Card</b><small id="accVibeSub">Your flatmate type, to share with friends</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <a class="acc-row" id="accInvite" target="_blank" rel="noopener"><i class="acc-ic" style="--ic:#E7F7EF;--icc:#0E9F7E"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></svg></i>
         <span><b>Invite a friend</b><small>Know someone looking for a room or a flatmate?</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="acc-row web-only" data-apk><i class="acc-ic" style="--ic:#FFEFE4;--icc:#EE5A12"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></i>
@@ -1611,6 +1658,12 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="field"><input type="search" id="areaQ" placeholder="Type an area, e.g. Wakad or Salt Lake" autocomplete="off" aria-label="Area"></div>
     <div class="chips" id="areaSugg"></div>
     <button class="btn btn-primary btn-block" type="submit" style="margin-top:16px">Add area</button></form></div></dialog>
+
+<dialog id="dlgQuiz" aria-labelledby="qzTitle"><div class="mhead"><div><h2 id="qzTitle">What's your flatmate type?</h2><div class="loc" id="qzSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="qzBody"></div></dialog>
+
+<dialog id="dlgVcard" class="vibe-dlg" aria-labelledby="vcTitle"><div class="mhead"><div><h2 id="vcTitle">Your Vibe Card</h2><div class="loc" id="vcSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="vcBody"></div></dialog>
 
 <dialog id="dlgSignOut" class="confirm" aria-labelledby="soTitle"><div class="confirm-body">
   <span class="confirm-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></span>
@@ -3721,13 +3774,15 @@ $("view-welcome").addEventListener("click", e => {
   const go = e.target.closest("[data-scroll]");
   if(go){ $(go.dataset.scroll).scrollIntoView({ behavior:"smooth", block:"start" }); return; }
   const pick = e.target.closest("[data-role-pick]");
-  if(!pick) return;
-  const role = pick.dataset.rolePick, radio = role && document.querySelector(`#loginForm input[name=role][value="${role}"]`);
+  if(pick) pickRole(pick.dataset.rolePick);
+});
+function pickRole(role){
+  const radio = role && document.querySelector(`#loginForm input[name=role][value="${role}"]`);
   if(radio) radio.checked = true;
   $("loginForm").hidden = false; $("otpForm").hidden = true;
   document.querySelector(".w-card").scrollIntoView({ behavior:"smooth", block:"center" });
   $("lgPhone").focus({ preventScroll:true });
-});
+}
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
@@ -3791,8 +3846,7 @@ function obStepsFor(role){
     { k:"occType", q:"What do you do?", why:"Owners like to know who they'd be living with.",
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
     { k:"occWhat", form:"text", q:"", why:"" },
-    { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
-      opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] },
+    SEEKER_GEN_STEP,
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true,
       opts: CITIES.map(c => ({ v:c, t:c })).concat({ v:"__other", t:"Other city", s:"Anywhere else in India" }) },
     { k:"areas", form:"areas", q:"", why:"" },
@@ -3802,13 +3856,17 @@ function obStepsFor(role){
     { k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
     { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." } ];
 }
+const SEEKER_GEN_STEP = { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
+  opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] };
 let ob = null;
 function startOnboarding(role){
   if(ob && ob.role === role) return renderOb();
   const occ = (state.user && state.user.occupation) || {};
+  const quizAnswers = role === "seeker" && answered(state.vibe) < 8 ? readLS(VIBE_QUIZ_KEY) : null;
   const prev = role === "owner" ? Object.assign({}, state.homeDraft, interestsOf((state.homeDraft || {}).interests))
-    : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), state.vibe, interestsOf(state.interests));
-  ob = { role, steps: obSteps(role), i: 0, a: Object.assign({}, prev) };
+    : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), quizAnswers, state.vibe, interestsOf(state.interests));
+  const asked = st => quizAnswers && (st.k === "gen" || VIBE_QS.some(x => x.k === st.k)) && quizAnswers[st.k] != null;
+  ob = { role, steps: obSteps(role).filter(st => !asked(st)), i: 0, a: Object.assign({}, prev) };
   renderOb();
 }
 function obTextStep(){
@@ -3935,20 +3993,25 @@ async function finishOnboarding(){
     await api.setInterests({ music: a.music || [], hobbies: a.hobbies || [] });
   }catch(err){ console.error(err); }
   state.onboarded.seeker = true; save();
+  writeLS(VIBE_QUIZ_KEY, null);
   await api.me();
   applyPrefs();
   const rows = applyFilters(await api.search({ city: prefs().city }), prefs());
   const scores = rows.map(l => (vibeMatch(state.vibe, l.household) || { pct: 0 }).pct);
   const best = Math.max(0, ...scores), strong = scores.filter(p => p >= 75).length;
   const where = prefs().areas.length === 1 ? prefs().areas[0] : prefs().city || "your city";
+  const vt = vibeType(state.vibe), inv = readLS(VIBE_INVITE_KEY), im = inv && vibeMatch(state.vibe, inv.vibe);
   $("obStage").innerHTML = `<div class="ob-q finale">
     <p class="eyebrow">Your vibe profile is ready</p>
+    ${vt ? `<p class="ob-type"><span aria-hidden="true">${vt.emoji}</span>You're <b>${esc(vt.title)}</b>${im ? `<small>and a ${im.pct}% match with ${esc(inv.name)}</small>` : ""}</p>` : ""}
     <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}
       Owners in ${esc(where)} can also invite you, so watch for notifications.</p>
-    <button class="btn btn-primary" type="button" id="obDone">Show me</button></div>`;
+    <div class="ob-finale-acts"><button class="btn btn-primary" type="button" id="obDone">Show me</button>
+      ${vt ? `<button class="btn btn-ghost" type="button" id="obCard">See my Vibe Card</button>` : ""}</div></div>`;
+  if($("obCard")) $("obCard").onclick = () => openVibeCard(state.vibe);
   let n = 0;
   const tick = () => { n = Math.min(best, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 140)); if(n < best) requestAnimationFrame(tick); };
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
@@ -4053,6 +4116,7 @@ function giftPillHtml(){
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
+  renderVibePromo();
   const [rows] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null]);
   if(seq !== browseSeq) return;
   cityRows = rows;
@@ -5797,9 +5861,14 @@ async function renderAccount(){
   $("accSwitchS").textContent = isOwner() ? "Find a room in a shared flat" : "List your spare room or bed, free";
   $("accInvite").href = `https://wa.me/?text=${encodeURIComponent("I'm using FindMyFlatMate to find flatmates who match my vibe. No brokers. Try it: " + appLink())}`;
   $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner();
+  const mt = vibeType(myVibe());
+  $("accVibeSub").textContent = mt ? `${mt.emoji} ${mt.title}` : "Take the 1-minute quiz and share your flatmate type";
   $("discToggle").checked = state.discoverable !== false;
   $("tribeToggle").checked = state.tribeOpen !== false;
   if(isOwner()) return;
+  const vt = vibeType(state.vibe);
+  $("vibeType").innerHTML = vt ? `<button class="vt-line" type="button" data-quiz><span aria-hidden="true">${vt.emoji}</span>
+    <span><small>Your flatmate type</small><b>${esc(vt.title)}</b></span><em>Share</em></button>` : "";
   $("vibeTraits").innerHTML = answered(state.vibe)
     ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")
     : `<p class="hint" style="margin:0">Not answered yet.</p>`;
@@ -5854,6 +5923,272 @@ $("soYes").addEventListener("click", async () => {
     toast("You're signed out. See you soon!");
   }catch(err){ toast(err.message || "Couldn't sign out. Try again."); }
 });
+/* ============================================================ vibe card */
+// A shareable "flatmate type" from the 12 living-style answers: a rhythm (bedtime) plus the most
+// distinctive habit, e.g. "The Night Owl Chef". It's shared as a story-sized image with a link that
+// carries the answers, so a friend can take the quiz (no sign-up) and see how well they'd live together.
+const VIBE_RHYTHM = [["Early Bird", "🐦", "In bed before 11"], ["Midnight", "🌙", "Up till around midnight"], ["Night Owl", "🦉", "Up past 1 am"]];
+// The first persona that fits wins, so the rarer, stronger habits come first.
+const VIBE_PERSONAS = [
+  { name:"Pet Parent",       emoji:"🐾", fits: v => v.pets === 2,   line:"I come with a pet" },
+  { name:"Chef",             emoji:"🍳", fits: v => v.cook === 0,   line:"I cook most days" },
+  { name:"Host",             emoji:"🎉", fits: v => v.guests === 2 || v.social === 2 && v.noise === 2, line:"I love a full house" },
+  { name:"Neat Freak",       emoji:"✨", fits: v => v.clean === 0,  line:"I keep the kitchen spotless" },
+  { name:"Bookworm",         emoji:"📚", fits: v => v.noise === 0 && v.social !== 2, line:"I like a quiet home" },
+  { name:"Social Butterfly", emoji:"🦋", fits: v => v.social === 2, line:"I want flatmates who become friends" },
+  { name:"Homebody",         emoji:"🏡", fits: v => v.work === 2,   line:"I work from home most days" },
+  { name:"Foodie",           emoji:"🍕", fits: v => v.cook === 2,   line:"I mostly order in" },
+  { name:"Introvert",        emoji:"🎧", fits: v => v.social === 0, line:"I value my own space" },
+  { name:"Free Spirit",      emoji:"🌈", fits: v => v.clean === 2,  line:"I don't sweat a little mess" },
+  { name:"Go-Getter",        emoji:"💼", fits: v => v.work === 0,   line:"I'm out all day" },
+  { name:"All-Rounder",      emoji:"🤝", fits: () => true,          line:"I'm easy to live with" },
+];
+const VIBE_EXTRAS = [["noise", 2, "always have music on"], ["food", 0, "eat veg only"], ["food", 2, "love non-veg"], ["guests", 0, "keep home for resting"],
+  ["sharing", 0, "split everything fairly"], ["pets", 1, "love pets"], ["smoke", 0, "keep it smoke-free"], ["clean", 1, "keep things tidy"]];
+const VIBE_CHIP_KEYS = ["food", "smoke", "pets", "clean", "guests", "social", "noise", "sleep"];
+function vibeType(v){
+  if(!v || answered(v) < 8) return null;
+  const r = Number.isInteger(v.sleep) ? v.sleep : 1, rh = VIBE_RHYTHM[r];
+  const p = VIBE_PERSONAS.find(x => x.fits(v));
+  const extra = VIBE_EXTRAS.find(([k, val, line]) => v[k] === val && !p.line.includes(line.split(" ").pop()));
+  return { rhythm: rh[0], persona: p.name, title: `The ${rh[0]} ${p.name}`, emoji: rh[1] + p.emoji,
+    desc: `${rh[2]}. ${p.line}${extra ? " and " + extra[2] : ""}.`,
+    chips: VIBE_CHIP_KEYS.filter(k => Number.isInteger(v[k])).slice(0, 6).map(k => VIBE_QS.find(x => x.k === k).t[v[k]]) };
+}
+// The answers in a link: 12 digits in VIBE_QS order ("x" = not answered) plus the generation letter.
+const vibeCode = v => VIBE_QS.map(x => Number.isInteger(v[x.k]) ? v[x.k] : "x").join("") + (["z", "m", "g", "x"].includes(v.gen) ? v.gen : "");
+function vibeFromCode(c){
+  if(!/^[0-2x]{12}[zmgx]?$/.test(c || "")) return null;
+  const v = {}; VIBE_QS.forEach((x, i) => { if(c[i] !== "x") v[x.k] = Number(c[i]); });
+  if(c[12]) v.gen = c[12];
+  return answered(v) >= 8 ? v : null;
+}
+const SITE_LINK = "https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/";
+const siteLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : SITE_LINK;
+// The quiz answers and a friend's invite live outside fm_state, so they survive signing in.
+const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite";
+const readLS = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
+const writeLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+(function takeVibeInvite(){
+  const p = new URLSearchParams(location.search), v = vibeFromCode(p.get("vibe"));
+  if(!p.has("vibe")) return;
+  if(v) writeLS(VIBE_INVITE_KEY, { name: (p.get("n") || "").replace(/[^\p{L} .'-]/gu, "").trim().slice(0, 20) || "Your friend", vibe: v, at: Date.now() });
+  history.replaceState(null, "", location.pathname + location.hash);
+})();
+// My own answers: a seeker's profile, otherwise whatever the quiz on this device said.
+const myVibe = () => isSeeker() && answered(state.vibe) >= 8 ? state.vibe : readLS(VIBE_QUIZ_KEY);
+
+// ---- the card: 1080 × 1920, the size of an Instagram or WhatsApp story
+function wrapLines(x, text, max){
+  const out = []; let line = "";
+  for(const w of text.split(" ")){ const t = line ? line + " " + w : w; if(line && x.measureText(t).width > max){ out.push(line); line = w; } else line = t; }
+  return line ? out.concat(line) : out;
+}
+function roundRect(x, l, t, w, h, r, fill){ x.beginPath(); x.roundRect(l, t, w, h, r); x.fillStyle = fill; x.fill(); }
+async function drawVibeCard(t, name, stat){
+  const W = 1080, H = 1920, c = document.createElement("canvas"), F = '"Plus Jakarta Sans", system-ui, sans-serif',
+    E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+  c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  await Promise.race([Promise.all(["800 96px", "500 40px", "700 34px"].map(f => document.fonts.load(`${f} "Plus Jakarta Sans"`))).catch(() => {}),
+    new Promise(r => setTimeout(r, 2500))]);
+  const logo = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = "icons/icon-192.png"; });
+  const g = x.createLinearGradient(0, 0, W * .45, H);
+  g.addColorStop(0, "#0E9AA0"); g.addColorStop(.45, "#0F8EA6"); g.addColorStop(1, "#1F6CC4");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = "rgba(255,255,255,.07)";
+  for(const [cx, cy, rr] of [[980, 120, 330], [60, 1560, 280], [1040, 1180, 150]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  x.textBaseline = "middle";
+  if(logo){ roundRect(x, 80, 86, 104, 104, 28, "#fff"); x.drawImage(logo, 88, 94, 88, 88); }
+  x.fillStyle = "#fff"; x.font = `800 46px ${F}`; x.fillText("FindMyFlatMate", 212, 140);
+  x.textAlign = "center";
+  x.font = `800 32px ${F}`; x.fillStyle = "#FFD08A"; x.letterSpacing = "6px";
+  x.fillText((name ? name.toUpperCase() + "'S" : "MY") + " FLATMATE VIBE", W / 2, 330); x.letterSpacing = "0px";
+  x.font = `180px ${E}`; x.fillText(t.emoji, W / 2, 500);
+  let y = 690;
+  x.font = `800 96px ${F}`; x.fillStyle = "#fff";
+  for(const l of wrapLines(x, "The " + t.rhythm, 940)){ x.fillText(l, W / 2, y); y += 104; }
+  x.fillStyle = "#FFC86B";
+  for(const l of wrapLines(x, t.persona + ".", 940)){ x.fillText(l, W / 2, y); y += 104; }
+  x.font = `500 40px ${F}`; x.fillStyle = "rgba(255,255,255,.92)"; y += 6;
+  for(const l of wrapLines(x, t.desc, 860)){ x.fillText(l, W / 2, y); y += 56; }
+  // White panel: how I live, as chips, and how many homes match.
+  x.font = `700 34px ${F}`;
+  const rows = [[]], maxRow = 860; let rowW = 0;
+  for(const chip of t.chips){
+    const w = x.measureText(chip).width + 52;
+    if(rowW && rowW + 16 + w > maxRow){ rows.push([]); rowW = 0; }
+    rows[rows.length - 1].push([chip, w]); rowW += (rowW ? 16 : 0) + w;
+  }
+  const top = y + 30, panelH = 110 + rows.length * 88 + (stat ? 86 : 10) + 30;
+  roundRect(x, 70, top, W - 140, panelH, 48, "#fff");
+  x.font = `800 28px ${F}`; x.fillStyle = "#8A919C"; x.letterSpacing = "4px"; x.fillText("HOW I LIVE", W / 2, top + 66); x.letterSpacing = "0px";
+  const tints = ["#E2F5F5", "#FFF2E8", "#EEF3FD", "#E3F6F0", "#FDECEA", "#F3EEFD"];
+  let cy = top + 130, n = 0;
+  for(const row of rows){
+    const total = row.reduce((a, [, w]) => a + w, 0) + 16 * (row.length - 1);
+    let cx = (W - total) / 2;
+    for(const [chip, w] of row){
+      roundRect(x, cx, cy - 34, w, 68, 34, tints[n++ % tints.length]);
+      x.fillStyle = "#10264F"; x.font = `700 34px ${F}`; x.fillText(chip, cx + w / 2, cy + 1);
+      cx += w + 16;
+    }
+    cy += 88;
+  }
+  if(stat){ x.fillStyle = "#0B7C82"; x.font = `800 34px ${F}`; x.fillText(stat, W / 2, cy + 20); }
+  x.fillStyle = "#fff"; x.font = `800 54px ${F}`; x.fillText("What's your flatmate type?", W / 2, H - 260);
+  x.fillStyle = "rgba(255,255,255,.88)"; x.font = `500 36px ${F}`; x.fillText("Take the 1-minute quiz on FindMyFlatMate", W / 2, H - 192);
+  x.fillStyle = "rgba(255,255,255,.7)"; x.font = `600 28px ${F}`;
+  x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, ""), W / 2, H - 130);
+  return c;
+}
+// "12 homes in Pune match my vibe 80%+", for a seeker with a city.
+async function vibeStat(v){
+  const f = prefs();
+  if(!isSeeker() || !f.city) return null;
+  try{
+    const n = (await api.search({ city: f.city })).filter(l => !l.is_owner && (vibeMatch(v, l.household) || {}).pct >= 80).length;
+    return n ? `🏠 ${n} ${n === 1 ? "home" : "homes"} in ${f.city} ${n === 1 ? "matches" : "match"} my vibe 80%+` : null;
+  }catch(err){ return null; }
+}
+
+// ---- the card dialog: preview, the match with whoever shared theirs, and sharing
+let vibeCtx = null;
+async function openVibeCard(vibe){
+  const t = vibeType(vibe);
+  if(!t){ openQuiz(); return; }
+  const first = firstName() || vibe.name || "";
+  vibeCtx = { vibe, t, first };
+  $("vcSub").textContent = `${t.emoji} ${t.title}`;
+  $("vcBody").innerHTML = `<p class="hint" style="text-align:center;padding:40px 0">Making your card…</p>`;
+  if(!$("dlgVcard").open) $("dlgVcard").showModal();
+  vibeCtx.canvas = await drawVibeCard(t, first, await vibeStat(vibe));
+  const inv = readLS(VIBE_INVITE_KEY), m = inv && vibeMatch(vibe, inv.vibe), it = inv && vibeType(inv.vibe);
+  const same = inv ? sameAnswers(vibe, inv.vibe).slice(0, 3) : [];
+  if(inv){ inv.seen = true; writeLS(VIBE_INVITE_KEY, inv); renderWelcomeInvite(); }
+  $("vcBody").innerHTML = `
+    <img class="vc-img" src="${vibeCtx.canvas.toDataURL("image/png")}" alt="${esc(t.title)}. ${esc(t.desc)}">
+    ${m ? `<div class="vc-match">${ringSvg(m.pct, 64)}<div><b>You and ${esc(inv.name)}: ${m.pct}% match</b>
+      <span>${esc(inv.name)} is ${esc(it.emoji + " " + it.title)}${same.length ? `. You're both: ${esc(same.join(" · "))}` : ""}</span></div></div>` : ""}
+    <div class="vc-acts">
+      <button class="btn btn-accent btn-block" type="button" data-vc="share">Share my Vibe Card</button>
+      ${m ? `<button class="btn btn-ghost btn-block" type="button" data-vc="compat">See the full match with ${esc(inv.name)}</button>` : ""}
+      ${!state.user ? `<button class="btn btn-primary btn-block" type="button" data-vc="join">Find flatmates who match me</button>` : ""}
+      ${isSeeker() ? "" : `<button class="linkbtn" type="button" data-vc="retake">Take the quiz again</button>`}
+    </div>
+    <div class="vc-more" id="vcMore" hidden></div>`;
+}
+async function shareVibeCard(){
+  const { t, vibe, first, canvas } = vibeCtx;
+  const link = siteLink() + "?vibe=" + vibeCode(vibe) + (first ? "&n=" + encodeURIComponent(first) : "");
+  const text = `I'm ${t.emoji} ${t.title} on FindMyFlatMate! What's your flatmate type? Take the 1-minute quiz and see how well we'd live together 👉 ${link}`;
+  state.vibeShared = Date.now(); save();
+  const png = canvas.toDataURL("image/png");
+  // Android app: hand the image to Android's share sheet (WhatsApp, Instagram, ...).
+  if(Notify.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"shareImage", png: png.split(",")[1], text })); return; }
+  const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
+  const file = new File([blob], "my-vibe-card.png", { type: "image/png" });
+  if(navigator.canShare && navigator.canShare({ files: [file] })){
+    try{ await navigator.share({ files: [file], text, title: t.title }); return; }
+    catch(err){ if(err && err.name === "AbortError") return; }
+  }
+  // No share sheet (most desktops): save the image and send the link yourself.
+  const more = $("vcMore");
+  more.hidden = false;
+  more.innerHTML = `<p class="hint" style="margin:0 0 10px">Save the image, then post it with this link so friends can take the quiz.</p>
+    <div class="vc-acts row">
+      <a class="btn btn-ghost btn-sm" href="${URL.createObjectURL(blob)}" download="my-vibe-card.png">Download image</a>
+      <a class="btn btn-ghost btn-sm" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="btn btn-ghost btn-sm" type="button" data-vc="copy">Copy link</button></div>`;
+  vibeCtx.link = link;
+}
+$("dlgVcard").addEventListener("click", async e => {
+  const b = e.target.closest("[data-vc]"); if(!b) return;
+  const a = b.dataset.vc, inv = readLS(VIBE_INVITE_KEY);
+  if(a === "share") return shareVibeCard();
+  if(a === "copy"){ try{ await navigator.clipboard.writeText(vibeCtx.link); toast("Link copied"); }catch(err){ toast(vibeCtx.link); } return; }
+  if(a === "compat" && inv) return openCompat({ me: vibeCtx.vibe, them: inv.vibe, meName: "You", themName: inv.name, title: "You + " + inv.name });
+  if(a === "retake"){ $("dlgVcard").close(); return openQuiz(true); }
+  if(a === "join"){ $("dlgVcard").close(); pickRole("seeker"); }
+});
+
+// ---- the quiz: the 12 questions and the generation, one per screen, no sign-up needed
+// Someone not signed in also gets an optional first name, so the card and the link say whose vibe it is.
+const quizSteps = () => VIBE_QS.map(x => ({ k:x.k, q:OB_TEXT[x.k].s, why:OB_TEXT[x.k].why,
+  opts:x.o.map((t, i) => ({ v:i, t, s:OB_TEXT[x.k].d[i] })) })).concat(SEEKER_GEN_STEP, firstName() ? [] : [{ k:"name", form:"name" }]);
+let quiz = null;
+function openQuiz(again){
+  const mine = myVibe();
+  if(mine && !again) return openVibeCard(mine);
+  quiz = { i: 0, a: Object.assign({}, mine || {}) };
+  renderQuiz();
+  if(!$("dlgQuiz").open) $("dlgQuiz").showModal();
+}
+function renderQuiz(){
+  const steps = quizSteps(), st = steps[quiz.i], inv = readLS(VIBE_INVITE_KEY);
+  $("qzSub").textContent = st.form ? "Almost done" : `Question ${quiz.i + 1} of ${steps.length - (steps[steps.length - 1].form ? 1 : 0)}`;
+  if(st.form === "name"){
+    $("qzBody").innerHTML = `<div class="qz-bar"><i style="width:96%"></i></div>
+      <h3 class="qz-q">Last one: what's your first name?</h3><p class="hint" style="margin:0 0 12px">It goes on your card, so friends know whose vibe they're matching.</p>
+      <form id="qzNameForm" novalidate><input type="text" id="qzName" maxlength="20" autocomplete="given-name" placeholder="First name" value="${esc(quiz.a.name || "")}">
+        <div class="vc-acts row" style="margin-top:14px;max-width:none;justify-content:flex-start"><button class="btn btn-primary" type="submit">Show my card</button>
+          <button class="btn btn-ghost" type="button" data-qskip>Skip</button></div></form>
+      <button class="linkbtn" type="button" data-qback style="margin-top:12px">← Previous question</button>`;
+    return;
+  }
+  $("qzBody").innerHTML = `<div class="qz-bar"><i style="width:${quiz.i / steps.length * 100}%"></i></div>
+    ${quiz.i === 0 && inv && !isSeeker() ? `<p class="qz-intro">See how well you'd live with ${esc(inv.name)}. Answer honestly: it only takes a minute.</p>` : ""}
+    <h3 class="qz-q">${esc(st.q)}</h3>${st.why ? `<p class="hint" style="margin:0 0 12px">${esc(st.why)}</p>` : ""}
+    <div class="opts">${st.opts.map((o, i) => `<button class="opt" type="button" data-qo="${i}" aria-pressed="${quiz.a[st.k] === o.v}">
+      <span class="dot" style="background:${AV_COLORS[(i * 2 + quiz.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>
+      <span><b>${esc(o.t)}</b>${o.s ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div>
+    ${quiz.i ? `<button class="linkbtn" type="button" data-qback style="margin-top:12px">← Previous question</button>` : ""}`;
+}
+function finishQuiz(){
+  writeLS(VIBE_QUIZ_KEY, quiz.a);
+  $("dlgQuiz").close();
+  renderWelcomeInvite();
+  openVibeCard(quiz.a);
+}
+$("dlgQuiz").addEventListener("click", e => {
+  if(e.target.closest("[data-qback]")){ quiz.i--; return renderQuiz(); }
+  if(e.target.closest("[data-qskip]")){ delete quiz.a.name; return finishQuiz(); }
+  const b = e.target.closest("[data-qo]"); if(!b) return;
+  const steps = quizSteps(), st = steps[quiz.i];
+  quiz.a[st.k] = st.opts[Number(b.dataset.qo)].v;
+  b.parentElement.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
+  setTimeout(() => { if(quiz.i < steps.length - 1){ quiz.i++; renderQuiz(); } else finishQuiz(); }, 180);
+});
+$("dlgQuiz").addEventListener("submit", e => {
+  e.preventDefault();
+  const n = $("qzName").value.replace(/[^\p{L} .'-]/gu, "").trim().split(" ")[0].slice(0, 20);
+  if(n) quiz.a.name = n; else delete quiz.a.name;
+  finishQuiz();
+});
+document.addEventListener("click", e => { if(e.target.closest("[data-quiz]")) openQuiz(); });
+
+// ---- the friend's invite on the welcome page, and the card in a few places in the app
+function renderWelcomeInvite(){
+  const inv = readLS(VIBE_INVITE_KEY), it = inv && vibeType(inv.vibe), mine = readLS(VIBE_QUIZ_KEY), m = inv && mine && vibeMatch(mine, inv.vibe);
+  $("wInvite").hidden = !it;
+  if(!it) return;
+  $("wInvite").innerHTML = m
+    ? `<span class="wi-emoji" aria-hidden="true">${it.emoji}</span><span>You and ${esc(inv.name)} are a <b>${m.pct}% match</b>.
+        <button class="linkbtn" type="button" data-quiz>See your card</button></span>`
+    : `<span class="wi-emoji" aria-hidden="true">${it.emoji}</span><span><b>${esc(inv.name)}</b> is <b>${esc(it.title)}</b>. Find your type and see how well you'd live together.</span>`;
+}
+// A signed-in seeker who opens a friend's link sees the match straight away.
+function maybeShowVibeInvite(){
+  const inv = readLS(VIBE_INVITE_KEY);
+  if(inv && !inv.seen && isSeeker() && answered(state.vibe) >= 8 && state.onboarded.seeker) openVibeCard(state.vibe);
+}
+function renderVibePromo(){
+  const t = isSeeker() && vibeType(state.vibe), hide = !t || state.vibeShared || state.vibePromoHidden;
+  $("vibePromo").innerHTML = hide ? "" : `<div class="vibe-promo"><span class="vp-emoji" aria-hidden="true">${t.emoji}</span>
+    <button class="vp-main" type="button" data-quiz><small>Your flatmate type</small><b>${esc(t.title)}</b><span>Share your Vibe Card and see which friends you'd live well with →</span></button>
+    <button class="vp-x" type="button" data-vp-hide aria-label="Hide">×</button></div>`;
+}
+$("vibePromo").addEventListener("click", e => { if(e.target.closest("[data-vp-hide]")){ state.vibePromoHidden = true; save(); renderVibePromo(); } });
 /* ================================================================ boot */
 document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
@@ -5878,6 +6213,8 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   const note = api.live ? "" : "Demo mode: sample homes, and nothing you enter leaves this browser. Sample owners reply to requests within a few seconds.";
   $("modeNote").textContent = note; $("appFoot").textContent = note;
   route();
+  renderWelcomeInvite();
+  maybeShowVibeInvite();
   checkInbox();
   checkExtras();
   // The Android app ships its files inside the APK, so it doesn't need one.

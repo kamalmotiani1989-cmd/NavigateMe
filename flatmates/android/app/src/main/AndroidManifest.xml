@@ -37,6 +37,15 @@
             android:value="requests" />
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_notify" />
+
+        <!-- Shares the Vibe Card image with other apps (files in cache/share only). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/share_paths" />
+        </provider>
     </application>
 
     <!-- Lets the app open dialer, WhatsApp, Maps and photo pickers on Android 11+. -->

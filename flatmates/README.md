@@ -111,7 +111,7 @@ the room comes second.
     people). When anyone in the tribe taps ♥, the others see it in Saved under "Shortlisted by Riya", on the
     home's card ("♥ Riya shortlisted this") and in "Your tribe's shortlist" on the Tribe tab, and get a
     notification. **Search together** sets Discover to every tribe member's areas at once.
-18. **PAN India.** City pickers list the 8 big cities first, then 47 more under "Other cities", and "Another
+18. **PAN India.** City pickers list the 10 big cities first, then 45 more under "Other cities", and "Another
     city…" takes any name. Onboarding has an "Other city" option. Areas aren't limited to the built-in lists:
     "+ Add area" (Discover and onboarding) and the area boxes on the post and FlatMart forms search any
     neighbourhood through OpenStreetMap.
@@ -121,6 +121,22 @@ the room comes second.
     location. Maps use OpenStreetMap with Leaflet, bundled in `vendor/leaflet` (no API key).
 20. **Back button.** The phone's back button closes an open listing or panel first, and on phones the close
     button is a back arrow at the top left.
+21. **Vibe Card (flatmate type).** The 12 living-style answers become a type to share: a rhythm from the
+    bedtime answer (Early Bird, Midnight or Night Owl) plus the most distinctive habit (Pet Parent, Chef, Host,
+    Neat Freak, Bookworm, Social Butterfly, Homebody, Foodie, Introvert, Free Spirit, Go-Getter or All-Rounder),
+    e.g. **🦉🍳 The Night Owl Chef**. The card is a story-sized image (1080 × 1920) with the type, a line about
+    how they live, six habits and, for a seeker with a city, how many homes there match 80%+.
+    - **Share:** Android's share sheet in the app (WhatsApp, Instagram...), the phone's share sheet on the
+      website, or download + WhatsApp + copy link on a computer. The link is the website with
+      `?vibe=<answers>&n=<first name>`: the 12 answers and the generation, nothing else.
+    - **The friend's side:** the website shows "Neha is The Night Owl Chef" and a **1-minute quiz** that needs
+      no sign-up (the 12 questions, the generation and an optional first name). The result is their own card
+      plus "You and Neha: 87% match", the answers they share and the full compatibility view. "Find
+      flatmates who match me" goes to sign-up, which then skips the questions already answered.
+    - **In the app:** the end of a seeker's sign-up reveals their type, Discover shows it once (until they
+      share or hide it), "How you live" on Account shows it, and **My Vibe Card** in Account settings opens
+      it (owners take the quiz for themselves). A signed-in seeker who opens a friend's link sees the match
+      straight away.
 
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request

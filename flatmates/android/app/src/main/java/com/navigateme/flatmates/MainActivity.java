@@ -24,6 +24,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.core.content.FileProvider;
 import androidx.webkit.JavaScriptReplyProxy;
 import androidx.webkit.WebMessageCompat;
 import androidx.webkit.WebViewAssetLoader;
@@ -34,6 +35,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Collections;
 
 /**
@@ -138,7 +141,7 @@ public class MainActivity extends Activity {
 
     /**
      * Exposes `FlatmatesNative` to the app's own pages only (not to embedded maps).
-     * Messages are JSON: {type: hello | permission | notify, ...}.
+     * Messages are JSON: {type: hello | permission | notify | shareImage, ...}.
      */
     private void addNativeBridge() {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) return;
@@ -160,11 +163,36 @@ public class MainActivity extends Activity {
                             case "notify":
                                 Notifications.show(this, m.optString("title"), m.optString("body"), m.optString("open", "requests"));
                                 break;
+                            case "shareImage":
+                                shareImage(m.optString("png"), m.optString("text"));
+                                break;
                         }
                     } catch (Exception ignored) {
                         // Malformed message from the page: nothing to do.
                     }
                 });
+    }
+
+    /** The Vibe Card: a PNG (base64) and its caption, handed to Android's share sheet. */
+    private void shareImage(String base64, String text) {
+        try {
+            File dir = new File(getCacheDir(), "share");
+            if (!dir.isDirectory() && !dir.mkdirs()) throw new IllegalStateException("no cache dir");
+            File file = new File(dir, "vibe-card.png");
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                out.write(android.util.Base64.decode(base64, android.util.Base64.DEFAULT));
+            }
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".files", file);
+            Intent send = new Intent(Intent.ACTION_SEND)
+                    .setType("image/png")
+                    .putExtra(Intent.EXTRA_STREAM, uri)
+                    .putExtra(Intent.EXTRA_TEXT, text)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            send.setClipData(ClipData.newRawUri("", uri));
+            startActivity(Intent.createChooser(send, "Share your Vibe Card"));
+        } catch (Exception e) {
+            Toast.makeText(this, "Couldn't share the card", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void askNotificationPermission() {
