@@ -40,7 +40,7 @@ import java.io.FileOutputStream;
 import java.util.Collections;
 
 /**
- * Hosts the FindMyFlatMate web app (bundled in assets) in a WebView.
+ * Hosts the FindMeFlatMate web app (bundled in assets) in a WebView.
  * Pages are served from https://appassets.androidplatform.net so storage and
  * network calls behave like a normal https site.
  */

@@ -1,9 +1,9 @@
-name: FindMyFlatMate website
+name: FindMeFlatMate website
 
 # Publishes the web app to GitHub Pages on every change, next to the repo's
 # own home page:
 #   https://<owner>.github.io/<repo>/            the root index.html (from main)
-#   https://<owner>.github.io/<repo>/flatmates/  FindMyFlatMate
+#   https://<owner>.github.io/<repo>/flatmates/  FindMeFlatMate
 # The site is pushed to the gh-pages branch, so it deploys from any branch.
 # One-time setup: Settings -> Pages -> Build and deployment -> Source:
 # "Deploy from a branch", Branch: gh-pages, folder: / (root).

@@ -1,4 +1,4 @@
-# FindMyFlatMate
+# FindMeFlatMate
 
 A flatmate app built around **vibe**: people who live the same way find each other first, and
 the room comes second.
@@ -280,7 +280,7 @@ connection, so changes show up on the next open.
 
 ## Android app (APK)
 
-The app is called **FindMyFlatMate** (logo: three smiling flatmates in a house; tagline "Find your vibe. Find your flatmate."). The folder, Android
+The app is called **FindMeFlatMate** (logo: three smiling flatmates in a house; tagline "Find your vibe. Find your flatmate."). The folder, Android
 package (`com.navigateme.flatmates`) and download link keep their old names so installed
 copies update in place.
 
@@ -307,7 +307,7 @@ Phones with the testing build must uninstall it once before installing the prope
 
 ## Live project
 
-The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai).
+The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai; the project kept its first name).
 The database runs the current `schema.sql` (Flatsplits, FlatMart, the shared tribe shortlist, map
 locations and sample people). It's safe to re-run after any change.
 
