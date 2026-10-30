@@ -110,6 +110,8 @@ Deno.serve(async (req) => {
     }
 
     if (route === "webhook") {
+      // Without its secret nothing can be checked, so nothing is accepted.
+      if (!env("RAZORPAY_WEBHOOK_SECRET")) return json({ error: "webhook-not-set-up" }, 503);
       const raw = await req.text();
       const expected = await hmacHex(env("RAZORPAY_WEBHOOK_SECRET"), raw);
       if (!safeEqual(expected, req.headers.get("x-razorpay-signature") ?? "")) {
