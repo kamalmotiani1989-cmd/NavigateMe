@@ -1140,6 +1140,39 @@ html:has(> body.app){background:var(--app-bg)}
 .plan-price > b{font-size:26px; font-family:var(--display)} .plan-price span{font-size:13.5px; color:var(--text-2)}
 .pass-on{display:flex; flex-direction:column; gap:4px; margin:0 0 12px; padding:12px 14px; border-radius:14px; background:var(--ok-soft); color:var(--ok); font-size:14.5px}
 .tag.feat{top:auto; bottom:10px; left:10px; background:#FFF1CC; color:#8A5A00}
+
+/* ---------- Passes tab and screen, nudges, passes on Account */
+.tab[data-view="plans"]{color:var(--accent)}
+.tab[data-view="plans"]::after{content:""; position:absolute; top:5px; right:calc(50% - 16px); width:7px; height:7px; border-radius:50%;
+  background:var(--accent); box-shadow:0 0 0 2px #fff; animation:passPulse 2s ease-in-out infinite}
+@media (min-width:721px){ .tab[data-view="plans"]::after{top:6px; right:6px; box-shadow:none} .app-head .tab[data-view="plans"]{color:#FFD08A} }
+@keyframes passPulse{50%{transform:scale(1.35); opacity:.7}}
+/* Seven tabs on a phone (the Passes tab is showing): slightly smaller labels so none gets cut off. */
+@media (max-width:720px){ .nav:has(> .tab:nth-child(8)) .tab{font-size:10.5px; letter-spacing:-.01em} }
+@media (max-width:380px){ .nav:has(> .tab:nth-child(8)) .tab{font-size:10px; letter-spacing:-.02em; padding-left:0; padding-right:0} }
+.plans-hero{margin:18px 0 14px; padding:22px 20px; border-radius:var(--r-card); background:linear-gradient(135deg,#FF8A4C,#EE5A12 55%,#C2410C); color:#fff;
+  box-shadow:0 12px 30px rgba(238,90,18,.28)}
+.plans-hero .eyebrow{color:#FFE2C2} .plans-hero h1{font-size:clamp(26px,5vw,34px); color:#fff}
+.plans-hero p{margin:8px 0 0; color:rgba(255,255,255,.92)}
+.plans-trust{display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:14px; font-size:13px; font-weight:700}
+.plans-free{display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:14px; background:var(--brand-soft); color:var(--brand-2); font-size:14.5px}
+.pass-nudge{position:relative; margin:16px 0 4px}
+.pn-main{display:flex; gap:12px; align-items:flex-start; width:100%; padding:14px 40px 14px 14px; border:0; border-radius:18px; cursor:pointer; text-align:left; font:inherit;
+  color:var(--text); background:linear-gradient(135deg,#FFF6EC,#FFEDE0); box-shadow:inset 0 0 0 1px #FFD9BD}
+.pn-ic{font-size:28px; flex:none}
+.pn-main b{display:block; font-size:16px} .pn-main small{display:block; font-size:13.5px; color:var(--text-2); margin-top:2px}
+.pn-main em{display:inline-block; margin-top:6px; font-style:normal; font-weight:800; color:var(--accent); font-size:14px}
+.pn-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(0,0,0,.05); cursor:pointer; font-size:16px; color:var(--text-2)}
+.my-passes{margin:16px 0 0; padding:16px; border-radius:var(--r-card); color:#fff; background:linear-gradient(135deg,#1F2937,#0D2233 60%,#0B4F5C);
+  box-shadow:0 12px 30px rgba(13,34,51,.3)}
+.mp-h{margin:0 0 8px; font-weight:800; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:#FFD08A}
+.mp-row{display:flex; align-items:center; gap:12px; padding:10px 0; box-shadow:0 -1px 0 rgba(255,255,255,.1)}
+.mp-row:first-of-type{box-shadow:none}
+.mp-ic{width:40px; height:40px; border-radius:12px; display:grid; place-items:center; background:rgba(255,255,255,.12); font-size:20px; flex:none}
+.mp-row > span:nth-child(2){flex:1; min-width:0} .mp-row b{display:block; font-size:16px} .mp-row small{display:block; font-size:12.5px; color:rgba(255,255,255,.7)}
+.mp-row em{font-style:normal; font-weight:800; text-align:right; color:#7EE0C3; font-size:14.5px; flex:none}
+.mp-more{margin-top:8px; border:0; background:rgba(255,255,255,.14); color:#fff; font:inherit; font-weight:700; font-size:14px; padding:8px 14px; border-radius:10px; cursor:pointer}
+#view-account .acc-hero{margin-top:14px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1337,6 +1370,7 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
     <div id="urgent"></div>
     <div id="vibePromo"></div>
+    <div id="passNudgeD"></div>
     <div id="extrasD"></div>
     <div class="d-controls">
       <div class="d-row">
@@ -1394,6 +1428,7 @@ html:has(> body.app){background:var(--app-bg)}
   <!-- owner: my listings -->
   <section id="view-mine" hidden>
     <div class="greet"><p class="eyebrow" id="mineTime"></p><h1 id="mineName"></h1><p id="mineSub"></p></div>
+    <div id="passNudgeM"></div>
     <div id="extrasM"></div>
     <div id="mineList"></div>
   </section>
@@ -1493,7 +1528,21 @@ html:has(> body.app){background:var(--app-bg)}
   </section>
 
   <!-- both: account -->
+  <!-- both: Passes (a tab until a pass is bought) -->
+  <section id="view-plans" hidden>
+    <div class="plans-hero">
+      <p class="eyebrow">Passes</p>
+      <h1 id="plHead"></h1>
+      <p id="plSub"></p>
+      <div class="plans-trust"><span>✓ Pay once, no auto-renewal</span><span>✓ UPI, cards, netbanking</span><span>✓ Starts the moment you pay</span></div>
+    </div>
+    <div id="plFree"></div>
+    <div id="plCards" class="plans"></div>
+    <p class="hint" style="text-align:center;margin:16px 0 4px">Prices exclude 18% GST, added at checkout. Secure payments by Razorpay.</p>
+  </section>
+
   <section id="view-account" hidden>
+    <div id="accPasses"></div>
     <div class="acc-hero">
       <span class="acc-av" id="accAvatar"></span>
       <div class="acc-id"><h1 id="accName"></h1><span class="acc-role" id="accRole"></span><span class="acc-phone" id="accPhone"></span></div>
@@ -3184,6 +3233,7 @@ const contactsLeft = () => Math.max(0, (state.credits || 0) - (state.pending || 
 // Passes bought from Plans: {room, tribe, escape} -> the date each runs until (from fm_me).
 const passUntil = k => { const t = state.passes && state.passes[k]; return t && new Date(t) > new Date() ? new Date(t) : null; };
 const roomPass = () => CHARGES_ON && passUntil("room");
+const anyPass = () => ["room", "tribe", "escape"].some(k => passUntil(k));
 const untilLabel = d => d.toLocaleDateString("en-IN", { day:"numeric", month:"short" });
 const onGift = () => !state.packs;
 const contactsLabel = n => `${n} ${onGift() ? "free " : ""}${n === 1 ? "contact" : "contacts"} left`;
@@ -3228,7 +3278,7 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","account"], owner:["mine","escape","requests","post","splits","market","account"] };
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","plans","account"], owner:["mine","escape","requests","post","splits","market","plans","account"] };
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
@@ -3239,9 +3289,10 @@ const TAB = {
   post:["Post",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>'],
   splits:["Splits",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'],
   market:["Market",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v10h16V10"/><path d="M2.5 10L5 4h14l2.5 6z"/><path d="M2.5 10a3.2 3.2 0 0 0 6.3 0 3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.3 0"/><path d="M10 20v-5h4v5"/></svg>'],
+  plans:["Passes",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.2"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","account"];
+const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","plans","account"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-onboard").hidden = name !== "onboard";
@@ -3264,12 +3315,13 @@ function route(){
   VIEWS.forEach(n => $("view-" + n).hidden = n !== v);
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
-  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, account:renderAccount })[v]();
+  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount })[v]();
   window.scrollTo(0, 0);
 }
 let unseen = 0, tribeUnseen = 0;
 function renderNav(){
-  const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"];
+  // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
+  const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
   $("nav").innerHTML = allowed.map(n => `<button class="tab" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
     n === "requests" && unseen ? `<i class="badge" aria-label="${unseen} new">${unseen}</i>` : n === "tribe" && tribeUnseen
       ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : n === "splits" && splitsUnseen
@@ -3721,6 +3773,7 @@ async function checkInbox(){
   }
 }
 setInterval(checkInbox, LIVE ? 30000 : 2000);
+setInterval(maybeNudge, LIVE ? 60000 : 5000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) checkInbox(); });
 const othersLine = l => l && l.unlock_count > 1 ? `${l.unlock_count - 1} other ${l.unlock_count - 1 === 1 ? "person has" : "people have"} asked about this home. ` : "";
 
@@ -4160,7 +4213,7 @@ function giftPillHtml(){
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
-  renderVibePromo();
+  renderVibePromo(); renderNudgeCards();
   const [rows] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null]);
   if(seq !== browseSeq) return;
   cityRows = rows;
@@ -4655,6 +4708,8 @@ const PLAN_COPY = {
 };
 const money = paise => "₹" + (paise / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 });
 const PASS_NAMES = { room:"Room Pass", tribe:"Tribe Pass", escape:"Escape Pass" };
+const PASS_EMOJI = { room:"🏠", tribe:"🤝", escape:"🚪" };
+const PASS_PERKS = { room:"Unlimited requests to owners", tribe:"Send tribe requests", escape:"Invite as many people as you like" };
 let afterPay = null, payPlans = [];
 // then: what to do once paid. focus: the plan this moment is about. lead: why the sheet opened.
 async function openPay(then, focus, lead){
@@ -4671,8 +4726,13 @@ async function openPay(then, focus, lead){
                                   : "Demo mode: nothing is charged. Tapping a plan starts it straight away.";
   if(!$("dlgPay").open) $("dlgPay").showModal();
   try{ payPlans = await api.plans(); }catch(err){ console.error(err); payPlans = []; }
-  const list = payPlans.filter(p => p.who === role);
-  $("payPlans").innerHTML = list.length ? list.map(p => {
+  $("payPlans").innerHTML = planCardsHtml(payPlans.filter(p => p.who === role), focus);
+}
+// While charges are off (testing), plans show but can't be bought yet.
+const FREE_NOTE = `<div class="plans-free">🎉 <span><b>Everything is free while we test.</b> Passes go on sale soon, and you'll see them here first.</span></div>`;
+function planCardsHtml(list, focus){
+  if(!list.length) return `<p class="hint">Plans couldn't load right now. Please try again in a moment.</p>`;
+  return (CHARGES_ON ? "" : FREE_NOTE) + list.map(p => {
     const c = PLAN_COPY[p.id] || { emoji:"✨", term:"", lines:[] }, total = p.base_paise + p.gst_paise;
     const kinds = ["room", "tribe", "escape"].filter(k => p[k + "_days"]), extends_ = kinds.some(k => passUntil(k));
     return `<article class="plan${focus === p.id ? " on" : ""}">
@@ -4680,25 +4740,90 @@ async function openPay(then, focus, lead){
         ${c.tag ? `<span class="plan-tag">${esc(c.tag)}</span>` : ""}</div>
       <ul>${c.lines.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
       <div class="plan-price"><b>${money(p.base_paise)}</b><span>+ ${money(p.gst_paise)} GST (18%) = <b>${money(total)}</b></span></div>
-      <button class="btn ${focus === p.id || (!focus && c.tag) ? "btn-accent" : "btn-primary"} btn-block" type="button" data-buy="${esc(p.id)}">${extends_ ? "Add more time" : "Get " + esc(p.name)} · ${money(total)}</button>
+      <button class="btn ${focus === p.id || (!focus && c.tag) ? "btn-accent" : "btn-primary"} btn-block" type="button" data-buy="${esc(p.id)}"${CHARGES_ON ? "" : " disabled"}>${
+        !CHARGES_ON ? "Coming soon" : (extends_ ? "Add more time" : "Get " + esc(p.name)) + " · " + money(total)}</button>
     </article>`;
-  }).join("") : `<p class="hint">Plans couldn't load right now. Please try again in a moment.</p>`;
+  }).join("");
 }
-$("payPlans").addEventListener("click", async e => {
-  const b = e.target.closest("[data-buy]"); if(!b) return;
-  const p = payPlans.find(x => x.id === b.dataset.buy); if(!p) return;
-  $("payPlans").querySelectorAll("[data-buy]").forEach(x => x.disabled = true);
+// Pays for a plan; afterwards the pass is on and the Passes tab goes (passes then show at the top of Account).
+async function buyPlan(p, root){
+  root.querySelectorAll("[data-buy]").forEach(x => x.disabled = true);
   try{
     await api.buyPlan(p.id); await api.me();
-    $("dlgPay").close();
+    if($("dlgPay").open) $("dlgPay").close();
     toast(`${p.name} is on. ${["room", "tribe", "escape"].filter(k => p[k + "_days"]).map(k => `${PASS_NAMES[k]} till ${untilLabel(passUntil(k))}`).join(", ")}.`);
     const next = afterPay; afterPay = null;
-    if(next) next(); else refreshCurrent();
+    if(next) next(); else if(currentView === "plans") go("account"); else refreshCurrent();
   }catch(err){
     const m = err && err.message;
     if(m === "payments-not-set-up") toast("Payments aren't switched on yet. Please try again later.");
     else if(m !== "cancelled"){ console.error(err); toast("Payment didn't go through, and you weren't charged."); }
-  }finally{ $("payPlans").querySelectorAll("[data-buy]").forEach(x => x.disabled = false); }
+  }finally{ root.querySelectorAll("[data-buy]").forEach(x => x.disabled = !CHARGES_ON); }
+}
+$("payPlans").addEventListener("click", e => {
+  const b = e.target.closest("[data-buy]"), p = b && payPlans.find(x => x.id === b.dataset.buy);
+  if(p) buyPlan(p, $("payPlans"));
+});
+// The Passes screen.
+async function renderPlans(){
+  const owner = isOwner();
+  $("plHead").textContent = owner ? "Fill your room faster." : "Find your room faster.";
+  $("plSub").textContent = owner ? "Invite everyone who fits your home, and pay only for the weeks you need."
+    : "Ask every owner you like, team up with flatmates who match your vibe, and pay once for the time you need.";
+  const active = Object.keys(PASS_NAMES).filter(k => passUntil(k));
+  $("plFree").innerHTML = active.length ? `<div class="pass-on">${active.map(k => `<span>✓ <b>${PASS_NAMES[k]}</b> till ${untilLabel(passUntil(k))}</span>`).join("")}</div>` : "";
+  $("plCards").innerHTML = `<p class="hint" style="text-align:center;padding:24px 0">Loading passes…</p>`;
+  try{ payPlans = await api.plans(); }catch(err){ console.error(err); payPlans = []; }
+  if(currentView !== "plans") return;
+  $("plCards").innerHTML = planCardsHtml(payPlans.filter(p => p.who === (owner ? "owner" : "seeker")), owner ? "escape7" : "room30");
+}
+$("plCards").addEventListener("click", e => {
+  const b = e.target.closest("[data-buy]"), p = b && payPlans.find(x => x.id === b.dataset.buy);
+  if(p){ afterPay = null; buyPlan(p, $("plCards")); }
+});
+
+/* ========================================================== pass nudges */
+// Now and then, until a pass is bought: a notification (when they're allowed) and a card on the home
+// screen, benefit-first rather than a hard sell. At most one a day (every minute in demo mode), none
+// while everything is free, and none at all once any pass is on.
+const NUDGE_EVERY = LIVE ? 20 * 36e5 : 60e3, NUDGE_FIRST = LIVE ? 3 * 36e5 : 20e3;
+function nudgeMessages(){
+  if(isOwner()){
+    const n = escSeekers.length, where = escListing && escListing.locality;
+    return [
+      n && where ? { t:`${n} ${n === 1 ? "person is" : "people are"} looking in ${where} right now`, b:"Don't wait for them to find you. Invite everyone who fits your home this week." }
+        : { t:"People near you are looking for a room", b:"Don't wait for them to find you. Invite everyone who fits your home this week." },
+      { t:"An empty room costs rent every day", b:"Fill yours faster: invite people whose vibe matches your home, all week long." },
+      { t:"Your home could be someone's perfect match", b:"See who's searching nearby and invite them in one tap with an Escape Pass." }];
+  }
+  const f = prefs(), strong = cityRows.filter(l => !l.is_owner && (vibeMatch(state.vibe, l.household) || {}).pct >= 75).length;
+  return [
+    strong && f.city ? { t:`${strong} ${strong === 1 ? "home" : "homes"} in ${f.city} match your vibe`, b:"Good rooms go to whoever asks first. Ask every owner you like, as often as you like." }
+      : { t:"Your next home might be one ask away", b:"Ask every owner you like, as often as you like, with a Room Pass." },
+    { t:"Flatmates who live like you are searching too", b:"Team up, rent a whole flat and split it. One Tribe Pass is all it takes to say hello first." },
+    { t:"Never pay for a no", b:"With a Room Pass you can ask owners for 30 days, and if nobody says yes, we add 15 days on us." },
+    { t:"Moving in the next two months?", b:"Premium covers your whole search: unlimited requests for 2 months and 2 weeks to build your tribe." }];
+}
+function maybeNudge(){
+  if(!state.user || !CHARGES_ON || anyPass()) return;
+  const now = Date.now();
+  if(!state.firstSeenAt){ state.firstSeenAt = now; save(); return; }
+  if(now - state.firstSeenAt < NUDGE_FIRST || now - (state.nudgeAt || 0) < NUDGE_EVERY) return;
+  const all = nudgeMessages(), m = all[(state.nudgeN || 0) % all.length];
+  Object.assign(state, { nudgeAt: now, nudgeN: (state.nudgeN || 0) + 1, nudge: m, nudgeHidden: false }); save();
+  Notify.show(m.t, m.b, "plans");
+  renderNudgeCards();
+}
+function renderNudgeCards(){
+  const m = state.nudge, show = m && CHARGES_ON && !anyPass() && !state.nudgeHidden;
+  const html = show ? `<div class="pass-nudge"><button class="pn-main" type="button" data-nudge-go><span class="pn-ic" aria-hidden="true">🎟️</span>
+    <span><b>${esc(m.t)}</b><small>${esc(m.b)}</small><em>See passes →</em></span></button>
+    <button class="pn-x" type="button" data-nudge-hide aria-label="Hide">×</button></div>` : "";
+  $("passNudgeD").innerHTML = html; $("passNudgeM").innerHTML = html;
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-nudge-go]")) go("plans");
+  else if(e.target.closest("[data-nudge-hide]")){ state.nudgeHidden = true; save(); renderNudgeCards(); }
 });
 
 /* =============================================================== visit */
@@ -4738,6 +4863,7 @@ $("vibeForm").addEventListener("submit", async e => {
 
 /* ================================================== owner: my listings */
 async function renderMine(){
+  renderNudgeCards();
   const [mine, inbox, visits] = await Promise.all([api.myListings(), api.inbox(), api.incomingVisits()]);
   const incoming = inbox.filter(r => r.direction === "incoming");
   const waiting = incoming.filter(r => r.status === "pending").length;
@@ -5942,6 +6068,12 @@ document.addEventListener("click", e => { if(e.target.closest("[data-together]")
 /* ============================================================= account */
 async function renderAccount(){
   await api.me();
+  const owned = Object.keys(PASS_NAMES).filter(k => passUntil(k));
+  $("accPasses").innerHTML = owned.length ? `<div class="my-passes"><p class="mp-h">🎟️ Your passes</p>${owned.map(k => {
+      const d = passUntil(k), left = Math.max(1, Math.ceil((d - Date.now()) / 864e5));
+      return `<div class="mp-row"><span class="mp-ic" aria-hidden="true">${PASS_EMOJI[k]}</span><span><b>${PASS_NAMES[k]}</b><small>${PASS_PERKS[k]}</small></span>
+        <em>${left} ${left === 1 ? "day" : "days"} left<small>till ${untilLabel(d)}</small></em></div>`;
+    }).join("")}<button class="mp-more" type="button" data-more-time>Add more time</button></div>` : "";
   $("accAvatar").textContent = (firstName()[0] || "?").toUpperCase();
   $("accName").textContent = state.user.name || "Your account";
   const phone = "+91 " + String(state.user.phone).replace(/^(\d{5})(\d{5})$/, "$1 $2");
@@ -5993,7 +6125,7 @@ $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
     if(b.dataset.action === "signout") return $("dlgSignOut").showModal();
-    if(b.id === "accPlans") return openPay(null);
+    if(b.id === "accPlans" || b.dataset.moreTime !== undefined) return openPay(null);
     if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
