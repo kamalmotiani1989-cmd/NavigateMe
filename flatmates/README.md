@@ -256,20 +256,24 @@ data (including photos) stored in that browser.
 
 ## Website
 
-The same `index.html` is the website: https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/
-(the repo's own home page stays at `/NavigateMe/`). In a browser the welcome page also shows
+The same `index.html` is the website: **https://findmeflatmate.com**. In a browser the welcome page also shows
 "How it works", the Flatsplits / FlatMart / search-together / map features, a **Get the Android
 app** band and a footer. Anything marked `web-only` (the download links) is hidden inside the
 Android app, which loads the page from `appassets.androidplatform.net`.
 
-GitHub Pages publishes the `main` branch (Settings → Pages: Deploy from a branch, `main`, `/ (root)`),
-so a change goes live a minute after it reaches `main`. `.nojekyll` at the repo root makes Pages
-serve the files as they are. Sign-in and payments work from there as is: the Supabase functions allow
-any origin.
+findmeflatmate.com is served by GitHub Pages from its own repo,
+[kamalmotiani1989-cmd/findmeflatmate](https://github.com/kamalmotiani1989-cmd/findmeflatmate). Its
+workflow copies this folder (without `android/`, `supabase/` and this README) from `main` every 30
+minutes, or straight away when run by hand (Actions → Publish FindMeFlatMate → Run workflow), and
+publishes it with the domain's `CNAME`. DNS is at GoDaddy: four A records for `@` (185.199.108.153,
+.109, .110, .111) and a CNAME `www` → `kamalmotiani1989-cmd.github.io`. Sign-in and payments work
+there as is: the Supabase functions allow any origin.
 
-`.github/workflows/flatmates-site.yml` also keeps a `gh-pages` branch with just the website (the app
-without `android/`, `supabase/` and this README, next to main's `index.html`), updated on every push
-that changes `flatmates/`. To publish that instead, pick branch **gh-pages** in the same setting.
+The old address, https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/ (this repo's Pages,
+from `main`), still serves the app but forwards to findmeflatmate.com, keeping invite and Vibe
+links; people signed in there sign in once more on the new domain. Share links, the Vibe Card and
+the page's og/canonical tags use `SITE_LINK` (`https://findmeflatmate.com/`).
+`.github/workflows/flatmates-site.yml` still keeps a `gh-pages` branch here with just the website.
 
 ## Install as an app
 
