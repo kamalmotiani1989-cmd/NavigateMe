@@ -215,8 +215,15 @@ The rules live in the database (`fm_request`, `fm_decide`, `fm_tribe_answer`, `f
 `update fm_plans set enabled = true where id = 'featured7';`). The free invites per listing and the
 Room Pass extension are `fm_settings.free_invites` and `fm_settings.guarantee_days`.
 
+**Where people see passes:** a **Passes** tab in the bottom bar (top bar on a computer) until any pass
+is bought; after that the tab goes and the passes, with days left, sit at the top of Account. Until
+then, now and then (at most once a day; every minute in demo mode) a gentle nudge arrives as a
+notification and a card on Discover / My flat, benefit-first ("7 homes in Pune match your vibe",
+"An empty room costs rent every day") and opening Passes. Nudges stop for good once a pass is on.
+
 **Everything free for a while:** `update fm_settings set charges_enabled = false;` The app reads it
-(through `fm_me`) and hides the paywalls.
+(through `fm_me`): paywalls and nudges disappear, and Passes says "free while we test" with
+"Coming soon" buttons.
 
 **Payments (Razorpay):** `supabase/functions/fm-pay` creates the order for a plan (price + GST), checks
 the payment signature and grants the plan (`fm_credit_order`; the webhook is a backstop). It needs
