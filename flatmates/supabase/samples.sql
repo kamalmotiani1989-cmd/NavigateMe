@@ -1,5 +1,5 @@
 -- =====================================================================
--- FindMyFlatMate sample data, for testing only.
+-- FindMeFlatMate sample data, for testing only.
 -- 10 sample homes in each of the top 10 cities (Bengaluru, Mumbai, Pune, Delhi NCR, Hyderabad, Chennai, Kolkata, Ahmedabad, Jaipur, Chandigarh), each with its own
 -- sample owner, plus 10 sample people looking for a room in each city, who show up in
 -- Build your tribe and The Empty Room Escape. Run schema.sql first.

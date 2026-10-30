@@ -1,6 +1,6 @@
 {
-  "name": "FindMyFlatMate",
-  "short_name": "FindMyFlatMate",
+  "name": "FindMeFlatMate",
+  "short_name": "FindMeFlatMate",
   "description": "Post your flat free and find a flatmate, or find a room in a shared flat.",
   "start_url": "./",
   "scope": "./",
