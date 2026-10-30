@@ -201,6 +201,102 @@ create table if not exists public.fm_orders (
   created_at          timestamptz not null default now()
 );
 
+-- ------------------------------------------------------- plans and passes --
+-- What people can buy. Prices exclude GST: fm_settings.gst_percent is added at checkout. A plan
+-- gives days on one or more passes:
+--   room     unlimited requests, and accepted requests don't use a contact
+--   tribe    send tribe requests (anyone can accept one for free)
+--   escape   owners invite people past the free ones (fm_settings.free_invites per listing)
+--   featured a listing shows first in its area (plan is off until enabled)
+-- Change a price with: update fm_plans set base_paise = 60000 where id = 'room30';
+create table if not exists public.fm_plans (
+  id            text primary key,
+  name          text not null,
+  who           text not null check (who in ('seeker','owner')),
+  base_paise    int  not null check (base_paise > 0),
+  room_days     int  not null default 0,
+  tribe_days    int  not null default 0,
+  escape_days   int  not null default 0,
+  featured_days int  not null default 0,
+  sort          int  not null default 0,
+  enabled       boolean not null default true
+);
+alter table public.fm_plans enable row level security;
+insert into public.fm_plans (id, name, who, base_paise, room_days, tribe_days, escape_days, featured_days, sort, enabled) values
+  ('room30',    'Room Pass',        'seeker',  50000, 30,  0, 0, 0, 1, true),
+  ('tribe7',    'Tribe Pass',       'seeker',  50000,  0,  7, 0, 0, 2, true),
+  ('premium',   'Premium',          'seeker', 150000, 60, 14, 0, 0, 3, true),
+  ('escape7',   'Escape Pass',      'owner',   50000,  0,  0, 7, 0, 4, true),
+  ('featured7', 'Featured listing', 'owner',   19900,  0,  0, 0, 7, 5, false)
+on conflict (id) do nothing;
+
+-- One row per run of a pass; buying more of the same pass extends the current run.
+create table if not exists public.fm_passes (
+  id                uuid primary key default gen_random_uuid(),
+  user_id           uuid not null references auth.users(id) on delete cascade,
+  kind              text not null check (kind in ('room','tribe','escape')),
+  starts_at         timestamptz not null default now(),
+  ends_at           timestamptz not null,
+  order_id          uuid references public.fm_orders(id) on delete set null,
+  guarantee_checked boolean not null default false,   -- room: the "nobody accepted" promise has been settled
+  created_at        timestamptz not null default now()
+);
+create index if not exists fm_passes_user on public.fm_passes (user_id, kind, ends_at);
+alter table public.fm_passes enable row level security;
+
+alter table public.fm_orders add column if not exists plan text references public.fm_plans(id);
+alter table public.fm_orders add column if not exists base_paise int;
+alter table public.fm_orders add column if not exists gst_paise int;
+alter table public.fm_orders add column if not exists listing_id uuid references public.fm_listings(id) on delete set null;
+alter table public.fm_settings add column if not exists gst_percent numeric(5,2) not null default 18;
+alter table public.fm_settings add column if not exists free_invites int not null default 1;     -- per listing, before Escape Pass
+alter table public.fm_settings add column if not exists guarantee_days int not null default 15;  -- Room Pass "nobody accepted" extension
+alter table public.fm_listings add column if not exists featured_until timestamptz;
+
+-- Referrals: a friend who signs up from your link (r=<ref_code>) and finishes their profile counts;
+-- every 2 friends earn 1 contact, up to 5.
+alter table public.fm_profiles add column if not exists ref_code text unique;
+alter table public.fm_profiles add column if not exists referred_by uuid references auth.users(id) on delete set null;
+alter table public.fm_profiles add column if not exists ref_rewarded boolean not null default false;
+alter table public.fm_profiles add column if not exists ref_bonus int not null default 0;
+
+-- When the caller's pass of this kind runs until (null if none is running).
+create or replace function public.fm_pass_until(p_user uuid, p_kind text) returns timestamptz
+language sql stable security definer set search_path = public as $$
+  select max(ends_at) from fm_passes where user_id = p_user and kind = p_kind and starts_at <= now() and ends_at > now();
+$$;
+
+create or replace function public.fm_grant_pass(p_user uuid, p_kind text, p_days int, p_order uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  if coalesce(p_days, 0) <= 0 then return; end if;
+  select id into v_id from fm_passes where user_id = p_user and kind = p_kind and ends_at > now()
+   order by ends_at desc limit 1 for update;
+  if v_id is not null then
+    update fm_passes set ends_at = ends_at + make_interval(days => p_days) where id = v_id;
+  else
+    insert into fm_passes (user_id, kind, ends_at, order_id) values (p_user, p_kind, now() + make_interval(days => p_days), p_order);
+  end if;
+end $$;
+
+-- The Room Pass promise: if no owner accepted any of your requests while it ran, it gets
+-- fm_settings.guarantee_days more, once (from the day it ended, or today if that's later).
+create or replace function public.fm_room_guarantee(p_user uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare p fm_passes%rowtype;
+begin
+  for p in select * from fm_passes where user_id = p_user and kind = 'room' and ends_at <= now()
+           and not guarantee_checked and order_id is not null for update loop
+    update fm_passes set guarantee_checked = true,
+           ends_at = case when exists (select 1 from fm_requests r where r.seeker_id = p_user and r.status = 'approved'
+                                         and r.initiated_by = 'seeker' and r.decided_at between p.starts_at and p.ends_at)
+                          then ends_at
+                          else greatest(ends_at, now()) + make_interval(days => (select guarantee_days from fm_settings)) end
+     where id = p.id;
+  end loop;
+end $$;
+
 -- --------------------------------------------------------------- RLS --
 alter table public.fm_profiles        enable row level security;
 alter table public.fm_listings        enable row level security;
@@ -278,14 +374,25 @@ drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund
 
 create or replace function public.fm_me()
 returns table (credits int, full_name text, phone text, role text, vibe jsonb, occupation jsonb,
-               gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean, tribe_open boolean)
-language sql security definer set search_path = public stable as $$
+               gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean, tribe_open boolean,
+               room_until timestamptz, tribe_until timestamptz, escape_until timestamptz,
+               ref_code text, ref_joined int, ref_bonus int, charges_on boolean)
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then return; end if;
+  perform fm_room_guarantee(auth.uid());
+  update fm_profiles f set ref_code = upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8))
+   where f.id = auth.uid() and f.ref_code is null;
+  return query
   select p.credits, p.full_name, p.phone, p.role, p.vibe, p.occupation, p.gift_given,
          (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid'),
          (select count(*) from fm_requests r where r.seeker_id = p.id and r.status = 'pending' and r.initiated_by = 'seeker'),
-         p.interests, p.discoverable, p.tribe_open
+         p.interests, p.discoverable, p.tribe_open,
+         fm_pass_until(p.id, 'room'), fm_pass_until(p.id, 'tribe'), fm_pass_until(p.id, 'escape'),
+         p.ref_code, (select count(*)::int from fm_profiles f where f.referred_by = p.id and f.ref_rewarded), p.ref_bonus,
+         (select s.charges_enabled from fm_settings s)
   from fm_profiles p where p.id = auth.uid();
-$$;
+end $$;
 
 -- A seeker's city, areas and budget, so owners in those areas can find and invite them.
 create or replace function public.fm_set_search(p_search jsonb, p_discoverable boolean) returns void
@@ -313,6 +420,7 @@ language plpgsql security definer set search_path = public as $$
 begin
   if jsonb_typeof(p_vibe) <> 'object' or pg_column_size(p_vibe) > 2048 then raise exception 'bad-vibe'; end if;
   update fm_profiles set vibe = p_vibe where id = auth.uid();
+  perform fm_referral_reward(auth.uid());
 end $$;
 
 create or replace function public.fm_set_occupation(p_occ jsonb) returns void
@@ -371,7 +479,8 @@ returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
-  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb)
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
+  featured boolean)
 language sql security definer set search_path = public stable as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -380,7 +489,7 @@ language sql security definer set search_path = public stable as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors, l.status, l.geo
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where (l.status = 'active' or l.owner_id = auth.uid())
@@ -452,6 +561,7 @@ begin
   returning id into v_id;
   insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts, address_key)
   values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'), v_key);
+  perform fm_referral_reward(auth.uid());
   return v_id;
 end $$;
 
@@ -475,7 +585,7 @@ begin
   if v_req.status in ('pending','approved') then return query select v_req.status, null::text; return; end if;
   if v_req.status = 'declined' then return query select v_req.status, 'declined'; return; end if;
 
-  if (select charges_enabled from fm_settings) then
+  if (select charges_enabled from fm_settings) and fm_pass_until(auth.uid(), 'room') is null then
     select count(*) into v_pending from fm_requests r where r.seeker_id = auth.uid() and r.status = 'pending';
     if v_me.credits - v_pending < 1 then return query select null::text, 'no-credits'; return; end if;
   end if;
@@ -516,7 +626,8 @@ begin
     return query select 'declined'::text, null::text; return;
   end if;
 
-  v_charges := (select charges_enabled from fm_settings) and v_req.initiated_by = 'seeker';
+  v_charges := (select charges_enabled from fm_settings) and v_req.initiated_by = 'seeker'
+               and fm_pass_until(v_req.seeker_id, 'room') is null;
   if v_charges then
     select credits into v_credits from fm_profiles where id = v_req.seeker_id for update;
     if v_credits < 1 then return query select 'pending'::text, 'seeker-out-of-contacts'; return; end if;
@@ -568,6 +679,10 @@ begin
        where l.owner_id = auth.uid() and r.initiated_by = 'owner' and r.created_at > now() - interval '1 day') >= 30 then
     return query select null::text, 'daily-limit'; return;
   end if;
+  if (select charges_enabled from fm_settings) and fm_pass_until(auth.uid(), 'escape') is null
+     and (select count(*) from fm_requests r where r.listing_id = p_listing and r.initiated_by = 'owner') >= (select free_invites from fm_settings) then
+    return query select null::text, 'escape-pass-required'; return;
+  end if;
   insert into fm_requests (listing_id, seeker_id, message, match_pct, initiated_by, seen_by_owner, seen_by_seeker)
   values (p_listing, p_seeker, left(coalesce(p_message, ''), 300), fm_match(v_s.vibe, v_l.household), 'owner', true, false)
   on conflict (listing_id, seeker_id) do update
@@ -601,7 +716,7 @@ begin
   if v_l.id is null then return query select null::text, 'listing-not-found', null::int; return; end if;
   v_new := fm_match(v_me.vibe || p_changes, v_l.household);
   if v_new is null or v_new <= coalesce(v_req.match_pct, 0) then return query select null::text, 'no-better', v_new; return; end if;
-  if (select charges_enabled from fm_settings) then
+  if (select charges_enabled from fm_settings) and fm_pass_until(auth.uid(), 'room') is null then
     select count(*) into v_pending from fm_requests r where r.seeker_id = auth.uid() and r.status = 'pending' and r.initiated_by = 'seeker';
     if v_me.credits - v_pending < 1 then return query select null::text, 'no-credits', null::int; return; end if;
   end if;
@@ -732,6 +847,12 @@ begin
      where fm_tribe_links.id = p_link;
     return 'closed';
   end if;
+  -- Saying yes first sends a tribe request: that needs a Tribe Pass. Accepting someone's request is
+  -- free, and so are the links that complete a tribe of three.
+  if t.kind = 'match' and not coalesce(case when t.a = auth.uid() then t.b_yes else t.a_yes end, false)
+     and (select charges_enabled from fm_settings) and fm_pass_until(auth.uid(), 'tribe') is null then
+    return 'tribe-pass-required';
+  end if;
   -- A tribe is at most 3 people: joining two groups mustn't go over that.
   select array_agg(distinct m) into v_all from unnest(fm_tribe_members(t.a) || fm_tribe_members(t.b)) m;
   if cardinality(v_all) > 3 then return 'full'; end if;
@@ -845,7 +966,7 @@ end $$;
 create or replace function public.fm_credit_order(p_razorpay_order text, p_razorpay_payment text)
 returns int
 language plpgsql security definer set search_path = public as $$
-declare v_order fm_orders%rowtype;
+declare v_order fm_orders%rowtype; v_plan fm_plans%rowtype;
 begin
   if auth.role() is distinct from 'service_role' then raise exception 'forbidden'; end if;
   select * into v_order from fm_orders where razorpay_order_id = p_razorpay_order for update;
@@ -854,6 +975,16 @@ begin
   update fm_orders set status = 'paid', razorpay_payment_id = p_razorpay_payment
    where id = v_order.id;
   update fm_profiles set credits = credits + v_order.credits where id = v_order.user_id;
+  if v_order.plan is not null then
+    select * into v_plan from fm_plans where id = v_order.plan;
+    perform fm_grant_pass(v_order.user_id, 'room', v_plan.room_days, v_order.id);
+    perform fm_grant_pass(v_order.user_id, 'tribe', v_plan.tribe_days, v_order.id);
+    perform fm_grant_pass(v_order.user_id, 'escape', v_plan.escape_days, v_order.id);
+    if v_plan.featured_days > 0 then
+      update fm_listings set featured_until = greatest(featured_until, now()) + make_interval(days => v_plan.featured_days)
+       where id = v_order.listing_id and owner_id = v_order.user_id;
+    end if;
+  end if;
   return v_order.credits;
 end $$;
 
@@ -897,7 +1028,7 @@ end $$;
 alter table public.fm_settings add column if not exists notify_url text;
 alter table public.fm_settings add column if not exists notify_secret text;
 revoke select on public.fm_settings from anon, authenticated;
-grant select (id, charges_enabled, welcome_credits) on public.fm_settings to anon, authenticated;
+grant select (id, charges_enabled, welcome_credits, gst_percent, free_invites) on public.fm_settings to anon, authenticated;
 
 do $$ begin
   create extension if not exists pg_net;
@@ -1472,6 +1603,49 @@ drop trigger if exists fm_visits_sample on public.fm_visits;
 create trigger fm_visits_sample before insert on public.fm_visits
   for each row execute function public.fm_sample_visit();
 
+-- ------------------------------------------------------ plans and referrals --
+-- The plans on sale, with GST worked out the same way fm-pay charges it.
+create or replace function public.fm_plan_list()
+returns table (id text, name text, who text, base_paise int, gst_paise int, room_days int, tribe_days int, escape_days int, featured_days int)
+language sql stable security definer set search_path = public as $$
+  select p.id, p.name, p.who, p.base_paise, round(p.base_paise * s.gst_percent / 100)::int,
+         p.room_days, p.tribe_days, p.escape_days, p.featured_days
+  from fm_plans p cross join fm_settings s where p.enabled order by p.sort;
+$$;
+
+-- A new account names who invited them (the r= code in the link they came from): once, within a
+-- day of signing up, never themselves.
+create or replace function public.fm_set_referrer(p_code text) returns text
+language plpgsql security definer set search_path = public as $$
+declare v_me fm_profiles%rowtype; v_ref uuid;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  select * into v_me from fm_profiles where id = auth.uid() for update;
+  if v_me.referred_by is not null then return 'already'; end if;
+  if v_me.created_at < now() - interval '1 day' then return 'too-late'; end if;
+  select id into v_ref from fm_profiles where ref_code = upper(trim(p_code));
+  if v_ref is null or v_ref = auth.uid() then return 'no-such-code'; end if;
+  update fm_profiles set referred_by = v_ref where id = auth.uid();
+  perform fm_referral_reward(auth.uid());
+  return 'ok';
+end $$;
+
+-- A referred friend counts once their profile is done: a seeker's living-style answers, or an
+-- owner's first listing. Every 2 friends earn the referrer 1 contact, up to 5.
+create or replace function public.fm_referral_reward(p_user uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_me fm_profiles%rowtype; v_joined int;
+begin
+  select * into v_me from fm_profiles where id = p_user;
+  if v_me.referred_by is null or v_me.ref_rewarded then return; end if;
+  if (select count(*) from jsonb_object_keys(v_me.vibe)) < 8 and not exists (select 1 from fm_listings where owner_id = p_user) then return; end if;
+  perform 1 from fm_profiles where id = v_me.referred_by for update;
+  update fm_profiles set ref_rewarded = true where id = p_user;
+  select count(*) into v_joined from fm_profiles where referred_by = v_me.referred_by and ref_rewarded;
+  update fm_profiles set ref_bonus = ref_bonus + 1, credits = credits + 1
+   where id = v_me.referred_by and v_joined % 2 = 0 and ref_bonus < 5;
+end $$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me and fm_search also answer signed-out callers, with nothing private).
@@ -1484,7 +1658,8 @@ begin
     execute format('revoke execute on function %s from public, anon', f.sig);
     if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order',
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
-                     'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit') then
+                     'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
+                     'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);

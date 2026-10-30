@@ -1,8 +1,9 @@
-// Supabase Edge Function: Razorpay checkout for visit packs.
+// Supabase Edge Function: Razorpay checkout for plans (Room Pass, Tribe Pass, Premium, Escape Pass...).
 //
-//   POST /fm-pay/order    (signed-in user)  -> creates a Rs 500 order for 10 contacts
-//   POST /fm-pay/verify   (signed-in user)  -> checks the checkout signature, adds credits
-//   POST /fm-pay/webhook  (Razorpay)        -> same crediting, as a backstop
+//   POST /fm-pay/order    (signed-in user)  {plan, listing_id?} -> a Razorpay order for the plan's
+//                                            price plus GST (fm_plans.base_paise, fm_settings.gst_percent)
+//   POST /fm-pay/verify   (signed-in user)  -> checks the checkout signature, grants the plan
+//   POST /fm-pay/webhook  (Razorpay)        -> same granting, as a backstop
 //
 // Secrets (supabase secrets set ...):
 //   RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
@@ -12,9 +13,6 @@
 // (JWT is checked below for /order and /verify; /webhook is signed by Razorpay instead.)
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
-
-const PACK_PRICE_PAISE = 500 * 100;
-const PACK_CREDITS = 10;
 
 const env = (k: string) => Deno.env.get(k) ?? "";
 const admin = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"));
@@ -64,21 +62,36 @@ Deno.serve(async (req) => {
     if (route === "order") {
       const user = await userFrom(req);
       if (!user) return json({ error: "not-signed-in" }, 401);
+      // Until the Razorpay keys are added as function secrets, say so instead of failing at Razorpay.
+      if (!env("RAZORPAY_KEY_ID") || !env("RAZORPAY_KEY_SECRET")) return json({ error: "payments-not-set-up" }, 503);
+
+      const { plan: planId, listing_id } = await req.json().catch(() => ({}));
+      const { data: plan } = await admin.from("fm_plans").select("*").eq("id", planId).eq("enabled", true).maybeSingle();
+      if (!plan) return json({ error: "no-such-plan" }, 400);
+      // A featured listing must be the buyer's own.
+      if (plan.featured_days > 0) {
+        const { data: l } = await admin.from("fm_listings").select("owner_id").eq("id", listing_id ?? "").maybeSingle();
+        if (!l || l.owner_id !== user.id) return json({ error: "not-your-listing" }, 403);
+      }
+      const { data: settings } = await admin.from("fm_settings").select("gst_percent").single();
+      const gst = Math.round(plan.base_paise * Number(settings?.gst_percent ?? 18) / 100);
+      const amount = plan.base_paise + gst;
 
       const auth = btoa(`${env("RAZORPAY_KEY_ID")}:${env("RAZORPAY_KEY_SECRET")}`);
       const r = await fetch("https://api.razorpay.com/v1/orders", {
         method: "POST",
         headers: { Authorization: `Basic ${auth}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: PACK_PRICE_PAISE, currency: "INR", notes: { user_id: user.id } }),
+        body: JSON.stringify({ amount, currency: "INR", notes: { user_id: user.id, plan: plan.id } }),
       });
       const order = await r.json();
       if (!r.ok) return json({ error: "razorpay", detail: order }, 502);
 
-      await admin.from("fm_orders").insert({
-        user_id: user.id, razorpay_order_id: order.id,
-        amount_paise: PACK_PRICE_PAISE, credits: PACK_CREDITS,
+      const { error } = await admin.from("fm_orders").insert({
+        user_id: user.id, razorpay_order_id: order.id, amount_paise: amount, credits: 0,
+        plan: plan.id, base_paise: plan.base_paise, gst_paise: gst, listing_id: plan.featured_days > 0 ? listing_id : null,
       });
-      return json({ key_id: env("RAZORPAY_KEY_ID"), order_id: order.id, amount: PACK_PRICE_PAISE });
+      if (error) throw error;
+      return json({ key_id: env("RAZORPAY_KEY_ID"), order_id: order.id, amount, plan: plan.name });
     }
 
     if (route === "verify") {

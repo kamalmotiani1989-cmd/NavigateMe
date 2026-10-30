@@ -193,16 +193,38 @@ suggests the single change that brings most homes back ("Remove “No smoking”
 
 ## Pricing
 
+Prices exclude GST: 18% is added at checkout (`fm_settings.gst_percent`), and the Plans screen shows
+both, e.g. ₹500 + ₹90 GST = ₹590. Plans are one-time passes, not auto-renewing subscriptions.
+
 | Who | What | Price |
 |---|---|---|
-| Owner | Post a listing with photos and flatmates (unlimited) | Free |
-| Seeker | Browse, see households, vibe matches, rent and expenses | Free |
-| Seeker | Welcome gift: first 5 accepted contacts | Free |
-| Seeker | After that: 10 accepted contacts | ₹500 (₹50 each) |
+| Owner | Post listings with photos and flatmates | Free |
+| Owner | The Empty Room Escape: the first invite for each listing | Free |
+| Owner | **Escape Pass**: invite as many people as you like for 7 days | ₹500 + GST |
+| Owner | **Featured listing**: first in its area for 7 days (built, switched off for now) | ₹199 + GST |
+| Seeker | Browse, vibe matches, rent and expenses, Vibe Card, Flatsplits, FlatMart | Free |
+| Seeker | Welcome gift: 5 contacts, each used only when an owner accepts | Free |
+| Seeker | **Room Pass**: 30 days of unlimited requests; accepted requests don't use contacts. If no owner accepts in those 30 days, 15 more days free (once) | ₹500 + GST |
+| Seeker | **Tribe Pass**: 7 days to send tribe requests. Accepting one is always free, so one pass makes the tribe | ₹500 + GST |
+| Seeker | **Premium**: 60 days of Room Pass + 14 days of Tribe Pass | ₹1,500 + GST |
+| Everyone | **Referrals**: every 2 friends who sign up with your link (`?r=<code>`) and finish their profile (a seeker's 12 answers, or an owner's first listing) earn 1 contact, up to 5 | Free |
 
-Contacts never expire. To make everything free for a while: set `CHARGES_ON = false` in
-`index.html` **and** run `update fm_settings set charges_enabled = false;` in Supabase. The
-database decides, so the app can't be tricked into free contacts while charges are on.
+The rules live in the database (`fm_request`, `fm_decide`, `fm_tribe_answer`, `fm_invite`,
+`fm_set_referrer`), so the app can't be tricked past them. Prices and what each plan gives are rows in
+`fm_plans` (e.g. `update fm_plans set base_paise = 60000 where id = 'room30';`; switch Featured on with
+`update fm_plans set enabled = true where id = 'featured7';`). The free invites per listing and the
+Room Pass extension are `fm_settings.free_invites` and `fm_settings.guarantee_days`.
+
+**Everything free for a while:** `update fm_settings set charges_enabled = false;` The app reads it
+(through `fm_me`) and hides the paywalls.
+
+**Payments (Razorpay):** `supabase/functions/fm-pay` creates the order for a plan (price + GST), checks
+the payment signature and grants the plan (`fm_credit_order`; the webhook is a backstop). It needs
+three secrets under Supabase → Edge Functions → Secrets: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and
+`RAZORPAY_WEBHOOK_SECRET`. For testing, use Razorpay's **Test Mode** keys (Dashboard → Test Mode →
+Account & Settings → API Keys) and its test cards or UPI `success@razorpay`; no money moves. Until
+the keys are set, buying shows "Payments aren't switched on yet". GST can only be charged once the
+business is GST-registered; invoices need the GSTIN.
 
 ## Files
 

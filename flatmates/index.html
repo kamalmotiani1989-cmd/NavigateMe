@@ -1124,6 +1124,22 @@ html:has(> body.app){background:var(--app-bg)}
 .ob-type b{font-size:24px; color:#FFC86B}
 .ob-type small{font-size:14px; opacity:.85}
 .ob-finale-acts{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+
+/* ---------- plans and passes */
+.plans{display:grid; gap:14px; margin-top:6px}
+.plan{border-radius:18px; padding:16px; background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
+.plan.on{box-shadow:inset 0 0 0 2px var(--accent), 0 10px 26px rgba(242,107,29,.16)}
+.plan-top{display:flex; align-items:center; gap:12px}
+.plan-emoji{width:44px; height:44px; border-radius:14px; display:grid; place-items:center; font-size:24px; background:var(--surface-2); flex:none}
+.plan-top h3{font-size:18px} .plan-top small{color:var(--text-2); font-size:13px}
+.plan-top > div{flex:1; min-width:0}
+.plan-tag{flex:none; background:var(--accent-soft); color:var(--accent); font-size:12px; font-weight:800; padding:4px 10px; border-radius:999px}
+.plan ul{margin:12px 0; padding-left:20px; color:var(--text-2); font-size:14.5px}
+.plan li{margin:4px 0}
+.plan-price{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 12px}
+.plan-price > b{font-size:26px; font-family:var(--display)} .plan-price span{font-size:13.5px; color:var(--text-2)}
+.pass-on{display:flex; flex-direction:column; gap:4px; margin:0 0 12px; padding:12px 14px; border-radius:14px; background:var(--ok-soft); color:var(--ok); font-size:14.5px}
+.tag.feat{top:auto; bottom:10px; left:10px; background:#FFF1CC; color:#8A5A00}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
@@ -1500,10 +1516,12 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="acc-list">
       <button class="acc-row" id="accSwitch" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-4-4M20 16H7l4 4"/></svg></i>
         <span><b id="accSwitchT"></b><small id="accSwitchS"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="acc-row" id="accPlans" type="button"><i class="acc-ic" style="--ic:#E8F1FD;--icc:#1F6CC4;font-size:20px">🎟️</i>
+        <span><b>Plans &amp; passes</b><small id="accPlansSub"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="acc-row" type="button" data-quiz><i class="acc-ic" style="--ic:#FFF1CC;--icc:#8A5A00;font-size:20px">✨</i>
         <span><b>My Vibe Card</b><small id="accVibeSub">Your flatmate type, to share with friends</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <a class="acc-row" id="accInvite" target="_blank" rel="noopener"><i class="acc-ic" style="--ic:#E7F7EF;--icc:#0E9F7E"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></svg></i>
-        <span><b>Invite a friend</b><small>Know someone looking for a room or a flatmate?</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+        <span><b>Invite friends, earn contacts</b><small id="accInviteSub">Every 2 friends who join with your link = 1 free contact</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="acc-row web-only" data-apk><i class="acc-ic" style="--ic:#FFEFE4;--icc:#EE5A12"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></i>
         <span><b>Get the Android app</b><small>Know the moment an owner says yes</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
     </div>
@@ -1576,19 +1594,8 @@ html:has(> body.app){background:var(--app-bg)}
     <button class="btn btn-accent btn-block" type="button" id="giftGo" style="margin-top:16px">Use 1 to send my request</button>
   </div></dialog>
 
-<dialog id="dlgPay"><div class="mhead"><h2>More contacts</h2><button class="x" data-close aria-label="Close">×</button></div>
-  <div class="mbody">
-    <p class="sub" id="payLead">You've used your 5 free contacts.</p>
-    <div class="pack"><b>₹500</b>for 10 more contacts · ₹50 each</div>
-    <p class="sub">A contact is only used when an owner <b>accepts</b> your request. Pending or declined requests cost nothing, and contacts never expire.</p>
-    <div class="paym">
-      <label class="chip"><input type="radio" name="pm" value="upi" checked>UPI</label>
-      <label class="chip"><input type="radio" name="pm" value="card">Card</label>
-      <label class="chip"><input type="radio" name="pm" value="nb">Netbanking</label>
-    </div>
-    <button class="btn btn-accent btn-block" id="payBtn">Pay ₹500</button>
-    <p class="hint" id="payNote"></p>
-  </div></dialog>
+<dialog id="dlgPay"><div class="mhead"><div><h2 id="payTitle">Plans</h2><div class="loc" id="payLead"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody"><div id="payActive"></div><div id="payPlans" class="plans"></div><p class="hint" id="payNote"></p></div></dialog>
 
 <dialog id="dlgFilters"><div class="mhead"><div><h2>Filters</h2><div class="loc">Saved for next time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
@@ -1697,11 +1704,11 @@ const FM_CONFIG = {
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
 
-const PACK_PRICE = 500, PACK_CREDITS = 10, WELCOME_CREDITS = 5;
-// Contacts: 5 free as a welcome gift, then 10 for Rs 500. One is used only when an
-// owner accepts. To make everything free, set this to false AND run
-// `update fm_settings set charges_enabled = false;` in Supabase (the database decides).
-const CHARGES_ON = true;
+const WELCOME_CREDITS = 5;
+// Contacts: 5 free as a welcome gift (one is used only when an owner accepts), then passes from Plans.
+// The database decides: `update fm_settings set charges_enabled = false;` makes everything free, and
+// fm_me tells the app, which then hides the paywalls. Demo mode always charges.
+let CHARGES_ON = true;
 const CITIES = ["Bengaluru","Mumbai","Pune","Delhi NCR","Hyderabad","Chennai","Kolkata","Ahmedabad","Jaipur","Chandigarh"];
 const AMENITIES = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking","Power backup","Gym","Lift","Balcony"];
 const KIND_LABEL = {room:"Private room", shared:"Shared room", flatmate:"Flatmate wanted", flat:"Whole flat"};
@@ -2262,7 +2269,7 @@ const demoApi = {
     if(r && (r.status === "pending" || r.status === "approved")) return { status:r.status };
     if(r && r.status === "declined") return { status:"declined", error:"declined" };
     await this.me();
-    if(CHARGES_ON && state.credits - state.pending < 1) return { error:"no-credits" };
+    if(CHARGES_ON && !passUntil("room") && state.credits - state.pending < 1) return { error:"no-credits" };
     const m = vibeMatch(state.vibe, l.household);
     const fresh = { id:"r" + Date.now(), listing_id:id, listing_title:l.title, seeker_phone:me.phone,
       seeker:{ name:me.name, occupation:me.occupation, vibe:state.vibe, phone:me.phone, interests:state.interests || {} },
@@ -2280,7 +2287,7 @@ const demoApi = {
     if(r.status !== "pending") return { status:r.status, error:"already-decided" };
     if(approve){
       const isMe = r.seeker_phone === this.me_();
-      if(CHARGES_ON && isMe && r.by !== "owner"){
+      if(CHARGES_ON && isMe && r.by !== "owner" && !passUntil("room")){
         if(state.credits < 1) return { status:"pending", error:"seeker-out-of-contacts" };
         state.credits -= 1;
       }
@@ -2315,6 +2322,8 @@ const demoApi = {
     if(!x) return { error:"seeker-not-found" };
     const r = state.requests.find(y => y.listing_id === lid && y.seeker_phone === x.phone && y.status !== "withdrawn");
     if(r) return { status:r.status };
+    if(CHARGES_ON && !passUntil("escape") && state.requests.filter(y => y.listing_id === lid && y.by === "owner").length >= FREE_INVITES)
+      return { error:"escape-pass-required" };
     const m = vibeMatch(x.vibe, l.household);
     state.requests.push({ id:"i" + Date.now() + sid, by:"owner", listing_id:lid, listing_title:l.title, seeker_phone:x.phone,
       seeker:{ name:x.name, occupation:x.occupation, vibe:x.vibe, phone:x.phone, interests:x.interests }, status:"pending",
@@ -2375,6 +2384,7 @@ const demoApi = {
     if(t.status !== "open") return t.status;
     if(!yes){ t.my_yes = false; t.status = "closed"; save(); return "closed"; }
     if(this.tribeSize() >= 3) return "full";   // tribes are 3 people at most
+    if(CHARGES_ON && !t.their_yes && !passUntil("tribe")) return "tribe-pass-required";   // sending needs a Tribe Pass
     t.my_yes = true; t.yesAt = Date.now();
     if(t.their_yes){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); t.seen = false; }
     save(); return t.status;
@@ -2513,7 +2523,19 @@ const demoApi = {
   async setListingStatus(id, status){
     const l = state.myListings.find(x => x.id === id); if(l){ l.status = status; save(); }
   },
-  async buyPack(){ state.credits += PACK_CREDITS; state.packs += 1; save(); return state; }
+  // Demo checkout: the plan is granted straight away, nothing is charged.
+  async plans(){ return DEMO_PLANS; },
+  async buyPlan(id){
+    const p = DEMO_PLANS.find(x => x.id === id); if(!p) throw new Error("no-such-plan");
+    state.passes = state.passes || {};
+    for(const [k, days] of [["room", p.room_days], ["tribe", p.tribe_days], ["escape", p.escape_days]]){
+      if(!days) continue;
+      const from = Math.max(Date.now(), passUntil(k) ? passUntil(k).getTime() : 0);
+      state.passes[k] = new Date(from + days * 864e5).toISOString();
+    }
+    state.packs = (state.packs || 0) + 1; save(); return state;
+  },
+  async setReferrer(){ return "ok"; },
 };
 
 function makeLiveApi(sb){
@@ -2576,7 +2598,10 @@ function makeLiveApi(sb){
       const phone = r.phone.replace(/^\+?91/, "");
       if((state.account || (state.user && state.user.phone)) !== phone) switchAccount(phone);
       state.user = { phone, name: r.full_name || "", role: r.role || null, occupation: r.occupation || {} };
-      Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given });
+      CHARGES_ON = r.charges_on !== false;
+      Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given,
+        passes: { room: r.room_until, tribe: r.tribe_until, escape: r.escape_until },
+        refCode: r.ref_code, refJoined: r.ref_joined || 0, refBonus: r.ref_bonus || 0 });
       // The server's copy wins, even when it's empty: answers left on this phone may be someone else's.
       state.vibe = r.vibe || {};
       state.interests = r.interests || {};
@@ -2653,13 +2678,15 @@ function makeLiveApi(sb){
       const { error } = await sb.from("fm_listings").update({ status }).eq("id", id);
       if(error) throw error;
     },
-    async buyPack(){
+    async plans(){ return rpc("fm_plan_list"); },
+    async setReferrer(code){ return rpc("fm_set_referrer", { p_code: code }); },
+    async buyPlan(id, listingId){
       await loadRazorpay();
-      const order = await callPay("order");
+      const order = await callPay("order", { plan: id, listing_id: listingId || null });
       const paid = await new Promise((resolve, reject) => {
         const rz = new window.Razorpay({
           key: order.key_id, order_id: order.order_id, amount: order.amount, currency: "INR",
-          name: "FindMyFlatMate", description: PACK_CREDITS + " contacts",
+          name: "FindMyFlatMate", description: order.plan + " (incl. 18% GST)",
           prefill: { contact: "+91" + (state.user?.phone || ""), name: state.user?.name || "" },
           theme: { color: "#12813F" },
           handler: resolve,
@@ -3154,6 +3181,10 @@ function toggleSaved(id){
 function picHtml(l){ const ph = photosOf(l); return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : roomArt(l.id, l.kind); }
 // Contacts a seeker can still use: total minus those held by requests waiting on an owner.
 const contactsLeft = () => Math.max(0, (state.credits || 0) - (state.pending || 0));
+// Passes bought from Plans: {room, tribe, escape} -> the date each runs until (from fm_me).
+const passUntil = k => { const t = state.passes && state.passes[k]; return t && new Date(t) > new Date() ? new Date(t) : null; };
+const roomPass = () => CHARGES_ON && passUntil("room");
+const untilLabel = d => d.toLocaleDateString("en-IN", { day:"numeric", month:"short" });
 const onGift = () => !state.packs;
 const contactsLabel = n => `${n} ${onGift() ? "free " : ""}${n === 1 ? "contact" : "contacts"} left`;
 // Flatmates in a household; older listings only have a free-text "about".
@@ -3276,6 +3307,9 @@ async function renderEscape(){
   $("escPick").innerHTML = listings.map(l => `<option value="${esc(l.id)}"${l.id === escListing.id ? " selected" : ""}>${esc(l.title)}</option>`).join("");
   escSeekers = await api.findSeekers(escListing.id);
   const fit = escSeekers.filter(x => x.budget && x.budget >= escListing.rent).length, hi = escSeekers.filter(x => x.match_pct >= 80).length;
+  $("escRule").textContent = !CHARGES_ON ? "Numbers stay private until they say yes to your invite."
+    : passUntil("escape") ? `Escape Pass: invite as many people as you like till ${untilLabel(passUntil("escape"))}. Numbers stay private until they say yes.`
+    : `Your first invite for each listing is free; after that, an Escape Pass (${money(50000)} + GST, 7 days) lets you invite as many as you like. Numbers stay private until they say yes.`;
   $("escStats").innerHTML = `<div><b>${escSeekers.length}</b><span>looking in ${esc(escListing.locality)}</span></div>
     <div><b>${hi}</b><span>80%+ vibe</span></div><div><b>${fit}</b><span>budget fits your rent</span></div>`;
   const f = state.escFilter || "all";
@@ -3330,16 +3364,20 @@ $("escList").addEventListener("click", async e => {
   const b = e.target.closest("[data-invite]"); if(!b) return;
   const x = escSeekers.find(y => y.seeker_id === b.dataset.invite); if(!x) return;
   b.disabled = true;
+  inviteSeeker(x);
+});
+async function inviteSeeker(x){
   const first = (x.name || "They").split(" ")[0];
   try{
     const r = await api.invite(escListing.id, x.seeker_id,
       `Hi ${first}! ${x.match_pct != null ? `Your vibe matches our home ${x.match_pct}%. ` : ""}Would you like to come and see the room?`);
+    if(r.error === "escape-pass-required"){ renderEscape(); return openPay(() => inviteSeeker(x), "escape7"); }
     toast(r.error === "daily-limit" ? "That's 30 invites today. You can send more tomorrow."
       : r.error ? "Couldn't send that invite. Please try again."
       : `Invite sent. ${first} sees your photos and can say yes in one tap. Numbers are shared only if they accept.`);
   }catch(err){ console.error(err); toast("Couldn't send that invite. Please try again."); }
   renderEscape();
-});
+}
 /* ============================================================ compromise */
 // After an owner declines, the seeker can change the answers that clash with the household, for this
 // home only, and ask once more. Same rules as fm_compromise in schema.sql.
@@ -3382,7 +3420,7 @@ $("cmBody").addEventListener("click", async e => {
   e.target.disabled = true;
   try{
     const r = await api.compromise(cmCtx.rid, cmCtx.changes, $("cmMsg").value.trim());
-    if(r.error === "no-credits"){ $("dlgCompromise").close(); return openPay(() => {}); }
+    if(r.error === "no-credits"){ $("dlgCompromise").close(); return openPay(() => {}, "room30"); }
     if(r.error){ toast(r.error === "no-better" ? "That doesn't raise your score. Try changing another answer." : "Couldn't send it right now."); e.target.disabled = false; return; }
     toast(`Sent! The owner now sees a ${r.match_pct}% match and what you're willing to adjust.`);
     $("dlgCompromise").close(); await openListing(cmCtx.l.id); refreshCurrent();
@@ -3436,7 +3474,7 @@ function tribeCardHtml(t){
   const acts = full ? `<span class="req-pill">${(t.my_size || 1) >= 3 ? "Your tribe is full (3 of 3)" : `${first}'s tribe is full`}</span>`
     : t.my_yes ? `<span class="req-pill pending">You said yes · waiting for ${first}</span>`
     : t.their_yes ? `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Yes, let's team up</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not for me</button>`
-    : `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Team up with ${first}</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not now</button>`;
+    : `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Team up with ${first}${CHARGES_ON && !passUntil("tribe") && t.kind !== "complete" ? " · Tribe Pass" : ""}</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not now</button>`;
   return `<article class="tribe-card${t.their_yes && !t.my_yes ? " wants" : ""}">
     ${t.kind === "complete" ? `<p class="wants-line">✨ Complete your tribe of 3: you're both teaming up with the same person. Say yes to each other to share numbers.</p>`
       : t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
@@ -3505,15 +3543,19 @@ $("view-tribe").addEventListener("click", async e => {
   }
   const b = e.target.closest("[data-ty],[data-tn]"); if(!b) return;
   b.disabled = true;
-  const id = b.dataset.ty || b.dataset.tn, yes = Boolean(b.dataset.ty), t = tribeRows.find(x => x.id === id);
+  answerTribe(b.dataset.ty || b.dataset.tn, Boolean(b.dataset.ty));
+});
+async function answerTribe(id, yes){
+  const t = tribeRows.find(x => x.id === id);
   try{
     const st = await api.tribeAnswer(id, yes);
+    if(st === "tribe-pass-required"){ renderTribe(); return openPay(() => answerTribe(id, yes), "tribe7"); }
     if(st === "full") toast("Tribes are 3 people at most, and this one would be bigger.");
     else if(st === "bonded" && t) celebrateTribe(Object.assign({}, t, { status: "bonded" }));
     else toast(yes ? `You said yes! If ${t ? t.name : "they"} says yes too, you'll both get each other's numbers.` : "Okay. We won't show you to each other again.");
   }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
   renderTribe();
-});
+}
 // The bonding moment: both said yes.
 async function celebrateTribe(t){
   state.notified = state.notified || {}; state.notified["tribe" + t.id + "bondedy"] = Date.now(); save();
@@ -3795,6 +3837,7 @@ $("otpForm").addEventListener("submit", async e => {
   save();
   $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
   location.hash = ""; route();
+  claimReferral();
 });
 
 /* =========================================================== onboarding */
@@ -4088,7 +4131,7 @@ function cardHtml(l, i){
   const tag = l.is_owner ? "Your listing" : REQ_TAG[l.request_status] || "";
   return `<article class="card" tabindex="0" data-id="${esc(l.id)}" style="--i:${Math.min(i || 0, 12)}">
     <div class="thumb">${picHtml(l)}
-      <span class="tag">${esc(KIND_LABEL[l.kind])}</span>
+      <span class="tag">${esc(KIND_LABEL[l.kind])}</span>${l.featured ? `<span class="tag feat">✨ Featured</span>` : ""}
       ${ph.length > 1 ? `<span class="count-ph">${ph.length} photos</span>` : ""}
       ${m ? `<span class="ring-wrap" title="How well your living style fits this household">${ringSvg(m.pct, 46)}</span>` : ""}
       ${tag ? `<span class="tag r${l.request_status === "approved" ? " ok" : ""}">${esc(tag)}</span>` : ""}
@@ -4109,6 +4152,7 @@ function cardHtml(l, i){
     </div></article>`;
 }
 function giftPillHtml(){
+  if(roomPass() && isSeeker()) return `<button class="gift-pill" type="button" data-gift>🏠 Room Pass till ${untilLabel(passUntil("room"))}</button>`;
   if(!CHARGES_ON || !isSeeker() || !state.giftSeen) return "";   // the gift is revealed on the first request
   const n = contactsLeft();
   return `<button class="gift-pill" type="button" data-gift>${GIFT_SVG}${n ? contactsLabel(n) : "Get more contacts"}</button>`;
@@ -4135,6 +4179,7 @@ async function renderDiscover(){
   if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
   else if(sort === "cost") list.sort((a, b) => a.rent - b.rent);
   else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));   // Featured listings first (stable sort)
   const strong = list.filter(l => score(l) >= 75).length;
   const where = f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
   $("greetTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
@@ -4235,7 +4280,7 @@ $("filterForm").addEventListener("change", e => {
 $("filterForm").addEventListener("input", updateFilterCount);
 $("fReset").addEventListener("click", () => { const { city, areas } = prefs(); setPrefs(Object.assign({}, DEFAULT_PREFS, { city, areas })); openFilters(); });
 $("filterForm").addEventListener("submit", e => { e.preventDefault(); setPrefs(readFilterForm()); $("dlgFilters").close(); renderDiscover(); });
-$("giftPill").addEventListener("click", e => { if(e.target.closest("[data-gift]")) { if(contactsLeft()) toast("Ask to meet an owner from any flat. A contact is only used if they accept."); else openPay(); } });
+$("giftPill").addEventListener("click", e => { if(e.target.closest("[data-gift]")) { if(roomPass()) openPay(null); else if(contactsLeft()) toast("Ask to meet an owner from any flat. A contact is only used if they accept."); else openPay(); } });
 function onCardClick(e){
   const h = e.target.closest("[data-save]");
   if(h){
@@ -4330,8 +4375,9 @@ async function openListing(id){
         <div class="share"><span>${esc(state.user.name || "You")}</span>${state.user.occupation && state.user.occupation.type ? `<span>${esc(occLine(state.user.occupation))}</span>` : ""}
           <span>Your 12 living-style answers</span>${m ? `<span>${m.pct}% match</span>` : ""}</div>
         <textarea id="reqMsg" maxlength="300" placeholder="Say hello (optional): when you'd like to move, anything they should know">${esc(note)}</textarea>
-        <button class="btn btn-accent btn-block" style="margin-top:10px" data-action="request">${CHARGES_ON && !left ? `Get ${PACK_CREDITS} more contacts · ₹${PACK_PRICE}` : "Send request"}</button>
-        ${!CHARGES_ON || !state.giftSeen ? `<div class="promise-line"><b>✓</b><span>The owner sees your vibe profile and decides. Your number is only shared if they accept.</span></div>`
+        <button class="btn btn-accent btn-block" style="margin-top:10px" data-action="request">${CHARGES_ON && !left && !roomPass() ? "Get a Room Pass to send this" : "Send request"}</button>
+        ${roomPass() ? `<div class="promise-line"><b>🏠</b><span>Room Pass: unlimited requests till ${untilLabel(passUntil("room"))}. Accepted requests don't use contacts.</span></div>`
+          : !CHARGES_ON || !state.giftSeen ? `<div class="promise-line"><b>✓</b><span>The owner sees your vibe profile and decides. Your number is only shared if they accept.</span></div>`
           : `<div class="promise-line"><b>${GIFT_SVG.replace("<svg", '<svg width="16" height="16"')}</b><span>${left
           ? `You have ${contactsLabel(left)}. One is used only if the owner accepts.`
           : "You've used your free contacts. Requests that aren't accepted never cost anything."}</span></div>`}
@@ -4425,11 +4471,11 @@ $("lBody").addEventListener("click", async e => {
 });
 async function sendRequest(id, message){
   // First ever request: reveal the welcome gift, then carry on with the request.
-  if(CHARGES_ON && !state.giftSeen && onGift() && contactsLeft() > 0) return openGift(() => sendRequest(id, message));
-  if(CHARGES_ON && !contactsLeft()) return openPay(() => sendRequest(id, message));
+  if(CHARGES_ON && !roomPass() && !state.giftSeen && onGift() && contactsLeft() > 0) return openGift(() => sendRequest(id, message));
+  if(CHARGES_ON && !roomPass() && !contactsLeft()) return openPay(() => sendRequest(id, message), "room30");
   try{
     const r = await api.sendRequest(id, message.trim());
-    if(r.error === "no-credits") return openPay(() => sendRequest(id, message));
+    if(r.error === "no-credits") return openPay(() => sendRequest(id, message), "room30");
     if(r.error === "vibe-required" || r.error === "profile-required"){
       toast("First, a few quick questions about how you live. Then you can send your request.");
       state.onboarded.seeker = false; save(); $("dlgListing").close(); route(); return;
@@ -4459,7 +4505,7 @@ async function renderRequests(){
   renderUrgent();
   $("reqSub").textContent = owner
     ? (waiting ? `${waiting} waiting for your reply. Accepting shares your number and address with them, and theirs with you.` : "When someone who fits your home asks to meet you, they'll show up here.")
-    : `${waiting ? waiting + " waiting for a reply. " : ""}${CHARGES_ON ? `You have ${contactsLabel(contactsLeft())}.` : ""}`;
+    : `${waiting ? waiting + " waiting for a reply. " : ""}${roomPass() ? `Room Pass: unlimited requests till ${untilLabel(passUntil("room"))}.` : CHARGES_ON ? `You have ${contactsLabel(contactsLeft())}.` : ""}`;
   const listings = owner ? await api.myListings() : [];
   const invHomes = await Promise.all(invites.map(r => api.get(r.listing_id)));
   const rest = list.filter(r => !invites.includes(r));
@@ -4589,24 +4635,70 @@ $("giftGo").addEventListener("click", () => {
 $("dlgGift").addEventListener("close", () => { if(!state.giftSeen){ state.giftSeen = true; save(); afterGift = null; } });
 
 /* ============================================================= payment */
-let afterPay = null;
-function openPay(then){
+// Plans: prices are before GST, which is added at checkout (fm_settings.gst_percent, 18%). The server
+// (fm_plan_list) decides what's on sale; demo mode uses the same numbers.
+const FREE_INVITES = 1;
+const DEMO_PLANS = [
+  { id:"room30", name:"Room Pass", who:"seeker", base_paise:50000, gst_paise:9000, room_days:30, tribe_days:0, escape_days:0, featured_days:0 },
+  { id:"tribe7", name:"Tribe Pass", who:"seeker", base_paise:50000, gst_paise:9000, room_days:0, tribe_days:7, escape_days:0, featured_days:0 },
+  { id:"premium", name:"Premium", who:"seeker", base_paise:150000, gst_paise:27000, room_days:60, tribe_days:14, escape_days:0, featured_days:0 },
+  { id:"escape7", name:"Escape Pass", who:"owner", base_paise:50000, gst_paise:9000, room_days:0, tribe_days:0, escape_days:7, featured_days:0 }];
+const PLAN_COPY = {
+  room30: { emoji:"🏠", term:"30 days", tag:"Most popular", lines:["Unlimited requests to owners", "Accepted requests don't use contacts",
+    "Nobody accepts you in 30 days? We add 15 days free"] },
+  tribe7: { emoji:"🤝", term:"7 days", lines:["Send tribe requests to people who match your vibe", "They accept for free: one pass makes the tribe",
+    "Numbers and bonds stay after the week"] },
+  premium: { emoji:"⭐", term:"2 months + 2 weeks of Tribe", tag:"Save 25%", lines:["60 days of Room Pass", "14 days of Tribe Pass", "Worth ₹2,000 + GST"] },
+  escape7: { emoji:"🚪", term:"7 days", lines:["Invite as many people as you like", `Your first ${FREE_INVITES === 1 ? "invite" : FREE_INVITES + " invites"} for each listing is free`,
+    "Numbers are shared only when they say yes"] },
+  featured7: { emoji:"✨", term:"7 days", lines:["Show first in your area", "A Featured badge on your listing"] },
+};
+const money = paise => "₹" + (paise / 100).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+const PASS_NAMES = { room:"Room Pass", tribe:"Tribe Pass", escape:"Escape Pass" };
+let afterPay = null, payPlans = [];
+// then: what to do once paid. focus: the plan this moment is about. lead: why the sheet opened.
+async function openPay(then, focus, lead){
   afterPay = then || null;
-  $("payLead").textContent = state.packs ? "You've used your contacts." : `You've used your ${WELCOME_CREDITS} free contacts.`;
-  $("payNote").textContent = LIVE ? "Secure checkout by Razorpay. Contacts are added as soon as payment is confirmed."
-                                  : "Demo mode: no money is charged. Tapping Pay adds 10 contacts.";
-  $("dlgPay").showModal();
+  const role = isOwner() ? "owner" : "seeker";
+  $("payTitle").textContent = isOwner() ? "Escape Pass" : "Plans";
+  $("payLead").textContent = lead || (focus === "tribe7" ? "Sending a tribe request needs a Tribe Pass. Accepting one is always free."
+    : focus === "escape7" ? `Your free invite for this listing is used.`
+    : focus === "room30" ? (state.packs ? "You've used your contacts." : `You've used your ${WELCOME_CREDITS} free contacts.`) : "Prices exclude 18% GST, added at checkout.");
+  const active = Object.keys(PASS_NAMES).filter(k => passUntil(k));
+  $("payActive").innerHTML = active.length ? `<div class="pass-on">${active.map(k => `<span>✓ <b>${PASS_NAMES[k]}</b> till ${untilLabel(passUntil(k))}</span>`).join("")}</div>` : "";
+  $("payPlans").innerHTML = `<p class="hint" style="text-align:center;padding:24px 0">Loading plans…</p>`;
+  $("payNote").textContent = LIVE ? "Secure checkout by Razorpay: UPI, cards and netbanking. Prices exclude 18% GST, added at checkout. Passes start as soon as payment is confirmed."
+                                  : "Demo mode: nothing is charged. Tapping a plan starts it straight away.";
+  if(!$("dlgPay").open) $("dlgPay").showModal();
+  try{ payPlans = await api.plans(); }catch(err){ console.error(err); payPlans = []; }
+  const list = payPlans.filter(p => p.who === role);
+  $("payPlans").innerHTML = list.length ? list.map(p => {
+    const c = PLAN_COPY[p.id] || { emoji:"✨", term:"", lines:[] }, total = p.base_paise + p.gst_paise;
+    const kinds = ["room", "tribe", "escape"].filter(k => p[k + "_days"]), extends_ = kinds.some(k => passUntil(k));
+    return `<article class="plan${focus === p.id ? " on" : ""}">
+      <div class="plan-top"><span class="plan-emoji" aria-hidden="true">${c.emoji}</span><div><h3>${esc(p.name)}</h3><small>${esc(c.term)}</small></div>
+        ${c.tag ? `<span class="plan-tag">${esc(c.tag)}</span>` : ""}</div>
+      <ul>${c.lines.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="plan-price"><b>${money(p.base_paise)}</b><span>+ ${money(p.gst_paise)} GST (18%) = <b>${money(total)}</b></span></div>
+      <button class="btn ${focus === p.id || (!focus && c.tag) ? "btn-accent" : "btn-primary"} btn-block" type="button" data-buy="${esc(p.id)}">${extends_ ? "Add more time" : "Get " + esc(p.name)} · ${money(total)}</button>
+    </article>`;
+  }).join("") : `<p class="hint">Plans couldn't load right now. Please try again in a moment.</p>`;
 }
-$("payBtn").addEventListener("click", async () => {
-  const b = $("payBtn"); b.disabled = true;
+$("payPlans").addEventListener("click", async e => {
+  const b = e.target.closest("[data-buy]"); if(!b) return;
+  const p = payPlans.find(x => x.id === b.dataset.buy); if(!p) return;
+  $("payPlans").querySelectorAll("[data-buy]").forEach(x => x.disabled = true);
   try{
-    await api.buyPack(); await api.me();
-    $("dlgPay").close(); toast(`Payment received. ${PACK_CREDITS} contacts added.`);
+    await api.buyPlan(p.id); await api.me();
+    $("dlgPay").close();
+    toast(`${p.name} is on. ${["room", "tribe", "escape"].filter(k => p[k + "_days"]).map(k => `${PASS_NAMES[k]} till ${untilLabel(passUntil(k))}`).join(", ")}.`);
     const next = afterPay; afterPay = null;
     if(next) next(); else refreshCurrent();
   }catch(err){
-    if(err.message !== "cancelled"){ console.error(err); toast("Payment didn't go through, and you weren't charged."); }
-  }finally{ b.disabled = false; }
+    const m = err && err.message;
+    if(m === "payments-not-set-up") toast("Payments aren't switched on yet. Please try again later.");
+    else if(m !== "cancelled"){ console.error(err); toast("Payment didn't go through, and you weren't charged."); }
+  }finally{ $("payPlans").querySelectorAll("[data-buy]").forEach(x => x.disabled = false); }
 });
 
 /* =============================================================== visit */
@@ -5859,7 +5951,14 @@ async function renderAccount(){
   $("accPhone").textContent = [!isOwner() && occLine(occ), phone].filter(Boolean).join(" · ");
   $("accSwitchT").textContent = isOwner() ? "Look for a room instead" : "Post a flat instead";
   $("accSwitchS").textContent = isOwner() ? "Find a room in a shared flat" : "List your spare room or bed, free";
-  $("accInvite").href = `https://wa.me/?text=${encodeURIComponent("I'm using FindMyFlatMate to find flatmates who match my vibe. No brokers. Try it: " + appLink())}`;
+  $("accInvite").href = `https://wa.me/?text=${encodeURIComponent(inviteText())}`;
+  $("accInviteSub").textContent = state.refCode && (state.refJoined || state.refBonus)
+    ? `${state.refJoined} ${state.refJoined === 1 ? "friend" : "friends"} joined · ${state.refBonus} free ${state.refBonus === 1 ? "contact" : "contacts"} earned${state.refBonus >= 5 ? " (the most)" : ""}`
+    : "Every 2 friends who join with your link = 1 free contact";
+  const on = Object.keys(PASS_NAMES).filter(k => passUntil(k));
+  $("accPlansSub").textContent = on.length ? on.map(k => `${PASS_NAMES[k]} till ${untilLabel(passUntil(k))}`).join(" · ")
+    : isOwner() ? `First invite for each listing is free · Escape Pass ${money(50000)} + GST`
+    : CHARGES_ON ? `Free plan · ${contactsLabel(contactsLeft())}` : "Everything is free right now";
   $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner();
   const mt = vibeType(myVibe());
   $("accVibeSub").textContent = mt ? `${mt.emoji} ${mt.title}` : "Take the 1-minute quiz and share your flatmate type";
@@ -5875,7 +5974,8 @@ async function renderAccount(){
   $("myInterests").innerHTML = allInterests(state.interests).length
     ? `<p class="hint" style="margin:12px 0 0">Into</p>${interestsHtml(state.interests, {})}` : "";
   const [unlocked, visits] = await Promise.all([api.unlockedListings(), api.visits()]);
-  $("creditLine").innerHTML = CHARGES_ON
+  $("creditLine").innerHTML = roomPass() ? `🏠 Room Pass: unlimited requests till ${untilLabel(passUntil("room"))}. Accepted requests don't use contacts.`
+    : CHARGES_ON
     ? `${GIFT_SVG.replace("<svg", '<svg width="16" height="16" style="vertical-align:-3px;color:var(--accent)"')} You have ${contactsLabel(contactsLeft())}${state.pending ? ` (${state.pending} held by requests waiting for a reply)` : ""}. Contacts never expire.`
     : "Owners who accept your request show up here with their number and address.";
   const contacts = await Promise.all(unlocked.map(l => api.contact(l.id)));
@@ -5893,6 +5993,7 @@ $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
     if(b.dataset.action === "signout") return $("dlgSignOut").showModal();
+    if(b.id === "accPlans") return openPay(null);
     if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
@@ -5910,11 +6011,14 @@ function offlineWait(){
     box.querySelector("button").onclick = () => { box.remove(); res(); };
   });
 }
+// The invite link carries your referral code (r=): every 2 friends who join with it earn you a contact.
+const inviteLink = () => siteLink() + (state.refCode ? "?r=" + state.refCode : "");
+const inviteText = () => `I'm finding flatmates on FindMyFlatMate: matched on how we live, no brokers. Join with my link: ${inviteLink()}`;
 $("accInvite").addEventListener("click", e => {
   // The browser's own share sheet where there is one; otherwise the WhatsApp link opens.
   if(!navigator.share) return;
   e.preventDefault();
-  navigator.share({ title: "FindMyFlatMate", text: "Find flatmates who match your vibe. No brokers.", url: appLink() }).catch(() => {});
+  navigator.share({ title: "FindMyFlatMate", text: inviteText() }).catch(() => {});
 });
 $("soYes").addEventListener("click", async () => {
   try{
@@ -5966,15 +6070,22 @@ function vibeFromCode(c){
 const SITE_LINK = "https://kamalmotiani1989-cmd.github.io/NavigateMe/flatmates/";
 const siteLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : SITE_LINK;
 // The quiz answers and a friend's invite live outside fm_state, so they survive signing in.
-const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite";
+const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite", REF_KEY = "fm_ref";
 const readLS = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
 const writeLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
-(function takeVibeInvite(){
-  const p = new URLSearchParams(location.search), v = vibeFromCode(p.get("vibe"));
-  if(!p.has("vibe")) return;
+(function takeLinkParams(){
+  const p = new URLSearchParams(location.search), v = vibeFromCode(p.get("vibe")), r = (p.get("r") || "").toUpperCase();
+  if(!p.has("vibe") && !p.has("r")) return;
   if(v) writeLS(VIBE_INVITE_KEY, { name: (p.get("n") || "").replace(/[^\p{L} .'-]/gu, "").trim().slice(0, 20) || "Your friend", vibe: v, at: Date.now() });
+  if(/^[A-Z0-9]{6,12}$/.test(r)) writeLS(REF_KEY, { code: r, at: Date.now() });
   history.replaceState(null, "", location.pathname + location.hash);
 })();
+// After signing in, tell the server who invited this account (it only counts for a new account).
+async function claimReferral(){
+  const ref = readLS(REF_KEY);
+  if(!ref || !state.user || !api.setReferrer) return;
+  try{ await api.setReferrer(ref.code); writeLS(REF_KEY, null); }catch(err){ console.error(err); }
+}
 // My own answers: a seeker's profile, otherwise whatever the quiz on this device said.
 const myVibe = () => isSeeker() && answered(state.vibe) >= 8 ? state.vibe : readLS(VIBE_QUIZ_KEY);
 
@@ -6080,7 +6191,7 @@ async function openVibeCard(vibe){
 }
 async function shareVibeCard(){
   const { t, vibe, first, canvas } = vibeCtx;
-  const link = siteLink() + "?vibe=" + vibeCode(vibe) + (first ? "&n=" + encodeURIComponent(first) : "");
+  const link = siteLink() + "?vibe=" + vibeCode(vibe) + (first ? "&n=" + encodeURIComponent(first) : "") + (state.refCode ? "&r=" + state.refCode : "");
   const text = `I'm ${t.emoji} ${t.title} on FindMyFlatMate! What's your flatmate type? Take the 1-minute quiz and see how well we'd live together 👉 ${link}`;
   state.vibeShared = Date.now(); save();
   const png = canvas.toDataURL("image/png");
@@ -6215,6 +6326,7 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   route();
   renderWelcomeInvite();
   maybeShowVibeInvite();
+  claimReferral();
   checkInbox();
   checkExtras();
   // The Android app ships its files inside the APK, so it doesn't need one.
