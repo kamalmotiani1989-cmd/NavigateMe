@@ -2,7 +2,8 @@
 // with no SMS, while phone login (Supabase Auth -> Phone + an SMS provider) isn't set up.
 // Anyone who knows the code can sign in as any number, so turn it off before real users:
 //   update fm_settings set test_login = false;
-// Deployed with verify_jwt = false: the code check below is the only gate.
+// Deployed with verify_jwt = false: the code check below is the only gate. With TURNSTILE_SECRET set
+// (Cloudflare Turnstile, the app's bot check), it also needs a valid bot-check token.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const TEST_CODE = "123456";
@@ -26,15 +27,31 @@ async function passwordFor(phone: string) {
   return btoa(String.fromCharCode(...new Uint8Array(sig)));
 }
 
+// Cloudflare Turnstile, when its secret is set: the token from the app's bot check must be valid.
+async function humanCheck(token: string, req: Request) {
+  const secret = Deno.env.get("TURNSTILE_SECRET");
+  if (!secret) return true;
+  if (!token) return false;
+  const form = new FormData();
+  form.append("secret", secret);
+  form.append("response", token);
+  const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+  if (ip) form.append("remoteip", ip);
+  const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body: form });
+  const out = await r.json().catch(() => ({}));
+  return out.success === true;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "method-not-allowed" }, 405);
-  const { phone, code } = await req.json().catch(() => ({}));
+  const { phone, code, captcha } = await req.json().catch(() => ({}));
   if (!/^[6-9][0-9]{9}$/.test(String(phone ?? ""))) return json({ error: "bad-phone" }, 400);
 
   const { data: settings } = await admin.from("fm_settings").select("test_login").single();
   if (!settings?.test_login) return json({ error: "test-login-off" }, 403);
   if (String(code ?? "") !== TEST_CODE) return json({ error: "bad-code" }, 401);
+  if (!(await humanCheck(String(captcha ?? ""), req))) return json({ error: "bot-check" }, 403);
 
   const email = `${phone}@test.findmyflatmate.app`, password = await passwordFor(phone);
   // First sign-in creates the account; after that this just reports "already registered".
