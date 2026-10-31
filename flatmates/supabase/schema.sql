@@ -192,7 +192,7 @@ create table if not exists public.fm_visits (
 -- ------------------------------------------------------------ orders --
 create table if not exists public.fm_orders (
   id                  uuid primary key default gen_random_uuid(),
-  user_id             uuid not null references auth.users(id) on delete cascade,
+  user_id             uuid references auth.users(id) on delete set null,   -- kept, without the person, if the account is deleted
   razorpay_order_id   text unique,
   razorpay_payment_id text unique,
   amount_paise        int  not null,
@@ -248,6 +248,10 @@ alter table public.fm_orders add column if not exists plan text references publi
 alter table public.fm_orders add column if not exists base_paise int;
 alter table public.fm_orders add column if not exists gst_paise int;
 alter table public.fm_orders add column if not exists listing_id uuid references public.fm_listings(id) on delete set null;
+-- Payment records outlive a deleted account (tax law): the order stays, without the person.
+alter table public.fm_orders alter column user_id drop not null;
+alter table public.fm_orders drop constraint if exists fm_orders_user_id_fkey;
+alter table public.fm_orders add constraint fm_orders_user_id_fkey foreign key (user_id) references auth.users(id) on delete set null;
 alter table public.fm_settings add column if not exists gst_percent numeric(5,2) not null default 18;
 alter table public.fm_settings add column if not exists free_invites int not null default 1;     -- per listing, before Escape Pass
 alter table public.fm_settings add column if not exists guarantee_days int not null default 15;  -- Room Pass "nobody accepted" extension
@@ -978,6 +982,7 @@ begin
   if v_order.status = 'paid' then return 0; end if;     -- webhook retries are harmless
   update fm_orders set status = 'paid', razorpay_payment_id = p_razorpay_payment
    where id = v_order.id;
+  if v_order.user_id is null then return 0; end if;     -- the account was deleted after checkout: record the payment only
   update fm_profiles set credits = credits + v_order.credits where id = v_order.user_id;
   if v_order.plan is not null then
     select * into v_plan from fm_plans where id = v_order.plan;
@@ -1006,6 +1011,10 @@ create policy fm_photos_insert on storage.objects for insert to authenticated
   with check (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 drop policy if exists fm_photos_delete on storage.objects;
 create policy fm_photos_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+-- Listing your own folder, so deleting an account can find and remove its photos.
+drop policy if exists fm_photos_select_own on storage.objects;
+create policy fm_photos_select_own on storage.objects for select to authenticated
   using (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
 -- ------------------------------------------------------ push notifications --
@@ -1327,7 +1336,7 @@ end $$;
 create or replace function public.fm_split_set_upi(p_upi text) returns void
 language plpgsql security definer set search_path = public as $$
 begin
-  if coalesce(p_upi, '') <> '' and p_upi !~ '^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$' then raise exception 'bad-upi'; end if;
+  if coalesce(p_upi, '') <> '' and p_upi !~ '^[a-zA-Z0-9.\-_]{2,255}@[a-zA-Z]{2,64}$' then raise exception 'bad-upi'; end if;
   update fm_split_members set upi = nullif(trim(p_upi), '') where phone = fm_my_phone();
 end $$;
 
@@ -1750,6 +1759,23 @@ language sql security definer set search_path = public stable as $$
          count(*) filter (where rooms > 0), sum(rooms)::bigint, sum(reqs)::bigint, sum(orders)::bigint, round(sum(paise) / 100.0, 2)
   from u group by 1, 2 order by 3 desc, 1, 2;
 $$;
+
+-- ------------------------------------------------------ deleting an account --
+-- Account -> Delete my account. Everything tied to the account goes with it: profile, listings and their
+-- private details, requests, invites, visits, saves, tribe links, FlatMart items and offers, passes,
+-- push tokens and reports (all "on delete cascade" from auth.users). Payment records stay without the
+-- person (tax law). Flatsplits groups stay for their other members as the record of who paid what,
+-- under the name and number they added; the person's UPI ID is removed from them. The app deletes
+-- the account's photos (its own storage folder) first.
+create or replace function public.fm_delete_account() returns void
+language plpgsql security definer set search_path = public as $$
+declare v_phone text;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  v_phone := fm_my_phone();
+  if v_phone <> '' then update fm_split_members set upi = null where phone = v_phone; end if;
+  delete from auth.users where id = auth.uid();
+end $$;
 
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may

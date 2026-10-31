@@ -349,9 +349,18 @@ collected, who sees what, the services used, cookies and ads measurement, how lo
 user's rights under the Digital Personal Data Protection Act, 2023, and the grievance officer
 (Richa Wadhwani, privacy@findmeflatmate.com). It's linked from the sign-in card, both footers and
 Account, and the Android app bundles it (`android/app/build.gradle`). Update it, and its date, when
-the app starts collecting something new or uses a new service. Requests to see or delete data come by
-email, and an account is deleted with
-`delete from auth.users where id = (select id from fm_profiles where phone = '91XXXXXXXXXX');`.
+the app starts collecting something new or uses a new service.
+
+**Deleting an account.** Account → **Delete my account** (type DELETE to confirm) removes the account's
+photos from storage (its own folder; `fm_photos_select_own` lets it list them), then calls
+`fm_delete_account`, which deletes the auth user. Everything tied to it goes by `on delete cascade`:
+profile, listings and their private details, requests, invites, visits, saves, tribe links, FlatMart
+items and offers, passes, push tokens and reports. Two things stay, as the privacy policy says:
+payment records (`fm_orders.user_id` becomes null; tax law), and Flatsplits groups shared with others,
+as their record of who paid what (the person's UPI ID is removed). The device's own copy is cleared too.
+For a deletion request by email, delete the auth user the same way:
+`delete from auth.users where id = (select id from fm_profiles where phone = '91XXXXXXXXXX');`
+(remove their photos in Storage → fm-photos → the folder named after their user id).
 
 ## Install as an app
 

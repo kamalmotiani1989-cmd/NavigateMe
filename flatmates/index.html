@@ -1103,6 +1103,10 @@ a.w-link{text-decoration:none}
 
 /* sign-out confirmation: a small card, a bottom sheet on phones */
 .btn-danger{background:var(--danger); color:#fff} .btn-danger:hover{filter:brightness(.94)}
+.btn-danger:disabled{opacity:.45; filter:none; cursor:not-allowed}
+.acc-del b{color:var(--text-2)} .acc-del .acc-ic{background:#F3F4F6; color:var(--danger)}
+.confirm-body .del-note{font-size:13.5px; margin-top:-8px}
+.del-field{text-align:left; margin-bottom:14px} .del-field label{font-size:13.5px; color:var(--text-2)}
 dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-height:calc(100dvh - 48px)}
 .confirm-body{padding:28px 24px 22px; text-align:center}
 .confirm-ic{width:60px; height:60px; margin:0 auto 14px; border-radius:50%; display:grid; place-items:center; background:#FDECEA; color:var(--danger)}
@@ -1696,6 +1700,8 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="acc-list">
       <button class="acc-row acc-out" type="button" data-action="signout"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></i>
         <span><b>Sign out</b><small id="accOutSub"></small></span></button>
+      <button class="acc-row acc-del" type="button" data-action="delete"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></i>
+        <span><b>Delete my account</b><small>Removes your profile, listings and matches for good</small></span></button>
     </div>
   </section>
 
@@ -1846,6 +1852,19 @@ html:has(> body.app){background:var(--app-bg)}
   <p>Your matches, requests and splits stay saved. Sign back in any time with <b id="soPhone"></b>.</p>
   <button class="btn btn-danger btn-block" type="button" id="soYes">Sign out</button>
   <button class="btn btn-ghost btn-block" type="button" data-close>Stay signed in</button>
+</div></dialog>
+
+<dialog id="dlgDelete" class="confirm" aria-labelledby="delTitle"><div class="confirm-body">
+  <span class="confirm-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></span>
+  <h2 id="delTitle">Delete your account?</h2>
+  <p>This can't be undone. Your profile and vibe answers, listings and photos, requests and invites, saved homes, tribe matches and
+    FlatMart items are deleted, and any pass you have ends.</p>
+  <p class="del-note">Flatsplits groups you share stay for the others, as their record of who paid what. Payment records are kept
+    without your name, as tax law requires. <a href="privacy.html#keep">More in our privacy policy</a>.</p>
+  <div class="field del-field"><label for="delType">Type <b>DELETE</b> to confirm</label>
+    <input type="text" id="delType" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+  <button class="btn btn-danger btn-block" type="button" id="delYes" disabled>Delete my account</button>
+  <button class="btn btn-ghost btn-block" type="button" data-close>Keep my account</button>
 </div></dialog>
 
 <dialog id="dlgFs" aria-labelledby="fsdTitle"><div class="mhead"><div><h2 id="fsdTitle"></h2><div class="loc" id="fsdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
@@ -2730,6 +2749,20 @@ const demoApi = {
     state.packs = (state.packs || 0) + 1; save(); return state;
   },
   async setReferrer(){ return "ok"; },
+  // Same as fm_delete_account, on this device: the account's own data goes, and the demo's shared world
+  // loses everything that was theirs. Flatsplits groups keep their name and number, without the UPI ID.
+  async deleteAccount(){
+    const me = this.me_(), mine = new Set(state.myListings.filter(l => l.owner_phone === me).map(l => l.id)), m = this.mk();
+    state.myListings = state.myListings.filter(l => !mine.has(l.id));
+    state.requests = state.requests.filter(r => r.seeker_phone !== me && !mine.has(r.listing_id));
+    state.visits = (state.visits || []).filter(v => v.seeker_phone !== me && !mine.has(v.listing_id));
+    const items = new Set(m.items.filter(i => i.seller_phone === me).map(i => i.id));
+    m.items = m.items.filter(i => !items.has(i.id)); m.offers = m.offers.filter(o => o.buyer_phone !== me && !items.has(o.item_id));
+    this.splitAll().forEach(g => g.members.forEach(x => { if(x.phone === me) x.upi = null; }));
+    try{ localStorage.removeItem("fm_state:" + me); }catch(e){}
+    state = Object.assign(freshState(), { myListings: state.myListings, visits: state.visits, requests: state.requests, splits: state.splits, market: state.market });
+    save();
+  },
   // The host page's counts: the demo's sample seekers stand in for real people.
   async areaDemand(city, area){ return areaDemandOf(demoSeekerPool(), city, area); },
   // Same as fm_set_attribution: true once per account, on its first sign-in.
@@ -2880,6 +2913,20 @@ function makeLiveApi(sb){
     async setReferrer(code){ return rpc("fm_set_referrer", { p_code: code }); },
     async areaDemand(city, area){ return rpc("fm_area_demand", { p_city: city, p_area: area || null }); },
     async setAttribution(a){ return rpc("fm_set_attribution", { p: a }); },
+    // Photos first (the database can't delete files): everything in the account's own storage folder.
+    // Then fm_delete_account removes the account and all that's tied to it, session included.
+    async deleteAccount(){
+      const me = await uid(), phone = state.account;
+      try{
+        const { data } = await sb.storage.from("fm-photos").list(me, { limit: 1000 });
+        const paths = (data || []).map(f => me + "/" + f.name);
+        for(let i = 0; i < paths.length; i += 100) await sb.storage.from("fm-photos").remove(paths.slice(i, i + 100));
+      }catch(err){ console.error(err); }
+      await rpc("fm_delete_account");
+      await sb.auth.signOut({ scope: "local" }).catch(() => {});
+      try{ if(phone) localStorage.removeItem("fm_state:" + phone); }catch(e){}
+      state = freshState(); save();
+    },
     async buyPlan(id, listingId){
       await loadRazorpay();
       const order = await callPay("order", { plan: id, listing_id: listingId || null });
@@ -3123,7 +3170,7 @@ Object.assign(demoApi, {
   },
   async splitBillDelete(gid, bid){ const g = this.splitFind(gid); g.bills = g.bills.filter(b => b.id !== bid); save(); },
   async splitSetUpi(upi){
-    if(upi && !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upi)) throw new Error("bad-upi");
+    if(upi && !/^[a-zA-Z0-9.\-_]{2,255}@[a-zA-Z]{2,64}$/.test(upi)) throw new Error("bad-upi");
     for(const g of this.splitMine()) for(const m of g.members) if(m.phone === this.me_()) m.upi = upi || null;
     save();
   },
@@ -6286,6 +6333,7 @@ $("view-account").addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   try{
     if(b.dataset.action === "signout") return $("dlgSignOut").showModal();
+    if(b.dataset.action === "delete"){ $("delType").value = ""; $("delYes").disabled = true; $("dlgDelete").showModal(); return $("delType").focus(); }
     if(b.id === "accPlans" || b.dataset.moreTime !== undefined) return openPay(null);
     if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
@@ -6319,6 +6367,22 @@ $("soYes").addEventListener("click", async () => {
     location.hash = ""; await route();
     toast("You're signed out. See you soon!");
   }catch(err){ toast(err.message || "Couldn't sign out. Try again."); }
+});
+$("delType").addEventListener("input", () => { $("delYes").disabled = $("delType").value.trim().toUpperCase() !== "DELETE"; });
+$("delYes").addEventListener("click", async () => {
+  const btn = $("delYes");
+  btn.disabled = true; btn.textContent = "Deleting…";
+  try{
+    await api.deleteAccount();
+    // This device's traces of the visit too: quiz answers, ad tags, the host page's last area.
+    [VIBE_QUIZ_KEY, ATTR_KEY, HOST_KEY].forEach(k => writeLS(k, null));
+    unseen = 0; $("dlgDelete").close();
+    location.hash = ""; await route();
+    toast("Your account has been deleted.");
+  }catch(err){
+    console.error(err); btn.disabled = false;
+    toast("Couldn't delete your account. Check your connection and try again.");
+  }finally{ btn.textContent = "Delete my account"; }
 });
 /* ============================================================ vibe card */
 // A shareable "flatmate type" from the 12 living-style answers: a rhythm (bedtime) plus the most
