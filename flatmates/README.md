@@ -5,16 +5,24 @@ the room comes second.
 
 ## How it flows
 
-1. **Welcome page = sign-in.** A short write-up and the sign-in card, which asks what you came
-   for: *post my flat* or *looking for a room*, then their mobile number and a one-time code. Their first name is the first question after sign-in (only asked once per number).
-2. **Questions at sign-in, one per screen, required.**
-   - Room seekers (19): what they do (working / student / self-employed / between jobs) and
-     where, city, the areas they like (pick several), monthly rent budget, 12 living-style
-     questions (bedtime, cleanliness, food, cooking, smoking, drinks, guests, noise, time
-     together, groceries and chores, weekday routine, pets; smoking, food and pets count double),
-     then **music and hobbies** (shown as "you both like", never part of the score).
-   - Flat owners (16): how many live there, each flatmate's work or studies and age range, the
-     same 12 questions and music/hobbies for the household. The posting form comes prefilled.
+1. **Welcome page = sign-in.** A short write-up, the **flatmate-type quiz** (the bright card under
+   the headline) and the sign-in card, which asks what you came for: *post my flat* or *looking for a
+   room*, then their mobile number. The one-time code comes **on WhatsApp**, or by SMS when they tap
+   "Send it by SMS instead"; the code screen can send it again, or by SMS, after a minute. Their first
+   name is the first question after sign-in (only asked once per number). See "Sign-in codes" below.
+2. **Questions at sign-in, one per screen, short.** 12 living-style questions in all (bedtime,
+   cleanliness, food, cooking, smoking, drinks, guests, noise, time together, groceries and chores,
+   weekday routine, pets; smoking, food and pets count double), but sign-up asks only the **6 core ones**
+   (bedtime, cleanliness, food, cooking, smoking, time together). 6 answers are enough to match.
+   - Room seekers (about 11 screens): what they do (working / student / self-employed / between jobs),
+     generation, city, the areas they like (pick several), monthly rent budget and the 6 core questions.
+   - Flat owners (about 9): how many live there, the household's generation and the 6 core questions.
+     The posting form that follows has the flatmates, the other 6 questions and music/hobbies, prefilled.
+   - **Complete your profile** (seekers): the rest later, on the same screens: a line about what they
+     do, the other 6 questions, **music and hobbies** (shown as "you both like", never part of the score).
+     A card on Discover shows how complete the profile is ("57% done · 9 quick questions left"), Account
+     shows it under "How you live", and a reminder comes now and then (6 hours after sign-up at the
+     earliest, at most once a day, 3 in all). "Finish later" saves what's answered.
 3. **Vibe matches.** Discover opens with a "Your vibe matches" row: every home in the city with an
    80%+ match, whatever the area or budget filters say, so a great fit is never missed.
    **Compatibility analysis:** tap the wheel (or "See compatibility analysis") on any home to see
@@ -129,10 +137,11 @@ the room comes second.
     - **Share:** Android's share sheet in the app (WhatsApp, Instagram...), the phone's share sheet on the
       website, or download + WhatsApp + copy link on a computer. The link is the website with
       `?vibe=<answers>&n=<first name>`: the 12 answers and the generation, nothing else.
-    - **The friend's side:** the website shows "Neha is The Night Owl Chef" and a **1-minute quiz** that needs
-      no sign-up (the 12 questions, the generation and an optional first name). The result is their own card
-      plus "You and Neha: 87% match", the answers they share and the full compatibility view. "Find
-      flatmates who match me" goes to sign-up, which then skips the questions already answered.
+    - **The quiz and the friend's side:** the website shows the quiz under the headline (and "Neha is The
+      Night Owl Chef" when they came from a friend's link): the 6 core questions, the generation and an
+      optional first name. Then **their number and a code**, so the answers are kept: the card shows right
+      after sign-in, the answers and name are saved to the new profile, and sign-up skips them. The card
+      shows "You and Neha: 87% match", the answers they share and the full compatibility view.
     - **In the app:** the end of a seeker's sign-up reveals their type, Discover shows it once (until they
       share or hide it), "How you live" on Account shows it, and **My Vibe Card** in Account settings opens
       it (owners take the quiz for themselves). A signed-in seeker who opens a friend's link sees the match
@@ -207,7 +216,7 @@ both, e.g. ₹500 + ₹90 GST = ₹590. Plans are one-time passes, not auto-rene
 | Seeker | **Room Pass**: 30 days of unlimited requests; accepted requests don't use contacts. If no owner accepts in those 30 days, 15 more days free (once) | ₹500 + GST |
 | Seeker | **Tribe Pass**: 7 days to send tribe requests. Accepting one is always free, so one pass makes the tribe | ₹500 + GST |
 | Seeker | **Premium**: 60 days of Room Pass + 14 days of Tribe Pass | ₹1,500 + GST |
-| Everyone | **Referrals**: every 2 friends who sign up with your link (`?r=<code>`) and finish their profile (a seeker's 12 answers, or an owner's first listing) earn 1 contact, up to 5 | Free |
+| Everyone | **Referrals**: every 2 friends who sign up with your link (`?r=<code>`) and finish signing up (a seeker's 6 core answers, or an owner's first listing) earn 1 contact, up to 5 | Free |
 
 The rules live in the database (`fm_request`, `fm_decide`, `fm_tribe_answer`, `fm_invite`,
 `fm_set_referrer`), so the app can't be tricked past them. Prices and what each plan gives are rows in
@@ -313,11 +322,23 @@ meta. The app itself can't call it.
 **Ad links.** Tag every ad so the report can tell campaigns apart:
 
 - Meta (Facebook / Instagram), website URL `https://findmeflatmate.com/?host=Pune&area=Baner`, URL parameters
-  `utm_source=meta&utm_medium=paid&utm_campaign=hosts_pune&utm_content={{ad.name}}`
+  `utm_source=meta&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{site_source_name}}`
+  (`site_source_name` is `ig` for Instagram placements, which is how Instagram ads are told apart from Facebook ads)
+- Instagram bio and posts (free): `https://findmeflatmate.com/?utm_source=instagram&utm_medium=social&utm_campaign=bio`
 - Google Ads: final URL `https://findmeflatmate.com/?host=Pune&area=Baner`. In the campaign's settings, under
   Campaign URL options, set the final URL suffix to `utm_source=google&utm_medium=cpc&utm_campaign=hosts_pune`.
   Keep auto-tagging on (it adds the gclid).
 - Ads for seekers can go to `https://findmeflatmate.com/?utm_source=...`.
+
+**Ads dashboard.** https://claude.ai/artifact/LrZ26dfDV7de4MDye4pFQY (private to its owner until shared)
+reads the live database through the Supabase connector: sign-ups, rooms listed by them, requests,
+passes and revenue by channel (Google Ads, Facebook ads, Instagram ads, other ads, free Instagram and
+Facebook, Google search, WhatsApp, friend invites, other links, direct, and accounts from before
+tracking) and by campaign, a chart per day, and cost per sign-up and per room listed from ads. It
+leaves sample accounts out. Ad spend isn't connected: enter it in `fm_ad_spend` (Supabase Table
+Editor: day, channel, campaign as in utm_campaign, amount in rupees as billed). Clicks and impressions
+stay in Meta Ads Manager and Google Ads; a connector such as Windsor.ai or Supermetrics could bring
+them in later.
 
 **Meta Pixel and Google tag.** Fill in `FM_CONFIG.ads` in `index.html` and they load, on the website
 only (never inside the Android app):
@@ -414,12 +435,36 @@ have). There's no real number or address to share, and the app says so. Running 
 replaces them. Before real users, remove them all:
 `delete from auth.users where id in (select id from public.fm_profiles where sample);`
 
-**Testing login (no SMS):** until phone login has an SMS provider, everyone signs in with their mobile
+**Testing login (no messages):** until real codes are set up (below), everyone signs in with their mobile
 number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It
-isn't secure: anyone with the code can sign in as any number. Before real users, add an SMS provider
-under Authentication → Sign In / Providers → Phone (Twilio, Vonage, MessageBird or Textlocal; Indian
-numbers need DLT registration), set `testLogin: false` in `FM_CONFIG`, and run
-`update fm_settings set test_login = false;`. The supabase-js library ships inside the app (`vendor/`), so it never depends on a CDN; if the
+isn't secure: anyone with the code can sign in as any number. The WhatsApp / SMS choice, the limits and
+the bot checks already work; only the message isn't sent.
+
+### Sign-in codes: WhatsApp first, SMS on request
+
+Every code request goes through `fm_otp_request` first: one code a minute and 5 an hour per number, 40
+an hour per network address, and the channel the person picked. The sign-in card also has a hidden field
+that only bots fill in and a minimum time, and Cloudflare Turnstile once its key is set. Codes are sent by
+`fm-send-otp`, Supabase's **Send SMS hook**, through WhatsApp (Meta's WhatsApp Cloud API, about ₹0.12 a
+code) or MSG91 SMS (about ₹0.15–0.25), and only to numbers that asked through the app in the last 10
+minutes, so calling Supabase's API directly can't run up the bill. WhatsApp doesn't say straight away
+whether a number has WhatsApp, so the code screen offers "Get it by SMS instead" after a minute.
+
+To send real codes:
+1. **WhatsApp:** in Meta Business Suite, add a WhatsApp Business phone number, create an
+   **Authentication** template named `fm_login_code` (English, with a copy-code button) and a permanent
+   access token (a system user). Then `supabase secrets set WHATSAPP_TOKEN=... WHATSAPP_PHONE_ID=...`
+   (and `WHATSAPP_TEMPLATE` / `WHATSAPP_LANG` if yours differ).
+2. **SMS:** register on the DLT portal (business, sender ID and an OTP template), set the template up in
+   MSG91, then `supabase secrets set MSG91_AUTHKEY=... MSG91_TEMPLATE_ID=...`.
+3. **Supabase:** Authentication → Sign In / Providers → Phone: on. Authentication → Auth Hooks → Send SMS
+   hook → HTTPS: `https://tjgkcuzypstnanpsoogi.supabase.co/functions/v1/fm-send-otp`; generate its secret and
+   `supabase secrets set SEND_SMS_HOOK_SECRET="v1,whsec_..."`.
+4. **Bot check:** in Cloudflare, add a Turnstile widget for findmeflatmate.com,
+   kamalmotiani1989-cmd.github.io and appassets.androidplatform.net (the Android app). Put its site key in
+   `FM_CONFIG.turnstileSiteKey`, its secret in Supabase (Authentication → Attack Protection → CAPTCHA,
+   Turnstile) and, while test login is on, `supabase secrets set TURNSTILE_SECRET=...` for `fm-login`.
+5. Switch test login off: `testLogin: false` in `FM_CONFIG`, and `update fm_settings set test_login = false;`. The supabase-js library ships inside the app (`vendor/`), so it never depends on a CDN; if the
 server can't be reached the app shows "Can't connect" instead of falling back to demo data.
 Set `supabaseUrl` and `supabaseAnonKey` in `FM_CONFIG` back to "" to run the demo again.
 

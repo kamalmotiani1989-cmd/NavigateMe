@@ -152,6 +152,13 @@ textarea{min-height:96px; resize:vertical}
 .role:has(input:checked) .ic{background:var(--brand-soft); color:var(--brand)}
 .role:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px; border-radius:8px}
 .otpbox{letter-spacing:.5em; text-align:center; font-size:22px!important}
+.btn-wa{background:#1DA851; color:#fff; box-shadow:0 6px 16px rgba(29,168,81,.28)} .btn-wa:hover{background:#178F45}
+.btn-wa svg{flex:none}
+.lg-sms{display:block; margin:8px auto 0; color:var(--text-2); font-size:14px}
+.hp{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
+.lg-captcha{margin:0 0 12px; min-height:0}
+.otp-more{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:2px 12px; margin-top:10px; font-size:14px; color:var(--text-3)}
+.otp-more .linkbtn{font-size:14px; color:var(--brand)}
 .demo{background:var(--brand-soft); color:var(--brand-2); padding:10px 14px; border-radius:10px; font-size:14px; font-weight:600; margin-bottom:14px}
 @media (max-width:900px){
   .w-grid{grid-template-columns:1fr; grid-template-areas:"copy" "card" "city"; padding-block:12px 0}
@@ -1132,11 +1139,31 @@ html:has(> body.app){background:var(--app-bg)}
 .smp-note .smp{margin:1px 0 0; flex:none}
 
 /* ---------- vibe card: the quiz, the card dialog and where the type shows up */
-.w-quiz{display:flex; align-items:center; gap:12px; margin-top:22px; padding:12px 18px 12px 14px; border:0; border-radius:16px; cursor:pointer; text-align:left;
-  background:rgba(255,255,255,.16); color:#fff; font:inherit; box-shadow:inset 0 0 0 1px rgba(255,255,255,.28); transition:background .15s}
-.w-quiz:hover{background:rgba(255,255,255,.24)}
-.w-quiz > span:first-child{font-size:26px}
-.w-quiz b{display:block; color:#FFD08A; font-size:15.5px}
+/* The quiz: the brightest thing on the page, so people start there. */
+.w-quiz{position:relative; display:flex; align-items:center; gap:14px; width:100%; max-width:540px; margin:22px 0 6px; padding:14px 16px;
+  border:0; border-radius:20px; cursor:pointer; text-align:left; color:#fff; font:inherit; overflow:hidden;
+  background:linear-gradient(120deg,#FF6B6B 0%,#F7468E 48%,#FF9A3D 100%); background-size:200% 200%; box-shadow:0 14px 34px rgba(214,40,110,.35);
+  transition:transform .15s}
+.w-quiz:hover{transform:translateY(-2px)}
+.w-quiz:focus-visible{outline:3px solid #fff; outline-offset:3px}
+.wq-faces{display:flex; flex:none}
+.wq-faces i{display:grid; place-items:center; width:38px; height:38px; margin-right:-10px; border-radius:50%; background:#fff; font-style:normal; font-size:20px;
+  box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.wq-text{flex:1; min-width:0; padding-left:10px}
+.wq-text small{display:block; font-size:11.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92}
+.wq-text b{display:block; font-size:19px; line-height:1.2; color:#fff}
+.wq-text span{display:block; font-size:13.5px; opacity:.94; margin-top:3px}
+.wq-go{flex:none; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.24); font-size:18px; font-weight:800}
+@media (prefers-reduced-motion:no-preference){
+  .w-quiz{animation:wq-shift 7s ease-in-out infinite}
+  .wq-faces i{animation:wq-bob 2.6s ease-in-out infinite} .wq-faces i:nth-child(2){animation-delay:.3s} .wq-faces i:nth-child(3){animation-delay:.6s}
+}
+@keyframes wq-shift{0%,100%{background-position:0% 50%} 50%{background-position:100% 50%}}
+@keyframes wq-bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)}}
+@media (max-width:420px){ .wq-faces i{width:32px; height:32px; font-size:17px} .wq-text b{font-size:17px} .wq-go{display:none} }
+.w-ready{display:flex; gap:10px; align-items:flex-start; margin:0 0 16px; padding:12px 14px; border-radius:14px; background:#FFF1E6; color:#7A3410; font-size:14px}
+.w-ready b{display:block; font-size:15px; color:#5C2408}
+.w-ready-ic{font-size:22px; line-height:1}
 .w-invite{display:flex; gap:12px; align-items:center; margin-top:22px; padding:12px 16px; border-radius:16px; background:#fff; color:var(--text);
   box-shadow:0 12px 30px rgba(4,40,70,.22); font-size:15px; line-height:1.45}
 .w-invite + .w-quiz{margin-top:12px}
@@ -1159,6 +1186,17 @@ html:has(> body.app){background:var(--app-bg)}
 .vt-line > span:first-child{font-size:28px}
 .vt-line span{flex:1} .vt-line small{display:block; font-size:12px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em}
 .vt-line b{font-size:16.5px} .vt-line em{font-style:normal; font-weight:800; color:var(--brand)}
+.pp-card{position:relative; margin:16px 0 4px; padding:14px 40px 14px 14px; border-radius:18px; background:linear-gradient(120deg,#E6F7F6,#EAF1FD);
+  box-shadow:inset 0 0 0 1px rgba(14,154,160,.18)}
+.pp-main{display:flex; gap:14px; align-items:center; border:0; background:none; padding:0; text-align:left; cursor:pointer; font:inherit; color:var(--text); width:100%}
+.pp-main b{display:block; font-size:16.5px} .pp-main small{display:block; font-size:13.5px; color:var(--text-2); margin-top:2px}
+.pp-main em{display:block; font-style:normal; font-weight:800; color:var(--teal); font-size:14px; margin-top:6px}
+.pp-ring{flex:none; width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
+  background:conic-gradient(var(--teal) calc(var(--p) * 1%), rgba(14,154,160,.15) 0)}
+.pp-ring b{display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:#fff; font-size:13px; color:var(--teal)}
+.pp-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(0,0,0,.05); cursor:pointer; font-size:16px; color:var(--text-2)}
+.acc-complete{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid var(--hair); font-size:14px; color:var(--text-2)}
+.ob .ob-later{padding:0 0 0 10px; font-size:13px; text-transform:none; letter-spacing:0; text-decoration:underline}
 .vibe-promo{position:relative; display:flex; gap:12px; align-items:center; margin:16px 0 4px; padding:14px 40px 14px 16px; border-radius:18px;
   background:linear-gradient(135deg,#FFF6E5,#FFEFE4); box-shadow:inset 0 0 0 1px #FFE2C2}
 .vp-emoji{font-size:34px; flex:none}
@@ -1242,14 +1280,21 @@ html:has(> body.app){background:var(--app-bg)}
       <div class="w-copy">
         <p class="eyebrow tagline">Find your vibe. Find your flatmate.</p>
         <h1>Find flatmates who <em>match your vibe.</em></h1>
+        <div class="w-invite" id="wInvite" hidden></div>
+        <button class="w-quiz" type="button" data-quiz>
+          <span class="wq-faces" aria-hidden="true"><i>🦉</i><i>🍳</i><i>🦋</i></span>
+          <span class="wq-text"><small>1-minute quiz</small><b>What's your flatmate type?</b>
+            <span>6 quick questions. Get your Vibe Card and see which friends you'd live well with.</span></span>
+          <span class="wq-go" aria-hidden="true">→</span></button>
         <p class="lede">Night owl or early bird? Veg kitchen or biryani Sundays? Gym at 6 or Netflix till 2? Tell us how you live, and we'll match you with flatmates who live the same way.</p>
         <ul class="w-points"><li>Matched on 12 lifestyle questions</li><li>Meet the people before the room</li><li>No brokers, ever</li></ul>
-        <div class="w-invite" id="wInvite" hidden></div>
-        <button class="w-quiz" type="button" data-quiz><span aria-hidden="true">✨</span><span>What's your flatmate type?<b>Take the 1-minute quiz →</b></span></button>
+
       </div>
       <div class="city" id="city" aria-hidden="true"></div>
       <div class="w-card">
         <form id="loginForm" novalidate>
+          <div class="w-ready" id="wCardReady" hidden><span class="w-ready-ic" aria-hidden="true">✨</span>
+            <span><b>Your Vibe Card is ready</b>Verify your number to see it. Your answers are saved to your profile, so you won't answer them again.</span></div>
           <h2>Welcome! What brings you here?</h2>
           <p class="sub">Pick one. You can switch any time from your account.</p>
           <div class="roles">
@@ -1261,18 +1306,25 @@ html:has(> body.app){background:var(--app-bg)}
               <span><b>I'm looking for a room</b><span>A private or shared room, with people who match my vibe</span></span></label>
           </div>
           <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
-          <button class="btn btn-primary btn-block" type="submit">Send me a code</button>
-          <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.
+          <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
+          <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
+          <div class="lg-captcha" id="lgCaptcha" hidden></div>
+          <button class="btn btn-wa btn-block" type="submit" data-channel="whatsapp"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.2-.5-.5-1-1.1-1.3-1.7-.1-.2 0-.4.1-.5l.4-.5.3-.4v-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>Get the code on WhatsApp</button>
+          <button class="linkbtn lg-sms" type="submit" data-channel="sms">Send it by SMS instead</button>
+          <p class="hint">A 6-digit code signs you in. No password to remember.
             Signing in means you agree to our <a href="privacy.html">privacy policy</a>.</p>
         </form>
         <form id="otpForm" novalidate hidden>
-          <h2>Check your messages</h2>
-          <p class="sub">Enter the 6-digit code sent to <b id="otpTo"></b>.</p>
+          <h2 id="otpTitle">Check your WhatsApp</h2>
+          <p class="sub">Enter the 6-digit code we sent <span id="otpVia">on WhatsApp</span> to <b id="otpTo"></b>.</p>
           <div class="demo" id="otpDemo" hidden></div>
           <div class="field"><label for="lgOtp">Code</label>
             <input type="text" class="otpbox" id="lgOtp" required pattern="[0-9]{6}" maxlength="6" inputmode="numeric" autocomplete="one-time-code"></div>
           <button class="btn btn-primary btn-block" type="submit">Sign in</button>
-          <button class="linkbtn" type="button" id="otpBack" style="margin-top:8px">Use a different number</button>
+          <div class="otp-more"><span id="otpWait" aria-live="polite"></span>
+            <button class="linkbtn" type="button" id="otpResend" hidden>Send the code again</button>
+            <button class="linkbtn" type="button" id="otpSms" hidden>Get it by SMS instead</button></div>
+          <button class="linkbtn" type="button" id="otpBack" style="margin-top:4px">Use a different number</button>
         </form>
       </div>
     </div>
@@ -1490,6 +1542,7 @@ html:has(> body.app){background:var(--app-bg)}
   <section id="view-discover" hidden>
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
     <div id="urgent"></div>
+    <div id="profilePromo"></div>
     <div id="vibePromo"></div>
     <div id="passNudgeD"></div>
     <div id="extrasD"></div>
@@ -1672,7 +1725,7 @@ html:has(> body.app){background:var(--app-bg)}
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
       <button class="btn btn-ghost btn-sm" data-vibe-open>Edit</button></div>
       <div id="vibeType"></div>
-      <div class="traits" id="vibeTraits"></div><div id="myInterests"></div></div>
+      <div class="traits" id="vibeTraits"></div><div id="myInterests"></div><div id="accComplete"></div></div>
     <div class="panel" id="discPanel"><h2>Who can find you</h2>
       <p class="sub">With The Empty Room Escape, owners with a room in your areas can find you (first name, what you do, budget and vibe match)
         and invite you to see their flat. Your number is only shared if you say yes.</p>
@@ -1892,6 +1945,9 @@ const FM_CONFIG = {
   //   googleTag: Google Analytics "G-..." and/or Google Ads "AW-..." tag IDs, comma-separated
   //   googleAds: Google Ads conversion actions ("AW-.../label") for sign-ups, rooms listed and purchases
   ads: { metaPixel: "", googleTag: "", googleAds: { sign_up: "", list_room: "", purchase: "" } },
+  // Bot check on the sign-in card: a Cloudflare Turnstile site key (free). Its secret goes in Supabase
+  // (Authentication -> Attack Protection -> CAPTCHA) and, while test login is on, as fm-login's TURNSTILE_SECRET.
+  turnstileSiteKey: "",
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqZ2tjdXp5cHN0bmFucHNvb2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NzU4OTksImV4cCI6MjEwODU1MTg5OX0.i50hd8s8umEngxNxGfizz-32PIkrzQzI87KM0Tix3WA",
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
@@ -1968,6 +2024,10 @@ function readQuiz(root, prefix){
   return out;
 }
 const answered = v => VIBE_QS.filter(x => v && Number.isInteger(v[x.k])).length;
+// Sign-up and the quiz ask 6 of the 12 (food, smoking, bedtime, tidiness, cooking, social); the other 6
+// come later, in "Complete your profile". Six answers are enough to match (fm_vibe_count in schema.sql).
+const CORE_KEYS = ["sleep", "clean", "food", "cook", "smoke", "social"];
+const MIN_VIBE = 6;
 
 /* ---- interests: shown as "you both like", never part of the vibe score. */
 const INTERESTS = {
@@ -2415,6 +2475,8 @@ function areaDemandOf(rows, city, area){
 /* ========================================================== data layer */
 /* Two implementations, one interface. Screens only call api.*          */
 let pendingOtp = null;
+const demoOtpLog = {};
+const otpError = (code, wait) => Object.assign(new Error(code), { code, wait });
 
 // Demo stand-ins for the other side: sample owners reply ~6 s after a request,
 // and a sample seeker asks to meet a flat ~8 s after you post it.
@@ -2424,8 +2486,13 @@ const demoApi = {
   live:false,
   me_(){ return state.user && state.user.phone; },
   all(){ const gone = new Set(state.delisted || []); return demoListings().concat(state.myListings).filter(l => !gone.has(l.id)); },
-  async sendOtp(phone, name, role){
-    pendingOtp = { phone, name, role, code: String(Math.floor(100000 + Math.random()*900000)) };
+  // Same limits as fm_otp_request: a code a minute, 5 an hour per number.
+  async sendOtp(phone, name, role, opts = {}){
+    const now = Date.now(), sent = (demoOtpLog[phone] || []).filter(t => now - t < 36e5);
+    if(sent.length && now - sent[sent.length - 1] < 60e3) throw otpError("too-soon", Math.ceil((60e3 - (now - sent[sent.length - 1])) / 1000));
+    if(sent.length >= 5) throw otpError("too-many");
+    demoOtpLog[phone] = sent.concat(now);
+    pendingOtp = { phone, name, role, channel: opts.channel === "sms" ? "sms" : "whatsapp", code: String(Math.floor(100000 + Math.random()*900000)) };
     return { demoCode: pendingOtp.code };
   },
   async verifyOtp(code){
@@ -2475,7 +2542,7 @@ const demoApi = {
   async sendRequest(id, message){
     const me = state.user, l = this.all().find(x => x.id === id);
     if(me.role !== "seeker") return { error:"seekers-only" };
-    if(answered(state.vibe) < 8) return { error:"vibe-required" };
+    if(answered(state.vibe) < MIN_VIBE) return { error:"vibe-required" };
     if(!me.occupation || !me.occupation.type) return { error:"profile-required" };
     if(!l) return { error:"listing-not-found" };
     const r = this.reqFor(id);
@@ -2569,7 +2636,7 @@ const demoApi = {
   // ---- Build your tribe. Same rules as fm_tribe_refresh / fm_tribe_list / fm_tribe_answer.
   async tribeRefresh(){
     const f = prefs();
-    if(!state.user || state.user.role !== "seeker" || state.tribeOpen === false || !f.city || answered(state.vibe) < 8) return 0;
+    if(!state.user || state.user.role !== "seeker" || state.tribeOpen === false || !f.city || answered(state.vibe) < MIN_VIBE) return 0;
     state.tribe = state.tribe || [];
     const have = new Set(state.tribe.map(t => t.sid));
     const fresh = demoSeekerPool().filter(x => x.city === f.city && !have.has(x.id)
@@ -2800,17 +2867,22 @@ function makeLiveApi(sb){
   const all = () => rpc("fm_search", {});
   return {
     live:true,
-    async sendOtp(phone, name, role){
-      if(FM_CONFIG.testLogin){ pendingOtp = { phone, name, role }; return { testCode: "123456" }; }
-      const { error } = await sb.auth.signInWithOtp({ phone: "+91" + phone });
-      if(error) throw error;
-      pendingOtp = { phone, name, role }; return {};
+    // fm_otp_request first (the abuse limits, and which channel fm-send-otp should use), then the code.
+    async sendOtp(phone, name, role, opts = {}){
+      const channel = opts.channel === "sms" ? "sms" : "whatsapp";
+      const r = await rpc("fm_otp_request", { p_phone: phone, p_channel: channel });
+      if(r && r.error) throw otpError(r.error, r.wait);
+      pendingOtp = { phone, name, role, channel, captcha: opts.captcha || "" };
+      if(FM_CONFIG.testLogin) return { testCode: "123456" };
+      const { error } = await sb.auth.signInWithOtp({ phone: "+91" + phone, options: { channel, captchaToken: opts.captcha || undefined } });
+      if(error) throw otpError(otpReason(error.message), null);
+      return {};
     },
     async verifyOtp(code){
       if(FM_CONFIG.testLogin){
         const res = await fetch(FM_CONFIG.supabaseUrl + "/functions/v1/fm-login", { method: "POST",
           headers: { "Content-Type": "application/json", apikey: FM_CONFIG.supabaseAnonKey },
-          body: JSON.stringify({ phone: pendingOtp.phone, code }) });
+          body: JSON.stringify({ phone: pendingOtp.phone, code, captcha: pendingOtp.captcha || "" }) });
         const t = await res.json().catch(() => ({}));
         if(!res.ok || !t.access_token) throw new Error(t.error || "bad-code");
         const { error } = await sb.auth.setSession({ access_token: t.access_token, refresh_token: t.refresh_token });
@@ -2837,7 +2909,7 @@ function makeLiveApi(sb){
       state.vibe = r.vibe || {};
       state.interests = r.interests || {};
       // A seeker the server has no answers for goes through the questions, whatever this phone remembers.
-      if(r.role === "seeker" && (answered(state.vibe) < 8 || !(r.occupation && r.occupation.type))) state.onboarded.seeker = false;
+      if(r.role === "seeker" && (answered(state.vibe) < MIN_VIBE || !(r.occupation && r.occupation.type))) state.onboarded.seeker = false;
       state.discoverable = r.discoverable !== false;
       state.tribeOpen = r.tribe_open !== false;
       save(); return state;
@@ -3497,7 +3569,7 @@ function showScreen(name){
   $("view-onboard").hidden = name !== "onboard";
   $("appHead").hidden = $("appMain").hidden = name !== "app";
   document.body.classList.toggle("app", name === "app");
-  if(name === "welcome") startCity(); else stopCity();
+  if(name === "welcome"){ startCity(); loadCaptcha(); } else stopCity();
 }
 function go(v){ if(location.hash === "#" + v) route(); else location.hash = v; }
 // "#splits/<group id>": the part after the slash is routeArg.
@@ -3508,6 +3580,7 @@ function route(){
   const role = isOwner() ? "owner" : "seeker";
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
   const [h, arg] = location.hash.slice(1).split("/"), allowed = ROLE_VIEWS[role];
+  if(h === "complete" && role === "seeker" && profileGaps().length){ currentView = null; showScreen("onboard"); startCompletion(); return; }
   const v = allowed.includes(h) ? h : allowed[0];
   routeArg = v === h ? decodeURIComponent(arg || "") : "";
   currentView = v;
@@ -3973,7 +4046,7 @@ async function checkInbox(){
   }
 }
 setInterval(checkInbox, LIVE ? 30000 : 2000);
-setInterval(maybeNudge, LIVE ? 60000 : 5000);
+setInterval(() => { maybeNudge(); maybeProfileNudge(); }, LIVE ? 60000 : 5000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) checkInbox(); });
 const othersLine = l => l && l.unlock_count > 1 ? `${l.unlock_count - 1} other ${l.unlock_count - 1 === 1 ? "person has" : "people have"} asked about this home. ` : "";
 
@@ -4046,21 +4119,84 @@ function startCity(){
 }
 function stopCity(){ clearInterval(cityTimer); cityTimer = null; }
 
+// ---- sign-in: the code on WhatsApp, or by SMS when they pick it. One code a minute (fm_otp_request
+// keeps the limits on the server too), a hidden field and a minimum time against bots, and Cloudflare
+// Turnstile once FM_CONFIG.turnstileSiteKey is set.
+const OTP_ERR = {
+  "too-soon": w => `Please wait ${w || 60} seconds before asking for another code.`,
+  "too-many": () => "That's a lot of codes for this number. Please try again in an hour.",
+  "bad-phone": () => "That doesn't look like a 10-digit mobile number.",
+  "whatsapp-not-set-up": () => "Codes on WhatsApp aren't switched on yet. Try SMS instead.",
+  "sms-not-set-up": () => "Codes by SMS aren't switched on yet. Try WhatsApp instead.",
+  "whatsapp-failed": () => "WhatsApp didn't take the message. Try SMS instead.",
+  "sms-failed": () => "The SMS didn't go through. Try WhatsApp instead.",
+  "bot-check": () => "Please complete the check above, then ask for the code again.",
+};
+const OTP_REASONS = Object.keys(OTP_ERR);
+function otpReason(m){ return OTP_REASONS.find(k => String(m || "").includes(k)) || "send-failed"; }
+const signin = { shownAt: Date.now(), captcha: "", widget: null, captchaLoading: false, channel: "whatsapp", phone: "", role: "", name: "", until: 0, timer: null };
+async function sendCode(channel){
+  // Filled in the hidden field, or submitted faster than a person can: most likely a bot.
+  if($("lgHp").value || Date.now() - signin.shownAt < 1200){ toast("Couldn't send the code. Please try again in a moment."); return false; }
+  if(FM_CONFIG.turnstileSiteKey && !signin.captcha){ toast(OTP_ERR["bot-check"]()); return false; }
+  try{
+    const r = await api.sendOtp(signin.phone, signin.name, signin.role, { channel, captcha: signin.captcha });
+    signin.channel = channel; captchaReset();
+    $("otpTo").textContent = "+91 " + signin.phone;
+    $("otpTitle").textContent = channel === "sms" ? "Check your messages" : "Check your WhatsApp";
+    $("otpVia").textContent = channel === "sms" ? "by SMS" : "on WhatsApp";
+    $("otpDemo").hidden = !r.demoCode && !r.testCode;
+    if(r.demoCode) $("otpDemo").textContent = "Demo mode: your code is " + r.demoCode;
+    if(r.testCode) $("otpDemo").textContent = "Testing: no message is sent. Enter the code " + r.testCode + ".";
+    otpCountdown(60);
+    return true;
+  }catch(err){
+    console.error(err);
+    const reason = err.code || otpReason(err.message), f = OTP_ERR[reason];
+    toast(f ? f(err.wait) : "Couldn't send the code. Check the number and try again.");
+    if(reason === "too-soon" && err.wait) otpCountdown(err.wait);
+    return false;
+  }
+}
+function otpCountdown(sec){
+  clearInterval(signin.timer);
+  signin.until = Date.now() + sec * 1000;
+  const tick = () => {
+    const left = Math.ceil((signin.until - Date.now()) / 1000);
+    $("otpWait").textContent = left > 0 ? `Didn't get it? Ask again in ${left}s` : "Didn't get it?";
+    $("otpResend").textContent = signin.channel === "sms" ? "Send the SMS again" : "Send it again on WhatsApp";
+    $("otpResend").hidden = left > 0;
+    $("otpSms").hidden = left > 0 || signin.channel === "sms";
+    if(left <= 0) clearInterval(signin.timer);
+  };
+  tick(); signin.timer = setInterval(tick, 1000);
+}
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
-  const phone = $("lgPhone").value.trim(), name = "";   // the name is asked right after sign-in
-  const role = e.target.querySelector("[name=role]:checked").value;
-  try{
-    const r = await api.sendOtp(phone, name, role);
-    $("otpTo").textContent = "+91 " + phone;
-    $("otpDemo").hidden = !r.demoCode && !r.testCode;
-    if(r.demoCode) $("otpDemo").textContent = "Demo mode: your code is " + r.demoCode;
-    if(r.testCode) $("otpDemo").textContent = "Testing: no SMS is sent. Enter the code " + r.testCode + ".";
-    $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus();
-  }catch(err){ console.error(err); toast(`Couldn't send the code. Check the number and try again.${err && err.message ? ` (${err.message})` : ""}`); }
+  signin.phone = $("lgPhone").value.trim();
+  signin.role = e.target.querySelector("[name=role]:checked").value;
+  signin.name = quizName();   // otherwise the name is asked right after sign-in
+  const channel = e.submitter && e.submitter.dataset.channel === "sms" ? "sms" : "whatsapp";
+  if(await sendCode(channel)){ $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus(); }
 });
-$("otpBack").addEventListener("click", () => { $("otpForm").hidden = true; $("loginForm").hidden = false; });
+$("otpResend").addEventListener("click", () => sendCode(signin.channel));
+$("otpSms").addEventListener("click", () => sendCode("sms"));
+$("otpBack").addEventListener("click", () => { clearInterval(signin.timer); $("otpForm").hidden = true; $("loginForm").hidden = false; });
+// Cloudflare Turnstile: mostly invisible, it only asks when it isn't sure. Loaded with the welcome page.
+function captchaReset(){ signin.captcha = ""; if(window.turnstile && signin.widget != null) try{ window.turnstile.reset(signin.widget); }catch(e){} }
+function loadCaptcha(){
+  if(!FM_CONFIG.turnstileSiteKey || signin.captchaLoading) return;
+  signin.captchaLoading = true;
+  window.fmTurnstileReady = () => {
+    $("lgCaptcha").hidden = false;
+    signin.widget = window.turnstile.render("#lgCaptcha", { sitekey: FM_CONFIG.turnstileSiteKey, appearance: "interaction-only",
+      callback: t => { signin.captcha = t; }, "expired-callback": () => { signin.captcha = ""; }, "error-callback": () => { signin.captcha = ""; } });
+  };
+  const sc = document.createElement("script");
+  sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=fmTurnstileReady"; sc.async = true;
+  document.head.appendChild(sc);
+}
 
 // Website bits on the welcome page: in-page links, "Find a room" / "Find a flatmate" shortcuts
 // that pick the role and jump to the sign-in card, and the Android download links.
@@ -4084,15 +4220,20 @@ $("otpForm").addEventListener("submit", async e => {
   if(!formOk(e.target)) return;
   switchAccount($("lgPhone").value.trim());
   try{ await api.verifyOtp($("lgOtp").value.trim()); }
-  catch(err){ toast("That code didn't match. Try again."); return; }
+  catch(err){
+    if(String(err && err.message).includes("bot-check")){ toast(OTP_ERR["bot-check"]()); $("otpForm").hidden = true; $("loginForm").hidden = false; return; }
+    toast("That code didn't match. Try again."); return;
+  }
+  clearInterval(signin.timer);
   // Answered on another device already: no need to ask again. (Live: these come from the server.)
-  if(isSeeker() && answered(state.vibe) >= 8 && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
+  if(isSeeker() && answered(state.vibe) >= MIN_VIBE && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
   if(api.live && isOwner() && (await api.myListings()).length) state.onboarded.owner = true;
   save();
   $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
   location.hash = ""; route();
   claimReferral();
   claimAttribution();
+  revealPendingCard();
 });
 
 /* =========================================================== onboarding */
@@ -4125,25 +4266,25 @@ const OB_TEXT = {
 const LETTERS = ["A","B","C","D","E","F","G","H"];
 const NAME_STEP = { k:"name", form:"name" };
 function obSteps(role){
-  const steps = obStepsFor(role);
+  const steps = obStepsFor(role, false);
   return state.user && state.user.name ? steps : [NAME_STEP].concat(steps);
 }
-function obStepsFor(role){
-  const vibe = VIBE_QS.map(x => ({ k:x.k, q: role === "owner" ? OB_TEXT[x.k].o : OB_TEXT[x.k].s, why: OB_TEXT[x.k].why,
+// Sign-up (full = false) asks the essentials and the 6 core questions. Owners describe the flatmates and
+// interests, and can answer the other 6, on the listing form right after. full = true is every step,
+// for "Complete your profile".
+function obStepsFor(role, full){
+  const vibe = VIBE_QS.filter(x => full || CORE_KEYS.includes(x.k)).map(x => ({ k:x.k, q: role === "owner" ? OB_TEXT[x.k].o : OB_TEXT[x.k].s, why: OB_TEXT[x.k].why,
     opts: x.o.map((t, i) => ({ v:i, t, s: (role === "owner" && OB_TEXT[x.k].od ? OB_TEXT[x.k].od : OB_TEXT[x.k].d)[i] })) }));
   if(role === "owner") return [
     { k:"residents", q:"How many people live in your flat right now?", why:"Including you. People looking for a room want to know who they'd share with.",
       opts:[{v:1,t:"Just me"},{v:2,t:"Two of us"},{v:3,t:"Three of us"},{v:4,t:"Four of us"},{v:0,t:"Nobody",s:"I'm letting out the whole flat"}] },
-    { k:"flatmates", form:"flatmates", q:"Tell us a little about everyone who lives there", why:"What they do and their age range. It's the first thing people look for." },
     { k:"gen", q:"Which generation is your household?", why:"People tend to click with their own generation. It nudges your match with each person.",
       opts:[{v:"z",t:"Mostly Gen Z",s:"Born 1997 or later"},{v:"m",t:"Mostly millennials",s:"Born 1981–1996"},{v:"g",t:"Mostly Gen X",s:"Born 1965–1980"},{v:"x",t:"Mixed"}] },
-    ...vibe,
-    { k:"music", form:"music", q:"What music plays in your flat?", why:"Just for fun, it doesn't change the vibe score. People love finding a flatmate with the same playlist." },
-    { k:"hobbies", form:"hobbies", q:"What are you all into?", why:"Shown on your listing, so people with the same interests notice you." } ];
+    ...vibe ];
   return [
     { k:"occType", q:"What do you do?", why:"Owners like to know who they'd be living with.",
       opts:[{v:"working",t:"Working professional"},{v:"student",t:"Student"},{v:"self",t:"Self-employed"},{v:"between",t:"Between jobs"}] },
-    { k:"occWhat", form:"text", q:"", why:"" },
+    ...(full ? [{ k:"occWhat", form:"text", q:"", why:"" }] : []),
     SEEKER_GEN_STEP,
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true,
       opts: CITIES.map(c => ({ v:c, t:c })).concat({ v:"__other", t:"Other city", s:"Anywhere else in India" }) },
@@ -4151,8 +4292,8 @@ function obStepsFor(role){
     { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
       opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
     ...vibe,
-    { k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
-    { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." } ];
+    ...(full ? [{ k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
+      { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." }] : []) ];
 }
 const SEEKER_GEN_STEP = { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
   opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] };
@@ -4160,10 +4301,10 @@ let ob = null;
 function startOnboarding(role){
   if(ob && ob.role === role) return renderOb();
   const occ = (state.user && state.user.occupation) || {};
-  const quizAnswers = role === "seeker" && answered(state.vibe) < 8 ? readLS(VIBE_QUIZ_KEY) : null;
+  const quizAnswers = role === "seeker" && answered(state.vibe) < MIN_VIBE ? readLS(VIBE_QUIZ_KEY) : null;
   const prev = role === "owner" ? Object.assign({}, state.homeDraft, interestsOf((state.homeDraft || {}).interests))
     : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), quizAnswers, state.vibe, interestsOf(state.interests));
-  const asked = st => quizAnswers && (st.k === "gen" || VIBE_QS.some(x => x.k === st.k)) && quizAnswers[st.k] != null;
+  const asked = st => (st.k === "gen" || VIBE_BY_KEY[st.k]) && prev[st.k] != null;
   ob = { role, steps: obSteps(role).filter(st => !asked(st)), i: 0, a: Object.assign({}, prev) };
   renderOb();
 }
@@ -4197,7 +4338,9 @@ function renderOb(){
   $("obBar").style.width = (ob.i / ob.steps.length * 100) + "%";
   $("obCount").textContent = `${ob.i + 1} / ${ob.steps.length}`;
   $("obBack").style.visibility = ob.i ? "visible" : "hidden";
-  const intro = ob.i === 0 && ob.steps[0].form !== "name" || ob.i === 1 && ob.steps[0].form === "name" ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "let's set up your profile"}</p>` : "";
+  const intro = ob.mode === "complete" ? `<p class="eyebrow">Complete your profile · ${ob.steps.length - ob.i} to go
+      <button class="linkbtn ob-later" type="button" data-ob-later>Finish later</button></p>`
+    : ob.i === 0 && ob.steps[0].form !== "name" || ob.i === 1 && ob.steps[0].form === "name" ? `<p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "tell us about your home" : "let's set up your profile"}</p>` : "";
   let inner;
   if(st.form === "name") inner = `<h1>Welcome! What should we call you?</h1>
     <p class="why">Your first name is what owners and flatmates see. Your number stays private.</p>
@@ -4234,6 +4377,7 @@ function renderOb(){
 }
 function obNext(){ if(ob.i < ob.steps.length - 1){ ob.i++; renderOb(); } else finishOnboarding(); }
 $("obStage").addEventListener("click", e => {
+  if(e.target.closest("[data-ob-later]")) return finishCompletion(true);
   if(e.target.id === "obAnyArea"){ ob.a.areas = []; return obNext(); }
   if(e.target.id === "obMoreArea"){
     const keep = [...$("obAreaForm").querySelectorAll("input:checked")].map(x => x.value);
@@ -4269,7 +4413,46 @@ $("obBack").addEventListener("click", () => {
   renderOb();
 });
 const roomArtBox = () => `<div style="position:relative;width:min(340px,100%);height:190px;margin:0 auto 20px;border-radius:20px;overflow:hidden">${roomArt("welcome-home", "room")}</div>`;
+
+/* ================================================== complete your profile */
+// What sign-up left for later (seekers): what they do in a line, the other living-style answers,
+// music and hobbies. Asked on the same screens as onboarding, from #complete.
+function profileGaps(){
+  if(!state.user || !isSeeker()) return [];
+  const occ = state.user.occupation || {}, v = state.vibe || {}, i = interestsOf(state.interests);
+  return [...(occ.what ? [] : ["occWhat"]), ...VIBE_QS.filter(x => !Number.isInteger(v[x.k])).map(x => x.k),
+    ...(i.music.length ? [] : ["music"]), ...(i.hobbies.length ? [] : ["hobbies"])];
+}
+// Done out of everything a seeker's profile has: the 6 sign-up essentials plus the 15 above.
+const profilePct = () => Math.round((21 - profileGaps().length) / 21 * 100);
+function startCompletion(){
+  const gaps = profileGaps(), occ = state.user.occupation || {};
+  ob = { role: "seeker", mode: "complete", steps: obStepsFor("seeker", true).filter(st => gaps.includes(st.k)), i: 0,
+    a: Object.assign({ occType: occ.type, occWhat: occ.what }, state.vibe, interestsOf(state.interests)) };
+  renderOb();
+}
+// Saves what's been answered; "Finish later" (later = true) goes straight back to the app.
+async function finishCompletion(later){
+  const a = ob.a;
+  const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
+  if(a.gen) vibe.gen = a.gen;
+  $("obBar").style.width = "100%"; $("obCount").textContent = ""; $("obBack").style.visibility = "hidden";
+  try{
+    if(a.occType) await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
+    await api.setVibe(vibe);
+    await api.setInterests({ music: a.music || [], hobbies: a.hobbies || [] });
+    await api.me();
+  }catch(err){ console.error(err); toast("Couldn't save just now. Please try again."); }
+  const left = profileGaps().length;
+  if(later){ ob = null; go("discover"); return; }
+  $("obStage").innerHTML = `<div class="ob-q finale"><p class="ob-type"><span aria-hidden="true">✅</span>${left ? "Saved" : "Your profile is complete"}</p>
+    <h1>${left ? "Thanks, that's saved." : "Every match now uses all 12 answers."}</h1>
+    <p>${left ? "You can finish the rest any time from Discover." : "Owners see the full picture of how you live, and your scores are as sharp as they get."}</p>
+    <div class="ob-finale-acts"><button class="btn btn-primary" type="button" id="obDone">Back to homes</button></div></div>`;
+  $("obDone").onclick = () => { ob = null; go("discover"); };
+}
 async function finishOnboarding(){
+  if(ob.mode === "complete") return finishCompletion();
   const a = ob.a, role = ob.role;
   const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
   if(a.gen) vibe.gen = a.gen;
@@ -4415,7 +4598,7 @@ function giftPillHtml(){
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
-  renderVibePromo(); renderNudgeCards();
+  renderProfilePromo(); renderVibePromo(); renderNudgeCards();
   const [rows] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null]);
   if(seq !== browseSeq) return;
   cityRows = rows;
@@ -5059,7 +5242,7 @@ document.addEventListener("click", e => {
 $("vibeForm").addEventListener("submit", async e => {
   e.preventDefault();
   const v = readQuiz(e.target, "v");
-  if(answered(v) < 8){ toast("Please answer at least 8 of the questions."); return; }
+  if(answered(v) < MIN_VIBE){ toast(`Please answer at least ${MIN_VIBE} of the questions.`); return; }
   try{ await api.setVibe(v); await api.setInterests(readInterests(e.target, "vi")); }catch(err){ console.error(err); }
   $("dlgVibe").close(); toast("Saved. Your matches are updated.");
   if($("dlgListing").open && currentId) openListing(currentId);
@@ -6313,6 +6496,9 @@ async function renderAccount(){
     : `<p class="hint" style="margin:0">Not answered yet.</p>`;
   $("myInterests").innerHTML = allInterests(state.interests).length
     ? `<p class="hint" style="margin:12px 0 0">Into</p>${interestsHtml(state.interests, {})}` : "";
+  const gaps = profileGaps();
+  $("accComplete").innerHTML = gaps.length ? `<div class="acc-complete"><span>${answered(state.vibe)} of 12 answered · profile ${profilePct()}% done</span>
+    <button class="btn btn-primary btn-sm" type="button" data-complete>Complete my profile</button></div>` : "";
   const [unlocked, visits] = await Promise.all([api.unlockedListings(), api.visits()]);
   $("creditLine").innerHTML = roomPass() ? `🏠 Room Pass: unlimited requests till ${untilLabel(passUntil("room"))}. Accepted requests don't use contacts.`
     : CHARGES_ON
@@ -6408,7 +6594,7 @@ const VIBE_EXTRAS = [["noise", 2, "always have music on"], ["food", 0, "eat veg 
   ["sharing", 0, "split everything fairly"], ["pets", 1, "love pets"], ["smoke", 0, "keep it smoke-free"], ["clean", 1, "keep things tidy"]];
 const VIBE_CHIP_KEYS = ["food", "smoke", "pets", "clean", "guests", "social", "noise", "sleep"];
 function vibeType(v){
-  if(!v || answered(v) < 8) return null;
+  if(!v || answered(v) < MIN_VIBE) return null;
   const r = Number.isInteger(v.sleep) ? v.sleep : 1, rh = VIBE_RHYTHM[r];
   const p = VIBE_PERSONAS.find(x => x.fits(v));
   const extra = VIBE_EXTRAS.find(([k, val, line]) => v[k] === val && !p.line.includes(line.split(" ").pop()));
@@ -6422,12 +6608,12 @@ function vibeFromCode(c){
   if(!/^[0-2x]{12}[zmgx]?$/.test(c || "")) return null;
   const v = {}; VIBE_QS.forEach((x, i) => { if(c[i] !== "x") v[x.k] = Number(c[i]); });
   if(c[12]) v.gen = c[12];
-  return answered(v) >= 8 ? v : null;
+  return answered(v) >= MIN_VIBE ? v : null;
 }
 const SITE_LINK = "https://findmeflatmate.com/";
 const siteLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : SITE_LINK;
 // The quiz answers and a friend's invite live outside fm_state, so they survive signing in.
-const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite", REF_KEY = "fm_ref";
+const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite", REF_KEY = "fm_ref", CARD_PENDING_KEY = "fm_card_pending";
 const readLS = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
 const writeLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
 
@@ -6627,7 +6813,7 @@ async function claimReferral(){
   try{ await api.setReferrer(ref.code); writeLS(REF_KEY, null); }catch(err){ console.error(err); }
 }
 // My own answers: a seeker's profile, otherwise whatever the quiz on this device said.
-const myVibe = () => isSeeker() && answered(state.vibe) >= 8 ? state.vibe : readLS(VIBE_QUIZ_KEY);
+const myVibe = () => isSeeker() && answered(state.vibe) >= MIN_VIBE ? state.vibe : readLS(VIBE_QUIZ_KEY);
 
 // ---- the card: 1080 × 1920, the size of an Instagram or WhatsApp story
 function wrapLines(x, text, max){
@@ -6763,14 +6949,35 @@ $("dlgVcard").addEventListener("click", async e => {
   if(a === "join"){ $("dlgVcard").close(); pickRole("seeker"); }
 });
 
-// ---- the quiz: the 12 questions and the generation, one per screen, no sign-up needed
-// Someone not signed in also gets an optional first name, so the card and the link say whose vibe it is.
-const quizSteps = () => VIBE_QS.map(x => ({ k:x.k, q:OB_TEXT[x.k].s, why:OB_TEXT[x.k].why,
+// ---- the quiz: the 6 core questions and the generation, one per screen. Someone not signed in also
+// gets an optional first name, so the card and the link say whose vibe it is, and then verifies their
+// number before the card shows: the answers go into their new profile, and sign-up skips them.
+const quizSteps = () => VIBE_QS.filter(x => CORE_KEYS.includes(x.k)).map(x => ({ k:x.k, q:OB_TEXT[x.k].s, why:OB_TEXT[x.k].why,
   opts:x.o.map((t, i) => ({ v:i, t, s:OB_TEXT[x.k].d[i] })) })).concat(SEEKER_GEN_STEP, firstName() ? [] : [{ k:"name", form:"name" }]);
 let quiz = null;
+// The name typed in the quiz, for the account the quiz is about to make.
+const quizName = () => { const q = readLS(VIBE_QUIZ_KEY); return readLS(CARD_PENDING_KEY) && q && q.name ? q.name : ""; };
+function askNumberForCard(){
+  writeLS(CARD_PENDING_KEY, true);
+  $("wCardReady").hidden = false;
+  pickRole("seeker");
+}
+// Signed in with a card waiting: save the quiz's answers to the new profile, then show the card.
+async function revealPendingCard(){
+  if(!readLS(CARD_PENDING_KEY)) return;
+  writeLS(CARD_PENDING_KEY, null);
+  $("wCardReady").hidden = true;
+  const a = readLS(VIBE_QUIZ_KEY);
+  if(!a) return;
+  if(isSeeker() && answered(state.vibe) < answered(a)){
+    const v = Object.fromEntries(Object.entries(a).filter(([k]) => VIBE_BY_KEY[k] || k === "gen"));
+    try{ await api.setVibe(Object.assign({}, state.vibe, v)); }catch(err){ console.error(err); }
+  }
+  openVibeCard(a);
+}
 function openQuiz(again){
   const mine = myVibe();
-  if(mine && !again) return openVibeCard(mine);
+  if(mine && !again) return state.user ? openVibeCard(mine) : askNumberForCard();
   quiz = { i: 0, a: Object.assign({}, mine || {}) };
   renderQuiz();
   if(!$("dlgQuiz").open) $("dlgQuiz").showModal();
@@ -6782,7 +6989,7 @@ function renderQuiz(){
     $("qzBody").innerHTML = `<div class="qz-bar"><i style="width:96%"></i></div>
       <h3 class="qz-q">Last one: what's your first name?</h3><p class="hint" style="margin:0 0 12px">It goes on your card, so friends know whose vibe they're matching.</p>
       <form id="qzNameForm" novalidate><input type="text" id="qzName" maxlength="20" autocomplete="given-name" placeholder="First name" value="${esc(quiz.a.name || "")}">
-        <div class="vc-acts row" style="margin-top:14px;max-width:none;justify-content:flex-start"><button class="btn btn-primary" type="submit">Show my card</button>
+        <div class="vc-acts row" style="margin-top:14px;max-width:none;justify-content:flex-start"><button class="btn btn-primary" type="submit">${state.user ? "Show my card" : "Continue"}</button>
           <button class="btn btn-ghost" type="button" data-qskip>Skip</button></div></form>
       <button class="linkbtn" type="button" data-qback style="margin-top:12px">← Previous question</button>`;
     return;
@@ -6799,6 +7006,7 @@ function finishQuiz(){
   writeLS(VIBE_QUIZ_KEY, quiz.a);
   $("dlgQuiz").close();
   renderWelcomeInvite();
+  if(!state.user) return askNumberForCard();
   openVibeCard(quiz.a);
 }
 $("dlgQuiz").addEventListener("click", e => {
@@ -6820,6 +7028,7 @@ document.addEventListener("click", e => { if(e.target.closest("[data-quiz]")) op
 
 // ---- the friend's invite on the welcome page, and the card in a few places in the app
 function renderWelcomeInvite(){
+  $("wCardReady").hidden = !(readLS(CARD_PENDING_KEY) && !state.user);
   const inv = readLS(VIBE_INVITE_KEY), it = inv && vibeType(inv.vibe), mine = readLS(VIBE_QUIZ_KEY), m = inv && mine && vibeMatch(mine, inv.vibe);
   $("wInvite").hidden = !it;
   if(!it) return;
@@ -6831,7 +7040,31 @@ function renderWelcomeInvite(){
 // A signed-in seeker who opens a friend's link sees the match straight away.
 function maybeShowVibeInvite(){
   const inv = readLS(VIBE_INVITE_KEY);
-  if(inv && !inv.seen && isSeeker() && answered(state.vibe) >= 8 && state.onboarded.seeker) openVibeCard(state.vibe);
+  if(inv && !inv.seen && isSeeker() && answered(state.vibe) >= MIN_VIBE && state.onboarded.seeker) openVibeCard(state.vibe);
+}
+// Discover: until the profile is complete (hidden for 3 days at a time with ×).
+function renderProfilePromo(){
+  const gaps = profileGaps(), pct = profilePct(), sharper = gaps.some(k => VIBE_BY_KEY[k]);
+  const hide = !gaps.length || (state.profilePromoAt && Date.now() - state.profilePromoAt < 3 * 864e5);
+  $("profilePromo").innerHTML = hide ? "" : `<div class="pp-card"><button class="pp-main" type="button" data-complete>
+    <span class="pp-ring" style="--p:${pct}" aria-hidden="true"><b>${pct}%</b></span>
+    <span><b>Your profile is ${pct}% done</b><small>${gaps.length} quick ${gaps.length === 1 ? "question" : "questions"} left, about a minute.
+      Owners reply sooner to complete profiles${sharper ? ", and your matches get sharper" : ""}.</small><em>Complete my profile →</em></span></button>
+    <button class="pp-x" type="button" data-pp-hide aria-label="Hide for now">×</button></div>`;
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-complete]")) go("complete");
+  else if(e.target.closest("[data-pp-hide]")){ state.profilePromoAt = Date.now(); save(); renderProfilePromo(); }
+});
+// A reminder now and then: 6 hours after sign-up at the earliest, at most once a day, 3 in all.
+function maybeProfileNudge(){
+  if(!state.user || !isSeeker() || !state.onboarded.seeker || !profileGaps().length) return;
+  const now = Date.now();
+  if(!state.profileSince){ state.profileSince = now; save(); return; }
+  if((state.profileNudges || 0) >= 3 || now - state.profileSince < (LIVE ? 6 * 36e5 : 45e3)
+     || now - (state.profileNudgeAt || 0) < (LIVE ? 24 * 36e5 : 90e3)) return;
+  Object.assign(state, { profileNudgeAt: now, profileNudges: (state.profileNudges || 0) + 1 }); save();
+  Notify.show("Owners reply sooner to complete profiles", `${profileGaps().length} quick questions left. It takes about a minute.`, "complete");
 }
 function renderVibePromo(){
   const t = isSeeker() && vibeType(state.vibe), hide = !t || state.vibeShared || state.vibePromoHidden;

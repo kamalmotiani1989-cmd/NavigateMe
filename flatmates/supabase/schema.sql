@@ -462,6 +462,14 @@ end $$;
 -- index.html): each answer is 0..2, a question scores 1 - gap/2, smoking/food/pets count double,
 -- at least 4 shared answers are needed. Generations (gen: z Gen Z, m millennial, g Gen X; x = neither):
 -- the same generation gets +10 when under 80, two different generations get -10.
+-- How many of the 12 living-style questions someone has answered (the generation isn't one of them).
+-- 6 are asked at sign-up and the other 6 later ("Complete your profile"); 6 answers are enough to match.
+create or replace function public.fm_vibe_count(p jsonb) returns int
+language sql immutable set search_path = public as $$
+  select count(*)::int from jsonb_object_keys(case when jsonb_typeof(p) = 'object' then p else '{}'::jsonb end) k
+  where k in ('sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets');
+$$;
+
 create or replace function public.fm_match(p_v jsonb, p_h jsonb) returns int
 language sql immutable set search_path = public as $$
   with q as (
@@ -583,7 +591,7 @@ begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   select * into v_me from fm_profiles where id = auth.uid() for update;
   if v_me.role is distinct from 'seeker' then return query select null::text, 'seekers-only'; return; end if;
-  if (select count(*) from jsonb_object_keys(v_me.vibe)) < 8 then return query select null::text, 'vibe-required'; return; end if;
+  if fm_vibe_count(v_me.vibe) < 6 then return query select null::text, 'vibe-required'; return; end if;
   if coalesce(v_me.occupation->>'type', '') = '' then return query select null::text, 'profile-required'; return; end if;
   select * into v_l from fm_listings where id = p_listing and fm_listings.status = 'active';
   if v_l.id is null then return query select null::text, 'listing-not-found'; return; end if;
@@ -665,7 +673,7 @@ language sql security definer set search_path = public stable as $$
    and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
   left join fm_requests r on r.listing_id = l.id and r.seeker_id = p.id
   where l.id = p_listing and l.owner_id = auth.uid()
-    and (select count(*) from jsonb_object_keys(p.vibe)) >= 8
+    and fm_vibe_count(p.vibe) >= 6
   order by fm_match(p.vibe, l.household) desc nulls last, coalesce(p.search_at, p.created_at) desc
   limit 100;
 $$;
@@ -798,7 +806,7 @@ declare v_me fm_profiles%rowtype; v_n int;
 begin
   select * into v_me from fm_profiles where id = auth.uid();
   if v_me.id is null or v_me.role is distinct from 'seeker' or not v_me.tribe_open
-     or coalesce(v_me.search->>'city', '') = '' or (select count(*) from jsonb_object_keys(v_me.vibe)) < 8 then
+     or coalesce(v_me.search->>'city', '') = '' or fm_vibe_count(v_me.vibe) < 6 then
     return 0;
   end if;
   insert into fm_tribe_links (a, b, match_pct)
@@ -806,7 +814,7 @@ begin
   from fm_profiles p
   where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open
     and lower(p.search->>'city') = lower(v_me.search->>'city')
-    and (select count(*) from jsonb_object_keys(p.vibe)) >= 8
+    and fm_vibe_count(p.vibe) >= 6
     and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0
          or jsonb_array_length(coalesce(v_me.search->'areas', '[]'::jsonb)) = 0
          or exists (select 1 from jsonb_array_elements_text(p.search->'areas') x where v_me.search->'areas' ? x))
@@ -1651,7 +1659,7 @@ declare v_me fm_profiles%rowtype; v_joined int;
 begin
   select * into v_me from fm_profiles where id = p_user;
   if v_me.referred_by is null or v_me.ref_rewarded then return; end if;
-  if (select count(*) from jsonb_object_keys(v_me.vibe)) < 8 and not exists (select 1 from fm_listings where owner_id = p_user) then return; end if;
+  if fm_vibe_count(v_me.vibe) < 6 and not exists (select 1 from fm_listings where owner_id = p_user) then return; end if;
   perform 1 from fm_profiles where id = v_me.referred_by for update;
   update fm_profiles set ref_rewarded = true where id = p_user;
   select count(*) into v_joined from fm_profiles where referred_by = v_me.referred_by and ref_rewarded;
@@ -1678,7 +1686,7 @@ language sql security definer set search_path = public stable as $$
     where p.role = 'seeker' and p.discoverable and not p.sample
       and lower(p.search->>'city') = lower(trim(p_city))
       and coalesce(p.search_at, p.created_at) > now() - interval '60 days'
-      and (select count(*) from jsonb_object_keys(p.vibe)) >= 8
+      and fm_vibe_count(p.vibe) >= 6
   ), n as (
     select count(*) as city_n, count(*) filter (where here) as area_n,
            count(*) filter (where fresh) as city_week, count(*) filter (where here and fresh) as area_week from s
@@ -1760,6 +1768,66 @@ language sql security definer set search_path = public stable as $$
   from u group by 1, 2 order by 3 desc, 1, 2;
 $$;
 
+-- ------------------------------------------------------------ sign-in codes --
+-- Every sign-in code goes through fm_otp_request first. It keeps the abuse limits (one code a minute per
+-- number, 5 an hour per number, 40 an hour per network address) and records the channel the person
+-- picked: WhatsApp unless they chose SMS. fm-send-otp (Supabase's Send SMS hook) reads it to know how to
+-- send, and sends nothing for a number with no request in the last 10 minutes, so calling Supabase's
+-- sign-in API directly can't run up the bill. While test login is on, fm-login checks it the same way.
+create table if not exists public.fm_otp_requests (
+  id         bigint generated always as identity primary key,
+  phone      text not null,                                        -- 10 digits
+  channel    text not null check (channel in ('whatsapp', 'sms')),
+  ip         text,
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_otp_requests_phone on public.fm_otp_requests (phone, created_at desc);
+create index if not exists fm_otp_requests_ip on public.fm_otp_requests (ip, created_at desc);
+alter table public.fm_otp_requests enable row level security;
+revoke all on public.fm_otp_requests from anon, authenticated;
+
+create or replace function public.fm_otp_request(p_phone text, p_channel text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_phone text := right(regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g'), 10);
+  v_headers json := coalesce(nullif(current_setting('request.headers', true), ''), '{}')::json;
+  v_ip text := trim(split_part(coalesce(v_headers->>'cf-connecting-ip', v_headers->>'x-forwarded-for', ''), ',', 1));
+  v_last timestamptz; v_hour int; v_ip_hour int;
+begin
+  if v_phone !~ '^[6-9][0-9]{9}$' then return jsonb_build_object('error', 'bad-phone'); end if;
+  if p_channel is null or p_channel not in ('whatsapp', 'sms') then return jsonb_build_object('error', 'bad-channel'); end if;
+  select max(created_at), count(*) into v_last, v_hour from fm_otp_requests where phone = v_phone and created_at > now() - interval '1 hour';
+  if v_last > now() - interval '60 seconds' then
+    return jsonb_build_object('error', 'too-soon', 'wait', ceil(extract(epoch from v_last + interval '60 seconds' - now()))::int);
+  end if;
+  if v_hour >= 5 then return jsonb_build_object('error', 'too-many'); end if;
+  if v_ip <> '' then
+    select count(*) into v_ip_hour from fm_otp_requests where ip = v_ip and created_at > now() - interval '1 hour';
+    if v_ip_hour >= 40 then return jsonb_build_object('error', 'too-many'); end if;
+  end if;
+  delete from fm_otp_requests where created_at < now() - interval '2 days';
+  insert into fm_otp_requests (phone, channel, ip) values (v_phone, p_channel, nullif(v_ip, ''));
+  return jsonb_build_object('ok', true);
+end $$;
+
+-- --------------------------------------------------------------- ad spend --
+-- What each ad channel cost, for the team's ads dashboard (cost per sign-up and per room listed).
+-- One row per channel and campaign, per day or per week, copied from Meta Ads Manager or Google
+-- Ads: in the Supabase Table Editor, or ask Claude. `campaign` is the same name as the link's
+-- utm_campaign tag. Only the team reads it: no app user can.
+create table if not exists public.fm_ad_spend (
+  id         uuid primary key default gen_random_uuid(),
+  day        date not null,
+  channel    text not null check (channel in ('Google Ads', 'Facebook ads', 'Instagram ads', 'Other ads')),
+  campaign   text not null default '-',
+  amount     numeric(12,2) not null check (amount >= 0),   -- rupees, as billed
+  note       text,
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_ad_spend_day on public.fm_ad_spend (day);
+alter table public.fm_ad_spend enable row level security;
+revoke all on public.fm_ad_spend from anon, authenticated;
+
 -- ------------------------------------------------------ deleting an account --
 -- Account -> Delete my account. Everything tied to the account goes with it: profile, listings and their
 -- private details, requests, invites, visits, saves, tribe links, FlatMart items and offers, passes,
@@ -1779,7 +1847,7 @@ end $$;
 
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
--- call them (fm_me, fm_search and fm_area_demand also answer signed-out callers, with nothing private).
+-- call them (fm_me, fm_search, fm_area_demand and fm_otp_request also answer signed-out callers, with nothing private).
 -- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample and the
 -- team's fm_source_report can't be called at all.
 do $$
@@ -1801,4 +1869,5 @@ end $$;
 grant execute on function public.fm_search(text, text, int, text, text) to anon;
 grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
+grant execute on function public.fm_otp_request(text, text) to anon;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
