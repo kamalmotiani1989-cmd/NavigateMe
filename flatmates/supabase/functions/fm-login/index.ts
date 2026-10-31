@@ -8,7 +8,7 @@
 // (Cloudflare Turnstile, the app's bot check), it also needs a valid bot-check token.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const TEST_CODE = Deno.env.get("TEST_LOGIN_CODE") ?? "";
+const TEST_CODE = (Deno.env.get("TEST_LOGIN_CODE") ?? "").trim();
 const url = Deno.env.get("SUPABASE_URL")!;
 const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -50,7 +50,9 @@ Deno.serve(async (req) => {
   if (!/^[6-9][0-9]{9}$/.test(String(phone ?? ""))) return json({ error: "bad-phone" }, 400);
 
   const { data: settings } = await admin.from("fm_settings").select("test_login").single();
-  if (!settings?.test_login || !/^\d{6}$/.test(TEST_CODE)) return json({ error: "test-login-off" }, 403);
+  if (!settings?.test_login) return json({ error: "test-login-off" }, 403);
+  // Says what's wrong with the secret, never what it is.
+  if (!/^\d{6}$/.test(TEST_CODE)) return json({ error: "test-login-off", why: TEST_CODE ? "code-not-6-digits" : "no-code-set" }, 403);
 
   // Wrong codes in the last hour: 5 per number, 10 per network address, 30 in all.
   const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
