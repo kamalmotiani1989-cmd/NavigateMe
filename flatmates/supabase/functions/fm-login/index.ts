@@ -1,14 +1,14 @@
 // fm-login: TESTING ONLY. Signs someone in with their mobile number and a shared test code,
 // with no SMS, while phone login (Supabase Auth -> Phone + an SMS provider) isn't set up.
-// The code is the TEST_LOGIN_CODE secret (supabase secrets set TEST_LOGIN_CODE=...), never in this repo
-// or the app; with no secret set, test login is off. Wrong codes are limited (fm_login_fails) so it
-// can't be guessed. Anyone who knows the code can sign in as any number, so turn it off before real users:
+// The code is stored scrambled in the database (fm_secrets, checked by fm_test_code_ok; see schema.sql
+// for how to change it), never in this repo or the app; with no code set, test login is off. Wrong codes
+// are limited (fm_login_fails) so it can't be guessed. Anyone who knows the code can sign in as any
+// number, so turn it off before real users:
 //   update fm_settings set test_login = false;
 // Deployed with verify_jwt = false: the code check below is the only gate. With TURNSTILE_SECRET set
 // (Cloudflare Turnstile, the app's bot check), it also needs a valid bot-check token.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const TEST_CODE = (Deno.env.get("TEST_LOGIN_CODE") ?? "").trim();
 const url = Deno.env.get("SUPABASE_URL")!;
 const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -51,8 +51,6 @@ Deno.serve(async (req) => {
 
   const { data: settings } = await admin.from("fm_settings").select("test_login").single();
   if (!settings?.test_login) return json({ error: "test-login-off" }, 403);
-  // Says what's wrong with the secret, never what it is.
-  if (!/^\d{6}$/.test(TEST_CODE)) return json({ error: "test-login-off", why: TEST_CODE ? "code-not-6-digits" : "no-code-set" }, 403);
 
   // Wrong codes in the last hour: 5 per number, 10 per network address, 30 in all.
   const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
@@ -72,7 +70,11 @@ Deno.serve(async (req) => {
     console.error(e);
     return json({ error: "server" }, 500);
   }
-  if (String(code ?? "") !== TEST_CODE) {
+  // null: no code set yet.
+  const { data: ok, error: codeError } = await admin.rpc("fm_test_code_ok", { p_code: String(code ?? "").trim() });
+  if (codeError) { console.error(codeError); return json({ error: "server" }, 500); }
+  if (ok === null) return json({ error: "test-login-off", why: "no-code-set" }, 403);
+  if (ok !== true) {
     await admin.from("fm_login_fails").delete().lt("created_at", new Date(Date.now() - 86400e3).toISOString());
     await admin.from("fm_login_fails").insert({ phone, ip: ip || null });
     return json({ error: "bad-code" }, 401);

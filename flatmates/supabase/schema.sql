@@ -1798,6 +1798,27 @@ create index if not exists fm_login_fails_time on public.fm_login_fails (created
 alter table public.fm_login_fails enable row level security;
 revoke all on public.fm_login_fails from anon, authenticated;
 
+-- The private test code, scrambled (bcrypt), so it's in no file and nobody can read it back. Only the
+-- server (fm-login, service role) can read the table or ask fm_test_code_ok whether a code matches.
+-- Set or change it (SQL editor):
+--   insert into public.fm_secrets (name, hash) values ('test_login_code', extensions.crypt('NEWCODE', extensions.gen_salt('bf')))
+--   on conflict (name) do update set hash = excluded.hash, updated_at = now();
+create table if not exists public.fm_secrets (
+  name       text primary key,
+  hash       text not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.fm_secrets enable row level security;
+revoke all on public.fm_secrets from anon, authenticated;
+
+-- null when no code is set (test login off); otherwise whether p_code is the code.
+create or replace function public.fm_test_code_ok(p_code text) returns boolean
+language sql stable security definer set search_path = public, extensions as $$
+  select case when s.hash is null then null
+              else coalesce(p_code, '') ~ '^[0-9]{6}$' and s.hash = crypt(p_code, s.hash) end
+  from (select (select hash from fm_secrets where name = 'test_login_code') as hash) s
+$$;
+
 create or replace function public.fm_otp_request(p_phone text, p_channel text) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
@@ -1860,8 +1881,8 @@ end $$;
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me, fm_search, fm_area_demand and fm_otp_request also answer signed-out callers, with nothing private).
--- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample and the
--- team's fm_source_report can't be called at all.
+-- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample, the
+-- team's fm_source_report and fm-login's fm_test_code_ok can't be called at all.
 do $$
 declare f record;
 begin
@@ -1871,7 +1892,8 @@ begin
     if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order',
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
-                     'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report') then
+                     'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
+                     'fm_test_code_ok') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -1882,4 +1904,5 @@ grant execute on function public.fm_search(text, text, int, text, text) to anon;
 grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
 grant execute on function public.fm_otp_request(text, text) to anon;
+grant execute on function public.fm_test_code_ok(text) to service_role;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
