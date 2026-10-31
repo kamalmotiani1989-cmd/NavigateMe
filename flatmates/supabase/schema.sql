@@ -781,6 +781,11 @@ alter table public.fm_tribe_links enable row level security;
 drop policy if exists fm_tribe_parties on public.fm_tribe_links;
 create policy fm_tribe_parties on public.fm_tribe_links for select using (a = auth.uid() or b = auth.uid());
 alter table public.fm_tribe_links add column if not exists kind text not null default 'match';
+-- Leaving a tribe: the leaver's bonded links become 'left' (kept, so they aren't suggested to each other again).
+alter table public.fm_tribe_links drop constraint if exists fm_tribe_links_status_check;
+alter table public.fm_tribe_links add constraint fm_tribe_links_status_check check (status in ('open','bonded','closed','left'));
+alter table public.fm_tribe_links add column if not exists left_by uuid;
+alter table public.fm_tribe_links add column if not exists left_at timestamptz;
 
 -- Everyone in a person's tribe (bonded links, followed through), the person included. Max 3.
 create or replace function public.fm_tribe_members(p_user uuid) returns uuid[]
@@ -831,6 +836,7 @@ returns table (id uuid, other_id uuid, name text, occupation jsonb, areas jsonb,
                created_at timestamptz, bonded_at timestamptz, unseen boolean,
                kind text, my_size int, their_size int)
 language sql security definer set search_path = public stable as $$
+  -- 'left' rows: only to the one who stayed, and only until they've seen the notice.
   select t.id, o.id, split_part(coalesce(o.full_name, ''), ' ', 1), o.occupation,
          coalesce(o.search->'areas', '[]'::jsonb), (o.search->>'budget')::int, t.match_pct, o.interests, o.vibe,
          case when t.a = auth.uid() then t.a_yes else t.b_yes end,
@@ -843,7 +849,8 @@ language sql security definer set search_path = public stable as $$
   from fm_tribe_links t
   join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
   where (t.a = auth.uid() or t.b = auth.uid()) and t.status <> 'closed'
-    and (t.status = 'bonded' or o.tribe_open)
+    and (t.status <> 'left' or (t.left_by <> auth.uid() and case when t.a = auth.uid() then not t.seen_a else not t.seen_b end))
+    and (t.status in ('bonded', 'left') or o.tribe_open)
   order by (t.status = 'bonded') desc, t.match_pct desc
   limit 100;
 $$;
@@ -901,6 +908,24 @@ language sql security definer set search_path = public as $$
   update fm_tribe_links set seen_a = true where a = auth.uid() and not seen_a;
   update fm_tribe_links set seen_b = true where b = auth.uid() and not seen_b;
 $$;
+
+-- Leave my tribe. My bonded links become 'left' (the others get a notice, fm-notify pushes it, and the
+-- shared shortlist stops being shared). The tribe's half-agreed "complete your tribe" links go too: if two
+-- people are still bonded to each other they stay a tribe, otherwise everyone is on their own again.
+-- Returns how many people I left (0 = I wasn't in a tribe).
+create or replace function public.fm_tribe_leave() returns int
+language plpgsql security definer set search_path = public as $$
+declare v_me uuid := auth.uid(); v_was uuid[]; v_n int;
+begin
+  if v_me is null then raise exception 'not-signed-in'; end if;
+  v_was := fm_tribe_members(v_me);
+  update fm_tribe_links set status = 'left', left_by = v_me, left_at = now(),
+         seen_a = (a = v_me), seen_b = (b = v_me)
+   where (a = v_me or b = v_me) and status = 'bonded';
+  get diagnostics v_n = row_count;
+  delete from fm_tribe_links where status = 'open' and kind = 'complete' and (a = any(v_was) or b = any(v_was));
+  return v_n;
+end $$;
 
 -- Both sides' requests in one list, newest first. 'incoming' = on my listing,
 -- 'outgoing' = mine as a seeker; 'by' says who started it. The seeker's phone reaches the
