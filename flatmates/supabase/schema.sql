@@ -1760,6 +1760,24 @@ language sql security definer set search_path = public stable as $$
   from u group by 1, 2 order by 3 desc, 1, 2;
 $$;
 
+-- --------------------------------------------------------------- ad spend --
+-- What each ad channel cost, for the team's ads dashboard (cost per sign-up and per room listed).
+-- One row per channel and campaign, per day or per week, copied from Meta Ads Manager or Google
+-- Ads: in the Supabase Table Editor, or ask Claude. `campaign` is the same name as the link's
+-- utm_campaign tag. Only the team reads it: no app user can.
+create table if not exists public.fm_ad_spend (
+  id         uuid primary key default gen_random_uuid(),
+  day        date not null,
+  channel    text not null check (channel in ('Google Ads', 'Facebook ads', 'Instagram ads', 'Other ads')),
+  campaign   text not null default '-',
+  amount     numeric(12,2) not null check (amount >= 0),   -- rupees, as billed
+  note       text,
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_ad_spend_day on public.fm_ad_spend (day);
+alter table public.fm_ad_spend enable row level security;
+revoke all on public.fm_ad_spend from anon, authenticated;
+
 -- ------------------------------------------------------ deleting an account --
 -- Account -> Delete my account. Everything tied to the account goes with it: profile, listings and their
 -- private details, requests, invites, visits, saves, tribe links, FlatMart items and offers, passes,
