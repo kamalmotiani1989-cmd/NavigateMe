@@ -59,6 +59,21 @@ the room comes second.
    whole flats that welcome bachelors, in any of the tribe's areas, with the rent per person. Asking
    to meet a whole flat pre-fills a note saying you're a tribe. A "no" closes the match quietly for
    both. Seekers can hide from tribe matches in Account.
+
+   **Homes for tribes.** Whole flats and shared (twin-sharing) rooms are for people moving in together,
+   so a seeker only sees them once they've bonded a tribe, sized to it. Before that, Discover shows "🔒 N
+   whole flats are waiting for a tribe" (linking to the Tribe tab), the Whole flat and Shared room
+   filters say "tribes only", and a whole flat's page says it's for tribes. Once bonded, Discover gets a
+   **For your tribe of N** row and the Tribe tab two groups: **a bedroom each** (whole flats with N+
+   bedrooms) and **share a room, pay less** (an (N-1)BHK where two of you share, or a twin-sharing room
+   for a tribe of 2), each card showing the rent per person ("₹9,500 each") or per bed. The budget filter
+   checks your share of a whole flat. Owners see everything.
+
+   **Leaving a tribe.** The tribe card has **Leave tribe** (with a confirmation). The others get a push
+   and a notice on their Tribe tab ("Riya left your tribe", kept 3 days or until closed); the shared
+   shortlist stops being shared. In a tribe of 3, the two who stay remain a tribe if they're bonded to
+   each other; half-agreed "complete your tribe" links are removed. People who left aren't suggested to
+   each other again (`fm_tribe_leave`, status `left`).
 9. **Bachelors welcome.** Owners mark each listing (on by default). Cards show "Bachelors welcome ·
    no brokers", the listing shows it, and Filters has a "Bachelors welcome" option.
 

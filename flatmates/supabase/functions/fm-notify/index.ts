@@ -70,13 +70,19 @@ async function pushTo(userId: string, title: string, body: string, open: string)
 }
 
 // Build your tribe (fm_tribe_links trigger): a new 70%+ match goes to both people, a "yes"
-// goes to the other person, and a bond (both said yes) goes to both.
+// goes to the other person, a bond (both said yes) goes to both, and leaving goes to the one who stayed.
 async function tribeEvent(id: string, event: string) {
   const { data: t } = await admin.from("fm_tribe_links").select("*").eq("id", id).single();
   if (!t || t.status === "closed") return { skipped: true };
   const { data: people } = await admin.from("fm_profiles").select("id, full_name").in("id", [t.a, t.b]);
   const first = (uid: string) => ((people || []).find((p: any) => p.id === uid)?.full_name || "Someone").split(" ")[0];
   const pct = t.match_pct != null ? ` · ${t.match_pct}% vibe` : "";
+  if (t.status === "left") {
+    // Someone left the tribe: tell the one who stayed.
+    const stayed = t.left_by === t.a ? t.b : t.a;
+    await pushTo(stayed, `${first(t.left_by)} left your tribe`, "You can team up with someone new on the Tribe tab.", "tribe");
+    return { sent: "left" };
+  }
   if (t.status === "bonded") {
     await pushTo(t.a, `You and ${first(t.b)} are a tribe!`, `Numbers are shared. Call ${first(t.b)} and start hunting for a whole flat together.`, "tribe");
     await pushTo(t.b, `You and ${first(t.a)} are a tribe!`, `Numbers are shared. Call ${first(t.a)} and start hunting for a whole flat together.`, "tribe");

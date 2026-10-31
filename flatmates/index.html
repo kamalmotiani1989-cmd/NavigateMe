@@ -1133,6 +1133,26 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 .confirm-body{padding:28px 24px 22px; text-align:center}
 .confirm-ic{width:60px; height:60px; margin:0 auto 14px; border-radius:50%; display:grid; place-items:center; background:#FDECEA; color:var(--danger)}
 .confirm-body h2{font-size:22px}
+.tribe-leave-btn{display:block; margin:14px auto 0; padding:8px 14px; border:0; border-radius:999px; background:none; cursor:pointer;
+  font:700 13.5px var(--body); color:rgba(255,255,255,.8); text-decoration:underline; text-underline-offset:3px}
+.tribe-leave-btn:hover{color:#fff; background:rgba(255,255,255,.12)}
+.tribe-left{display:flex; gap:10px; align-items:flex-start; margin:14px 0; padding:12px 14px; border-radius:14px; background:#FFF6E5;
+  box-shadow:inset 0 0 0 1px #FFE2C2; font-size:14.5px; color:var(--text)}
+.tribe-left b{display:block}
+.tribe-left{position:relative; padding-right:48px}
+.fit-line{margin-top:6px; font-size:13px; font-weight:800; color:#B63BA8}
+.tribe-row .vrow-h{display:flex; align-items:flex-end; justify-content:space-between; gap:12px}
+.tribe-tease{display:flex; gap:12px; align-items:flex-start; margin:16px 0 4px; padding:14px 16px; border-radius:18px; text-decoration:none; color:var(--text);
+  background:linear-gradient(135deg,#FBEFFF,#FFEFF4); box-shadow:inset 0 0 0 1px #F1D3F3}
+.tribe-tease[hidden]{display:none}
+.tribe-tease .tt-ic{font-size:24px; flex:none; line-height:1.2}
+.tribe-tease b{display:block; font-size:15.5px} .tribe-tease small{display:block; font-size:13.5px; color:var(--text-2); margin-top:2px}
+.tribe-tease em{display:inline-block; margin-top:6px; font-style:normal; font-weight:800; color:#B63BA8; font-size:14px}
+.tribe-fit{display:grid; gap:2px; margin:14px 0 0; padding:12px 14px; border-radius:14px; background:#FBEFFF; box-shadow:inset 0 0 0 1px #F1D3F3; font-size:14px}
+.tribe-fit b{font-size:15px; color:#8A2A82} .tribe-fit span{color:var(--text-2)}
+.tribe-fit a{font-weight:800; color:#B63BA8; text-decoration:none; margin-top:4px}
+.tribe-fit.solo{background:var(--surface-2); box-shadow:none} .tribe-fit.solo b{color:var(--text)}
+.chip.for-tribes{opacity:.5} .chip.for-tribes::after{content:" · tribes only"; font-weight:600; font-size:12px}
 .confirm-body p{color:var(--text-2); margin:8px 0 20px}
 .confirm-body .btn + .btn{margin-top:10px}
 @media (max-width:640px){
@@ -1582,6 +1602,12 @@ html:has(> body.app){background:var(--app-bg)}
       <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
       <div class="active-f" id="activeF"></div>
     </div>
+    <a class="tribe-tease" id="tribeTease" href="#tribe" hidden></a>
+    <section id="tribeRow" class="tribe-row" hidden>
+      <div class="vrow-h"><div><p class="eyebrow">Your tribe</p><h2 id="tribeRowH">For your tribe</h2><p class="hint" id="tribeRowSub" style="margin:2px 0 0"></p></div>
+        <a class="linkbtn" href="#tribe" style="color:var(--brand);white-space:nowrap">See all&nbsp;→</a></div>
+      <div class="vrow" id="tribeRowCards"></div>
+    </section>
     <section id="vibeRow" hidden>
       <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
       <div class="vrow" id="vibeCards"></div>
@@ -1924,6 +1950,13 @@ html:has(> body.app){background:var(--app-bg)}
 <dialog id="dlgVcard" class="vibe-dlg" aria-labelledby="vcTitle"><div class="mhead"><div><h2 id="vcTitle">Your Vibe Card</h2><div class="loc" id="vcSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="vcBody"></div></dialog>
 
+<dialog id="dlgLeaveTribe" class="confirm" aria-labelledby="ltTitle"><div class="confirm-body">
+  <span class="confirm-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><path d="M16 11h6"/></svg></span>
+  <h2 id="ltTitle">Leave your tribe?</h2>
+  <p id="ltText"></p>
+  <button class="btn btn-danger btn-block" type="button" id="ltYes">Leave tribe</button>
+  <button class="btn btn-ghost btn-block" type="button" data-close>Stay in the tribe</button>
+</div></dialog>
 <dialog id="dlgSignOut" class="confirm" aria-labelledby="soTitle"><div class="confirm-body">
   <span class="confirm-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></span>
   <h2 id="soTitle">Sign out?</h2>
@@ -2681,7 +2714,7 @@ const demoApi = {
   async tribeList(){
     this.tick();
     const pool = new Map(demoSeekerPool().map(x => [x.id, x]));
-    return (state.tribe || []).filter(t => t.status !== "closed").map(t => {
+    return (state.tribe || []).filter(t => t.status !== "closed" && t.status !== "left").map(t => {
       const x = pool.get(t.sid);
       return { id:t.id, other_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct:t.match_pct,
         interests:x.interests, vibe:x.vibe, my_yes:t.my_yes, their_yes:t.their_yes, status:t.status,
@@ -2701,6 +2734,12 @@ const demoApi = {
     save(); return t.status;
   },
   async tribeSeen(){ (state.tribe || []).forEach(t => t.seen = true); save(); },
+  // Leave the tribe: every bond ends (sample people don't get told). Returns how many people I left.
+  async tribeLeave(){
+    const mine = (state.tribe || []).filter(t => t.status === "bonded");
+    mine.forEach(t => { t.status = "left"; t.left_at = new Date().toISOString(); });
+    state.demoTribeSaves = []; state.demoTribeSaveAt = null; save(); return mine.length;
+  },
   tribeSize(){ return 1 + (state.tribe || []).filter(t => t.status === "bonded").length; },
   async setTribeOpen(v){ state.tribeOpen = v; save(); },
   // Plays the other side in demo mode.
@@ -2971,6 +3010,7 @@ function makeLiveApi(sb){
     async tribeList(){ return (await rpc("fm_tribe_list")).map(t => Object.assign(t, { phone: plusPhone(t.phone) })); },
     async tribeAnswer(id, yes){ return rpc("fm_tribe_answer", { p_link:id, p_yes:yes }); },
     async tribeSeen(){ await rpc("fm_tribe_seen"); },
+    async tribeLeave(){ return Number(await rpc("fm_tribe_leave")) || 0; },
     async setTribeOpen(v){ state.tribeOpen = v; save(); await rpc("fm_set_tribe_open", { p_open:v }); },
     async markSeen(){ await rpc("fm_mark_seen"); },
     async savePushToken(token){ await rpc("fm_save_push_token", { p_token: token, p_platform: "android" }); },
@@ -3844,7 +3884,9 @@ function tribeCardHtml(t){
 }
 async function renderTribe(){
   await api.tribeRefresh().catch(() => 0);
-  tribeRows = await api.tribeList();
+  const all = await api.tribeList();
+  tribeRows = all.filter(t => t.status !== "left");
+  noteTribeLeft(all);
   const bonded = tribeRows.filter(t => t.status === "bonded");
   const wants = tribeRows.filter(t => t.status === "open" && t.their_yes && !t.my_yes);
   const open = tribeRows.filter(t => t.status === "open" && !wants.includes(t));
@@ -3852,7 +3894,10 @@ async function renderTribe(){
   $("tribeOrbit").innerHTML = orbitSvg(tribeRows);
   $("tribeSave").innerHTML = await tribeSavings();
   $("tribeJourney").innerHTML = TRIBE_STEPS.map(([h, sub], i) => `<li class="${i < step ? "done" : i === step ? "now" : ""}"><i>${i < step ? "✓" : i + 1}</i><b>${h}</b><span>${sub}</span></li>`).join("");
-  $("tribeWants").innerHTML = wants.length ? `<h2 class="section-h">They want to team up with you</h2>${wants.map(tribeCardHtml).join("")}` : "";
+  $("tribeWants").innerHTML = (state.tribeLeft || []).map(n => `<div class="tribe-left" role="status">👋 <span><b>${esc(n.name)} left your tribe.</b>
+      ${bonded.length ? "The rest of you are still a tribe." : "You can team up with someone new below."}</span>
+      <button class="pp-x" type="button" data-left-hide="${esc(n.id)}" aria-label="Hide">${CLOSE_SVG}</button></div>`).join("")
+    + (wants.length ? `<h2 class="section-h">They want to team up with you</h2>${wants.map(tribeCardHtml).join("")}` : "");
   const f = prefs(), size = bonded.length + 1, budget = (f.max || 0) + bonded.reduce((a, t) => a + (t.budget || 0), 0);
   $("tribeBonded").innerHTML = bonded.length ? `<div class="tribe-bond">
       <p class="eyebrow">Your tribe · ${size} of 3 people</p>
@@ -3863,20 +3908,20 @@ async function renderTribe(){
       ${bonded.map(t => `<div class="bond-row"><span><b>${esc(t.name)}</b> · ${esc(occLine(t.occupation))}<small>Bonded ${timeAgo(t.bonded_at)} · ${t.match_pct}% vibe</small></span>
         <span class="acts">${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMeFlatMate. Let's find our flat!`)}">WhatsApp</a>`}</span></div>`).join("")}
+      <button class="tribe-leave-btn" type="button" data-tleave>Leave tribe</button>
     </div>` : "";
   $("tribeMatches").innerHTML = open.length ? `<h2 class="section-h">Vibe matches near you · 70%+</h2>${open.map(tribeCardHtml).join("")}`
     : tribeRows.length ? "" : `<div class="empty"><h3>No matches yet</h3><p>${f.city ? `As more people looking in ${esc(f.areas.length ? f.areas.join(", ") : f.city)} join, anyone who matches your vibe 70%+ shows up here, and we'll notify you both.`
       : "Pick your city and areas on Discover first."}</p></div>`;
-  // Hunt together: whole flats that welcome bachelors, in any of the tribe's areas, within the joint budget.
+  // Hunt together (only once bonded): whole flats with a bedroom each, and cheaper ones where two of you share.
   if(bonded.length){
-    const areas = new Set(f.areas.concat(...bonded.map(t => t.areas || []))), anyArea = !f.areas.length || bonded.some(t => !(t.areas || []).length);
-    const all = (await api.search({ city: f.city })).filter(l => l.kind === "flat" && l.bachelors !== false && l.bhk >= size
-      && (anyArea || areas.has(l.locality))).sort((a, b) => a.rent - b.rent);
-    const fits = all.filter(l => !budget || l.rent <= budget * 1.1), flats = fits.length ? fits : all.slice(0, 4);
-    $("tribeHunt").innerHTML = `<h2 class="section-h" style="grid-column:1 / -1">Hunt together · whole flats for ${size}</h2>`
-      + (!fits.length && flats.length ? `<p class="hint" style="grid-column:1 / -1;margin:-4px 0 0">Nothing within your joint budget yet. These are the closest.</p>` : "") + (flats.length
-      ? flats.map((l, i) => cardHtml(l, i).replace("<small> /month rent</small>", `<small> /month rent</small> <span class="each">${inr(Math.round(l.rent / size / 50) * 50)} each</span>`)).join("")
-      : `<div class="empty" style="grid-column:1 / -1"><p>No whole flats in your areas within your joint budget right now. New ones are posted every day.</p></div>`);
+    const h = tribeHomes(await api.search({ city: f.city }), bonded);
+    const sec = (title, sub, g, empty) => `<h2 class="section-h" style="grid-column:1 / -1">${title}</h2>
+      <p class="hint" style="grid-column:1 / -1;margin:-4px 0 0">${g.over ? "Nothing within your joint budget yet. These are the closest." : sub}</p>`
+      + (g.list.length ? g.list.map((l, i) => tribeHomeCard(l, i, size)).join("") : `<div class="empty" style="grid-column:1 / -1"><p>${empty}</p></div>`);
+    $("tribeHunt").innerHTML = sec(`Hunt together · a bedroom each`, `Whole flats with ${size}+ bedrooms in your areas${budget ? `, within your joint ${inr(budget)}` : ""}.`,
+        h.room, "No whole flats like this in your areas right now. New ones are posted every day.")
+      + (h.share.list.length ? sec("Share a room, pay less", size === 2 ? "A 1BHK, or a twin-sharing room the two of you share." : `A ${size - 1}BHK where two of you share a bedroom.`, h.share, "") : "");
   }else $("tribeHunt").innerHTML = "";
   // The tribe's shortlist: every ♥ any of you taps, with who saved it.
   if(bonded.length){
@@ -3887,9 +3932,12 @@ async function renderTribe(){
       <div style="grid-column:1 / -1"><button class="btn btn-primary" type="button" data-together>🔎 Search together in all your areas</button></div>`
       + (list.length ? list.map(cardHtml).join("") : `<div class="empty" style="grid-column:1 / -1"><p>Nothing shortlisted yet. Tap ♥ on homes you like and ${esc(bonded.map(t => t.name).join(" & "))} will see them.</p></div>`);
   }else $("tribeShort").innerHTML = "";
-  if(tribeRows.some(t => t.unseen)){ await api.tribeSeen(); tribeUnseen = 0; renderNav(); }
+  if(all.some(t => t.unseen)){ await api.tribeSeen(); tribeUnseen = 0; renderNav(); }
 }
 $("view-tribe").addEventListener("click", async e => {
+  if(e.target.closest("[data-tleave]")) return openLeaveTribe();
+  const lh = e.target.closest("[data-left-hide]");
+  if(lh){ state.tribeLeft = (state.tribeLeft || []).filter(n => n.id !== lh.dataset.leftHide); save(); return renderTribe(); }
   const c = e.target.closest("[data-tcompat]");
   if(c){
     const t = tribeRows.find(x => x.id === c.dataset.tcompat);
@@ -3912,6 +3960,37 @@ async function answerTribe(id, yes){
   }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
   renderTribe();
 }
+// Someone left my tribe: tell me once, and keep a notice on the Tribe page for 3 days (or until I close it).
+function noteTribeLeft(rows){
+  state.notified = state.notified || {};
+  state.tribeLeft = (state.tribeLeft || []).filter(n => Date.now() - n.at < 3 * 864e5);
+  for(const t of rows.filter(r => r.status === "left")){
+    if(state.notified["tribeleft" + t.id]) continue;
+    state.notified["tribeleft" + t.id] = Date.now();
+    state.tribeLeft.push({ id: t.id, name: t.name || "Someone", at: Date.now() });
+    Notify.show(`${t.name || "Someone"} left your tribe`, "You can team up with someone new on the Tribe tab.", "tribe");
+    toast(`👋 ${t.name || "Someone"} left your tribe`);
+  }
+  save();
+}
+// Leaving the tribe: confirm first (it can't be undone), then tell the others (the server pushes it).
+function openLeaveTribe(){
+  const names = tribeRows.filter(t => t.status === "bonded").map(t => t.name || "Your tribemate");
+  const who = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0] || "Your tribe";
+  $("ltText").textContent = `${who} will be told you've left, and your shortlists stop being shared. You won't be matched with ${names.length > 1 ? "them" : "each other"} again.`;
+  $("ltYes").disabled = false;
+  $("dlgLeaveTribe").showModal();
+}
+$("ltYes").addEventListener("click", async () => {
+  $("ltYes").disabled = true;
+  try{
+    const n = await api.tribeLeave();
+    $("dlgLeaveTribe").close();
+    tribeSaved = new Map();
+    toast(n ? "You've left the tribe. You can team up with someone new any time." : "You weren't in a tribe.");
+    if(currentView === "tribe") renderTribe();
+  }catch(err){ console.error(err); $("ltYes").disabled = false; toast("Couldn't leave right now. Please try again."); }
+});
 // The bonding moment: both said yes.
 async function celebrateTribe(t){
   state.notified = state.notified || {}; state.notified["tribe" + t.id + "bondedy"] = Date.now(); save();
@@ -4033,7 +4112,9 @@ async function checkInbox(){
     let trows = [];
     try{ trows = await api.tribeList(); }catch(err){}
     const tf = trows.filter(t => t.unseen), news = [];
+    noteTribeLeft(trows);
     for(const t of tf){
+      if(t.status === "left") continue;
       const key = "tribe" + t.id + t.status + (t.their_yes ? "y" : "");
       if(state.notified[key]) continue;
       state.notified[key] = Date.now();
@@ -4556,7 +4637,9 @@ const RULES = { veg:["Veg-only kitchen", hh => hh.food === 0], noSmoke:["No smok
   bach:["Bachelors welcome", () => true] };  // checked for every kind of home in applyFilters
 function applyFilters(rows, f){
   return rows.filter(l => {
-    const cost = l.rent, hh = l.household || {}, shared = l.kind !== "flat" && (hh.residents || 0) > 0;
+    // With a tribe, a whole flat's budget check is your share of it.
+    const cost = l.kind === "flat" && myTribeSize > 1 && isSeeker() ? l.rent / myTribeSize : l.rent;
+    const hh = l.household || {}, shared = l.kind !== "flat" && (hh.residents || 0) > 0;
     if(f.areas.length && !f.areas.includes(l.locality)) return false;
     if(f.min && cost < f.min) return false;
     if(f.max && cost > f.max) return false;
@@ -4630,9 +4713,10 @@ let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
   renderProfilePromo(); renderVibePromo(); renderNudgeCards();
-  const [rows] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null]);
+  const [rows, , bonded] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
   if(seq !== browseSeq) return;
-  cityRows = rows;
+  cityRows = rows; myTribeSize = bonded.length + 1;
+  const seen = rows.filter(browseable);   // whole flats and shared rooms wait for a tribe
   // Area chips for the chosen city.
   const areas = f.city ? [...new Set(areasFor(f.city, rows).concat(f.areas))] : [];
   $("areaChips").hidden = !f.city;
@@ -4643,7 +4727,7 @@ async function renderDiscover(){
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
 
-  let list = applyFilters(rows, f);
+  let list = applyFilters(seen, f);
   const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
   if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
   else if(sort === "cost") list.sort((a, b) => a.rent - b.rent);
@@ -4658,13 +4742,34 @@ async function renderDiscover(){
   renderUrgent();
   extrasHtml().then(h => $("extrasD").innerHTML = h);
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
-  const vibes = rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
+  const vibes = seen.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
   $("vibeRow").hidden = !vibes.length;
   $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} in ${f.city || "all cities"} where the people live like you`;
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
   $("count").textContent = rest.length ? (vibes.length ? "More homes" : "") : "";
-  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : vibes.length && list.length ? "" : emptyHtml(rows, f);
+  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : vibes.length && list.length ? "" : emptyHtml(seen, f);
+  renderTribeRow(rows, bonded);
+}
+// Discover's tribe row: homes sized to your tribe once you've bonded; before that, how many are waiting for one.
+function renderTribeRow(rows, bonded){
+  const f = prefs(), size = bonded.length + 1;
+  if(bonded.length){
+    const h = tribeHomes(rows, bonded), homes = h.room.list.concat(h.share.list).slice(0, 12);
+    $("tribeRow").hidden = !homes.length; $("tribeTease").hidden = true;
+    $("tribeRowH").textContent = `For your tribe of ${size}`;
+    $("tribeRowSub").textContent = `You${bonded.map(t => " + " + t.name).join("")} · whole flats${h.share.list.length ? " and rooms to share" : ""}, split ${size} ways`;
+    $("tribeRowCards").innerHTML = homes.map((l, i) => tribeHomeCard(l, i, size)).join("");
+    return;
+  }
+  $("tribeRow").hidden = true;
+  const waiting = isSeeker() ? rows.filter(l => FOR_TRIBES.has(l.kind) && !l.is_owner && (!f.areas.length || f.areas.includes(l.locality))) : [];
+  const flats = waiting.filter(l => l.kind === "flat").length, shared = waiting.length - flats;
+  $("tribeTease").hidden = !waiting.length;
+  $("tribeTease").innerHTML = waiting.length ? `<span class="tt-ic" aria-hidden="true">🔒</span><span><b>${[flats ? `${flats} whole ${flats === 1 ? "flat" : "flats"}` : "",
+      shared ? `${shared} shared ${shared === 1 ? "room" : "rooms"}` : ""].filter(Boolean).join(" and ")} ${waiting.length === 1 ? "is" : "are"} waiting for a tribe</b>
+      <small>Team up with people who match your vibe, then rent one together and split it. They'll show up here, sized to your tribe.</small>
+      <em>Build your tribe&nbsp;→</em></span>` : "";
 }
 // When nothing matches, offer the changes that would bring homes back, with counts.
 let suggestions = [];
@@ -4723,7 +4828,11 @@ function openFilters(){
   $("bandChips").innerHTML = BANDS.map(([lo, hi, label], i) => `<label class="chip"><input type="radio" name="fBand" value="${i}"${f.min === lo && f.max === hi && (lo || hi) ? " checked" : ""}>${label}</label>`).join("");
   $("fMust").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" name="fMust" value="${esc(a)}"${f.must.includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("");
   $("fMin").value = f.min || ""; $("fMax").value = f.max || ""; $("fMove").value = f.moveBy || "";
-  form.querySelectorAll("[name=fKind]").forEach(x => x.checked = f.kinds.includes(x.value));
+  form.querySelectorAll("[name=fKind]").forEach(x => {
+    const locked = isSeeker() && FOR_TRIBES.has(x.value) && myTribeSize < 2;   // whole flats / shared rooms: for tribes
+    x.disabled = locked; x.checked = !locked && f.kinds.includes(x.value);
+    x.parentElement.classList.toggle("for-tribes", locked);
+  });
   form.querySelectorAll("[name=fFurn]").forEach(x => x.checked = f.furn.includes(x.value));
   form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
   form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
@@ -4766,7 +4875,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","vibeCards","tribeHunt","tribeShort"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","savedCards","vibeCards","tribeHunt","tribeShort","tribeRowCards"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null, currentListing = null;
@@ -4864,6 +4973,14 @@ async function openListing(id){
       ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
     ${cp ? `<button class="btn btn-primary btn-sm" style="margin-top:12px" data-action="compat">See compatibility analysis</button>` : ""}</div></div>`;
   const items = expenseItems(l);
+  const tribe = isSeeker() && !l.is_owner && FOR_TRIBES.has(l.kind) ? await bondedTribe() : [], tsize = tribe.length + 1;
+  const tribeNote = !isSeeker() || l.is_owner || !FOR_TRIBES.has(l.kind) ? ""
+    : !tribe.length ? `<div class="tribe-fit solo"><b>👯 This ${l.kind === "flat" ? "whole flat" : "shared room"} is for tribes</b>
+        <span>Team up with people looking in ${esc(l.city)} who match your vibe, then rent it together and split the rent.</span>
+        <a href="#tribe" data-close>Build your tribe&nbsp;→</a></div>`
+    : tribeFit(l, tsize) ? `<div class="tribe-fit"><b>For your tribe of ${tsize}: ${tribeEach(l, tsize)}</b>
+        <span>${tribeFitLabel(l, tsize)} · you${tribe.map(t => " + " + esc(t.name)).join("")}</span></div>`
+    : `<div class="tribe-fit solo"><b>Too small for your tribe of ${tsize}</b><span>Look for ${tsize}BHK whole flats on your Tribe page.</span></div>`;
   const bill = items.map(([k, label]) => `<span class="muted">${label}</span><span>${l.costs[k] === "usage" ? "As per use" : inr(l.costs[k])}</span>`).join("");
   $("lBody").innerHTML = `
     ${isSample(l) ? `<p class="smp-note">${SAMPLE_TAG}<span>A sample home for testing. Ask to meet and the owner accepts straight away, without using a contact.
@@ -4871,6 +4988,7 @@ async function openListing(id){
     <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
+    ${tribeNote}
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
     <div class="household">${mates.length ? matesHtml(hh, l.id) : ""}
@@ -6457,6 +6575,39 @@ async function syncSaves(){
 }
 const tribeSavedLine = l => { const n = tribeSaved.get(l.id); return n && n.length ? `<div class="tribe-saved">♥ ${esc(n.join(" & "))} shortlisted this</div>` : ""; };
 const bondedTribe = async () => isSeeker() ? (await api.tribeList().catch(() => [])).filter(t => t.status === "bonded") : [];
+/* Homes for tribes. Whole flats and shared rooms are for people moving in together, so a seeker sees them once
+   they've bonded a tribe, sized to it: a whole flat with a bedroom each, or a cheaper one where two of them share
+   a bedroom (a twin-sharing room for a tribe of 2). */
+let myTribeSize = 1;   // you + your bonded tribemates, refreshed whenever Discover loads
+const FOR_TRIBES = new Set(["flat", "shared"]);
+// "room": a bedroom each · "share": two of you share a bedroom · null: doesn't fit this tribe
+function tribeFit(l, size){
+  if(l.kind === "flat") return size < 2 ? null : l.bhk >= size ? "room" : l.bhk === size - 1 ? "share" : null;
+  if(l.kind === "shared") return size === 2 ? "share" : null;
+  return null;
+}
+// Browsing (Discover): tribe homes only once there's a tribe to fill them, and only the ones that fit it.
+const browseable = l => !isSeeker() || l.is_owner || !FOR_TRIBES.has(l.kind) || Boolean(tribeFit(l, myTribeSize));
+const tribeEach = (l, size) => l.kind === "shared" ? `${inr(l.rent)} a bed` : `${inr(Math.round(l.rent / size / 50) * 50)} each`;
+const tribeFitLabel = (l, size) => tribeFit(l, size) === "room" ? "🛏️ A bedroom each"
+  : l.kind === "shared" ? "👯 You two share this room" : size === 2 ? "👯 You two share the bedroom" : "👯 Two of you share a bedroom";
+function tribeHomeCard(l, i, size){
+  return cardHtml(l, i).replace(`<div class="price">`, `<div class="fit-line">${tribeFitLabel(l, size)}</div><div class="price">`)
+    .replace("<small> /month rent</small>", `<small> /month rent</small> <span class="each">${tribeEach(l, size)}</span>`);
+}
+// A bonded tribe's homes: in any member's areas, bachelors welcome, within the joint budget when there are any.
+function tribeHomes(rows, bonded){
+  const f = prefs(), size = bonded.length + 1, budget = (f.max || 0) + bonded.reduce((a, t) => a + (t.budget || 0), 0);
+  const areas = new Set(f.areas.concat(...bonded.map(t => t.areas || []))), anyArea = !f.areas.length || bonded.some(t => !(t.areas || []).length);
+  const ok = rows.filter(l => tribeFit(l, size) && l.bachelors !== false && !l.is_owner && (anyArea || areas.has(l.locality)));
+  const cost = l => l.kind === "shared" ? l.rent * size : l.rent;   // what the whole tribe pays a month
+  const pick = list => {
+    list.sort((a, b) => cost(a) - cost(b));
+    const fits = list.filter(l => !budget || cost(l) <= budget * 1.1);
+    return { list: fits.length ? fits : list.slice(0, 4), over: !fits.length && list.length > 0 };
+  };
+  return { size, budget, room: pick(ok.filter(l => tribeFit(l, size) === "room")), share: pick(ok.filter(l => tribeFit(l, size) === "share")) };
+}
 // Search together: Discover shows homes in every tribe member's areas.
 async function searchTogether(){
   const bonded = await bondedTribe(), f = prefs();
