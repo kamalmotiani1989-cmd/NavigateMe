@@ -435,10 +435,14 @@ have). There's no real number or address to share, and the app says so. Running 
 replaces them. Before real users, remove them all:
 `delete from auth.users where id in (select id from public.fm_profiles where sample);`
 
-**Testing login (no messages):** until real codes are set up (below), everyone signs in with their mobile
-number and the code **123456**, through the `fm-login` function (`supabase/functions/fm-login`). It
-isn't secure: anyone with the code can sign in as any number. The WhatsApp / SMS choice, the limits and
-the bot checks already work; only the message isn't sent.
+**Testing login (no messages):** until real codes are set up (below), you sign in with your mobile number
+and a private test code, through the `fm-login` function (`supabase/functions/fm-login`). The code is
+the Supabase secret `TEST_LOGIN_CODE` (6 digits; change it with `supabase secrets set TEST_LOGIN_CODE=...`
+or under Edge Functions → Secrets). It is never in this repo or shown in the app, and with no secret set,
+test login is off. Wrong codes are limited (`fm_login_fails`): 5 an hour per number, 10 per network
+address and 30 in all, then test login waits an hour. Anyone with the code can still sign in as any
+number, so keep it private. The WhatsApp / SMS choice, the limits and the bot checks already work; only
+the message isn't sent.
 
 ### Sign-in codes: WhatsApp first, SMS on request
 

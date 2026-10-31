@@ -1,12 +1,14 @@
 // fm-login: TESTING ONLY. Signs someone in with their mobile number and a shared test code,
 // with no SMS, while phone login (Supabase Auth -> Phone + an SMS provider) isn't set up.
-// Anyone who knows the code can sign in as any number, so turn it off before real users:
+// The code is the TEST_LOGIN_CODE secret (supabase secrets set TEST_LOGIN_CODE=...), never in this repo
+// or the app; with no secret set, test login is off. Wrong codes are limited (fm_login_fails) so it
+// can't be guessed. Anyone who knows the code can sign in as any number, so turn it off before real users:
 //   update fm_settings set test_login = false;
 // Deployed with verify_jwt = false: the code check below is the only gate. With TURNSTILE_SECRET set
 // (Cloudflare Turnstile, the app's bot check), it also needs a valid bot-check token.
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const TEST_CODE = "123456";
+const TEST_CODE = (Deno.env.get("TEST_LOGIN_CODE") ?? "").trim();
 const url = Deno.env.get("SUPABASE_URL")!;
 const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const anon = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -28,14 +30,13 @@ async function passwordFor(phone: string) {
 }
 
 // Cloudflare Turnstile, when its secret is set: the token from the app's bot check must be valid.
-async function humanCheck(token: string, req: Request) {
+async function humanCheck(token: string, req: Request, ip: string) {
   const secret = Deno.env.get("TURNSTILE_SECRET");
   if (!secret) return true;
   if (!token) return false;
   const form = new FormData();
   form.append("secret", secret);
   form.append("response", token);
-  const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
   if (ip) form.append("remoteip", ip);
   const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body: form });
   const out = await r.json().catch(() => ({}));
@@ -50,8 +51,33 @@ Deno.serve(async (req) => {
 
   const { data: settings } = await admin.from("fm_settings").select("test_login").single();
   if (!settings?.test_login) return json({ error: "test-login-off" }, 403);
-  if (String(code ?? "") !== TEST_CODE) return json({ error: "bad-code" }, 401);
-  if (!(await humanCheck(String(captcha ?? ""), req))) return json({ error: "bot-check" }, 403);
+  // Says what's wrong with the secret, never what it is.
+  if (!/^\d{6}$/.test(TEST_CODE)) return json({ error: "test-login-off", why: TEST_CODE ? "code-not-6-digits" : "no-code-set" }, 403);
+
+  // Wrong codes in the last hour: 5 per number, 10 per network address, 30 in all.
+  const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+  const since = new Date(Date.now() - 3600e3).toISOString();
+  const fails = async (col?: string, val?: string) => {
+    let q = admin.from("fm_login_fails").select("id", { count: "exact", head: true }).gt("created_at", since);
+    if (col) q = q.eq(col, val);
+    const { count, error } = await q;
+    if (error) throw error;
+    return count ?? 0;
+  };
+  try {
+    if ((await fails("phone", phone)) >= 5 || (ip && (await fails("ip", ip)) >= 10) || (await fails()) >= 30) {
+      return json({ error: "too-many-tries" }, 429);
+    }
+  } catch (e) {
+    console.error(e);
+    return json({ error: "server" }, 500);
+  }
+  if (String(code ?? "") !== TEST_CODE) {
+    await admin.from("fm_login_fails").delete().lt("created_at", new Date(Date.now() - 86400e3).toISOString());
+    await admin.from("fm_login_fails").insert({ phone, ip: ip || null });
+    return json({ error: "bad-code" }, 401);
+  }
+  if (!(await humanCheck(String(captcha ?? ""), req, ip))) return json({ error: "bot-check" }, 403);
 
   const email = `${phone}@test.findmyflatmate.app`, password = await passwordFor(phone);
   // First sign-in creates the account; after that this just reports "already registered".
