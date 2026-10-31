@@ -437,9 +437,10 @@ replaces them. Before real users, remove them all:
 
 **Testing login (no messages):** until real codes are set up (below), you sign in with your mobile number
 and a private test code, through the `fm-login` function (`supabase/functions/fm-login`). The code is
-the Supabase secret `TEST_LOGIN_CODE` (6 digits; change it with `supabase secrets set TEST_LOGIN_CODE=...`
-or under Edge Functions → Secrets). It is never in this repo or shown in the app, and with no secret set,
-test login is off. Wrong codes are limited (`fm_login_fails`): 5 an hour per number, 10 per network
+stored scrambled (bcrypt) in the database table `fm_secrets`, which only the server can read, and checked
+by `fm_test_code_ok`. It is never in this repo or shown in the app, and with no code set, test login is
+off. To change it, run in the SQL editor (6 digits):
+`insert into public.fm_secrets (name, hash) values ('test_login_code', extensions.crypt('NEWCODE', extensions.gen_salt('bf'))) on conflict (name) do update set hash = excluded.hash, updated_at = now();` Wrong codes are limited (`fm_login_fails`): 5 an hour per number, 10 per network
 address and 30 in all, then test login waits an hour. Anyone with the code can still sign in as any
 number, so keep it private. The WhatsApp / SMS choice, the limits and the bot checks already work; only
 the message isn't sent.

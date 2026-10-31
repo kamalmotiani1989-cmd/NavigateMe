@@ -1938,7 +1938,7 @@ html:has(> body.app){background:var(--app-bg)}
 const FM_CONFIG = {
   supabaseUrl:     "https://tjgkcuzypstnanpsoogi.supabase.co",
   // TESTING ONLY: sign in with any mobile number and the private test code, no message sent
-  // (supabase/functions/fm-login; the code is the TEST_LOGIN_CODE secret in Supabase and is never shown).
+  // (supabase/functions/fm-login; the code is stored scrambled in the database and never shown).
   // Set to false once Supabase phone login has an SMS provider, and run: update fm_settings set test_login = false;
   testLogin:       true,
   // Ads, on the website only: the Meta Pixel and the Google tag load once their IDs are filled in.
