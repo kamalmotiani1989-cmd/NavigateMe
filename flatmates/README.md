@@ -313,11 +313,23 @@ meta. The app itself can't call it.
 **Ad links.** Tag every ad so the report can tell campaigns apart:
 
 - Meta (Facebook / Instagram), website URL `https://findmeflatmate.com/?host=Pune&area=Baner`, URL parameters
-  `utm_source=meta&utm_medium=paid&utm_campaign=hosts_pune&utm_content={{ad.name}}`
+  `utm_source=meta&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{site_source_name}}`
+  (`site_source_name` is `ig` for Instagram placements, which is how Instagram ads are told apart from Facebook ads)
+- Instagram bio and posts (free): `https://findmeflatmate.com/?utm_source=instagram&utm_medium=social&utm_campaign=bio`
 - Google Ads: final URL `https://findmeflatmate.com/?host=Pune&area=Baner`. In the campaign's settings, under
   Campaign URL options, set the final URL suffix to `utm_source=google&utm_medium=cpc&utm_campaign=hosts_pune`.
   Keep auto-tagging on (it adds the gclid).
 - Ads for seekers can go to `https://findmeflatmate.com/?utm_source=...`.
+
+**Ads dashboard.** https://claude.ai/artifact/LrZ26dfDV7de4MDye4pFQY (private to its owner until shared)
+reads the live database through the Supabase connector: sign-ups, rooms listed by them, requests,
+passes and revenue by channel (Google Ads, Facebook ads, Instagram ads, other ads, free Instagram and
+Facebook, Google search, WhatsApp, friend invites, other links, direct, and accounts from before
+tracking) and by campaign, a chart per day, and cost per sign-up and per room listed from ads. It
+leaves sample accounts out. Ad spend isn't connected: enter it in `fm_ad_spend` (Supabase Table
+Editor: day, channel, campaign as in utm_campaign, amount in rupees as billed). Clicks and impressions
+stay in Meta Ads Manager and Google Ads; a connector such as Windsor.ai or Supermetrics could bring
+them in later.
 
 **Meta Pixel and Google tag.** Fill in `FM_CONFIG.ads` in `index.html` and they load, on the website
 only (never inside the Android app):
