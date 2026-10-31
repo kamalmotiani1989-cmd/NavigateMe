@@ -1258,7 +1258,8 @@ html:has(> body.app){background:var(--app-bg)}
           </div>
           <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <button class="btn btn-primary btn-block" type="submit">Send me a code</button>
-          <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.</p>
+          <p class="hint">We'll text a 6-digit code to sign you in. No password to remember.
+            Signing in means you agree to our <a href="privacy.html">privacy policy</a>.</p>
         </form>
         <form id="otpForm" novalidate hidden>
           <h2>Check your messages</h2>
@@ -1384,7 +1385,7 @@ html:has(> body.app){background:var(--app-bg)}
         <a data-apk>Android app</a>
         <span>iPhone: Add to Home Screen</span></div>
     </div>
-    <div class="wrap w-foot-bottom"><span>© 2026 FindMeFlatMate · Made in India</span><span id="modeNote"></span></div>
+    <div class="wrap w-foot-bottom"><span>© 2026 FindMeFlatMate · Made in India · <a href="privacy.html" style="display:inline;padding:0">Privacy policy</a></span><span id="modeNote"></span></div>
   </footer>
 </section>
 
@@ -1455,7 +1456,7 @@ html:has(> body.app){background:var(--app-bg)}
   </div>
 
   <footer class="w-footer">
-    <div class="wrap w-foot-bottom"><span>© 2026 FindMeFlatMate · Made in India</span><a href="./" data-host-home style="display:inline;padding:0">Looking for a room instead?</a></div>
+    <div class="wrap w-foot-bottom"><span>© 2026 FindMeFlatMate · Made in India · <a href="privacy.html" style="display:inline;padding:0">Privacy policy</a></span><a href="./" data-host-home style="display:inline;padding:0">Looking for a room instead?</a></div>
   </footer>
 </section>
 
@@ -1689,6 +1690,8 @@ html:has(> body.app){background:var(--app-bg)}
         <span><b>Invite friends, earn contacts</b><small id="accInviteSub">Every 2 friends who join with your link = 1 free contact</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="acc-row web-only" data-apk><i class="acc-ic" style="--ic:#FFEFE4;--icc:#EE5A12"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></i>
         <span><b>Get the Android app</b><small>Know the moment an owner says yes</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+      <a class="acc-row" href="privacy.html"><i class="acc-ic" style="--ic:#EEF0F4;--icc:#4A5A73;font-size:19px">🔒</i>
+        <span><b>Privacy policy</b><small>What we keep, who sees it, and how to delete it</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
     </div>
     <div class="acc-list">
       <button class="acc-row acc-out" type="button" data-action="signout"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/></svg></i>

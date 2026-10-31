@@ -339,7 +339,19 @@ ads: { metaPixel: "123456789012345", googleTag: "G-XXXXXXX, AW-1234567890",
 Campaigns aimed at hosts should optimise for **Lead** (a room listed). Seeker campaigns should
 optimise for **CompleteRegistration**, and for **Purchase** once charges are on. Only the event, a
 city, area, role or plan, and a purchase's value are sent: never names, numbers or anything typed in.
-Before running ads, publish a privacy policy that says the site uses the Meta Pixel and Google tags.
+The privacy policy, `privacy.html` (https://findmeflatmate.com/privacy.html), says so. Use that link
+wherever Meta or Google ask for a privacy policy URL.
+
+## Privacy policy
+
+`privacy.html` is the privacy policy, written to match what the app actually does. It covers what's
+collected, who sees what, the services used, cookies and ads measurement, how long data is kept, the
+user's rights under the Digital Personal Data Protection Act, 2023, and the grievance officer
+(Richa Wadhwani, privacy@findmeflatmate.com). It's linked from the sign-in card, both footers and
+Account, and the Android app bundles it (`android/app/build.gradle`). Update it, and its date, when
+the app starts collecting something new or uses a new service. Requests to see or delete data come by
+email, and an account is deleted with
+`delete from auth.users where id = (select id from fm_profiles where phone = '91XXXXXXXXXX');`.
 
 ## Install as an app
 
