@@ -1937,7 +1937,8 @@ html:has(> body.app){background:var(--app-bg)}
    The anon key is safe in the page; the service_role key never is.     */
 const FM_CONFIG = {
   supabaseUrl:     "https://tjgkcuzypstnanpsoogi.supabase.co",
-  // TESTING ONLY: sign in with any mobile number and the code 123456, no SMS (supabase/functions/fm-login).
+  // TESTING ONLY: sign in with any mobile number and the private test code, no message sent
+  // (supabase/functions/fm-login; the code is the TEST_LOGIN_CODE secret in Supabase and is never shown).
   // Set to false once Supabase phone login has an SMS provider, and run: update fm_settings set test_login = false;
   testLogin:       true,
   // Ads, on the website only: the Meta Pixel and the Google tag load once their IDs are filled in.
@@ -2873,7 +2874,7 @@ function makeLiveApi(sb){
       const r = await rpc("fm_otp_request", { p_phone: phone, p_channel: channel });
       if(r && r.error) throw otpError(r.error, r.wait);
       pendingOtp = { phone, name, role, channel, captcha: opts.captcha || "" };
-      if(FM_CONFIG.testLogin) return { testCode: "123456" };
+      if(FM_CONFIG.testLogin) return {};
       const { error } = await sb.auth.signInWithOtp({ phone: "+91" + phone, options: { channel, captchaToken: opts.captcha || undefined } });
       if(error) throw otpError(otpReason(error.message), null);
       return {};
@@ -4145,9 +4146,8 @@ async function sendCode(channel){
     $("otpTo").textContent = "+91 " + signin.phone;
     $("otpTitle").textContent = channel === "sms" ? "Check your messages" : "Check your WhatsApp";
     $("otpVia").textContent = channel === "sms" ? "by SMS" : "on WhatsApp";
-    $("otpDemo").hidden = !r.demoCode && !r.testCode;
+    $("otpDemo").hidden = !r.demoCode;
     if(r.demoCode) $("otpDemo").textContent = "Demo mode: your code is " + r.demoCode;
-    if(r.testCode) $("otpDemo").textContent = "Testing: no message is sent. Enter the code " + r.testCode + ".";
     otpCountdown(60);
     return true;
   }catch(err){
@@ -4222,6 +4222,7 @@ $("otpForm").addEventListener("submit", async e => {
   try{ await api.verifyOtp($("lgOtp").value.trim()); }
   catch(err){
     if(String(err && err.message).includes("bot-check")){ toast(OTP_ERR["bot-check"]()); $("otpForm").hidden = true; $("loginForm").hidden = false; return; }
+    if(String(err && err.message).includes("too-many-tries")){ toast("Too many wrong codes. Please try again in an hour."); return; }
     toast("That code didn't match. Try again."); return;
   }
   clearInterval(signin.timer);

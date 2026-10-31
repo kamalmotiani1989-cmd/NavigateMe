@@ -1773,7 +1773,7 @@ $$;
 -- number, 5 an hour per number, 40 an hour per network address) and records the channel the person
 -- picked: WhatsApp unless they chose SMS. fm-send-otp (Supabase's Send SMS hook) reads it to know how to
 -- send, and sends nothing for a number with no request in the last 10 minutes, so calling Supabase's
--- sign-in API directly can't run up the bill. While test login is on, fm-login checks it the same way.
+-- sign-in API directly can't run up the bill.
 create table if not exists public.fm_otp_requests (
   id         bigint generated always as identity primary key,
   phone      text not null,                                        -- 10 digits
@@ -1785,6 +1785,18 @@ create index if not exists fm_otp_requests_phone on public.fm_otp_requests (phon
 create index if not exists fm_otp_requests_ip on public.fm_otp_requests (ip, created_at desc);
 alter table public.fm_otp_requests enable row level security;
 revoke all on public.fm_otp_requests from anon, authenticated;
+
+-- Wrong test-login codes (fm-login), so the private test code can't be guessed: 5 wrong tries an hour per
+-- number, 10 per network address and 30 in all; then test login waits. Only fm-login (service role) uses it.
+create table if not exists public.fm_login_fails (
+  id         bigint generated always as identity primary key,
+  phone      text not null,
+  ip         text,
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_login_fails_time on public.fm_login_fails (created_at desc);
+alter table public.fm_login_fails enable row level security;
+revoke all on public.fm_login_fails from anon, authenticated;
 
 create or replace function public.fm_otp_request(p_phone text, p_channel text) returns jsonb
 language plpgsql security definer set search_path = public as $$
