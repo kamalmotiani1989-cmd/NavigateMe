@@ -60,14 +60,12 @@ the room comes second.
    to meet a whole flat pre-fills a note saying you're a tribe. A "no" closes the match quietly for
    both. Seekers can hide from tribe matches in Account.
 
-   **Homes for tribes.** Whole flats and shared (twin-sharing) rooms are for people moving in together,
-   so a seeker only sees them once they've bonded a tribe, sized to it. Before that, Discover shows "🔒 N
-   whole flats are waiting for a tribe" (linking to the Tribe tab), the Whole flat and Shared room
-   filters say "tribes only", and a whole flat's page says it's for tribes. Once bonded, Discover gets a
-   **For your tribe of N** row and the Tribe tab two groups: **a bedroom each** (whole flats with N+
-   bedrooms) and **share a room, pay less** (an (N-1)BHK where two of you share, or a twin-sharing room
-   for a tribe of 2), each card showing the rent per person ("₹9,500 each") or per bed. The budget filter
-   checks your share of a whole flat. Owners see everything.
+   **Homes for tribes.** Discover shows every home to everyone. A bonded tribe's Tribe tab shows only the
+   homes that match its size: **whole flats with one bedroom per person** (a 2BHK for 2, a 3BHK for 3) and,
+   for a tribe of 2, **twin-sharing rooms** the two of them can share, each card showing the rent per person
+   ("₹9,500 each") or per bed. Discover gets the same homes in a **For your tribe of N** row; a whole flat's
+   page shows your tribe's share when it matches, or how a tribe could split it ("Rent it with a tribe:
+   ₹9,500 each"). With a tribe, the budget filter checks your share of a whole flat.
 
    **Leaving a tribe.** The tribe card has **Leave tribe** (with a confirmation). The others get a push
    and a notice on their Tribe tab ("Riya left your tribe", kept 3 days or until closed); the shared
