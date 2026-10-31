@@ -260,6 +260,10 @@ alter table public.fm_profiles add column if not exists referred_by uuid referen
 alter table public.fm_profiles add column if not exists ref_rewarded boolean not null default false;
 alter table public.fm_profiles add column if not exists ref_bonus int not null default 0;
 
+-- Where an account came from (the first visit's utm_* tags, gclid / fbclid, referring site and
+-- landing page), saved once by fm_set_attribution. Read only by the team, through fm_source_report.
+alter table public.fm_profiles add column if not exists attribution jsonb;
+
 -- When the caller's pass of this kind runs until (null if none is running).
 create or replace function public.fm_pass_until(p_user uuid, p_kind text) returns timestamptz
 language sql stable security definer set search_path = public as $$
@@ -1646,10 +1650,112 @@ begin
    where id = v_me.referred_by and v_joined % 2 = 0 and ref_bonus < 5;
 end $$;
 
+-- ------------------------------------------------------ host page and ads --
+-- The public "people looking in your area" page: how many real people (no samples) are looking for
+-- a room in a city, and in one area of it. They're the people an owner there could invite from the
+-- Escape tab (discoverable seekers with their living-style answers, open to that area or to the whole
+-- city), active in the last 60 days. Only totals: the mix (budgets, lifestyle) needs 5 or more people,
+-- and describes the whole city when the area has fewer. Areas are listed when 2 or more people chose them.
+create or replace function public.fm_area_demand(p_city text, p_area text default null) returns jsonb
+language sql security definer set search_path = public stable as $$
+  with s as (
+    select nullif(p.search->>'budget', '')::int as budget, p.vibe, p.occupation->>'type' as occ,
+           coalesce(p.search->'areas', '[]'::jsonb) as areas,
+           coalesce(p.search_at, p.created_at) > now() - interval '7 days' as fresh,
+           nullif(trim(p_area), '') is not null
+             and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0
+                  or exists (select 1 from jsonb_array_elements_text(p.search->'areas') a where lower(a) = lower(trim(p_area)))) as here
+    from fm_profiles p
+    where p.role = 'seeker' and p.discoverable and not p.sample
+      and lower(p.search->>'city') = lower(trim(p_city))
+      and coalesce(p.search_at, p.created_at) > now() - interval '60 days'
+      and (select count(*) from jsonb_object_keys(p.vibe)) >= 8
+  ), n as (
+    select count(*) as city_n, count(*) filter (where here) as area_n,
+           count(*) filter (where fresh) as city_week, count(*) filter (where here and fresh) as area_week from s
+  ), pool as (
+    select s.* from s, n where s.here or n.area_n < 5
+  ), m as (
+    select count(*) as n,
+           percentile_cont(.25) within group (order by budget) filter (where budget > 0) as b25,
+           percentile_cont(.5)  within group (order by budget) filter (where budget > 0) as b50,
+           percentile_cont(.75) within group (order by budget) filter (where budget > 0) as b75,
+           count(*) filter (where coalesce(budget, 0) = 0) as flexible,
+           count(*) filter (where occ = 'working') as working, count(*) filter (where occ = 'student') as student,
+           count(*) filter (where vibe->>'gen' = 'z') as gz, count(*) filter (where vibe->>'gen' = 'm') as gm,
+           count(*) filter (where vibe->>'gen' = 'g') as gg,
+           count(*) filter (where vibe->>'smoke' = '0') as nosmoke, count(*) filter (where vibe->>'food' in ('0','1')) as veg,
+           count(*) filter (where vibe->>'sleep' = '0') as early, count(*) filter (where vibe->>'sleep' = '2') as night,
+           count(*) filter (where vibe->>'work' = '0') as out_all_day
+    from pool
+  )
+  select jsonb_build_object(
+    'city_n', n.city_n, 'area_n', case when nullif(trim(p_area), '') is not null then n.area_n end,
+    'city_week', n.city_week, 'area_week', case when nullif(trim(p_area), '') is not null then n.area_week end,
+    'mix', case when m.n >= 5 then jsonb_build_object(
+      'scope', case when nullif(trim(p_area), '') is not null and n.area_n >= 5 then 'area' else 'city' end, 'n', m.n,
+      'budget_p25', round(m.b25 / 500) * 500, 'budget_p50', round(m.b50 / 500) * 500, 'budget_p75', round(m.b75 / 500) * 500,
+      'flexible_pct', round(100.0 * m.flexible / m.n), 'working_pct', round(100.0 * m.working / m.n),
+      'student_pct', round(100.0 * m.student / m.n), 'genz_pct', round(100.0 * m.gz / m.n),
+      'millennial_pct', round(100.0 * m.gm / m.n), 'genx_pct', round(100.0 * m.gg / m.n),
+      'nosmoke_pct', round(100.0 * m.nosmoke / m.n), 'veg_pct', round(100.0 * m.veg / m.n),
+      'early_pct', round(100.0 * m.early / m.n), 'night_pct', round(100.0 * m.night / m.n),
+      'out_pct', round(100.0 * m.out_all_day / m.n)) end,
+    'anywhere', (select count(*) from s where jsonb_array_length(s.areas) = 0),
+    'areas', (select coalesce(jsonb_agg(jsonb_build_object('area', x.area, 'n', x.n) order by x.n desc, x.area), '[]'::jsonb)
+              from (select a as area, count(*) as n from s, jsonb_array_elements_text(s.areas) a
+                    group by a having count(*) >= 2 order by count(*) desc, a limit 8) x))
+  from n, m;
+$$;
+
+-- Where a new account came from, saved on its first sign-in (accounts made in the last day only).
+-- Returns true that once, so the app reports the sign-up to the ad platforms exactly once.
+create or replace function public.fm_set_attribution(p jsonb) returns boolean
+language plpgsql security definer set search_path = public as $$
+declare v_me fm_profiles%rowtype; v jsonb := '{}'::jsonb; k text;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  select * into v_me from fm_profiles where id = auth.uid() for update;
+  if v_me.id is null or v_me.attribution is not null or v_me.created_at < now() - interval '1 day' then return false; end if;
+  foreach k in array array['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid','referrer','landing','first_at'] loop
+    if jsonb_typeof(p->k) = 'string' and length(p->>k) > 0 then v := v || jsonb_build_object(k, left(p->>k, 200)); end if;
+  end loop;
+  update fm_profiles set attribution = v || jsonb_build_object('signed_up_at', now()) where id = auth.uid();
+  return true;
+end $$;
+
+-- Ad results for the team, by source and campaign (not callable from the app). In the SQL editor:
+--   select * from fm_source_report(30);
+-- Sign-ups in the last p_days days and what they did since. "unknown" is accounts made before
+-- tracking; "direct" came with no tags; gclid / fbclid without utm tags count as google / meta.
+create or replace function public.fm_source_report(p_days int default 30)
+returns table (source text, campaign text, signups bigint, seekers bigint, owners bigint, hosts_with_room bigint,
+               rooms_listed bigint, requests_sent bigint, passes_bought bigint, paid_rupees_incl_gst numeric)
+language sql security definer set search_path = public stable as $$
+  with u as (
+    select p.role,
+           case when p.attribution is null then 'unknown'
+                when nullif(p.attribution->>'utm_source', '') is not null then lower(p.attribution->>'utm_source')
+                when p.attribution ? 'gclid' then 'google' when p.attribution ? 'fbclid' then 'meta'
+                when p.attribution ? 'referrer' then 'site:' || (p.attribution->>'referrer') else 'direct' end as source,
+           coalesce(nullif(p.attribution->>'utm_campaign', ''), '-') as campaign,
+           (select count(*) from fm_listings l where l.owner_id = p.id) as rooms,
+           (select count(*) from fm_requests r where r.seeker_id = p.id and coalesce(r.initiated_by, 'seeker') = 'seeker') as reqs,
+           (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid') as orders,
+           (select coalesce(sum(o.amount_paise), 0) from fm_orders o where o.user_id = p.id and o.status = 'paid') as paise
+    from fm_profiles p
+    where not p.sample and p.created_at > now() - make_interval(days => greatest(p_days, 1))
+  )
+  select source, campaign, count(*), count(*) filter (where role = 'seeker'), count(*) filter (where role = 'owner'),
+         count(*) filter (where rooms > 0), sum(rooms)::bigint, sum(reqs)::bigint, sum(orders)::bigint, round(sum(paise) / 100.0, 2)
+  from u group by 1, 2 order by 3 desc, 1, 2;
+$$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
--- call them (fm_me and fm_search also answer signed-out callers, with nothing private).
--- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers and fm_is_sample can't be called at all.
+-- call them (fm_me, fm_search and fm_area_demand also answer signed-out callers, with nothing private).
+-- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample and the
+-- team's fm_source_report can't be called at all.
 do $$
 declare f record;
 begin
@@ -1659,7 +1765,7 @@ begin
     if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order',
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
-                     'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward') then
+                     'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -1668,4 +1774,5 @@ begin
 end $$;
 grant execute on function public.fm_search(text, text, int, text, text) to anon;
 grant execute on function public.fm_me() to anon;
+grant execute on function public.fm_area_demand(text, text) to anon;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;

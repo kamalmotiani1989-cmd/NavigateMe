@@ -961,6 +961,7 @@ body.app .foot{box-shadow:none}
 .w-nav{display:flex; align-items:center; gap:6px}
 .w-link{border:0; background:none; color:rgba(255,255,255,.86); font-weight:700; font-size:14.5px; padding:8px 12px; border-radius:10px; cursor:pointer}
 .w-link:hover{color:#fff; background:rgba(255,255,255,.14)}
+a.w-link{text-decoration:none}
 .w-get{background:#fff; color:var(--brand-2); box-shadow:0 6px 18px rgba(4,40,70,.18)}
 .w-get:hover{background:#EFFAFA}
 .w-nav .w-get{margin-left:6px}
@@ -1032,6 +1033,46 @@ body.app .foot{box-shadow:none}
   font-size:12.5px; color:rgba(255,255,255,.55)}
 .w-foot-bottom span{display:inline; padding:0}
 @media (max-width:760px){ .w-foot-grid{grid-template-columns:1fr 1fr} .w-foot-brand{grid-column:1/-1} }
+
+/* ---------- host page: who's looking near you (ads land here) */
+.logo i img{display:block; border-radius:10px}
+.h-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:0 56px; align-items:start; padding-block:28px 56px}
+.h-copy h1{font-size:clamp(34px,5vw,58px); font-weight:800; letter-spacing:-.04em; line-height:1.05; color:#fff}
+.h-copy h1 em{font-style:normal; color:#FFC86B}
+.h-copy .lede{color:rgba(255,255,255,.9); font-size:18px; max-width:46ch; margin:18px 0 0}
+.h-card{margin:0; grid-area:auto}   /* .w-card names a grid area the host page doesn't have */
+.h-card h2{font-size:22px; margin-bottom:14px}
+.h-pick{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px}
+.h-pick label{display:block; font-size:12.5px; font-weight:700; color:var(--text-2); margin-bottom:4px}
+.h-stats{min-height:150px}
+.h-big{font-size:19px; line-height:1.35; margin:0; color:var(--text)}
+.h-big b{display:block; font-size:54px; line-height:1; letter-spacing:-.04em; color:var(--teal); margin-bottom:4px}
+.h-sub{margin:8px 0 0; color:var(--text-2); font-size:14.5px}
+.h-budget{margin:16px 0 0; padding:12px 14px; border-radius:14px; background:var(--brand-soft); color:var(--brand-2); font-weight:700; font-size:15px}
+.h-budget small{display:block; font-weight:500; color:var(--text-2); font-size:12.5px; margin-top:2px}
+.h-facts{list-style:none; padding:0; margin:14px 0 0; display:grid; gap:9px}
+.h-facts li{display:grid; grid-template-columns:44px 1fr; align-items:center; gap:10px; font-size:14px; color:var(--text)}
+.h-facts b{font-size:15px; color:var(--teal)}
+.h-facts i{grid-column:2; height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden; margin-top:-4px}
+.h-facts i::after{content:""; display:block; height:100%; width:var(--w); background:linear-gradient(90deg,#12A9AE,#1F6CC4); border-radius:3px}
+.h-note{font-size:12.5px; color:var(--text-3); margin:14px 0 16px}
+.h-share{margin-top:10px}
+.h-sec{padding-block:64px 8px}
+.h-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:28px}
+.h-step{background:var(--surface-2); border-radius:var(--radius); padding:22px 20px}
+.h-step span{display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:var(--teal); color:#fff; font-weight:800; margin-bottom:12px}
+.h-step h3{font-size:18px; margin-bottom:6px} .h-step p{margin:0; color:var(--text-2)}
+.h-areas{margin-top:14px}
+.h-areas .chip b{font-weight:800; color:var(--teal)}
+.h-faq{max-width:760px; margin-top:12px}
+.h-faq details{box-shadow:0 1px 0 var(--line); padding:14px 2px}
+.h-faq summary{cursor:pointer; font-weight:700; color:var(--text)}
+.h-faq p{margin:8px 0 0; color:var(--text-2)}
+.h-end{margin-top:56px; padding:32px 24px; border-radius:24px; background:var(--grad); color:#fff; text-align:center}
+.h-end h2{color:#fff; font-size:clamp(22px,3vw,30px)} .h-end p{color:rgba(255,255,255,.88); margin:8px 0 18px}
+.h-end .btn{background:#fff; color:var(--brand-2)}
+@media (max-width:900px){ .h-grid{grid-template-columns:1fr; padding-block:8px 32px} .h-card{margin-top:28px} .h-steps{grid-template-columns:1fr} }
+@media (max-width:380px){ .h-pick{grid-template-columns:1fr} }
 
 /* ---------- account: profile header, settings rows, sign out */
 #view-account{max-width:720px; margin:0 auto}
@@ -1249,7 +1290,8 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="steps" id="w-how">
       <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate who fits in</h3>
         <ol><li><b>Describe your home</b> and the people in it. It takes about two minutes.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
-          <li><b>Get a notification when someone with your vibe asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol></div>
+          <li><b>Get a notification when someone with your vibe asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol>
+        <button class="linkbtn" type="button" data-host-open style="margin-top:6px">See who's looking for a room near you →</button></div>
       <div><p class="eyebrow">If you need a room</p><h3>Find people who live like you</h3>
         <ol><li><b>Tell us how you live</b>, what you're into, which areas you like and your budget.</li><li><b>See your vibe matches first</b>, then every other home ranked by fit.</li>
           <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol></div>
@@ -1332,7 +1374,8 @@ html:has(> body.app){background:var(--app-bg)}
       </div>
       <div><h4>Get started</h4>
         <button type="button" data-role-pick="seeker">Find a room</button>
-        <button type="button" data-role-pick="owner">Find a flatmate</button></div>
+        <button type="button" data-role-pick="owner">Find a flatmate</button>
+        <button type="button" data-host-open>Who's looking near you</button></div>
       <div><h4>Flat life</h4>
         <button type="button" data-scroll="w-more">Flatsplits</button>
         <button type="button" data-scroll="w-more">FlatMart</button>
@@ -1342,6 +1385,77 @@ html:has(> body.app){background:var(--app-bg)}
         <span>iPhone: Add to Home Screen</span></div>
     </div>
     <div class="wrap w-foot-bottom"><span>© 2026 FindMeFlatMate · Made in India</span><span id="modeNote"></span></div>
+  </footer>
+</section>
+
+<!-- ============================================================== host page -->
+<!-- For people with a spare room: who's looking near them right now, then into sign-up as an owner.
+     Ads link here: ?host=<city>&area=<area> (plus utm_* tags), or #host/<city>/<area> from inside the app. -->
+<section id="view-host" hidden>
+  <div class="w-band">
+    <div class="wrap w-top">
+      <a class="logo" href="./" data-host-home><i><img src="icons/icon-192.png" alt="" width="40" height="40"></i><span class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></a>
+      <nav class="w-nav" aria-label="Host page">
+        <a class="w-link" href="./" data-host-home>Find a room</a>
+        <button class="btn btn-sm w-get" type="button" data-host-cta>List my room</button>
+      </nav>
+    </div>
+    <div class="wrap h-grid">
+      <div class="h-copy">
+        <p class="eyebrow tagline">For flats with a spare room</p>
+        <h1>Flatmate moving out? <em>Fill the room with someone who fits.</em></h1>
+        <p class="lede">See who's looking for a room near you right now, what they can pay and how they live. Listing is free, and only the people you say yes to get your number.</p>
+        <ul class="w-points"><li>Free to list</li><li>Tenants can list too</li><li>No brokers, ever</li></ul>
+      </div>
+      <div class="w-card h-card">
+        <h2>Who's looking near you</h2>
+        <div class="h-pick">
+          <div><label for="hCity">City</label><select id="hCity"></select></div>
+          <div><label for="hArea">Area</label><select id="hArea"></select></div>
+        </div>
+        <div class="h-stats" id="hStats" aria-live="polite"></div>
+        <p class="h-note">Real people only, counted live. Their names and numbers stay private.</p>
+        <button class="btn btn-primary btn-block" type="button" data-host-cta>List my room free</button>
+        <button class="btn btn-ghost btn-block h-share" type="button" id="hShare">Send this to my flatmates</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap h-sec">
+    <p class="eyebrow">How it works for hosts</p>
+    <h2 class="story-h">Three steps to the right flatmate.</h2>
+    <div class="h-steps">
+      <article class="h-step"><span>1</span><h3>List in two minutes</h3>
+        <p>The room, the rent and a few photos, plus how your home lives: bedtimes, cooking, guests. Renting the flat yourself? You can list your spare room too.</p></article>
+      <article class="h-step"><span>2</span><h3>Invite the people who fit</h3>
+        <p>The Empty Room Escape shows everyone looking in your area, with their budget and how well they match your home. Invite them in one tap, or wait for their requests.</p></article>
+      <article class="h-step"><span>3</span><h3>You decide</h3>
+        <p>Your number and address stay private until you say yes. Brokers can't post here, so every request is from someone who wants to live there.</p></article>
+    </div>
+    <div class="h-areas" id="hAreas" hidden></div>
+  </div>
+
+  <div class="wrap h-sec">
+    <p class="eyebrow">Questions hosts ask</p>
+    <div class="h-faq">
+      <details><summary>I rent the flat. Can I list the spare room?</summary>
+        <p>Yes. Most rooms here are listed by tenants whose flatmate is moving out. Just check that your rental agreement allows a new flatmate.</p></details>
+      <details><summary>What does it cost?</summary>
+        <p>Listing your room and answering requests is free.</p></details>
+      <details><summary>Who sees my number and address?</summary>
+        <p>Only the people you accept. Everyone else sees your first name, the room, the rent and how your home lives.</p></details>
+      <details><summary>Can brokers use it?</summary>
+        <p>No. One person can list at most two addresses, and anyone you accept can report a broker, which takes the listing down.</p></details>
+    </div>
+    <div class="h-end">
+      <h2>Your next flatmate might already be looking.</h2>
+      <p>List the room in two minutes. It's free.</p>
+      <button class="btn" type="button" data-host-cta>List my room free</button>
+    </div>
+  </div>
+
+  <footer class="w-footer">
+    <div class="wrap w-foot-bottom"><span>© 2026 FindMeFlatMate · Made in India</span><a href="./" data-host-home style="display:inline;padding:0">Looking for a room instead?</a></div>
   </footer>
 </section>
 
@@ -1751,6 +1865,11 @@ const FM_CONFIG = {
   // TESTING ONLY: sign in with any mobile number and the code 123456, no SMS (supabase/functions/fm-login).
   // Set to false once Supabase phone login has an SMS provider, and run: update fm_settings set test_login = false;
   testLogin:       true,
+  // Ads, on the website only: the Meta Pixel and the Google tag load once their IDs are filled in.
+  //   metaPixel: Meta Events Manager -> your pixel -> Pixel ID (digits only)
+  //   googleTag: Google Analytics "G-..." and/or Google Ads "AW-..." tag IDs, comma-separated
+  //   googleAds: Google Ads conversion actions ("AW-.../label") for sign-ups, rooms listed and purchases
+  ads: { metaPixel: "", googleTag: "", googleAds: { sign_up: "", list_room: "", purchase: "" } },
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqZ2tjdXp5cHN0bmFucHNvb2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NzU4OTksImV4cCI6MjEwODU1MTg5OX0.i50hd8s8umEngxNxGfizz-32PIkrzQzI87KM0Tix3WA",
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
@@ -2249,6 +2368,27 @@ function demoSeekerPool(){
   }
   return demoSeekerCache = out;
 }
+// Same counting as fm_area_demand: people open to the area (or to the whole city), active in the last
+// 60 days; the mix only for 5 or more, describing the city when the area has fewer.
+function areaDemandOf(rows, city, area){
+  const lc = x => String(x || "").trim().toLowerCase(), a = lc(area), age = x => Date.now() - new Date(x.active_at).getTime();
+  const s = rows.filter(x => lc(x.city) === lc(city) && age(x) < 60 * 864e5)
+    .map(x => ({ x, fresh: age(x) < 7 * 864e5, here: Boolean(a) && (!x.areas.length || x.areas.some(y => lc(y) === a)) }));
+  const areaN = s.filter(y => y.here).length, pool = s.filter(y => y.here || areaN < 5).map(y => y.x), n = pool.length;
+  const pct = f => Math.round(100 * pool.filter(f).length / n);
+  const b = pool.map(x => x.budget).filter(v => v > 0).sort((x, y) => x - y);
+  const q = t => { if(!b.length) return null; const i = t * (b.length - 1), lo = Math.floor(i);
+    return Math.round((b[lo] + (b[Math.ceil(i)] - b[lo]) * (i - lo)) / 500) * 500; };
+  const counts = {}; s.forEach(y => y.x.areas.forEach(z => counts[z] = (counts[z] || 0) + 1));
+  return { city_n: s.length, area_n: a ? areaN : null, city_week: s.filter(y => y.fresh).length, area_week: a ? s.filter(y => y.here && y.fresh).length : null,
+    mix: n >= 5 ? { scope: a && areaN >= 5 ? "area" : "city", n, budget_p25: q(.25), budget_p50: q(.5), budget_p75: q(.75),
+      flexible_pct: pct(x => !x.budget), working_pct: pct(x => x.occupation.type === "working"), student_pct: pct(x => x.occupation.type === "student"),
+      genz_pct: pct(x => x.vibe.gen === "z"), millennial_pct: pct(x => x.vibe.gen === "m"), genx_pct: pct(x => x.vibe.gen === "g"),
+      nosmoke_pct: pct(x => x.vibe.smoke === 0), veg_pct: pct(x => x.vibe.food <= 1), early_pct: pct(x => x.vibe.sleep === 0),
+      night_pct: pct(x => x.vibe.sleep === 2), out_pct: pct(x => x.vibe.work === 0) } : null,
+    anywhere: s.filter(y => !y.x.areas.length).length,
+    areas: Object.entries(counts).filter(([, k]) => k >= 2).sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0])).slice(0, 8).map(([area, n]) => ({ area, n })) };
+}
 
 /* ========================================================== data layer */
 /* Two implementations, one interface. Screens only call api.*          */
@@ -2587,6 +2727,10 @@ const demoApi = {
     state.packs = (state.packs || 0) + 1; save(); return state;
   },
   async setReferrer(){ return "ok"; },
+  // The host page's counts: the demo's sample seekers stand in for real people.
+  async areaDemand(city, area){ return areaDemandOf(demoSeekerPool(), city, area); },
+  // Same as fm_set_attribution: true once per account, on its first sign-in.
+  async setAttribution(a){ if(state.attribution) return false; state.attribution = Object.assign({}, a, { signed_up_at: new Date().toISOString() }); save(); return true; },
 };
 
 function makeLiveApi(sb){
@@ -2731,6 +2875,8 @@ function makeLiveApi(sb){
     },
     async plans(){ return rpc("fm_plan_list"); },
     async setReferrer(code){ return rpc("fm_set_referrer", { p_code: code }); },
+    async areaDemand(city, area){ return rpc("fm_area_demand", { p_city: city, p_area: area || null }); },
+    async setAttribution(a){ return rpc("fm_set_attribution", { p: a }); },
     async buyPlan(id, listingId){
       await loadRazorpay();
       const order = await callPay("order", { plan: id, listing_id: listingId || null });
@@ -3297,6 +3443,7 @@ const TAB = {
 const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","plans","account"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
+  $("view-host").hidden = name !== "host";
   $("view-onboard").hidden = name !== "onboard";
   $("appHead").hidden = $("appMain").hidden = name !== "app";
   document.body.classList.toggle("app", name === "app");
@@ -3306,6 +3453,7 @@ function go(v){ if(location.hash === "#" + v) route(); else location.hash = v; }
 // "#splits/<group id>": the part after the slash is routeArg.
 let currentView = null, routeArg = "";
 function route(){
+  if(isHostRoute()){ currentView = null; showScreen("host"); renderHost(); return; }
   if(!state.user){ currentView = null; showScreen("welcome"); return; }
   const role = isOwner() ? "owner" : "seeker";
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
@@ -3870,6 +4018,7 @@ document.querySelectorAll("[data-apk]").forEach(a => { a.href = APK_LINK; a.rel 
 $("view-welcome").addEventListener("click", e => {
   const go = e.target.closest("[data-scroll]");
   if(go){ $(go.dataset.scroll).scrollIntoView({ behavior:"smooth", block:"start" }); return; }
+  if(e.target.closest("[data-host-open]")){ location.hash = "host"; return; }
   const pick = e.target.closest("[data-role-pick]");
   if(pick) pickRole(pick.dataset.rolePick);
 });
@@ -3893,6 +4042,7 @@ $("otpForm").addEventListener("submit", async e => {
   $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
   location.hash = ""; route();
   claimReferral();
+  claimAttribution();
 });
 
 /* =========================================================== onboarding */
@@ -4355,7 +4505,7 @@ function onCardKey(e){
 ["cards","savedCards","vibeCards","tribeHunt","tribeShort"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
-let currentId = null;
+let currentId = null, currentListing = null;
 const REQ_ERR = { "vibe-required":"Answer the living-style questions first, from your account.",
   "profile-required":"Add what you do first, from your account.", "no-credits":"You're out of contacts.",
   "declined":"The owner already said no to this one.", "listing-not-found":"This listing is no longer available." };
@@ -4363,6 +4513,7 @@ async function openListing(id){
   currentId = id;
   const l = await api.get(id);
   if(!l){ toast("This listing is no longer available."); return; }
+  currentListing = l;
   $("lTitle").textContent = l.title;
   $("lLoc").textContent = l.locality + ", " + l.city;
   const contact = l.unlocked ? await api.contact(id) : null;
@@ -4537,6 +4688,7 @@ async function sendRequest(id, message){
     }
     if(r.error){ toast(REQ_ERR[r.error] || "Couldn't send the request right now."); return; }
     toast("Request sent. We'll let you know when they reply.");
+    track("request_room", { city: currentListing && currentListing.id === id ? currentListing.city : "" });
     await openListing(id); refreshCurrent();
   }catch(err){ console.error(err); toast("Couldn't send the request right now. Please try again."); }
 }
@@ -4752,6 +4904,7 @@ async function buyPlan(p, root){
   root.querySelectorAll("[data-buy]").forEach(x => x.disabled = true);
   try{
     await api.buyPlan(p.id); await api.me();
+    track("purchase", { plan: p.id, value: (p.base_paise + p.gst_paise) / 100 });
     if($("dlgPay").open) $("dlgPay").close();
     toast(`${p.name} is on. ${["room", "tribe", "escape"].filter(k => p[k + "_days"]).map(k => `${PASS_NAMES[k]} till ${untilLabel(passUntil(k))}`).join(", ")}.`);
     const next = afterPay; afterPay = null;
@@ -5001,6 +5154,8 @@ function renderPost(){
   $("hInt").innerHTML = interestChips("hi", d.interests);
   if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
   $("fmRows").innerHTML = ""; renderFmRows();
+  const h = readLS(HOST_KEY);   // came from the host page: start with the city and area picked there
+  if(h && h.city && !$("pLocality").value){ setCitySelect($("pCity"), h.city); if(h.area) $("pLocality").value = h.area; writeLS(HOST_KEY, null); }
   fillAreaList();
   if(!$("pFrom").value) $("pFrom").value = new Date().toISOString().slice(0,10);
   if(!$("pName").value) $("pName").value = state.user.name || "";
@@ -5039,6 +5194,7 @@ $("postForm").addEventListener("submit", async e => {
     }
     btn.textContent = "Publishing…";
     const res = await api.post(p);
+    track("list_room", { city: p.listing.city, area: p.listing.locality, kind: p.listing.kind });
     state.homeDraft = Object.assign({}, p.listing.household); save();
     f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
     if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null;
@@ -6207,12 +6363,195 @@ const siteLink = () => /^https:/.test(location.href) && location.hostname !== "a
 const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite", REF_KEY = "fm_ref";
 const readLS = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
 const writeLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+
+/* ===================================================== ads + attribution */
+// Where people came from: the first visit's utm_* tags, Google and Meta click ids, the referring site
+// and the landing page, kept on this device and saved to the account when it's made
+// (fm_set_attribution; the team reads it with fm_source_report). The Meta Pixel and the Google tag
+// load only on the website, and only once their IDs are in FM_CONFIG.ads. Nothing personal is sent.
+const ATTR_KEY = "fm_attr", ATTR_TAGS = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","gclid","fbclid"];
+const ADS = FM_CONFIG.ads || {}, ON_WEB = /^https?:$/.test(location.protocol) && location.hostname !== "appassets.androidplatform.net";
+// Query parameters, wherever an ad tool put them: before the hash or after it.
+function urlParams(){
+  const q = new URLSearchParams(location.search), i = location.hash.indexOf("?");
+  if(i >= 0) new URLSearchParams(location.hash.slice(i + 1)).forEach((v, k) => { if(!q.has(k)) q.set(k, v); });
+  return q;
+}
+(function captureAttribution(){
+  if(readLS(ATTR_KEY)) return;
+  const q = urlParams(), a = {};
+  ATTR_TAGS.forEach(k => { if(q.get(k)) a[k] = q.get(k).slice(0, 200); q.delete(k); });
+  let ref = ""; try{ ref = document.referrer ? new URL(document.referrer).hostname : ""; }catch(e){}
+  if(ref && ref !== location.hostname) a.referrer = ref;
+  a.landing = (location.pathname + (q.toString() ? "?" + q : "") + location.hash.split("?")[0]).slice(0, 200);
+  a.first_at = new Date().toISOString();
+  writeLS(ATTR_KEY, a);
+})();
+// Once per account, on its first sign-in: save where it came from, and count the sign-up.
+async function claimAttribution(){
+  if(!state.user || !api.setAttribution || state.attrClaimed) return;
+  try{
+    if(await api.setAttribution(readLS(ATTR_KEY) || {})) track("sign_up", { role: isOwner() ? "owner" : "seeker" });
+    state.attrClaimed = true; save();
+  }catch(err){ console.error(err); }
+}
+function loadAds(){
+  if(!ON_WEB) return;
+  if(ADS.metaPixel){
+    // Meta's pixel loader, as Events Manager gives it.
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
+      s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+    fbq("init", String(ADS.metaPixel)); fbq("track", "PageView");
+  }
+  const tags = String(ADS.googleTag || "").split(/[\s,]+/).filter(Boolean);
+  if(tags.length){
+    const sc = document.createElement("script"); sc.async = true;
+    sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(tags[0]); document.head.appendChild(sc);
+    window.dataLayer = window.dataLayer || []; window.gtag = function(){ dataLayer.push(arguments); };
+    gtag("js", new Date()); tags.forEach(t => gtag("config", t));
+  }
+}
+// App events, as Meta standard events where one fits (campaigns can optimise for those) and
+// Google's recommended names, plus a Google Ads conversion where one is set up.
+const AD_EVENTS = {
+  host_view:    ["ViewContent", d => ({ content_name:"host_page", content_category:d.city || "" })],
+  host_start:   ["HostStart", d => ({ content_category:d.city || "" }), true],
+  sign_up:      ["CompleteRegistration", d => ({ content_name:d.role })],
+  list_room:    ["Lead", d => ({ content_name:"room", content_category:d.city || "" })],
+  request_room: ["Contact", d => ({ content_category:d.city || "" })],
+  purchase:     ["Purchase", d => ({ value:d.value, currency:"INR", content_name:d.plan })] };
+const GA_NAME = { list_room:"generate_lead" };
+function track(name, d = {}){
+  (window.fmEvents = window.fmEvents || []).push(Object.assign({ event:name }, d));
+  if(!ON_WEB) return;
+  try{
+    const [ev, props, custom] = AD_EVENTS[name] || [];
+    if(window.fbq && ev) fbq(custom ? "trackCustom" : "track", ev, props(d));
+    if(window.gtag){
+      gtag("event", GA_NAME[name] || name, name === "purchase" ? { value:d.value, currency:"INR", items:[{ item_id:d.plan, item_name:d.plan }] } : d);
+      const conv = (ADS.googleAds || {})[name];
+      if(conv) gtag("event", "conversion", Object.assign({ send_to:conv }, name === "purchase" ? { value:d.value, currency:"INR" } : {}));
+    }
+  }catch(err){ console.error(err); }
+}
+
+/* ============================================================== host page */
+// For people with a spare room: who's looking near them, then into sign-up as an owner.
+// ?host=<city>&area=<area> (what ads link to) or #host/<city>/<area>; it shows signed in or out.
+const HOST_KEY = "fm_host";
+const isHostRoute = () => urlParams().has("host") || /^#host(\/|\?|$)/.test(location.hash);
+const knownCity = c => ALL_CITIES.find(x => x.toLowerCase() === String(c || "").trim().toLowerCase()) || titleCase(c);
+function hostTarget(){
+  const q = urlParams();
+  if(q.has("host")) return { city: q.get("host") || "", area: q.get("area") || "" };
+  const [, c, a] = location.hash.split("?")[0].slice(1).split("/");
+  return { city: decodeURIComponent(c || ""), area: decodeURIComponent(a || "") };
+}
+const hostSel = () => ({ city: $("hCity").value, area: $("hArea").value });
+let hostViewed = false, hostSeq = 0, hostLast = null;
+function renderHost(){
+  const t = hostTarget(), last = readLS(HOST_KEY) || {};
+  const city = knownCity(t.city) || last.city || (state.user && isSeeker() && prefs().city) || CITIES[0];
+  setCitySelect($("hCity"), city);
+  setHostAreas(city, t.city ? t.area : city === last.city ? last.area : "");
+  if(!hostViewed){ hostViewed = true; track("host_view", hostSel()); }
+  loadHostStats();
+  window.scrollTo(0, 0);
+}
+function setHostAreas(city, area){
+  const known = CITY_AREAS[city] || [], match = known.find(a => a.toLowerCase() === String(area || "").trim().toLowerCase());
+  const pick = match || titleCase(area || "");
+  $("hArea").innerHTML = `<option value="">Anywhere in ${esc(city)}</option>`
+    + (pick && !match ? `<option>${esc(pick)}</option>` : "") + known.map(a => `<option>${esc(a)}</option>`).join("");
+  $("hArea").value = pick;
+}
+// Keep the address bar on what's shown, so a shared or reloaded link opens the same area.
+function hostUrl(){
+  const { city, area } = hostSel(), q = new URLSearchParams({ host: city });
+  if(area) q.set("area", area);
+  history.replaceState(null, "", location.pathname + "?" + q);
+}
+async function loadHostStats(){
+  const seq = ++hostSeq, { city, area } = hostSel();
+  $("hStats").innerHTML = `<p class="h-sub">Counting who's looking…</p>`;
+  let d = null;
+  try{ d = await api.areaDemand(city, area); }catch(err){ console.error(err); }
+  if(seq !== hostSeq) return;
+  hostLast = d && { city, area, n: area ? d.area_n : d.city_n };
+  $("hStats").innerHTML = hostStatsHtml(d, city, area);
+  const areas = d && d.areas ? d.areas : [];
+  $("hAreas").hidden = !areas.length;
+  $("hAreas").innerHTML = areas.length ? `<p class="eyebrow" style="margin-top:36px">Where people are looking in ${esc(city)}</p>
+    <div class="chips">${areas.map(x => `<button class="chip" type="button" data-host-area="${esc(x.area)}">${esc(x.area)} <b>${x.n + (d.anywhere || 0)}</b></button>`).join("")}</div>
+    ${d.anywhere ? `<p class="h-sub">Each count includes ${d.anywhere} ${d.anywhere === 1 ? "person" : "people"} happy to live anywhere in ${esc(city)}.</p>` : ""}` : "";
+}
+const peopleAre = n => `${n === 1 ? "person is" : "people are"}`;
+function hostStatsHtml(d, city, area){
+  if(!d) return `<p class="h-big">We couldn't count just now.</p><p class="h-sub">Check your connection and try again. You can still list your room.</p>`;
+  const n = area ? d.area_n : d.city_n, week = area ? d.area_week : d.city_week, where = area || city;
+  let html;
+  if(n > 0) html = `<p class="h-big"><b>${n}</b>${peopleAre(n)} looking for a room in ${esc(where)}</p>
+    <p class="h-sub">${[area && d.city_n > n ? `${d.city_n} across ${esc(city)}` : "", week ? `${week} searched this week` : ""].filter(Boolean).join(" · ")}</p>`;
+  else if(area && d.city_n > 0) html = `<p class="h-big"><b>${d.city_n}</b>${peopleAre(d.city_n)} looking for a room across ${esc(city)}</p>
+    <p class="h-sub">Nobody has picked ${esc(area)} yet. List your room, and it's one of the first homes they see when they do.</p>`;
+  else html = `<p class="h-big">People are just starting to look in ${esc(where)}.</p>
+    <p class="h-sub">List your room now and it's one of the first homes they see. We'll tell you the moment someone who fits asks to meet you.</p>`;
+  const m = d.mix;
+  if(!m) return html;
+  const budget = m.budget_p25 && m.budget_p75 ? (m.budget_p25 === m.budget_p75 ? `Most can pay about ${inr(m.budget_p50)} a month`
+    : `Most can pay ${inr(m.budget_p25)}–${inr(m.budget_p75).slice(1)} a month`) : "";
+  const facts = [["working_pct","are working professionals"],["student_pct","are students"],["nosmoke_pct","don't smoke"],["veg_pct","eat veg at home"],
+    ["genz_pct","are Gen Z"],["millennial_pct","are millennials"],["early_pct","are early birds"],["night_pct","are night owls"],
+    ["out_pct","are out all day on weekdays"]].map(([k, t]) => [m[k], t]).filter(([v]) => v >= 30).sort((x, y) => y[0] - x[0]).slice(0, 4);
+  return html + (budget ? `<p class="h-budget">${budget}<small>${m.flexible_pct ? `${m.flexible_pct}% are flexible on rent. ` : ""}Rent only: expenses are listed separately.</small></p>` : "")
+    + (facts.length ? `<ul class="h-facts">${facts.map(([v, t]) => `<li><b>${v}%</b><span>${t}</span><i style="--w:${v}%"></i></li>`).join("")}</ul>` : "")
+    + (m.scope === "city" && area ? `<p class="h-sub">Budgets and lifestyles are for everyone looking in ${esc(city)}.</p>` : "");
+}
+$("hCity").addEventListener("change", () => {
+  if(!pickOtherCity($("hCity"))) return;
+  setHostAreas($("hCity").value, ""); hostUrl(); loadHostStats();
+});
+$("hArea").addEventListener("change", () => { hostUrl(); loadHostStats(); });
+// Off the host page: drop its address (the visit's tags are kept in ATTR_KEY already).
+function leaveHost(hash){
+  const q = new URLSearchParams(location.search);
+  ["host","area"].concat(ATTR_TAGS).forEach(k => q.delete(k));
+  history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + (hash ? "#" + hash : ""));
+  route();
+}
+async function hostStart(){
+  const sel = hostSel();
+  track("host_start", sel);
+  writeLS(HOST_KEY, sel);   // the city and area also fill in the listing form
+  if(!state.user){ leaveHost(""); pickRole("owner"); return; }
+  if(!isOwner()){ try{ await api.setRole("owner"); }catch(err){ console.error(err); toast("Couldn't switch to listing a room. Try again from Account."); return; } }
+  leaveHost(state.onboarded.owner ? "post" : "");
+}
+$("view-host").addEventListener("click", e => {
+  if(e.target.closest("[data-host-cta]")) return hostStart();
+  if(e.target.closest("[data-host-home]")){ e.preventDefault(); return leaveHost(""); }
+  const chip = e.target.closest("[data-host-area]");
+  if(chip){ setHostAreas($("hCity").value, chip.dataset.hostArea); hostUrl(); loadHostStats();
+    $("hStats").scrollIntoView({ behavior:"smooth", block:"center" }); }
+});
+$("hShare").addEventListener("click", () => {
+  const { city, area } = hostSel(), where = area || city;
+  const link = siteLink() + "?" + new URLSearchParams(Object.assign({ host: city }, area ? { area } : {}));
+  const n = hostLast && hostLast.city === city && hostLast.area === area ? hostLast.n : 0;
+  const text = n > 0 ? `${n} ${peopleAre(n)} looking for a room in ${where} on FindMeFlatMate. If a flatmate's moving out, we can list the room free: ${link}`
+    : `We can list our spare room free on FindMeFlatMate, and see who's looking in ${where}: ${link}`;
+  if(navigator.share) navigator.share({ title:"FindMeFlatMate", text }).catch(() => {});
+  else window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+});
+
 (function takeLinkParams(){
   const p = new URLSearchParams(location.search), v = vibeFromCode(p.get("vibe")), r = (p.get("r") || "").toUpperCase();
   if(!p.has("vibe") && !p.has("r")) return;
   if(v) writeLS(VIBE_INVITE_KEY, { name: (p.get("n") || "").replace(/[^\p{L} .'-]/gu, "").trim().slice(0, 20) || "Your friend", vibe: v, at: Date.now() });
   if(/^[A-Z0-9]{6,12}$/.test(r)) writeLS(REF_KEY, { code: r, at: Date.now() });
-  history.replaceState(null, "", location.pathname + location.hash);
+  ["vibe","n","r"].forEach(k => p.delete(k));   // other parameters (a host page link, ad tags) stay
+  history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
 })();
 // After signing in, tell the server who invited this account (it only counts for a new account).
 async function claimReferral(){
@@ -6444,6 +6783,7 @@ setCitySelect($("pCity"), CITIES[0]);
 $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" value="${esc(a)}">${esc(a)}</label>`).join("");
 
 (async function boot(){
+  loadAds();
   load();
   // Live mode never falls back to demo data: that would let someone post a listing nobody else can see.
   for(;;){
@@ -6461,6 +6801,7 @@ $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="chec
   renderWelcomeInvite();
   maybeShowVibeInvite();
   claimReferral();
+  claimAttribution();
   checkInbox();
   checkExtras();
   // The Android app ships its files inside the APK, so it doesn't need one.
