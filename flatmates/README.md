@@ -275,6 +275,72 @@ links; people signed in there sign in once more on the new domain. Share links, 
 the page's og/canonical tags use `SITE_LINK` (`https://findmeflatmate.com/`).
 `.github/workflows/flatmates-site.yml` still keeps a `gh-pages` branch here with just the website.
 
+### Host page (where ads for people with a room land)
+
+**https://findmeflatmate.com/?host=Pune&area=Baner** shows people with a spare room who's looking
+near them right now: how many people want a room in that area and across the city, how many searched
+this week, what most of them can pay, and their lifestyle mix (working or studying, smoking, veg,
+generation, early birds or night owls). Visitors can switch city and area, tap the busiest areas,
+and send the page to their flatmates. **List my room free** goes to sign-up as an owner, or straight
+to the listing form for someone already signed in, with the city and area filled in. A seeker who
+taps it is switched to listing a room. The welcome page links to it ("See who's looking for a room
+near you"), and inside the app it's `#host/<city>/<area>`.
+
+The counts come from `fm_area_demand`, which anyone can call. It counts only real people: no sample
+accounts, nobody who chose not to be shown to owners, and only people active in the last 60 days who
+answered the living-style questions. These are the same people an owner there could invite from the
+Escape tab. Budgets and the lifestyle mix only show for 5 or more people, describing the whole city
+when the area has fewer, and an area is only listed once 2 or more people picked it. Nobody can be
+picked out. In demo mode the demo's sample seekers stand in.
+
+## Ads and tracking
+
+**Where each account came from.** On a visitor's first visit, the app keeps the link's `utm_source`,
+`utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `gclid` / `fbclid`, the referring site and the
+landing page on that device. When a new account signs in for the first time (accounts made in the
+last day only), `fm_set_attribution` saves them in `fm_profiles.attribution`, once. The team reads the
+results in the Supabase SQL editor:
+
+```sql
+select * from fm_source_report(30);   -- sign-ups in the last 30 days, by source and campaign
+```
+
+It gives, per source and campaign: sign-ups, seekers, owners, owners with a room listed, rooms
+listed, requests sent, passes bought and money paid (with GST). `unknown` is accounts made before
+tracking, and `direct` came without tags. A `gclid` or `fbclid` without utm tags counts as google /
+meta. The app itself can't call it.
+
+**Ad links.** Tag every ad so the report can tell campaigns apart:
+
+- Meta (Facebook / Instagram), website URL `https://findmeflatmate.com/?host=Pune&area=Baner`, URL parameters
+  `utm_source=meta&utm_medium=paid&utm_campaign=hosts_pune&utm_content={{ad.name}}`
+- Google Ads: final URL `https://findmeflatmate.com/?host=Pune&area=Baner`. In the campaign's settings, under
+  Campaign URL options, set the final URL suffix to `utm_source=google&utm_medium=cpc&utm_campaign=hosts_pune`.
+  Keep auto-tagging on (it adds the gclid).
+- Ads for seekers can go to `https://findmeflatmate.com/?utm_source=...`.
+
+**Meta Pixel and Google tag.** Fill in `FM_CONFIG.ads` in `index.html` and they load, on the website
+only (never inside the Android app):
+
+```js
+ads: { metaPixel: "123456789012345", googleTag: "G-XXXXXXX, AW-1234567890",
+       googleAds: { sign_up: "AW-1234567890/AbCd", list_room: "AW-1234567890/EfGh", purchase: "AW-1234567890/IjKl" } },
+```
+
+| App event | Meta Pixel | Google tag | Google Ads conversion |
+|---|---|---|---|
+| Host page opened | `ViewContent` (content_name host_page) | `host_view` | |
+| "List my room" tapped | custom `HostStart` | `host_start` | |
+| New account | `CompleteRegistration` (owner / seeker) | `sign_up` | `googleAds.sign_up` |
+| Room listed | `Lead` | `generate_lead` | `googleAds.list_room` |
+| Request sent | `Contact` | `request_room` | |
+| Pass bought | `Purchase` (value in ₹, incl. GST) | `purchase` | `googleAds.purchase` |
+
+Campaigns aimed at hosts should optimise for **Lead** (a room listed). Seeker campaigns should
+optimise for **CompleteRegistration**, and for **Purchase** once charges are on. Only the event, a
+city, area, role or plan, and a purchase's value are sent: never names, numbers or anything typed in.
+Before running ads, publish a privacy policy that says the site uses the Meta Pixel and Google tags.
+
 ## Install as an app
 
 Once it's served over HTTPS (GitHub Pages at `/flatmates/` works), open it on the phone:
@@ -313,7 +379,8 @@ Phones with the testing build must uninstall it once before installing the prope
 
 The app is connected to the Supabase project **FindMyFlatMate** (`tjgkcuzypstnanpsoogi`, Mumbai; the project kept its first name).
 The database runs the current `schema.sql` (Flatsplits, FlatMart, the shared tribe shortlist, map
-locations and sample people). It's safe to re-run after any change.
+locations, sample people, plans and passes, and the host page's counts and ad attribution). It's safe
+to re-run after any change.
 
 **Sample data for testing:** `supabase/samples.sql` adds 10 sample homes in each of the top 10 cities
 (Bengaluru, Mumbai, Pune, Delhi NCR, Hyderabad, Chennai, Kolkata, Ahmedabad, Jaipur, Chandigarh), each
