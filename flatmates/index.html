@@ -185,6 +185,14 @@ textarea{min-height:96px; resize:vertical}
 /* ---------- onboarding */
 .ob{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; background:var(--bg)}
 .ob-top{display:flex; align-items:center; gap:14px; padding-block:18px}
+.ob-back{flex:none; display:grid; place-items:center; width:40px; height:40px; padding:0; border:0; border-radius:50%; cursor:pointer;
+  background:rgba(255,255,255,.18); color:#fff; transition:background .15s, transform .1s}
+.ob-back:hover{background:rgba(255,255,255,.3)}
+.back-link{display:inline-flex; align-items:center; gap:6px}
+.back-link .ic{transition:transform .15s} .back-link:hover .ic{transform:translateX(-3px)}
+.x:active, .ob-back:active, .pp-x:active, .vp-x:active, .pn-x:active, .previews button:active{transform:scale(.92)}
+.x:focus-visible, .ob-back:focus-visible, .pp-x:focus-visible, .vp-x:focus-visible, .pn-x:focus-visible, .previews button:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.mhead .x:focus-visible, .ob-back:focus-visible{outline-color:#fff}
 .ob-progress{flex:1; height:4px; background:var(--surface-2); border-radius:999px; overflow:hidden}
 .ob-progress i{display:block; height:100%; width:0; background:var(--text); border-radius:inherit; transition:width .35s}
 .ob-count{font-weight:700; color:var(--text-3); font-size:13px; font-variant-numeric:tabular-nums}
@@ -297,7 +305,10 @@ textarea{min-height:96px; resize:vertical}
 .previews figure{margin:0; position:relative; aspect-ratio:4/3; max-width:100%; border-radius:10px; overflow:hidden; background:var(--surface-2)}
 .previews img{width:100%; height:100%; object-fit:cover; display:block}
 .previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700; background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
-.previews button{position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; border:0; background:rgba(0,0,0,.6); color:#fff; cursor:pointer}
+.previews button{position:absolute; top:5px; right:5px; display:grid; place-items:center; width:28px; height:28px; padding:0; border-radius:50%; border:0;
+  background:rgba(17,24,39,.72); color:#fff; cursor:pointer; box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+.previews button .ic{width:14px; height:14px}
+.previews button:hover{background:#B42318}
 .private{padding:22px 0 4px; margin:8px 0 16px; box-shadow:0 -1px 0 var(--line)}
 .private h3{font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); margin-bottom:12px}
 .household{padding:0}
@@ -316,7 +327,9 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 }
 .mhead{position:sticky; top:0; z-index:3; display:flex; justify-content:space-between; align-items:start; gap:12px; padding:18px 20px 12px; background:var(--surface)}
 .mhead h2{font-size:22px}
-.x{border:0; background:var(--surface-2); width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; flex:none; color:var(--text)}
+.x{display:grid; place-items:center; padding:0; border:0; background:var(--surface-2); width:40px; height:40px; border-radius:50%; cursor:pointer; flex:none; color:var(--text);
+  transition:background .15s, transform .1s}
+.x:hover{background:var(--line)}
 .mbody{padding:4px 20px 28px}
 .hero-pic{position:relative; height:280px; border-radius:var(--radius); overflow:hidden; margin:0 0 8px; background:var(--surface-2)}
 .hero-pic .ring-wrap{position:absolute; left:12px; bottom:12px; z-index:2; background:rgba(0,0,0,.35); border-radius:50%; padding:4px}
@@ -448,7 +461,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .active-f{display:flex; flex-wrap:wrap; gap:6px}
 .active-f:empty{display:none}
 .active-f button{border:0; border-radius:999px; padding:5px 6px 5px 12px; background:var(--accent-soft); color:var(--text); font:600 13px var(--body); cursor:pointer}
-.active-f button span{display:inline-grid; place-items:center; width:18px; height:18px; margin-left:4px; border-radius:50%; background:var(--accent); color:var(--on-accent); font-size:12px}
+.active-f button span{display:inline-grid; place-items:center; width:18px; height:18px; margin-left:4px; border-radius:50%; background:var(--accent); color:var(--on-accent); vertical-align:-4px}
+.active-f button span .ic{width:10px; height:10px; stroke-width:3.4}
 .f-actions{position:sticky; bottom:-28px; display:flex; gap:10px; justify-content:space-between; padding:14px 0 6px; margin-top:20px; background:var(--surface); box-shadow:0 -1px 0 var(--line)}
 .f-actions .btn-primary{flex:1}
 .suggest{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:16px}
@@ -520,6 +534,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .mhead{background:var(--teal); color:#fff; padding-bottom:16px; margin-bottom:14px}
 .mhead h2{color:#fff} .mhead .loc{color:rgba(255,255,255,.85)}
 .mhead .x{background:rgba(255,255,255,.2); color:#fff}
+.mhead .x:hover{background:rgba(255,255,255,.32)}
 
 /* ---------- compatibility analysis */
 .wheel{display:block; max-width:100%; height:auto}
@@ -862,7 +877,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
   .mhead{justify-content:flex-start; align-items:center}
   .mhead > div{flex:1; min-width:0; order:2}
   .mhead .x{order:1; width:40px; height:40px; background:rgba(255,255,255,.18)}
-  .x .x-back{display:block; margin:auto} .x .x-x{display:none}
+  .x .x-back{display:block} .x .x-x{display:none}
 }
 /* ---------- polish: soft white cards on a light, cool background (signed-in app only; the
    welcome page stays white). Inputs, chips and secondary buttons get a hairline so they read on
@@ -1153,14 +1168,19 @@ html:has(> body.app){background:var(--app-bg)}
 .wq-text small{display:block; font-size:11.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; opacity:.92}
 .wq-text b{display:block; font-size:19px; line-height:1.2; color:#fff}
 .wq-text span{display:block; font-size:13.5px; opacity:.94; margin-top:3px}
-.wq-go{flex:none; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.24); font-size:18px; font-weight:800}
+.wq-go{flex:none; display:grid; place-items:center; width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.26); color:#fff;
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.45); transition:transform .2s, background .2s}
+.w-quiz:hover .wq-go{transform:translateX(3px); background:rgba(255,255,255,.36)}
 @media (prefers-reduced-motion:no-preference){
   .w-quiz{animation:wq-shift 7s ease-in-out infinite}
   .wq-faces i{animation:wq-bob 2.6s ease-in-out infinite} .wq-faces i:nth-child(2){animation-delay:.3s} .wq-faces i:nth-child(3){animation-delay:.6s}
 }
 @keyframes wq-shift{0%,100%{background-position:0% 50%} 50%{background-position:100% 50%}}
 @keyframes wq-bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)}}
-@media (max-width:420px){ .wq-faces i{width:32px; height:32px; font-size:17px} .wq-text b{font-size:17px} .wq-go{display:none} }
+@media (max-width:420px){ .wq-faces i{width:32px; height:32px; font-size:17px} .wq-text b{font-size:17px}
+  /* phones: the arrow sits in the bottom corner, and the text keeps clear of it */
+  .w-quiz{padding-bottom:16px} .wq-text span{padding-right:30px}
+  .wq-go{position:absolute; right:12px; bottom:12px; width:32px; height:32px} .wq-go .ic{width:16px; height:16px} }
 .w-ready{display:flex; gap:10px; align-items:flex-start; margin:0 0 16px; padding:12px 14px; border-radius:14px; background:#FFF1E6; color:#7A3410; font-size:14px}
 .w-ready b{display:block; font-size:15px; color:#5C2408}
 .w-ready-ic{font-size:22px; line-height:1}
@@ -1194,7 +1214,7 @@ html:has(> body.app){background:var(--app-bg)}
 .pp-ring{flex:none; width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
   background:conic-gradient(var(--teal) calc(var(--p) * 1%), rgba(14,154,160,.15) 0)}
 .pp-ring b{display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:#fff; font-size:13px; color:var(--teal)}
-.pp-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(0,0,0,.05); cursor:pointer; font-size:16px; color:var(--text-2)}
+
 .acc-complete{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid var(--hair); font-size:14px; color:var(--text-2)}
 .ob .ob-later{padding:0 0 0 10px; font-size:13px; text-transform:none; letter-spacing:0; text-decoration:underline}
 .vibe-promo{position:relative; display:flex; gap:12px; align-items:center; margin:16px 0 4px; padding:14px 40px 14px 16px; border-radius:18px;
@@ -1203,7 +1223,7 @@ html:has(> body.app){background:var(--app-bg)}
 .vp-main{border:0; background:none; padding:0; text-align:left; cursor:pointer; font:inherit; color:var(--text)}
 .vp-main small{display:block; font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#B45309}
 .vp-main b{display:block; font-size:17px} .vp-main span{font-size:13.5px; color:var(--text-2)}
-.vp-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(0,0,0,.05); cursor:pointer; font-size:16px; color:var(--text-2)}
+
 .finale .ob-type{display:flex; flex-direction:column; align-items:center; gap:2px; font-size:19px; margin:4px auto 16px; color:#fff}
 .ob-type span{font-size:44px; line-height:1.1}
 .ob-type b{font-size:24px; color:#FFC86B}
@@ -1247,7 +1267,12 @@ html:has(> body.app){background:var(--app-bg)}
 .pn-ic{font-size:28px; flex:none}
 .pn-main b{display:block; font-size:16px} .pn-main small{display:block; font-size:13.5px; color:var(--text-2); margin-top:2px}
 .pn-main em{display:inline-block; margin-top:6px; font-style:normal; font-weight:800; color:var(--accent); font-size:14px}
-.pn-x{position:absolute; top:8px; right:8px; width:28px; height:28px; border:0; border-radius:50%; background:rgba(0,0,0,.05); cursor:pointer; font-size:16px; color:var(--text-2)}
+.pp-x, .vp-x, .pn-x{position:absolute; top:8px; right:8px; display:grid; place-items:center; width:32px; height:32px; padding:0; border:0; border-radius:50%;
+  background:rgba(0,0,0,.06); color:var(--text-2); cursor:pointer; transition:background .15s, color .15s, transform .1s}
+.pp-x .ic, .vp-x .ic, .pn-x .ic{width:15px; height:15px}
+.pp-x:hover, .vp-x:hover, .pn-x:hover{background:rgba(0,0,0,.11); color:var(--text)}
+/* a finger-sized tap area around the small circle */
+.pp-x::after, .vp-x::after, .pn-x::after{content:""; position:absolute; inset:-6px; border-radius:50%}
 .my-passes{margin:16px 0 0; padding:16px; border-radius:var(--r-card); color:#fff; background:linear-gradient(135deg,#1F2937,#0D2233 60%,#0B4F5C);
   box-shadow:0 12px 30px rgba(13,34,51,.3)}
 .mp-h{margin:0 0 8px; font-weight:800; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:#FFD08A}
@@ -1285,7 +1310,7 @@ html:has(> body.app){background:var(--app-bg)}
           <span class="wq-faces" aria-hidden="true"><i>🦉</i><i>🍳</i><i>🦋</i></span>
           <span class="wq-text"><small>1-minute quiz</small><b>What's your flatmate type?</b>
             <span>6 quick questions. Get your Vibe Card and see which friends you'd live well with.</span></span>
-          <span class="wq-go" aria-hidden="true">→</span></button>
+          <span class="wq-go" aria-hidden="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
         <p class="lede">Night owl or early bird? Veg kitchen or biryani Sundays? Gym at 6 or Netflix till 2? Tell us how you live, and we'll match you with flatmates who live the same way.</p>
         <ul class="w-points"><li>Matched on 12 lifestyle questions</li><li>Meet the people before the room</li><li>No brokers, ever</li></ul>
 
@@ -1348,7 +1373,7 @@ html:has(> body.app){background:var(--app-bg)}
       <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate who fits in</h3>
         <ol><li><b>Describe your home</b> and the people in it. It takes about two minutes.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
           <li><b>Get a notification when someone with your vibe asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol>
-        <button class="linkbtn" type="button" data-host-open style="margin-top:6px">See who's looking for a room near you →</button></div>
+        <button class="linkbtn" type="button" data-host-open style="margin-top:6px">See who's looking for a room near you&nbsp;→</button></div>
       <div><p class="eyebrow">If you need a room</p><h3>Find people who live like you</h3>
         <ol><li><b>Tell us how you live</b>, what you're into, which areas you like and your budget.</li><li><b>See your vibe matches first</b>, then every other home ranked by fit.</li>
           <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol></div>
@@ -1520,7 +1545,7 @@ html:has(> body.app){background:var(--app-bg)}
 <section id="view-onboard" class="ob" hidden>
   <div class="wrap" style="width:100%">
     <div class="ob-top">
-      <button class="linkbtn" type="button" id="obBack" aria-label="Previous question">←</button>
+      <button class="ob-back" type="button" id="obBack" aria-label="Previous question"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
       <div class="ob-progress" aria-hidden="true"><i id="obBar"></i></div>
       <span class="ob-count" id="obCount"></span>
     </div>
@@ -1927,6 +1952,11 @@ html:has(> body.app){background:var(--app-bg)}
   <div class="mbody" id="mkdBody"></div></dialog>
 
 <script>
+// Icons are drawn (SVG) rather than typed (×, ←, →), so they're crisp, centred and the same on every phone.
+const svgIcon = (d, size, w) => `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const BACK_SVG = svgIcon("M15 5l-7 7 7 7", 22, 2.4);
+const CLOSE_SVG = svgIcon("M6 6l12 12M18 6L6 18", 18, 2.4);
+const LEFT_SVG = svgIcon("M19 12H5M11 6l-6 6 6 6", 18, 2.4);
 /* ==================================================================== */
 /* CONFIGURATION: paste your Supabase project to go live                */
 /* ==================================================================== */
@@ -3656,8 +3686,8 @@ function seekerHtml(x, l, i){
   const st = x.invite_status, by = x.invite_by;
   const action = !st || st === "withdrawn" ? `<button class="btn btn-accent btn-sm" data-invite="${esc(x.seeker_id)}">Invite ${esc(first)}</button>`
     : st === "pending" && by === "owner" ? `<span class="req-pill pending">Invite sent · waiting</span>`
-    : st === "pending" ? `<a class="req-pill pending" href="#requests">${esc(first)} asked to meet you →</a>`
-    : st === "approved" ? `<a class="req-pill approved" href="#requests">${by === "owner" ? "Accepted your invite" : "You accepted"} · call →</a>`
+    : st === "pending" ? `<a class="req-pill pending" href="#requests">${esc(first)} asked to meet you&nbsp;→</a>`
+    : st === "approved" ? `<a class="req-pill approved" href="#requests">${by === "owner" ? "Accepted your invite" : "You accepted"} · call&nbsp;→</a>`
     : `<span class="req-pill">${by === "owner" ? "Passed this time" : "Declined"}</span>`;
   return `<article class="seek-card" style="--i:${i}">
     <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
@@ -4060,12 +4090,12 @@ async function renderUrgent(){
   const rows = inbox.filter(r => r.direction === "outgoing" && r.status === "approved" && !(state.called || {})[r.listing_id]);
   const inviteCard = invites.length ? `<a class="inv-banner" href="#requests"><span class="urgent-dot" aria-hidden="true"></span><span>
       <b>${invites.length === 1 ? `${esc(invites[0].name || "An owner")} invited you to see their flat` : `${invites.length} owners invited you to see their flats`}</b>
-      <small>See the photos and say yes or no in one tap →</small></span></a>` : "";
+      <small>See the photos and say yes or no in one tap&nbsp;→</small></span></a>` : "";
   const trows = await api.tribeList().catch(() => []);
   const tw = trows.filter(t => t.status === "open" && t.their_yes && !t.my_yes), tn = trows.filter(t => t.status === "open" && t.my_yes == null);
   const tribeCard = tw.length || tn.length ? `<a class="inv-banner tribe" href="#tribe"><span class="urgent-dot" aria-hidden="true"></span><span>
       <b>${tw.length ? `✨ ${esc(tw[0].name)} wants to build a tribe with you` : `${tn.length} ${tn.length === 1 ? "person" : "people"} looking in your areas ${tn.length === 1 ? "matches" : "match"} your vibe 70%+`}</b>
-      <small>Team up, rent a whole flat together and split it →</small></span></a>` : "";
+      <small>Team up, rent a whole flat together and split it&nbsp;→</small></span></a>` : "";
   const cards = await Promise.all(rows.map(async r => {
     const [c, l] = await Promise.all([api.contact(r.listing_id), api.get(r.listing_id)]);
     if(!c) return "";
@@ -4610,7 +4640,7 @@ async function renderDiscover(){
     areas.map(a => `<button type="button" data-area="${esc(a)}" aria-pressed="${f.areas.includes(a)}">${esc(a)}</button>`).join("") +
     `<button type="button" data-area-add>+ Add area</button>`;
   const act = activeFilters(f);
-  $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">×</span></button>`).join("");
+  $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
 
   let list = applyFilters(rows, f);
@@ -5000,7 +5030,7 @@ function incomingHtml(r, l){
         <ul>${Object.keys(r.compromise).filter(k => VIBE_BY_KEY[k]).map(k => `<li>${esc(VIBE_BY_KEY[k].q)}: <s>${esc(VIBE_BY_KEY[k].o[(r.vibe || {})[k]] || "?")}</s> → <b>${esc(VIBE_BY_KEY[k].o[r.compromise[k]])}</b></li>`).join("")}</ul></div>` : ""}
       ${r.by === "owner" ? `<p class="inv-timer">${r.status === "approved" ? (isSample(r) ? `${esc(first)} accepted straight away. Sample people have no number to call.`
           : `${esc(first)} accepted your invite. Call now while they're keen.`)
-        : r.status === "declined" ? `${esc(first)} passed this time. <a href="#escape">Find more people →</a>`
+        : r.status === "declined" ? `${esc(first)} passed this time. <a href="#escape">Find more people&nbsp;→</a>`
         : `You invited ${esc(first)}. You'll both get each other's numbers as soon as ${esc(first)} says yes.`}</p>`
         : r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <div class="traits">${traits}</div>
@@ -5206,8 +5236,8 @@ function maybeNudge(){
 function renderNudgeCards(){
   const m = state.nudge, show = m && CHARGES_ON && !anyPass() && !state.nudgeHidden;
   const html = show ? `<div class="pass-nudge"><button class="pn-main" type="button" data-nudge-go><span class="pn-ic" aria-hidden="true">🎟️</span>
-    <span><b>${esc(m.t)}</b><small>${esc(m.b)}</small><em>See passes →</em></span></button>
-    <button class="pn-x" type="button" data-nudge-hide aria-label="Hide">×</button></div>` : "";
+    <span><b>${esc(m.t)}</b><small>${esc(m.b)}</small><em>See passes&nbsp;→</em></span></button>
+    <button class="pn-x" type="button" data-nudge-hide aria-label="Hide">${CLOSE_SVG}</button></div>` : "";
   $("passNudgeD").innerHTML = html; $("passNudgeM").innerHTML = html;
 }
 document.addEventListener("click", e => {
@@ -5259,7 +5289,7 @@ async function renderMine(){
   $("mineTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
   $("mineName").textContent = mine.length ? (mine.length === 1 ? "Your flat is live" : "Your flats are live") : "Let's find your flatmate";
   $("mineSub").innerHTML = mine.length
-    ? (waiting ? `<a href="#requests">${waiting} ${waiting === 1 ? "person wants" : "people want"} to meet you →</a>` : "No new requests right now. We'll notify you as soon as someone asks.")
+    ? (waiting ? `<a href="#requests">${waiting} ${waiting === 1 ? "person wants" : "people want"} to meet you&nbsp;→</a>` : "No new requests right now. We'll notify you as soon as someone asks.")
     : "Describe the room and add a few photos. People who fit your home will ask to meet you.";
   extrasHtml().then(h => $("extrasM").innerHTML = h);
   const ask = mine.length ? notifyCard("Turn on notifications so you never miss someone who wants to meet you.") : "";
@@ -5267,7 +5297,7 @@ async function renderMine(){
   const looking = live.length ? await api.findSeekers(live[0].id) : [];
   const promo = looking.length ? `<a class="esc-promo" href="#escape"><span><small>The Empty Room Escape</small>
       <b>${looking.length} ${looking.length === 1 ? "person is" : "people are"} looking for a room in ${esc(live[0].locality)} right now</b>
-      ${looking.filter(x => x.match_pct >= 80).length ? `${looking.filter(x => x.match_pct >= 80).length} match your home's vibe 80%+. ` : ""}Invite them before someone else does →</span></a>` : "";
+      ${looking.filter(x => x.match_pct >= 80).length ? `${looking.filter(x => x.match_pct >= 80).length} match your home's vibe 80%+. ` : ""}Invite them before someone else does&nbsp;→</span></a>` : "";
   $("mineList").innerHTML = promo + ask + (mine.length ? mine.map(l => {
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
@@ -5304,7 +5334,7 @@ let photoFiles = [];   // File objects picked for the listing being posted
 function renderPhotos(){
   photoFiles.forEach(f => f.preview = f.preview || URL.createObjectURL(f));
   $("pPreviews").innerHTML = photoFiles.map((f, i) =>
-    `<figure><img src="${f.preview}" alt="Photo ${i+1}"><button type="button" data-rm="${i}" aria-label="Remove photo">×</button></figure>`).join("");
+    `<figure><img src="${f.preview}" alt="Photo ${i+1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
   $("pDrop").hidden = photoFiles.length >= MAX_PHOTOS;
 }
 function addPhotos(list){
@@ -5508,7 +5538,7 @@ function drawSplitGroup(){
     ? `You owe ${esc(fsMember(p.to).name)} <b>${rupees(p.amount)}</b>` : `${esc(fsMember(p.from).name)} owes you <b>${rupees(p.amount)}</b>`);
   const tabs = [["activity", "Activity"], ["balances", "Balances"], ["bills", "Monthly bills"], ["month", "This month"]];
   $("fsGroup").innerHTML = `
-    <button class="linkbtn" type="button" data-fs="back" style="margin-top:14px;padding-left:0">← All groups</button>
+    <button class="linkbtn back-link" type="button" data-fs="back" style="margin-top:14px;padding-left:0">${LEFT_SVG}All groups</button>
     <div class="fs-ghead"><span class="fs-emoji">${esc(d.group.emoji)}</span><div style="min-width:0"><h1>${esc(d.group.name)}</h1>
       <p>${others.length ? "You, " + esc(others.map(m => m.name).join(", ")) : "Just you so far"} ·
         <button class="linkbtn" type="button" data-fs="members">${others.length ? "Members" : "Add flatmates"}</button></p></div></div>
@@ -6041,7 +6071,7 @@ async function openItem(id){
 }
 
 function mkPhotosHtml(){
-  return mkFiles.map((f, n) => `<figure><img src="${f.preview}" alt="Photo ${n + 1}"><button type="button" data-mk-rm="${n}" aria-label="Remove photo">×</button></figure>`).join("");
+  return mkFiles.map((f, n) => `<figure><img src="${f.preview}" alt="Photo ${n + 1}"><button type="button" data-mk-rm="${n}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
 }
 function openSell(){
   mkFiles.forEach(f => URL.revokeObjectURL(f.preview)); mkFiles = [];
@@ -6452,8 +6482,10 @@ window.fmBack = () => {
   return false;
 };
 // The close button: a back arrow on phones (dialogs are full screen there), a cross on bigger screens.
-const BACK_SVG = '<svg class="x-back" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
-document.querySelectorAll(".mhead .x").forEach(b => { b.innerHTML = BACK_SVG + '<span class="x-x" aria-hidden="true">×</span>'; b.setAttribute("aria-label", "Back"); });
+document.querySelectorAll(".mhead .x").forEach(b => {
+  b.innerHTML = BACK_SVG.replace('class="ic"', 'class="ic x-back"') + CLOSE_SVG.replace('class="ic"', 'class="ic x-x"');
+  b.setAttribute("aria-label", "Close");
+});
 
 document.addEventListener("click", e => { if(e.target.closest("[data-together]")) searchTogether(); });
 
@@ -6992,7 +7024,7 @@ function renderQuiz(){
       <form id="qzNameForm" novalidate><input type="text" id="qzName" maxlength="20" autocomplete="given-name" placeholder="First name" value="${esc(quiz.a.name || "")}">
         <div class="vc-acts row" style="margin-top:14px;max-width:none;justify-content:flex-start"><button class="btn btn-primary" type="submit">${state.user ? "Show my card" : "Continue"}</button>
           <button class="btn btn-ghost" type="button" data-qskip>Skip</button></div></form>
-      <button class="linkbtn" type="button" data-qback style="margin-top:12px">← Previous question</button>`;
+      <button class="linkbtn back-link" type="button" data-qback style="margin-top:12px">${LEFT_SVG}Previous question</button>`;
     return;
   }
   $("qzBody").innerHTML = `<div class="qz-bar"><i style="width:${quiz.i / steps.length * 100}%"></i></div>
@@ -7001,7 +7033,7 @@ function renderQuiz(){
     <div class="opts">${st.opts.map((o, i) => `<button class="opt" type="button" data-qo="${i}" aria-pressed="${quiz.a[st.k] === o.v}">
       <span class="dot" style="background:${AV_COLORS[(i * 2 + quiz.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>
       <span><b>${esc(o.t)}</b>${o.s ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div>
-    ${quiz.i ? `<button class="linkbtn" type="button" data-qback style="margin-top:12px">← Previous question</button>` : ""}`;
+    ${quiz.i ? `<button class="linkbtn back-link" type="button" data-qback style="margin-top:12px">${LEFT_SVG}Previous question</button>` : ""}`;
 }
 function finishQuiz(){
   writeLS(VIBE_QUIZ_KEY, quiz.a);
@@ -7050,8 +7082,8 @@ function renderProfilePromo(){
   $("profilePromo").innerHTML = hide ? "" : `<div class="pp-card"><button class="pp-main" type="button" data-complete>
     <span class="pp-ring" style="--p:${pct}" aria-hidden="true"><b>${pct}%</b></span>
     <span><b>Your profile is ${pct}% done</b><small>${gaps.length} quick ${gaps.length === 1 ? "question" : "questions"} left, about a minute.
-      Owners reply sooner to complete profiles${sharper ? ", and your matches get sharper" : ""}.</small><em>Complete my profile →</em></span></button>
-    <button class="pp-x" type="button" data-pp-hide aria-label="Hide for now">×</button></div>`;
+      Owners reply sooner to complete profiles${sharper ? ", and your matches get sharper" : ""}.</small><em>Complete my profile&nbsp;→</em></span></button>
+    <button class="pp-x" type="button" data-pp-hide aria-label="Hide for now">${CLOSE_SVG}</button></div>`;
 }
 document.addEventListener("click", e => {
   if(e.target.closest("[data-complete]")) go("complete");
@@ -7070,8 +7102,8 @@ function maybeProfileNudge(){
 function renderVibePromo(){
   const t = isSeeker() && vibeType(state.vibe), hide = !t || state.vibeShared || state.vibePromoHidden;
   $("vibePromo").innerHTML = hide ? "" : `<div class="vibe-promo"><span class="vp-emoji" aria-hidden="true">${t.emoji}</span>
-    <button class="vp-main" type="button" data-quiz><small>Your flatmate type</small><b>${esc(t.title)}</b><span>Share your Vibe Card and see which friends you'd live well with →</span></button>
-    <button class="vp-x" type="button" data-vp-hide aria-label="Hide">×</button></div>`;
+    <button class="vp-main" type="button" data-quiz><small>Your flatmate type</small><b>${esc(t.title)}</b><span>Share your Vibe Card and see which friends you'd live well with&nbsp;→</span></button>
+    <button class="vp-x" type="button" data-vp-hide aria-label="Hide">${CLOSE_SVG}</button></div>`;
 }
 $("vibePromo").addEventListener("click", e => { if(e.target.closest("[data-vp-hide]")){ state.vibePromoHidden = true; save(); renderVibePromo(); } });
 /* ================================================================ boot */
