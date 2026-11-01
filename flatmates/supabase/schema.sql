@@ -236,6 +236,18 @@ insert into public.fm_plans (id, name, who, base_paise, room_days, tribe_days, e
   ('escape7',   'Escape Pass',      'owner',   50000,  0,  0, 7, 0, 4, true),
   ('featured7', 'Featured listing', 'owner',   19900,  0,  0, 0, 7, 5, false)
 on conflict (id) do nothing;
+-- FlatMart: a Boost puts one item first for 3 days; a pack is 5 boosts to use any time; a moving-out sale
+-- puts all of a seller's items on one shareable page, all shown first until the date they pick (30 days at most).
+-- These are for anyone (who = 'any') and give credits, used with fm_market_boost / fm_market_sale_start.
+alter table public.fm_plans drop constraint if exists fm_plans_who_check;
+alter table public.fm_plans add constraint fm_plans_who_check check (who in ('seeker','owner','any'));
+alter table public.fm_plans add column if not exists boosts int not null default 0;
+alter table public.fm_plans add column if not exists sales int not null default 0;
+insert into public.fm_plans (id, name, who, base_paise, boosts, sales, sort, enabled) values
+  ('boost1', 'FlatMart Boost',        'any',  4900, 1, 0, 10, true),
+  ('boost5', 'Boost pack · 5 boosts', 'any', 19900, 5, 0, 11, true),
+  ('mksale', 'Moving-out sale',       'any', 14900, 0, 1, 12, true)
+on conflict (id) do nothing;
 
 -- One row per run of a pass; buying more of the same pass extends the current run.
 create table if not exists public.fm_passes (
@@ -274,6 +286,9 @@ alter table public.fm_profiles add column if not exists ref_bonus int not null d
 -- Where an account came from (the first visit's utm_* tags, gclid / fbclid, referring site and
 -- landing page), saved once by fm_set_attribution. Read only by the team, through fm_source_report.
 alter table public.fm_profiles add column if not exists attribution jsonb;
+-- FlatMart boosts and moving-out sales bought and not used yet.
+alter table public.fm_profiles add column if not exists boost_credits int not null default 0 check (boost_credits >= 0);
+alter table public.fm_profiles add column if not exists sale_credits int not null default 0 check (sale_credits >= 0);
 
 -- When the caller's pass of this kind runs until (null if none is running).
 create or replace function public.fm_pass_until(p_user uuid, p_kind text) returns timestamptz
@@ -392,7 +407,8 @@ returns table (credits int, full_name text, phone text, role text, vibe jsonb, o
                gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean, tribe_open boolean,
                room_until timestamptz, tribe_until timestamptz, escape_until timestamptz,
                ref_code text, ref_joined int, ref_bonus int, charges_on boolean,
-               gender text, tribe_show_to text, escape_show_to text)
+               gender text, tribe_show_to text, escape_show_to text,
+               boost_credits int, sale_credits int, sale_code text, sale_title text, sale_until timestamptz)
 language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is null then return; end if;
@@ -407,8 +423,10 @@ begin
          fm_pass_until(p.id, 'room'), fm_pass_until(p.id, 'tribe'), fm_pass_until(p.id, 'escape'),
          p.ref_code, (select count(*)::int from fm_profiles f where f.referred_by = p.id and f.ref_rewarded), p.ref_bonus,
          (select s.charges_enabled from fm_settings s),
-         p.gender, p.tribe_show_to, p.escape_show_to
-  from fm_profiles p where p.id = auth.uid();
+         p.gender, p.tribe_show_to, p.escape_show_to,
+         p.boost_credits, p.sale_credits, sl.code, sl.title, sl.ends_at
+  from fm_profiles p left join fm_market_sales sl on sl.seller_id = p.id and sl.ends_at > now()
+  where p.id = auth.uid();
 end $$;
 
 -- Gender, from sign-up (or Account). Only male or female.
@@ -1062,6 +1080,9 @@ begin
       update fm_listings set featured_until = greatest(featured_until, now()) + make_interval(days => v_plan.featured_days)
        where id = v_order.listing_id and owner_id = v_order.user_id;
     end if;
+    if v_plan.boosts > 0 or v_plan.sales > 0 then
+      update fm_profiles set boost_credits = boost_credits + v_plan.boosts, sale_credits = sale_credits + v_plan.sales where id = v_order.user_id;
+    end if;
   end if;
   return v_order.credits;
 end $$;
@@ -1487,28 +1508,113 @@ create table if not exists public.fm_market_offers (
 );
 alter table public.fm_market_items  enable row level security;
 alter table public.fm_market_offers enable row level security;
+alter table public.fm_market_items add column if not exists boosted_until timestamptz;
+-- A seller's moving-out sale: one page (/#sale/<code>) with all their items, shown first until ends_at.
+create table if not exists public.fm_market_sales (
+  id         uuid primary key default gen_random_uuid(),
+  seller_id  uuid not null unique references auth.users(id) on delete cascade,
+  code       text not null unique,
+  title      text not null check (char_length(title) between 3 and 60),
+  ends_at    timestamptz not null,
+  started_at timestamptz not null default now(),
+  created_at timestamptz not null default now()
+);
+alter table public.fm_market_sales enable row level security;   -- no policies: the fm_market_sale* functions only
 
 drop function if exists public.fm_market_search(text, text, text);
+drop function if exists public.fm_market_search(text, text, text, boolean);
+-- Boosted items and items in a moving-out sale come first; boosted_until / sale_code say why.
 create or replace function public.fm_market_search(p_city text default null, p_category text default null, p_q text default null,
                                                    p_mine boolean default false)
 returns table (id uuid, title text, category text, condition text, price int, negotiable boolean, city text, locality text,
                description text, photos text[], moving_by date, status text, created_at timestamptz, bumped_at timestamptz,
-               seller_name text, is_mine boolean, my_offer_status text, my_offer int, offer_count bigint)
+               seller_name text, is_mine boolean, my_offer_status text, my_offer int, offer_count bigint,
+               boosted_until timestamptz, sale_code text, sale_until timestamptz)
 language sql stable security definer set search_path = public as $$
   select i.id, i.title, i.category, i.condition, i.price, i.negotiable, i.city, i.locality, i.description, i.photos,
          i.moving_by, i.status, i.created_at, i.bumped_at,
          split_part(coalesce(p.full_name, ''), ' ', 1), i.seller_id = auth.uid(), o.status, o.offer,
-         (select count(*) from fm_market_offers x where x.item_id = i.id and x.status in ('pending','accepted'))
+         (select count(*) from fm_market_offers x where x.item_id = i.id and x.status in ('pending','accepted')),
+         case when i.boosted_until > now() then i.boosted_until end, sl.code, sl.ends_at
   from fm_market_items i
   left join fm_profiles p on p.id = i.seller_id
+  left join fm_market_sales sl on sl.seller_id = i.seller_id and sl.ends_at > now()
   left join fm_market_offers o on o.item_id = i.id and o.buyer_id = auth.uid()
   where (i.status in ('active','reserved') or (i.seller_id = auth.uid() and i.status <> 'removed'))
     and (not coalesce(p_mine, false) or i.seller_id = auth.uid())
     and (p_city is null or i.city = p_city)
     and (p_category is null or i.category = p_category or (p_category = 'free' and i.price = 0))
     and (p_q is null or i.title ilike '%' || p_q || '%' or i.description ilike '%' || p_q || '%')
-  order by i.bumped_at desc
+  order by coalesce(i.status = 'active' and (i.boosted_until > now() or sl.code is not null), false) desc, i.bumped_at desc
   limit 300;
+$$;
+
+-- Boost one of my items: first in FlatMart for 3 days (more days if it's already boosted). Uses a boost
+-- credit, except while charges are off (everything is free while testing).
+create or replace function public.fm_market_boost(p_item uuid) returns text
+language plpgsql security definer set search_path = public as $$
+declare v_until timestamptz;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if not exists (select 1 from fm_market_items where id = p_item and seller_id = auth.uid() and status = 'active') then return 'not-found'; end if;
+  if (select charges_enabled from fm_settings) then
+    update fm_profiles set boost_credits = boost_credits - 1 where id = auth.uid() and boost_credits > 0;
+    if not found then return 'boost-required'; end if;
+  end if;
+  update fm_market_items set boosted_until = greatest(coalesce(boosted_until, now()), now()) + interval '3 days', bumped_at = now()
+   where id = p_item returning boosted_until into v_until;
+  return 'boosted';
+end $$;
+
+-- Start (or change) my moving-out sale, until the end of p_until (India time), 30 days at most. Starting one
+-- uses a sale credit, except while charges are off; changing the title or date of a running sale is free.
+create or replace function public.fm_market_sale_start(p_until date, p_title text)
+returns table (code text, ends_at timestamptz, error text)
+language plpgsql security definer set search_path = public as $$
+declare v_today date := (now() at time zone 'Asia/Kolkata')::date; v_s fm_market_sales%rowtype; v_end timestamptz; v_code text;
+        v_title text := left(trim(coalesce(p_title, '')), 60);
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if char_length(v_title) < 3 then return query select null::text, null::timestamptz, 'bad-title'; return; end if;
+  if p_until is null or p_until < v_today or p_until > v_today + 30 then return query select null::text, null::timestamptz, 'bad-date'; return; end if;
+  if not exists (select 1 from fm_market_items where seller_id = auth.uid() and status = 'active') then
+    return query select null::text, null::timestamptz, 'no-items'; return;
+  end if;
+  v_end := ((p_until + 1)::timestamp at time zone 'Asia/Kolkata');
+  select * into v_s from fm_market_sales where seller_id = auth.uid() for update;
+  if v_s.id is not null and v_s.ends_at > now() then
+    if v_end > v_s.started_at + interval '31 days' then return query select null::text, null::timestamptz, 'bad-date'; return; end if;
+    update fm_market_sales set title = v_title, ends_at = v_end where id = v_s.id;
+    return query select v_s.code, v_end, null::text; return;
+  end if;
+  if (select charges_enabled from fm_settings) then
+    update fm_profiles set sale_credits = sale_credits - 1 where id = auth.uid() and sale_credits > 0;
+    if not found then return query select null::text, null::timestamptz, 'sale-required'; return; end if;
+  end if;
+  if v_s.id is not null then
+    update fm_market_sales set title = v_title, ends_at = v_end, started_at = now() where id = v_s.id;
+    return query select v_s.code, v_end, null::text; return;
+  end if;
+  loop
+    v_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6));
+    exit when not exists (select 1 from fm_market_sales where fm_market_sales.code = v_code);
+  end loop;
+  insert into fm_market_sales (seller_id, code, title, ends_at) values (auth.uid(), v_code, v_title, v_end);
+  return query select v_code, v_end, null::text;
+end $$;
+
+-- A moving-out sale's page, for anyone with the link (signed in or not): the seller's first name, the
+-- items still for sale and when it ends. Nothing private: no number, no exact address.
+create or replace function public.fm_market_sale(p_code text) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('code', s.code, 'title', s.title, 'seller', split_part(coalesce(p.full_name, ''), ' ', 1),
+    'ends_at', s.ends_at, 'active', s.ends_at > now(), 'is_mine', coalesce(s.seller_id = auth.uid(), false),
+    'items', coalesce((select jsonb_agg(jsonb_build_object('id', i.id, 'title', i.title, 'category', i.category, 'condition', i.condition,
+        'price', i.price, 'negotiable', i.negotiable, 'city', i.city, 'locality', i.locality, 'photos', i.photos, 'status', i.status,
+        'moving_by', i.moving_by, 'created_at', i.created_at, 'bumped_at', i.bumped_at) order by i.status = 'reserved', i.bumped_at desc)
+      from fm_market_items i where i.seller_id = s.seller_id and i.status in ('active', 'reserved')), '[]'::jsonb))
+  from fm_market_sales s join fm_profiles p on p.id = s.seller_id
+  where s.code = upper(trim(coalesce(p_code, '')));
 $$;
 
 create or replace function public.fm_market_post(
@@ -1687,11 +1793,13 @@ create trigger fm_visits_sample before insert on public.fm_visits
 
 -- ------------------------------------------------------ plans and referrals --
 -- The plans on sale, with GST worked out the same way fm-pay charges it.
+drop function if exists public.fm_plan_list();
 create or replace function public.fm_plan_list()
-returns table (id text, name text, who text, base_paise int, gst_paise int, room_days int, tribe_days int, escape_days int, featured_days int)
+returns table (id text, name text, who text, base_paise int, gst_paise int, room_days int, tribe_days int, escape_days int, featured_days int,
+               boosts int, sales int)
 language sql stable security definer set search_path = public as $$
   select p.id, p.name, p.who, p.base_paise, round(p.base_paise * s.gst_percent / 100)::int,
-         p.room_days, p.tribe_days, p.escape_days, p.featured_days
+         p.room_days, p.tribe_days, p.escape_days, p.featured_days, p.boosts, p.sales
   from fm_plans p cross join fm_settings s where p.enabled order by p.sort;
 $$;
 
@@ -1966,4 +2074,5 @@ grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
 grant execute on function public.fm_otp_request(text, text) to anon;
 grant execute on function public.fm_test_code_ok(text) to service_role;
+grant execute on function public.fm_market_sale(text) to anon;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
