@@ -3497,7 +3497,8 @@ const rupees = p => { const r = Math.abs(p) / 100; return "₹" + r.toLocaleStri
 const toPaise = v => Math.round(Number(String(v ?? "").replace(/[^0-9.]/g, "")) * 100) || 0;
 const ten = p => String(p || "").replace(/\D/g, "").slice(-10);
 const validPhone = p => /^[6-9][0-9]{9}$/.test(p);
-const APK_LINK = "https://github.com/kamalmotiani1989-cmd/NavigateMe/releases/download/flatmates-apk/flatmates.apk";
+// The website repo's copy of the newest build (it stays downloadable when the source repo is private).
+const APK_LINK = "https://github.com/kamalmotiani1989-cmd/findmeflatmate/releases/download/flatmates-apk/flatmates.apk";
 const appLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : APK_LINK;
 const waLink = (phone, text) => `https://wa.me/91${ten(phone)}?text=${encodeURIComponent(text)}`;
 const upiLink = (upi, name, paise, note) =>

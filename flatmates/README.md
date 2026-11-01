@@ -538,10 +538,13 @@ Still open, and worth doing next:
 - **Test sign-in.** While `fm_settings.test_login` is on, the shared 6-digit test code is the only
   thing protecting every account (wrong codes are limited to 5 an hour per number, 10 per network and
   30 in all). Switch to real WhatsApp/SMS codes before inviting the public (see "Sign-in codes").
-- **The source code is public.** This repository is public on GitHub, so anyone can read the app and
-  the database design. Making it private needs two changes first: the website's publish job needs a
-  token to read it, and the Android APK has to be downloaded from somewhere public (the website repo's
-  releases) instead of this repo's releases.
+- **The source code is public until this repository is made private.** Everything is ready for that:
+  the website's publish job reads this repo with a `SOURCE_TOKEN` secret when it has one, the APK is
+  downloaded from the website repo's releases, and the published pages (and the ones inside the APK)
+  are compacted, without the source's comments. Steps: findmeflatmate's README, "NavigateMe private".
+  The website's own code always stays readable in a browser (every website's does), but the database
+  design, the Android project and this documentation won't be. Once private, database changes are
+  applied straight through the Supabase connection instead of from a public GitHub link.
 
 ## Install as an app
 
@@ -557,7 +560,12 @@ The app is called **FindMeFlatMate** (logo: three smiling flatmates in a house; 
 before, so a phone with that older build installs this one as a new app: uninstall the old one and sign in
 again). The folder and download link keep their old names.
 
-Download on the phone: https://github.com/kamalmotiani1989-cmd/NavigateMe/releases/download/flatmates-apk/flatmates.apk
+Download on the phone: https://github.com/kamalmotiani1989-cmd/findmeflatmate/releases/download/flatmates-apk/flatmates.apk
+
+That's the website repo's copy: each build goes to this repo's `flatmates-apk` release first, and the
+website's publish job (every 30 minutes, or run it from its Actions tab) copies it over when the build
+changes, so the link keeps working when this repo is private. The pages inside the APK are compacted
+(no source comments or spacing), like the website's.
 
 Open the downloaded file and allow "Install unknown apps" for your browser when Android asks.
 New versions install over the old one and keep your data.

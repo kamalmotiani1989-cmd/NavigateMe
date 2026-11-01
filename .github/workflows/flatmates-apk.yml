@@ -1,8 +1,10 @@
 name: FindMeFlatMate Android APK
 
 # Builds the Android app from flatmates/ on every change and publishes it as
-# the "flatmates-apk" release, so the download link never changes:
-# https://github.com/<owner>/<repo>/releases/download/flatmates-apk/flatmates.apk
+# the "flatmates-apk" release. The website's publish job (kamalmotiani1989-cmd/findmeflatmate) copies
+# it to that repo's own "flatmates-apk" release, which is the public download link (it keeps working
+# when this repo is private):
+# https://github.com/kamalmotiani1989-cmd/findmeflatmate/releases/download/flatmates-apk/flatmates.apk
 on:
   push:
     branches: [main, "claude/rental-flat-roommate-app-*"]
@@ -50,6 +52,21 @@ jobs:
         run: |
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then echo "$GOOGLE_SERVICES_JSON" > app/google-services.json; fi
 
+      # The pages inside the app as the website has them: without the source's comments and spacing
+      # (only in this build's copy; the repo keeps the readable source). If it fails, they go in as they are.
+      - name: Compact the pages
+        working-directory: flatmates
+        run: |
+          for f in index.html privacy.html; do
+            if npx -y html-minifier-terser@7.2.0 --remove-comments --minify-css true \
+                 --minify-js '{"compress":false,"mangle":true,"format":{"comments":false}}' -o "$RUNNER_TEMP/$f" "$f" \
+               && grep -q "<title>" "$RUNNER_TEMP/$f"; then
+              cp "$RUNNER_TEMP/$f" "$f"
+            else
+              echo "::warning::$f went into the app without compacting."
+            fi
+          done
+
       - name: Build APK
         env:
           VERSION_CODE: ${{ github.run_number }}
@@ -71,9 +88,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           notes="Latest Flatmates Android build (${GITHUB_SHA::7}, build ${{ github.run_number }}). Download flatmates.apk on your phone and open it to install."
+          # The file first, then the notes: the website copies the app to its own release when the notes change.
           if gh release view flatmates-apk >/dev/null 2>&1; then
+            gh release upload flatmates-apk "$RUNNER_TEMP/flatmates.apk" --clobber
             gh release edit flatmates-apk --notes "$notes"
           else
-            gh release create flatmates-apk --title "Flatmates Android app" --notes "$notes" --target "$GITHUB_SHA" --prerelease
+            gh release create flatmates-apk "$RUNNER_TEMP/flatmates.apk" --title "Flatmates Android app" --notes "$notes" --target "$GITHUB_SHA" --prerelease
           fi
-          gh release upload flatmates-apk "$RUNNER_TEMP/flatmates.apk" --clobber
