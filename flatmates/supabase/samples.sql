@@ -458,6 +458,10 @@ update public.fm_tribe_links t
      where l.status = 'open' and l.a_yes is null and l.b_yes is null and (public.fm_is_sample(l.a) <> public.fm_is_sample(l.b))) x
    where n <= 2);
 
+-- Sample people's gender, from their first name (used by "show me to" in Build your tribe and Escape).
+update public.fm_profiles set gender = case when split_part(full_name, ' ', 1) in ('Aditi', 'Ananya', 'Anika', 'Ayesha', 'Divya', 'Fatima', 'Ira', 'Isha', 'Kavya', 'Lakshmi', 'Leela', 'Meera', 'Meher', 'Neha', 'Nisha', 'Pallavi', 'Pooja', 'Priya', 'Riya', 'Sana', 'Shruti', 'Sneha', 'Tanvi', 'Tara', 'Zoya')
+  then 'female' else 'male' end where sample;
+
 commit;
 
 select (select count(*) from public.fm_listings l join public.fm_profiles p on p.id = l.owner_id where p.sample) as sample_homes,
