@@ -1,4 +1,4 @@
-package com.navigateme.flatmates;
+package com.findmeflatmate.app;
 
 import androidx.annotation.NonNull;
 

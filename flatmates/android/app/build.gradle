@@ -24,11 +24,11 @@ def env = System.getenv()
 def hasUploadKey = env.ANDROID_KEYSTORE_FILE && file(env.ANDROID_KEYSTORE_FILE).exists()
 
 android {
-    namespace "com.navigateme.flatmates"
+    namespace "com.findmeflatmate.app"
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.navigateme.flatmates"
+        applicationId "com.findmeflatmate.app"
         minSdk 24
         targetSdk 35
         versionCode((env.VERSION_CODE ?: "1") as int)
