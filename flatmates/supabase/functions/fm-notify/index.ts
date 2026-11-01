@@ -53,10 +53,10 @@ async function accessToken(sa: { client_email: string; private_key: string }) {
   return cached.token;
 }
 
-// Keys from the environment, else from the database (cached while this instance runs).
+// Keys from the environment, else from the database (kept once both are there; until then, read each time).
 let keys: { notify: string; fcm: string } | null = null;
 async function serverKeys() {
-  if (keys) return keys;
+  if (keys && keys.notify && keys.fcm) return keys;
   const { data: st } = await admin.from("fm_settings").select("notify_secret").limit(1).maybeSingle();
   const { data: k } = await admin.from("fm_server_keys").select("value").eq("name", "fcm_service_account").maybeSingle();
   keys = { notify: env("NOTIFY_SECRET") || st?.notify_secret || "", fcm: env("FCM_SERVICE_ACCOUNT") || k?.value || "" };
