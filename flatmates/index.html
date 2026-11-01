@@ -4645,11 +4645,20 @@ const Notify = {
       .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(() => {});
   }
 };
+// The phone's Firebase push ID. It arrives as soon as the app opens, often before sign-in, so it's kept and
+// saved once someone is signed in (and again if they switch accounts).
+let pushToken = null;
+async function savePushToken(){
+  if(!pushToken || !state.user || !api.savePushToken) return;
+  const key = state.user.phone + ":" + pushToken;
+  if(state.pushSaved === key) return;
+  try{ await api.savePushToken(pushToken); state.pushSaved = key; save(); }catch(err){}
+}
 if(Notify.native()){
   FlatmatesNative.onmessage = e => {
     let m; try{ m = JSON.parse(e.data); }catch(err){ return; }
     if(m.type === "status") Notify.nativeOn = Boolean(m.granted);
-    if(m.type === "token" && api.savePushToken) api.savePushToken(m.token).catch(() => {});
+    if(m.type === "token"){ pushToken = m.token; savePushToken(); }
     if(m.type === "open" && state.user) go(m.view || "requests");
   };
   FlatmatesNative.postMessage(JSON.stringify({ type:"hello" }));
@@ -7370,6 +7379,7 @@ async function extrasHtml(){
 }
 let splitsUnseen = 0, marketUnseen = 0;
 async function checkExtras(){
+  savePushToken();
   if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
   state.notified = state.notified || {};
   let changed = false;
