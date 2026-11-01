@@ -4457,13 +4457,27 @@ function obStepsFor(role, full){
 const SEEKER_GEN_STEP = { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
   opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] };
 let ob = null;
-function startOnboarding(role){
+// Lifestyle answers (the 12 questions and generation) only, from a seeker's profile or an owner's household.
+const vibeAnswers = o => Object.fromEntries(Object.entries(o || {}).filter(([k, v]) => (k === "gen" || VIBE_BY_KEY[k]) && v != null && v !== ""));
+async function startOnboarding(role){
   if(ob && ob.role === role) return renderOb();
   const occ = (state.user && state.user.occupation) || {};
   const quizAnswers = role === "seeker" && answered(state.vibe) < MIN_VIBE ? readLS(VIBE_QUIZ_KEY) : null;
-  const prev = role === "owner" ? Object.assign({}, state.homeDraft, interestsOf((state.homeDraft || {}).interests))
-    : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), quizAnswers, state.vibe, interestsOf(state.interests));
-  const asked = st => (st.k === "gen" || VIBE_BY_KEY[st.k]) && prev[st.k] != null;
+  // Someone switching between posting and looking has answered the lifestyle questions already, in the other
+  // role: an owner's household answers (this phone's copy, or their listing's) or a seeker's own. Use those.
+  let home = state.homeDraft || {};
+  if(role === "seeker" && answered(vibeAnswers(home)) < MIN_VIBE && answered(state.vibe) < MIN_VIBE){
+    const mine = await api.myListings().catch(() => []);
+    if(mine.length && mine[0].household) home = mine[0].household;
+    if(ob && ob.role === role) return renderOb();   // started meanwhile
+  }
+  const prev = role === "owner"
+    ? Object.assign({}, vibeAnswers(state.vibe), interestsOf(state.interests), state.homeDraft,
+        allInterests((state.homeDraft || {}).interests).length ? interestsOf(state.homeDraft.interests) : {})
+    : Object.assign({ occType: occ.type, occWhat: occ.what, budget: prefs().max }, prefs(), vibeAnswers(home), interestsOf(home.interests),
+        quizAnswers, vibeAnswers(state.vibe), allInterests(state.interests).length ? interestsOf(state.interests) : {});
+  const asked = st => ((st.k === "gen" || VIBE_BY_KEY[st.k]) && prev[st.k] != null)
+    || ((st.k === "music" || st.k === "hobbies") && (prev[st.k] || []).length > 0);
   ob = { role, steps: obSteps(role).filter(st => !asked(st)), i: 0, a: Object.assign({}, prev) };
   renderOb();
 }
