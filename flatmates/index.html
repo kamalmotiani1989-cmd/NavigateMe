@@ -1140,6 +1140,33 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
   box-shadow:inset 0 0 0 1px #FFE2C2; font-size:14.5px; color:var(--text)}
 .tribe-left b{display:block}
 .tribe-left{position:relative; padding-right:48px}
+/* FlatMart Boost and the moving-out sale */
+.mk-flag{display:inline-block; align-self:flex-start; width:max-content; margin:0 0 6px; background:#FFC24D; color:#3B2600; font-size:12px; font-weight:800; padding:3px 9px; border-radius:999px}
+.mk-flag.sale{background:#F26B1D; color:#fff}
+.mk-boostbox{display:flex; gap:12px; align-items:center; margin:16px 0 4px; padding:14px; border-radius:16px; background:linear-gradient(135deg,#FFF8E1,#FFF1D6); box-shadow:inset 0 0 0 1px #FFE2A8}
+.mk-boostbox .bb-ic{font-size:26px; flex:none} .mk-boostbox > div{flex:1; min-width:0}
+.mk-boostbox b{display:block; font-size:15.5px} .mk-boostbox small{display:block; color:var(--text-2); font-size:13px; margin-top:2px}
+.mk-boostbox .btn{flex:none; white-space:nowrap}
+.mk-salecard{display:flex; gap:12px; align-items:flex-start; margin:6px 0 12px; padding:16px; border-radius:18px; background:linear-gradient(135deg,#FFF1E6,#FFE7D6); box-shadow:inset 0 0 0 1px #FFD3B5}
+.mk-salecard.live{background:linear-gradient(135deg,#E9F9F1,#DDF4F4); box-shadow:inset 0 0 0 1px #BDE8D6}
+.mk-salecard .sc-ic{font-size:28px; flex:none} .mk-salecard > div{flex:1; min-width:0}
+.mk-salecard b{display:block; font-size:16px} .mk-salecard small{display:block; color:var(--text-2); font-size:13.5px; margin-top:2px}
+.mk-salecard .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+.mk-boostline{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 14px; font-size:14px; color:var(--text-2)}
+.mk-boostline .linkbtn{color:var(--accent); font-weight:800; padding:4px 0}
+.mk-boosted{display:inline-flex; align-items:center; font-size:13px; font-weight:800; color:#B7791F; padding:0 6px}
+.mk-salelink{display:block; margin:12px 0; padding:12px 14px; border-radius:14px; background:#FFF1E6; color:#C2410C; font-weight:800; text-decoration:none}
+.bb-opts{display:grid; gap:10px; margin-bottom:10px}
+.bb-opt{display:flex; flex-direction:column; gap:1px; line-height:1.2} .bb-opt small{font-size:12px; font-weight:600; opacity:.85}
+.sl-f{display:block; text-align:left; margin:0 0 12px} .sl-f span{display:block; font-weight:700; font-size:14px; margin-bottom:5px}
+.sl-f input{width:100%}
+.sale-band{padding-bottom:26px} .sale-hero{color:#fff; padding-top:18px}
+.sale-hero h1{font-size:clamp(30px,7vw,46px); line-height:1.08; margin:6px 0 8px; color:#fff} .sale-hero p{margin:0 0 12px; opacity:.92; max-width:640px}
+.sale-hero .eyebrow{color:#FFD9A8}
+.sale-chips{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px} .sale-chips span{background:rgba(255,255,255,.18); color:#fff; padding:6px 12px; border-radius:999px; font-weight:700; font-size:13.5px}
+.sale-hero .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+#saleCards{margin-top:18px}
+.sale-foot{text-align:center; padding:22px 0 50px} .sale-foot p{color:var(--text-2); margin:0 auto 12px; max-width:440px}
 .gd-opts{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 #gdTitle:focus{outline:none}
 #dlgGender .gd-opts .btn{margin:0}
@@ -1495,6 +1522,12 @@ html:has(> body.app){background:var(--app-bg)}
 <!-- ============================================================== host page -->
 <!-- For people with a spare room: who's looking near them right now, then into sign-up as an owner.
      Ads link here: ?host=<city>&area=<area> (plus utm_* tags), or #host/<city>/<area> from inside the app. -->
+<section id="view-sale" hidden>
+  <div class="w-band sale-band"><div class="wrap w-top">
+    <a class="logo" href="./"><i><img src="icons/icon-192.png" alt="" width="40" height="40"></i><span class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></a></div>
+    <div class="wrap sale-hero" id="saleHero"></div></div>
+  <div class="wrap"><div class="cards mk-grid" id="saleCards"></div><div class="sale-foot" id="saleFoot"></div></div>
+</section>
 <section id="view-host" hidden>
   <div class="w-band">
     <div class="wrap w-top">
@@ -1949,6 +1982,22 @@ html:has(> body.app){background:var(--app-bg)}
 <dialog id="dlgVcard" class="vibe-dlg" aria-labelledby="vcTitle"><div class="mhead"><div><h2 id="vcTitle">Your Vibe Card</h2><div class="loc" id="vcSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="vcBody"></div></dialog>
 
+<dialog id="dlgBoost" class="confirm" aria-labelledby="bbTitle"><div class="confirm-body">
+  <span class="confirm-ic" style="background:#FFF4D6;color:#B7791F;font-size:30px">⚡</span>
+  <h2 id="bbTitle">Boost this item</h2><p id="bbText"></p>
+  <div id="bbOpts" class="bb-opts"></div>
+  <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
+</div></dialog>
+<dialog id="dlgSale" class="confirm" aria-labelledby="slTitle"><form class="confirm-body" id="saleForm" novalidate>
+  <span class="confirm-ic" style="background:#FFF1E6;color:#C2410C;font-size:30px">📦</span>
+  <h2 id="slTitle">Start a moving-out sale</h2>
+  <p>Everything you're selling on one page, with one link to share on WhatsApp. All of it shows first in FlatMart until the date you pick.</p>
+  <label class="sl-f"><span>Name of the sale</span><input type="text" id="slName" required minlength="3" maxlength="60"></label>
+  <label class="sl-f"><span>Until (up to 30 days from today)</span><input type="date" id="slUntil" required></label>
+  <p class="hint" id="slPrice" style="margin:4px 0 14px"></p>
+  <button class="btn btn-accent btn-block" type="submit" id="slGo">Start my sale</button>
+  <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
+</form></dialog>
 <dialog id="dlgGender" class="confirm" aria-labelledby="gdTitle"><div class="confirm-body">
   <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg></span>
   <h2 id="gdTitle" tabindex="-1" autofocus>One quick question</h2>
@@ -2886,6 +2935,9 @@ const demoApi = {
   async plans(){ return DEMO_PLANS; },
   async buyPlan(id){
     const p = DEMO_PLANS.find(x => x.id === id); if(!p) throw new Error("no-such-plan");
+    if(p.boosts || p.sales){   // FlatMart: credits to use on items / a sale
+      state.boostCredits = (state.boostCredits || 0) + (p.boosts || 0); state.saleCredits = (state.saleCredits || 0) + (p.sales || 0); save(); return state;
+    }
     state.passes = state.passes || {};
     for(const [k, days] of [["room", p.room_days], ["tribe", p.tribe_days], ["escape", p.escape_days]]){
       if(!days) continue;
@@ -2993,6 +3045,8 @@ function makeLiveApi(sb){
       state.tribeOpen = r.tribe_open !== false;
       state.user.gender = r.gender || null;
       state.tribeShowTo = r.tribe_show_to || "all"; state.escapeShowTo = r.escape_show_to || "all";
+      state.boostCredits = r.boost_credits || 0; state.saleCredits = r.sale_credits || 0;
+      state.mkSale = r.sale_code ? { code: r.sale_code, title: r.sale_title, ends_at: r.sale_until } : null;
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
@@ -3356,15 +3410,44 @@ Object.assign(demoApi, {
   mkView(i){
     const me = this.me_(), m = this.mk(), o = m.offers.find(x => x.item_id === i.id && x.buyer_phone === me && x.status !== "withdrawn");
     const live = m.offers.filter(x => x.item_id === i.id && ["pending", "accepted"].includes(x.status)).length;
+    const b = (m.boosts || {})[i.id], sale = i.seller_phone === me && state.mkSale && new Date(state.mkSale.ends_at) > new Date() ? state.mkSale : null;
     return Object.assign({}, i, { status: m.status[i.id] || i.status, is_mine: i.seller_phone === me,
-      my_offer_status: o ? o.status : null, my_offer: o ? o.offer : null, offer_count: live + (i.interested || 0) });
+      my_offer_status: o ? o.status : null, my_offer: o ? o.offer : null, offer_count: live + (i.interested || 0),
+      boosted_until: b && new Date(b) > new Date() ? b : null, sale_code: sale ? sale.code : null, sale_until: sale ? sale.ends_at : null });
   },
   async marketSearch(f){
     this.marketTick();
     const q = (f.q || "").toLowerCase();
     return this.mkAll().map(i => this.mkView(i)).filter(i => (["active", "reserved"].includes(i.status) || (i.is_mine && i.status !== "removed"))
       && (!f.mine || i.is_mine) && (!f.city || i.city === f.city) && (!q || (i.title + " " + i.description).toLowerCase().includes(q)))
-      .sort((a, b) => b.bumped_at.localeCompare(a.bumped_at));
+      .sort((a, b) => mkLift(b) - mkLift(a) || b.bumped_at.localeCompare(a.bumped_at));
+  },
+  // Same rules as fm_market_boost / fm_market_sale_start / fm_market_sale.
+  async marketBoost(id){
+    const m = this.mk(), i = m.items.find(x => x.id === id && x.seller_phone === this.me_());
+    if(!i || this.mkView(i).status !== "active") return "not-found";
+    if(CHARGES_ON){ if(!(state.boostCredits > 0)) return "boost-required"; state.boostCredits--; }
+    m.boosts = m.boosts || {};
+    m.boosts[id] = new Date(Math.max(Date.now(), new Date(m.boosts[id] || 0).getTime()) + 3 * 864e5).toISOString();
+    i.bumped_at = new Date().toISOString(); save(); return "boosted";
+  },
+  async marketSaleStart(until, title){
+    title = String(title || "").trim().slice(0, 60);
+    if(title.length < 3) return { error:"bad-title" };
+    const today = new Date(); today.setHours(0, 0, 0, 0); const d = new Date(until + "T00:00:00");
+    if(isNaN(d) || d < today || d > new Date(today.getTime() + 30 * 864e5)) return { error:"bad-date" };
+    const me = this.me_();
+    if(!this.mk().items.some(i => i.seller_phone === me && this.mkView(i).status === "active")) return { error:"no-items" };
+    const ends = new Date(d.getTime() + 864e5).toISOString(), s = state.mkSale;
+    if(s && new Date(s.ends_at) > new Date()){ Object.assign(s, { title, ends_at: ends }); save(); return { code: s.code, ends_at: ends }; }
+    if(CHARGES_ON){ if(!(state.saleCredits > 0)) return { error:"sale-required" }; state.saleCredits--; }
+    state.mkSale = { code: (s && s.code) || ("D" + Math.random().toString(36).slice(2, 7).toUpperCase()), title, ends_at: ends };
+    save(); return { code: state.mkSale.code, ends_at: ends };
+  },
+  async marketSale(code){
+    const s = state.mkSale; if(!s || s.code !== String(code || "").toUpperCase()) return null;
+    const me = this.me_(), items = this.mk().items.filter(i => i.seller_phone === me).map(i => this.mkView(i)).filter(i => ["active", "reserved"].includes(i.status));
+    return { code: s.code, title: s.title, seller: firstName(), ends_at: s.ends_at, active: new Date(s.ends_at) > new Date(), is_mine: true, items };
   },
   async marketGet(id){ const i = this.mkAll().find(x => x.id === id); return i && this.mkView(i); },
   async marketPost(p){
@@ -3510,6 +3593,9 @@ function liveExtras(rpc){
     async marketDecide(oid, accept){ return rpc("fm_market_decide", { p_offer:oid, p_accept:accept }); },
     async marketSetStatus(id, status){ await rpc("fm_market_set_status", { p_item:id, p_status:status }); },
     async marketSetPrice(id, price){ await rpc("fm_market_set_price", { p_item:id, p_price:price }); },
+    async marketBoost(id){ return rpc("fm_market_boost", { p_item:id }); },
+    async marketSaleStart(until, title){ return (await rpc("fm_market_sale_start", { p_until:until, p_title:title }))[0] || {}; },
+    async marketSale(code){ return rpc("fm_market_sale", { p_code:code }); },
     // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
     async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
     async marketSeen(){ await rpc("fm_market_seen"); },
@@ -3651,6 +3737,7 @@ const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","spl
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-host").hidden = name !== "host";
+  $("view-sale").hidden = name !== "sale";
   $("view-onboard").hidden = name !== "onboard";
   $("appHead").hidden = $("appMain").hidden = name !== "app";
   document.body.classList.toggle("app", name === "app");
@@ -3661,6 +3748,12 @@ function go(v){ if(location.hash === "#" + v) route(); else location.hash = v; }
 let currentView = null, routeArg = "";
 function route(){
   if(isHostRoute()){ currentView = null; showScreen("host"); renderHost(); return; }
+  if(isSaleRoute()){ currentView = null; showScreen("sale"); renderSale(); return; }
+  // Came from a sale page to sign in: back to it once the account is set up.
+  if(state.user && state.onboarded[isOwner() ? "owner" : "seeker"]){
+    const back = readLS(AFTER_SIGNIN_KEY);
+    if(back){ writeLS(AFTER_SIGNIN_KEY, null); if(location.hash !== back){ location.hash = back; return; } }
+  }
   if(!state.user){ currentView = null; showScreen("welcome"); return; }
   const role = isOwner() ? "owner" : "seeker";
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
@@ -5268,7 +5361,10 @@ const DEMO_PLANS = [
   { id:"room30", name:"Room Pass", who:"seeker", base_paise:50000, gst_paise:9000, room_days:30, tribe_days:0, escape_days:0, featured_days:0 },
   { id:"tribe7", name:"Tribe Pass", who:"seeker", base_paise:50000, gst_paise:9000, room_days:0, tribe_days:7, escape_days:0, featured_days:0 },
   { id:"premium", name:"Premium", who:"seeker", base_paise:150000, gst_paise:27000, room_days:60, tribe_days:14, escape_days:0, featured_days:0 },
-  { id:"escape7", name:"Escape Pass", who:"owner", base_paise:50000, gst_paise:9000, room_days:0, tribe_days:0, escape_days:7, featured_days:0 }];
+  { id:"escape7", name:"Escape Pass", who:"owner", base_paise:50000, gst_paise:9000, room_days:0, tribe_days:0, escape_days:7, featured_days:0 },
+  { id:"boost1", name:"FlatMart Boost", who:"any", base_paise:4900, gst_paise:882, room_days:0, tribe_days:0, escape_days:0, featured_days:0, boosts:1, sales:0 },
+  { id:"boost5", name:"Boost pack · 5 boosts", who:"any", base_paise:19900, gst_paise:3582, room_days:0, tribe_days:0, escape_days:0, featured_days:0, boosts:5, sales:0 },
+  { id:"mksale", name:"Moving-out sale", who:"any", base_paise:14900, gst_paise:2682, room_days:0, tribe_days:0, escape_days:0, featured_days:0, boosts:0, sales:1 }];
 const PLAN_COPY = {
   room30: { emoji:"🏠", term:"30 days", tag:"Most popular", lines:["Unlimited requests to owners", "Accepted requests don't use contacts",
     "Nobody accepts you in 30 days? We add 15 days free"] },
@@ -6071,6 +6167,13 @@ function mkArt(i, small){
 }
 const mkPhotos = i => (i.photos || []).map(safeImg).filter(Boolean);
 function mkPic(i, small){ const ph = mkPhotos(i); return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : mkArt(i, small); }
+// Boosted items and items in a moving-out sale come first (in "Newest" and "In my areas first").
+const mkLift = i => i.status === "active" && (i.boosted_until || i.sale_code) ? 1 : 0;
+function mkFlag(i){
+  if(i.status !== "active") return "";
+  if(i.sale_code) return `<span class="mk-flag sale">📦 Moving-out sale</span>`;
+  return i.boosted_until ? `<span class="mk-flag">⚡ Boosted</span>` : "";
+}
 function mkCardHtml(i, n){
   const st = i.status === "reserved" ? "Reserved" : i.status === "sold" ? "Sold" : "";
   const tag = st || (i.is_mine ? "Yours" : MK_OFFER_TXT[i.my_offer_status] || "");
@@ -6078,7 +6181,7 @@ function mkCardHtml(i, n){
     <div class="thumb">${mkPic(i)}<span class="tag">${esc(MK_COND[i.condition] || "")}</span>
       ${tag ? `<span class="tag r ${i.status === "sold" ? "sold" : "ok"}">${esc(tag)}</span>` : ""}
       <button class="heart" type="button" data-mk-save="${esc(i.id)}" aria-pressed="${mkSaved(i.id)}" aria-label="Save this item">♥</button></div>
-    <div class="body"><h3>${esc(i.title)}</h3><div class="loc">${esc(i.locality)}, ${esc(i.city)}</div>
+    <div class="body">${mkFlag(i)}<h3>${esc(i.title)}</h3><div class="loc">${esc(i.locality)}, ${esc(i.city)}</div>
       <div class="price">${mkPrice(i)}${i.price && i.negotiable ? "<small> open to offers</small>" : ""}</div>
       ${i.moving_by ? `<div><span class="mk-move">📦 Moving out by ${fmtDate(i.moving_by)}</span></div>` : ""}
       <div class="seller">${i.is_mine ? "You" : esc(i.seller_name || "A flatmate")} · ${timeAgo(i.bumped_at || i.created_at)}${i.offer_count ? ` · ${i.offer_count} interested` : ""}</div></div></article>`;
@@ -6112,8 +6215,8 @@ async function renderMkBrowse(){
   const sort = $("mkSort").value, areas = prefs().areas || [], near = i => areas.includes(i.locality) ? 1 : 0;
   const when = i => i.bumped_at || i.created_at;
   if(sort === "low") list.sort((a, b) => a.price - b.price);
-  else if(sort === "near") list.sort((a, b) => near(b) - near(a) || when(b).localeCompare(when(a)));
-  else list.sort((a, b) => when(b).localeCompare(when(a)));
+  else if(sort === "near") list.sort((a, b) => mkLift(b) - mkLift(a) || near(b) - near(a) || when(b).localeCompare(when(a)));
+  else list.sort((a, b) => mkLift(b) - mkLift(a) || when(b).localeCompare(when(a)));
   list.sort((a, b) => (a.status === "reserved") - (b.status === "reserved"));
   $("mkCount").textContent = list.length ? `${list.length} ${list.length === 1 ? "item" : "items"}${city ? " in " + city : ""}` : "";
   $("mkCards").innerHTML = list.length ? list.map(mkCardHtml).join("")
@@ -6123,18 +6226,31 @@ async function renderMkBrowse(){
 }
 async function renderMkMine(){
   const mine = await api.marketSearch({ mine: true }), inbox = await api.marketInbox().catch(() => []);
-  $("mkMine").innerHTML = mine.length ? mine.map(i => {
+  const live = saleLive(), forSale = mine.filter(i => i.status === "active").length;
+  const top = (live ? `<div class="mk-salecard live"><span class="sc-ic" aria-hidden="true">📦</span><div><b>Your moving-out sale is live</b>
+      <small>“${esc(live.title)}” · ${forSale} ${forSale === 1 ? "item" : "items"} · till ${fmtDate(saleLastDay(live))} · all shown first in FlatMart</small>
+      <div class="acts"><button class="btn btn-accent btn-sm" type="button" data-sale-share>Share on WhatsApp</button><button class="btn btn-ghost btn-sm" type="button" data-sale-copy>Copy link</button>
+        <a class="btn btn-ghost btn-sm" href="#sale/${esc(live.code)}">See the page</a><button class="btn btn-ghost btn-sm" type="button" data-sale-edit>Change</button></div></div></div>`
+    : forSale ? `<div class="mk-salecard"><span class="sc-ic" aria-hidden="true">📦</span><div><b>Moving out? Run a moving-out sale</b>
+      <small>Everything you're selling on one page, with one link to share on WhatsApp, and all of it shown first in FlatMart until you leave.</small>
+      <div class="acts"><button class="btn btn-primary btn-sm" type="button" data-sale-edit>${!CHARGES_ON ? "Start my sale · free" : state.saleCredits > 0 ? "Start my sale" : "Start my sale · ₹149"}</button></div></div></div>` : "")
+    + (forSale ? `<div class="mk-boostline"><span>⚡ ${!CHARGES_ON ? "Boosts and moving-out sales are free while we test."
+      : state.boostCredits > 0 ? `You have <b>${state.boostCredits}</b> ${state.boostCredits === 1 ? "boost" : "boosts"} to use.` : "A Boost puts an item first for 3 days."}</span>
+      ${CHARGES_ON ? `<button class="linkbtn" type="button" data-boost-pack>5 boosts for ₹199</button>` : ""}</div>` : "");
+  $("mkMine").innerHTML = top + (mine.length ? mine.map(i => {
     const offers = inbox.filter(r => r.item_id === i.id && r.direction === "incoming" && r.status === "pending").length;
     return `<div class="mk-offer"><div class="mk-mini">${mkPic(i, true)}</div><div style="min-width:0">
       <h3>${esc(i.title)}</h3><div class="s">${mkPrice(i)} · ${esc(i.status === "active" ? "for sale" : i.status)} · posted ${timeAgo(i.created_at)}${offers ? ` · <b>${offers} new ${offers === 1 ? "offer" : "offers"}</b>` : ""}</div>
       <div class="acts"><button class="btn btn-ghost btn-sm" type="button" data-item="${esc(i.id)}">${offers ? "See offers" : "Open"}</button>
+        ${i.status === "active" ? (i.boosted_until ? `<span class="mk-boosted">⚡ Boosted till ${fmtDate(i.boosted_until)}</span>`
+          : `<button class="btn btn-ghost btn-sm mk-boost-btn" type="button" data-mk-boost="${esc(i.id)}">⚡ Boost</button>`) : ""}
         ${i.status === "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|active">Relist</button>`
           : `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|sold">Mark as sold</button>`}
         <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed">Remove</button></div></div></div>`;
   }).join("") + `<button class="btn btn-ghost" type="button" data-mk="sell" style="margin:16px 0 30px">+ Sell something else</button>`
   : `<div class="empty"><div class="empty-ic" aria-hidden="true">📦</div><h3>Sell what you won't take with you</h3>
       <p>A spare mattress, the fridge, a cycle you never ride. Someone a few streets away is looking for it.</p>
-      <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`;
+      <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`);
 }
 function mkContactActs(r, text){
   return `<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
@@ -6179,7 +6295,7 @@ async function openItem(id){
   let act;
   if(i.is_mine){
     const offers = inbox.filter(r => r.item_id === i.id && r.direction === "incoming");
-    act = `<h3 class="section-h">Offers</h3>${offers.length ? offers.map(mkOfferHtml).join("") : `<p class="sub">No offers yet. We'll notify you as soon as someone's interested.</p>`}
+    act = `${i.status === "active" ? boostBoxHtml(i) : ""}<h3 class="section-h">Offers</h3>${offers.length ? offers.map(mkOfferHtml).join("") : `<p class="sub">No offers yet. We'll notify you as soon as someone's interested.</p>`}
       ${i.status !== "sold" ? `<h3 class="section-h">Drop the price</h3><p class="hint" style="margin:0 0 8px">A lower price moves it back to the top for everyone nearby.</p>
       <form class="mk-row" id="mkPriceForm" novalidate><input type="number" id="mkNewPrice" min="0" step="50" inputmode="numeric" value="${i.price}" aria-label="New price">
         <button class="btn btn-ghost" type="submit">Update</button></form>` : ""}
@@ -6219,11 +6335,152 @@ async function openItem(id){
     <div class="traits"><span>${esc(MK_COND[i.condition] || "")}</span><span>${(MK_CAT[i.category] || MK_CAT.other)[1]} ${esc((MK_CAT[i.category] || MK_CAT.other)[2])}</span>
       ${i.moving_by ? `<span class="mk-move" style="margin:0">📦 Moving out by ${fmtDate(i.moving_by)}</span>` : ""}${i.offer_count && !i.is_mine ? `<span>${i.offer_count} interested</span>` : ""}</div>
     ${i.description ? `<p style="white-space:pre-line">${esc(i.description)}</p>` : ""}
+    ${i.sale_code && !i.is_mine && i.status === "active" ? `<a class="mk-salelink" href="#sale/${esc(i.sale_code)}" data-close>📦 Part of ${esc(i.seller_name || "a flatmate")}'s moving-out sale · see everything&nbsp;→</a>` : ""}
     <div class="mk-seller">${fsAv({ name: i.is_mine ? firstName() : i.seller_name, id: i.id })}<div><b>${i.is_mine ? "You're selling this" : "Sold by " + esc(i.seller_name || "a flatmate")}</b>
       <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div></div></div>
     ${act}`;
   if(!$("dlgMk").open) $("dlgMk").showModal();
 }
+
+/* ----- FlatMart Boost (₹49, or 5 for ₹199) and the moving-out sale (₹149). While charges are off they're free. */
+const saleLive = () => state.mkSale && new Date(state.mkSale.ends_at) > new Date() ? state.mkSale : null;
+const saleLastDay = s => new Date(new Date(s.ends_at).getTime() - 1000);   // ends_at is the start of the day after
+const saleLink = code => siteLink() + "#sale/" + code;
+const boostLabel = () => !CHARGES_ON ? "Boost free" : state.boostCredits > 0 ? `Use 1 of your ${state.boostCredits} boosts` : "Boost · ₹49";
+function boostBoxHtml(i){
+  const on = i.boosted_until && new Date(i.boosted_until) > new Date();
+  return `<div class="mk-boostbox"><span class="bb-ic" aria-hidden="true">⚡</span><div><b>${on ? `Boosted till ${fmtDate(i.boosted_until)}` : "Boost this item"}</b>
+    <small>${on ? "It's first in FlatMart, with a ⚡ Boosted tag. Add 3 more days any time." : `First in FlatMart${i.city ? " in " + esc(i.city) : ""} for 3 days, with a ⚡ Boosted tag. More people see it, sooner.`}</small></div>
+    <button class="btn btn-accent btn-sm" type="button" data-mk-boost="${esc(i.id)}">${on ? "+3 days" : boostLabel()}</button></div>`;
+}
+// Buys a FlatMart plan (Razorpay live, instant in the demo) and refreshes the credits. True if paid.
+async function buyExtra(planId){
+  try{
+    const p = DEMO_PLANS.find(x => x.id === planId);
+    await api.buyPlan(planId); await api.me();
+    track("purchase", { plan: planId, value: p ? (p.base_paise + p.gst_paise) / 100 : 0 });
+    return true;
+  }catch(err){
+    const m = err && err.message;
+    toast(m === "payments-not-set-up" ? "Payments aren't switched on yet. Please try again later." : m === "cancelled" ? "Payment cancelled. Nothing was charged."
+      : "Couldn't take the payment. Please try again.");
+    return false;
+  }
+}
+let boostFor = null;
+function openBoost(id){
+  boostFor = id;
+  const item = id && mkCurrent && mkCurrent.id === id ? mkCurrent : null;
+  $("bbTitle").textContent = id ? "Boost this item" : "Boost pack";
+  $("bbText").textContent = id ? `${item ? "“" + item.title + "” s" : "S"}hows first in FlatMart for 3 days, with a ⚡ Boosted tag. More people see it, sooner.`
+    : "5 boosts to use on any of your items, whenever you like. Each puts an item first for 3 days.";
+  $("bbOpts").innerHTML = !CHARGES_ON ? `<button class="btn btn-accent btn-block" type="button" data-bb="use">Boost free · while we test</button>`
+    : id && state.boostCredits > 0 ? `<button class="btn btn-accent btn-block" type="button" data-bb="use">Use 1 of your ${state.boostCredits} boosts</button>`
+    : (id ? `<button class="btn btn-accent btn-block bb-opt" type="button" data-bb="boost1"><span>Boost for ₹49</span><small>+ ₹8.82 GST</small></button>` : "")
+      + `<button class="btn ${id ? "btn-ghost" : "btn-accent"} btn-block bb-opt" type="button" data-bb="boost5"><span>5 boosts for ₹199</span><small>${id ? "use 1 now, 4 later · save ₹46" : "+ ₹35.82 GST · save ₹46"}</small></button>`;
+  $("dlgBoost").showModal();
+}
+$("dlgBoost").addEventListener("click", async e => {
+  const b = e.target.closest("[data-bb]"); if(!b) return;
+  const id = boostFor;
+  $("bbOpts").querySelectorAll("button").forEach(x => x.disabled = true);
+  try{
+    if(b.dataset.bb !== "use" && !(await buyExtra(b.dataset.bb))) return;
+    if(id){ const r = await api.marketBoost(id); if(r !== "boosted") throw new Error(r); await api.me().catch(() => {}); }
+    $("dlgBoost").close();
+    toast(id ? "⚡ Boosted! It's first in FlatMart for the next 3 days." : `You have ${state.boostCredits} boosts. Use them from any item.`);
+    if($("dlgMk").open && mkCurrent) openItem(mkCurrent.id);
+    if(currentView === "market") renderMarket();
+  }catch(err){
+    console.error(err);
+    toast(err.message === "boost-required" ? "You're out of boosts. Get one to boost this item." : err.message === "not-found" ? "Only items that are for sale can be boosted." : "Couldn't boost it right now. Please try again.");
+  }finally{ $("bbOpts").querySelectorAll("button").forEach(x => x.disabled = false); }
+});
+function openSale(){
+  const live = saleLive(), today = new Date(), iso = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+  const max = new Date(today.getTime() + 30 * 864e5);
+  $("slUntil").min = iso(today); $("slUntil").max = iso(max);
+  $("slUntil").value = live ? iso(saleLastDay(live)) : iso(new Date(today.getTime() + 14 * 864e5));
+  $("slName").value = live ? live.title : `${firstName() || "My"}'s moving-out sale`.replace("My's", "My");
+  $("slTitle").textContent = live ? "Change your sale" : "Start a moving-out sale";
+  $("slPrice").textContent = live ? "Changing your sale is free." : !CHARGES_ON ? "Free while we test." : state.saleCredits > 0 ? "Uses the moving-out sale you've bought."
+    : "₹149 + ₹26.82 GST, once. Everything you add to FlatMart until then joins the sale too.";
+  $("slGo").textContent = live ? "Save" : !CHARGES_ON || state.saleCredits > 0 ? "Start my sale" : "Start my sale · ₹149";
+  $("dlgSale").showModal();
+}
+$("saleForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(!formOk(e.target)) return;
+  const live = saleLive(), btn = $("slGo"), title = $("slName").value.trim();
+  btn.disabled = true;
+  try{
+    if(!live && CHARGES_ON && !(state.saleCredits > 0) && !(await buyExtra("mksale"))) return;
+    const r = await api.marketSaleStart($("slUntil").value, title);
+    if(r.error) throw new Error(r.error);
+    await api.me().catch(() => {});
+    state.mkSale = Object.assign({}, state.mkSale, { code: r.code, title, ends_at: r.ends_at }); save();
+    $("dlgSale").close();
+    toast(live ? "Sale updated." : "📦 Your moving-out sale is live! Share the link on WhatsApp.");
+    if(currentView === "market") renderMarket();
+  }catch(err){
+    console.error(err);
+    const m = err.message;
+    toast(m === "no-items" ? "Put something up for sale first." : m === "bad-date" ? "Pick a date in the next 30 days." : m === "bad-title" ? "Give your sale a name."
+      : m === "sale-required" ? "Get a moving-out sale to start one." : "Couldn't start the sale right now. Please try again.");
+  }finally{ btn.disabled = false; }
+});
+async function shareSale(){
+  const s = saleLive(); if(!s) return;
+  const items = (await api.marketSearch({ mine: true }).catch(() => [])).filter(i => i.status === "active");
+  const free = items.filter(i => !i.price).length, area = items[0] ? items[0].locality : "";
+  const text = `📦 ${s.title}: ${items.length} ${items.length === 1 ? "thing" : "things"} for sale${free ? `, ${free} free` : ""}${area ? " in " + area : ""}. `
+    + `Pick up before ${fmtDate(saleLastDay(s))} 👉 ${saleLink(s.code)}`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+}
+document.addEventListener("click", e => {
+  const t = e.target;
+  const bo = t.closest("[data-mk-boost]"); if(bo){ e.stopPropagation(); return openBoost(bo.dataset.mkBoost); }
+  if(t.closest("[data-boost-pack]")) return openBoost(null);
+  if(t.closest("[data-sale-edit]")) return openSale();
+  if(t.closest("[data-sale-share]")) return shareSale();
+  if(t.closest("[data-sale-copy]")){ const s = saleLive(); if(s) navigator.clipboard.writeText(saleLink(s.code)).then(() => toast("Link copied. Paste it anywhere."), () => toast(saleLink(s.code))); }
+}, true);
+
+// The sale's own page (#sale/<code>): anyone with the link, signed in or not.
+const isSaleRoute = () => /^#sale\/[A-Za-z0-9]+/.test(location.hash);
+const AFTER_SIGNIN_KEY = "fm_after_signin";
+let saleNow = null;
+async function renderSale(){
+  const code = location.hash.slice(6).split(/[/?]/)[0].toUpperCase();
+  $("saleHero").innerHTML = `<p class="hint" style="padding:30px 0">Loading the sale…</p>`; $("saleCards").innerHTML = ""; $("saleFoot").innerHTML = "";
+  let s = null; try{ s = await api.marketSale(code); }catch(err){ console.error(err); }
+  saleNow = s; window.scrollTo(0, 0);
+  const cta = state.user ? `<a class="btn btn-primary" href="#market">Open FlatMart</a>` : `<button class="btn btn-accent" type="button" data-sale-signin>Sign in to make an offer</button>`;
+  if(!s){
+    $("saleHero").innerHTML = `<p class="eyebrow">📦 Moving-out sale</p><h1>This sale isn't here any more</h1><p>The link may be old. There's plenty more on FlatMart, from people who live nearby.</p>`;
+    $("saleFoot").innerHTML = cta; return;
+  }
+  const items = s.items || [], forSale = items.filter(i => i.status === "active"), free = forSale.filter(i => !i.price).length;
+  const where = items[0] ? `${items[0].locality}, ${items[0].city}` : "";
+  $("saleHero").innerHTML = `<p class="eyebrow">📦 Moving-out sale</p><h1>${esc(s.title)}</h1>
+    <p>${esc(s.seller || "A flatmate")} is moving out${where ? " · " + esc(where) : ""}. Pick up in person, and pay when you collect.</p>
+    <div class="sale-chips"><span>${forSale.length} ${forSale.length === 1 ? "thing" : "things"} for sale</span>${free ? `<span>🎁 ${free} free</span>` : ""}
+      <span>${s.active ? "⏳ Ends " + fmtDate(saleLastDay(s)) : "This sale has ended"}</span></div>
+    ${s.is_mine && s.active ? `<div class="acts"><button class="btn btn-accent btn-sm" type="button" data-sale-share>Share on WhatsApp</button><button class="btn btn-ghost btn-sm" type="button" data-sale-copy>Copy link</button></div>` : ""}`;
+  $("saleCards").innerHTML = items.length ? items.map((i, n) => mkCardHtml(Object.assign({ seller_name: s.seller, is_mine: s.is_mine }, i, { sale_code: null }), n)).join("")
+    : `<div class="empty"><h3>Everything's gone!</h3><p>All of it found a new home.</p></div>`;
+  $("saleFoot").innerHTML = (state.user ? "" : `<p>Sign in with your mobile number to make an offer. Your number is shared only if the seller accepts.</p>`) + cta;
+}
+$("view-sale").addEventListener("click", e => {
+  const t = e.target;
+  if(t.closest("[data-mk-save]")) return;
+  if(t.closest("[data-sale-signin]") || (!state.user && t.closest("[data-item]"))){
+    writeLS(AFTER_SIGNIN_KEY, location.hash);
+    toast("Sign in to make an offer. We'll bring you back to the sale.");
+    location.hash = ""; return;
+  }
+  const card = t.closest("[data-item]"); if(card) openItem(card.dataset.item);
+});
 
 function mkPhotosHtml(){
   return mkFiles.map((f, n) => `<figure><img src="${f.preview}" alt="Photo ${n + 1}"><button type="button" data-mk-rm="${n}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");

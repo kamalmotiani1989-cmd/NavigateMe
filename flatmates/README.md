@@ -133,6 +133,14 @@ the room comes second.
     reserved, then sold. Sellers can **drop the price**, which moves the item back to the top. Offers have
     their own tab and badge, with a notification for every new offer, acceptance or decline.
     Discover and My flat show a shortcut to both ("You get back ₹1,240", "8 new things for sale near you this week").
+    **Boost** (₹49): an item shows first in FlatMart for 3 days with a "⚡ Boosted" tag (boosting again adds 3 days).
+    **Boost pack** (5 for ₹199): boosts to use on any item, any time. **Moving-out sale** (₹149): everything the seller
+    has for sale, and anything they add until the date they pick (up to 30 days), on one page with one link
+    (`findmeflatmate.com/#sale/<code>`) to share on WhatsApp, all shown first with a "📦 Moving-out sale" tag; the
+    page works for people who aren't signed in (no numbers on it), and tapping an item asks them to sign in and
+    brings them back. Changing a running sale's name or date is free. Bought boosts and sales are credits
+    (`fm_profiles.boost_credits` / `sale_credits`, added by `fm_credit_order`) used by `fm_market_boost` and
+    `fm_market_sale_start`; while charges are off (`fm_settings.charges_enabled`), both are free.
     On phones the bottom bar now has six tabs, and Account moved to the avatar at the top right.
 
 17. **Search together as a tribe.** The ♥ shortlist is saved to the server and shared inside a tribe (up to 3
@@ -231,6 +239,9 @@ both, e.g. ₹500 + ₹90 GST = ₹590. Plans are one-time passes, not auto-rene
 | Owner | The Empty Room Escape: the first invite for each listing | Free |
 | Owner | **Escape Pass**: invite as many people as you like for 7 days | ₹500 + GST |
 | Owner | **Featured listing**: first in its area for 7 days (built, switched off for now) | ₹199 + GST |
+| Anyone | **FlatMart Boost**: an item first in FlatMart for 3 days | ₹49 + GST |
+| Anyone | **Boost pack**: 5 boosts to use any time | ₹199 + GST |
+| Anyone | **Moving-out sale**: all your items on one shareable page, shown first until your moving date (up to 30 days) | ₹149 + GST |
 | Seeker | Browse, vibe matches, rent and expenses, Vibe Card, Flatsplits, FlatMart | Free |
 | Seeker | Welcome gift: 5 contacts, each used only when an owner accepts | Free |
 | Seeker | **Room Pass**: 30 days of unlimited requests; accepted requests don't use contacts. If no owner accepts in those 30 days, 15 more days free (once) | ₹500 + GST |
