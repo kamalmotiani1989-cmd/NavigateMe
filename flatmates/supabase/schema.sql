@@ -69,6 +69,41 @@ create trigger fm_on_auth_user_created
   after insert on auth.users
   for each row execute function public.fm_handle_new_user();
 
+-- ------------------------------------------------------------ rate limits --
+-- Stops anyone sweeping the app with a script: each fm_ function that hands out listings, people or
+-- party/sale pages counts calls per account (or, signed out, per network address) per hour and per day,
+-- and says 'rate-limited' past the limit. Ordinary use stays far below every limit.
+create table if not exists public.fm_rate (
+  who    text not null,          -- the account id, or 'ip:' + network address when signed out
+  bucket text not null,
+  slot   timestamptz not null,   -- the hour
+  n      int not null default 0,
+  primary key (who, bucket, slot)
+);
+alter table public.fm_rate enable row level security;   -- no policies: fm_throttle only
+
+-- The caller's network address. Cloudflare (in front of Supabase) sets cf-connecting-ip and refuses
+-- requests that bring their own; the first x-forwarded-for entry can be made up, so it's only a fallback.
+create or replace function public.fm_client_ip() returns text
+language sql stable set search_path = public as $$
+  select coalesce(nullif(h->>'cf-connecting-ip', ''), nullif(h->>'sb-forwarded-for', ''),
+                  nullif(trim(regexp_replace(coalesce(h->>'x-forwarded-for', ''), '^.*,', '')), ''), 'unknown')
+  from (select coalesce(nullif(current_setting('request.headers', true), ''), '{}')::json as h) x
+$$;
+
+create or replace function public.fm_throttle(p_bucket text, p_hour int, p_day int) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_who text := coalesce(auth.uid()::text, 'ip:' || fm_client_ip()); v_h int; v_d int;
+begin
+  insert into fm_rate (who, bucket, slot, n) values (v_who, p_bucket, date_trunc('hour', now()), 1)
+  on conflict (who, bucket, slot) do update set n = fm_rate.n + 1
+  returning n into v_h;
+  select coalesce(sum(n), 0) into v_d from fm_rate
+   where who = v_who and bucket = p_bucket and slot > now() - interval '24 hours';
+  if v_h > p_hour or v_d > p_day then raise exception 'rate-limited'; end if;
+  if random() < 0.01 then delete from fm_rate where slot < now() - interval '2 days'; end if;
+end $$;
+
 -- ---------------------------------------------------------- listings --
 -- Public part of a listing: anything here can be seen by anyone.
 create table if not exists public.fm_listings (
@@ -342,46 +377,17 @@ alter table public.fm_settings        enable row level security;
 alter table public.fm_requests        enable row level security;
 alter table public.fm_reports         enable row level security;   -- no policies: written by fm_report_broker only
 
+-- No policies: nobody reads or writes these tables directly through the API, signed in or not (the
+-- table rights are taken away at the end of this file too). Everything goes through the fm_ functions,
+-- which check who's asking and apply the limits.
 drop policy if exists fm_requests_parties on public.fm_requests;
-create policy fm_requests_parties on public.fm_requests
-  for select using (
-    seeker_id = auth.uid()
-    or exists (select 1 from public.fm_listings l where l.id = listing_id and l.owner_id = auth.uid()));
--- All writes go through fm_request / fm_withdraw / fm_decide.
-
 drop policy if exists fm_settings_read on public.fm_settings;
-create policy fm_settings_read on public.fm_settings for select using (true);
-
 drop policy if exists fm_profiles_self on public.fm_profiles;
-create policy fm_profiles_self on public.fm_profiles
-  for select using (auth.uid() = id);
--- No update policy: credits can't be edited from the browser. Name and
--- role go through fm_set_profile().
-
 drop policy if exists fm_listings_read on public.fm_listings;
-create policy fm_listings_read on public.fm_listings
-  for select using (status = 'active' or owner_id = auth.uid());
 drop policy if exists fm_listings_update on public.fm_listings;
-create policy fm_listings_update on public.fm_listings
-  for update using (owner_id = auth.uid()) with check (owner_id = auth.uid());
--- Inserts go through fm_post_listing() so the private row is written too.
-
--- fm_listing_private: RLS on, no policies => nobody reads it directly.
-
 drop policy if exists fm_unlocks_self on public.fm_unlocks;
-create policy fm_unlocks_self on public.fm_unlocks
-  for select using (user_id = auth.uid());
-
 drop policy if exists fm_visits_parties on public.fm_visits;
-create policy fm_visits_parties on public.fm_visits
-  for select using (
-    seeker_id = auth.uid()
-    or exists (select 1 from public.fm_listings l
-               where l.id = listing_id and l.owner_id = auth.uid()));
-
 drop policy if exists fm_orders_self on public.fm_orders;
-create policy fm_orders_self on public.fm_orders
-  for select using (user_id = auth.uid());
 
 -- ------------------------------------------------------------- RPCs --
 -- Return types and signatures changed since the first version; drop the old ones.
@@ -499,14 +505,17 @@ begin
   update fm_profiles set occupation = p_occ where id = auth.uid();
 end $$;
 
--- Null arguments leave the current value alone. The first time someone
--- becomes a seeker they get the welcome gift of free contacts.
+-- Null arguments leave the current value alone. The name is set once, at sign-up, and can't be changed
+-- after that (deleting the account and signing up again is the only way; see fm_name_lock). The first
+-- time someone becomes a seeker they get the welcome gift of free contacts.
 create or replace function public.fm_set_profile(p_name text, p_role text) returns void
 language plpgsql security definer set search_path = public as $$
 begin
   if p_role is not null and p_role not in ('owner','seeker') then raise exception 'bad-role'; end if;
   update fm_profiles
-     set full_name = coalesce(nullif(left(trim(p_name), 60), ''), full_name),
+     set full_name = case when coalesce(full_name, '') = ''
+                          then coalesce(nullif(left(regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g'), 60), ''), full_name)
+                          else full_name end,
          role      = coalesce(p_role, role)
    where id = auth.uid();
   if p_role = 'seeker' then
@@ -546,6 +555,7 @@ language sql immutable set search_path = public as $$
 $$;
 
 -- Listings, with whether the caller can see the contact and where their request stands.
+-- Signed-in only, and counted (fm_throttle): Discover calls it once per search.
 create or replace function public.fm_search(
   p_city text default null, p_kind text default null,
   p_max_rent int default null, p_gender text default null, p_q text default null)
@@ -555,7 +565,8 @@ returns table (
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
   featured boolean)
-language sql security definer set search_path = public stable as $$
+language sql security definer set search_path = public as $$
+  select fm_throttle('search', 200, 1000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
          l.photos, l.household, l.costs, l.created_at,
@@ -566,7 +577,7 @@ language sql security definer set search_path = public stable as $$
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
-  where (l.status = 'active' or l.owner_id = auth.uid())
+  where auth.uid() is not null and (l.status = 'active' or l.owner_id = auth.uid())
     and (p_city is null or l.city = p_city)
     and (p_kind is null or l.kind = p_kind)
     and (p_max_rent is null or l.rent <= p_max_rent)
@@ -586,7 +597,8 @@ returns table (
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
   featured boolean)
-language sql security definer set search_path = public stable as $$
+language sql security definer set search_path = public as $$
+  select fm_throttle('search', 200, 1000);
   with p as (select least(25, greatest(1, coalesce(p_km, 5)))::double precision as km, nullif(trim(coalesce(p_area, '')), '') as area),
   l as (
     select l.*, case when l.geo is not null then 12742 * asin(sqrt(
@@ -594,7 +606,7 @@ language sql security definer set search_path = public stable as $$
            + cos(radians(p_lat)) * cos(radians((l.geo->>'lat')::double precision))
            * power(sin(radians(((l.geo->>'lng')::double precision - p_lng) / 2)), 2))) end as dist
     from fm_listings l, p
-    where (l.status = 'active' or l.owner_id = auth.uid())
+    where auth.uid() is not null and (l.status = 'active' or l.owner_id = auth.uid())
       and p_lat between 6 and 37 and p_lng between 68 and 98
       and ((l.geo is not null and abs((l.geo->>'lat')::double precision - p_lat) <= p.km / 111.0 + 0.01
                               and abs((l.geo->>'lng')::double precision - p_lng) <= p.km / 100.0 + 0.01)
@@ -612,7 +624,7 @@ language sql security definer set search_path = public stable as $$
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where l.dist is null or l.dist <= p.km
   order by l.dist nulls last, l.created_at desc
-  limit 300;
+  limit 200;
 $$;
 
 create or replace function public.fm_post_listing(
@@ -630,7 +642,14 @@ begin
   if (select role from fm_profiles where id = auth.uid()) is distinct from 'owner' then
     raise exception 'owners-only';
   end if;
+  perform fm_throttle('post', 10, 20);
   if coalesce(array_length(p_photos, 1), 0) > 6 then raise exception 'too-many-photos'; end if;
+  if char_length(coalesce(p_city, '')) not between 2 and 60 or char_length(coalesce(p_locality, '')) not between 2 and 80
+     or char_length(coalesce(p_description, '')) > 1500 or char_length(coalesce(p_contact_name, '')) > 60
+     or char_length(coalesce(p_address, '')) > 300 or coalesce(array_length(p_amenities, 1), 0) > 30
+     or exists (select 1 from unnest(coalesce(p_amenities, '{}')) a where char_length(a) > 40) then
+    raise exception 'too-long';
+  end if;
   if jsonb_typeof(coalesce(p_household, '{}')) <> 'object' or pg_column_size(p_household) > 4096
      or jsonb_typeof(coalesce(p_costs, '{}')) <> 'object' or pg_column_size(p_costs) > 1024 then
     raise exception 'bad-details';
@@ -686,6 +705,7 @@ language plpgsql security definer set search_path = public as $$
 declare v_me fm_profiles%rowtype; v_l fm_listings%rowtype; v_req fm_requests%rowtype; v_pending int;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('request', 60, 200);
   select * into v_me from fm_profiles where id = auth.uid() for update;
   if v_me.role is distinct from 'seeker' then return query select null::text, 'seekers-only'; return; end if;
   if fm_vibe_count(v_me.vibe) < 6 then return query select null::text, 'vibe-required'; return; end if;
@@ -760,7 +780,8 @@ drop function if exists public.fm_find_seekers(uuid);
 create or replace function public.fm_find_seekers(p_listing uuid)
 returns table (seeker_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
                interests jsonb, vibe jsonb, active_at timestamptz, invite_status text, invite_by text, on_time boolean)
-language sql security definer set search_path = public stable as $$
+language sql security definer set search_path = public as $$
+  select fm_throttle('seekers', 60, 300);
   select p.id, split_part(coalesce(p.full_name, ''), ' ', 1), p.occupation,
          coalesce(p.search->'areas', '[]'::jsonb), (p.search->>'budget')::int,
          fm_match(p.vibe, l.household), p.interests, p.vibe, coalesce(p.search_at, p.created_at),
@@ -878,8 +899,7 @@ create table if not exists public.fm_tribe_links (
   unique (a, b)
 );
 alter table public.fm_tribe_links enable row level security;
-drop policy if exists fm_tribe_parties on public.fm_tribe_links;
-create policy fm_tribe_parties on public.fm_tribe_links for select using (a = auth.uid() or b = auth.uid());
+drop policy if exists fm_tribe_parties on public.fm_tribe_links;   -- fm_tribe_* functions only
 alter table public.fm_tribe_links add column if not exists kind text not null default 'match';
 -- Leaving a tribe: the leaver's bonded links become 'left' (kept, so they aren't suggested to each other again).
 alter table public.fm_tribe_links drop constraint if exists fm_tribe_links_status_check;
@@ -1193,8 +1213,7 @@ revoke all on public.fm_server_keys from anon, authenticated;
 -- Off until fm_settings.notify_url / notify_secret are set (see README, "Push notifications").
 alter table public.fm_settings add column if not exists notify_url text;
 alter table public.fm_settings add column if not exists notify_secret text;
-revoke select on public.fm_settings from anon, authenticated;
-grant select (id, charges_enabled, welcome_credits, gst_percent, free_invites) on public.fm_settings to anon, authenticated;
+revoke all on public.fm_settings from anon, authenticated;   -- fm_me says whether charges are on
 
 do $$ begin
   create extension if not exists pg_net;
@@ -1386,11 +1405,13 @@ begin
   insert into fm_split_groups (name, emoji, created_by, kind)
   values (left(trim(p_name), 60), coalesce(nullif(left(p_emoji, 8), ''), case v_kind when 'trip' then '✈️' when 'party' then '🎉' else '🏠' end), auth.uid(), v_kind)
   returning id into v_id;
+  perform fm_throttle('fsnew', 20, 50);
   insert into fm_split_members (group_id, name, phone, upi)
   values (v_id, left(v_name, 40), v_phone, (select upi from fm_split_members where phone = v_phone and upi is not null limit 1));
+  -- Other people's UPI IDs aren't copied in: each person's own shows up once they open the group (fm_split_get).
   for m in select * from jsonb_array_elements(case when jsonb_typeof(p_members) = 'array' then p_members else '[]' end) loop
-    insert into fm_split_members (group_id, name, phone, upi)
-    select v_id, left(trim(m->>'name'), 40), x.phone, (select upi from fm_split_members where phone = x.phone and upi is not null limit 1)
+    insert into fm_split_members (group_id, name, phone)
+    select v_id, left(trim(m->>'name'), 40), x.phone
     from (select right(regexp_replace(coalesce(m->>'phone', ''), '\D', '', 'g'), 10) as phone) x
     on conflict (group_id, phone) do nothing;
   end loop;
@@ -1417,9 +1438,10 @@ language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 10);
 begin
   if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
+  perform fm_throttle('fsadd', 60, 150);
   if (select count(*) from fm_split_members where group_id = p_group) >= fm_split_cap(p_group) then raise exception 'too-many-members'; end if;
-  insert into fm_split_members (group_id, name, phone, upi)
-  values (p_group, left(trim(p_name), 40), v_phone, (select upi from fm_split_members where phone = v_phone and upi is not null limit 1))
+  insert into fm_split_members (group_id, name, phone)
+  values (p_group, left(trim(p_name), 40), v_phone)
   on conflict (group_id, phone) do update set name = excluded.name returning id into v_id;
   return v_id;
 end $$;
@@ -1544,7 +1566,10 @@ begin
             make_date(extract(year from current_date)::int, extract(month from current_date)::int, b.day_of_month), null, b.id);
     update fm_split_bills set last_month = v_month where id = b.id;
   end loop;
-  update fm_split_members set seen_at = now() where id = v_me;
+  -- My UPI ID from my other groups, the first time I open this one.
+  update fm_split_members set seen_at = now(),
+         upi = coalesce(upi, (select x.upi from fm_split_members x where x.phone = fm_my_phone() and x.upi is not null limit 1))
+   where id = v_me;
   return jsonb_build_object(
     'group', (select to_jsonb(g) - 'created_by' from fm_split_groups g where g.id = p_group),
     'me', v_me,
@@ -1663,7 +1688,9 @@ $$;
 
 -- The card and its RSVPs as anyone with the link sees them (first names only; the full guest list with
 -- plus-ones is the same, there are no numbers in it). p_token is this browser's RSVP token.
-create or replace function public.fm_party_get(p_code text, p_token text default null) returns jsonb
+-- fm_party_get is the page (counted, so invite codes can't be guessed by trying them all);
+-- fm_party_json is the same thing for the functions below.
+create or replace function public.fm_party_json(p_code text, p_token text default null) returns jsonb
 language sql stable security definer set search_path = public as $$
   select jsonb_build_object(
     'code', p.code, 'occasion', p.occasion, 'title', p.title, 'starts_at', p.starts_at, 'ends_at', p.ends_at,
@@ -1682,6 +1709,11 @@ language sql stable security definer set search_path = public as $$
              where r.party_id = p.id and r.token = p_token))
   from fm_parties p left join fm_profiles h on h.id = p.host_id
   where p.code = upper(trim(p_code));
+$$;
+create or replace function public.fm_party_get(p_code text, p_token text default null) returns jsonb
+language sql security definer set search_path = public as $$
+  select fm_throttle('party', 120, 600);
+  select fm_party_json(p_code, p_token);
 $$;
 
 -- Make or change the invite for a party group (the host, or whoever makes it first, is the host).
@@ -1749,7 +1781,7 @@ begin
   if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
   select code into v_code from fm_parties where group_id = p_group;
   if v_code is null then return null; end if;
-  return fm_party_get(v_code);
+  return fm_party_json(v_code);
 end $$;
 
 create or replace function public.fm_party_cancel(p_group uuid, p_on boolean default true) returns void
@@ -1765,6 +1797,7 @@ create or replace function public.fm_party_rsvp(p_code text, p_token text, p_nam
 language plpgsql security definer set search_path = public as $$
 declare v_p fm_parties%rowtype; v_name text := left(regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g'), 30);
 begin
+  perform fm_throttle('rsvp', 30, 100);
   select * into v_p from fm_parties where code = upper(trim(p_code));
   if v_p.id is null then raise exception 'no-party'; end if;
   if v_p.cancelled then raise exception 'party-cancelled'; end if;
@@ -1778,7 +1811,7 @@ begin
   values (v_p.id, p_token, auth.uid(), v_name, p_answer, case when v_p.plus_ones and p_answer = 'yes' then greatest(0, least(5, coalesce(p_plus, 0))) else 0 end)
   on conflict (party_id, token) do update set name = excluded.name, answer = excluded.answer, plus = excluded.plus,
      user_id = coalesce(excluded.user_id, fm_party_rsvps.user_id), updated_at = now();
-  return fm_party_get(v_p.code, p_token);
+  return fm_party_json(v_p.code, p_token);
 end $$;
 
 -- Parties at my flat that someone else is hosting (today's and coming up), for the heads-up.
@@ -2019,7 +2052,8 @@ returns table (id uuid, title text, category text, condition text, price int, ne
                description text, photos text[], moving_by date, status text, created_at timestamptz, bumped_at timestamptz,
                seller_name text, is_mine boolean, my_offer_status text, my_offer int, offer_count bigint,
                boosted_until timestamptz, sale_code text, sale_until timestamptz)
-language sql stable security definer set search_path = public as $$
+language sql security definer set search_path = public as $$
+  select fm_throttle('market', 200, 1000);
   select i.id, i.title, i.category, i.condition, i.price, i.negotiable, i.city, i.locality, i.description, i.photos,
          i.moving_by, i.status, i.created_at, i.bumped_at,
          split_part(coalesce(p.full_name, ''), ' ', 1), i.seller_id = auth.uid(), o.status, o.offer,
@@ -2095,7 +2129,8 @@ end $$;
 -- A moving-out sale's page, for anyone with the link (signed in or not): the seller's first name, the
 -- items still for sale and when it ends. Nothing private: no number, no exact address.
 create or replace function public.fm_market_sale(p_code text) returns jsonb
-language sql stable security definer set search_path = public as $$
+language sql security definer set search_path = public as $$
+  select fm_throttle('sale', 120, 600);
   select jsonb_build_object('code', s.code, 'title', s.title, 'seller', split_part(coalesce(p.full_name, ''), ' ', 1),
     'ends_at', s.ends_at, 'active', s.ends_at > now(), 'is_mine', coalesce(s.seller_id = auth.uid(), false),
     'items', coalesce((select jsonb_agg(jsonb_build_object('id', i.id, 'title', i.title, 'category', i.category, 'condition', i.condition,
@@ -2114,6 +2149,8 @@ language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_photo text;
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('mkpost', 20, 60);
+  if char_length(coalesce(p_locality, '')) > 80 or char_length(coalesce(p_city, '')) > 60 then raise exception 'too-long'; end if;
   if (select count(*) from fm_market_items where seller_id = auth.uid() and status in ('active','reserved')) >= 25 then
     raise exception 'too-many-items';
   end if;
@@ -2332,7 +2369,8 @@ end $$;
 -- city), active in the last 60 days. Only totals: the mix (budgets, lifestyle) needs 5 or more people,
 -- and describes the whole city when the area has fewer. Areas are listed when 2 or more people chose them.
 create or replace function public.fm_area_demand(p_city text, p_area text default null) returns jsonb
-language sql security definer set search_path = public stable as $$
+language sql security definer set search_path = public as $$
+  select fm_throttle('demand', 60, 300);
   with s as (
     select nullif(p.search->>'budget', '')::int as budget, p.vibe, p.occupation->>'type' as occ,
            coalesce(p.search->'areas', '[]'::jsonb) as areas,
@@ -2481,8 +2519,7 @@ create or replace function public.fm_otp_request(p_phone text, p_channel text) r
 language plpgsql security definer set search_path = public as $$
 declare
   v_phone text := right(regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g'), 10);
-  v_headers json := coalesce(nullif(current_setting('request.headers', true), ''), '{}')::json;
-  v_ip text := trim(split_part(coalesce(v_headers->>'cf-connecting-ip', v_headers->>'x-forwarded-for', ''), ',', 1));
+  v_ip text := nullif(fm_client_ip(), 'unknown');
   v_last timestamptz; v_hour int; v_ip_hour int;
 begin
   if v_phone !~ '^[6-9][0-9]{9}$' then return jsonb_build_object('error', 'bad-phone'); end if;
@@ -2492,12 +2529,12 @@ begin
     return jsonb_build_object('error', 'too-soon', 'wait', ceil(extract(epoch from v_last + interval '60 seconds' - now()))::int);
   end if;
   if v_hour >= 5 then return jsonb_build_object('error', 'too-many'); end if;
-  if v_ip <> '' then
+  if v_ip is not null then
     select count(*) into v_ip_hour from fm_otp_requests where ip = v_ip and created_at > now() - interval '1 hour';
     if v_ip_hour >= 40 then return jsonb_build_object('error', 'too-many'); end if;
   end if;
   delete from fm_otp_requests where created_at < now() - interval '2 days';
-  insert into fm_otp_requests (phone, channel, ip) values (v_phone, p_channel, nullif(v_ip, ''));
+  insert into fm_otp_requests (phone, channel, ip) values (v_phone, p_channel, v_ip);
   return jsonb_build_object('ok', true);
 end $$;
 
@@ -2536,9 +2573,149 @@ begin
   delete from auth.users where id = auth.uid();
 end $$;
 
+-- --------------------------------------------------------------- security --
+-- One listing, and my own, without fishing them out of a search (counted like searches are).
+create or replace function public.fm_listing_get(p_id uuid)
+returns table (
+  id uuid, kind text, title text, city text, locality text, bhk int, rent int,
+  deposit int, available_from date, gender text, furnishing text,
+  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
+  featured boolean)
+language sql security definer set search_path = public as $$
+  select fm_throttle('listing', 300, 2000);
+  select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
+         l.available_from, l.gender, l.furnishing, l.amenities, l.description,
+         l.photos, l.household, l.costs, l.created_at,
+         l.owner_id = auth.uid(),
+         l.owner_id = auth.uid() or exists (
+           select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
+         (select count(*) from fm_requests r where r.listing_id = l.id),
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+  from fm_listings l
+  left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
+  where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid());
+$$;
+
+-- My listings (whatever their status) and the homes whose owners accepted me (while they're up).
+create or replace function public.fm_my_listings()
+returns table (
+  id uuid, kind text, title text, city text, locality text, bhk int, rent int,
+  deposit int, available_from date, gender text, furnishing text,
+  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
+  featured boolean)
+language sql stable security definer set search_path = public as $$
+  select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
+         l.available_from, l.gender, l.furnishing, l.amenities, l.description,
+         l.photos, l.household, l.costs, l.created_at,
+         l.owner_id = auth.uid(),
+         l.owner_id = auth.uid() or exists (
+           select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
+         (select count(*) from fm_requests r where r.listing_id = l.id),
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+  from fm_listings l
+  left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
+  where l.owner_id = auth.uid()
+     or (l.status = 'active' and exists (select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()))
+  order by l.created_at desc
+  limit 200;
+$$;
+
+-- Visits: the ones I asked for, and the ones asked for on my listings.
+create or replace function public.fm_my_visits() returns setof public.fm_visits
+language sql stable security definer set search_path = public as $$
+  select v.* from fm_visits v where v.seeker_id = auth.uid() order by v.visit_at limit 200;
+$$;
+create or replace function public.fm_incoming_visits() returns setof public.fm_visits
+language sql stable security definer set search_path = public as $$
+  select v.* from fm_visits v join fm_listings l on l.id = v.listing_id
+  where l.owner_id = auth.uid() and v.seeker_id <> auth.uid() order by v.visit_at limit 200;
+$$;
+
+-- Mark as rented, or reopen. A listing taken down after a broker report stays down.
+create or replace function public.fm_set_listing_status(p_listing uuid, p_status text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if p_status not in ('active', 'closed') then raise exception 'bad-status'; end if;
+  update fm_listings set status = p_status where id = p_listing and owner_id = auth.uid() and status <> 'delisted';
+  if not found then raise exception 'not-found'; end if;
+end $$;
+
+-- Text people type can't carry HTML: < and > become ‹ and › before anything is saved, so a name, title,
+-- message or note can never turn into a script on someone else's screen (the app escapes text as well).
+create or replace function public.fm_clean_json(j jsonb) returns jsonb
+language plpgsql immutable set search_path = public as $$
+declare r jsonb;
+begin
+  case jsonb_typeof(j)
+    when 'string' then return to_jsonb(translate(j #>> '{}', '<>', '‹›'));
+    when 'array' then
+      select coalesce(jsonb_agg(fm_clean_json(e) order by i), '[]'::jsonb) into r from jsonb_array_elements(j) with ordinality x(e, i);
+      return r;
+    when 'object' then
+      select coalesce(jsonb_object_agg(translate(k, '<>', '‹›'), fm_clean_json(v)), '{}'::jsonb) into r from jsonb_each(j) x(k, v);
+      return r;
+    else return j;
+  end case;
+end $$;
+create or replace function public.fm_clean_row() returns trigger
+language plpgsql set search_path = public as $$
+declare j jsonb := to_jsonb(new);
+begin
+  if j::text !~ '[<>]' then return new; end if;
+  return jsonb_populate_record(new, fm_clean_json(j));
+end $$;
+do $$ declare t text;
+begin
+  foreach t in array array['fm_profiles', 'fm_listings', 'fm_listing_private', 'fm_requests', 'fm_visits', 'fm_reports',
+                           'fm_market_items', 'fm_market_offers', 'fm_market_sales', 'fm_parties', 'fm_party_rsvps',
+                           'fm_split_groups', 'fm_split_members', 'fm_split_expenses', 'fm_split_bills', 'fm_tickets'] loop
+    execute format('drop trigger if exists %I on public.%I', t || '_clean', t);
+    execute format('create trigger %I before insert or update on public.%I for each row execute function public.fm_clean_row()', t || '_clean', t);
+  end loop;
+end $$;
+
+-- A name is set once, at sign-up, and then stays: fm_set_profile won't change it and neither will anything
+-- else. Deleting the account and signing up again is the only way to pick a new one. The team can still
+-- correct a name, in one transaction in the SQL editor:
+--   select set_config('fm.name_change', 'allow', true); update fm_profiles set full_name = '...' where ...;
+create or replace function public.fm_name_lock() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if coalesce(old.full_name, '') <> '' and new.full_name is distinct from old.full_name
+     and coalesce(current_setting('fm.name_change', true), '') <> 'allow' then
+    new.full_name := old.full_name;
+  end if;
+  return new;
+end $$;
+drop trigger if exists fm_profiles_name_lock on public.fm_profiles;
+create trigger fm_profiles_name_lock before update on public.fm_profiles for each row execute function public.fm_name_lock();
+
+-- No table is read or changed directly through the API, signed in or not: only through the fm_ functions.
+-- Tables added later start out the same way.
+do $$ declare t record;
+begin
+  for t in select c.oid::regclass as rel from pg_class c join pg_namespace n on n.oid = c.relnamespace
+           where n.nspname = 'public' and c.relkind in ('r', 'v', 'm', 'p', 'f') and c.relname like 'fm\_%' loop
+    execute format('revoke all on %s from anon, authenticated', t.rel);
+  end loop;
+end $$;
+alter default privileges in schema public revoke all on tables from anon, authenticated;
+alter default privileges in schema public revoke all on sequences from anon, authenticated;
+alter default privileges in schema public revoke all on functions from anon, authenticated;
+
+-- The API doesn't hand out a list of its functions and tables (PostgREST's OpenAPI description).
+do $$ begin
+  execute 'alter role authenticator set pgrst.openapi_mode to ''disabled''';
+  perform pg_notify('pgrst', 'reload config');
+exception when others then raise notice 'API description left on: %', sqlerrm;
+end $$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
--- call them (fm_me, fm_search, fm_area_demand and fm_otp_request also answer signed-out callers, with nothing private).
+-- call them (fm_me, fm_area_demand, fm_otp_request and the party and sale pages also answer signed-out callers,
+-- with nothing private; listings need an account).
 -- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample, the
 -- team's fm_source_report and fm-login's fm_test_code_ok can't be called at all.
 do $$
@@ -2551,15 +2728,14 @@ begin
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
-                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify') then
+                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify',
+                     'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
     end if;
   end loop;
 end $$;
-grant execute on function public.fm_search(text, text, int, text, text) to anon;
-grant execute on function public.fm_search_near(double precision, double precision, int, text) to anon;
 grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
 grant execute on function public.fm_otp_request(text, text) to anon;
@@ -2569,3 +2745,5 @@ grant execute on function public.fm_market_sale(text) to anon;
 grant execute on function public.fm_party_get(text, text) to anon;
 grant execute on function public.fm_party_rsvp(text, text, text, text, int) to anon;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
+alter function public.fm_shows_to(text, text) set search_path = public;
+alter function public.fm_party_occasions() set search_path = public;
