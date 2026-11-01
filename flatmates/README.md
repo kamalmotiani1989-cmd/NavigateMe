@@ -32,10 +32,13 @@ the room comes second.
      gender (`fm_find_seekers`, `fm_invite`). Someone with no gender set only sees people set to Everyone.
 3. **Vibe matches.** Discover opens with a "Your vibe matches" row: every home in the city with an
    80%+ match, whatever the area or budget filters say, so a great fit is never missed.
-   **Compatibility analysis:** tap the wheel (or "See compatibility analysis") on any home to see
-   the score broken down by area of life: daily rhythm, home and chores, lifestyle choices and
-   social life. Each of the 12 answers is one bar of a radial chart, with "You" vs "This home" side
-   by side and a Same / Close / Different verdict. Owners get the same view for every request.
+   **Compatibility analysis:** tap the score (or "See the full compatibility analysis") on any home: the
+   score with a plain verdict ("A strong fit", "Could work, with a chat"), the four areas of life (daily
+   rhythm, home and chores, lifestyle choices, social life) as bars, **Where you click** (answers that are
+   the same) and **Talk about these** (the biggest differences, both answers shown), then every answer,
+   "You" vs "This home", with a Same / Close / Different verdict, and shared interests. On a home's page the
+   household's habits are marked ✓ (same as you) or ! (very different). Owners get the same view for every
+   request.
 4. **Welcome gift, on the first request.** Nothing about money on the sign-in page or during
    onboarding. The first time a seeker asks to meet an owner, a gift opens: **5 free contacts**.
 5. **Ask to meet, owner approves.** A seeker opens a flat and sends a request: their name, what
@@ -140,6 +143,21 @@ the room comes second.
     Account, then owners see it on requests and in the Escape, and tribe matches see it on their cards. The
     count is kept on `fm_profiles` (refreshed daily by `fm_me` and straight away by `fm_on_time_status` on
     the Account page); a badge not refreshed for 40 days isn't shown.
+    **🎉 Party invites.** A house party's group can have an **invite card**, drawn like the Vibe Card (1080 × 1920,
+    ready for a WhatsApp status or chat). The host picks what it is (house party, movie night, game night,
+    potluck, birthday, housewarming, match screening, festival night, karaoke, brunch, chai & chill, terrace
+    night, jam session, farewell or a welcome party for a new flatmate), the day and time, and where: just
+    **"at my home"** (no address on the card, friends ask the way) or **the address with directions** (and a
+    Google Maps link). Extras: what to bring, a chip-in amount (split on Flatsplits after), plus-ones, a note.
+    **Share the card** sends the image and the link; **Message my flatmates on WhatsApp** sends a heads-up.
+    The link opens the invite page (`#party/<code>`), which works without signing in: when and where, add to
+    Google Calendar, directions, and **I'm in / Maybe / Can't make it** with a first name and plus-ones (the
+    browser remembers the answer, so it can be changed). The guest list shows first names only, never numbers.
+    **Flatmates are told automatically:** if the host ticks "Tell my flatmates", everyone in that flat group sees
+    "Coming up at your flat" on Splits and gets a notification (in the app, and a push once push is set up).
+    The host can edit it or call it off; the page then says so. Tables `fm_parties` / `fm_party_rsvps`;
+    `fm_party_save`, `fm_party_for_group`, `fm_party_cancel`, `fm_party_feed` (signed in) and `fm_party_get`,
+    `fm_party_rsvp` (anyone, up to 200 replies a party); the `fm_parties_notify` trigger calls fm-notify.
 16. **FlatMart (everyone).** An OLX for flatmates: buy and sell furniture, beds, appliances, kitchen
     things, electronics, bikes and books with people nearby, so nobody pays full price to furnish a room
     and nobody dumps a fridge when they move out. Post in a minute: up to 4 photos, category, condition,
@@ -170,11 +188,21 @@ the room comes second.
     city…" takes any name. Onboarding has an "Other city" option. Areas aren't limited to the built-in lists:
     "+ Add area" (Discover and onboarding) and the area boxes on the post and FlatMart forms search any
     neighbourhood through OpenStreetMap.
-19. **Maps with a precise pin.** Owners tap **📍 Pin it on the map** and drag the pin onto their building
-    (or search, tap the map, or use "I'm there now"). The exact pin is private: people the owner accepts get
-    it with directions in Google Maps. Everyone else sees a circle about a kilometre wide around a rounded
-    location. Maps use OpenStreetMap with Leaflet, bundled in `vendor/leaflet` (no API key).
-20. **Back button.** The phone's back button closes an open listing or panel first, and on phones the close
+19. **Search by place, on a real map.** Discover opens with a search bar like the property sites: the city,
+    then **"Search locality, landmark, society or metro"** with suggestions as you type (and "Use my current
+    location"). Pick a place and you see homes **within 1, 3, 5, 10 or 20 km**, nearest first, each card saying
+    how far it is ("1.2 km from Hinjewadi Phase 1"), as a **List or a Map** with price pins (orange for 80%+
+    vibe matches; tap one for the home). Picking a place in another city switches the city. The search runs on
+    the server (`fm_search_near`): homes with a pin within the distance, plus unpinned homes in that area.
+    Posting a room starts with **"Where's the flat?"**: one search fills in the city, area, PIN and building
+    and drops the pin. **Google Maps:** with `FM_CONFIG.googleMapsKey` set, every map and place search in the
+    app is Google's (Maps JavaScript API + Places API (New), suggestions limited to India and biased to your
+    city); without a key, the same search uses OpenStreetMap (Photon search, Leaflet maps). The two are never
+    mixed. See "Google Maps" under Go live.
+20. **Maps with a precise pin.** Owners pin their building by moving the map under the pin (or search, or
+    "I'm there now"). The exact pin is private: people the owner accepts get it with directions in Google Maps.
+    Everyone else sees a circle about a kilometre wide around a rounded location.
+21. **Back button.** The phone's back button closes an open listing or panel first, and on phones the close
     button is a back arrow at the top left.
 21. **Vibe Card (flatmate type).** The 12 living-style answers become a type to share: a rhythm from the
     bedtime answer (Early Bird, Midnight or Night Owl) plus the most distinctive habit (Pet Parent, Chef, Host,
@@ -222,7 +250,8 @@ How they're delivered:
 
 ## Search and filters
 
-City, then **any number of areas** as chips (set during onboarding, changeable any time), plus a
+A **place search** (locality, landmark, society, metro station) with a distance (1 to 20 km), or the city
+and **any number of areas** as chips (set during onboarding, changeable any time), plus a
 **Filters** panel: budget band or exact min/max (all-in), room type, who it's open to,
 furnishing, move-in date, must-have amenities, house rules (veg-only kitchen, no smoking, no
 alcohol, pet-friendly) and minimum match. It shows a live count ("Show 7 homes"), active
@@ -524,6 +553,12 @@ server can't be reached the app shows "Can't connect" instead of falling back to
 Set `supabaseUrl` and `supabaseAnonKey` in `FM_CONFIG` back to "" to run the demo again.
 
 ## Go live
+
+**Google Maps (optional).** In the Google Cloud console (billing on; India pricing has a large free
+monthly allowance): enable **Maps JavaScript API** and **Places API (New)**, create an API key, restrict
+it to **Websites** `https://findmeflatmate.com/*` and `https://appassets.androidplatform.net/*` (the
+Android app), and to those two APIs. Put it in `FM_CONFIG.googleMapsKey` in `index.html` and publish.
+Until then the app uses OpenStreetMap for the same features.
 
 1. Create a Supabase project. Under Authentication → Providers enable **Phone** (needs an SMS
    provider such as Twilio or MSG91).

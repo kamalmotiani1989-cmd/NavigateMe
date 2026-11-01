@@ -574,6 +574,45 @@ language sql security definer set search_path = public stable as $$
   limit 200;
 $$;
 
+-- Homes near a spot picked in the place search (Discover): pinned homes within p_km (1 to 25 km) of it,
+-- nearest first, plus homes without a pin whose area is the place's area. Same columns as fm_search.
+-- Listings keep a rounded spot (about a kilometre), so distances are approximate.
+create or replace function public.fm_search_near(p_lat double precision, p_lng double precision, p_km int default 5, p_area text default null)
+returns table (
+  id uuid, kind text, title text, city text, locality text, bhk int, rent int,
+  deposit int, available_from date, gender text, furnishing text,
+  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
+  featured boolean)
+language sql security definer set search_path = public stable as $$
+  with p as (select least(25, greatest(1, coalesce(p_km, 5)))::double precision as km, nullif(trim(coalesce(p_area, '')), '') as area),
+  l as (
+    select l.*, case when l.geo is not null then 12742 * asin(sqrt(
+             power(sin(radians(((l.geo->>'lat')::double precision - p_lat) / 2)), 2)
+           + cos(radians(p_lat)) * cos(radians((l.geo->>'lat')::double precision))
+           * power(sin(radians(((l.geo->>'lng')::double precision - p_lng) / 2)), 2))) end as dist
+    from fm_listings l, p
+    where (l.status = 'active' or l.owner_id = auth.uid())
+      and p_lat between 6 and 37 and p_lng between 68 and 98
+      and ((l.geo is not null and abs((l.geo->>'lat')::double precision - p_lat) <= p.km / 111.0 + 0.01
+                              and abs((l.geo->>'lng')::double precision - p_lng) <= p.km / 100.0 + 0.01)
+           or (l.geo is null and p.area is not null and lower(l.locality) = lower(p.area)))
+  )
+  select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
+         l.available_from, l.gender, l.furnishing, l.amenities, l.description,
+         l.photos, l.household, l.costs, l.created_at,
+         l.owner_id = auth.uid(),
+         l.owner_id = auth.uid() or exists (
+           select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
+         (select count(*) from fm_requests r where r.listing_id = l.id),
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+  from l cross join p
+  left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
+  where l.dist is null or l.dist <= p.km
+  order by l.dist nulls last, l.created_at desc
+  limit 300;
+$$;
+
 create or replace function public.fm_post_listing(
   p_kind text, p_title text, p_city text, p_locality text, p_bhk int,
   p_rent int, p_deposit int, p_available_from date, p_gender text,
@@ -1561,6 +1600,212 @@ begin
    where id = auth.uid() returning on_time_months, show_on_time;
 end $$;
 
+-- ----------------------------------------------------------- Party invites --
+-- A house party's Flatsplits group can have one invite: a card to share on WhatsApp, a page anyone with
+-- the link can open (#party/<code>) to say if they're coming, and a heads-up for the host's flatmates.
+-- The address is optional: "at my home" is enough; the host can add the address and directions.
+create table if not exists public.fm_parties (
+  id          uuid primary key default gen_random_uuid(),
+  group_id    uuid not null unique references public.fm_split_groups(id) on delete cascade,
+  host_id     uuid not null references auth.users(id) on delete cascade,
+  code        text not null unique,
+  occasion    text not null default 'party',
+  title       text not null,
+  starts_at   timestamptz not null,
+  ends_at     timestamptz,
+  place       text not null default 'home' check (place in ('home', 'address')),
+  address     text,
+  directions  text,
+  geo         jsonb,
+  bring       text,
+  note        text,
+  chip_in     int check (chip_in between 0 and 100000),
+  plus_ones   boolean not null default true,
+  flat_group  uuid references public.fm_split_groups(id) on delete set null,
+  cancelled   boolean not null default false,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+create table if not exists public.fm_party_rsvps (
+  party_id    uuid not null references public.fm_parties(id) on delete cascade,
+  token       text not null,
+  user_id     uuid references auth.users(id) on delete set null,
+  name        text not null,
+  answer      text not null check (answer in ('yes', 'maybe', 'no')),
+  plus        int not null default 0 check (plus between 0 and 5),
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  primary key (party_id, token)
+);
+create index if not exists fm_parties_flat_idx on public.fm_parties (flat_group);
+alter table public.fm_parties     enable row level security;   -- no policies: fm_party_* only
+alter table public.fm_party_rsvps enable row level security;
+
+-- The kinds of get-together a card can be for (the app has the emoji and wording for each).
+create or replace function public.fm_party_occasions() returns text[]
+language sql immutable as $$
+  select array['party','movie','games','potluck','birthday','housewarming','match','festival','karaoke',
+               'brunch','chai','terrace','jam','farewell','welcome']
+$$;
+
+-- The card and its RSVPs as anyone with the link sees them (first names only; the full guest list with
+-- plus-ones is the same, there are no numbers in it). p_token is this browser's RSVP token.
+create or replace function public.fm_party_get(p_code text, p_token text default null) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object(
+    'code', p.code, 'occasion', p.occasion, 'title', p.title, 'starts_at', p.starts_at, 'ends_at', p.ends_at,
+    'place', p.place, 'address', case when p.place = 'address' then p.address end,
+    'directions', case when p.place = 'address' then p.directions end, 'geo', case when p.place = 'address' then p.geo end,
+    'bring', p.bring, 'note', p.note, 'chip_in', p.chip_in, 'plus_ones', p.plus_ones, 'cancelled', p.cancelled,
+    'host', split_part(coalesce(h.full_name, ''), ' ', 1),
+    'is_host', p.host_id = auth.uid(),
+    'group_id', case when exists (select 1 from fm_split_members m where m.group_id = p.group_id and m.phone = fm_my_phone()) then p.group_id end,
+    'going', (select count(*) + coalesce(sum(r.plus), 0) from fm_party_rsvps r where r.party_id = p.id and r.answer = 'yes'),
+    'maybe', (select count(*) from fm_party_rsvps r where r.party_id = p.id and r.answer = 'maybe'),
+    'cant',  (select count(*) from fm_party_rsvps r where r.party_id = p.id and r.answer = 'no'),
+    'guests', coalesce((select jsonb_agg(jsonb_build_object('name', r.name, 'answer', r.answer, 'plus', r.plus) order by r.created_at)
+                        from fm_party_rsvps r where r.party_id = p.id), '[]'::jsonb),
+    'mine', (select jsonb_build_object('name', r.name, 'answer', r.answer, 'plus', r.plus) from fm_party_rsvps r
+             where r.party_id = p.id and r.token = p_token))
+  from fm_parties p left join fm_profiles h on h.id = p.host_id
+  where p.code = upper(trim(p_code));
+$$;
+
+-- Make or change the invite for a party group (the host, or whoever makes it first, is the host).
+create or replace function public.fm_party_save(p_group uuid, p jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare v_old fm_parties%rowtype; v_code text; v_starts timestamptz; v_ends timestamptz; v_flat uuid; v_geo jsonb;
+        v_place text := case when p->>'place' = 'address' then 'address' else 'home' end;
+        v_title text := left(trim(coalesce(p->>'title', '')), 80);
+        v_occ text := coalesce(nullif(p->>'occasion', ''), 'party');
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
+  if (select kind from fm_split_groups where id = p_group) <> 'party' then raise exception 'not-a-party'; end if;
+  select * into v_old from fm_parties where group_id = p_group for update;
+  if v_old.id is not null and v_old.host_id <> auth.uid() then raise exception 'not-the-host'; end if;
+  if not v_occ = any (fm_party_occasions()) then raise exception 'bad-occasion'; end if;
+  if char_length(v_title) < 2 then raise exception 'bad-title'; end if;
+  begin
+    v_starts := (p->>'starts_at')::timestamptz; v_ends := nullif(p->>'ends_at', '')::timestamptz;
+  exception when others then raise exception 'bad-time';
+  end;
+  if v_starts is null or v_starts < now() - interval '1 day' or v_starts > now() + interval '1 year' then raise exception 'bad-time'; end if;
+  if v_ends is not null and (v_ends <= v_starts or v_ends > v_starts + interval '3 days') then raise exception 'bad-time'; end if;
+  if v_place = 'address' and char_length(trim(coalesce(p->>'address', ''))) < 5 then raise exception 'bad-address'; end if;
+  if jsonb_typeof(p->'geo') = 'object' and jsonb_typeof(p->'geo'->'lat') = 'number' and jsonb_typeof(p->'geo'->'lng') = 'number'
+     and (p->'geo'->>'lat')::numeric between 6 and 37 and (p->'geo'->>'lng')::numeric between 68 and 98 then
+    v_geo := jsonb_build_object('lat', round((p->'geo'->>'lat')::numeric, 6), 'lng', round((p->'geo'->>'lng')::numeric, 6));
+  end if;
+  -- The flat to tell: one of the host's own flat groups.
+  v_flat := nullif(p->>'flat_group', '')::uuid;
+  if v_flat is not null and not exists (select 1 from fm_split_groups g join fm_split_members m on m.group_id = g.id
+                                        where g.id = v_flat and g.kind = 'flat' and m.phone = fm_my_phone()) then v_flat := null; end if;
+  if v_old.id is null then
+    loop
+      v_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 7));
+      exit when not exists (select 1 from fm_parties where code = v_code);
+    end loop;
+    insert into fm_parties (group_id, host_id, code, occasion, title, starts_at, ends_at, place, address, directions, geo,
+                            bring, note, chip_in, plus_ones, flat_group)
+    values (p_group, auth.uid(), v_code, v_occ, v_title, v_starts, v_ends, v_place,
+            case when v_place = 'address' then left(trim(p->>'address'), 200) end,
+            case when v_place = 'address' then nullif(left(trim(coalesce(p->>'directions', '')), 300), '') end,
+            case when v_place = 'address' then v_geo end,
+            nullif(left(trim(coalesce(p->>'bring', '')), 120), ''), nullif(left(trim(coalesce(p->>'note', '')), 300), ''),
+            nullif(greatest(0, least(100000, coalesce((p->>'chip_in')::numeric, 0)::int)), 0),
+            coalesce((p->>'plus_ones')::boolean, true), v_flat);
+    return v_code;
+  end if;
+  update fm_parties set occasion = v_occ, title = v_title, starts_at = v_starts, ends_at = v_ends, place = v_place,
+         address = case when v_place = 'address' then left(trim(p->>'address'), 200) end,
+         directions = case when v_place = 'address' then nullif(left(trim(coalesce(p->>'directions', '')), 300), '') end,
+         geo = case when v_place = 'address' then v_geo end,
+         bring = nullif(left(trim(coalesce(p->>'bring', '')), 120), ''), note = nullif(left(trim(coalesce(p->>'note', '')), 300), ''),
+         chip_in = nullif(greatest(0, least(100000, coalesce((p->>'chip_in')::numeric, 0)::int)), 0),
+         plus_ones = coalesce((p->>'plus_ones')::boolean, true), flat_group = v_flat, cancelled = false, updated_at = now()
+   where id = v_old.id;
+  return v_old.code;
+end $$;
+
+-- The invite for a party group, for its members (same shape as fm_party_get).
+create or replace function public.fm_party_for_group(p_group uuid) returns jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v_code text;
+begin
+  if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
+  select code into v_code from fm_parties where group_id = p_group;
+  if v_code is null then return null; end if;
+  return fm_party_get(v_code);
+end $$;
+
+create or replace function public.fm_party_cancel(p_group uuid, p_on boolean default true) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  update fm_parties set cancelled = coalesce(p_on, true), updated_at = now() where group_id = p_group and host_id = auth.uid();
+  if not found then raise exception 'not-the-host'; end if;
+end $$;
+
+-- Say if you're coming. Anyone with the link, signed in or not; the token (kept in their browser) lets
+-- them change their answer. Up to 200 replies a party.
+create or replace function public.fm_party_rsvp(p_code text, p_token text, p_name text, p_answer text, p_plus int default 0) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_p fm_parties%rowtype; v_name text := left(regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g'), 30);
+begin
+  select * into v_p from fm_parties where code = upper(trim(p_code));
+  if v_p.id is null then raise exception 'no-party'; end if;
+  if v_p.cancelled then raise exception 'party-cancelled'; end if;
+  if coalesce(v_p.ends_at, v_p.starts_at + interval '12 hours') < now() then raise exception 'party-over'; end if;
+  if coalesce(p_token, '') !~ '^[A-Za-z0-9_-]{16,64}$' then raise exception 'bad-token'; end if;
+  if char_length(v_name) < 1 then raise exception 'bad-name'; end if;
+  if p_answer not in ('yes', 'maybe', 'no') then raise exception 'bad-answer'; end if;
+  if not exists (select 1 from fm_party_rsvps where party_id = v_p.id and token = p_token)
+     and (select count(*) from fm_party_rsvps where party_id = v_p.id) >= 200 then raise exception 'party-full'; end if;
+  insert into fm_party_rsvps (party_id, token, user_id, name, answer, plus)
+  values (v_p.id, p_token, auth.uid(), v_name, p_answer, case when v_p.plus_ones and p_answer = 'yes' then greatest(0, least(5, coalesce(p_plus, 0))) else 0 end)
+  on conflict (party_id, token) do update set name = excluded.name, answer = excluded.answer, plus = excluded.plus,
+     user_id = coalesce(excluded.user_id, fm_party_rsvps.user_id), updated_at = now();
+  return fm_party_get(v_p.code, p_token);
+end $$;
+
+-- Parties at my flat that someone else is hosting (today's and coming up), for the heads-up.
+create or replace function public.fm_party_feed()
+returns table (code text, occasion text, title text, starts_at timestamptz, ends_at timestamptz, host text, flat text,
+               cancelled boolean, updated_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select p.code, p.occasion, p.title, p.starts_at, p.ends_at, split_part(coalesce(h.full_name, ''), ' ', 1), g.name,
+         p.cancelled, p.updated_at
+  from fm_parties p
+  join fm_split_groups g on g.id = p.flat_group
+  left join fm_profiles h on h.id = p.host_id
+  where p.host_id <> auth.uid()
+    and exists (select 1 from fm_split_members m where m.group_id = p.flat_group and m.phone = fm_my_phone())
+    and coalesce(p.ends_at, p.starts_at + interval '12 hours') > now()
+  order by p.starts_at;
+$$;
+
+-- Push to the host's flatmates when a party is first planned (see fm-notify).
+create or replace function public.fm_party_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if new.flat_group is null then return new; end if;
+  if tg_op = 'UPDATE' and (new.flat_group is not distinct from old.flat_group and new.starts_at = old.starts_at
+                           and new.cancelled = old.cancelled) then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(
+    url := v_url,
+    body := jsonb_build_object('party_id', new.id, 'event', lower(tg_op)),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_parties_notify on public.fm_parties;
+create trigger fm_parties_notify after insert or update on public.fm_parties
+  for each row execute function public.fm_party_notify();
+
 -- -------------------------------------------------------------- FlatMart --
 -- Flatmates selling furniture, appliances and the rest to each other. Same rule as rooms:
 -- the seller's number is only shared once they accept an offer, and then both ways.
@@ -2151,7 +2396,7 @@ begin
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
-                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap') then
+                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -2159,9 +2404,12 @@ begin
   end loop;
 end $$;
 grant execute on function public.fm_search(text, text, int, text, text) to anon;
+grant execute on function public.fm_search_near(double precision, double precision, int, text) to anon;
 grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
 grant execute on function public.fm_otp_request(text, text) to anon;
 grant execute on function public.fm_test_code_ok(text) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;
+grant execute on function public.fm_party_get(text, text) to anon;
+grant execute on function public.fm_party_rsvp(text, text, text, text, int) to anon;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
