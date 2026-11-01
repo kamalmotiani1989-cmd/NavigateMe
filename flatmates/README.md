@@ -558,7 +558,9 @@ Set `supabaseUrl` and `supabaseAnonKey` in `FM_CONFIG` back to "" to run the dem
 monthly allowance): enable **Maps JavaScript API** and **Places API (New)**, create an API key, restrict
 it to **Websites** `https://findmeflatmate.com/*` and `https://appassets.androidplatform.net/*` (the
 Android app), and to those two APIs. Put it in `FM_CONFIG.googleMapsKey` in `index.html` and publish.
-Until then the app uses OpenStreetMap for the same features.
+Until then the app uses OpenStreetMap for the same features. **Set up:** the live key is in `FM_CONFIG`
+(restricted to those two sites and those two APIs; it's a browser key, so being in the page is expected).
+Keep a budget alert on the billing account.
 
 1. Create a Supabase project. Under Authentication → Providers enable **Phone** (needs an SMS
    provider such as Twilio or MSG91).
