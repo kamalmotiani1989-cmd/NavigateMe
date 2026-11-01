@@ -456,12 +456,10 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 /* ---------- discover controls */
 .d-controls{margin:20px 0 8px; display:grid; gap:12px}
 .d-row{display:flex; gap:8px; align-items:center}
-.d-row #fCity{flex:1; min-width:0; font-weight:700}
 .d-row #fSort{width:auto; flex:none}
 .d-row .btn{flex:none; height:46px}
 @media (max-width:560px){
   .d-row{flex-wrap:wrap}
-  .d-row #fCity{flex-basis:100%}
   .d-row .btn, .d-row #fSort{flex:1 1 0; min-width:0}
 }
 .area-chips{display:flex; gap:8px; overflow-x:auto; padding:2px 0 4px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
@@ -548,35 +546,59 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .mhead .x:hover{background:rgba(255,255,255,.32)}
 
 /* ---------- compatibility analysis */
-.wheel{display:block; max-width:100%; height:auto}
-.wheel .trk{fill:#F1F3F5}
-.wheel .bar{stroke:#fff; stroke-width:2; cursor:pointer; transform-box:view-box; transform-origin:50% 50%; animation:grow .7s cubic-bezier(.2,.8,.2,1) both; animation-delay:calc(var(--i) * 35ms); transition:opacity .2s}
-.wheel .bar.dim{opacity:.4}
-@keyframes grow{from{transform:scale(.4); opacity:0}}
-.compat-top{display:grid; justify-items:center; gap:6px; text-align:center}
-.compat-sum{margin:6px 0 0; color:var(--text-2); max-width:44ch}
-.gen-note{margin:4px 0 0; padding:4px 12px; border-radius:999px; font-size:13px; font-weight:700}
-.gen-note.up{background:var(--ok-soft); color:var(--ok)} .gen-note.down{background:#FDE8E9; color:#B42332}
-.compat-tabs{display:flex; gap:8px; overflow-x:auto; margin:18px -20px 0; padding:4px 20px 10px; scrollbar-width:none}
-.compat-tabs::-webkit-scrollbar{display:none}
-.compat-tabs button{flex:none; display:flex; align-items:center; gap:8px; border:0; border-radius:999px; padding:9px 14px; background:var(--surface-2);
-  font:600 14px var(--body); color:var(--text); cursor:pointer}
-.compat-tabs button i{width:10px; height:10px; border-radius:50%}
-.compat-tabs button .heart-dot{width:auto; height:auto; font-style:normal; color:var(--accent)}
-.compat-tabs button b{font-weight:800}
-.compat-tabs button[aria-selected="true"]{background:var(--text); color:#fff}
-.compat-panel{padding-top:10px; box-shadow:0 -1px 0 var(--line)}
-.compat-panel h3{font-size:13px; letter-spacing:.09em; text-transform:uppercase; margin:14px 0 4px}
-.compat-rows{display:grid; margin-top:10px}
-.compat-row{display:grid; grid-template-columns:1fr auto; gap:6px 12px; align-items:center; padding:12px 0; box-shadow:0 -1px 0 var(--line)}
-.compat-row .q{font-weight:700; grid-column:1 / -1}
-.compat-row .x2{font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:1px 7px; border-radius:999px; margin-left:4px}
-.compat-row .ans{display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:14px}
-.compat-row .ans small{display:block; font-size:11.5px; color:var(--text-3); font-weight:600}
-.verdict{font-size:12.5px; font-weight:800; padding:4px 10px; border-radius:999px; background:var(--surface-2); color:var(--text-2); white-space:nowrap}
-.verdict.g{background:var(--ok-soft); color:var(--ok)} .verdict.m{background:#FFF4DE; color:#9A5B00} .verdict.c{background:#FDE8E9; color:#B42332}
+.cx-ring{display:block; flex:none}
+.cx-ring .cx-val{animation:cxfill .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes cxfill{from{stroke-dashoffset:var(--c)}}
+.cx-hero{display:flex; gap:18px; align-items:center; padding:6px 0 18px}
+.cx-head{min-width:0} .cx-head h3{font-size:22px; margin:2px 0 6px} .cx-head p{margin:0; color:var(--text-2); font-size:14.5px; line-height:1.5}
+.cx-eye{font-size:12px!important; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3)!important}
+.cx-gen{display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:8px!important; font-size:13px!important}
+.cx-gt{font-weight:700} .cx-gen.up .cx-gt{color:var(--ok)} .cx-gen.down .cx-gt{color:#B42332} .cx-gen .gen{font-size:11px}
+.cx-areas{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.cx-area{display:grid; grid-template-columns:1fr auto; align-items:center; gap:6px 8px; border:0; text-align:left; padding:12px 12px 13px; border-radius:14px; background:var(--surface-2); color:var(--text); font:inherit; cursor:pointer}
+div.cx-area{cursor:default}
+.cx-an{display:flex; align-items:center; gap:7px; font-weight:700; font-size:13.5px; min-width:0}
+.cx-an i{flex:none; width:9px; height:9px; border-radius:50%} .cx-an i.h{width:auto; height:auto; font-style:normal; color:var(--accent)}
+.cx-area b{font-family:var(--display); font-size:17px}
+.cx-bar{grid-column:1 / -1; height:7px; border-radius:99px; background:#fff; overflow:hidden}
+.cx-bar i{display:block; height:100%; border-radius:99px}
+.cx-bar-note{grid-column:1 / -1; font-size:12.5px; color:var(--text-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.cx-areas.mini{margin-top:10px; gap:6px} .cx-areas.mini .cx-area{padding:8px 10px 9px; background:rgba(255,255,255,.75)} .cx-areas.mini .cx-area b{font-size:14px} .cx-areas.mini .cx-an{font-size:12.5px}
+.cx-areas.mini .cx-bar{height:5px; background:var(--line)}
+.cx-split{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+@media (max-width:560px){ .cx-split{grid-template-columns:1fr} }
+.cx-box{border-radius:16px; padding:14px 16px}
+.cx-box.good{background:var(--ok-soft)} .cx-box.talk{background:var(--accent-soft)}
+.cx-box h4{margin:0 0 8px; font-size:15px} .cx-box.good h4 span{color:var(--ok)}
+.cx-box ul{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+.cx-box li b{display:block; font-size:14px} .cx-box li span{display:block; font-size:13.5px; color:var(--text-2); line-height:1.45}
+.cx-box li em{font-style:normal; font-size:11px; font-weight:700; color:var(--accent); margin-left:2px}
+.cx-box p{margin:0; font-size:14px; color:var(--text-2)}
+.cx-title{font-size:13px; letter-spacing:.09em; text-transform:uppercase; color:var(--brand); margin:26px 0 4px}
+.cx-group{padding:14px 0 6px; scroll-margin-top:10px}
+.cx-group + .cx-group{box-shadow:0 -1px 0 var(--line)}
+.cx-group header{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.cx-group header b{display:flex; align-items:center; gap:8px; font-family:var(--display); font-size:17px}
+.cx-group header b::before{content:""; width:4px; height:18px; border-radius:4px; background:var(--c)}
+.cx-group header span{font-weight:800; color:var(--c)}
+.cx-about{margin:4px 0 8px; color:var(--text-3); font-size:13.5px; line-height:1.5}
+.cx-row{padding:10px 12px; border-radius:12px; margin-bottom:6px; background:var(--surface-2)}
+.cx-row.c{background:#FDF1F1} .cx-row.m{background:#FFF8EA}
+.cx-q{display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:700; font-size:14.5px}
+.cx-q .x2, .x2{font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-soft); padding:1px 7px; border-radius:999px; margin-left:4px; white-space:nowrap}
+.cx-q .verdict{margin-left:auto}
+.cx-ans{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; font-size:14px}
+.cx-ans small{display:block; font-size:11.5px; color:var(--text-3); font-weight:600}
+.verdict{font-size:12px; font-weight:800; padding:3px 9px; border-radius:999px; background:#fff; color:var(--text-2); white-space:nowrap}
+.verdict.g{background:var(--ok-soft); color:var(--ok)} .verdict.m{background:#FFF0D2; color:#9A5B00} .verdict.c{background:#FCE1E3; color:#B42332}
+.cx-row .verdict.g{background:#fff}
 .compat-mini{display:flex; gap:16px; align-items:center; margin-top:16px; padding:14px; border-radius:16px; background:linear-gradient(135deg,#E9F8F8,#EEF3FD)}
 .compat-mini .reasons{margin-top:8px}
+.compat-mini.v2{display:block; padding:16px}
+.cm-top{display:flex; gap:14px; align-items:center}
+.cm-top b{display:block; font-family:var(--display); font-size:18px; line-height:1.25} .cm-top span{display:block; color:var(--text-2); font-size:14px; margin-top:2px}
+.compat-mini.v2 .reasons{margin:10px 0 0}
+.compat-mini.v2 .btn{margin-top:12px}
 .compat-wheel-btn{border:0; background:none; padding:0; cursor:pointer; flex:none}
 @media (max-width:420px){ .compat-mini{flex-direction:column; align-items:flex-start} }
 /* ---------- The Empty Room Escape + invites */
@@ -716,7 +738,6 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .gen-intro{margin:-2px 0 10px; font-weight:700; color:var(--text-2)}
 .mate span .gen{margin-left:2px}
 .req h3 + .gen, .seek-top h3 .gen, .tribe-card h3 .gen{margin-left:4px}
-.gen-note .gen{font-size:11px}
 /* ---------- compromise, broker reports */
 .cm-cta{display:grid; gap:6px; margin-top:12px; padding:14px; border-radius:16px; background:linear-gradient(135deg,#FFF4E8,#FFE9F0)}
 .cm-cta span{font-size:14px; color:var(--text-2)}
@@ -862,7 +883,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 }
 .mk-card .price .free, .free-tag{color:var(--ok)}
 .mk-card .seller{font-size:13px; color:var(--text-3)}
-.mk-move{display:inline-block; margin-top:4px; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px; background:#FFF4DE; color:#9A5B00}
+.mk-move{display:inline-block; margin-top:4px; font-size:12px; font-weight:700; padding:2px 9px; border-radius:999px; background:#FFF4DE; color:#9A5B00; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis}
 .tag.sold{background:var(--text); color:#fff}
 .mk-mini{position:relative; width:64px; height:64px; border-radius:12px; overflow:hidden; flex:none; background:var(--surface-2)}
 .mk-mini img{width:100%; height:100%; object-fit:cover}
@@ -881,6 +902,143 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .pin-tools input{flex:1 1 180px; min-width:0; padding:10px 12px; border:0; border-radius:10px; background:#fff; -webkit-appearance:none; appearance:none}
 .pin-ic span{display:block; width:30px; height:30px; border-radius:50% 50% 50% 0; background:var(--accent); transform:rotate(-45deg); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .leaflet-container{font:inherit; z-index:0}
+.kind-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:560px}
+.kind-grid .chip{justify-content:center; text-align:center; border-radius:14px; padding:12px 10px; line-height:1.3; white-space:normal}
+.traits span.tr-same, .tr-key .tr-same{background:var(--ok-soft); color:var(--ok); font-weight:600}
+.traits span.tr-diff, .tr-key .tr-diff{background:#FDF1F1; color:#B42332; font-weight:600}
+.tr-key{display:flex; gap:8px; margin:8px 0 0; font-size:12px} .tr-key span{padding:2px 9px; border-radius:999px}
+/* ---------- place search (Discover, posting a room, party addresses) */
+.ps-anchor{position:relative}
+.d-controls > *{min-width:0}
+.d-search{display:flex; align-items:center; gap:0; background:var(--surface); border-radius:16px; padding:6px; box-shadow:0 0 0 1.5px var(--line-2), 0 6px 20px rgba(16,20,24,.06)}
+.d-search:focus-within{box-shadow:0 0 0 2px var(--brand), 0 6px 20px rgba(16,20,24,.08)}
+.ds-city{display:flex; align-items:center; gap:4px; flex:none; padding-left:10px; color:var(--brand); position:relative}
+.ds-city select{border:0; background:transparent; box-shadow:none!important; font-weight:800; padding:10px 22px 10px 2px; max-width:140px; color:var(--text); cursor:pointer}
+.ds-city::after{content:""; width:1.5px; height:26px; background:var(--line-2); margin-left:4px}
+.ds-q{flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:0 4px 0 12px; color:var(--text-3)}
+.ds-q input{flex:1; min-width:0; width:0; border:0; background:transparent; box-shadow:none!important; padding:12px 0; font-weight:600; color:var(--text)}
+.ds-q input::-webkit-search-cancel-button{display:none}
+.ds-x{flex:none; border:0; width:28px; height:28px; border-radius:50%; background:var(--surface-2); color:var(--text-2); font-size:18px; line-height:1; cursor:pointer}
+.ds-go{flex:none; height:46px; padding:0 18px; border-radius:12px}
+.ds-go svg{display:none}
+@media (max-width:560px){
+  .ds-city{padding-left:6px} .ds-city > svg{display:none} .ds-city select{max-width:96px; padding-right:14px}
+  .ds-q{padding-left:8px} .ds-q > svg{display:none}
+  .ds-go{width:46px; padding:0} .ds-go span{display:none} .ds-go svg{display:block}
+}
+.ds-radius{align-items:center}
+.ds-rl{flex:none; font-size:13px; font-weight:700; color:var(--text-3); padding-right:2px}
+.ds-radius button[aria-pressed="true"]{background:var(--brand); color:#fff}
+.ds-view{flex:none; display:flex; background:var(--surface-2); border-radius:12px; padding:3px; height:46px}
+.ds-view button{border:0; background:none; border-radius:9px; padding:0 14px; font-weight:700; font-size:14px; color:var(--text-2); cursor:pointer}
+.ds-view button[aria-pressed="true"]{background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(16,20,24,.12)}
+@media (max-width:560px){ .d-row .ds-view{flex:1 1 0; min-width:0} .ds-view button{flex:1; padding:0 6px} .d-row #fSort{font-size:14px; padding-left:10px} }
+.ps-list{position:absolute; left:0; right:0; top:calc(100% + 6px); z-index:60; background:var(--surface); border-radius:16px; padding:6px;
+  box-shadow:0 16px 40px rgba(16,20,24,.16), 0 0 0 1px var(--line); max-height:min(60vh, 420px); overflow:auto}
+.ps-item{display:flex; gap:12px; align-items:center; width:100%; border:0; background:none; text-align:left; padding:10px; border-radius:12px; cursor:pointer; color:var(--text)}
+.ps-item:hover, .ps-item.on{background:var(--surface-2)}
+.ps-item i{flex:none; width:36px; height:36px; border-radius:50%; background:var(--surface-2); display:grid; place-items:center; font-style:normal; font-size:16px}
+.ps-item:hover i, .ps-item.on i{background:#fff}
+.ps-item.here i{background:var(--brand-soft); color:var(--brand); font-size:20px; font-weight:800}
+.ps-item span{min-width:0} .ps-item b{display:block; font-weight:700; line-height:1.3}
+.ps-item small{display:block; color:var(--text-3); font-size:13px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.ps-by{text-align:right; font-size:11px; color:var(--text-3); padding:6px 10px 2px} .ps-by b{font-weight:700; color:var(--text-2)}
+.ps-none{margin:0; padding:12px; color:var(--text-2); font-size:14px}
+.card .dist{font-size:13px; font-weight:700; color:var(--brand-2); margin-top:2px}
+/* the map view and its price pins */
+.d-map{margin:4px 0 16px}
+.d-map-el{height:min(62vh, 520px); border-radius:18px; overflow:hidden; background:var(--surface-2); box-shadow:0 0 0 1px var(--line)}
+.dm-hint{margin:10px 2px 0}
+.dm-cards{display:grid; grid-auto-flow:column; grid-auto-columns:min(320px, 86%); gap:12px; overflow-x:auto; padding:12px 2px 6px; scroll-snap-type:x mandatory}
+.dm-cards .card{scroll-snap-align:start}
+.gpin{position:absolute; transform:translate(-50%, -100%); cursor:pointer}
+.lpin{background:none; border:0} .lpin .gpin{position:relative; left:0; top:0}
+.gp{display:inline-flex; align-items:center; gap:5px; white-space:nowrap; background:#fff; color:var(--text); font:800 13px var(--body); padding:6px 10px; border-radius:999px;
+  box-shadow:0 2px 8px rgba(16,20,24,.25); position:relative; transition:transform .12s}
+.gp::after{content:""; position:absolute; left:50%; bottom:-5px; width:10px; height:10px; background:inherit; transform:translateX(-50%) rotate(45deg); border-radius:2px; z-index:-1}
+.gp i{font-style:normal; font-size:11px; background:var(--brand-soft); color:var(--brand-2); border-radius:999px; padding:1px 6px}
+.gp.hot{background:var(--accent); color:#fff} .gp.hot i{background:rgba(255,255,255,.25); color:#fff}
+.gp.on, .gp:hover{transform:scale(1.12); background:var(--text); color:#fff; z-index:2}
+.pin-tools .ps-field{flex:1 1 200px; min-width:0; display:flex; align-items:center; gap:8px; background:#fff; border-radius:10px; padding:0 10px; color:var(--text-3)}
+.pin-tools .ps-field input{flex:1; min-width:0; width:0; border:0; padding:10px 0; background:transparent; box-shadow:none!important; color:var(--text)}
+.pin-tools .ps-list{top:calc(100% - 4px)}
+.pin-wrap{position:relative}
+.pin-center{position:absolute; left:50%; top:50%; transform:translate(-50%, -100%); z-index:500; pointer-events:none}
+.pin-center span{display:block; width:30px; height:30px; border-radius:50% 50% 50% 0; background:var(--accent); transform:rotate(-45deg); border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.p-where .ps-box{display:flex; align-items:center; gap:8px; background:var(--surface-2); border-radius:12px; padding:0 12px; color:var(--text-3)}
+.p-where .ps-box:focus-within{background:var(--surface); box-shadow:0 0 0 2px var(--brand)}
+.p-where .ps-box input{flex:1; min-width:0; width:0; border:0; background:transparent; box-shadow:none!important; padding:13px 0; color:var(--text)}
+/* ---------- party invites: the card's colours (teal to blue, warm accents), like the Vibe Card */
+.pt-make{display:flex; gap:14px; align-items:center; padding:16px; border-radius:16px; background:var(--accent-soft); margin:14px 0 4px}
+.pt-make > div{flex:1; min-width:0} .pt-make b{display:block; font-family:var(--display)} .pt-make small{display:block; color:var(--text-2); font-size:13.5px; line-height:1.45}
+.pt-make-ic{font-size:30px; line-height:1}
+.pt-mini{border-radius:18px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow); margin:14px 0 4px}
+.pt-mini-top{display:flex; gap:14px; align-items:center; padding:16px; background:var(--grad); color:#fff; text-decoration:none}
+.pt-mini-top small{display:block; font-size:11.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#FFD08A}
+.pt-mini-top b{display:block; font-family:var(--display); font-size:18px; line-height:1.25}
+.pt-mini-top em{display:block; font-style:normal; font-size:13.5px; opacity:.9}
+.pt-mini-ic{flex:none; width:52px; height:52px; border-radius:16px; display:grid; place-items:center; font-size:28px; background:rgba(255,255,255,.18)}
+.pt-mini.off .pt-mini-top{filter:grayscale(.7)}
+.pt-counts{display:flex; gap:0; border-bottom:1px solid var(--line)}
+.pt-counts span{flex:1; text-align:center; padding:10px 4px; font-size:13px; color:var(--text-2)} .pt-counts span + span{box-shadow:-1px 0 0 var(--line)}
+.pt-counts b{display:block; font-size:20px; color:var(--text); font-family:var(--display)}
+.pt-mini-acts{display:flex; gap:8px; flex-wrap:wrap; padding:12px 14px}
+.pt-occ{display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:8px; margin:6px 0 16px}
+.pt-occ button{border:0; border-radius:14px; background:var(--surface-2); padding:10px 6px; font-size:12.5px; font-weight:700; cursor:pointer; line-height:1.25; color:var(--text-2)}
+.pt-occ button i{display:block; font-style:normal; font-size:24px; margin-bottom:3px}
+.pt-occ button[aria-pressed="true"]{background:var(--brand-soft); color:var(--brand-2); box-shadow:inset 0 0 0 2px var(--brand)}
+.pt-where{display:grid; gap:8px; margin:6px 0 12px}
+.pt-wopt{display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border-radius:14px; background:var(--surface-2); cursor:pointer}
+.pt-wopt input{position:absolute; opacity:0; pointer-events:none}
+.pt-wopt .ic{font-size:22px; line-height:1.2} .pt-wopt b{display:block} .pt-wopt small{display:block; color:var(--text-2); font-size:13px; line-height:1.4}
+.pt-wopt:has(input:checked){background:var(--brand-soft); box-shadow:inset 0 0 0 2px var(--brand)}
+.pt-wopt:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px}
+.pt-tell{margin:4px 0 0}
+.pt-extra{margin:14px 0 0; border-radius:14px; background:var(--surface-2); padding:4px 14px 6px}
+.pt-extra summary{cursor:pointer; font-weight:700; padding:10px 0; color:var(--text-2)}
+.opt-l{font-weight:500; color:var(--text-3)}
+.danger-link{color:var(--danger)!important}
+.pt-feed{display:flex; gap:12px; align-items:center; padding:12px 14px; border-radius:16px; background:var(--accent-soft); color:var(--text); text-decoration:none; margin-bottom:8px}
+.pt-feed .pt-mini-ic{background:#fff; width:46px; height:46px; font-size:24px}
+.pt-feed > span:nth-child(2){flex:1; min-width:0} .pt-feed b{display:block; font-family:var(--display)} .pt-feed small{display:block; color:var(--text-2); font-size:13px}
+.pt-feed .pt-go{font-weight:700; font-size:13px; color:var(--accent); white-space:nowrap}
+.pt-feed.off{background:var(--surface-2)} .pt-feed.off b{text-decoration:line-through; color:var(--text-3)}
+/* the invite page */
+#view-party{background:var(--surface-2); min-height:100vh}
+.pt-top{display:flex; align-items:center; padding-block:16px}
+.pt-wrap{max-width:560px; margin:0 auto; padding:0 16px 40px}
+.pt-hero{position:relative; overflow:hidden; text-align:center; color:#fff; background:var(--grad); border-radius:26px; padding:34px 22px 28px; box-shadow:var(--shadow)}
+.pt-hero.off{filter:grayscale(.6)}
+.pt-hero h1{font-size:clamp(30px, 8vw, 42px); margin:4px 0 8px; position:relative}
+.pt-emoji{display:block; font-size:72px; line-height:1.1; position:relative}
+.pt-eyebrow{font-size:12.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#FFD08A; margin:10px 0 0; position:relative}
+.pt-tag{margin:0 auto; max-width:30em; opacity:.92; position:relative}
+.pt-by{margin:14px 0 0; font-size:14px; opacity:.85; position:relative}
+.pt-conf i{position:absolute; width:12px; height:6px; border-radius:3px; background:var(--c); opacity:.7; transform:rotate(var(--r))}
+.pt-card{background:var(--surface); border-radius:20px; padding:18px; margin-top:12px; box-shadow:0 2px 10px rgba(16,20,24,.05)}
+.pt-card h2{font-size:20px; margin:0 0 12px}
+.pt-row{display:flex; gap:14px; padding:10px 0} .pt-row + .pt-row{border-top:1px solid var(--line)}
+.pt-ic{flex:none; width:40px; height:40px; border-radius:12px; background:var(--surface-2); display:grid; place-items:center; font-size:20px}
+.pt-row b{display:block} .pt-row p{margin:2px 0 0; color:var(--text-2); font-size:14.5px; line-height:1.5}
+.pt-row a{display:inline-block; margin-top:4px; font-weight:700; font-size:14px}
+.pt-ans{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:4px 0 12px}
+.pt-ans button{border:0; border-radius:16px; background:var(--surface-2); padding:12px 4px; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--text-2)}
+.pt-ans button i{display:block; font-style:normal; font-size:26px; margin-bottom:2px}
+.pt-ans button[aria-pressed="true"]{background:var(--accent-soft); color:var(--accent); box-shadow:inset 0 0 0 2px var(--accent)}
+.pt-plus{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 14px; font-weight:600}
+.stepper{display:inline-flex; align-items:center; gap:4px; background:var(--surface-2); border-radius:12px; padding:3px}
+.stepper button{border:0; width:36px; height:36px; border-radius:10px; background:#fff; font-size:20px; font-weight:700; cursor:pointer}
+.stepper b{min-width:28px; text-align:center}
+.pt-done b, .pt-off b{font-family:var(--display); font-size:20px} .pt-done p, .pt-off p{margin:4px 0 12px; color:var(--text-2)}
+.pt-off{text-align:center} .pt-off p{margin-bottom:0}
+.pt-hostbar{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; background:var(--brand-soft)}
+.pt-hostbar div{display:flex; gap:8px; flex-wrap:wrap}
+.pt-gl{display:flex; flex-wrap:wrap; gap:8px}
+.pt-g{display:inline-flex; align-items:center; gap:7px; padding:5px 12px 5px 5px; border-radius:999px; background:var(--surface-2); font-weight:600; font-size:14px}
+.pt-g i{width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-style:normal; font-size:12px; font-weight:800; color:#fff; background:var(--brand)}
+.pt-g.maybe{color:var(--text-2)} .pt-g.maybe i{background:var(--text-3)}
+.pt-foot{text-align:center; padding:26px 8px 0} .pt-foot p{color:var(--text-2); margin:0 auto 14px; max-width:28em}
+
 .tribe-saved{font-size:13px; font-weight:700; color:#B63BA8}
 .area-chips button[data-area-add]{background:none; box-shadow:inset 0 0 0 1.5px var(--line-2); color:var(--brand)}
 .ob-other{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0}
@@ -1561,6 +1719,10 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="wrap sale-hero" id="saleHero"></div></div>
   <div class="wrap"><div class="cards mk-grid" id="saleCards"></div><div class="sale-foot" id="saleFoot"></div></div>
 </section>
+<section id="view-party" hidden>
+  <div class="wrap pt-top"><a class="logo" href="./"><i><img src="icons/icon-192.png" alt="" width="40" height="40"></i><span class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></a></div>
+  <div class="pt-wrap" id="ptBody"></div>
+</section>
 <section id="view-host" hidden>
   <div class="w-band">
     <div class="wrap w-top">
@@ -1655,22 +1817,30 @@ html:has(> body.app){background:var(--app-bg)}
   <!-- seeker: discover -->
   <section id="view-discover" hidden>
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
+    <div class="d-controls">
+      <div class="d-search ps-anchor" role="search">
+        <label class="ds-city"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><select id="fCity" aria-label="City"></select></label>
+        <div class="ds-q"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="dsQ" placeholder="Search locality, landmark, society or metro" aria-label="Search a place" enterkeyhint="search">
+          <button type="button" class="ds-x" id="dsX" aria-label="Clear the place" hidden>×</button></div>
+        <button class="btn btn-accent ds-go" type="button" id="dsGo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search</span></button>
+      </div>
+      <div class="ds-radius area-chips" id="dsRadius" role="group" aria-label="How far from the place" hidden></div>
+      <div class="d-row">
+        <button class="btn btn-ghost btn-sm" type="button" id="filtersBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          Filters <i class="badge" id="fCount" hidden></i></button>
+        <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="near">Nearest</option><option value="new">Newest</option><option value="cost">Lowest rent</option></select>
+        <div class="ds-view" id="dView" role="group" aria-label="Show as"><button type="button" data-dview="list" aria-pressed="true">List</button><button type="button" data-dview="map" aria-pressed="false">Map</button></div>
+      </div>
+      <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
+      <div class="active-f" id="activeF"></div>
+    </div>
     <div id="urgent"></div>
     <div id="profilePromo"></div>
     <div id="vibePromo"></div>
     <div id="passNudgeD"></div>
     <div id="extrasD"></div>
-    <div class="d-controls">
-      <div class="d-row">
-        <select id="fCity" aria-label="City"></select>
-        <button class="btn btn-ghost btn-sm" type="button" id="filtersBtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-          Filters <i class="badge" id="fCount" hidden></i></button>
-        <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="new">Newest</option><option value="cost">Lowest rent</option></select>
-      </div>
-      <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
-      <div class="active-f" id="activeF"></div>
-    </div>
+    <div class="d-map" id="dMap" hidden><div class="d-map-el" id="dMapEl"></div><div id="dMapCard"></div></div>
     <section id="vibeRow" hidden>
       <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
       <div class="vrow" id="vibeCards"></div>
@@ -1744,7 +1914,7 @@ html:has(> body.app){background:var(--app-bg)}
     <div class="panel">
       <form id="postForm" novalidate autocomplete="on">
         <div class="field"><label>What are you offering?</label>
-          <div class="chips">
+          <div class="chips kind-grid">
             <label class="chip"><input type="radio" name="kind" value="room" checked>Private room</label>
             <label class="chip"><input type="radio" name="kind" value="shared">Shared room (twin sharing)</label>
             <label class="chip"><input type="radio" name="kind" value="flatmate">Looking for a flatmate</label>
@@ -1752,6 +1922,10 @@ html:has(> body.app){background:var(--app-bg)}
           </div></div>
         <div class="field"><label for="pTitle">Title</label>
           <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
+        <div class="field ps-anchor p-where"><label for="pWhere">Where's the flat?</label>
+          <div class="ps-box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input type="search" id="pWhere" placeholder="Search your society, building or area" aria-describedby="pWhereHint"></div>
+          <p class="hint" id="pWhereHint" style="margin:6px 0 0">Fills in the city, area and PIN, and drops a pin you can fine-tune below.</p></div>
         <div class="grid2">
           <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
           <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout" list="areaList" autocomplete="off"><datalist id="areaList"></datalist></div>
@@ -2101,6 +2275,10 @@ const FM_CONFIG = {
   // Bot check on the sign-in card: a Cloudflare Turnstile site key (free). Its secret goes in Supabase
   // (Authentication -> Attack Protection -> CAPTCHA) and, while test login is on, as fm-login's TURNSTILE_SECRET.
   turnstileSiteKey: "",
+  // Google Maps for every map and place search (Discover, posting a room, party addresses). Without it the app
+  // uses OpenStreetMap. Google Cloud console: enable "Maps JavaScript API" and "Places API (New)", make an
+  // API key, and restrict it to the websites https://findmeflatmate.com/* and https://appassets.androidplatform.net/*.
+  googleMapsKey: "",
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqZ2tjdXp5cHN0bmFucHNvb2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NzU4OTksImV4cCI6MjEwODU1MTg5OX0.i50hd8s8umEngxNxGfizz-32PIkrzQzI87KM0Tix3WA",
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
@@ -2249,71 +2427,67 @@ function compatOf(me, them){
   });
   return { pct: m.pct, base: m.base, gen: m.gen, gens: [me && me.gen, them && them.gen], groups };
 }
-// Annular sector between radii r0..r1 and angles a0..a1 (radians, clockwise from 12 o'clock).
-function sectorPath(c, r0, r1, a0, a1){
-  const p = (r, a) => (c + r * Math.sin(a)).toFixed(1) + " " + (c - r * Math.cos(a)).toFixed(1);
-  const big = a1 - a0 > Math.PI ? 1 : 0;
-  return `M${p(r1, a0)}A${r1} ${r1} 0 ${big} 1 ${p(r1, a1)}L${p(r0, a1)}A${r0} ${r0} 0 ${big} 0 ${p(r0, a0)}Z`;
+// The score as a ring: a light track, filled in the score's colour (green 80+, amber 60+, grey below).
+function cxRing(pct, size){
+  const sw = Math.round(size / 10), r = size / 2 - sw / 2 - 1, c = 2 * Math.PI * r;
+  return `<svg class="cx-ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${pct}% vibe match">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${sw}"/>
+    <circle class="cx-val" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${ringColor(pct)}" stroke-width="${sw}" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - pct/100)).toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})" style="--c:${c.toFixed(1)}"/>
+    <text x="50%" y="47%" text-anchor="middle" dominant-baseline="central" font-size="${Math.round(size * .27)}" font-weight="800" fill="#101418">${pct}%</text>
+    <text x="50%" y="70%" text-anchor="middle" font-size="${Math.round(size * .085)}" font-weight="700" fill="#8A919C">vibe match</text></svg>`;
 }
-function compatWheel(cp, size, active){
-  const c = size / 2, R = c - 10, r0 = size * .2, slots = VIBE_QS.length + COMPAT_GROUPS.length, step = 2 * Math.PI / slots;
-  let i = 0, bars = "", rims = "";
-  for(const g of cp.groups){
-    const start = i * step;
-    for(const r of g.rows){
-      const a0 = i * step + step * .08, a1 = (i + 1) * step - step * .08, len = r.d == null ? 0 : 1 - r.d / 2;
-      const tip = `${r.x.q}: ${r.d == null ? "not answered" : VERDICT[r.d][0].toLowerCase()}`;
-      bars += `<path class="trk" d="${sectorPath(c, r0, R - 8, a0, a1)}"/>`;
-      bars += `<path class="bar${active && active !== g.k ? " dim" : ""}" data-g="${g.k}" fill="${g.color}"${len ? "" : ' fill-opacity=".35"'}
-        d="${sectorPath(c, r0, r0 + (R - 8 - r0) * Math.max(len, .12), a0, a1)}" style="--i:${i}"><title>${esc(tip)}</title></path>`;
-      i++;
-    }
-    rims += `<path fill="${g.color}" d="${sectorPath(c, R - 3, R, start + step * .1, i * step - step * .1)}"/>`;
-    i++;  // gap between areas
-  }
-  return `<svg class="wheel" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="Vibe score ${cp.pct}%">
-    ${rims}${bars}<circle cx="${c}" cy="${c}" r="${r0 - 4}" fill="#fff"/>
-    <text x="${c}" y="${c - size * .015}" text-anchor="middle" font-size="${Math.round(size * .13)}" font-weight="800" fill="#101418">${cp.pct}%</text>
-    <text x="${c}" y="${c + size * .07}" text-anchor="middle" font-size="${Math.round(size * .042)}" font-weight="700" fill="#4A5260">vibe score</text></svg>`;
-}
+const cxVerdict = p => p >= 85 ? "You'd live really well together" : p >= 75 ? "A strong fit" : p >= 60 ? "Could work, with a chat" : "Very different ways of living";
+// The four areas of life as bars, each in its colour.
+const cxAreasHtml = (cp, jump) => cp.groups.map(g => `<${jump ? `button type="button" data-cjump="${g.k}"` : "div"} class="cx-area">
+    <span class="cx-an"><i style="background:${g.color}"></i>${esc(g.name)}</span><b>${g.pct == null ? "–" : g.pct + "%"}</b>
+    <span class="cx-bar"><i style="width:${g.pct || 0}%;background:${g.color}"></i></span></${jump ? "button" : "div"}>`).join("");
 let compatCtx = null;
-// ctx: {me, them, meName, themName, myInts, theirInts, title}
+// ctx: {me, them, meName, themName, myInts, theirInts, title}; tab: an area to jump to ("likes" for interests).
 function openCompat(ctx, tab){
   const cp = compatOf(ctx.me, ctx.them);
   if(!cp){ toast("Not enough answers yet to compare."); return; }
   compatCtx = ctx;
   const scored = cp.groups.filter(g => g.pct != null);
   const best = scored.reduce((a, b) => b.pct > a.pct ? b : a), worst = scored.reduce((a, b) => b.pct < a.pct ? b : a);
-  const shared = sharedInterests(ctx.myInts, ctx.theirInts);
-  const g = cp.groups.find(x => x.k === tab) || (tab === "likes" ? null : best);
+  const shared = sharedInterests(ctx.myInts, ctx.theirInts), rows = cp.groups.flatMap(g => g.rows.map(r => Object.assign({ g }, r))).filter(r => r.d != null);
+  const ans = (x, v) => Number.isInteger(v) ? x.o[v] : "–";
+  const click = rows.filter(r => r.d === 0).sort((a, b) => b.x.w - a.x.w).slice(0, 4);
+  const talk = rows.filter(r => r.d > 0).sort((a, b) => b.d - a.d || b.x.w - a.x.w).slice(0, 4);
+  const them = esc(ctx.themName), me = esc(ctx.meName);
   $("cSub").textContent = ctx.title || "";
-  $("cBody").innerHTML = `
-    <div class="compat-top">${compatWheel(cp, 280, tab && g ? g.k : null)}
-      ${cp.gen ? `<p class="gen-note ${cp.gen > 0 ? "up" : "down"}">${genBadge(cp.gens[0])} + ${genBadge(cp.gens[1])} ${cp.gen > 0 ? "+" : "−"}${Math.abs(cp.gen)} on the score
-        (${cp.base}% from your answers)</p>` : ""}
-      <p class="compat-sum"><b>${cp.pct}% vibe match.</b> Strongest on <b style="color:${best.color}">${esc(best.name)}</b>${worst.pct < best.pct ? `; talk about <b style="color:${worst.color}">${esc(worst.name)}</b> before moving in` : ""}.</p></div>
-    <div class="compat-tabs" role="tablist">${cp.groups.map(x => `<button role="tab" data-ctab="${x.k}" aria-selected="${g && g.k === x.k}">
-        <i style="background:${x.color}"></i><span>${esc(x.name)}</span><b>${x.pct == null ? "–" : x.pct + "%"}</b></button>`).join("")}
-      <button role="tab" data-ctab="likes" aria-selected="${!g}"><i class="heart-dot">♥</i><span>Shared interests</span><b>${shared.length}</b></button></div>
-    <div class="compat-panel" role="tabpanel">${g ? `
-      <h3 style="color:${g.color}">${esc(g.name)} · ${g.pct == null ? "not answered" : g.pct + "%"}</h3>
-      <p class="hint">${esc(g.about)}</p>
-      <div class="compat-rows">${g.rows.map(r => `<div class="compat-row">
-        <div class="q">${esc(r.x.q)}${r.x.w > 1 ? ' <span class="x2">counts double</span>' : ""}</div>
-        <div class="ans"><span><small>${esc(ctx.meName)}</small>${Number.isInteger(r.a) ? esc(r.x.o[r.a]) : "–"}</span>
-          <span><small>${esc(ctx.themName)}</small>${Number.isInteger(r.b) ? esc(r.x.o[r.b]) : "–"}</span></div>
-        ${r.d == null ? `<span class="verdict">Not answered</span>` : `<span class="verdict ${VERDICT[r.d][2]}">${VERDICT[r.d][1]} ${VERDICT[r.d][0]}</span>`}</div>`).join("")}</div>`
-      : `<h3 style="color:var(--accent)">Shared interests · ${shared.length}</h3>
-      <p class="hint">Music and hobbies you have in common. Nice to have, so they're not part of the score.</p>
-      ${allInterests(ctx.theirInts).length ? interestsHtml(ctx.theirInts, ctx.myInts) : `<p>${esc(ctx.themName)} hasn't added interests yet.</p>`}`}
-    </div>`;
+  $("cBody").innerHTML = `<div class="cx">
+    <div class="cx-hero">${cxRing(cp.pct, 128)}
+      <div class="cx-head"><p class="cx-eye">${me} + ${them}</p><h3>${cxVerdict(cp.pct)}</h3>
+        <p>Strongest on <b style="color:${best.color}">${esc(best.name)}</b>${worst.pct < best.pct ? `. Talk about <b style="color:${worst.color}">${esc(worst.name)}</b> before moving in` : ""}.</p>
+        ${cp.gen ? `<p class="cx-gen ${cp.gen > 0 ? "up" : "down"}">${genBadge(cp.gens[0])}${cp.gens[0] === cp.gens[1] ? " both" : " + " + genBadge(cp.gens[1])}
+          <span class="cx-gt">${cp.gen > 0 ? "+" : "−"}${Math.abs(cp.gen)} on the score · ${cp.base}% from the answers</span></p>` : ""}</div></div>
+    <div class="cx-areas">${cxAreasHtml(cp, true)}
+      <button type="button" data-cjump="likes" class="cx-area likes"><span class="cx-an"><i class="h">♥</i>Shared interests</span><b>${shared.length}</b>
+        <span class="cx-bar-note">${shared.length ? esc(shared.slice(0, 3).join(", ")) : "None yet"}</span></button></div>
+    <div class="cx-split">
+      <div class="cx-box good"><h4><span aria-hidden="true">✓</span> Where you click</h4>${click.length ? `<ul>${click.map(r => `<li><b>${esc(r.x.q)}</b><span>Both: ${esc(ans(r.x, r.a))}</span></li>`).join("")}</ul>`
+        : `<p>No answers exactly the same. Look at the close ones below.</p>`}</div>
+      <div class="cx-box talk"><h4><span aria-hidden="true">💬</span> Talk about these</h4>${talk.length ? `<ul>${talk.map(r => `<li><b>${esc(r.x.q)}${r.x.w > 1 ? ` <em>counts double</em>` : ""}</b>
+          <span>${me}: ${esc(ans(r.x, r.a))}<br>${them}: ${esc(ans(r.x, r.b))}</span></li>`).join("")}</ul>`
+        : `<p>Nothing big. You answered the same or close on everything.</p>`}</div></div>
+    <h3 class="cx-title">Answer by answer</h3>
+    ${cp.groups.map(g => `<section class="cx-group" id="cxg-${g.k}" style="--c:${g.color}">
+      <header><b>${esc(g.name)}</b><span>${g.pct == null ? "not answered" : g.pct + "%"}</span></header><p class="cx-about">${esc(g.about)}</p>
+      ${g.rows.map(r => `<div class="cx-row ${r.d == null ? "" : VERDICT[r.d][2]}"><div class="cx-q">${esc(r.x.q)}${r.x.w > 1 ? ` <span class="x2">counts double</span>` : ""}
+          ${r.d == null ? `<span class="verdict">Not answered</span>` : `<span class="verdict ${VERDICT[r.d][2]}">${VERDICT[r.d][1]} ${VERDICT[r.d][0]}</span>`}</div>
+        <div class="cx-ans"><span><small>${me}</small>${esc(ans(r.x, r.a))}</span><span><small>${them}</small>${esc(ans(r.x, r.b))}</span></div></div>`).join("")}</section>`).join("")}
+    <section class="cx-group" id="cxg-likes" style="--c:var(--accent)"><header><b>♥ Shared interests</b><span>${shared.length}</span></header>
+      <p class="cx-about">Music and hobbies you have in common. Nice to have, so they're not part of the score.</p>
+      ${allInterests(ctx.theirInts).length ? interestsHtml(ctx.theirInts, ctx.myInts) : `<p class="hint">${them} hasn't added interests yet.</p>`}</section>
+  </div>`;
   if(!$("dlgCompat").open) $("dlgCompat").showModal();
+  const body = $("dlgCompat").querySelector(".mbody"); if(body) body.scrollTop = 0;
+  if(tab) setTimeout(() => { const el = $("cxg-" + tab); if(el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
 }
 $("cBody").addEventListener("click", e => {
-  const t = e.target.closest("[data-ctab]") || e.target.closest(".wheel .bar");
-  if(!t || !compatCtx) return;
-  openCompat(compatCtx, t.dataset.ctab || t.dataset.g);
-  const tab = $("cBody").querySelector(`[data-ctab="${t.dataset.ctab || t.dataset.g}"]`); if(tab) tab.focus();
+  const t = e.target.closest("[data-cjump]"); if(!t) return;
+  const el = $("cxg-" + t.dataset.cjump); if(el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 /* ---- money: rent plus this room's share of the bills */
@@ -2441,7 +2615,7 @@ function switchAccount(phone){
   try{ next = JSON.parse(localStorage.getItem("fm_state:" + phone) || "null"); }catch(e){}
   // Demo mode: listings, visits and requests are the demo's shared world on this device, so an owner
   // number and a seeker number can try the whole flow with each other. (Live: they're on the server.)
-  const shared = api.live ? {} : { myListings: state.myListings, visits: state.visits, requests: state.requests, splits: state.splits, market: state.market };
+  const shared = api.live ? {} : { myListings: state.myListings, visits: state.visits, requests: state.requests, splits: state.splits, market: state.market, parties: state.parties };
   state = Object.assign(freshState(), next || {}, shared, { account: phone });
   ob = null; save();
 }
@@ -2489,6 +2663,39 @@ const DEMO_AREAS = {
     ["Raja Park","302004"],["Tonk Road","302018"],["Bani Park","302016"],["Sodala","302006"],["Jawahar Nagar","302004"]],
   "Chandigarh": [["Sector 15","160015"],["Sector 22","160022"],["Sector 35","160022"],["Sector 43","160043"],["Sector 8","160009"],
     ["Sector 17","160017"],["Manimajra","160101"],["Mohali Phase 7","160062"],["Panchkula Sector 20","134116"],["Zirakpur","140603"]],
+};
+// Rough centres of the cities and the known areas (lat, lng): sample homes go here, and place search
+// finds these areas even offline. "_" is the city itself.
+const DEMO_GEO = {
+  "Bengaluru": { _:[12.9716,77.5946], "HSR Layout":[12.9116,77.6474], "Koramangala":[12.9352,77.6245], "Indiranagar":[12.9719,77.6412], "Whitefield":[12.9698,77.75],
+    "Marathahalli":[12.9569,77.7011], "BTM Layout":[12.9166,77.6101], "Electronic City":[12.8452,77.6602], "Bellandur":[12.9304,77.6784], "JP Nagar":[12.9063,77.5857],
+    "Jayanagar":[12.9308,77.5838], "Hebbal":[13.0358,77.597], "Yelahanka":[13.1007,77.5963], "Sarjapur Road":[12.901,77.686] },
+  "Mumbai": { _:[19.076,72.8777], "Andheri West":[19.1364,72.8296], "Powai":[19.1176,72.906], "Bandra West":[19.0596,72.8295], "Goregaon East":[19.1663,72.8526],
+    "Malad West":[19.1874,72.8484], "Thane West":[19.2072,72.9644], "Chembur":[19.0522,72.9005], "Lower Parel":[18.9953,72.83], "Kandivali East":[19.2057,72.8711],
+    "Vile Parle East":[19.0997,72.8495], "Vashi":[19.0771,72.9988], "Juhu":[19.1075,72.8263], "Dadar West":[19.0213,72.8381] },
+  "Pune": { _:[18.5204,73.8567], "Baner":[18.559,73.7868], "Viman Nagar":[18.5679,73.9143], "Kothrud":[18.5074,73.8077], "Hinjewadi Phase 1":[18.5913,73.7389],
+    "Wakad":[18.5987,73.765], "Aundh":[18.559,73.8075], "Kharadi":[18.5515,73.9348], "Hadapsar":[18.5089,73.926], "Magarpatta":[18.5158,73.9272],
+    "Koregaon Park":[18.5362,73.894], "Pimple Saudagar":[18.598,73.7957], "Shivaji Nagar":[18.5308,73.8475], "Balewadi":[18.5765,73.779] },
+  "Delhi NCR": { _:[28.6139,77.209], "Gurugram Sector 45":[28.4446,77.0656], "Saket":[28.5245,77.2066], "Noida Sector 62":[28.627,77.3727], "Hauz Khas":[28.5494,77.2001],
+    "Lajpat Nagar":[28.5677,77.2433], "Dwarka Sector 10":[28.5806,77.059], "DLF Phase 3, Gurugram":[28.492,77.093], "Rajouri Garden":[28.6492,77.122],
+    "Malviya Nagar":[28.5355,77.21], "Noida Sector 137":[28.5104,77.406], "Vasant Kunj":[28.52,77.159], "Mayur Vihar Phase 1":[28.6046,77.294], "Kalkaji":[28.5492,77.2588] },
+  "Hyderabad": { _:[17.385,78.4867], "Gachibowli":[17.4401,78.3489], "Madhapur":[17.4483,78.3915], "Kondapur":[17.46,78.36], "Hitech City":[17.4435,78.3772],
+    "Kukatpally":[17.4948,78.3996], "Banjara Hills":[17.4156,78.4347], "Jubilee Hills":[17.4325,78.4071], "Begumpet":[17.4447,78.4664], "Miyapur":[17.4968,78.3614],
+    "Manikonda":[17.404,78.386], "Ameerpet":[17.4375,78.4483], "Secunderabad":[17.4399,78.4983] },
+  "Chennai": { _:[13.0827,80.2707], "Velachery":[12.9815,80.218], "Adyar":[13.0012,80.2565], "Thoraipakkam, OMR":[12.9416,80.2362], "Anna Nagar":[13.085,80.2101],
+    "T Nagar":[13.0418,80.2341], "Porur":[13.0382,80.1565], "Guindy":[13.0067,80.2206], "Sholinganallur":[12.901,80.2279], "Nungambakkam":[13.0569,80.2425],
+    "Perungudi":[12.9654,80.2461], "Mylapore":[13.0368,80.2676], "Tambaram":[12.9249,80.1] },
+  "Kolkata": { _:[22.5726,88.3639], "Salt Lake Sector V":[22.5726,88.4339], "New Town":[22.5958,88.4795], "Ballygunge":[22.5276,88.3643], "Park Street":[22.5527,88.3524],
+    "Gariahat":[22.519,88.366], "Behala":[22.4991,88.3104], "Kasba":[22.5162,88.3866], "Rajarhat":[22.62,88.45], "Tollygunge":[22.4987,88.3456], "Dum Dum":[22.62,88.42],
+    "Jadavpur":[22.4955,88.3709], "Lake Town":[22.601,88.4032] },
+  "Ahmedabad": { _:[23.0225,72.5714], "Prahlad Nagar":[23.012,72.5108], "Satellite":[23.03,72.517], "Bodakdev":[23.0396,72.5113], "SG Highway":[23.05,72.5],
+    "Vastrapur":[23.0395,72.5293], "Navrangpura":[23.0365,72.5611], "Thaltej":[23.05,72.508], "Gota":[23.102,72.54], "Maninagar":[22.9962,72.6037],
+    "Chandkheda":[23.1095,72.5845], "Bopal":[23.033,72.467], "Ellisbridge":[23.022,72.565] },
+  "Jaipur": { _:[26.9124,75.7873], "Malviya Nagar":[26.853,75.805], "Vaishali Nagar":[26.911,75.743], "Mansarovar":[26.87,75.76], "C-Scheme":[26.906,75.807],
+    "Jagatpura":[26.827,75.862], "Raja Park":[26.899,75.83], "Tonk Road":[26.86,75.8], "Bani Park":[26.93,75.795], "Sodala":[26.901,75.772], "Jawahar Nagar":[26.896,75.834] },
+  "Chandigarh": { _:[30.7333,76.7794], "Sector 15":[30.76,76.765], "Sector 22":[30.733,76.772], "Sector 35":[30.723,76.76], "Sector 43":[30.718,76.748],
+    "Sector 8":[30.754,76.798], "Sector 17":[30.74,76.782], "Manimajra":[30.721,76.836], "Mohali Phase 7":[30.71,76.72], "Panchkula Sector 20":[30.672,76.855],
+    "Zirakpur":[30.6425,76.8173] },
 };
 // Typical rent for a single room in a shared flat, per city (low, high).
 const DEMO_RENT = { "Mumbai":[17000,30000], "Bengaluru":[11000,22000], "Delhi NCR":[12000,24000], "Pune":[9000,17000],
@@ -2559,6 +2766,7 @@ function demoListings(){
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
       out.push({
         id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        geo: (g => g ? { lat: Math.round((g[0] + (hue("la" + n) % 17 - 8) / 1000) * 100) / 100, lng: Math.round((g[1] + (hue("ln" + n) % 17 - 8) / 1000) * 100) / 100 } : null)((DEMO_GEO[city] || {})[area]),
         bachelors: hue("bach" + n) % 10 < 9,
         furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
         description: who + `${near[0].toUpperCase() + near.slice(1)}. ${pick(["Owner is friendly and lives nearby.",
@@ -2689,6 +2897,12 @@ const demoApi = {
       (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
       (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
     ).map(l => this.view(l));
+  },
+  // Same rule as fm_search_near: pinned homes within km of the spot, and unpinned ones in that area.
+  async searchNear(n){
+    this.tick();
+    return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
+      (l.geo ? kmBetween(n, l.geo) <= n.km : n.area && l.locality.toLowerCase() === n.area.toLowerCase())).map(l => this.view(l));
   },
   async get(id){ const l = this.all().find(x => x.id === id); return l && this.view(l); },
   async contact(id){
@@ -3102,6 +3316,7 @@ function makeLiveApi(sb){
         p_max_rent: f.maxRent || null, p_gender: f.gender || null, p_q: f.q || null });
       return rows;
     },
+    async searchNear(n){ return rpc("fm_search_near", { p_lat:n.lat, p_lng:n.lng, p_km:n.km, p_area:n.area || null }); },
     async get(id){ return (await all()).find(l => l.id === id); },
     async contact(id){ const c = one(await rpc("fm_contact", { p_listing: id })); return c.contact_phone ? c : null; },
     async sendRequest(id, message){ const r = one(await rpc("fm_request", { p_listing:id, p_message:message })); await this.me(); return r; },
@@ -3470,9 +3685,68 @@ Object.assign(demoApi, {
     add("Pizza night", "food", 128000, riya, 1, [riya.id, kabir.id]);
     g.bills.push({ id:this.newId("b"), title:"Rent", category:"rent", amount:4200000, paid_by:me.id, splits:equalSplit(4200000, all),
       day_of_month:1, last_month:new Date().toISOString().slice(0, 7), created_at:new Date().toISOString() });
+    const sat = new Date(); sat.setDate(sat.getDate() + ((6 - sat.getDay() + 7) % 7 || 7)); sat.setHours(20, 0, 0, 0);
+    this.parties().push({ id:this.newId("pt"), group_id:null, host_phone:riya.phone, host_name:"Riya", code:"PSAMPLE", occasion:"movie", title:"Movie night at Riya's",
+      starts_at: sat.toISOString(), ends_at: new Date(sat.getTime() + 3.5 * 36e5).toISOString(), place:"home", address:null, directions:null, geo:null,
+      bring:"Your favourite snack", note:null, chip_in:150, plus_ones:true, flat_group:id, cancelled:false, rsvps:[{ token:"sample-kabir-0000000", name:"Kabir", answer:"yes", plus:1, created_at:new Date().toISOString() }],
+      created_at:new Date().toISOString(), updated_at:new Date().toISOString() });
     g.demoNext = { at: Date.now() + 15000, e: { id:this.newId("e"), kind:"expense", title:"Milk, bread and eggs", category:"groceries", amount:42000,
       paid_by:kabir.id, splits:equalSplit(42000, all), spent_on:day(0), created_by:kabir.id, bill_id:null } };
     save(); return id;
+  },
+
+  // Party invites: same rules as fm_party_save / fm_party_get / fm_party_rsvp / fm_party_feed.
+  parties(){ return state.parties || (state.parties = []); },
+  partyView(p, token){
+    const me = this.me_(), r = p.rsvps || [], g = this.splitAll().find(x => x.id === p.group_id);
+    const pub = p.place === "address";
+    return { code:p.code, occasion:p.occasion, title:p.title, starts_at:p.starts_at, ends_at:p.ends_at, place:p.place,
+      address: pub ? p.address : null, directions: pub ? p.directions : null, geo: pub ? p.geo : null,
+      bring:p.bring, note:p.note, chip_in:p.chip_in, plus_ones:p.plus_ones, cancelled:p.cancelled, host:p.host_name, is_host: !!me && p.host_phone === me,
+      group_id: g && g.members.some(m => m.phone === me) ? g.id : null, flat_group:p.flat_group,
+      going: r.filter(x => x.answer === "yes").reduce((t, x) => t + 1 + (x.plus || 0), 0), maybe: r.filter(x => x.answer === "maybe").length,
+      cant: r.filter(x => x.answer === "no").length, guests: r.map(x => ({ name:x.name, answer:x.answer, plus:x.plus })),
+      mine: (r.find(x => x.token === token) || null) && (({ name, answer, plus }) => ({ name, answer, plus }))(r.find(x => x.token === token)) };
+  },
+  async partyForGroup(gid){ const p = this.parties().find(x => x.group_id === gid); return p ? this.partyView(p) : null; },
+  async partyGet(code, token){ const p = this.parties().find(x => x.code === String(code || "").toUpperCase()); return p ? this.partyView(p, token) : null; },
+  async partySave(gid, x){
+    const g = this.splitFind(gid), me = this.me_();
+    if(!g.members.some(m => m.phone === me)) throw new Error("not-a-member");
+    if(g.kind !== "party") throw new Error("not-a-party");
+    let p = this.parties().find(y => y.group_id === gid);
+    if(p && p.host_phone !== me) throw new Error("not-the-host");
+    if(!PARTY_KINDS[x.occasion]) throw new Error("bad-occasion");
+    if(String(x.title || "").trim().length < 2) throw new Error("bad-title");
+    const flat = x.flat_group && this.splitMine().some(f => f.id === x.flat_group && !fsIsEvent(f)) ? x.flat_group : null, addr = x.place === "address";
+    const v = { occasion:x.occasion, title:x.title.trim().slice(0, 80), starts_at:x.starts_at, ends_at:x.ends_at || null, place: addr ? "address" : "home",
+      address: addr ? x.address.slice(0, 200) : null, directions: addr ? (x.directions || "").slice(0, 300) || null : null, geo: addr ? x.geo || null : null,
+      bring:(x.bring || "").slice(0, 120) || null, note:(x.note || "").slice(0, 300) || null, chip_in: Math.max(0, Math.min(100000, Math.round(x.chip_in || 0))) || null,
+      plus_ones: x.plus_ones !== false, flat_group: flat, cancelled:false, updated_at:new Date().toISOString() };
+    if(p) Object.assign(p, v);
+    else this.parties().push(p = Object.assign(v, { id:this.newId("pt"), group_id:gid, host_phone:me, host_name:firstName(), rsvps:[],
+      code: "P" + Math.random().toString(36).slice(2, 8).toUpperCase(), created_at:new Date().toISOString() }));
+    save(); return p.code;
+  },
+  async partyCancel(gid, on){ const p = this.parties().find(x => x.group_id === gid && x.host_phone === this.me_()); if(!p) throw new Error("not-the-host");
+    p.cancelled = on !== false; p.updated_at = new Date().toISOString(); save(); },
+  async partyRsvp(code, token, name, answer, plus){
+    const p = this.parties().find(x => x.code === String(code || "").toUpperCase());
+    if(!p) throw new Error("no-party"); if(p.cancelled) throw new Error("party-cancelled");
+    if(new Date(p.ends_at || new Date(p.starts_at).getTime() + 12 * 36e5) < new Date()) throw new Error("party-over");
+    name = String(name || "").trim().replace(/\s+/g, " ").slice(0, 30); if(!name) throw new Error("bad-name");
+    let r = p.rsvps.find(x => x.token === token);
+    if(!r){ if(p.rsvps.length >= 200) throw new Error("party-full"); p.rsvps.push(r = { token, created_at:new Date().toISOString() }); }
+    Object.assign(r, { name, answer, plus: p.plus_ones && answer === "yes" ? Math.max(0, Math.min(5, plus || 0)) : 0 });
+    save(); return this.partyView(p, token);
+  },
+  async partyFeed(){
+    const me = this.me_(), now = Date.now();
+    return this.parties().filter(p => p.host_phone !== me && p.flat_group && this.splitMine().some(g => g.id === p.flat_group)
+        && new Date(p.ends_at || new Date(p.starts_at).getTime() + 12 * 36e5).getTime() > now)
+      .map(p => ({ code:p.code, occasion:p.occasion, title:p.title, starts_at:p.starts_at, ends_at:p.ends_at, host:p.host_name,
+        flat: (this.splitAll().find(g => g.id === p.flat_group) || {}).name, cancelled:p.cancelled, updated_at:p.updated_at }))
+      .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
   },
 
   mk(){ return state.market || (state.market = { items:[], offers:[], status:{}, incoming:{} }); },
@@ -3667,6 +3941,12 @@ function liveExtras(rpc){
     async marketBoost(id){ return rpc("fm_market_boost", { p_item:id }); },
     async marketSaleStart(until, title){ return (await rpc("fm_market_sale_start", { p_until:until, p_title:title }))[0] || {}; },
     async marketSale(code){ return rpc("fm_market_sale", { p_code:code }); },
+    async partyForGroup(gid){ return rpc("fm_party_for_group", { p_group:gid }); },
+    async partyGet(code, token){ return rpc("fm_party_get", { p_code:code, p_token:token || null }); },
+    async partySave(gid, p){ return rpc("fm_party_save", { p_group:gid, p }); },
+    async partyCancel(gid, on){ await rpc("fm_party_cancel", { p_group:gid, p_on:on !== false }); },
+    async partyRsvp(code, token, name, answer, plus){ return rpc("fm_party_rsvp", { p_code:code, p_token:token, p_name:name, p_answer:answer, p_plus:plus || 0 }); },
+    async partyFeed(){ return rpc("fm_party_feed"); },
     // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
     async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
     async marketSeen(){ await rpc("fm_market_seen"); },
@@ -3809,6 +4089,7 @@ function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-host").hidden = name !== "host";
   $("view-sale").hidden = name !== "sale";
+  $("view-party").hidden = name !== "party";
   $("view-onboard").hidden = name !== "onboard";
   $("appHead").hidden = $("appMain").hidden = name !== "app";
   document.body.classList.toggle("app", name === "app");
@@ -3820,6 +4101,7 @@ let currentView = null, routeArg = "";
 function route(){
   if(isHostRoute()){ currentView = null; showScreen("host"); renderHost(); return; }
   if(isSaleRoute()){ currentView = null; showScreen("sale"); renderSale(); return; }
+  if(isPartyRoute()){ currentView = null; showScreen("party"); renderParty(); window.scrollTo(0, 0); return; }
   // Came from a sale page to sign in: back to it once the account is set up.
   if(state.user && state.onboarded[isOwner() ? "owner" : "seeker"]){
     const back = readLS(AFTER_SIGNIN_KEY);
@@ -3917,6 +4199,7 @@ const ESC_FILTERS = [["all", "Everyone"], ["fit", "Budget fits my rent"], ["vibe
 let escSeekers = [], escListing = null;
 async function renderEscape(){
   const listings = (await api.myListings()).filter(l => l.status !== "closed");
+  $("escRule").hidden = !listings.length;
   if(!listings.length){
     $("escStats").innerHTML = ""; $("escPick").hidden = true; $("escFilters").innerHTML = "";
     $("escList").innerHTML = `<div class="empty"><h3>Post your room first</h3><p>Then we'll show you everyone looking in your area.</p>
@@ -4858,7 +5141,7 @@ async function finishOnboarding(){
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
+const DEFAULT_PREFS = { city:"", areas:[], near:null, min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
 const prefs = () => Object.assign({}, DEFAULT_PREFS, state.prefs);
 function setPrefs(p){ state.prefs = Object.assign(prefs(), p); save(); syncSearch(); }
 // Owners find seekers by city, areas and budget (The Empty Room Escape), so keep the server's copy current.
@@ -4938,6 +5221,7 @@ function cardHtml(l, i){
     <div class="body">
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
+      ${nearNow && l._km != null ? `<div class="dist">${kmLabel(l._km)} from ${esc(nearNow.label)}</div>` : ""}
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span></div>` : ""}
       ${householdGen(hh) ? `<div class="gen-line">${genBadge(householdGen(hh), " household")}</div>` : ""}
       ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
@@ -4957,14 +5241,23 @@ function giftPillHtml(){
 }
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
-  const seq = ++browseSeq, f = prefs(), sort = $("fSort").value;
+  const seq = ++browseSeq, f = prefs(), near = f.near && f.near.lat ? f.near : null;
+  nearNow = near;
+  if(!near && $("fSort").value === "near") $("fSort").value = "match";
+  $("fSort").querySelector("[value=near]").hidden = !near;
+  const sort = $("fSort").value, mapView = state.dView === "map";
   renderProfilePromo(); renderVibePromo(); renderNudgeCards();
-  const [rows, , bonded] = await Promise.all([api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
+  const [rows, , bonded] = await Promise.all([near ? api.searchNear(near) : api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
   if(seq !== browseSeq) return;
+  if(near) rows.forEach(l => l._km = l.geo ? kmBetween(near, { lat: +l.geo.lat, lng: +l.geo.lng }) : null);
   cityRows = rows; myTribeSize = bonded.length + 1;
-  // Area chips for the chosen city.
+  if(document.activeElement !== $("dsQ")) $("dsQ").value = near ? near.label : "";
+  $("dsX").hidden = !near;
+  $("dsRadius").hidden = !near; if(near) $("dsRadius").innerHTML = `<span class="ds-rl">Within</span>` + radiusHtml(near);
+  $("dView").querySelectorAll("[data-dview]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.dview === "map") === mapView)));
+  // Area chips for the chosen city (a place search replaces them).
   const areas = f.city ? [...new Set(areasFor(f.city, rows).concat(f.areas))] : [];
-  $("areaChips").hidden = !f.city;
+  $("areaChips").hidden = !f.city || Boolean(near);
   $("areaChips").innerHTML = `<button type="button" data-area="" aria-pressed="${!f.areas.length}">All areas</button>` +
     areas.map(a => `<button type="button" data-area="${esc(a)}" aria-pressed="${f.areas.includes(a)}">${esc(a)}</button>`).join("") +
     `<button type="button" data-area-add>+ Add area</button>`;
@@ -4972,24 +5265,27 @@ async function renderDiscover(){
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
 
-  let list = applyFilters(rows, f);
+  let list = applyFilters(rows, near ? Object.assign({}, f, { areas: [] }) : f);
   const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
-  if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
+  if(sort === "near") list.sort((a, b) => (a._km ?? 999) - (b._km ?? 999));
+  else if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
   else if(sort === "cost") list.sort((a, b) => a.rent - b.rent);
   else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
   list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));   // Featured listings first (stable sort)
   const strong = list.filter(l => score(l) >= 75).length;
-  const where = f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
+  const where = near ? `${near.km} km of ${near.label}` : f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
   $("greetTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
   $("greetName").textContent = "Here's who you'd get along with";
-  $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} in ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
+  $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} ${near ? "within" : "in"} ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
   renderUrgent();
   extrasHtml().then(h => $("extrasD").innerHTML = h);
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
-  const vibes = rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
+  const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
   $("vibeRow").hidden = !vibes.length;
-  $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} in ${f.city || "all cities"} where the people live like you`;
+  $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
+  $("dMap").hidden = !mapView;
+  if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
   $("count").textContent = rest.length ? (vibes.length ? "More homes" : "") : "";
@@ -4998,7 +5294,14 @@ async function renderDiscover(){
 // When nothing matches, offer the changes that would bring homes back, with counts.
 let suggestions = [];
 function emptyHtml(rows, f){
-  const tries = [];
+  const tries = [], near = f.near && f.near.lat ? f.near : null;
+  if(near){
+    const wider = RADII.find(k => k > near.km);
+    suggestions = [wider ? { near: Object.assign({}, near, { km: wider }) } : null, { near: null }].filter(Boolean);
+    return `<div class="empty"><div class="empty-ic" aria-hidden="true">📍</div><h3>No homes within ${near.km} km of ${esc(near.label)} yet</h3><p>New homes are added every day. Meanwhile:</p>
+      <div class="suggest">${wider ? `<button class="btn btn-ghost btn-sm" type="button" data-suggest="0">Look within ${wider} km</button>` : ""}
+        <button class="btn btn-ghost btn-sm" type="button" data-suggest="${wider ? 1 : 0}">Show all of ${esc(f.city || "India")}</button></div></div>`;
+  }
   if(f.areas.length) tries.push([{ areas:[] }, `Show all of ${f.city}`]);
   if(f.max){ const up = Math.ceil(f.max * 1.25 / 1000) * 1000; tries.push([{ max: up }, `Raise budget to ${inr(up)}`]); }
   // Dropping one filter at a time shows which one is doing the damage.
@@ -5028,7 +5331,7 @@ async function renderSaved(){
       bonded.length ? ` ${esc(names)} will see it too.` : ""}</div>`)
     + (bonded.length ? `<div style="grid-column:1 / -1;margin-bottom:24px"><button class="btn btn-primary" type="button" data-together>🔎 Search together with ${esc(names)}</button></div>` : "");
 }
-$("fCity").addEventListener("change", () => { if(!pickOtherCity($("fCity"))) return; setPrefs({ city: $("fCity").value, areas: [] }); renderDiscover(); });
+$("fCity").addEventListener("change", () => { if(!pickOtherCity($("fCity"))) return; setPrefs({ city: $("fCity").value, areas: [], near: null }); dMapAt = ""; renderDiscover(); });
 $("fSort").addEventListener("change", renderDiscover);
 $("areaChips").addEventListener("click", e => {
   if(e.target.closest("[data-area-add]")){
@@ -5041,6 +5344,73 @@ $("areaChips").addEventListener("click", e => {
   renderDiscover();
 });
 $("activeF").addEventListener("click", e => { const b = e.target.closest("[data-unfilter]"); if(b){ removeFilter(b.dataset.unfilter); renderDiscover(); } });
+// ---- Discover's place search: like the search on property sites. Pick a city, type a locality,
+// landmark, society or metro station, and see homes within a few km, nearest first, as a list or on a map.
+let nearNow = null, dMap = null, dMapCircle = null, dMapAt = "";
+const RADII = [1, 3, 5, 10, 20];
+const zoomFor = km => km <= 1 ? 15 : km <= 3 ? 14 : km <= 5 ? 13 : km <= 10 ? 12 : 11;
+const shortInr = n => n >= 1e5 ? "₹" + (n / 1e5).toFixed(1).replace(/\.0$/, "") + "L" : n >= 1000 ? "₹" + (n / 1000).toFixed(n % 1000 && n < 1e4 ? 1 : 0).replace(/\.0$/, "") + "k" : "₹" + n;
+// The nearest of the big cities (within 45 km), so a place in Gurugram or Thane sets the city too.
+function cityOfPlace(pl){
+  let best = null, d = 45;
+  for(const [c, a] of Object.entries(DEMO_GEO)){ const k = kmBetween(pl, { lat: a._[0], lng: a._[1] }); if(k < d){ d = k; best = c; } }
+  return best || titleCase(pl.city || "");
+}
+function setNear(pl){
+  const f = prefs(), city = cityOfPlace(pl);
+  const near = { label: pl.label || pl.area || "this place", lat: +pl.lat.toFixed(5), lng: +pl.lng.toFixed(5), km: (f.near && f.near.km) || 5, area: pl.area || "", city };
+  setPrefs(Object.assign({ near }, city && city !== f.city ? { city, areas: [] } : {}));
+  if(city && ![...$("fCity").options].some(o => o.value === city)) setCitySelect($("fCity"), city, "All cities");
+  else if(city) $("fCity").value = city;
+  $("fSort").value = "near";
+  renderDiscover();
+}
+function radiusHtml(near){
+  return RADII.map(k => `<button type="button" data-km="${k}" aria-pressed="${near.km === k}">${k} km</button>`).join("");
+}
+async function drawDiscoverMap(list, near, city, score){
+  const box = $("dMap"); box.hidden = false;
+  const at = near || knownPlace(city) || { lat: 22.5, lng: 79 }, key = near ? `${near.lat},${near.lng},${near.km}` : "c:" + city;
+  try{
+    if(!dMap){ $("dMapEl").innerHTML = ""; dMap = await Geo.map($("dMapEl"), at, near ? zoomFor(near.km) : city ? 11 : 5, true); dMapAt = ""; }
+  }catch(err){ $("dMapCard").innerHTML = `<p class="hint">Couldn't load the map. Check your connection and try again.</p>`; return; }
+  const pts = list.filter(l => l.geo), groups = new Map();
+  pts.forEach(l => { const k = (+l.geo.lat).toFixed(3) + "," + (+l.geo.lng).toFixed(3); if(!groups.has(k)) groups.set(k, []); groups.get(k).push(l); });
+  const pins = [...groups.values()].map((ls, idx) => ({ lat: +ls[0].geo.lat, lng: +ls[0].geo.lng, ids: ls.map(l => l.id), idx,
+    html: `<span class="gp${ls.some(l => score(l) >= 80) ? " hot" : ""}" data-pin="${idx}">${ls.length > 1 ? `<i>${ls.length}</i>` : ""}${shortInr(Math.min(...ls.map(l => l.rent)))}</span>` }));
+  dMap.pins(pins, p => {
+    $("dMapCard").innerHTML = `<div class="dm-cards">${p.ids.map((id, i) => cardHtml(list.find(l => l.id === id), i)).join("")}</div>`;
+    document.querySelectorAll(".gp.on").forEach(x => x.classList.remove("on"));
+    const el = document.querySelector(`.gp[data-pin="${p.idx}"]`); if(el) el.classList.add("on");
+  });
+  if(dMapAt !== key){
+    dMapAt = key;
+    if(dMapCircle){ dMapCircle.remove(); dMapCircle = null; }
+    if(near){ dMap.setView(near, zoomFor(near.km)); dMapCircle = dMap.circle(near, near.km * 1000); }
+    else if(pts.length) dMap.fit(pts.map(l => ({ lat: +l.geo.lat, lng: +l.geo.lng })), 13);
+  }
+  const off = list.length - pts.length;
+  $("dMapCard").innerHTML = `<p class="hint dm-hint">${pts.length ? `Tap a price to see the home. Pins show the area, not the building.` : "None of these homes are on the map yet."}${
+    off > 0 ? ` ${off} ${off === 1 ? "home has" : "homes have"} no pin yet: switch to List to see ${off === 1 ? "it" : "them"}.` : ""}</p>`;
+}
+$("dsRadius").addEventListener("click", e => {
+  const b = e.target.closest("[data-km]"); if(!b) return;
+  const f = prefs(); if(!f.near) return;
+  setPrefs({ near: Object.assign({}, f.near, { km: Number(b.dataset.km) }) }); renderDiscover();
+});
+$("dsX").addEventListener("click", () => { $("dsQ").value = ""; setPrefs({ near: null }); if($("fSort").value === "near") $("fSort").value = "match"; renderDiscover(); $("dsQ").focus(); });
+$("dsGo").addEventListener("click", () => {
+  const q = $("dsQ").value.trim();
+  if(!q){ $("dsQ").focus(); toast("Type a locality, landmark, society or metro station."); return; }
+  if(nearNow && q === nearNow.label){ renderDiscover(); return; }
+  $("dsQ")._psGo();
+});
+$("dView").addEventListener("click", e => {
+  const b = e.target.closest("[data-dview]"); if(!b) return;
+  state.dView = b.dataset.dview; save(); renderDiscover();
+});
+attachPlaceSearch($("dsQ"), setNear, { here: true, near: () => { const f = prefs(), g = f.near || knownPlace(f.city); return g ? Object.assign({ city: f.city }, g) : null; } });
+
 $("cards").addEventListener("click", e => {
   const b = e.target.closest("[data-suggest]"); if(!b) return;
   e.stopPropagation(); setPrefs(suggestions[Number(b.dataset.suggest)]); applyPrefs(); renderDiscover();
@@ -5095,7 +5465,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","vibeCards","tribeHunt","tribeShort"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","savedCards","vibeCards","tribeHunt","tribeShort","dMapCard"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null, currentListing = null;
@@ -5184,14 +5554,25 @@ async function openListing(id){
       </div>`;
     }
   }
-  const traits = VIBE_QS.filter(x => Number.isInteger(hh[x.k])).map(x => `<span>${esc(x.t[hh[x.k]])}</span>`).join("");
+  // Coloured by how close each answer is to yours (seekers): ✓ same, ! very different.
+  const mineV = isSeeker() && !l.is_owner ? state.vibe || {} : {};
+  const traits = VIBE_QS.filter(x => Number.isInteger(hh[x.k])).map(x => {
+    const d = Number.isInteger(mineV[x.k]) ? Math.abs(mineV[x.k] - hh[x.k]) : null;
+    return `<span class="${d === 0 ? "tr-same" : d === 2 ? "tr-diff" : ""}">${d === 0 ? "✓ " : d === 2 ? "! " : ""}${esc(x.t[hh[x.k]])}</span>`; }).join("");
+  const traitKey = Object.keys(mineV).length ? `<p class="tr-key"><span class="tr-same">✓ same as you</span><span class="tr-diff">! very different</span></p>` : "";
   const mates = matesOf(hh);
   const cp = isSeeker() && !l.is_owner ? compatOf(state.vibe, hh) : null;
-  const matchBlock = !m ? "" : `<div class="compat-mini">${cp ? `<button class="compat-wheel-btn" data-action="compat" aria-label="Open compatibility analysis">${compatWheel(cp, 132)}</button>` : ""}
-    <div><p style="margin:0;font-weight:800">${m.pct}% match with how you live</p>
+  const cpBest = cp && cp.groups.filter(g => g.pct != null).sort((a, b) => b.pct - a.pct);
+  const matchBlock = !m ? "" : cp ? `<div class="compat-mini v2">
+      <div class="cm-top"><button class="compat-wheel-btn" type="button" data-action="compat" aria-label="Open compatibility analysis">${cxRing(cp.pct, 88)}</button>
+        <div><b>${esc(cxVerdict(cp.pct))}</b><span>Strongest on ${esc(cpBest[0].name.toLowerCase())}${cpBest.length > 1 && cpBest[cpBest.length - 1].pct < cpBest[0].pct
+          ? `. Talk about ${esc(cpBest[cpBest.length - 1].name.toLowerCase())} first` : ""}.</span></div></div>
+      <div class="cx-areas mini">${cxAreasHtml(cp)}</div>
+      ${m.clash.length ? `<ul class="reasons">${m.clash.slice(0, 2).map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>` : ""}
+      <button class="btn btn-primary btn-block" type="button" data-action="compat">See the full compatibility analysis</button></div>`
+    : `<div class="compat-mini"><div style="min-width:0;flex:1"><p style="margin:0;font-weight:800">${m.pct}% match with how you live</p>
     <ul class="reasons">${m.good.slice(0, 3).map(t => `<li><span class="g">✓</span>${esc(t)}</li>`).join("")}
-      ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul>
-    ${cp ? `<button class="btn btn-primary btn-sm" style="margin-top:12px" data-action="compat">See compatibility analysis</button>` : ""}</div></div>`;
+      ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul></div></div>`;
   const items = expenseItems(l);
   // A whole flat or shared room: what it means for your tribe, or how a tribe could split it.
   const tribe = isSeeker() && !l.is_owner && (l.kind === "flat" || l.kind === "shared") ? await bondedTribe() : [], tsize = tribe.length + 1;
@@ -5213,7 +5594,7 @@ async function openListing(id){
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
     <div class="household">${mates.length ? matesHtml(hh, l.id) : ""}
-      ${traits ? `<div class="traits">${traits}</div>` : ""}${matchBlock}
+      ${traits ? `<div class="traits">${traits}</div>${traitKey}` : ""}${matchBlock}
       ${allInterests(hh.interests).length ? `<p style="margin:12px 0 0;font-weight:800">What they're into${sharedInterests(state.interests, hh.interests).length
         ? ` · <span style="color:var(--accent)">you both like ${esc(sharedInterests(state.interests, hh.interests).join(", "))}</span>` : ""}</p>
         ${interestsHtml(hh.interests, state.interests)}` : ""}</div>` : ""}
@@ -5852,8 +6233,8 @@ async function knownPeople(){
 async function renderSplits(){
   if(routeArg) return renderSplitGroup(routeArg);
   $("fsHome").hidden = false; $("fsGroup").hidden = true;
-  let groups = [];
-  try{ groups = await api.splitGroups(); }catch(err){ console.error(err); }
+  let groups = [], feed = [];
+  try{ [groups, feed] = await Promise.all([api.splitGroups(), api.partyFeed().catch(() => [])]); }catch(err){ console.error(err); }
   if(currentView !== "splits" || routeArg) return;
   const owed = groups.reduce((t, g) => t + Math.max(0, g.my_net), 0), owe = groups.reduce((t, g) => t + Math.max(0, -g.my_net), 0);
   $("fsTot").innerHTML = groups.length ? `<div><b>${rupees(owed)}</b><span>you get back in all</span></div><div><b>${rupees(owe)}</b><span>you owe in all</span></div>` : "";
@@ -5866,7 +6247,7 @@ async function renderSplits(){
       ${fsNetHtml(g.my_net)}</button>`;
   // This month, your share: the flat's household spending, kept apart from trips and parties.
   const month = new Date().toLocaleDateString("en-IN", { month:"long" });
-  $("fsGroups").innerHTML = groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
+  $("fsGroups").innerHTML = ptFeedHtml(feed) + (groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
         <div><span>🏠 Household</span><b>${rupees(share(flats))}</b></div><div><span>✈️🎉 Trips & parties</span><b>${rupees(share(events))}</b></div></div>
       <h3 class="section-h">Your flat</h3>${flats.length ? flats.map(groupBtn).join("") : `<p class="hint" style="margin:0 0 6px">No flat group yet.</p>`}
       <button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:10px">+ New flat group</button>
@@ -5876,14 +6257,18 @@ async function renderSplits(){
     : `<div class="empty"><div class="empty-ic" aria-hidden="true">🧾</div><h3>Living with people? Split it fairly.</h3>
        <p>Make a group for your flat, add your flatmates by mobile number, and add the first expense. Everyone sees the same balance.</p>
        <button class="btn btn-primary" type="button" data-fs="new">Create your flat's group</button>
-       ${api.splitDemoSeed ? `<p style="margin-top:6px"><button class="linkbtn" type="button" data-fs="sample">Or try it with a sample flat</button></p>` : ""}</div>`;
+       ${api.splitDemoSeed ? `<p style="margin-top:6px"><button class="linkbtn" type="button" data-fs="sample">Or try it with a sample flat</button></p>` : ""}</div>`);
 }
 
 async function renderSplitGroup(id){
   $("fsHome").hidden = true; $("fsGroup").hidden = false;
   try{ fsData = await api.splitGet(id); }
   catch(err){ console.error(err); toast("This group isn't available."); return go("splits"); }
-  if(currentView === "splits" && routeArg === id) drawSplitGroup();
+  await loadFsParty();
+  if(currentView === "splits" && routeArg === id){
+    drawSplitGroup();
+    if(ptOpenAfter === id){ ptOpenAfter = null; openPartyEditor(); }
+  }
 }
 function drawSplitGroup(){
   const d = fsData, net = splitNets(d.members, d.expenses), mine = net[d.me] || 0, pays = simplifyDebts(net);
@@ -5900,6 +6285,7 @@ function drawSplitGroup(){
     <div class="fs-ghead"><span class="fs-emoji">${esc(d.group.emoji)}</span><div style="min-width:0"><h1>${esc(d.group.name)}</h1>
       <p>${ev ? `<span class="fs-kind">${fsKindLabel(d.group.kind)}</span> ` : ""}${others.length ? "You, " + esc(others.map(m => m.name).join(", ")) : "Just you so far"} ·
         <button class="linkbtn" type="button" data-fs="members">${others.length ? "Members" : ev ? "Add people" : "Add flatmates"}</button></p></div></div>
+    ${d.group.kind === "party" ? fsPartyHtml() : ""}
     <div class="fs-bal ${mine > 0 ? "pos" : mine < 0 ? "neg" : ""}"><small>${mine > 0 ? "Overall, you get back" : mine < 0 ? "Overall, you owe" : "Your balance"}</small>
       <b>${mine ? rupees(mine) : "All settled up 🎉"}</b>${lines.length ? `<ul>${lines.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
     <div class="fs-acts"><button class="btn btn-primary" type="button" data-fs="add">+ Add expense</button>
@@ -6168,6 +6554,12 @@ function openExpenseDetail(id){
 function fsChanged(){ $("dlgFs").close(); renderSplitGroup(fsData.group.id); checkExtras(); }
 
 $("view-splits").addEventListener("click", async e => {
+  const pt = e.target.closest("[data-pt]");
+  if(pt){
+    if(pt.dataset.pt === "edit") return openPartyEditor();
+    if(pt.dataset.pt === "share") return openPartyCard();
+    if(pt.dataset.pt === "revive"){ try{ await api.partyCancel(fsData.group.id, false); toast("It's back on!"); await loadFsParty(); drawSplitGroup(); }catch(err){ console.error(err); toast("Couldn't do that. Please try again."); } return; }
+  }
   const b = e.target.closest("[data-fs],[data-fs-open],[data-fs-tab],[data-fs-exp],[data-fs-record],[data-fs-upi],[data-fs-bill-del]"); if(!b) return;
   try{
     if(b.dataset.fsOpen){ fsTab = "activity"; return go("splits/" + b.dataset.fsOpen); }
@@ -6273,7 +6665,8 @@ $("dlgFs").addEventListener("submit", async e => {
       const people = picked.concat(rows.filter(r => !picked.some(p => p.phone === r.phone)));
       btn.disabled = true;
       const id = await api.splitCreate(name, (f.querySelector("[name=fsEEmoji]:checked") || {}).value, people, kind);
-      $("dlgFs").close(); toast(`${kind === "trip" ? "Trip" : "Party"} created. Add the first expense; it won't touch the flat's bills.`);
+      $("dlgFs").close(); toast(kind === "trip" ? "Trip created. Add the first expense; it won't touch the flat's bills." : "Party created. Now make the invite card.");
+      if(kind === "party") ptOpenAfter = id;
       fsTab = "activity"; return go("splits/" + id);
     }
     if(f.id === "fsNewForm"){
@@ -6359,7 +6752,7 @@ function mkCardHtml(i, n){
       <button class="heart" type="button" data-mk-save="${esc(i.id)}" aria-pressed="${mkSaved(i.id)}" aria-label="Save this item">♥</button></div>
     <div class="body">${mkFlag(i)}<h3>${esc(i.title)}</h3><div class="loc">${esc(i.locality)}, ${esc(i.city)}</div>
       <div class="price">${mkPrice(i)}${i.price && i.negotiable ? "<small> open to offers</small>" : ""}</div>
-      ${i.moving_by ? `<div><span class="mk-move">📦 Moving out by ${fmtDate(i.moving_by)}</span></div>` : ""}
+      ${i.moving_by ? `<div><span class="mk-move" title="Moving out by ${fmtDate(i.moving_by)}">📦 Moving ${fmtDate(i.moving_by)}</span></div>` : ""}
       <div class="seller">${i.is_mine ? "You" : esc(i.seller_name || "A flatmate")} · ${timeAgo(i.bumped_at || i.created_at)}${i.offer_count ? ` · ${i.offer_count} interested` : ""}</div></div></article>`;
 }
 async function renderMarket(){
@@ -6832,6 +7225,16 @@ async function checkExtras(){
     }
   }catch(err){}
   try{
+    for(const p of await api.partyFeed()){
+      const key = "pt" + p.code + p.updated_at; if(state.notified[key]) continue;
+      state.notified[key] = Date.now(); changed = true;
+      const k = ptKind(p.occasion);
+      if(p.cancelled){ Notify.show(`${p.host || "A flatmate"} called off ${k[1].toLowerCase()}`, "Nothing's happening at your place after all.", "party/" + p.code); continue; }
+      Notify.show(`${k[0]} ${p.host || "A flatmate"} is hosting ${k[1].toLowerCase()} at your flat`, `${ptShort(p)}. See the invite and say if you're in.`, "party/" + p.code);
+      toast(`${k[0]} ${p.host || "A flatmate"} is hosting ${k[1].toLowerCase()} at ${p.flat || "your flat"}, ${ptShort(p)}.`);
+    }
+  }catch(err){}
+  try{
     const rows = await api.marketInbox(), fresh = rows.filter(r => r.unseen);
     marketUnseen = fresh.length;
     for(const r of fresh){
@@ -6884,6 +7287,348 @@ function pickOtherCity(sel){
   return true;
 }
 function setCitySelect(sel, city, allLabel){ sel.innerHTML = cityOptions(city, allLabel); sel.dataset.prev = sel.value; }
+
+/* ========================================================= party invites */
+// A house party's Flatsplits group can have an invite: a card like the Vibe Card to share on WhatsApp,
+// a page anyone with the link can open (#party/<code>) to say if they're coming, and a heads-up for the
+// host's flatmates. "At my home" is enough; the address and directions are optional.
+const PARTY_KINDS = {
+  party:       ["🎉", "House party",     "House party at {h}'s",     "Music, snacks and good people. Come as you are."],
+  movie:       ["🎬", "Movie night",     "Movie night at {h}'s",     "Popcorn's sorted. The film is up for a vote."],
+  games:       ["🎲", "Game night",      "Game night at {h}'s",      "Board games, cards and friendly fights over the rules."],
+  potluck:     ["🍲", "Potluck",         "Potluck at {h}'s",         "Bring a dish you love. Everything gets shared."],
+  birthday:    ["🎂", "Birthday",        "Birthday bash at {h}'s",   "Cake, candles and a very loud happy birthday."],
+  housewarming:["🏡", "Housewarming",    "Housewarming at {h}'s",    "New place, same people. Come and see it!"],
+  match:       ["🏏", "Match screening", "Match night at {h}'s",     "Big screen, loud cheering, snacks on the side."],
+  festival:    ["🪔", "Festival night",  "Festival night at {h}'s",  "Lights, sweets and everyone together."],
+  karaoke:     ["🎤", "Karaoke night",   "Karaoke night at {h}'s",   "No talent needed. Confidence optional."],
+  brunch:      ["🥞", "Brunch",          "Brunch at {h}'s",          "A lazy morning, big plates and endless chai."],
+  chai:        ["☕", "Chai & chill",    "Chai & chill at {h}'s",    "Chai, pakoras and long conversations."],
+  terrace:     ["🌙", "Terrace night",   "Terrace night at {h}'s",   "Fairy lights, music and the city below."],
+  jam:         ["🎸", "Jam session",     "Jam session at {h}'s",     "Bring an instrument, or just your voice."],
+  farewell:    ["👋", "Farewell",        "Farewell at {h}'s",        "One last night together before the move."],
+  welcome:     ["🙌", "Welcome party",   "Welcome party at {h}'s",   "Come and say hi to the newest flatmate!"],
+};
+const ptKind = k => PARTY_KINDS[k] || PARTY_KINDS.party;
+const ptLink = code => siteLink() + "#party/" + code;
+const ptDay = d => new Date(d).toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long" });
+const ptTime = d => new Date(d).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" }).replace(/\s?([ap])\.?m\.?/i, " $1m").toLowerCase();
+const ptTimes = p => ptTime(p.starts_at) + (p.ends_at ? " – " + ptTime(p.ends_at) : " onwards");
+const ptShort = p => new Date(p.starts_at).toLocaleDateString("en-IN", { weekday:"short", day:"numeric", month:"short" }) + ", " + ptTime(p.starts_at);
+const ptWhere = p => p.place === "address" && p.address ? p.address : `At ${p.host || "the host"}'s home`;
+const ptMaps = p => p.geo ? `https://www.google.com/maps/dir/?api=1&destination=${p.geo.lat},${p.geo.lng}`
+  : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.address || "")}`;
+function ptToken(){
+  let t = readLS("fm_party_tok");
+  if(!t || !/^[A-Za-z0-9_-]{16,64}$/.test(t)){
+    const a = new Uint8Array(18); crypto.getRandomValues(a);
+    t = btoa(String.fromCharCode(...a)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); writeLS("fm_party_tok", t);
+  }
+  return t;
+}
+function ptCalendar(p){
+  const z = d => new Date(d).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const end = p.ends_at || new Date(new Date(p.starts_at).getTime() + 3 * 36e5).toISOString();
+  return "https://calendar.google.com/calendar/render?" + new URLSearchParams({ action:"TEMPLATE", text: p.title, dates: z(p.starts_at) + "/" + z(end),
+    details: `${ptKind(p.occasion)[3]}\n${ptLink(p.code)}`, location: p.place === "address" ? p.address || "" : ptWhere(p) });
+}
+const ptShareText = p => `${ptKind(p.occasion)[0]} ${p.title}! ${ptShort(p)}. ${p.place === "address" ? "📍 " + p.address + ". " : ""}Say if you're coming: ${ptLink(p.code)}`;
+
+// The card: 1080 × 1920 like the Vibe Card, ready for a WhatsApp status or a chat.
+async function drawPartyCard(p){
+  const W = 1080, H = 1920, c = document.createElement("canvas"), F = '"Plus Jakarta Sans", system-ui, sans-serif',
+    E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', k = ptKind(p.occasion);
+  c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  await Promise.race([Promise.all(["800 96px", "500 40px", "700 34px"].map(f => document.fonts.load(`${f} "Plus Jakarta Sans"`))).catch(() => {}),
+    new Promise(r => setTimeout(r, 2500))]);
+  const logo = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = "icons/icon-192.png"; });
+  const g = x.createLinearGradient(0, 0, W * .45, H);
+  g.addColorStop(0, "#0E9AA0"); g.addColorStop(.45, "#0F8EA6"); g.addColorStop(1, "#1F6CC4");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = "rgba(255,255,255,.07)";
+  for(const [cx, cy, rr] of [[980, 120, 330], [60, 1560, 280], [1040, 1180, 150]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  // Confetti, the same every time for the same party.
+  let seed = [...(p.code || "FMF")].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) >>> 0;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) >>> 0) / 4294967296;
+  for(let i = 0; i < 34; i++){
+    const cx = rnd() * W, cy = rnd() < .5 ? 230 + rnd() * 420 : 1560 + rnd() * 140;
+    x.save(); x.translate(cx, cy); x.rotate(rnd() * Math.PI); x.fillStyle = ["#FFC86B", "#F0645A", "#14C08A", "#FFFFFF", "#FFD08A"][i % 5];
+    x.globalAlpha = .55 + rnd() * .4; x.beginPath(); x.roundRect(-11, -5, 22, 10, 4); x.fill(); x.restore();
+  }
+  x.globalAlpha = 1; x.textBaseline = "middle";
+  if(logo){ roundRect(x, 80, 86, 104, 104, 28, "#fff"); x.drawImage(logo, 88, 94, 88, 88); }
+  x.fillStyle = "#fff"; x.font = `800 46px ${F}`; x.textAlign = "left"; x.fillText("FindMeFlatMate", 212, 140);
+  x.textAlign = "center";
+  x.font = `800 32px ${F}`; x.fillStyle = "#FFD08A"; x.letterSpacing = "6px";
+  x.fillText(p.cancelled ? "CALLED OFF" : "YOU'RE INVITED", W / 2, 330); x.letterSpacing = "0px";
+  x.font = `180px ${E}`; x.fillText(k[0], W / 2, 500);
+  let y = 690;
+  x.font = `800 92px ${F}`; x.fillStyle = "#fff";
+  for(const l of wrapLines(x, p.title, 940).slice(0, 3)){ x.fillText(l, W / 2, y); y += 100; }
+  x.font = `500 40px ${F}`; x.fillStyle = "rgba(255,255,255,.92)"; y += 4;
+  for(const l of wrapLines(x, k[3], 860).slice(0, 2)){ x.fillText(l, W / 2, y); y += 56; }
+  // White panel: when, where and the rest, one line each.
+  const rows = [["📅", ptDay(p.starts_at)], ["⏰", ptTimes(p)], ["📍", ptWhere(p)]];
+  if(p.bring) rows.push(["🎁", "Bring: " + p.bring]);
+  if(p.chip_in) rows.push(["💸", `Chip in ${inr(p.chip_in)} each`]);
+  if(p.plus_ones) rows.push(["👥", "Plus-ones welcome"]);
+  x.font = `700 38px ${F}`;
+  const lines = rows.map(([ic, t]) => [ic, wrapLines(x, t, 700).slice(0, 2)]);
+  const top = y + 34, panelH = 70 + lines.reduce((a, [, l]) => a + l.length * 50 + 34, 0) + 20;
+  roundRect(x, 70, top, W - 140, panelH, 48, "#fff");
+  let ry = top + 70; x.textAlign = "left";
+  for(const [ic, l] of lines){
+    x.font = `44px ${E}`; x.fillText(ic, 140, ry);
+    x.font = `700 38px ${F}`; x.fillStyle = "#10264F";
+    l.forEach((t, i) => x.fillText(t, 216, ry + i * 50));
+    ry += l.length * 50 + 34;
+  }
+  x.textAlign = "center";
+  const by = Math.max(ry + 120, H - 300);
+  x.fillStyle = "#fff"; x.font = `800 54px ${F}`; x.fillText(p.cancelled ? "Sorry, it's off this time" : "Are you in?", W / 2, by);
+  x.fillStyle = "rgba(255,255,255,.88)"; x.font = `500 36px ${F}`;
+  x.fillText(p.cancelled ? "" : `Tap the link to tell ${p.host || "the host"}`, W / 2, by + 68);
+  x.fillStyle = "rgba(255,255,255,.7)"; x.font = `600 28px ${F}`;
+  x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, "") + " · party " + (p.code || ""), W / 2, by + 130);
+  return c;
+}
+
+// ---- inside the party's Flatsplits group
+let fsParty = null, ptOpenAfter = null;
+function fsPartyHtml(){
+  const p = fsParty;
+  if(!p) return `<div class="pt-make"><span class="pt-make-ic" aria-hidden="true">🎟️</span><div><b>Make an invite card</b>
+      <small>Share it on WhatsApp, see who's coming, and give your flatmates a heads-up.</small></div>
+      <button class="btn btn-accent btn-sm" type="button" data-pt="edit">Make the card</button></div>`;
+  const k = ptKind(p.occasion);
+  return `<div class="pt-mini${p.cancelled ? " off" : ""}">
+      <a class="pt-mini-top" href="#party/${esc(p.code)}"><span class="pt-mini-ic" aria-hidden="true">${k[0]}</span><span><small>${p.cancelled ? "Called off" : "Your invite"}</small>
+        <b>${esc(p.title)}</b><em>${esc(ptShort(p))} · ${esc(p.place === "address" ? p.address : "at " + (p.host || "your") + "'s home")}</em></span></a>
+      <div class="pt-counts"><span><b>${p.going || 0}</b> going</span><span><b>${p.maybe || 0}</b> maybe</span><span><b>${p.cant || 0}</b> can't</span></div>
+      <div class="pt-mini-acts">${p.is_host ? `${p.cancelled ? `<button class="btn btn-ghost btn-sm" type="button" data-pt="revive">It's back on</button>`
+          : `<button class="btn btn-accent btn-sm" type="button" data-pt="share">Share the card</button>`}
+        <button class="btn btn-ghost btn-sm" type="button" data-pt="edit">Edit</button>` : ""}
+        <a class="btn btn-ghost btn-sm" href="#party/${esc(p.code)}">Guest list</a></div></div>`;
+}
+async function loadFsParty(){
+  fsParty = null;
+  if(!fsData || fsData.group.kind !== "party") return;
+  try{ fsParty = await api.partyForGroup(fsData.group.id); }catch(err){ console.error(err); }
+}
+function ptLocalParts(iso){
+  const d = iso ? new Date(iso) : null, pad = n => String(n).padStart(2, "0");
+  return d ? { date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` } : null;
+}
+async function openPartyEditor(){
+  const p = fsParty, host = firstName() || "me", flats = (await api.splitGroups().catch(() => [])).filter(g => !fsIsEvent(g));
+  const next = new Date(); next.setDate(next.getDate() + ((6 - next.getDay() + 7) % 7 || 7)); next.setHours(20, 0, 0, 0);
+  const s = ptLocalParts(p ? p.starts_at : next.toISOString()), e = p && p.ends_at ? ptLocalParts(p.ends_at) : null;
+  const occ = p ? p.occasion : "party", title = p ? p.title : ptKind(occ)[2].replace("{h}", host);
+  ptx = { occ, auto: !p, geo: p && p.geo || null };
+  openFs(p ? "Edit the invite" : "Make an invite card", fsData.group.name, `<form id="ptForm" novalidate>
+    <h3 class="section-h" style="margin-top:0">What's the plan?</h3>
+    <div class="pt-occ" role="group" aria-label="Kind of get-together">${Object.entries(PARTY_KINDS).map(([key, [ic, label]]) =>
+      `<button type="button" data-pt-occ="${key}" aria-pressed="${key === occ}"><i aria-hidden="true">${ic}</i>${esc(label)}</button>`).join("")}</div>
+    <div class="field"><label for="ptTitle">Title on the card</label><input type="text" id="ptTitle" maxlength="80" value="${esc(title)}" required></div>
+    <div class="grid3 pt-when"><div class="field"><label for="ptDate">Day</label><input type="date" id="ptDate" value="${s.date}" required></div>
+      <div class="field"><label for="ptStart">From</label><input type="time" id="ptStart" value="${s.time}" required></div>
+      <div class="field"><label for="ptEnd">Till <span class="opt-l">(optional)</span></label><input type="time" id="ptEnd" value="${e ? e.time : ""}"></div></div>
+    <h3 class="section-h">Where</h3>
+    <div class="pt-where">
+      <label class="pt-wopt"><input type="radio" name="ptPlace" value="home"${!p || p.place !== "address" ? " checked" : ""}><span class="ic" aria-hidden="true">🏠</span>
+        <span><b>At my home</b><small>The card says “at ${esc(host)}'s home”. Friends ask you for the way.</small></span></label>
+      <label class="pt-wopt"><input type="radio" name="ptPlace" value="address"${p && p.place === "address" ? " checked" : ""}><span class="ic" aria-hidden="true">📍</span>
+        <span><b>Add the address</b><small>With directions and a Google Maps link. Anyone with the link sees it.</small></span></label></div>
+    <div id="ptAddr"${p && p.place === "address" ? "" : " hidden"}>
+      <div class="field ps-anchor"><label for="ptAddress">Address</label><input type="text" id="ptAddress" maxlength="200" autocomplete="off" value="${esc(p && p.address || "")}" placeholder="Search your building or street"></div>
+      <div class="field"><label for="ptDir">Directions <span class="opt-l">(optional)</span></label><textarea id="ptDir" rows="2" maxlength="300" placeholder="Tower B, 3rd floor. Ring the bell twice.">${esc(p && p.directions || "")}</textarea></div></div>
+    ${flats.length ? `<label class="switch pt-tell"><input type="checkbox" id="ptTell"${!p || p.flat_group || !p.code ? " checked" : ""}><span>Tell my flatmates it's at our place</span></label>
+      ${flats.length > 1 ? `<div class="field" style="margin-top:8px"><label for="ptFlat">Which flat</label><select id="ptFlat">${flats.map(g => `<option value="${esc(g.id)}">${esc(g.emoji + " " + g.name)}</option>`).join("")}</select></div>`
+        : `<input type="hidden" id="ptFlat" value="${esc(flats[0].id)}">`}
+      <p class="hint" style="margin-top:4px">${flats.length === 1 && flats[0].names.length ? esc(flats[0].names.join(", ")) + " get" : "They get"} a heads-up in the app, and you can message them on WhatsApp next.</p>`
+      : `<p class="hint">Make a flat group in Splits and your flatmates get a heads-up whenever there's a party at your place.</p>`}
+    <details class="pt-extra"${p && (p.bring || p.chip_in || p.note) ? " open" : ""}><summary>Extras: what to bring, chip in, a note</summary>
+      <div class="field"><label for="ptBring">Bring along</label><input type="text" id="ptBring" maxlength="120" value="${esc(p && p.bring || "")}" placeholder="Snacks, drinks, your favourite game"></div>
+      <div class="field"><label for="ptChip">Chip in, each (₹) <span class="opt-l">(optional, split on Flatsplits after)</span></label><input type="text" id="ptChip" inputmode="numeric" maxlength="6" value="${p && p.chip_in || ""}" placeholder="0"></div>
+      <label class="switch" style="margin:0 0 14px"><input type="checkbox" id="ptPlus"${!p || p.plus_ones ? " checked" : ""}><span>Plus-ones welcome</span></label>
+      <div class="field"><label for="ptNote">A note for guests</label><textarea id="ptNote" rows="2" maxlength="300" placeholder="Wraps up by 11, the neighbours are lovely but light sleepers.">${esc(p && p.note || "")}</textarea></div></details>
+    <button class="btn btn-accent btn-block" type="submit" style="margin-top:14px">${p ? "Save the invite" : "Make the card"}</button>
+    ${p && p.is_host && !p.cancelled ? `<button class="linkbtn danger-link" type="button" data-pt="cancel" style="margin-top:8px">Call off the party</button>` : ""}</form>`);
+  if(p && p.flat_group && $("ptFlat") && $("ptFlat").tagName === "SELECT") $("ptFlat").value = p.flat_group;
+  if(window.attachPlaceSearch) attachPlaceSearch($("ptAddress"), pl => { ptx.geo = { lat: pl.lat, lng: pl.lng }; $("ptAddress").value = pl.address || pl.label; });
+}
+let ptx = null;
+$("dlgFs").addEventListener("click", async e => {
+  const t = e.target;
+  const occ = t.closest("[data-pt-occ]");
+  if(occ){
+    const prev = ptx.occ; ptx.occ = occ.dataset.ptOcc;
+    occ.parentNode.querySelectorAll("[data-pt-occ]").forEach(b => b.setAttribute("aria-pressed", b === occ));
+    const host = firstName() || "me", title = $("ptTitle");
+    if(ptx.auto || title.value === ptKind(prev)[2].replace("{h}", host)) title.value = ptKind(ptx.occ)[2].replace("{h}", host);
+    return;
+  }
+  const a = t.closest("[data-pt]"); if(!a) return;
+  if(a.dataset.pt === "cancel"){
+    if(!confirm("Call off the party? Guests who open the link will see it's off.")) return;
+    try{ await api.partyCancel(fsData.group.id, true); $("dlgFs").close(); toast("The party's called off."); await loadFsParty(); drawSplitGroup(); }
+    catch(err){ console.error(err); toast("Couldn't do that. Please try again."); }
+  }
+  if(a.dataset.pt === "card") return sharePartyCard();
+  if(a.dataset.pt === "flatmates") return ptTellFlatmates();
+  if(a.dataset.pt === "copy"){ try{ await navigator.clipboard.writeText(ptLink(fsParty.code)); toast("Link copied"); }catch(err){ toast(ptLink(fsParty.code)); } }
+});
+$("dlgFs").addEventListener("input", e => { if(e.target.id === "ptTitle" && ptx) ptx.auto = false; if(e.target.id === "ptChip") e.target.value = e.target.value.replace(/\D/g, ""); if(e.target.id === "ptAddress" && ptx) ptx.geo = null; });
+$("dlgFs").addEventListener("change", e => { if(e.target.name === "ptPlace") $("ptAddr").hidden = e.target.value !== "address"; });
+$("dlgFs").addEventListener("submit", async e => {
+  if(e.target.id !== "ptForm") return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  const f = e.target, btn = f.querySelector("[type=submit]"), bad = msg => { showFormError(f, msg); toast(msg); };
+  const date = $("ptDate").value, start = $("ptStart").value, end = $("ptEnd").value, place = (f.querySelector("[name=ptPlace]:checked") || {}).value || "home";
+  if($("ptTitle").value.trim().length < 2) return bad("Give the card a title.");
+  if(!date || !start) return bad("Pick the day and the time it starts.");
+  const starts = new Date(`${date}T${start}`);
+  if(isNaN(starts) || starts < new Date(Date.now() - 36e5)) return bad("That time has already gone. Pick a time that's coming up.");
+  let ends = end ? new Date(`${date}T${end}`) : null;
+  if(ends && ends <= starts) ends = new Date(ends.getTime() + 864e5);   // past midnight
+  if(place === "address" && $("ptAddress").value.trim().length < 5) return bad("Add the address, or pick “At my home”.");
+  const p = { occasion: ptx.occ, title: $("ptTitle").value.trim(), starts_at: starts.toISOString(), ends_at: ends ? ends.toISOString() : null, place,
+    address: $("ptAddress").value.trim(), directions: $("ptDir").value.trim(), geo: place === "address" ? ptx.geo : null,
+    bring: $("ptBring").value.trim(), chip_in: Number($("ptChip").value) || 0, plus_ones: $("ptPlus").checked, note: $("ptNote").value.trim(),
+    flat_group: $("ptTell") && $("ptTell").checked && $("ptFlat") ? $("ptFlat").value : null };
+  btn.disabled = true;
+  try{
+    const first = !fsParty;
+    await api.partySave(fsData.group.id, p);
+    await loadFsParty(); drawSplitGroup();
+    toast(first ? (p.flat_group ? "Card ready, and your flatmates know. Now share it!" : "Card ready. Now share it!") : "Invite saved. Everyone with the link sees the change.");
+    openPartyCard();
+  }catch(err){ console.error(err); bad(String(err.message || "").includes("not-the-host") ? "Only the person who made the invite can change it." : "Couldn't save that. Please try again."); }
+  finally{ btn.disabled = false; }
+}, true);
+// The card, ready to share.
+async function openPartyCard(){
+  const p = fsParty; if(!p) return;
+  openFs("Your invite card", p.title, `<p class="hint" style="text-align:center;padding:40px 0">Making your card…</p>`);
+  const canvas = await drawPartyCard(p); ptCanvas = canvas;
+  $("fsdBody").innerHTML = `<img class="vc-img" src="${canvas.toDataURL("image/png")}" alt="${esc(p.title)}, ${esc(ptShort(p))}">
+    <div class="vc-acts"><button class="btn btn-accent btn-block" type="button" data-pt="card">Share the card</button>
+      ${p.flat_group ? `<button class="btn btn-ghost btn-block" type="button" data-pt="flatmates">Message my flatmates on WhatsApp</button>` : ""}
+      <button class="btn btn-ghost btn-block" type="button" data-pt="copy">Copy the link</button></div>
+    <div class="vc-more" id="ptMore" hidden></div>`;
+}
+let ptCanvas = null;
+async function sharePartyCard(){
+  const p = fsParty, text = ptShareText(p), canvas = ptCanvas || await drawPartyCard(p), png = canvas.toDataURL("image/png");
+  if(Notify.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"shareImage", png: png.split(",")[1], text })); return; }
+  const blob = await new Promise(r => canvas.toBlob(r, "image/png")), file = new File([blob], "party-invite.png", { type: "image/png" });
+  if(navigator.canShare && navigator.canShare({ files: [file] })){
+    try{ await navigator.share({ files: [file], text, title: p.title }); return; }catch(err){ if(err && err.name === "AbortError") return; }
+  }
+  const more = $("ptMore"); if(!more) return;
+  more.hidden = false;
+  more.innerHTML = `<p class="hint" style="margin:0 0 10px">Save the image and send it with the link, or just send the link: it opens the invite.</p>
+    <div class="vc-acts row"><a class="btn btn-ghost btn-sm" href="${URL.createObjectURL(blob)}" download="party-invite.png">Download image</a>
+      <a class="btn btn-ghost btn-sm" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a></div>`;
+}
+function ptTellFlatmates(){
+  const p = fsParty, k = ptKind(p.occasion);
+  const text = `Heads-up: I'm hosting ${k[0]} ${k[1].toLowerCase()} at our place on ${ptShort(p)}${p.ends_at ? ", till " + ptTime(p.ends_at) : ""}. Hope that's cool! You're invited too: ${ptLink(p.code)}`;
+  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+}
+
+// ---- the invite page (#party/<code>): anyone with the link, signed in or not
+const isPartyRoute = () => /^#party\/[A-Za-z0-9]+/.test(location.hash);
+let ptNow = null, ptEditing = false;
+async function renderParty(){
+  const code = location.hash.slice(7).split(/[/?]/)[0].toUpperCase();
+  if(!ptNow || ptNow.code !== code) $("ptBody").innerHTML = `<p class="hint" style="padding:60px 0;text-align:center">Opening the invite…</p>`;
+  let p = null; try{ p = await api.partyGet(code, ptToken()); }catch(err){ console.error(err); }
+  ptNow = p; drawParty();
+}
+function drawParty(){
+  const p = ptNow;
+  if(!p){
+    $("ptBody").innerHTML = `<div class="pt-hero"><span class="pt-emoji" aria-hidden="true">🎈</span><h1>This invite isn't here</h1>
+      <p class="pt-tag">The link may be mistyped, or the party was removed.</p></div>${ptFootHtml()}`; return;
+  }
+  const k = ptKind(p.occasion), mine = p.mine, over = new Date(p.ends_at || new Date(p.starts_at).getTime() + 12 * 36e5) < new Date();
+  const guests = p.guests || [], yes = guests.filter(g => g.answer === "yes"), maybe = guests.filter(g => g.answer === "maybe");
+  const conf = Array.from({ length: 18 }, (_, i) => `<i style="left:${i % 2 ? 84 + (i * 7) % 13 : 2 + (i * 5) % 12}%;top:${4 + (i * 53) % 88}%;--r:${i * 47}deg;--c:${["#FFC86B", "#F0645A", "#14C08A", "#FFFFFF", "#FFD08A"][i % 5]}"></i>`).join("");
+  const rows = [
+    ["📅", ptDay(p.starts_at), ptTimes(p), p.cancelled || over ? "" : `<a href="${esc(ptCalendar(p))}" target="_blank" rel="noopener">Add to calendar</a>`],
+    ["📍", ptWhere(p), p.place === "address" ? (p.directions || "") : `Ask ${p.host || "the host"} for the way.`,
+      p.place === "address" && !p.cancelled ? `<a href="${esc(ptMaps(p))}" target="_blank" rel="noopener">Directions in Google Maps</a>` : ""]];
+  if(p.bring) rows.push(["🎁", "Bring along", p.bring, ""]);
+  if(p.chip_in) rows.push(["💸", `Chip in ${inr(p.chip_in)} each`, "Split on Flatsplits afterwards", ""]);
+  if(p.plus_ones) rows.push(["👥", "Plus-ones welcome", "Bring a friend or two", ""]);
+  if(p.note) rows.push(["💬", `A note from ${p.host || "the host"}`, p.note, ""]);
+  const ansTxt = { yes: "You're in! 🎉", maybe: "You said maybe 🤔", no: "You can't make it 😢" };
+  const rsvp = p.cancelled ? `<div class="pt-card pt-off"><b>This party's been called off.</b><p>Nothing's happening this time. Maybe next weekend?</p></div>`
+    : over ? `<div class="pt-card pt-off"><b>This one's over.</b><p>Hope it was a good one!</p></div>`
+    : mine && !ptEditing ? `<div class="pt-card pt-done"><b>${ansTxt[mine.answer]}</b><p>${mine.answer === "yes" ? `${esc(p.host || "The host")} knows you're coming${mine.plus ? ` with ${mine.plus} more` : ""}. See you ${esc(ptShort(p))}!`
+        : mine.answer === "maybe" ? `Let ${esc(p.host || "the host")} know when you're sure.` : `${esc(p.host || "The host")} will miss you.`}</p>
+        <button class="btn btn-ghost btn-sm" type="button" data-pt-change>Change my answer</button></div>`
+    : `<form class="pt-card pt-rsvp" id="ptRsvp" novalidate><h2>Are you coming?</h2>
+        <div class="field"><label for="ptName">Your name</label><input type="text" id="ptName" maxlength="30" autocomplete="given-name" value="${esc(mine ? mine.name : readLS("fm_party_name") || firstName() || "")}" placeholder="So ${esc(p.host || "the host")} knows who's coming"></div>
+        <div class="pt-ans" role="group" aria-label="Your answer">${[["yes", "🙌", "I'm in"], ["maybe", "🤔", "Maybe"], ["no", "😢", "Can't make it"]].map(([v, ic, t]) =>
+          `<button type="button" data-ans="${v}" aria-pressed="${(mine ? mine.answer : "yes") === v}"><i aria-hidden="true">${ic}</i>${t}</button>`).join("")}</div>
+        ${p.plus_ones ? `<div class="pt-plus" id="ptPlusRow"${mine && mine.answer !== "yes" ? " hidden" : ""}><span>Bringing anyone?</span><div class="stepper"><button type="button" data-plus="-1" aria-label="One fewer">−</button>
+          <b id="ptPlusN">${mine ? mine.plus : 0}</b><button type="button" data-plus="1" aria-label="One more">+</button></div></div>` : ""}
+        <button class="btn btn-accent btn-block" type="submit">Send my answer</button>
+        <p class="hint" style="margin:8px 0 0;text-align:center">Your first name shows on the guest list. No sign-in needed.</p></form>`;
+  $("ptBody").innerHTML = `
+    <div class="pt-hero${p.cancelled ? " off" : ""}"><div class="pt-conf" aria-hidden="true">${conf}</div>
+      <span class="pt-emoji" aria-hidden="true">${k[0]}</span><p class="pt-eyebrow">${p.cancelled ? "Called off" : "You're invited"}</p>
+      <h1>${esc(p.title)}</h1><p class="pt-tag">${esc(k[3])}</p><p class="pt-by">Hosted by <b>${esc(p.host || "a FindMeFlatMate user")}</b> · ${esc(k[1])}</p></div>
+    ${p.is_host ? `<div class="pt-card pt-hostbar"><b>This is your invite.</b><div><button class="btn btn-accent btn-sm" type="button" data-pt-share>Share it</button>
+      ${p.group_id ? `<a class="btn btn-ghost btn-sm" href="#splits/${esc(p.group_id)}">Edit in Flatsplits</a>` : ""}</div></div>` : ""}
+    <div class="pt-card pt-details">${rows.map(([ic, t, s, link]) => `<div class="pt-row"><span class="pt-ic" aria-hidden="true">${ic}</span><div><b>${esc(t)}</b>${s ? `<p>${esc(s)}</p>` : ""}${link}</div></div>`).join("")}</div>
+    ${rsvp}
+    <div class="pt-card pt-guests"><h2>${yes.length ? `${p.going} going` : "Be the first to say yes"}${p.maybe ? ` · ${p.maybe} maybe` : ""}</h2>
+      ${guests.length ? `<div class="pt-gl">${yes.concat(maybe).map(g => `<span class="pt-g ${g.answer}"><i>${esc((g.name || "?")[0].toUpperCase())}</i>${esc(g.name)}${g.plus ? ` +${g.plus}` : ""}${g.answer === "maybe" ? " · maybe" : ""}</span>`).join("")}</div>`
+        : `<p class="hint" style="margin:0">Nobody's answered yet.</p>`}
+      ${p.is_host && p.cant ? `<p class="hint" style="margin:10px 0 0">Can't make it: ${esc(guests.filter(g => g.answer === "no").map(g => g.name).join(", "))}</p>` : ""}</div>
+    ${ptFootHtml()}`;
+}
+const ptFootHtml = () => state.user ? `<div class="pt-foot"><a class="btn btn-ghost" href="#splits">Back to FindMeFlatMate</a></div>`
+  : `<div class="pt-foot"><p><b>Looking for flatmates who'd come to your parties?</b> FindMeFlatMate matches you with people who live like you: same bedtime, same kitchen rules.</p>
+     <a class="btn btn-primary" href="./">Find your kind of flatmate</a></div>`;
+$("view-party").addEventListener("click", async e => {
+  const t = e.target;
+  const ans = t.closest("[data-ans]");
+  if(ans){ ans.parentNode.querySelectorAll("[data-ans]").forEach(b => b.setAttribute("aria-pressed", b === ans)); if($("ptPlusRow")) $("ptPlusRow").hidden = ans.dataset.ans !== "yes"; return; }
+  const pl = t.closest("[data-plus]");
+  if(pl){ const n = $("ptPlusN"); n.textContent = Math.max(0, Math.min(5, Number(n.textContent) + Number(pl.dataset.plus))); return; }
+  if(t.closest("[data-pt-change]")){ ptEditing = true; drawParty(); return; }
+  if(t.closest("[data-pt-share]")){
+    const text = ptShareText(ptNow);
+    if(navigator.share) navigator.share({ title: ptNow.title, text }).catch(() => {});
+    else window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+  }
+});
+$("view-party").addEventListener("submit", async e => {
+  if(e.target.id !== "ptRsvp") return;
+  e.preventDefault();
+  const f = e.target, name = $("ptName").value.trim(), ans = (f.querySelector("[data-ans][aria-pressed=true]") || {}).dataset;
+  if(!name){ showFormError(f, "Add your name so the host knows who's coming."); $("ptName").focus(); return; }
+  const btn = f.querySelector("[type=submit]"); btn.disabled = true;
+  try{
+    ptNow = await api.partyRsvp(ptNow.code, ptToken(), name, (ans && ans.ans) || "yes", $("ptPlusN") ? Number($("ptPlusN").textContent) : 0);
+    writeLS("fm_party_name", name); ptEditing = false; drawParty();
+    toast(ptNow.mine && ptNow.mine.answer === "yes" ? "You're on the list! 🎉" : "Thanks, the host can see your answer.");
+  }catch(err){
+    console.error(err); const m = String(err.message || "");
+    showFormError(f, m.includes("party-full") ? "The guest list is full." : m.includes("cancelled") ? "This party's been called off." : m.includes("over") ? "This party's already over." : "Couldn't send that. Please try again.");
+  }finally{ btn.disabled = false; }
+});
+
+// ---- flatmates: parties at our place that someone else is hosting
+const ptFeedHtml = feed => feed.length ? `<h3 class="section-h">Coming up at your flat</h3>${feed.map(p => {
+    const k = ptKind(p.occasion);
+    return `<a class="pt-feed${p.cancelled ? " off" : ""}" href="#party/${esc(p.code)}"><span class="pt-mini-ic" aria-hidden="true">${k[0]}</span><span><b>${esc(p.title)}</b>
+      <small>${p.cancelled ? "Called off" : `${esc(p.host || "A flatmate")} is hosting · ${esc(ptShort(p))}`} · ${esc(p.flat)}</small></span><span class="pt-go">${p.cancelled ? "" : "See invite"}</span></a>`; }).join("")}` : "";
 
 /* ========================================================= areas + maps */
 // Areas and the map pin come from OpenStreetMap: Photon for search, OSM tiles for the map.
@@ -6950,7 +7695,12 @@ function chooseArea(a){
 $("areaSugg").addEventListener("click", e => { const b = e.target.closest("[data-pick-area]"); if(b) chooseArea(b.dataset.pickArea); });
 $("areaForm").addEventListener("submit", e => { e.preventDefault(); chooseArea($("areaQ").value); });
 
-let leafletLoad = null;
+/* ================================================== maps and place search */
+// Google Maps (the map and Places search) once FM_CONFIG.googleMapsKey is set; until then
+// OpenStreetMap (Leaflet tiles, Photon search). The two are never mixed: with a key, every map and
+// every place search in the app is Google's.
+const GMAPS_KEY = String(FM_CONFIG.googleMapsKey || "").trim();
+let leafletLoad = null, gmapsLoad = null;
 function loadLeaflet(){
   if(window.L) return Promise.resolve();
   return leafletLoad || (leafletLoad = new Promise((res, rej) => {
@@ -6960,66 +7710,237 @@ function loadLeaflet(){
     document.head.appendChild(s);
   }));
 }
-const pinIcon = () => L.divIcon({ className: "pin-ic", html: "<span></span>", iconSize: [30, 42], iconAnchor: [15, 40] });
-function baseMap(el, lat, lng, zoom, interactive){
-  const m = L.map(el, { scrollWheelZoom: false, dragging: interactive || !L.Browser.mobile, tap: false, zoomControl: true }).setView([lat, lng], zoom);
-  m.attributionControl.setPrefix(false);
-  L.tileLayer(OSM_TILES, { maxZoom: 19, attribution: OSM_ATTR }).addTo(m);
-  setTimeout(() => m.invalidateSize(), 250);   // maps inside dialogs measure late
-  return m;
+function loadGmaps(){
+  if(window.google && google.maps && google.maps.importLibrary) return Promise.resolve();
+  return gmapsLoad || (gmapsLoad = new Promise((res, rej) => {
+    window.__fmGmaps = res;
+    const s = document.createElement("script");
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GMAPS_KEY)}&v=weekly&loading=async&libraries=places&region=IN&language=en&callback=__fmGmaps`;
+    s.async = true; s.onerror = () => { gmapsLoad = null; rej(new Error("map")); };
+    document.head.appendChild(s);
+  }));
 }
-// Owner: drag a pin onto the building. The exact spot only reaches people they accept.
-let pinGeo = null, pinMap = null, pinMarker = null;
+const kmBetween = (a, b) => {
+  const r = x => x * Math.PI / 180, dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(h));
+};
+const kmLabel = km => km < 1 ? `${Math.max(100, Math.round(km * 10) * 100)} m` : `${km < 10 ? km.toFixed(1) : Math.round(km)} km`;
+// Rough centres of the cities and their known areas, so search works offline and sample homes have a place on the map.
+const knownPlace = (city, area) => { const c = DEMO_GEO[city]; const g = c && (area ? c[area] : c._); return g ? { lat: g[0], lng: g[1] } : null; };
+
+const Geo = {
+  google: Boolean(GMAPS_KEY),
+  load(){ return this.google ? loadGmaps() : loadLeaflet(); },
+  // Suggestions for a typed place: [{ id, main, sub, lat?, lng?, city?, area?, pred? }]
+  async suggest(q, near){
+    q = q.trim(); if(q.length < 2) return [];
+    const s = q.toLowerCase(), local = [];
+    for(const [city, areas] of Object.entries(DEMO_GEO)) for(const [area, g] of Object.entries(areas)){
+      if(area === "_") { if(city.toLowerCase().startsWith(s)) local.push({ id: "c:" + city, main: city, sub: "City", lat: g[0], lng: g[1], city, area: "", kind: "city" }); continue; }
+      if(area.toLowerCase().includes(s)) local.push({ id: "k:" + city + area, main: area, sub: city, lat: g[0], lng: g[1], city, area,
+        postal: ((DEMO_AREAS[city] || []).find(x => x[0] === area) || [])[1] || "" });
+    }
+    const here = near && near.city, rank = x => (x.city === here ? 0 : 1) + (x.main.toLowerCase().startsWith(s) ? 0 : .5);
+    local.sort((a, b) => rank(a) - rank(b));
+    if(this.google){
+      try{
+        await loadGmaps();
+        const { AutocompleteSuggestion, AutocompleteSessionToken } = await google.maps.importLibrary("places");
+        this.token = this.token || new AutocompleteSessionToken();
+        const req = { input: q, sessionToken: this.token, includedRegionCodes: ["in"], language: "en-IN" };
+        if(near && near.lat) req.locationBias = { center: { lat: near.lat, lng: near.lng }, radius: 40000 };
+        const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
+        const g = (suggestions || []).map(x => x.placePrediction).filter(Boolean).map(p => ({ id: "g:" + p.placeId, main: p.mainText ? p.mainText.text : p.text.text,
+          sub: p.secondaryText ? p.secondaryText.text : "", pred: p }));
+        return g.length ? g.slice(0, 7) : local.slice(0, 6);
+      }catch(err){ console.error(err); return local.slice(0, 8); }
+    }
+    let remote = [];
+    try{
+      const bias = near && near.lat ? `&lat=${near.lat}&lon=${near.lng}` : "";
+      const r = await fetch(`${PHOTON}?q=${encodeURIComponent(q)}&limit=10&lang=en&bbox=68,6,98,37${bias}`);
+      if(r.ok) remote = ((await r.json()).features || []).filter(f => f.properties && f.properties.countrycode === "IN").map(f => {
+        const p = f.properties, city = p.city || p.county || p.district || p.state || "";
+        const sub = [p.street && p.name !== p.street ? p.street : "", p.district && p.district !== p.name ? p.district : "", city !== p.name ? city : "", p.state]
+          .filter(Boolean).filter((x, i, a) => a.indexOf(x) === i).slice(0, 3).join(", ");
+        return { id: "o:" + p.osm_type + p.osm_id, main: p.name || p.street || city, sub, lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0],
+          city: titleCase(String(city).replace(/ (City|District)$/, "")), area: AREA_KINDS.has(p.osm_value) || AREA_KINDS.has(p.type) ? p.name : (p.district || p.locality || ""), postal: p.postcode || "" };
+      }).filter(x => x.main);
+    }catch(err){}
+    const seen = new Set();
+    return local.slice(0, 4).concat(remote).filter(x => { const k = x.main.toLowerCase() + "|" + (x.city || "").toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true; }).slice(0, 8);
+  },
+  // The chosen suggestion as a place: { lat, lng, label, address, area, city }
+  async resolve(x){
+    if(!x.pred) return { lat: x.lat, lng: x.lng, label: x.main, address: [x.main, x.sub].filter(Boolean).join(", "), area: x.area || "", city: x.city || "", postal: x.postal || "" };
+    const place = x.pred.toPlace();
+    await place.fetchFields({ fields: ["location", "addressComponents", "formattedAddress", "displayName"] });
+    this.token = null;   // the session ends with the details
+    const comp = t => ((place.addressComponents || []).find(c => (c.types || []).includes(t)) || {}).longText || "";
+    const city = comp("locality") || comp("administrative_area_level_3") || comp("administrative_area_level_2");
+    return { lat: place.location.lat(), lng: place.location.lng(), label: x.main, address: place.formattedAddress || [x.main, x.sub].filter(Boolean).join(", "),
+      area: comp("sublocality_level_1") || comp("sublocality") || comp("neighborhood") || x.main, city, postal: comp("postal_code") };
+  },
+  // A map in el: { setView, center, onMove, circle, pins, fit, remove }
+  async map(el, at, zoom, interactive){
+    await this.load();
+    if(this.google){
+      const { Map, Circle, OverlayView } = await google.maps.importLibrary("maps");
+      const m = new Map(el, { center: at, zoom, disableDefaultUI: true, zoomControl: true, clickableIcons: false,
+        gestureHandling: interactive ? "greedy" : "cooperative", keyboardShortcuts: false });
+      let overlays = [];
+      class HtmlPin extends OverlayView {
+        constructor(pos, html, onClick){ super(); this.pos = pos; this.div = document.createElement("div"); this.div.className = "gpin"; this.div.innerHTML = html;
+          if(onClick) this.div.addEventListener("click", e => { e.stopPropagation(); onClick(); }); }
+        onAdd(){ this.getPanes().overlayMouseTarget.appendChild(this.div); }
+        draw(){ const p = this.getProjection().fromLatLngToDivPixel(new google.maps.LatLng(this.pos.lat, this.pos.lng)); if(p){ this.div.style.left = p.x + "px"; this.div.style.top = p.y + "px"; } }
+        onRemove(){ this.div.remove(); }
+      }
+      return {
+        setView: (p, z) => { m.setCenter(p); if(z) m.setZoom(z); },
+        center: () => { const c = m.getCenter(); return { lat: c.lat(), lng: c.lng() }; },
+        onMove: cb => m.addListener("idle", () => { const c = m.getCenter(); cb({ lat: c.lat(), lng: c.lng() }); }),
+        circle: (p, r) => { const c = new Circle({ map: m, center: p, radius: r, strokeColor: "#0E9AA0", strokeWeight: 2, fillColor: "#0E9AA0", fillOpacity: .12, clickable: false }); return { remove: () => c.setMap(null) }; },
+        pins: (list, onClick) => { overlays.forEach(o => o.setMap(null)); overlays = list.map(x => { const o = new HtmlPin(x, x.html, () => onClick(x)); o.setMap(m); return o; }); },
+        fit: (pts, maxZoom) => { if(!pts.length) return; const b = new google.maps.LatLngBounds(); pts.forEach(p => b.extend(p)); m.fitBounds(b, 40);
+          google.maps.event.addListenerOnce(m, "idle", () => { if(m.getZoom() > maxZoom) m.setZoom(maxZoom); }); },
+        remove: () => { overlays.forEach(o => o.setMap(null)); el.innerHTML = ""; },
+      };
+    }
+    const m = L.map(el, { scrollWheelZoom: false, dragging: interactive || !L.Browser.mobile, tap: false, zoomControl: true }).setView([at.lat, at.lng], zoom);
+    m.attributionControl.setPrefix(false);
+    L.tileLayer(OSM_TILES, { maxZoom: 19, attribution: OSM_ATTR }).addTo(m);
+    setTimeout(() => m.invalidateSize(), 250);   // maps inside dialogs measure late
+    let layer = L.layerGroup().addTo(m);
+    return {
+      setView: (p, z) => m.setView([p.lat, p.lng], z || m.getZoom()),
+      center: () => { const c = m.getCenter(); return { lat: c.lat, lng: c.lng }; },
+      onMove: cb => m.on("moveend", () => { const c = m.getCenter(); cb({ lat: c.lat, lng: c.lng }); }),
+      circle: (p, r) => { const c = L.circle([p.lat, p.lng], { radius: r, color: "#0E9AA0", weight: 2, fillOpacity: .12, interactive: false }).addTo(m); return { remove: () => c.remove() }; },
+      pins: (list, onClick) => { layer.clearLayers(); list.forEach(x => L.marker([x.lat, x.lng], { icon: L.divIcon({ className: "lpin", html: `<div class="gpin">${x.html}</div>`, iconSize: [0, 0] }) })
+        .on("click", () => onClick(x)).addTo(layer)); },
+      fit: (pts, maxZoom) => { if(pts.length) m.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])), { padding: [40, 40], maxZoom }); },
+      remove: () => m.remove(),
+    };
+  },
+};
+const POWERED = () => Geo.google ? `<div class="ps-by">powered by <b>Google</b></div>` : `<div class="ps-by">© OpenStreetMap</div>`;
+
+// Type-ahead under a text box, like the search on property sites: places as you type, then pick one.
+// opts.here adds "Use my current location"; opts.near({lat,lng,city}) biases results.
+function attachPlaceSearch(input, onPick, opts = {}){
+  if(!input || input.dataset.ps) return;
+  input.dataset.ps = "1"; input.setAttribute("autocomplete", "off"); input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list"); input.setAttribute("aria-expanded", "false");
+  const box = document.createElement("div"); box.className = "ps-list"; box.hidden = true; box.setAttribute("role", "listbox");
+  box.id = (input.id || "ps") + "List"; input.setAttribute("aria-controls", box.id);
+  (input.closest(".ps-anchor") || input.parentNode).appendChild(box);
+  let items = [], active = -1, timer = null, seq = 0;
+  const close = () => { box.hidden = true; input.setAttribute("aria-expanded", "false"); active = -1; };
+  const draw = () => {
+    const hereRow = opts.here ? `<button type="button" class="ps-item here" data-ps="here" role="option"><i aria-hidden="true">◎</i><span><b>Use my current location</b><small>Homes near where you are now</small></span></button>` : "";
+    box.innerHTML = hereRow + items.map((x, i) => `<button type="button" class="ps-item${i === active ? " on" : ""}" data-ps="${i}" role="option" aria-selected="${i === active}">
+        <i aria-hidden="true">${x.kind === "city" ? "🏙️" : "📍"}</i><span><b>${esc(x.main)}</b>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</span></button>`).join("")
+      + (items.length ? POWERED() : input.value.trim().length >= 2 ? `<p class="ps-none">No places found. Try a landmark, a metro station or the area's name.</p>` : "");
+    box.hidden = !(items.length || opts.here || input.value.trim().length >= 2); input.setAttribute("aria-expanded", String(!box.hidden));
+  };
+  const run = async () => {
+    const q = input.value, my = ++seq;
+    if(q.trim().length < 2){ items = []; draw(); return; }
+    const r = await Geo.suggest(q, opts.near ? opts.near() : null);
+    if(my !== seq) return;
+    items = r; active = -1; draw();
+  };
+  const pick = async i => {
+    close();
+    if(i === "here"){
+      if(!navigator.geolocation){ toast("This phone can't share its location here."); return; }
+      navigator.geolocation.getCurrentPosition(p => onPick({ lat: p.coords.latitude, lng: p.coords.longitude, label: "Near you", address: "", area: "", city: "", here: true }),
+        () => toast("Couldn't get your location. Allow location for the app, or type a place."), { enableHighAccuracy: true, timeout: 15000 });
+      return;
+    }
+    const x = items[i]; if(!x) return;
+    try{ const pl = await Geo.resolve(x); input.value = opts.keepText ? input.value : pl.label; onPick(pl); }
+    catch(err){ console.error(err); toast("Couldn't open that place. Please try another."); }
+  };
+  input.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 250); });
+  input.addEventListener("focus", () => { if(opts.here || items.length) draw(); });
+  input.addEventListener("keydown", e => {
+    if(box.hidden && e.key !== "Enter") return;
+    if(e.key === "ArrowDown" || e.key === "ArrowUp"){ e.preventDefault(); active = (active + (e.key === "ArrowDown" ? 1 : -1) + items.length) % Math.max(1, items.length); draw(); }
+    else if(e.key === "Enter"){ e.preventDefault(); if(active >= 0) pick(active); else if(items.length) pick(0); else run().then(() => items.length && pick(0)); }
+    else if(e.key === "Escape") close();
+  });
+  box.addEventListener("mousedown", e => e.preventDefault());   // keep focus in the box while choosing
+  box.addEventListener("click", e => { const b = e.target.closest("[data-ps]"); if(b) pick(b.dataset.ps === "here" ? "here" : Number(b.dataset.ps)); });
+  input.addEventListener("blur", () => setTimeout(close, 150));
+  input._psGo = async () => { if(!items.length) await run(); if(items.length) pick(active >= 0 ? active : 0); else if(input.value.trim().length >= 2) draw(); };
+}
+
+// Owner: put the pin on the building. Move the map so the pin in the middle sits on the gate.
+// The exact spot only reaches people they accept; everyone else sees the area.
+let pinGeo = null, pinMap = null;
 function setPin(ll, note){
   pinGeo = { lat: +ll.lat.toFixed(6), lng: +ll.lng.toFixed(6) };
-  pinMarker.setLatLng(ll);
   $("pinNote").innerHTML = note || `<b style="color:var(--ok)">✓ Pinned.</b> People you accept get this exact spot with directions. Everyone else only sees the area.`;
 }
 async function openPinPicker(){
   const a = addressFromForm(), area = $("pLocality").value.trim(), city = $("pCity").value;
   $("mapBox").hidden = false;
-  $("mapBox").innerHTML = `<div class="pin-tools"><input type="search" id="pinQ" placeholder="Search a building, street or landmark" autocomplete="off"
-      value="${esc([a.building, a.street].filter(Boolean).join(", "))}"><button class="btn btn-ghost btn-sm" type="button" id="pinFind">Search</button>
-      <button class="btn btn-ghost btn-sm" type="button" id="pinMe">📍 I'm there now</button></div>
-    <div class="pin-map" id="pinMap"></div><p class="map-q" id="pinNote">Loading the map…</p>`;
-  try{ await loadLeaflet(); }catch(e){ $("pinNote").textContent = "Couldn't load the map. Check your connection and try again."; return; }
-  const guess = pinGeo || await geocode([a.building, a.street, area, city, a.pin].filter(Boolean).join(", "))
-    || await geocode([area, city].filter(Boolean).join(", ")) || await geocode(city);
+  $("mapBox").innerHTML = `<div class="pin-tools ps-anchor"><div class="ps-field"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" id="pinQ" placeholder="Search your society, building or street" value="${esc([a.building, a.street].filter(Boolean).join(", "))}" aria-label="Search the map"></div>
+      <button class="btn btn-ghost btn-sm" type="button" id="pinMe">◎ I'm there now</button></div>
+    <div class="pin-wrap"><div class="pin-map" id="pinMap"></div><span class="pin-center" aria-hidden="true"><span></span></span></div>
+    <p class="map-q" id="pinNote">Loading the map…</p>`;
+  attachPlaceSearch($("pinQ"), pl => { pinMap && pinMap.setView(pl, 18); setPin(pl, "Found it. <b>Move the map</b> so the pin sits on your building's gate."); },
+    { near: () => { const g = knownPlace(city, area) || knownPlace(city); return g ? Object.assign({ city }, g) : null; } });
+  let guess = pinGeo || knownPlace(city, area);
+  if(!guess && !Geo.google){ guess = await geocode([area, city].filter(Boolean).join(", ")) || await geocode(city); }
+  guess = guess || knownPlace(city);
   const at = guess || { lat: 22.5, lng: 79 };
   if(pinMap){ pinMap.remove(); pinMap = null; }
-  pinMap = baseMap("pinMap", at.lat, at.lng, guess ? (pinGeo ? 18 : 16) : 5, true);
-  pinMarker = L.marker([at.lat, at.lng], { draggable: true, icon: pinIcon() }).addTo(pinMap);
-  pinMarker.on("dragend", () => setPin(pinMarker.getLatLng()));
-  pinMap.on("click", e => setPin(e.latlng));
+  try{ pinMap = await Geo.map($("pinMap"), at, guess ? (pinGeo ? 18 : 16) : 5, true); }
+  catch(e){ $("pinNote").textContent = "Couldn't load the map. Check your connection and try again."; return; }
+  pinMap.onMove(c => setPin(c));
   if(pinGeo) setPin(pinGeo);
-  else if(guess) setPin(at, "We've placed the pin near your address. <b>Drag it onto your building</b> or tap the map, so people who visit find the right gate.");
-  else $("pinNote").textContent = "Search for your building above, or tap the map where it is.";
+  else if(guess) setPin(at, "We've put the pin near your area. <b>Search your building or move the map</b> so the pin sits on it.");
+  else $("pinNote").textContent = "Search for your building above, or move the map to it.";
 }
-$("mapBox").addEventListener("click", async e => {
-  if(e.target.id === "pinFind"){
-    const q = $("pinQ").value.trim(); if(!q) return;
-    const g = await geocode(q + ", " + ($("pLocality").value.trim() ? $("pLocality").value.trim() + ", " : "") + $("pCity").value) || await geocode(q);
-    if(!g){ toast("Couldn't find that. Try a landmark nearby, or tap the map."); return; }
-    pinMap.setView([g.lat, g.lng], 17); setPin(g, "Found it. <b>Drag the pin onto your building</b> if it's a little off.");
-  }
-  if(e.target.id === "pinMe"){
-    if(!navigator.geolocation){ toast("This phone can't share its location here."); return; }
-    e.target.disabled = true;
-    navigator.geolocation.getCurrentPosition(p => {
-      e.target.disabled = false;
-      const g = { lat: p.coords.latitude, lng: p.coords.longitude };
-      pinMap.setView([g.lat, g.lng], 18); setPin(g);
-    }, () => { e.target.disabled = false; toast("Couldn't get your location. Allow location for the app, or drag the pin."); },
-    { enableHighAccuracy: true, timeout: 15000 });
-  }
+$("mapBox").addEventListener("click", e => {
+  if(e.target.id !== "pinMe") return;
+  if(!navigator.geolocation){ toast("This phone can't share its location here."); return; }
+  e.target.disabled = true;
+  navigator.geolocation.getCurrentPosition(p => {
+    e.target.disabled = false;
+    const g = { lat: p.coords.latitude, lng: p.coords.longitude };
+    pinMap.setView(g, 18); setPin(g);
+  }, () => { e.target.disabled = false; toast("Couldn't get your location. Allow location for the app, or move the map."); },
+  { enableHighAccuracy: true, timeout: 15000 });
 });
-document.addEventListener("keydown", e => { if(e.target.id === "pinQ" && e.key === "Enter"){ e.preventDefault(); $("pinFind").click(); } });
+// The known area closest to a spot (within 3 km), for places that don't name their area (a metro station, a mall).
+function nearestArea(pl, city){
+  let best = "", d = 3;
+  for(const [a, g] of Object.entries(DEMO_GEO[city] || {})){ if(a === "_") continue; const k = kmBetween(pl, { lat: g[0], lng: g[1] }); if(k < d){ d = k; best = a; } }
+  return best;
+}
+// Posting: one search fills the city, area and PIN, and drops the pin.
+attachPlaceSearch($("pWhere"), pl => {
+  const city = cityOfPlace(pl);
+  if(city){ if(![...$("pCity").options].some(o => o.value === city)) setCitySelect($("pCity"), city); $("pCity").value = city; $("pCity").dispatchEvent(new Event("change")); }
+  const area = pl.area && pl.area !== city ? pl.area : nearestArea(pl, city);
+  if(area) $("pLocality").value = area;
+  if(pl.label && pl.label !== area && pl.label !== city && !$("aBuilding").value) $("aBuilding").value = pl.label;
+  if(/^[1-9]\d{5}$/.test(pl.postal || "")) $("aPin").value = pl.postal;
+  pinGeo = { lat: +pl.lat.toFixed(6), lng: +pl.lng.toFixed(6) };
+  openPinPicker().then(() => { const n = $("pinNote"); if(n) n.innerHTML = `<b style="color:var(--ok)">✓ Pinned at ${esc(pl.label)}.</b> Move the map if the pin isn't on your building's gate.`; });
+  toast(area ? `${area}, ${city || pl.city}: filled in. Check the pin below.` : "Pinned. Check the pin below.");
+}, { near: () => { const c = $("pCity").value, g = knownPlace(c); return g ? Object.assign({ city: c }, g) : null; } });
 // Seekers: the area on a map, as a circle about a kilometre wide around the rounded spot.
 async function drawApproxMap(id, geo){
-  try{ await loadLeaflet(); }catch(e){ return; }
-  const el = $(id); if(!el || el._leaflet_id) return;
-  const m = baseMap(el, geo.lat, geo.lng, 14, false);
-  L.circle([geo.lat, geo.lng], { radius: 700, color: "#0E9AA0", weight: 2, fillOpacity: .15 }).addTo(m);
+  const el = $(id); if(!el || el.dataset.drawn) return;
+  el.dataset.drawn = "1";
+  try{ const m = await Geo.map(el, geo, 14, false); m.circle(geo, 700); }catch(e){ el.dataset.drawn = ""; }
 }
 
 /* ================================================ shortlist shared in a tribe */

@@ -5,6 +5,7 @@
 //   approved -> the seeker: "Asha said yes! Call now" (urgent: others are interested)
 //   declined -> the seeker: "Not this time"
 // Tribe events ({tribe_id, event}) are handled by tribeEvent below.
+// Party invites ({party_id, event}) tell the host's flatmates: partyEvent below.
 // Owner invites (The Empty Room Escape) go the other way:
 //   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
 //   approved / declined -> the owner
@@ -99,11 +100,39 @@ async function tribeEvent(id: string, event: string) {
   return { sent: "yes" };
 }
 
+// A party invite (fm_parties trigger): tell the host's flatmates (members of the flat group the host
+// picked, who are on the app) that a party is happening at their place, and again if it moves or is called off.
+const OCCASION: Record<string, string> = {
+  party: "🎉 a house party", movie: "🎬 a movie night", games: "🎲 a game night", potluck: "🍲 a potluck", birthday: "🎂 a birthday",
+  housewarming: "🏡 a housewarming", match: "🏏 a match screening", festival: "🪔 a festival night", karaoke: "🎤 a karaoke night",
+  brunch: "🥞 a brunch", chai: "☕ chai and chill", terrace: "🌙 a terrace night", jam: "🎸 a jam session", farewell: "👋 a farewell",
+  welcome: "🙌 a welcome party",
+};
+async function partyEvent(id: string, event: string) {
+  const { data: p } = await admin.from("fm_parties").select("*").eq("id", id).single();
+  if (!p || !p.flat_group) return { skipped: true };
+  const { data: host } = await admin.from("fm_profiles").select("full_name, phone").eq("id", p.host_id).single();
+  const first = (host?.full_name || "A flatmate").split(" ")[0];
+  const hostPhone = (host?.phone || "").replace(/\D/g, "").slice(-10);
+  const { data: members } = await admin.from("fm_split_members").select("phone").eq("group_id", p.flat_group);
+  const phones = (members || []).map((m: any) => m.phone).filter((ph: string) => ph && ph !== hostPhone);
+  if (!phones.length) return { sent: 0 };
+  const { data: people } = await admin.from("fm_profiles").select("id, phone").in("phone", phones.map((ph: string) => "91" + ph));
+  const when = new Date(p.starts_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+  const what = OCCASION[p.occasion] || "a get-together";
+  const title = p.cancelled ? `${first} called off ${what.replace(/^\S+ /, "")}` : `${first} is hosting ${what} at your flat`;
+  const body = p.cancelled ? "Nothing's happening at your place after all." : `${when}${event === "update" ? " (updated)" : ""}. See the invite and say if you're in.`;
+  let sent = 0;
+  for (const u of people || []) sent += await pushTo(u.id, title, body, "party/" + p.code);
+  return { sent };
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get("x-notify-secret") !== env("NOTIFY_SECRET") || !env("NOTIFY_SECRET")) return json({ error: "forbidden" }, 403);
   try {
     const payload = await req.json();
     if (payload.tribe_id) return json(await tribeEvent(payload.tribe_id, payload.event));
+    if (payload.party_id) return json(await partyEvent(payload.party_id, payload.event));
     const { request_id } = payload;
     const { data: r } = await admin.from("fm_requests")
       .select("id, status, match_pct, seeker_id, listing_id, initiated_by, fm_listings(title, owner_id)").eq("id", request_id).single();
