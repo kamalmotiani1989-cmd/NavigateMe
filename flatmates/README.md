@@ -611,8 +611,9 @@ Keep a budget alert on the billing account.
 
 **Status:** switched on. Firebase project `findmeflatmate` (Android app `com.findmeflatmate.app`); the
 service-account key is in `fm_server_keys` (only the push function can read it); `fm_settings.notify_url` and
-`notify_secret` are set. The APK needs the GitHub secret `GOOGLE_SERVICES_JSON` (the app's
-`google-services.json`) so phones register for push. Steps, for a new project:
+`notify_secret` are set. The app's `google-services.json` is in `android/app/` (it identifies the app, it
+isn't a secret; a GitHub secret `GOOGLE_SERVICES_JSON`, if set, replaces it), so phones register for push.
+Steps, for a new project:
 
 1. Create a Firebase project, add an **Android app** with package name `com.findmeflatmate.app`,
    and download `google-services.json`. Add its contents as the GitHub secret

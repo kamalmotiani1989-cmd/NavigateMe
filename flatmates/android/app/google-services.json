@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "790677963220",
+    "project_id": "findmeflatmate",
+    "storage_bucket": "findmeflatmate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790677963220:android:f64771757b6e1169e79641",
+        "android_client_info": {
+          "package_name": "com.findmeflatmate.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS3zKmY765lRdw1Cskq7pXJT1z1rq-XXo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
