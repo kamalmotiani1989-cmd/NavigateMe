@@ -609,11 +609,18 @@ Keep a budget alert on the billing account.
 
 ### Push notifications (when the app is closed)
 
+**Status:** switched on. Firebase project `findmeflatmate` (Android app `com.findmeflatmate.app`); the
+service-account key is in `fm_server_keys` (only the push function can read it); `fm_settings.notify_url` and
+`notify_secret` are set. The app's `google-services.json` is in `android/app/` (it identifies the app, it
+isn't a secret; a GitHub secret `GOOGLE_SERVICES_JSON`, if set, replaces it), so phones register for push.
+Steps, for a new project:
+
 1. Create a Firebase project, add an **Android app** with package name `com.findmeflatmate.app`,
    and download `google-services.json`. Add its contents as the GitHub secret
    `GOOGLE_SERVICES_JSON`; the APK workflow picks it up automatically.
-2. In Firebase → Project settings → Service accounts, generate a private key (JSON) and set it as a
-   function secret, together with a random notify secret:
+2. In Firebase → Project settings → Service accounts, generate a private key (JSON). Store it in the
+   database (`insert into fm_server_keys (name, value) values ('fcm_service_account', '<json>')`, readable only
+   by the push function), or set it as a function secret, together with a random notify secret:
    ```
    supabase secrets set FCM_SERVICE_ACCOUNT="$(cat service-account.json)" NOTIFY_SECRET=<random>
    supabase functions deploy fm-notify --no-verify-jwt
