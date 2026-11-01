@@ -2278,7 +2278,7 @@ const FM_CONFIG = {
   // Google Maps for every map and place search (Discover, posting a room, party addresses). Without it the app
   // uses OpenStreetMap. Google Cloud console: enable "Maps JavaScript API" and "Places API (New)", make an
   // API key, and restrict it to the websites https://findmeflatmate.com/* and https://appassets.androidplatform.net/*.
-  googleMapsKey: "",
+  googleMapsKey: "AIzaSyBaJvciS2yvPycp-vZjhnaKR8WQ6upAJwI",
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqZ2tjdXp5cHN0bmFucHNvb2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NzU4OTksImV4cCI6MjEwODU1MTg5OX0.i50hd8s8umEngxNxGfizz-32PIkrzQzI87KM0Tix3WA",
 };
 const LIVE = Boolean(FM_CONFIG.supabaseUrl && FM_CONFIG.supabaseAnonKey);
@@ -7788,7 +7788,8 @@ const Geo = {
     if(this.google){
       const { Map, Circle, OverlayView } = await google.maps.importLibrary("maps");
       const m = new Map(el, { center: at, zoom, disableDefaultUI: true, zoomControl: true, clickableIcons: false,
-        gestureHandling: interactive ? "greedy" : "cooperative", keyboardShortcuts: false });
+        gestureHandling: interactive ? "greedy" : "cooperative", keyboardShortcuts: false,
+        styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }, { featureType: "poi.attraction", elementType: "labels.icon", stylers: [{ visibility: "off" }] }] });
       let overlays = [];
       class HtmlPin extends OverlayView {
         constructor(pos, html, onClick){ super(); this.pos = pos; this.div = document.createElement("div"); this.div.className = "gpin"; this.div.innerHTML = html;
