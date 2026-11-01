@@ -288,6 +288,10 @@ alter table public.fm_profiles add column if not exists ref_bonus int not null d
 alter table public.fm_profiles add column if not exists attribution jsonb;
 -- FlatMart boosts and moving-out sales bought and not used yet.
 alter table public.fm_profiles add column if not exists boost_credits int not null default 0 check (boost_credits >= 0);
+-- "Pays on time": months in a row settled up in Flatsplits by the 10th (cached daily by fm_me); shown only if the person opts in.
+alter table public.fm_profiles add column if not exists show_on_time boolean not null default false;
+alter table public.fm_profiles add column if not exists on_time_months int not null default 0;
+alter table public.fm_profiles add column if not exists on_time_at timestamptz;
 alter table public.fm_profiles add column if not exists sale_credits int not null default 0 check (sale_credits >= 0);
 
 -- When the caller's pass of this kind runs until (null if none is running).
@@ -408,11 +412,14 @@ returns table (credits int, full_name text, phone text, role text, vibe jsonb, o
                room_until timestamptz, tribe_until timestamptz, escape_until timestamptz,
                ref_code text, ref_joined int, ref_bonus int, charges_on boolean,
                gender text, tribe_show_to text, escape_show_to text,
-               boost_credits int, sale_credits int, sale_code text, sale_title text, sale_until timestamptz)
+               boost_credits int, sale_credits int, sale_code text, sale_title text, sale_until timestamptz,
+               on_time_months int, show_on_time boolean)
 language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is null then return; end if;
   perform fm_room_guarantee(auth.uid());
+  update fm_profiles f set on_time_months = fm_on_time_months(f.id), on_time_at = now()
+   where f.id = auth.uid() and (f.on_time_at is null or f.on_time_at < now() - interval '1 day');
   update fm_profiles f set ref_code = upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8))
    where f.id = auth.uid() and f.ref_code is null;
   return query
@@ -424,7 +431,8 @@ begin
          p.ref_code, (select count(*)::int from fm_profiles f where f.referred_by = p.id and f.ref_rewarded), p.ref_bonus,
          (select s.charges_enabled from fm_settings s),
          p.gender, p.tribe_show_to, p.escape_show_to,
-         p.boost_credits, p.sale_credits, sl.code, sl.title, sl.ends_at
+         p.boost_credits, p.sale_credits, sl.code, sl.title, sl.ends_at,
+         p.on_time_months, p.show_on_time
   from fm_profiles p left join fm_market_sales sl on sl.seller_id = p.id and sl.ends_at > now()
   where p.id = auth.uid();
 end $$;
@@ -707,14 +715,15 @@ end $$;
 
 -- The Empty Room Escape: seekers looking in this listing's city (and area, if they picked
 -- areas), with their budget and vibe match. Only the listing's owner can ask.
+drop function if exists public.fm_find_seekers(uuid);
 create or replace function public.fm_find_seekers(p_listing uuid)
 returns table (seeker_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
-               interests jsonb, vibe jsonb, active_at timestamptz, invite_status text, invite_by text)
+               interests jsonb, vibe jsonb, active_at timestamptz, invite_status text, invite_by text, on_time boolean)
 language sql security definer set search_path = public stable as $$
   select p.id, split_part(coalesce(p.full_name, ''), ' ', 1), p.occupation,
          coalesce(p.search->'areas', '[]'::jsonb), (p.search->>'budget')::int,
          fm_match(p.vibe, l.household), p.interests, p.vibe, coalesce(p.search_at, p.created_at),
-         r.status, r.initiated_by
+         r.status, r.initiated_by, p.show_on_time and p.on_time_months >= 3 and p.on_time_at > now() - interval '40 days'
   from fm_listings l
   join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
    and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()))
@@ -885,7 +894,7 @@ create or replace function public.fm_tribe_list()
 returns table (id uuid, other_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
                interests jsonb, vibe jsonb, my_yes boolean, their_yes boolean, status text, phone text,
                created_at timestamptz, bonded_at timestamptz, unseen boolean,
-               kind text, my_size int, their_size int)
+               kind text, my_size int, their_size int, on_time boolean)
 language sql security definer set search_path = public stable as $$
   -- 'left' rows: only to the one who stayed, and only until they've seen the notice.
   select t.id, o.id, split_part(coalesce(o.full_name, ''), ' ', 1), o.occupation,
@@ -896,7 +905,8 @@ language sql security definer set search_path = public stable as $$
          case when t.status = 'bonded' then o.phone end,
          t.created_at, t.bonded_at,
          case when t.a = auth.uid() then not t.seen_a else not t.seen_b end,
-         t.kind, cardinality(fm_tribe_members(auth.uid())), cardinality(fm_tribe_members(o.id))
+         t.kind, cardinality(fm_tribe_members(auth.uid())), cardinality(fm_tribe_members(o.id)),
+         o.show_on_time and o.on_time_months >= 3 and o.on_time_at > now() - interval '40 days'
   from fm_tribe_links t
   join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
   join fm_profiles me on me.id = auth.uid()
@@ -988,7 +998,7 @@ create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
                name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb,
-               by text, compromise jsonb, orig_match_pct int)
+               by text, compromise jsonb, orig_match_pct int, on_time boolean)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
@@ -1001,7 +1011,8 @@ language sql security definer set search_path = public stable as $$
          case when l.owner_id = auth.uid() then not r.seen_by_owner and (r.status = 'pending') = (r.initiated_by = 'seeker')
               else not r.seen_by_seeker end,
          case when l.owner_id = auth.uid() then sp.interests end,
-         r.initiated_by, r.compromise, r.orig_match_pct
+         r.initiated_by, r.compromise, r.orig_match_pct,
+         case when l.owner_id = auth.uid() then sp.show_on_time and sp.on_time_months >= 3 and sp.on_time_at > now() - interval '40 days' end
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
@@ -1274,6 +1285,8 @@ create table if not exists public.fm_split_bills (
   last_month   text,
   created_at   timestamptz not null default now()
 );
+-- What the group is for: the flat's household spending, or a trip / house party kept apart from it.
+alter table public.fm_split_groups add column if not exists kind text not null default 'flat' check (kind in ('flat','trip','party'));
 alter table public.fm_split_groups   enable row level security;
 alter table public.fm_split_members  enable row level security;
 alter table public.fm_split_expenses enable row level security;
@@ -1307,15 +1320,20 @@ begin
   if v_sum <> p_amount then raise exception 'splits-dont-add-up'; end if;
 end $$;
 
-create or replace function public.fm_split_create(p_name text, p_emoji text, p_members jsonb) returns uuid
+-- p_kind: 'flat' (household spending), 'trip' (out of the house) or 'party' (at home); trips and parties
+-- can include friends from outside the flat and have up to 20 people.
+drop function if exists public.fm_split_create(text, text, jsonb);
+create or replace function public.fm_split_create(p_name text, p_emoji text, p_members jsonb, p_kind text default 'flat') returns uuid
 language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_phone text := fm_my_phone(); v_name text; m jsonb;
+        v_kind text := case when p_kind in ('trip', 'party') then p_kind else 'flat' end;
 begin
   if auth.uid() is null or coalesce(v_phone, '') = '' then raise exception 'not-signed-in'; end if;
-  if (select count(*) from fm_split_members where phone = v_phone) >= 20 then raise exception 'too-many-groups'; end if;
+  if (select count(*) from fm_split_members where phone = v_phone) >= 30 then raise exception 'too-many-groups'; end if;
   select coalesce(nullif(split_part(full_name, ' ', 1), ''), 'Me') into v_name from fm_profiles where id = auth.uid();
-  insert into fm_split_groups (name, emoji, created_by)
-  values (left(trim(p_name), 60), coalesce(nullif(left(p_emoji, 8), ''), '🏠'), auth.uid()) returning id into v_id;
+  insert into fm_split_groups (name, emoji, created_by, kind)
+  values (left(trim(p_name), 60), coalesce(nullif(left(p_emoji, 8), ''), case v_kind when 'trip' then '✈️' when 'party' then '🎉' else '🏠' end), auth.uid(), v_kind)
+  returning id into v_id;
   insert into fm_split_members (group_id, name, phone, upi)
   values (v_id, left(v_name, 40), v_phone, (select upi from fm_split_members where phone = v_phone and upi is not null limit 1));
   for m in select * from jsonb_array_elements(case when jsonb_typeof(p_members) = 'array' then p_members else '[]' end) loop
@@ -1324,9 +1342,15 @@ begin
     from (select right(regexp_replace(coalesce(m->>'phone', ''), '\D', '', 'g'), 10) as phone) x
     on conflict (group_id, phone) do nothing;
   end loop;
-  if (select count(*) from fm_split_members where group_id = v_id) > 12 then raise exception 'too-many-members'; end if;
+  if (select count(*) from fm_split_members where group_id = v_id) > fm_split_cap(v_id) then raise exception 'too-many-members'; end if;
   return v_id;
 end $$;
+
+-- How many people a group can have: 12 in a flat, 20 on a trip or at a party.
+create or replace function public.fm_split_cap(p_group uuid) returns int
+language sql stable security definer set search_path = public as $$
+  select case when kind = 'flat' then 12 else 20 end from fm_split_groups where id = p_group;
+$$;
 
 create or replace function public.fm_split_update(p_group uuid, p_name text, p_emoji text) returns void
 language plpgsql security definer set search_path = public as $$
@@ -1341,7 +1365,7 @@ language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 10);
 begin
   if fm_split_me(p_group) is null then raise exception 'not-a-member'; end if;
-  if (select count(*) from fm_split_members where group_id = p_group) >= 12 then raise exception 'too-many-members'; end if;
+  if (select count(*) from fm_split_members where group_id = p_group) >= fm_split_cap(p_group) then raise exception 'too-many-members'; end if;
   insert into fm_split_members (group_id, name, phone, upi)
   values (p_group, left(trim(p_name), 40), v_phone, (select upi from fm_split_members where phone = v_phone and upi is not null limit 1))
   on conflict (group_id, phone) do update set name = excluded.name returning id into v_id;
@@ -1404,6 +1428,7 @@ begin
   if jsonb_typeof(p->'amount') <> 'number' then raise exception 'bad-amount'; end if;
   v_amount := (p->>'amount')::bigint;
   perform fm_split_check(p_group, v_amount, (p->>'paid_by')::uuid, p->'splits');
+  if (select kind from fm_split_groups where id = p_group) <> 'flat' then raise exception 'bills-only-for-flats'; end if;
   if (select count(*) from fm_split_bills where group_id = p_group) >= 15 then raise exception 'too-many-bills'; end if;
   insert into fm_split_bills (group_id, title, category, amount, paid_by, splits, day_of_month, last_month)
   values (p_group, left(coalesce(nullif(trim(p->>'title'), ''), 'Monthly bill'), 80), left(coalesce(nullif(p->>'category', ''), 'other'), 20),
@@ -1430,9 +1455,12 @@ begin
   update fm_split_members set upi = nullif(trim(p_upi), '') where phone = fm_my_phone();
 end $$;
 
--- My groups with my balance and how many new expenses others have added.
+-- My groups with my balance, how many new expenses others have added, the kind of group, my share of
+-- this month's spending in it, and the other people in it (to pick friends for a trip or party).
+drop function if exists public.fm_split_groups();
 create or replace function public.fm_split_groups()
-returns table (id uuid, name text, emoji text, members bigint, names text[], my_net bigint, unseen bigint, last_at timestamptz)
+returns table (id uuid, name text, emoji text, members bigint, names text[], my_net bigint, unseen bigint, last_at timestamptz,
+               kind text, month_share bigint, people jsonb)
 language sql stable security definer set search_path = public as $$
   select g.id, g.name, g.emoji,
          (select count(*) from fm_split_members x where x.group_id = g.id),
@@ -1440,7 +1468,12 @@ language sql stable security definer set search_path = public as $$
          fm_split_net(m.id),
          (select count(*) from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null
             and e.created_at > m.seen_at and e.created_by is distinct from m.id),
-         coalesce((select max(e.created_at) from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null), g.created_at)
+         coalesce((select max(e.created_at) from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null), g.created_at),
+         g.kind,
+         coalesce((select sum(coalesce((e.splits->>m.id::text)::bigint, 0)) from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null
+                     and e.kind = 'expense' and date_trunc('month', e.spent_on) = date_trunc('month', current_date)), 0)::bigint,
+         coalesce((select jsonb_agg(jsonb_build_object('name', x.name, 'phone', x.phone) order by x.created_at) from fm_split_members x
+                     where x.group_id = g.id and x.id <> m.id), '[]'::jsonb)
   from fm_split_members m join fm_split_groups g on g.id = m.group_id
   where m.phone = fm_my_phone()
   order by 8 desc;
@@ -1470,6 +1503,62 @@ begin
                  from (select * from fm_split_expenses where group_id = p_group and deleted_at is null
                        order by spent_on desc, created_at desc limit 500) e), '[]'),
     'bills', coalesce((select jsonb_agg(to_jsonb(x) - 'group_id' order by x.day_of_month) from fm_split_bills x where x.group_id = p_group), '[]'));
+end $$;
+
+-- ------------------------------------------------------ Pays on time --
+-- Months in a row (most recent first, up to 12) in which the person settled up in their flat groups:
+-- for every month they had a share of household spending, they owed nothing by the 10th of the next month.
+-- Trips and parties don't count. Months with no household spending are skipped; a late month ends the run.
+-- Only flat groups with at least one other member who is on the app count, so a group of made-up numbers earns nothing.
+-- A month is judged once its 10th-of-next-month has passed (India time).
+create or replace function public.fm_on_time_months(p_user uuid) returns int
+language plpgsql stable security definer set search_path = public as $$
+declare v_phone text; v_today date := (now() at time zone 'Asia/Kolkata')::date; v_month date; v_end date; v_cut date;
+        n int := 0; i int; v_had boolean; v_late boolean;
+begin
+  select right(regexp_replace(coalesce(phone, ''), '\D', '', 'g'), 10) into v_phone from fm_profiles where id = p_user;
+  if coalesce(v_phone, '') = '' then return 0; end if;
+  for i in 1..12 loop
+    v_month := (date_trunc('month', v_today) - make_interval(months => i))::date;
+    v_end := (v_month + interval '1 month' - interval '1 day')::date;
+    v_cut := (v_month + interval '1 month' + interval '9 days')::date;
+    continue when v_cut >= v_today;
+    select exists (select 1 from fm_split_members m join fm_split_groups g on g.id = m.group_id and g.kind = 'flat'
+                   join fm_split_expenses e on e.group_id = g.id and e.deleted_at is null and e.kind = 'expense'
+                   where m.phone = v_phone and e.spent_on between v_month and v_end and coalesce((e.splits->>m.id::text)::bigint, 0) > 0
+                     and exists (select 1 from fm_split_members o join fm_profiles op
+                     on right(regexp_replace(coalesce(op.phone, ''), '\D', '', 'g'), 10) = o.phone where o.group_id = g.id and o.id <> m.id)) into v_had;
+    continue when not v_had;
+    select exists (select 1 from fm_split_members m join fm_split_groups g on g.id = m.group_id and g.kind = 'flat'
+                   where m.phone = v_phone and exists (select 1 from fm_split_members o join fm_profiles op
+                     on right(regexp_replace(coalesce(op.phone, ''), '\D', '', 'g'), 10) = o.phone where o.group_id = g.id and o.id <> m.id) and (
+                     select coalesce(sum(case when e.paid_by = m.id then e.amount else 0 end - coalesce((e.splits->>m.id::text)::bigint, 0)), 0)
+                     from fm_split_expenses e where e.group_id = g.id and e.deleted_at is null
+                       and ((e.kind = 'expense' and e.spent_on <= v_end) or (e.kind = 'settle' and e.spent_on <= v_cut))) < -100) into v_late;
+    exit when v_late;
+    n := n + 1;
+  end loop;
+  return n;
+end $$;
+
+create or replace function public.fm_set_show_on_time(p_on boolean) returns int
+language plpgsql security definer set search_path = public as $$
+declare v_n int;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  update fm_profiles set show_on_time = coalesce(p_on, false), on_time_months = fm_on_time_months(id), on_time_at = now()
+   where id = auth.uid() returning on_time_months into v_n;
+  return v_n;
+end $$;
+
+-- The Account page's badge box: worked out afresh, so a payment made today counts straight away.
+-- (Everywhere else uses the copy fm_me refreshes once a day; a badge not refreshed for 40 days isn't shown.)
+create or replace function public.fm_on_time_status() returns table (months int, show boolean)
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  return query update fm_profiles set on_time_months = fm_on_time_months(id), on_time_at = now()
+   where id = auth.uid() returning on_time_months, show_on_time;
 end $$;
 
 -- -------------------------------------------------------------- FlatMart --
@@ -2062,7 +2151,7 @@ begin
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
-                     'fm_test_code_ok') then
+                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
