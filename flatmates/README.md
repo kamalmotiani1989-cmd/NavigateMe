@@ -493,6 +493,56 @@ For a deletion request by email, delete the auth user the same way:
 `delete from auth.users where id = (select id from fm_profiles where phone = '91XXXXXXXXXX');`
 (remove their photos in Storage → fm-photos → the folder named after their user id).
 
+## Security
+
+How the app keeps accounts safe and stops people copying the inventory with a script:
+
+- **No direct table access.** Nobody, signed in or not, can read or change a table through the Supabase
+  API (REST or GraphQL): every `fm_` table has its rights taken away from `anon` and `authenticated`,
+  and new tables start that way (`alter default privileges`). All reads and writes go through the
+  `fm_` functions, which check who's asking. That also closes what used to be open: reading every active
+  listing in one request, and owners editing their own listing rows (they could have given themselves a
+  free "featured" spot or reopened a listing taken down after a broker report). Owners now mark a
+  listing rented or reopen it with `fm_set_listing_status`, which leaves a delisted one down.
+- **Listings need an account.** `fm_search`, `fm_search_near`, `fm_listing_get` and `fm_my_listings`
+  answer signed-in callers only. Signed out, only the host page's area counts (`fm_area_demand`), and
+  party and sale pages by their link, answer.
+- **Rate limits (`fm_throttle`).** Each call that hands out listings, people, or party and sale pages is
+  counted per account (signed out: per network address, from Cloudflare's `cf-connecting-ip`, which can't
+  be faked) per hour and per day. Past the limit the function says `rate-limited` and the app shows
+  "You're going a bit fast". Limits (hour / day): searches 200 / 1000, opening a listing 300 / 2000,
+  Empty Room Escape 60 / 300, FlatMart search 200 / 1000, party pages 120 / 600, RSVPs 30 / 100,
+  sale pages 120 / 600, host-page counts 60 / 300, room requests 60 / 200, posting a listing 10 / 20,
+  FlatMart posts 20 / 60, new Flatsplits groups 20 / 50, adding Flatsplits members 60 / 150. Counts are in
+  `fm_rate` (kept two days). To let someone through early: `delete from fm_rate where who = '<user id>';`
+- **No lookups by phone number.** Adding a number to a Flatsplits group no longer copies in that
+  person's UPI ID from their other groups; their own ID shows up once they open the group.
+- **Text can't carry HTML.** A trigger on every table people type into (`fm_clean_row`) turns `<` and `>`
+  into `‹` and `›` before saving, so a name, title, message or note can never become a script on someone
+  else's screen. The app escapes text as well (tested with script-like text in every field).
+- **Sizes.** Listing fields have length limits on the server too (city 60, area 80, description 1500,
+  contact name 60, address 300, up to 30 amenities).
+- **Names are set once.** The name given at sign-up can't be changed afterwards: `fm_set_profile` only
+  fills an empty name, and `fm_name_lock` keeps it whatever else tries. Deleting the account and signing
+  up again is the only way to pick a new one. The team can still correct a name, in one transaction in
+  the SQL editor:
+  `select set_config('fm.name_change', 'allow', true); update fm_profiles set full_name = 'New Name' where phone = '91XXXXXXXXXX';`
+- **The API isn't described to visitors.** PostgREST's OpenAPI listing of functions and tables is off
+  (`pgrst.openapi_mode = 'disabled'` on the `authenticator` role).
+- **Pages.** `index.html` and `privacy.html` won't run inside another site's frame (no clickjacking),
+  allow no plugins or `<base>` tricks (a Content Security Policy), and send only the site name to other sites
+  (`strict-origin-when-cross-origin`).
+
+Still open, and worth doing next:
+
+- **Test sign-in.** While `fm_settings.test_login` is on, the shared 6-digit test code is the only
+  thing protecting every account (wrong codes are limited to 5 an hour per number, 10 per network and
+  30 in all). Switch to real WhatsApp/SMS codes before inviting the public (see "Sign-in codes").
+- **The source code is public.** This repository is public on GitHub, so anyone can read the app and
+  the database design. Making it private needs two changes first: the website's publish job needs a
+  token to read it, and the Android APK has to be downloaded from somewhere public (the website repo's
+  releases) instead of this repo's releases.
+
 ## Install as an app
 
 Once it's served over HTTPS (GitHub Pages at `/flatmates/` works), open it on the phone:

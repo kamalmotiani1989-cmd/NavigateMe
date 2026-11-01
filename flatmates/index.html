@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Page safety: no plugins or <base> tricks, and the app won't run inside someone else's page (where a hidden
+     frame over it could trick people into tapping things). -->
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate</title>
 <meta name="description" content="Find a room and the people worth sharing it with. Owners post their spare room free; seekers see who lives there, how they live and what it really costs.">
 <meta name="theme-color" content="#0E9AA0">
@@ -2921,7 +2926,8 @@ const demoApi = {
   },
   async verifyOtp(code){
     if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
-    state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: pendingOtp.name || (state.user && state.user.name) || state.lastName || "" });
+    const known = state.user && state.user.phone === pendingOtp.phone && state.user.name;   // a name, once set, stays
+    state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: known || pendingOtp.name || (state.user && state.user.name) || state.lastName || "" });
     const role = pendingOtp.role;
     pendingOtp = null;
     await this.setRole(role);
@@ -2938,7 +2944,7 @@ const demoApi = {
     save();
   },
   async setVibe(v){ state.vibe = v; save(); },
-  async setName(n){ state.user.name = n; save(); },
+  async setName(n){ if(!state.user.name) state.user.name = n; save(); },   // set once, like the server
   async setGender(g){ state.user.gender = g; save(); },
   async onTime(){ state.onTime = { show: Boolean((state.onTime || {}).show), months: this.onTimeMonths() }; save(); return state.onTime; },
   async setShowTo(tribe, escape){ if(tribe) state.tribeShowTo = tribe; if(escape) state.escapeShowTo = escape; save(); },
@@ -3283,7 +3289,11 @@ const demoApi = {
 function makeLiveApi(sb){
   const rpc = async (fn, args) => {
     const { data, error } = await sb.rpc(fn, args || {});
-    if(error) throw error;
+    if(error){
+      // The server's limits on searches, page views and posts (fm_throttle). Shown after the caller's own message.
+      if(/rate-limited/.test(error.message || "")) setTimeout(() => toast("You're going a bit fast. Please wait a few minutes and try again."), 60);
+      throw error;
+    }
     return data;
   };
   const one = rows => (rows && rows[0]) || {};
@@ -3308,7 +3318,6 @@ function makeLiveApi(sb){
       document.head.appendChild(s);
     });
   }
-  const all = () => rpc("fm_search", {});
   return {
     live:true,
     // fm_otp_request first (the abuse limits, and which channel fm-send-otp should use), then the code.
@@ -3364,7 +3373,8 @@ function makeLiveApi(sb){
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
-    async setName(n){ await rpc("fm_set_profile", { p_name:n, p_role:null }); state.user.name = n; save(); },
+    // The server keeps the first name it was given (it can't be changed later), so take its copy.
+    async setName(n){ await rpc("fm_set_profile", { p_name:n, p_role:null }); state.user.name = one(await rpc("fm_me")).full_name || n; save(); },
     async setGender(g){ await rpc("fm_set_gender", { p_gender:g }); state.user.gender = g; save(); },
     async setShowOnTime(on){ const n = Number(await rpc("fm_set_show_on_time", { p_on: Boolean(on) })) || 0; state.onTime = { show: Boolean(on), months: n }; save(); return n; },
     async onTime(){ const r = (await rpc("fm_on_time_status"))[0] || {}; state.onTime = { months: r.months || 0, show: r.show === true }; save(); return state.onTime; },
@@ -3379,7 +3389,7 @@ function makeLiveApi(sb){
       return rows;
     },
     async searchNear(n){ return rpc("fm_search_near", { p_lat:n.lat, p_lng:n.lng, p_km:n.km, p_area:n.area || null }); },
-    async get(id){ return (await all()).find(l => l.id === id); },
+    async get(id){ return (await rpc("fm_listing_get", { p_id: id }))[0]; },
     async contact(id){ const c = one(await rpc("fm_contact", { p_listing: id })); return c.contact_phone ? c : null; },
     async sendRequest(id, message){ const r = one(await rpc("fm_request", { p_listing:id, p_message:message })); await this.me(); return r; },
     async withdraw(rid){ await rpc("fm_withdraw", { p_request: rid }); await this.me(); },
@@ -3419,24 +3429,15 @@ function makeLiveApi(sb){
         p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
       return { id, photos:"kept" };
     },
-    async myListings(){ return (await all()).filter(l => l.is_owner); },
-    async unlockedListings(){ return (await all()).filter(l => l.unlocked && !l.is_owner); },
-    async visits(){
-      const { data, error } = await sb.from("fm_visits").select("*").eq("seeker_id", await uid()).order("visit_at");
-      if(error) throw error; return data;
-    },
-    async incomingVisits(){
-      const { data, error } = await sb.from("fm_visits").select("*").neq("seeker_id", await uid()).order("visit_at");
-      if(error) throw error; return data;   // RLS limits these to visits on my listings
-    },
+    async myListings(){ return (await rpc("fm_my_listings")).filter(l => l.is_owner); },
+    async unlockedListings(){ return (await rpc("fm_my_listings")).filter(l => l.unlocked && !l.is_owner); },
+    async visits(){ return rpc("fm_my_visits"); },
+    async incomingVisits(){ return rpc("fm_incoming_visits"); },   // visits on my listings
     async requestVisit(id, at, note){
       await rpc("fm_request_visit", { p_listing:id, p_at:new Date(at).toISOString(), p_note:note });
     },
     async setVisitStatus(vid, status){ await rpc("fm_set_visit_status", { p_visit:vid, p_status:status }); },
-    async setListingStatus(id, status){
-      const { error } = await sb.from("fm_listings").update({ status }).eq("id", id);
-      if(error) throw error;
-    },
+    async setListingStatus(id, status){ await rpc("fm_set_listing_status", { p_listing: id, p_status: status }); },
     async plans(){ return rpc("fm_plan_list"); },
     async setReferrer(code){ return rpc("fm_set_referrer", { p_code: code }); },
     async areaDemand(city, area){ return rpc("fm_area_demand", { p_city: city, p_area: area || null }); },
@@ -7939,7 +7940,7 @@ const HB_TOPICS = [
     say: () => `We notify you about new requests, answers, tribe matches, new flats that fit you, Flatsplits expenses and updates on your tickets. Turn them on so you don't miss an owner's yes.`,
     acts: () => [["Turn on notifications", "notify"]] },
   { id: "account", words: ["account", "profile", "edit", "name", "gender", "delete", "remove my", "logout", "log out", "sign out", "switch"],
-    say: () => `Account has your profile, how you live (edit any answer), who can see you, switching between looking for a room and having a flat, signing out, and <b>Delete my account</b> at the bottom.`,
+    say: () => `Account has your profile, how you live (edit any answer), who can see you, switching between looking for a room and having a flat, signing out, and <b>Delete my account</b> at the bottom. Your name is fixed once you sign up: to use a different one, delete the account and sign up again.`,
     acts: () => [["Open Account", "go:account"]] },
   { id: "privacy", words: ["privacy", "data", "personal", "safe data", "dpdp"],
     say: () => `Your number and exact address stay private until you say yes to someone. You can see, correct or delete your data any time. The privacy policy has the details, and our grievance officer is ${HELP_OFFICER.name} (<a href="mailto:${HELP_OFFICER.email}">${HELP_OFFICER.email}</a>).`,
