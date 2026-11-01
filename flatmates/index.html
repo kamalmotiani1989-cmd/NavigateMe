@@ -1140,8 +1140,17 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
   box-shadow:inset 0 0 0 1px #FFE2C2; font-size:14.5px; color:var(--text)}
 .tribe-left b{display:block}
 .tribe-left{position:relative; padding-right:48px}
+.gd-opts{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+#gdTitle:focus{outline:none}
+#dlgGender .gd-opts .btn{margin:0}
+.gd-opts .btn[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--brand); color:var(--brand)}
+.show-to{margin-top:16px; padding-top:14px; border-top:1px solid var(--hair); display:grid; gap:14px}
+.st-row > span{display:block; font-weight:700; font-size:14px; margin-bottom:6px}
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg button{flex:1 1 auto; white-space:nowrap; border:0; border-radius:999px; padding:8px 10px; cursor:pointer; font:600 13px var(--body); color:var(--text);
+  background:var(--surface-2); box-shadow:inset 0 0 0 1px var(--line-2)}
+.seg button[aria-pressed="true"]{background:var(--brand); color:#fff; box-shadow:none}
 .fit-line{margin-top:6px; font-size:13px; font-weight:800; color:#B63BA8}
-.tribe-row .vrow-h{display:flex; align-items:flex-end; justify-content:space-between; gap:12px}
 .tribe-fit{display:grid; gap:2px; margin:14px 0 0; padding:12px 14px; border-radius:14px; background:#FBEFFF; box-shadow:inset 0 0 0 1px #F1D3F3; font-size:14px}
 .tribe-fit b{font-size:15px; color:#8A2A82} .tribe-fit span{color:var(--text-2)}
 .tribe-fit a{font-weight:800; color:#B63BA8; text-decoration:none; margin-top:4px}
@@ -1595,11 +1604,6 @@ html:has(> body.app){background:var(--app-bg)}
       <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
       <div class="active-f" id="activeF"></div>
     </div>
-    <section id="tribeRow" class="tribe-row" hidden>
-      <div class="vrow-h"><div><p class="eyebrow">Your tribe</p><h2 id="tribeRowH">For your tribe</h2><p class="hint" id="tribeRowSub" style="margin:2px 0 0"></p></div>
-        <a class="linkbtn" href="#tribe" style="color:var(--brand);white-space:nowrap">See all&nbsp;→</a></div>
-      <div class="vrow" id="tribeRowCards"></div>
-    </section>
     <section id="vibeRow" hidden>
       <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
       <div class="vrow" id="vibeCards"></div>
@@ -1774,7 +1778,8 @@ html:has(> body.app){background:var(--app-bg)}
         and invite you to see their flat. Your number is only shared if you say yes.</p>
       <label class="switch"><input type="checkbox" id="discToggle"><span>Show me to owners in my areas</span></label>
       <label class="switch" style="margin-top:14px"><input type="checkbox" id="tribeToggle"><span>Show me in Build your tribe
-        <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label></div>
+        <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label>
+      <div class="show-to" id="showTo"></div></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
 
@@ -1786,6 +1791,8 @@ html:has(> body.app){background:var(--app-bg)}
         <span><b>Plans &amp; passes</b><small id="accPlansSub"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="acc-row" type="button" data-quiz><i class="acc-ic" style="--ic:#FFF1CC;--icc:#8A5A00;font-size:20px">✨</i>
         <span><b>My Vibe Card</b><small id="accVibeSub">Your flatmate type, to share with friends</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+      <button class="acc-row" id="accGender" type="button"><i class="acc-ic" style="--ic:#EEF2FF;--icc:#4F46E5"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg></i>
+        <span><b>Gender</b><small id="accGenderSub"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <a class="acc-row" id="accInvite" target="_blank" rel="noopener"><i class="acc-ic" style="--ic:#E7F7EF;--icc:#0E9F7E"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></svg></i>
         <span><b>Invite friends, earn contacts</b><small id="accInviteSub">Every 2 friends who join with your link = 1 free contact</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="acc-row web-only" data-apk><i class="acc-ic" style="--ic:#FFEFE4;--icc:#EE5A12"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></i>
@@ -1942,6 +1949,12 @@ html:has(> body.app){background:var(--app-bg)}
 <dialog id="dlgVcard" class="vibe-dlg" aria-labelledby="vcTitle"><div class="mhead"><div><h2 id="vcTitle">Your Vibe Card</h2><div class="loc" id="vcSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="vcBody"></div></dialog>
 
+<dialog id="dlgGender" class="confirm" aria-labelledby="gdTitle"><div class="confirm-body">
+  <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg></span>
+  <h2 id="gdTitle" tabindex="-1" autofocus>One quick question</h2>
+  <p id="gdText"></p>
+  <div class="gd-opts"><button class="btn btn-ghost" type="button" data-gender="female">Female</button><button class="btn btn-ghost" type="button" data-gender="male">Male</button></div>
+</div></dialog>
 <dialog id="dlgLeaveTribe" class="confirm" aria-labelledby="ltTitle"><div class="confirm-body">
   <span class="confirm-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><path d="M16 11h6"/></svg></span>
   <h2 id="ltTitle">Leave your tribe?</h2>
@@ -2483,6 +2496,7 @@ function demoListings(){
 // quarter happy with any area. Same fixed-seed idea as the sample homes.
 const DEMO_SEEKER_NAMES = ["Riya","Arjun","Sana","Kabir","Meher","Rohan","Zoya","Aditi","Varun","Nisha","Ishaan","Tara","Yash","Fatima",
   "Siddharth","Ira","Manav","Anika","Kunal","Leela","Omar","Pallavi","Reuben","Shruti"];
+const DEMO_SEEKER_GENDERS = "fmfmfmffmfmfmfmfmfmfmfmf";   // one letter per name above
 let demoSeekerCache = null;
 function demoSeekerPool(){
   if(demoSeekerCache) return demoSeekerCache;
@@ -2497,7 +2511,7 @@ function demoSeekerPool(){
       while(mine.length < want){ const a = pick(areas)[0]; if(!mine.includes(a)) mine.push(a); }
       const vibe = {}; VIBE_QS.forEach(x => vibe[x.k] = r() < .5 ? 1 : r() < .5 ? 0 : 2);
       vibe.gen = type === "student" || hue("gen" + n) % 3 ? "z" : "m";
-      out.push({ id: "seeker-" + n, name: DEMO_SEEKER_NAMES[i], phone: "98" + String(10000000 + Math.floor(r() * 89999999)),
+      out.push({ id: "seeker-" + n, name: DEMO_SEEKER_NAMES[i], gender: DEMO_SEEKER_GENDERS[i] === "f" ? "female" : "male", phone: "98" + String(10000000 + Math.floor(r() * 89999999)),
         occupation: { type, what: pick(DEMO_JOBS[type]) }, city, areas: mine,
         budget: Math.round((lo * .85 + r() * (hi * 1.15 - lo * .85)) / 500) * 500, vibe,
         interests: { music: INTERESTS.music.filter(() => r() < .2).slice(0, 3), hobbies: INTERESTS.hobbies.filter(() => r() < .18).slice(0, 4) },
@@ -2571,6 +2585,8 @@ const demoApi = {
   },
   async setVibe(v){ state.vibe = v; save(); },
   async setName(n){ state.user.name = n; save(); },
+  async setGender(g){ state.user.gender = g; save(); },
+  async setShowTo(tribe, escape){ if(tribe) state.tribeShowTo = tribe; if(escape) state.escapeShowTo = escape; save(); },
   async setInterests(i){ state.interests = i; save(); },
   async setOccupation(o){ state.user.occupation = o; save(); },
   reqFor(id){ return state.requests.find(r => r.listing_id === id && r.seeker_phone === this.me_()); },
@@ -2695,7 +2711,7 @@ const demoApi = {
     if(!state.user || state.user.role !== "seeker" || state.tribeOpen === false || !f.city || answered(state.vibe) < MIN_VIBE) return 0;
     state.tribe = state.tribe || [];
     const have = new Set(state.tribe.map(t => t.sid));
-    const fresh = demoSeekerPool().filter(x => x.city === f.city && !have.has(x.id)
+    const fresh = demoSeekerPool().filter(x => x.city === f.city && !have.has(x.id) && showsTo(state.tribeShowTo, x.gender)
         && (!f.areas.length || !x.areas.length || x.areas.some(a => f.areas.includes(a))))
       .map(x => ({ x, m: vibeMatch(state.vibe, x.vibe) })).filter(c => c.m && c.m.pct >= 70)
       .sort((a, b) => b.m.pct - a.m.pct).slice(0, Math.max(0, 6 - state.tribe.length));
@@ -2706,7 +2722,8 @@ const demoApi = {
   async tribeList(){
     this.tick();
     const pool = new Map(demoSeekerPool().map(x => [x.id, x]));
-    return (state.tribe || []).filter(t => t.status !== "closed" && t.status !== "left").map(t => {
+    return (state.tribe || []).filter(t => t.status !== "closed" && t.status !== "left"
+      && (t.status !== "open" || showsTo(state.tribeShowTo, (pool.get(t.sid) || {}).gender))).map(t => {
       const x = pool.get(t.sid);
       return { id:t.id, other_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct:t.match_pct,
         interests:x.interests, vibe:x.vibe, my_yes:t.my_yes, their_yes:t.their_yes, status:t.status,
@@ -2974,10 +2991,15 @@ function makeLiveApi(sb){
       if(r.role === "seeker" && (answered(state.vibe) < MIN_VIBE || !(r.occupation && r.occupation.type))) state.onboarded.seeker = false;
       state.discoverable = r.discoverable !== false;
       state.tribeOpen = r.tribe_open !== false;
+      state.user.gender = r.gender || null;
+      state.tribeShowTo = r.tribe_show_to || "all"; state.escapeShowTo = r.escape_show_to || "all";
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
     async setName(n){ await rpc("fm_set_profile", { p_name:n, p_role:null }); state.user.name = n; save(); },
+    async setGender(g){ await rpc("fm_set_gender", { p_gender:g }); state.user.gender = g; save(); },
+    async setShowTo(tribe, escape){ await rpc("fm_set_show_to", { p_tribe: tribe || null, p_escape: escape || null });
+      if(tribe) state.tribeShowTo = tribe; if(escape) state.escapeShowTo = escape; save(); },
     async setVibe(v){ state.vibe = v; save(); await rpc("fm_set_vibe", { p_vibe: v }); },
     async setInterests(i){ state.interests = i; save(); await rpc("fm_set_interests", { p_interests: i }); },
     async setOccupation(o){ await rpc("fm_set_occupation", { p_occ: o }); state.user.occupation = o; save(); },
@@ -3651,10 +3673,29 @@ function route(){
   VIEWS.forEach(n => $("view-" + n).hidden = n !== v);
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
+  setTimeout(maybeAskGender, 600);
   ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount })[v]();
   window.scrollTo(0, 0);
 }
 let unseen = 0, tribeUnseen = 0;
+// Gender: asked at sign-up; accounts from before get one quick question (once per visit, until answered).
+let genderAsked = false;
+function maybeAskGender(){
+  if(genderAsked || !state.user || state.user.gender || !currentView || document.querySelector("dialog[open]")) return;
+  genderAsked = true; openGender(true);
+}
+function openGender(first){
+  $("gdTitle").textContent = first ? "One quick question" : "Your gender";
+  $("gdText").textContent = first ? "Are you male or female? Many people look for flatmates of the same gender, and you choose who can see you in Account."
+    : "Many people look for flatmates of the same gender. You choose who can see you in Account.";
+  $("dlgGender").querySelectorAll("[data-gender]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gender === state.user.gender));
+  $("dlgGender").showModal();
+}
+$("dlgGender").addEventListener("click", async e => {
+  const b = e.target.closest("[data-gender]"); if(!b) return;
+  try{ await api.setGender(b.dataset.gender); $("dlgGender").close(); toast("Saved. Thank you!"); if(currentView === "account") renderAccount(); }
+  catch(err){ console.error(err); toast("Couldn't save that. Please try again."); }
+});
 function renderNav(){
   // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
   const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
@@ -3669,6 +3710,16 @@ $("meBtn").addEventListener("click", () => go("account"));
 $("tribeToggle").addEventListener("change", async e => {
   try{ await api.setTribeOpen(e.target.checked); }catch(err){ console.error(err); }
   toast(e.target.checked ? "You're back in Build your tribe." : "You're hidden from tribe matches.");
+});
+$("accGender").addEventListener("click", () => openGender(false));
+$("showTo").addEventListener("click", async e => {
+  const b = e.target.closest("[data-show]"); if(!b) return;
+  const k = b.dataset.show, v = b.dataset.v, label = { all: "everyone", female: "women only", male: "men only" }[v];
+  try{
+    await api.setShowTo(k === "tribe" ? v : null, k === "escape" ? v : null);
+    b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    toast(k === "tribe" ? `In Build your tribe, you're shown to ${label}.` : `Owners: you're shown to ${label}.`);
+  }catch(err){ console.error(err); toast("Couldn't save that. Please try again."); }
 });
 $("discToggle").addEventListener("change", e => {
   state.discoverable = e.target.checked; save(); syncSearch();
@@ -4369,14 +4420,17 @@ const OB_TEXT = {
              d:["I'd rather not live with pets","Happy to live with one","I have a pet who'd move with me"], od:["No pets, please","Happy to have one","We already have a pet"] },
 };
 const LETTERS = ["A","B","C","D","E","F","G","H"];
+const showsTo = (pref, gender) => !pref || pref === "all" || pref === gender;
 const NAME_STEP = { k:"name", form:"name" };
+const SEX_STEP = { k:"sex", q:"Are you male or female?", why:"Many people look for flatmates of the same gender. In Account you choose who can see you.",
+  opts:[{ v:"female", t:"Female" }, { v:"male", t:"Male" }] };
+// Sign-up asks everything: the name and gender once per account, then every question (a complete vibe from day one).
 function obSteps(role){
-  const steps = obStepsFor(role, false);
-  return state.user && state.user.name ? steps : [NAME_STEP].concat(steps);
+  const u = state.user || {};
+  return [].concat(u.name ? [] : [NAME_STEP], u.gender ? [] : [SEX_STEP], obStepsFor(role, true));
 }
-// Sign-up (full = false) asks the essentials and the 6 core questions. Owners describe the flatmates and
-// interests, and can answer the other 6, on the listing form right after. full = true is every step,
-// for "Complete your profile".
+// full = true is every step (sign-up, and "Complete your profile" for older accounts); full = false is the
+// essentials and the 6 core questions.
 function obStepsFor(role, full){
   const vibe = VIBE_QS.filter(x => full || CORE_KEYS.includes(x.k)).map(x => ({ k:x.k, q: role === "owner" ? OB_TEXT[x.k].o : OB_TEXT[x.k].s, why: OB_TEXT[x.k].why,
     opts: x.o.map((t, i) => ({ v:i, t, s: (role === "owner" && OB_TEXT[x.k].od ? OB_TEXT[x.k].od : OB_TEXT[x.k].d)[i] })) }));
@@ -4494,6 +4548,7 @@ $("obStage").addEventListener("click", e => {
   const b = e.target.closest(".opt[data-i]"); if(!b) return;
   const st = ob.steps[ob.i]; ob.a[st.k] = st.opts[Number(b.dataset.i)].v;
   if(ob.a[st.k] === "__other"){ ob.otherCity = true; return renderOb(); }
+  if(st.k === "sex") api.setGender(ob.a.sex).catch(err => console.error(err));   // saved straight away, like the name
   b.parentElement.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", x === b));
   setTimeout(obNext, 200);
 });
@@ -4741,17 +4796,6 @@ async function renderDiscover(){
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
   $("count").textContent = rest.length ? (vibes.length ? "More homes" : "") : "";
   $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : vibes.length && list.length ? "" : emptyHtml(rows, f);
-  renderTribeRow(rows, bonded);
-}
-// Discover's tribe row (bonded tribes only): the homes that match the tribe's size, with each person's share.
-function renderTribeRow(rows, bonded){
-  const size = bonded.length + 1, h = bonded.length ? tribeHomes(rows, bonded) : null;
-  const homes = h ? h.room.list.concat(h.share.list).slice(0, 12) : [];
-  $("tribeRow").hidden = !homes.length;
-  if(!homes.length) return;
-  $("tribeRowH").textContent = `For your tribe of ${size}`;
-  $("tribeRowSub").textContent = `You${bonded.map(t => " + " + t.name).join("")} · ${size}BHK whole flats${h.share.list.length ? " and rooms to share" : ""}, split ${size} ways`;
-  $("tribeRowCards").innerHTML = homes.map((l, i) => tribeHomeCard(l, i, size)).join("");
 }
 // When nothing matches, offer the changes that would bring homes back, with counts.
 let suggestions = [];
@@ -4853,7 +4897,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","vibeCards","tribeHunt","tribeShort","tribeRowCards"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","savedCards","vibeCards","tribeHunt","tribeShort"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null, currentListing = null;
@@ -6554,8 +6598,8 @@ async function syncSaves(){
 }
 const tribeSavedLine = l => { const n = tribeSaved.get(l.id); return n && n.length ? `<div class="tribe-saved">♥ ${esc(n.join(" & "))} shortlisted this</div>` : ""; };
 const bondedTribe = async () => isSeeker() ? (await api.tribeList().catch(() => [])).filter(t => t.status === "bonded") : [];
-/* Homes for tribes. Discover shows every home to everyone. The Tribe tab (and Discover's "For your tribe" row)
-   shows a bonded tribe only the homes that match its size: whole flats with exactly one bedroom per person
+/* Homes for tribes. Discover shows every home to everyone. The Tribe tab shows a bonded tribe only the homes
+   that match its size: whole flats with exactly one bedroom per person
    (a 2BHK for 2, a 3BHK for 3), and for a tribe of 2, twin-sharing rooms the two of them can share. */
 let myTribeSize = 1;   // you + your bonded tribemates, refreshed whenever Discover loads
 // "room": a bedroom each · "share": a twin-sharing room for two · null: doesn't match this tribe
@@ -6647,6 +6691,10 @@ async function renderAccount(){
   $("accVibeSub").textContent = mt ? `${mt.emoji} ${mt.title}` : "Take the 1-minute quiz and share your flatmate type";
   $("discToggle").checked = state.discoverable !== false;
   $("tribeToggle").checked = state.tribeOpen !== false;
+  $("accGenderSub").textContent = state.user.gender === "female" ? "Female" : state.user.gender === "male" ? "Male" : "Not set yet";
+  $("showTo").innerHTML = [["tribe", "In Build your tribe", state.tribeShowTo], ["escape", "In The Empty Room Escape (owners)", state.escapeShowTo]].map(([k, label, cur]) =>
+    `<div class="st-row"><span>${label}, show me to</span><div class="seg" role="group" aria-label="${label}, show me to">${[["all", "Everyone"], ["female", "Women only"], ["male", "Men only"]].map(([v, t]) =>
+      `<button type="button" data-show="${k}" data-v="${v}" aria-pressed="${(cur || "all") === v}">${t}</button>`).join("")}</div></div>`).join("");
   if(isOwner()) return;
   const vt = vibeType(state.vibe);
   $("vibeType").innerHTML = vt ? `<button class="vt-line" type="button" data-quiz><span aria-hidden="true">${vt.emoji}</span>

@@ -9,20 +9,27 @@ the room comes second.
    the headline) and the sign-in card, which asks what you came for: *post my flat* or *looking for a
    room*, then their mobile number. The one-time code comes **on WhatsApp**, or by SMS when they tap
    "Send it by SMS instead"; the code screen can send it again, or by SMS, after a minute. Their first
-   name is the first question after sign-in (only asked once per number). See "Sign-in codes" below.
-2. **Questions at sign-in, one per screen, short.** 12 living-style questions in all (bedtime,
+   name is the first question after sign-in, then **male or female** (each asked only once per number).
+   See "Sign-in codes" below.
+2. **Questions at sign-in, one per screen, short.** All 12 living-style questions (bedtime,
    cleanliness, food, cooking, smoking, drinks, guests, noise, time together, groceries and chores,
-   weekday routine, pets; smoking, food and pets count double), but sign-up asks only the **6 core ones**
-   (bedtime, cleanliness, food, cooking, smoking, time together). 6 answers are enough to match.
-   - Room seekers (about 11 screens): what they do (working / student / self-employed / between jobs),
-     generation, city, the areas they like (pick several), monthly rent budget and the 6 core questions.
-   - Flat owners (about 9): how many live there, the household's generation and the 6 core questions.
-     The posting form that follows has the flatmates, the other 6 questions and music/hobbies, prefilled.
-   - **Complete your profile** (seekers): the rest later, on the same screens: a line about what they
-     do, the other 6 questions, **music and hobbies** (shown as "you both like", never part of the score).
-     A card on Discover shows how complete the profile is ("57% done · 9 quick questions left"), Account
-     shows it under "How you live", and a reminder comes now and then (6 hours after sign-up at the
-     earliest, at most once a day, 3 in all). "Finish later" saves what's answered.
+   weekday routine, pets; smoking, food and pets count double), so every new profile has a complete vibe.
+   Answers from the flatmate-type quiz aren't asked again.
+   - Room seekers: what they do (working / student / self-employed / between jobs) and a line about it,
+     generation, city, the areas they like (pick several), monthly rent budget, the 12 questions, and
+     **music and hobbies** (shown as "you both like", never part of the score).
+   - Flat owners: how many live there, the household's generation and the 12 questions. The posting form
+     that follows has the flatmates and music/hobbies, prefilled.
+   - **Complete your profile** (accounts from when sign-up asked only 6): the rest on the same screens.
+     A card on Discover shows how complete the profile is, Account shows it under "How you live", and a
+     reminder comes now and then (at most once a day, 3 in all). "Finish later" saves what's answered.
+   - **Gender.** Saved on the profile (`fm_set_gender`). Accounts from before are asked once, in a small
+     box ("One quick question"); it can be changed in Account → Gender.
+   - **Who can see you** (seekers, Account → Who can find you): in Build your tribe and in The Empty Room
+     Escape, separately, **Everyone / Women only / Men only** (`fm_set_show_to`). In a tribe both people's
+     choices count, so a match only appears if each shows themselves to the other (`fm_tribe_refresh`,
+     `fm_tribe_list`); in Escape an owner only finds and invites seekers who show themselves to the owner's
+     gender (`fm_find_seekers`, `fm_invite`). Someone with no gender set only sees people set to Everyone.
 3. **Vibe matches.** Discover opens with a "Your vibe matches" row: every home in the city with an
    80%+ match, whatever the area or budget filters say, so a great fit is never missed.
    **Compatibility analysis:** tap the wheel (or "See compatibility analysis") on any home to see
@@ -63,7 +70,7 @@ the room comes second.
    **Homes for tribes.** Discover shows every home to everyone. A bonded tribe's Tribe tab shows only the
    homes that match its size: **whole flats with one bedroom per person** (a 2BHK for 2, a 3BHK for 3) and,
    for a tribe of 2, **twin-sharing rooms** the two of them can share, each card showing the rent per person
-   ("₹9,500 each") or per bed. Discover gets the same homes in a **For your tribe of N** row; a whole flat's
+   ("₹9,500 each") or per bed. A whole flat's
    page shows your tribe's share when it matches, or how a tribe could split it ("Rent it with a tribe:
    ₹9,500 each"). With a tribe, the budget filter checks your share of a whole flat.
 
