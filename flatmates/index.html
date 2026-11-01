@@ -105,6 +105,14 @@ textarea{min-height:96px; resize:vertical}
 .tab svg{width:20px; height:20px}
 @media (min-width:721px){ .tab[data-view="account"]{display:none} .tab[aria-current="true"]{background:var(--surface-2)} }
 .me{width:38px; height:38px; border-radius:50%; border:0; cursor:pointer; background:var(--text); color:#fff; font-weight:800}
+.top-acts{display:flex; gap:8px; align-items:center; margin:0 10px 0 12px}
+.top-acts:empty{display:none}
+.hd-ic{position:relative; display:grid; place-items:center; width:40px; height:40px; padding:0; border:0; border-radius:50%; cursor:pointer;
+  background:rgba(255,255,255,.18); color:#fff; transition:background .15s, transform .1s}
+.hd-ic svg{width:22px; height:22px} .hd-ic:hover{background:rgba(255,255,255,.3)} .hd-ic:active{transform:scale(.92)}
+.hd-ic[aria-current="true"]{background:#fff; color:var(--brand-2)}
+.hd-ic .badge{position:absolute; top:-3px; right:-3px; box-shadow:0 0 0 2px var(--teal)}
+.hd-ic:focus-visible{outline:2px solid #fff; outline-offset:2px}
 @media (max-width:720px){
   .app-head{backdrop-filter:none; background:var(--bg)}  /* a filter would trap the fixed nav inside the header */
   .nav{position:fixed; bottom:0; left:0; right:0; justify-content:space-around; background:var(--bg); box-shadow:0 -1px 0 var(--line);
@@ -285,6 +293,9 @@ textarea{min-height:96px; resize:vertical}
 .stat + .stat{padding-left:16px; box-shadow:-1px 0 0 var(--line)}
 .stat b{font-size:28px; font-weight:800; letter-spacing:-.03em; display:block; font-variant-numeric:tabular-nums}
 .stat span{font-size:13px; color:var(--text-2)}
+.fs-sum-stats .stat b{font-size:clamp(17px, 5.2vw, 26px)}
+.fs-sum-stats .stat{padding-right:10px}
+.fs-sum-stats .stat + .stat{padding-left:10px}
 .mine-card{display:grid; grid-template-columns:220px 1fr; gap:24px; padding:24px 0; box-shadow:0 -1px 0 var(--line)}
 .mine-card:first-child{box-shadow:none}
 .mine-card .pic{position:relative; min-height:165px; border-radius:var(--radius); overflow:hidden; background:var(--surface-2)}
@@ -730,7 +741,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 /* ---------- six tabs on phones: Account moves to the avatar in the header */
 @media (max-width:720px){
   .tab[data-view="account"]{display:none}
-  .bar .me{display:block; margin-left:auto}
+  .bar .me{display:block; margin-left:0}
+  .top-acts{margin-left:auto}
   .tab{flex:1 1 0; min-width:0; padding:6px 2px}
   .tab span{max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .tab .badge{right:calc(50% - 22px)}
@@ -1157,6 +1169,27 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 .mk-boosted{display:inline-flex; align-items:center; font-size:13px; font-weight:800; color:#B7791F; padding:0 6px}
 .mk-salelink{display:block; margin:12px 0; padding:12px 14px; border-radius:14px; background:#FFF1E6; color:#C2410C; font-weight:800; text-decoration:none}
 .bb-opts{display:grid; gap:10px; margin-bottom:10px}
+/* Flatsplits: trips & parties */
+.fs-split-sum{margin:6px 0 4px; padding:14px 16px; border-radius:16px; background:var(--surface-2)}
+.fs-split-sum p{margin:0 0 8px; font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--text-3)}
+.fs-split-sum div{display:flex; justify-content:space-between; gap:10px; padding:4px 0; font-size:15px} .fs-split-sum b{font-size:16px}
+.fs-event-new{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 30px}
+.fs-kind{display:inline-block; font-size:12.5px; font-weight:800; padding:2px 9px; border-radius:999px; background:#FFF1E6; color:#C2410C}
+.fs-party-hint{margin:6px 0 30px; font-size:13.5px; color:var(--text-2)} .fs-party-hint .linkbtn{color:var(--brand); padding:0 2px}
+.fs-kinds{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0 0 14px}
+.fs-kindopt{display:flex; gap:10px; align-items:flex-start; padding:12px; border-radius:14px; cursor:pointer; box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.fs-kindopt input{position:absolute; opacity:0; pointer-events:none}
+.fs-kindopt .ic{font-size:24px} .fs-kindopt b{display:block} .fs-kindopt small{display:block; color:var(--text-2); font-size:12.5px}
+.fs-kindopt:has(input:checked){box-shadow:inset 0 0 0 2px var(--brand); background:var(--brand-soft)}
+.chip[aria-pressed="true"]{background:var(--brand); color:#fff; box-shadow:none}
+/* Pays on time */
+.ontime{display:inline-flex; align-items:center; gap:3px; margin-left:4px; font-size:11.5px; font-weight:800; padding:2px 8px; border-radius:999px; background:#E3F6EC; color:#12804A;
+  vertical-align:middle; white-space:nowrap}
+.ontime.big{font-size:13px; margin:0}
+.ontime-box{margin-top:16px; padding-top:14px; border-top:1px solid var(--hair)}
+.ot-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.ot-meter{display:flex; gap:6px} .ot-meter i{flex:1; height:8px; border-radius:99px; background:var(--surface-2); box-shadow:inset 0 0 0 1px var(--line-2)}
+.ot-meter i.on{background:#12A150; box-shadow:none}
 .bb-opt{display:flex; flex-direction:column; gap:1px; line-height:1.2} .bb-opt small{font-size:12px; font-weight:600; opacity:.85}
 .sl-f{display:block; text-align:left; margin:0 0 12px} .sl-f span{display:block; font-weight:700; font-size:14px; margin-bottom:5px}
 .sl-f input{width:100%}
@@ -1613,6 +1646,7 @@ html:has(> body.app){background:var(--app-bg)}
   <div class="wrap bar">
     <a class="logo" href="#"><i><svg width="42" height="42" viewBox="0 0 100 100" aria-hidden="true"><defs> <linearGradient id="fmRoofH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F80F0"/><stop offset="1" stop-color="#0A4FC4"/></linearGradient> <linearGradient id="fmSmileH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E6FD9"/><stop offset="1" stop-color="#14C08A"/></linearGradient> <clipPath id="fmInH"><path d="M23.5 10H76.5V70Q50 84 23.5 70Z"/></clipPath> </defs> <rect x="67.5" y="12" width="9.5" height="20" rx="1.5" fill="#0A4FC4"/> <path d="M19 62V40L50 13.5L81 40V62" fill="none" stroke="url(#fmRoofH)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/> <path d="M50 21.5v5M43.2 23.6l2.4 4.2M56.8 23.6l-2.4 4.2" stroke="#F5A623" stroke-width="2.6" stroke-linecap="round"/> <g clip-path="url(#fmInH)"> <path d="M23.5 84V69.5a11 9.5 0 0 1 22 0V84z" fill="#1E6FD9"/> <path d="M54.5 84V69.5a11 9.5 0 0 1 22 0V84z" fill="#F0645A"/> <path d="M38 84V68a12 10 0 0 1 24 0V84z" fill="#F7B53B" stroke="#fff" stroke-width="2" paint-order="stroke"/> <circle cx="34" cy="47" r="8.3" fill="#F9C9A0"/> <path d="M25.6 47.5a8.5 8.5 0 0 1 14-7.4c-2.6.4-6.2 2.6-8.6 2.5c-1.6 1.6-3 3.3-5.4 4.9z" fill="#10264F"/> <path d="M25.7 46.2c-.6-5.6 3.4-9.6 8.6-9.6c3.4 0 6 1.4 7.2 3.4c-3 0-5.2 1.8-8.4 2.2c-2.4.3-4.5 1.6-7.4 4z" fill="#10264F"/> <circle cx="50" cy="44.5" r="8.6" fill="#F9C9A0" stroke="#fff" stroke-width="1.6" paint-order="stroke"/> <path d="M41.4 44c-.4-5.4 3.6-9.2 8.6-9.2s9 3.8 8.6 9.2c-1.6-2.8-4-4.2-6.6-4.6c-1 1.4-3 2.2-5.2 2.2c-2.3 0-4.1 1-5.4 2.4z" fill="#10264F"/> <path d="M70.5 44.5c4.6 1 6.4 6 4.6 11.5c-1-3-2.6-4.4-4.6-5z" fill="#10264F"/> <circle cx="66" cy="47" r="8.3" fill="#F9C9A0"/> <path d="M57.7 46.6c-.3-5.4 3.6-9.6 8.6-9.6c4.4 0 8.2 3.4 8.2 8.4c-2.2-1.6-4.4-3.8-6-5.6c-2.6 3-6.2 5.6-10.8 6.8z" fill="#10264F"/> <circle cx="72.6" cy="38.6" r="2.6" fill="#F0645A"/> <g fill="none" stroke="#10264F" stroke-width="1.3" stroke-linecap="round"> <path d="M30.2 48.4q1.3-1.4 2.6 0M35.6 48.4q1.3-1.4 2.6 0M32.4 51.6q1.6 1.4 3.2 0"/> <path d="M45.9 46q1.3-1.4 2.6 0M51.5 46q1.3-1.4 2.6 0M48.3 49.2q1.7 1.5 3.4 0"/> <path d="M61.8 48.4q1.3-1.4 2.6 0M67.2 48.4q1.3-1.4 2.6 0M64.4 51.6q1.6 1.4 3.2 0"/> </g> </g> <path d="M26 76Q50 91 74 76" fill="none" stroke="url(#fmSmileH)" stroke-width="6" stroke-linecap="round"/> <circle cx="20" cy="69.5" r="3.6" fill="#1E6FD9"/> <circle cx="80" cy="69.5" r="3.6" fill="#14C08A"/></svg></i><span class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></a>
     <nav class="nav" id="nav"></nav>
+    <div class="top-acts" id="topActs"></div>
     <button class="me" id="meBtn" aria-label="My account"></button>
   </div>
 </header>
@@ -1812,7 +1846,8 @@ html:has(> body.app){background:var(--app-bg)}
       <label class="switch"><input type="checkbox" id="discToggle"><span>Show me to owners in my areas</span></label>
       <label class="switch" style="margin-top:14px"><input type="checkbox" id="tribeToggle"><span>Show me in Build your tribe
         <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label>
-      <div class="show-to" id="showTo"></div></div>
+      <div class="show-to" id="showTo"></div>
+      <div class="ontime-box" id="onTimeBox"></div></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
 
@@ -2635,6 +2670,7 @@ const demoApi = {
   async setVibe(v){ state.vibe = v; save(); },
   async setName(n){ state.user.name = n; save(); },
   async setGender(g){ state.user.gender = g; save(); },
+  async onTime(){ state.onTime = { show: Boolean((state.onTime || {}).show), months: this.onTimeMonths() }; save(); return state.onTime; },
   async setShowTo(tribe, escape){ if(tribe) state.tribeShowTo = tribe; if(escape) state.escapeShowTo = escape; save(); },
   async setInterests(i){ state.interests = i; save(); },
   async setOccupation(o){ state.user.occupation = o; save(); },
@@ -2673,7 +2709,7 @@ const demoApi = {
     if(CHARGES_ON && !passUntil("room") && state.credits - state.pending < 1) return { error:"no-credits" };
     const m = vibeMatch(state.vibe, l.household);
     const fresh = { id:"r" + Date.now(), listing_id:id, listing_title:l.title, seeker_phone:me.phone,
-      seeker:{ name:me.name, occupation:me.occupation, vibe:state.vibe, phone:me.phone, interests:state.interests || {} },
+      seeker:{ name:me.name, occupation:me.occupation, vibe:state.vibe, phone:me.phone, interests:state.interests || {}, on_time:!!(state.onTime && state.onTime.show && state.onTime.months >= 3) },
       status:"pending", message:(message || "").slice(0, 300), match_pct: m ? m.pct : null,
       created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true };
     if(r) Object.assign(r, fresh); else state.requests.push(fresh);
@@ -2712,7 +2748,7 @@ const demoApi = {
     const reqs = new Map(state.requests.filter(r => r.listing_id === lid && r.status !== "withdrawn").map(r => [r.seeker_phone, r]));
     return demoSeekerPool().filter(x => x.city === l.city && (!x.areas.length || x.areas.includes(l.locality))).map(x => {
       const m = vibeMatch(x.vibe, l.household), r = reqs.get(x.phone);
-      return { seeker_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct: m ? m.pct : null,
+      return { seeker_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct: m ? m.pct : null, on_time: hue(x.id) % 3 === 0,
         interests:x.interests, vibe:x.vibe, active_at:x.active_at, invite_status: r ? r.status : null, invite_by: r ? r.by || "seeker" : null };
     }).sort((a, b) => (b.match_pct ?? -1) - (a.match_pct ?? -1) || b.active_at.localeCompare(a.active_at));
   },
@@ -2727,7 +2763,7 @@ const demoApi = {
       return { error:"escape-pass-required" };
     const m = vibeMatch(x.vibe, l.household);
     state.requests.push({ id:"i" + Date.now() + sid, by:"owner", listing_id:lid, listing_title:l.title, seeker_phone:x.phone,
-      seeker:{ name:x.name, occupation:x.occupation, vibe:x.vibe, phone:x.phone, interests:x.interests }, status:"pending",
+      seeker:{ name:x.name, occupation:x.occupation, vibe:x.vibe, phone:x.phone, interests:x.interests, on_time: hue(x.id) % 3 === 0 }, status:"pending",
       message:(message || "").slice(0, 300), match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null,
       seen_owner:true, seen_seeker:false });
     save(); return { status:"pending" };
@@ -2776,7 +2812,7 @@ const demoApi = {
       const x = pool.get(t.sid);
       return { id:t.id, other_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct:t.match_pct,
         interests:x.interests, vibe:x.vibe, my_yes:t.my_yes, their_yes:t.their_yes, status:t.status,
-        phone: t.status === "bonded" ? "+91" + x.phone : null, created_at:t.created_at, bonded_at:t.bonded_at, unseen:!t.seen,
+        phone: t.status === "bonded" ? "+91" + x.phone : null, created_at:t.created_at, bonded_at:t.bonded_at, unseen:!t.seen, on_time: hue(x.id) % 3 === 0,
         kind:"match", my_size:this.tribeSize(), their_size:1 };
     }).sort((a, b) => (b.status === "bonded") - (a.status === "bonded") || b.match_pct - a.match_pct);
   },
@@ -2827,7 +2863,7 @@ const demoApi = {
       const s = DEMO_SEEKERS[state.myListings.indexOf(l) % DEMO_SEEKERS.length], v = digitsToVibe(s.v, s.gen);
       const m = vibeMatch(v, l.household);
       state.requests.push({ id:"r" + now + lid, by:"seeker", listing_id:lid, listing_title:l.title, seeker_phone:s.phone,
-        seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {} }, status:"pending", message:s.message,
+        seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {}, on_time: hue(s.name) % 3 === 0 }, status:"pending", message:s.message,
         match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true });
     }
     // Build your tribe: matches appear ~5 s after onboarding; a third of sample seekers say yes
@@ -2856,7 +2892,7 @@ const demoApi = {
           .map(l => ({ l, m: vibeMatch(state.vibe, l.household) })).filter(x => x.m && x.m.pct >= 60)
           .sort((a, b) => b.m.pct - a.m.pct).slice(0, 2).forEach(({ l, m }, i) => state.requests.push({
             id:"i" + now + i, by:"owner", listing_id:l.id, listing_title:l.title, seeker_phone:state.user.phone,
-            seeker:{ name:state.user.name, occupation:state.user.occupation, vibe:state.vibe, phone:state.user.phone, interests:state.interests || {} },
+            seeker:{ name:state.user.name, occupation:state.user.occupation, vibe:state.vibe, phone:state.user.phone, interests:state.interests || {}, on_time:!!(state.onTime && state.onTime.show && state.onTime.months >= 3) },
             status:"pending", message:`Hi! Your vibe matches our home ${m.pct}%. Want to come and see the room?`, match_pct:m.pct,
             created_at:new Date(now - i * 15000).toISOString(), decided_at:null, seen_owner:true, seen_seeker:false }));
       }
@@ -2875,6 +2911,7 @@ const demoApi = {
         name: incoming ? r.seeker.name : l && l.private ? l.private.contact_name.split(" ")[0] : null,
         occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
         interests: incoming ? r.seeker.interests || {} : null,
+        on_time: incoming && !!r.seeker.on_time,
         phone: incoming && r.status === "approved" ? "+91" + r.seeker.phone : null,
         unseen: incoming ? !r.seen_owner && (r.status === "pending") === (by === "seeker") : !r.seen_seeker };
     }).sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -3046,12 +3083,15 @@ function makeLiveApi(sb){
       state.user.gender = r.gender || null;
       state.tribeShowTo = r.tribe_show_to || "all"; state.escapeShowTo = r.escape_show_to || "all";
       state.boostCredits = r.boost_credits || 0; state.saleCredits = r.sale_credits || 0;
+      state.onTime = { months: r.on_time_months || 0, show: r.show_on_time === true };
       state.mkSale = r.sale_code ? { code: r.sale_code, title: r.sale_title, ends_at: r.sale_until } : null;
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
     async setName(n){ await rpc("fm_set_profile", { p_name:n, p_role:null }); state.user.name = n; save(); },
     async setGender(g){ await rpc("fm_set_gender", { p_gender:g }); state.user.gender = g; save(); },
+    async setShowOnTime(on){ const n = Number(await rpc("fm_set_show_on_time", { p_on: Boolean(on) })) || 0; state.onTime = { show: Boolean(on), months: n }; save(); return n; },
+    async onTime(){ const r = (await rpc("fm_on_time_status"))[0] || {}; state.onTime = { months: r.months || 0, show: r.show === true }; save(); return state.onTime; },
     async setShowTo(tribe, escape){ await rpc("fm_set_show_to", { p_tribe: tribe || null, p_escape: escape || null });
       if(tribe) state.tribeShowTo = tribe; if(escape) state.escapeShowTo = escape; save(); },
     async setVibe(v){ state.vibe = v; save(); await rpc("fm_set_vibe", { p_vibe: v }); },
@@ -3165,7 +3205,13 @@ function makeLiveApi(sb){
 // fm_split_* functions in schema.sql: a split names members of the group and adds up to the amount.
 const SPLIT_CATS = [["groceries","🛒","Groceries"],["rent","🏠","Rent"],["electricity","⚡","Electricity"],["wifi","📶","Wi-Fi"],
   ["maid","🧹","Maid"],["cook","🍳","Cook"],["gas","🔥","Gas"],["water","💧","Water"],["food","🍕","Food order"],
-  ["outing","🎉","Outing"],["household","🧴","Household"],["other","📦","Other"]];
+  ["outing","🎉","Outing"],["household","🧴","Household"],["travel","🚕","Travel"],["stay","🏨","Stay"],["drinks","🍻","Drinks"],
+  ["tickets","🎟️","Tickets"],["other","📦","Other"]];
+// Trips and parties: the categories that matter there first, and their own icons.
+const EVENT_CATS = ["food", "travel", "stay", "drinks", "tickets", "groceries", "outing", "other"];
+const EVENT_EMOJI = { trip: ["✈️","🏖️","🏔️","🚗","🚆","🏕️","🌴","🎒"], party: ["🎉","🎂","🍻","🍕","🎶","🥳","🎁","🔥"] };
+const fsIsEvent = g => g && (g.kind === "trip" || g.kind === "party");
+const fsKindLabel = k => k === "trip" ? "✈️ Trip" : k === "party" ? "🎉 House party" : "🏠 Flat";
 const SPLIT_CAT = Object.fromEntries(SPLIT_CATS.map(c => [c[0], c]));
 const catIcon = k => (SPLIT_CAT[k] || SPLIT_CAT.other)[1];
 const GROUP_EMOJI = ["🏠","🏢","🌿","🌇","🎉","🍕","🐾","☕"];
@@ -3306,9 +3352,12 @@ Object.assign(demoApi, {
     this.splitTick();
     return this.splitMine().map(g => {
       const me = this.splitMeIn(g), ex = this.splitLive(g), net = splitNets(g.members, ex);
+      const ym = new Date().toISOString().slice(0, 7);
       return { id:g.id, name:g.name, emoji:g.emoji, members:g.members.length, names:g.members.filter(m => m.id !== me.id).map(m => m.name),
         my_net: net[me.id] || 0, unseen: ex.filter(e => e.created_by !== me.id && e.created_at > me.seen_at).length,
-        last_at: ex.reduce((t, e) => e.created_at > t ? e.created_at : t, g.created_at) };
+        last_at: ex.reduce((t, e) => e.created_at > t ? e.created_at : t, g.created_at), kind: g.kind || "flat",
+        month_share: ex.filter(e => e.kind === "expense" && e.spent_on.startsWith(ym)).reduce((t, e) => t + Number(e.splits[me.id] || 0), 0),
+        people: g.members.filter(m => m.id !== me.id).map(m => ({ name:m.name, phone:m.phone })) };
     }).sort((a, b) => b.last_at.localeCompare(a.last_at));
   },
   async splitGet(id){
@@ -3323,14 +3372,15 @@ Object.assign(demoApi, {
     }
     me.seen_at = new Date().toISOString(); save();
     const onApp = phone => phone === this.me_() || DEMO_FLATMATES.some(f => f[1] === phone) || (() => { try{ return Boolean(localStorage.getItem("fm_state:" + phone)); }catch(e){ return false; } })();
-    return JSON.parse(JSON.stringify({ group:{ id:g.id, name:g.name, emoji:g.emoji, created_at:g.created_at }, me:me.id,
+    return JSON.parse(JSON.stringify({ group:{ id:g.id, name:g.name, emoji:g.emoji, created_at:g.created_at, kind:g.kind || "flat" }, me:me.id,
       members: g.members.map(m => Object.assign({}, m, { on_app: onApp(m.phone) })),
       expenses: this.splitLive(g).sort((a, b) => b.spent_on.localeCompare(a.spent_on) || b.created_at.localeCompare(a.created_at)),
       bills: g.bills }));
   },
-  async splitCreate(name, emoji, members){
+  async splitCreate(name, emoji, members, kind){
     const me = this.me_(), now = new Date().toISOString();
-    if(this.splitMine().length >= 20) throw new Error("too-many-groups");
+    kind = kind === "trip" || kind === "party" ? kind : "flat";
+    if(this.splitMine().length >= 30) throw new Error("too-many-groups");
     const upi = (this.splitMine().flatMap(g => g.members).find(m => m.phone === me && m.upi) || {}).upi || null;
     const list = [{ name: firstName() || "Me", phone: me }].concat(members.map(m => ({ name: m.name.trim().slice(0, 40), phone: ten(m.phone) })));
     const seen = new Set(), mem = [];
@@ -3339,9 +3389,9 @@ Object.assign(demoApi, {
       seen.add(m.phone);
       mem.push({ id:this.newId("m"), name:m.name, phone:m.phone, upi: m.phone === me ? upi : null, seen_at:now, created_at:now });
     }
-    if(mem.length > 12) throw new Error("too-many-members");
+    if(mem.length > (kind === "flat" ? 12 : 20)) throw new Error("too-many-members");
     const id = this.newId("g");
-    this.splitAll().push({ id, name:name.trim().slice(0, 60), emoji, created_at:now, members:mem, expenses:[], bills:[] });
+    this.splitAll().push({ id, kind, name:name.trim().slice(0, 60), emoji: emoji || (kind === "trip" ? "✈️" : kind === "party" ? "🎉" : "🏠"), created_at:now, members:mem, expenses:[], bills:[] });
     save(); return id;
   },
   async splitUpdate(gid, name, emoji){ const g = this.splitFind(gid); g.name = name.trim().slice(0, 60) || g.name; g.emoji = emoji || g.emoji; save(); },
@@ -3373,6 +3423,7 @@ Object.assign(demoApi, {
   async splitDelete(gid, eid){ const e = this.splitFind(gid).expenses.find(x => x.id === eid); if(e){ e.deleted_at = new Date().toISOString(); save(); } },
   async splitBillSave(gid, p){
     const g = this.splitFind(gid); this.splitCheck(g, p);
+    if(fsIsEvent(g)) throw new Error("bills-only-for-flats");
     if(g.bills.length >= 15) throw new Error("too-many-bills");
     const id = this.newId("b");
     g.bills.push({ id, title:(p.title || "Monthly bill").slice(0, 80), category:p.category || "other", amount:p.amount, paid_by:p.paid_by,
@@ -3380,6 +3431,25 @@ Object.assign(demoApi, {
     save(); return id;
   },
   async splitBillDelete(gid, bid){ const g = this.splitFind(gid); g.bills = g.bills.filter(b => b.id !== bid); save(); },
+  onTimeMonths(){
+    const me = this.me_(), flats = this.splitMine().filter(g => !fsIsEvent(g)), today = new Date(), iso = d => d.toISOString().slice(0, 10);
+    let n = 0;
+    for(let i = 1; i <= 12; i++){
+      const start = new Date(Date.UTC(today.getFullYear(), today.getMonth() - i, 1)), end = new Date(Date.UTC(today.getFullYear(), today.getMonth() - i + 1, 0));
+      const cut = new Date(Date.UTC(today.getFullYear(), today.getMonth() - i + 1, 10));
+      if(iso(cut) >= iso(today)) continue;
+      const mem = g => g.members.find(m => m.phone === me);
+      const had = flats.some(g => this.splitLive(g).some(e => e.kind === "expense" && e.spent_on >= iso(start) && e.spent_on <= iso(end) && Number(e.splits[mem(g).id] || 0) > 0));
+      if(!had) continue;
+      const late = flats.some(g => { const m = mem(g);
+        return this.splitLive(g).filter(e => (e.kind === "expense" && e.spent_on <= iso(end)) || (e.kind === "settle" && e.spent_on <= iso(cut)))
+          .reduce((t, e) => t + (e.paid_by === m.id ? e.amount : 0) - Number(e.splits[m.id] || 0), 0) < -100; });
+      if(late) break;
+      n++;
+    }
+    return n;
+  },
+  async setShowOnTime(on){ state.onTime = { show: Boolean(on), months: this.onTimeMonths() }; save(); return state.onTime.months; },
   async splitSetUpi(upi){
     if(upi && !/^[a-zA-Z0-9.\-_]{2,255}@[a-zA-Z]{2,64}$/.test(upi)) throw new Error("bad-upi");
     for(const g of this.splitMine()) for(const m of g.members) if(m.phone === this.me_()) m.upi = upi || null;
@@ -3561,11 +3631,12 @@ function liveExtras(rpc){
   const num = x => Object.assign(x, { amount: Number(x.amount) });
   return {
     async splitGroups(){
-      return (await rpc("fm_split_groups")).map(g => Object.assign(g, { my_net:Number(g.my_net), unseen:Number(g.unseen), members:Number(g.members), names:g.names || [] }));
+      return (await rpc("fm_split_groups")).map(g => Object.assign(g, { my_net:Number(g.my_net), unseen:Number(g.unseen), members:Number(g.members), names:g.names || [],
+        kind: g.kind || "flat", month_share: Number(g.month_share || 0), people: g.people || [] }));
     },
     async splitGet(id){ const d = await rpc("fm_split_get", { p_group:id }); d.expenses.forEach(num); d.bills.forEach(num); return d; },
-    async splitCreate(name, emoji, members){
-      return rpc("fm_split_create", { p_name:name, p_emoji:emoji, p_members:members.map(m => ({ name:m.name.trim(), phone:ten(m.phone) })) });
+    async splitCreate(name, emoji, members, kind){
+      return rpc("fm_split_create", { p_name:name, p_emoji:emoji, p_members:members.map(m => ({ name:m.name.trim(), phone:ten(m.phone) })), p_kind: kind || "flat" });
     },
     async splitUpdate(gid, name, emoji){ await rpc("fm_split_update", { p_group:gid, p_name:name, p_emoji:emoji }); },
     async splitAddMember(gid, name, phone){ return rpc("fm_split_add_member", { p_group:gid, p_name:name.trim(), p_phone:ten(phone) }); },
@@ -3792,19 +3863,38 @@ $("dlgGender").addEventListener("click", async e => {
 function renderNav(){
   // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
   const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
-  $("nav").innerHTML = allowed.map(n => `<button class="tab" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
-    n === "requests" && unseen ? `<i class="badge" aria-label="${unseen} new">${unseen}</i>` : n === "tribe" && tribeUnseen
-      ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : n === "splits" && splitsUnseen
-      ? `<i class="badge" aria-label="${splitsUnseen} new">${splitsUnseen}</i>` : n === "market" && marketUnseen
-      ? `<i class="badge" aria-label="${marketUnseen} new">${marketUnseen}</i>` : ""}</button>`).join("");
+  // Requests and Tribe live in the top bar, next to the avatar, so the bottom bar has room for the rest.
+  const TOP = ["requests", "tribe"], count = n => n === "requests" ? unseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
+  $("nav").innerHTML = allowed.filter(n => !TOP.includes(n)).map(n => `<button class="tab" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
+    count(n) ? `<i class="badge" aria-label="${count(n)} new">${count(n)}</i>` : ""}</button>`).join("");
+  $("topActs").innerHTML = allowed.filter(n => TOP.includes(n)).map(n => `<button class="hd-ic" type="button" data-view="${n}" aria-current="${n === currentView}"
+    aria-label="${TAB[n][0]}${count(n) ? ` (${count(n)} new)` : ""}" title="${TAB[n][0]}">${TAB[n][1]}${count(n) ? `<i class="badge" aria-hidden="true">${count(n)}</i>` : ""}</button>`).join("");
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
+$("topActs").addEventListener("click", e => { const t = e.target.closest("[data-view]"); if(t) go(t.dataset.view); });
 $("meBtn").addEventListener("click", () => go("account"));
 $("tribeToggle").addEventListener("change", async e => {
   try{ await api.setTribeOpen(e.target.checked); }catch(err){ console.error(err); }
   toast(e.target.checked ? "You're back in Build your tribe." : "You're hidden from tribe matches.");
 });
 $("accGender").addEventListener("click", () => openGender(false));
+// "Pays on time": earned by settling up in Flatsplits by the 10th, 3 months in a row; shown only if switched on.
+async function renderOnTime(){
+  const o = await api.onTime().catch(() => state.onTime || {}), n = o.months || 0, earned = n >= 3;
+  $("onTimeBox").innerHTML = `<div class="ot-head"><span class="ontime big">✓ Pays on time</span><b>${earned ? `Earned: ${n} months in a row` : `${n} of 3 months so far`}</b></div>
+    <p class="hint" style="margin:6px 0 10px">Settle up in your flat's Flatsplits group (with at least one flatmate on the app) by the 10th of every month, 3 months in a row, and owners and tribe matches
+      see this next to your name. Trips and parties don't count.</p>
+    <div class="ot-meter" aria-hidden="true">${[0, 1, 2].map(i => `<i class="${i < Math.min(n, 3) ? "on" : ""}"></i>`).join("")}</div>
+    <label class="switch" style="margin-top:12px"><input type="checkbox" id="onTimeToggle"${o.show ? " checked" : ""}><span>Show my badge${earned ? "" : " once I've earned it"}</span></label>`;
+}
+$("onTimeBox").addEventListener("change", async e => {
+  if(e.target.id !== "onTimeToggle") return;
+  try{
+    const n = await api.setShowOnTime(e.target.checked);
+    toast(!e.target.checked ? "Your badge is hidden." : n >= 3 ? "Owners and tribe matches now see ✓ Pays on time." : `You'll show the badge once you've paid on time 3 months in a row (${n} so far).`);
+    renderOnTime();
+  }catch(err){ console.error(err); toast("Couldn't save that. Please try again."); e.target.checked = !e.target.checked; }
+});
 $("showTo").addEventListener("click", async e => {
   const b = e.target.closest("[data-show]"); if(!b) return;
   const k = b.dataset.show, v = b.dataset.v, label = { all: "everyone", female: "women only", male: "men only" }[v];
@@ -3867,7 +3957,7 @@ function seekerHtml(x, l, i){
     : `<span class="req-pill">${by === "owner" ? "Passed this time" : "Declined"}</span>`;
   return `<article class="seek-card" style="--i:${i}">
     <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
-      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${isSample(x) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
+      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${onTimeBadge(x)}${isSample(x) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
         <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
       ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="Compatibility with ${esc(first)}">${ringSvg(x.match_pct, 58)}</button>` : ""}</div>
     <div class="seek-facts">
@@ -4011,7 +4101,7 @@ function tribeCardHtml(t){
     ${t.kind === "complete" ? `<p class="wants-line">✨ Complete your tribe of 3: you're both teaming up with the same person. Say yes to each other to share numbers.</p>`
       : t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
     <div class="seek-top"><span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>
-      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}${isSample(t) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
+      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}${onTimeBadge(t)}${isSample(t) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
     <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
     ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
@@ -4514,6 +4604,7 @@ const OB_TEXT = {
 };
 const LETTERS = ["A","B","C","D","E","F","G","H"];
 const showsTo = (pref, gender) => !pref || pref === "all" || pref === gender;
+const onTimeBadge = x => x && x.on_time ? `<span class="ontime" title="Settles up in Flatsplits on time, month after month">✓ Pays on time</span>` : "";
 const NAME_STEP = { k:"name", form:"name" };
 const SEX_STEP = { k:"sex", q:"Are you male or female?", why:"Many people look for flatmates of the same gender. In Account you choose who can see you.",
   opts:[{ v:"female", t:"Female" }, { v:"male", t:"Male" }] };
@@ -5270,7 +5361,7 @@ function incomingHtml(r, l){
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}${isSample(r) ? SAMPLE_TAG : ""}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}${onTimeBadge(r)}${isSample(r) ? SAMPLE_TAG : ""}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
       ${r.compromise ? `<div class="cm-banner"><b>🤝 Ready to compromise · ${r.orig_match_pct ?? "?"}% → ${r.match_pct}%</b>
@@ -5766,10 +5857,22 @@ async function renderSplits(){
   if(currentView !== "splits" || routeArg) return;
   const owed = groups.reduce((t, g) => t + Math.max(0, g.my_net), 0), owe = groups.reduce((t, g) => t + Math.max(0, -g.my_net), 0);
   $("fsTot").innerHTML = groups.length ? `<div><b>${rupees(owed)}</b><span>you get back in all</span></div><div><b>${rupees(owe)}</b><span>you owe in all</span></div>` : "";
-  $("fsGroups").innerHTML = groups.length ? groups.map(g => `<button class="fs-group" type="button" data-fs-open="${esc(g.id)}">
+  const flats = groups.filter(g => !fsIsEvent(g)), events = groups.filter(fsIsEvent);
+  const share = list => list.reduce((t, g) => t + (g.month_share || 0), 0);
+  const groupBtn = g => `<button class="fs-group" type="button" data-fs-open="${esc(g.id)}">
       <span class="fs-emoji">${esc(g.emoji)}${g.unseen ? `<i class="badge" aria-label="${g.unseen} new">${g.unseen}</i>` : ""}</span>
-      <span style="min-width:0"><b class="h">${esc(g.name)}</b><span class="s">${g.names.length ? "You, " + esc(g.names.join(", ")) : "Just you so far: add your flatmates"}</span></span>
-      ${fsNetHtml(g.my_net)}</button>`).join("") + `<button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:18px">+ New group</button>`
+      <span style="min-width:0"><b class="h">${esc(g.name)}</b><span class="s">${fsIsEvent(g) ? fsKindLabel(g.kind) + " · " : ""}${g.names.length ? "You, " + esc(g.names.join(", "))
+        : fsIsEvent(g) ? "Just you so far: add people" : "Just you so far: add your flatmates"}</span></span>
+      ${fsNetHtml(g.my_net)}</button>`;
+  // This month, your share: the flat's household spending, kept apart from trips and parties.
+  const month = new Date().toLocaleDateString("en-IN", { month:"long" });
+  $("fsGroups").innerHTML = groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
+        <div><span>🏠 Household</span><b>${rupees(share(flats))}</b></div><div><span>✈️🎉 Trips & parties</span><b>${rupees(share(events))}</b></div></div>
+      <h3 class="section-h">Your flat</h3>${flats.length ? flats.map(groupBtn).join("") : `<p class="hint" style="margin:0 0 6px">No flat group yet.</p>`}
+      <button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:10px">+ New flat group</button>
+      <h3 class="section-h">Trips & parties</h3>${events.length ? events.map(groupBtn).join("")
+        : `<p class="hint" style="margin:0 0 6px">Going away, or having people over? Split it here, apart from the flat's bills.</p>`}
+      <div class="fs-event-new"><button class="btn btn-ghost" type="button" data-fs-event="trip">✈️ New trip</button><button class="btn btn-ghost" type="button" data-fs-event="party">🎉 New house party</button></div>`
     : `<div class="empty"><div class="empty-ic" aria-hidden="true">🧾</div><h3>Living with people? Split it fairly.</h3>
        <p>Make a group for your flat, add your flatmates by mobile number, and add the first expense. Everyone sees the same balance.</p>
        <button class="btn btn-primary" type="button" data-fs="new">Create your flat's group</button>
@@ -5787,12 +5890,16 @@ function drawSplitGroup(){
   const others = d.members.filter(m => m.id !== d.me);
   const lines = pays.filter(p => p.from === d.me || p.to === d.me).map(p => p.from === d.me
     ? `You owe ${esc(fsMember(p.to).name)} <b>${rupees(p.amount)}</b>` : `${esc(fsMember(p.from).name)} owes you <b>${rupees(p.amount)}</b>`);
-  const tabs = [["activity", "Activity"], ["balances", "Balances"], ["bills", "Monthly bills"], ["month", "This month"]];
+  const ev = fsIsEvent(d.group);
+  if(ev && (fsTab === "bills" || fsTab === "month")) fsTab = "activity";
+  if(!ev && fsTab === "summary") fsTab = "activity";
+  const tabs = ev ? [["activity", "Activity"], ["balances", "Balances"], ["summary", "Summary"]]
+    : [["activity", "Activity"], ["balances", "Balances"], ["bills", "Monthly bills"], ["month", "This month"]];
   $("fsGroup").innerHTML = `
     <button class="linkbtn back-link" type="button" data-fs="back" style="margin-top:14px;padding-left:0">${LEFT_SVG}All groups</button>
     <div class="fs-ghead"><span class="fs-emoji">${esc(d.group.emoji)}</span><div style="min-width:0"><h1>${esc(d.group.name)}</h1>
-      <p>${others.length ? "You, " + esc(others.map(m => m.name).join(", ")) : "Just you so far"} ·
-        <button class="linkbtn" type="button" data-fs="members">${others.length ? "Members" : "Add flatmates"}</button></p></div></div>
+      <p>${ev ? `<span class="fs-kind">${fsKindLabel(d.group.kind)}</span> ` : ""}${others.length ? "You, " + esc(others.map(m => m.name).join(", ")) : "Just you so far"} ·
+        <button class="linkbtn" type="button" data-fs="members">${others.length ? "Members" : ev ? "Add people" : "Add flatmates"}</button></p></div></div>
     <div class="fs-bal ${mine > 0 ? "pos" : mine < 0 ? "neg" : ""}"><small>${mine > 0 ? "Overall, you get back" : mine < 0 ? "Overall, you owe" : "Your balance"}</small>
       <b>${mine ? rupees(mine) : "All settled up 🎉"}</b>${lines.length ? `<ul>${lines.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
     <div class="fs-acts"><button class="btn btn-primary" type="button" data-fs="add">+ Add expense</button>
@@ -5800,6 +5907,8 @@ function drawSplitGroup(){
     <div class="area-chips fs-tabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-fs-tab="${k}" aria-pressed="${fsTab === k}">${t}${
       k === "bills" && d.bills.length ? ` · ${d.bills.length}` : ""}</button>`).join("")}</div>
     <div id="fsPanel">${fsPanel(net, pays)}</div>
+    ${ev ? "" : `<p class="fs-party-hint">🎉 Having people over or going on a trip? <button class="linkbtn" type="button" data-fs-event="party" data-fs-from-flat>Start a separate group</button>
+      so it stays out of the flat's monthly bills.</p>`}
     <button class="fs-fab" type="button" data-fs="add" aria-label="Add expense">+</button>`;
 }
 function fsRowHtml(e){
@@ -5851,6 +5960,25 @@ function fsPanel(net, pays){
         <button class="btn btn-ghost btn-sm" type="button" data-fs-bill-del="${esc(b.id)}">Stop</button></div>`).join("")}
       <button class="btn btn-ghost" type="button" data-fs="bill" style="margin:14px 0 30px">+ Add a monthly bill</button>`;
   }
+  if(fsTab === "summary"){
+    // A trip or party: everything in it, who paid what against their share.
+    const spend = d.expenses.filter(e => e.kind === "expense"), total = spend.reduce((t, e) => t + e.amount, 0);
+    if(!spend.length) return `<div class="empty"><h3>Nothing spent yet</h3><p>Add the first expense: tickets, the cab, dinner, drinks…</p></div>`;
+    const paid = {}, owes = {}, byCat = {};
+    spend.forEach(e => { paid[e.paid_by] = (paid[e.paid_by] || 0) + e.amount; byCat[e.category] = (byCat[e.category] || 0) + e.amount;
+      Object.entries(e.splits).forEach(([m, v]) => owes[m] = (owes[m] || 0) + Number(v)); });
+    const days = new Set(spend.map(e => e.spent_on)).size, top = Math.max(...Object.values(byCat));
+    return `<div class="stats fs-sum-stats" style="margin:16px 0 4px"><div class="stat"><b>${rupees(total)}</b><span>spent in all</span></div>
+        <div class="stat"><b>${rupees(owes[d.me] || 0)}</b><span>your share</span></div>
+        <div class="stat"><b>${rupees(Math.round(total / Math.max(1, d.members.length)))}</b><span>average each</span></div></div>
+      <h3 class="section-h">Who paid, and their share</h3>
+      ${d.members.map(m => `<div class="fs-member">${fsAv(m)}<span class="grow"><b>${esc(fsName(m.id))}</b>
+        <span class="s" style="display:block">paid ${rupees(paid[m.id] || 0)} · share ${rupees(owes[m.id] || 0)}</span></span>${fsNetHtml(net[m.id] || 0)
+        .replace(/you get back/, m.id === d.me ? "you get back" : "gets back").replace(/you owe/, m.id === d.me ? "you owe" : "owes")}</div>`).join("")}
+      <h3 class="section-h">By category</h3><div class="fs-bars" style="margin-bottom:30px">${Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([k, v]) =>
+        `<div class="fs-bar"><span>${catIcon(k)} ${esc((SPLIT_CAT[k] || SPLIT_CAT.other)[2])}</span><span><i style="width:${Math.round(v / top * 100)}%"></i></span><span>${rupees(v)}</span></div>`).join("")}</div>
+      <p class="hint" style="margin:-14px 0 30px">${days} ${days === 1 ? "day" : "days"} of spending. None of it counts in your flat's household totals.</p>`;
+  }
   if(fsTab === "month"){
     const ym = new Date().toISOString().slice(0, 7), last = new Date(); last.setDate(1); last.setMonth(last.getMonth() - 1);
     const lym = last.toISOString().slice(0, 7), spend = d.expenses.filter(e => e.kind === "expense");
@@ -5882,8 +6010,8 @@ function openFs(title, sub, html){
   $("fsdTitle").textContent = title; $("fsdSub").textContent = sub || ""; $("fsdBody").innerHTML = html;
   if(!$("dlgFs").open) $("dlgFs").showModal();
 }
-function memberRowsHtml(rows){
-  return rows.map((r, i) => `<div class="grid2 fs-new-row"><div class="field"><label for="fsN${i}">Name</label><input type="text" id="fsN${i}" maxlength="40" value="${esc(r.name)}" placeholder="Riya"></div>
+function memberRowsHtml(rows, ph = "Riya"){
+  return rows.map((r, i) => `<div class="grid2 fs-new-row"><div class="field"><label for="fsN${i}">Name</label><input type="text" id="fsN${i}" maxlength="40" value="${esc(r.name)}" placeholder="${ph}"></div>
     <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" maxlength="10" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
 }
 function readMemberRows(root){
@@ -5893,7 +6021,7 @@ function readMemberRows(root){
 async function openNewGroup(){
   const people = await knownPeople();
   fsx = { emoji: "🏠", rows: [{ name:"", phone:"" }] };
-  openFs("New group", "For your flat, or a trip with flatmates", `<form id="fsNewForm" novalidate>
+  openFs("New flat group", "Rent, bills and groceries for your flat", `<form id="fsNewForm" novalidate>
     <div class="field"><label for="fsGName">Group name</label><input type="text" id="fsGName" maxlength="60" required placeholder="Flat B-304, Koramangala"></div>
     <div class="field"><label>Icon</label><div class="chips">${GROUP_EMOJI.map((e, i) => `<label class="chip"><input type="radio" name="fsEmoji" value="${e}"${i ? "" : " checked"}>${e}</label>`).join("")}</div></div>
     <h3 class="section-h" style="margin-top:6px">Your flatmates</h3>
@@ -5903,6 +6031,28 @@ async function openNewGroup(){
     <button class="linkbtn" type="button" data-fs="row" style="padding-left:0">+ Add another person</button>
     <p class="hint">They'll see the group when they sign in with that number. You can add people later too.</p>
     <button class="btn btn-primary btn-block" type="submit" style="margin-top:12px">Create group</button></form>`);
+}
+// A trip (out of the house) or a house party (at home): its own group, with flatmates and/or friends, apart from the flat.
+async function openNewEvent(kind, fromFlat){
+  const groups = await api.splitGroups().catch(() => []), known = new Map();
+  if(fromFlat && fsData) fsData.members.filter(m => m.id !== fsData.me).forEach(m => known.set(m.phone, { name: m.name, phone: m.phone, flat: true }));
+  groups.filter(g => !fsIsEvent(g)).forEach(g => (g.people || []).forEach(p => { if(!known.has(p.phone)) known.set(p.phone, Object.assign({ flat: true }, p)); }));
+  (await knownPeople().catch(() => [])).forEach(p => { if(!known.has(p.phone)) known.set(p.phone, p); });
+  fsx = { kind, rows: [{ name:"", phone:"" }], picked: new Set(fromFlat ? [...known.values()].filter(p => p.flat).map(p => p.phone) : []) };
+  const people = [...known.values()];
+  openFs(kind === "trip" ? "New trip" : "New house party", "Split it apart from the flat's bills", `<form id="fsEventForm" novalidate>
+    <div class="fs-kinds">${[["trip", "✈️", "Trip", "Out of the house: travel, stay, food"], ["party", "🎉", "House party", "At home, with flatmates and friends"]].map(([k, ic, t, sub]) =>
+      `<label class="fs-kindopt"><input type="radio" name="fsKind" value="${k}"${k === kind ? " checked" : ""}><span class="ic">${ic}</span><span><b>${t}</b><small>${sub}</small></span></label>`).join("")}</div>
+    <div class="field"><label for="fsEName">Name</label><input type="text" id="fsEName" maxlength="60" required placeholder="${kind === "trip" ? "Goa weekend" : "Saturday house party"}"></div>
+    <div class="field"><label>Icon</label><div class="chips" id="fsEEmoji">${EVENT_EMOJI[kind].map((e, i) => `<label class="chip"><input type="radio" name="fsEEmoji" value="${e}"${i ? "" : " checked"}>${e}</label>`).join("")}</div></div>
+    <h3 class="section-h" style="margin-top:6px">Who's in</h3>
+    ${people.length ? `<p class="hint" style="margin:0 0 8px">Tap to add:</p><div class="chips" style="margin-bottom:12px">${people.map(p =>
+      `<button class="chip" type="button" data-fs-pick="${esc(p.phone)}" data-name="${esc(p.name)}" aria-pressed="${fsx.picked.has(p.phone)}">${esc(p.name)}${p.flat ? " 🏠" : ""}</button>`).join("")}</div>` : ""}
+    <p class="hint" style="margin:0 0 6px">Friends from outside the flat too:</p>
+    <div id="fsNewRows">${memberRowsHtml(fsx.rows, "Friend's name")}</div>
+    <button class="linkbtn" type="button" data-fs="row" style="padding-left:0">+ Add another person</button>
+    <p class="hint">Everyone sees it when they sign in with that number. None of it counts in your flat's household spending.</p>
+    <button class="btn btn-primary btn-block" type="submit" style="margin-top:12px">${kind === "trip" ? "Create the trip" : "Create the party"}</button></form>`);
 }
 async function openMembers(){
   const d = fsData, net = splitNets(d.members, d.expenses), people = (await knownPeople()).filter(p => !d.members.some(m => m.phone === p.phone));
@@ -5926,11 +6076,12 @@ async function openMembers(){
 function openExpense(bill){
   const d = fsData;
   if(d.members.length < 2){ toast("Add your flatmates first."); return openMembers(); }
-  fsx = { bill, cat:"groceries", how:"equal", incl:new Set(d.members.map(m => m.id)), exact:{}, shares:Object.fromEntries(d.members.map(m => [m.id, 1])) };
+  fsx = { bill, cat: fsIsEvent(d.group) ? "food" : "groceries", how:"equal", incl:new Set(d.members.map(m => m.id)), exact:{}, shares:Object.fromEntries(d.members.map(m => [m.id, 1])) };
   const today = new Date().toISOString().slice(0, 10), dom = Math.min(28, new Date().getDate());
   openFs(bill ? "Add a monthly bill" : "Add an expense", d.group.name, `<form id="fsAddForm" novalidate>
     <div class="fs-amt"><span>₹</span><input type="text" id="fsAmt" inputmode="decimal" placeholder="0" aria-label="Amount" autocomplete="off"></div>
-    <div class="fs-cats" id="fsCats">${SPLIT_CATS.map(([k, ic, t]) => `<button type="button" data-cat="${k}" aria-pressed="${k === fsx.cat}"><i aria-hidden="true">${ic}</i>${t}</button>`).join("")}</div>
+    <div class="fs-cats" id="fsCats">${(fsIsEvent(d.group) ? EVENT_CATS.map(k => SPLIT_CAT[k]) : SPLIT_CATS.filter(c => !["travel", "stay", "drinks", "tickets"].includes(c[0])))
+      .map(([k, ic, t]) => `<button type="button" data-cat="${k}" aria-pressed="${k === fsx.cat}"><i aria-hidden="true">${ic}</i>${t}</button>`).join("")}</div>
     <div class="field"><label for="fsTitle">What for</label><input type="text" id="fsTitle" maxlength="80" placeholder="Groceries"></div>
     <div class="field"><label>Paid by</label><div class="chips">${d.members.map(m => `<label class="chip"><input type="radio" name="fsPaid" value="${esc(m.id)}"${
       m.id === d.me ? " checked" : ""}>${esc(fsName(m.id))}</label>`).join("")}</div></div>
@@ -5941,7 +6092,7 @@ function openExpense(bill){
         `<option value="${i + 1}"${i + 1 === dom ? " selected" : ""}>${i + 1}</option>`).join("")}</select>
         <p class="hint">Starts this month if that day has already passed.</p></div>`
       : `<div class="grid2"><div class="field"><label for="fsDate">Date</label><input type="date" id="fsDate" value="${today}"></div>
-        <div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="fsRepeat"><span>Repeats monthly</span></label></div></div>`}
+        ${fsIsEvent(d.group) ? "" : `<div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="fsRepeat"><span>Repeats monthly</span></label></div>`}</div>`}
     <button class="btn btn-primary btn-block" type="submit">${bill ? "Save monthly bill" : "Add expense"}</button></form>`);
   drawSplitRows();
   setTimeout(() => $("fsAmt") && $("fsAmt").focus(), 60);
@@ -6065,7 +6216,7 @@ $("dlgFs").addEventListener("click", async e => {
     if(!rows.some(r => r.phone === phone)) rows.push({ name, phone });
     $("fsNewRows").innerHTML = memberRowsHtml(rows.concat({ name:"", phone:"" })); known.remove(); return;
   }
-  if(t.closest("[data-fs=row]")){ $("fsNewRows").insertAdjacentHTML("beforeend", memberRowsHtml([{ name:"", phone:"" }]).replace(/fs([NP])0/g, `fs$1${$("fsNewRows").children.length}`)); return; }
+  if(t.closest("[data-fs=row]")){ $("fsNewRows").insertAdjacentHTML("beforeend", memberRowsHtml([{ name:"", phone:"" }], $("fsEventForm") ? "Friend's name" : "Riya").replace(/fs([NP])0/g, `fs$1${$("fsNewRows").children.length}`)); return; }
   const add = t.closest("[data-fs-add]");
   try{
     if(add){ const [name, phone] = add.dataset.fsAdd.split("|"); await api.splitAddMember(fsData.group.id, name, phone); toast(`${name} added.`); fsData = await api.splitGet(fsData.group.id); drawSplitGroup(); return openMembers(); }
@@ -6096,11 +6247,35 @@ $("dlgFs").addEventListener("input", e => {
   if(t.dataset.exact){ fsx.exact[t.dataset.exact] = t.value; return updateSplitInfo(); }
   if(t.id === "fsSAmt") updateUpiPay();
 });
+document.addEventListener("click", e => {
+  const ev = e.target.closest("[data-fs-event]"); if(!ev) return;
+  e.stopPropagation(); openNewEvent(ev.dataset.fsEvent, ev.hasAttribute("data-fs-from-flat"));
+}, true);
+$("dlgFs").addEventListener("click", e => {
+  const pick = e.target.closest("[data-fs-pick]");
+  if(pick){ const ph = pick.dataset.fsPick, on = !fsx.picked.has(ph); on ? fsx.picked.add(ph) : fsx.picked.delete(ph); pick.setAttribute("aria-pressed", on); return; }
+  const k = e.target.closest("[name=fsKind]");
+  if(k && k.value !== fsx.kind){ fsx.kind = k.value; $("fsEEmoji").innerHTML = EVENT_EMOJI[k.value].map((x, i) => `<label class="chip"><input type="radio" name="fsEEmoji" value="${x}"${i ? "" : " checked"}>${x}</label>`).join("");
+    $("fsEName").placeholder = k.value === "trip" ? "Goa weekend" : "Saturday house party"; $("fsdTitle").textContent = k.value === "trip" ? "New trip" : "New house party";
+    $("fsEventForm").querySelector("[type=submit]").textContent = k.value === "trip" ? "Create the trip" : "Create the party"; }
+});
 $("dlgFs").addEventListener("submit", async e => {
   e.preventDefault();
   const f = e.target, btn = f.querySelector("[type=submit]");
   const bad = msg => { showFormError(f, msg); toast(msg); };
   try{
+    if(f.id === "fsEventForm"){
+      const name = $("fsEName").value.trim(), kind = (f.querySelector("[name=fsKind]:checked") || {}).value || fsx.kind, rows = readMemberRows(f);
+      if(!name) return bad(kind === "trip" ? "Give the trip a name." : "Give the party a name.");
+      const wrong = rows.find(r => !r.name || !validPhone(r.phone));
+      if(wrong) return bad(`Please check ${wrong.name || "each person"}: a name and a 10-digit mobile number starting with 6–9.`);
+      const picked = [...f.querySelectorAll("[data-fs-pick][aria-pressed=true]")].map(b => ({ name: b.dataset.name, phone: b.dataset.fsPick }));
+      const people = picked.concat(rows.filter(r => !picked.some(p => p.phone === r.phone)));
+      btn.disabled = true;
+      const id = await api.splitCreate(name, (f.querySelector("[name=fsEEmoji]:checked") || {}).value, people, kind);
+      $("dlgFs").close(); toast(`${kind === "trip" ? "Trip" : "Party"} created. Add the first expense; it won't touch the flat's bills.`);
+      fsTab = "activity"; return go("splits/" + id);
+    }
     if(f.id === "fsNewForm"){
       const name = $("fsGName").value.trim(), rows = readMemberRows(f);
       if(!name) return bad("Give the group a name.");
@@ -6144,9 +6319,10 @@ $("dlgFs").addEventListener("submit", async e => {
       }else{
         p.spent_on = $("fsDate").value || new Date().toISOString().slice(0, 10);
         await api.splitAdd(fsData.group.id, p);
-        if($("fsRepeat").checked) await api.splitBillSave(fsData.group.id, Object.assign({}, p, { day: Math.min(28, Number(p.spent_on.slice(8, 10))), last_month: p.spent_on.slice(0, 7) }));
+        const repeat = !!($("fsRepeat") && $("fsRepeat").checked);
+        if(repeat) await api.splitBillSave(fsData.group.id, Object.assign({}, p, { day: Math.min(28, Number(p.spent_on.slice(8, 10))), last_month: p.spent_on.slice(0, 7) }));
         const mine = splits[fsData.me] || 0, paidMe = p.paid_by === fsData.me;
-        toast(`Added ${p.title}. ${paidMe ? (amt - mine ? `You lent ${rupees(amt - mine)}.` : "") : mine ? `Your share: ${rupees(mine)}.` : ""}${$("fsRepeat").checked ? " Repeats monthly." : ""}`);
+        toast(`Added ${p.title}. ${paidMe ? (amt - mine ? `You lent ${rupees(amt - mine)}.` : "") : mine ? `Your share: ${rupees(mine)}.` : ""}${repeat ? " Repeats monthly." : ""}`);
         fsTab = "activity";
       }
       return fsChanged();
@@ -6967,6 +7143,7 @@ async function renderAccount(){
     `<div class="st-row"><span>${label}, show me to</span><div class="seg" role="group" aria-label="${label}, show me to">${[["all", "Everyone"], ["female", "Women only"], ["male", "Men only"]].map(([v, t]) =>
       `<button type="button" data-show="${k}" data-v="${v}" aria-pressed="${(cur || "all") === v}">${t}</button>`).join("")}</div></div>`).join("");
   if(isOwner()) return;
+  renderOnTime();
   const vt = vibeType(state.vibe);
   $("vibeType").innerHTML = vt ? `<button class="vt-line" type="button" data-quiz><span aria-hidden="true">${vt.emoji}</span>
     <span><small>Your flatmate type</small><b>${esc(vt.title)}</b></span><em>Share</em></button>` : "";

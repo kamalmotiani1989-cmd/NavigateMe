@@ -123,6 +123,23 @@ the room comes second.
     expense; people can only be removed once they're settled up. New expenses from others show as a badge
     on Splits and a notification. People who aren't on the app yet get a WhatsApp invite, and they see
     the group as soon as they sign in with that number.
+    **Trips and house parties are kept apart from the flat.** A group is a *flat*, a *trip* (out of the
+    house: travel, stay, food) or a *house party* (at home, with flatmates and friends), in
+    `fm_split_groups.kind`. Start one from Splits (✈️ New trip / 🎉 New house party) or from inside the
+    flat's group ("Having people over or going on a trip? Start a separate group"), which ticks your
+    flatmates for you; anyone else is added by mobile number. Trips and parties have their own categories
+    (cab, stay, drinks, tickets, food), up to 20 people, no monthly bills (`fm_split_bill_save` refuses them)
+    and a **Summary** tab: total spent, your share, the average, who paid against their share, and spend by
+    category. The Splits home shows **Your share this month** in two lines, 🏠 Household and ✈️🎉 Trips &
+    parties (`month_share` from `fm_split_groups()`), so the flat's household spending is never mixed with outings.
+    **✓ Pays on time (opt-in).** A seeker who settles up in their *flat* group by the 10th of the next month,
+    3 months in a row, earns a badge; trips and parties don't count. A month counts if you had a share of
+    that month's flat expenses; it's on time if, counting that month's expenses and payments made up to the
+    10th, you owe no more than ₹1 in any flat group (only groups with at least one other member on the app count, so a group of made-up numbers earns nothing; `fm_on_time_months`, India time, last 12 months; the
+    current month waits until its 10th has passed). It's off until you switch on **Show my badge** in
+    Account, then owners see it on requests and in the Escape, and tribe matches see it on their cards. The
+    count is kept on `fm_profiles` (refreshed daily by `fm_me` and straight away by `fm_on_time_status` on
+    the Account page); a badge not refreshed for 40 days isn't shown.
 16. **FlatMart (everyone).** An OLX for flatmates: buy and sell furniture, beds, appliances, kitchen
     things, electronics, bikes and books with people nearby, so nobody pays full price to furnish a room
     and nobody dumps a fridge when they move out. Post in a minute: up to 4 photos, category, condition,
@@ -141,7 +158,9 @@ the room comes second.
     brings them back. Changing a running sale's name or date is free. Bought boosts and sales are credits
     (`fm_profiles.boost_credits` / `sale_credits`, added by `fm_credit_order`) used by `fm_market_boost` and
     `fm_market_sale_start`; while charges are off (`fm_settings.charges_enabled`), both are free.
-    On phones the bottom bar now has six tabs, and Account moved to the avatar at the top right.
+    **Requests** and **Tribe** sit as icons in the top bar (with their badges), next to notifications and the
+    avatar for Account, so the bottom bar keeps the main places: Discover, Saved, Splits, Market and Passes
+    for seekers; My flat, Escape, Post, Splits, Market and Passes for owners.
 
 17. **Search together as a tribe.** The ♥ shortlist is saved to the server and shared inside a tribe (up to 3
     people). When anyone in the tribe taps ♥, the others see it in Saved under "Shortlisted by Riya", on the
