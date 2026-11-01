@@ -6,6 +6,7 @@
 //   declined -> the seeker: "Not this time"
 // Tribe events ({tribe_id, event}) are handled by tribeEvent below.
 // Party invites ({party_id, event}) tell the host's flatmates: partyEvent below.
+// New listings ({listing_id}) go to seekers they fit (fm_listing_audience); ticket updates ({ticket_id}) to their owner.
 // Owner invites (The Empty Room Escape) go the other way:
 //   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
 //   approved / declined -> the owner
@@ -87,6 +88,16 @@ async function tribeEvent(id: string, event: string) {
   if (t.status === "bonded") {
     await pushTo(t.a, `You and ${first(t.b)} are a tribe!`, `Numbers are shared. Call ${first(t.b)} and start hunting for a whole flat together.`, "tribe");
     await pushTo(t.b, `You and ${first(t.a)} are a tribe!`, `Numbers are shared. Call ${first(t.a)} and start hunting for a whole flat together.`, "tribe");
+    // Anyone already in the tribe hears that someone new joined it: the newcomer is whichever of the two
+    // they weren't already bonded with.
+    const { data: ma } = await admin.rpc("fm_tribe_members", { p_user: t.a });
+    const members = (ma as string[]) || [];
+    for (const u of members.filter((x) => x !== t.a && x !== t.b)) {
+      const [x, y] = [u, t.a].sort();
+      const { data: had } = await admin.from("fm_tribe_links").select("id").eq("a", x).eq("b", y).eq("status", "bonded").maybeSingle();
+      const newcomer = had ? t.b : t.a;
+      await pushTo(u, `${first(newcomer)} joined your tribe`, `Your tribe is now ${members.length}. Say hi, and hunt for a ${members.length}BHK together.`, "tribe");
+    }
     return { sent: "bonded" };
   }
   if (event === "insert") {
@@ -127,12 +138,37 @@ async function partyEvent(id: string, event: string) {
   return { sent };
 }
 
+// A new listing: everyone it fits (city, areas, kind, 70%+ vibe; whole flats for tribes of that size).
+const KIND: Record<string, string> = { room: "private room", flatmate: "private room", shared: "shared room", flat: "whole flat" };
+async function listingEvent(id: string) {
+  const { data: l } = await admin.from("fm_listings").select("id, kind, title, locality, rent, bhk, status").eq("id", id).single();
+  if (!l || l.status !== "active") return { skipped: true };
+  const { data: rows, error } = await admin.rpc("fm_listing_audience", { p_listing: id });
+  if (error) throw error;
+  let sent = 0;
+  for (const r of (rows || []) as { user_id: string; match_pct: number | null; for_tribe: boolean }[]) {
+    const title = r.for_tribe ? `🏠 A ${l.bhk}BHK for your tribe in ${l.locality}`
+      : `New ${KIND[l.kind] || "home"} in ${l.locality}${r.match_pct != null ? ` · ${r.match_pct}% vibe` : ""}`;
+    sent += await pushTo(r.user_id, title, `${l.title} · ₹${Number(l.rent).toLocaleString("en-IN")}/month. Have a look before it's gone.`, "discover");
+  }
+  return { sent };
+}
+// The team changed a ticket's status or replied.
+const TICKET_STATUS: Record<string, string> = { open: "Received", in_review: "Being looked at", resolved: "Resolved", closed: "Closed" };
+async function ticketEvent(id: string) {
+  const { data: t } = await admin.from("fm_tickets").select("code, user_id, status, reply").eq("id", id).single();
+  if (!t) return { skipped: true };
+  return { sent: await pushTo(t.user_id, `Update on your ticket ${t.code}: ${TICKET_STATUS[t.status] || t.status}`, t.reply ? String(t.reply).slice(0, 160) : "Open Help to see it.", "help") };
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get("x-notify-secret") !== env("NOTIFY_SECRET") || !env("NOTIFY_SECRET")) return json({ error: "forbidden" }, 403);
   try {
     const payload = await req.json();
     if (payload.tribe_id) return json(await tribeEvent(payload.tribe_id, payload.event));
     if (payload.party_id) return json(await partyEvent(payload.party_id, payload.event));
+    if (payload.listing_id) return json(await listingEvent(payload.listing_id));
+    if (payload.ticket_id) return json(await ticketEvent(payload.ticket_id));
     const { request_id } = payload;
     const { data: r } = await admin.from("fm_requests")
       .select("id, status, match_pct, seeker_id, listing_id, initiated_by, fm_listings(title, owner_id)").eq("id", request_id).single();

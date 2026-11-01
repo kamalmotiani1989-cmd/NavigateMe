@@ -465,7 +465,9 @@ begin
   update fm_profiles set
     search = jsonb_build_object('city', p_search->>'city',
                                 'areas', case when jsonb_typeof(p_search->'areas') = 'array' then p_search->'areas' else '[]'::jsonb end,
-                                'budget', case when p_search->>'budget' ~ '^[0-9]{1,7}$' then (p_search->>'budget')::int end),
+                                'budget', case when p_search->>'budget' ~ '^[0-9]{1,7}$' then (p_search->>'budget')::int end,
+                                -- What they're looking for: a private room, a shared room or a whole flat ('' = anything).
+                                'kind', case when p_search->>'kind' in ('room', 'shared', 'flat') then p_search->>'kind' else '' end),
     search_at = now(),
     discoverable = coalesce(p_discoverable, discoverable)
   where id = auth.uid();
@@ -933,7 +935,7 @@ create or replace function public.fm_tribe_list()
 returns table (id uuid, other_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
                interests jsonb, vibe jsonb, my_yes boolean, their_yes boolean, status text, phone text,
                created_at timestamptz, bonded_at timestamptz, unseen boolean,
-               kind text, my_size int, their_size int, on_time boolean)
+               kind text, my_size int, their_size int, on_time boolean, looking text)
 language sql security definer set search_path = public stable as $$
   -- 'left' rows: only to the one who stayed, and only until they've seen the notice.
   select t.id, o.id, split_part(coalesce(o.full_name, ''), ' ', 1), o.occupation,
@@ -945,7 +947,8 @@ language sql security definer set search_path = public stable as $$
          t.created_at, t.bonded_at,
          case when t.a = auth.uid() then not t.seen_a else not t.seen_b end,
          t.kind, cardinality(fm_tribe_members(auth.uid())), cardinality(fm_tribe_members(o.id)),
-         o.show_on_time and o.on_time_months >= 3 and o.on_time_at > now() - interval '40 days'
+         o.show_on_time and o.on_time_months >= 3 and o.on_time_at > now() - interval '40 days',
+         coalesce(o.search->>'kind', '')
   from fm_tribe_links t
   join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
   join fm_profiles me on me.id = auth.uid()
@@ -1806,6 +1809,148 @@ drop trigger if exists fm_parties_notify on public.fm_parties;
 create trigger fm_parties_notify after insert or update on public.fm_parties
   for each row execute function public.fm_party_notify();
 
+-- ------------------------------------------------- new-flat alerts --
+-- Who a new listing is for: seekers in its city and areas, still looking (searched in the last 60 days), who'd see
+-- its kind (private room or whole flat: no shared rooms; shared room or anything: everything), and with 70%+
+-- vibe with the household (whole flats and empty flats always count). "tribe": a whole flat with a bedroom
+-- for each member of the seeker's tribe.
+create or replace function public.fm_listing_fits(l fm_listings, p fm_profiles) returns boolean
+language sql stable set search_path = public as $$
+  select p.role = 'seeker' and p.id <> l.owner_id and l.status = 'active'
+     and lower(coalesce(p.search->>'city', '')) = lower(l.city)
+     and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
+     and (coalesce(p.search->>'kind', '') in ('', 'shared') or l.kind <> 'shared')
+     and (l.kind = 'flat' or coalesce((l.household->>'residents')::int, 0) = 0 or coalesce(fm_match(p.vibe, l.household), 0) >= 70)
+$$;
+
+-- In the app: new homes for me since p_since (at most a week back), newest first.
+create or replace function public.fm_listing_alerts(p_since timestamptz)
+returns table (id uuid, kind text, title text, locality text, city text, rent int, bhk int, match_pct int, for_tribe boolean, created_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select l.id, l.kind, l.title, l.locality, l.city, l.rent, l.bhk,
+         case when coalesce((l.household->>'residents')::int, 0) > 0 then fm_match(me.vibe, l.household) end,
+         l.kind = 'flat' and cardinality(fm_tribe_members(me.id)) > 1 and l.bhk = cardinality(fm_tribe_members(me.id)),
+         l.created_at
+  from fm_profiles me join fm_listings l on fm_listing_fits(l, me)
+  where me.id = auth.uid() and l.created_at > greatest(coalesce(p_since, now() - interval '1 day'), now() - interval '7 days')
+  order by l.created_at desc limit 10;
+$$;
+
+-- For fm-notify (service role only): everyone a new listing is for.
+create or replace function public.fm_listing_audience(p_listing uuid)
+returns table (user_id uuid, match_pct int, for_tribe boolean)
+language sql stable security definer set search_path = public as $$
+  select p.id,
+         case when coalesce((l.household->>'residents')::int, 0) > 0 then fm_match(p.vibe, l.household) end,
+         l.kind = 'flat' and cardinality(fm_tribe_members(p.id)) > 1 and l.bhk = cardinality(fm_tribe_members(p.id))
+  from fm_listings l join fm_profiles p on fm_listing_fits(l, p)
+  where l.id = p_listing and p.search_at > now() - interval '60 days'
+  limit 500;
+$$;
+
+-- Push them when a listing goes live (see fm-notify).
+create or replace function public.fm_listing_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if new.status <> 'active' or (tg_op = 'UPDATE' and old.status = 'active') then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(url := v_url, body := jsonb_build_object('listing_id', new.id),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_listings_notify on public.fm_listings;
+create trigger fm_listings_notify after insert or update of status on public.fm_listings for each row execute function public.fm_listing_notify();
+
+-- ------------------------------------------------- Help: grievances and reports --
+-- The in-app helper files grievances (about the service) and reports (about a listing, a person or an item) as
+-- tickets. The team works them in the Supabase Table Editor: set status and write a reply; the person sees both
+-- in "My tickets" and gets a notification. Under India's IT Rules, acknowledge within 24 hours, resolve within 15 days.
+create table if not exists public.fm_tickets (
+  id            uuid primary key default gen_random_uuid(),
+  code          text not null unique,
+  user_id       uuid not null references auth.users(id) on delete cascade,
+  kind          text not null check (kind in ('grievance', 'report')),
+  category      text not null,
+  subject_type  text check (subject_type in ('listing', 'person', 'item', 'party', 'app')),
+  subject_id    text,
+  subject_label text,
+  message       text not null,
+  status        text not null default 'open' check (status in ('open', 'in_review', 'resolved', 'closed')),
+  reply         text,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  seen_at       timestamptz
+);
+create index if not exists fm_tickets_user_idx on public.fm_tickets (user_id, created_at desc);
+create index if not exists fm_tickets_open_idx on public.fm_tickets (status, created_at);
+alter table public.fm_tickets enable row level security;   -- no policies: fm_ticket_* only (and the team, as admin)
+
+-- When the team changes the status or the reply, the person sees it as new (and fm-notify pushes it).
+create or replace function public.fm_ticket_touch() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if new.status is distinct from old.status or new.reply is distinct from old.reply then new.updated_at := now(); end if;
+  return new;
+end $$;
+drop trigger if exists fm_tickets_touch on public.fm_tickets;
+create trigger fm_tickets_touch before update on public.fm_tickets for each row execute function public.fm_ticket_touch();
+
+create or replace function public.fm_ticket_create(p jsonb) returns text
+language plpgsql security definer set search_path = public as $$
+declare v_code text; v_kind text := p->>'kind'; v_cat text := p->>'category'; v_msg text := trim(coalesce(p->>'message', ''));
+        v_type text := nullif(p->>'subject_type', '');
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if v_kind not in ('grievance', 'report') then raise exception 'bad-kind'; end if;
+  if v_cat not in ('broker', 'fake', 'scam', 'harassment', 'spam', 'payment', 'account', 'listing', 'privacy', 'bug', 'other') then raise exception 'bad-category'; end if;
+  if char_length(v_msg) < 10 then raise exception 'too-short'; end if;
+  if v_type is not null and v_type not in ('listing', 'person', 'item', 'party', 'app') then v_type := null; end if;
+  if (select count(*) from fm_tickets where user_id = auth.uid() and created_at > now() - interval '1 day') >= 10 then raise exception 'too-many'; end if;
+  loop
+    v_code := 'FMF-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6));
+    exit when not exists (select 1 from fm_tickets where code = v_code);
+  end loop;
+  insert into fm_tickets (code, user_id, kind, category, subject_type, subject_id, subject_label, message)
+  values (v_code, auth.uid(), v_kind, v_cat, v_type, left(nullif(p->>'subject_id', ''), 80), left(nullif(trim(coalesce(p->>'subject_label', '')), ''), 120), left(v_msg, 2000));
+  return v_code;
+end $$;
+
+-- My tickets, newest first. unseen: the team changed it since I last looked.
+create or replace function public.fm_my_tickets()
+returns table (code text, kind text, category text, subject_label text, message text, status text, reply text,
+               created_at timestamptz, updated_at timestamptz, unseen boolean)
+language sql stable security definer set search_path = public as $$
+  select t.code, t.kind, t.category, t.subject_label, t.message, t.status, t.reply, t.created_at, t.updated_at,
+         (t.status <> 'open' or t.reply is not null) and (t.seen_at is null or t.updated_at > t.seen_at)
+  from fm_tickets t where t.user_id = auth.uid() order by t.created_at desc limit 50;
+$$;
+
+create or replace function public.fm_tickets_seen() returns void
+language sql security definer set search_path = public as $$
+  update fm_tickets set seen_at = now() where user_id = auth.uid() and (seen_at is null or updated_at > seen_at);
+$$;
+
+-- Push the person when their ticket changes (see fm-notify).
+create or replace function public.fm_ticket_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if new.status is not distinct from old.status and new.reply is not distinct from old.reply then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(url := v_url, body := jsonb_build_object('ticket_id', new.id),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_tickets_notify on public.fm_tickets;
+create trigger fm_tickets_notify after update on public.fm_tickets for each row execute function public.fm_ticket_notify();
+
 -- -------------------------------------------------------------- FlatMart --
 -- Flatmates selling furniture, appliances and the rest to each other. Same rule as rooms:
 -- the seller's number is only shared once they accept an offer, and then both ways.
@@ -2396,7 +2541,7 @@ begin
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
-                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify') then
+                     'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -2409,6 +2554,7 @@ grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
 grant execute on function public.fm_otp_request(text, text) to anon;
 grant execute on function public.fm_test_code_ok(text) to service_role;
+grant execute on function public.fm_listing_audience(uuid) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;
 grant execute on function public.fm_party_get(text, text) to anon;
 grant execute on function public.fm_party_rsvp(text, text, text, text, int) to anon;

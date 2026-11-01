@@ -968,6 +968,62 @@ div.cx-area{cursor:default}
 .p-where .ps-box{display:flex; align-items:center; gap:8px; background:var(--surface-2); border-radius:12px; padding:0 12px; color:var(--text-3)}
 .p-where .ps-box:focus-within{background:var(--surface); box-shadow:0 0 0 2px var(--brand)}
 .p-where .ps-box input{flex:1; min-width:0; width:0; border:0; background:transparent; box-shadow:none!important; padding:13px 0; color:var(--text)}
+/* ---------- Discover: looking for, grouped results */
+.ds-look{display:flex; background:var(--surface); border-radius:14px; padding:4px; gap:4px; box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.ds-look button{flex:1; border:0; background:none; border-radius:10px; padding:9px 6px; font-weight:700; font-size:13.5px; color:var(--text-2); cursor:pointer; white-space:nowrap}
+.ds-look button[aria-pressed="true"]{background:var(--brand); color:#fff}
+@media (max-width:420px){ .ds-look button{font-size:12.5px; padding:9px 3px} }
+.d-group{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; font-size:20px; margin:14px 0 -2px}
+.d-group span{font-size:13px; font-weight:800; color:var(--brand-2); background:var(--brand-soft); padding:1px 9px; border-radius:999px}
+.d-group small{flex-basis:100%; font:500 13.5px var(--body); color:var(--text-3)}
+/* ---------- Tribe: named button, rules, what people look for */
+.hd-tribe{display:none; position:relative; align-items:center; gap:6px; height:40px; padding:0 14px 0 11px; border:0; border-radius:999px; cursor:pointer;
+  background:rgba(255,255,255,.18); color:#fff; font:800 14px var(--body)}
+.hd-tribe svg{width:20px; height:20px} .hd-tribe[aria-current="true"]{background:#fff; color:var(--brand-2)}
+.hd-tribe .badge{position:absolute; top:-3px; right:-3px; box-shadow:0 0 0 2px var(--teal)}
+@media (max-width:720px){ .hd-tribe{display:inline-flex} .nav .tab-tribe{display:none} }
+/* Phones: logo, Requests, the named Tribe button and the avatar all fit on one line. */
+@media (max-width:480px){
+  .bar{gap:8px} .bar .logo{gap:7px} .bar .logo i{width:36px; height:36px} .bar .logo i svg{width:36px; height:36px}
+  .bar .wordmark{font-size:16px} .top-acts{gap:6px; margin-right:4px} .hd-ic{width:38px; height:38px} .hd-tribe{height:38px; padding:0 11px 0 9px; font-size:13.5px}
+}
+@media (max-width:370px){ .bar .wordmark{display:none} }
+.look-tag{display:inline-block; margin:8px 0 0; font-size:12.5px; font-weight:700; padding:3px 10px; border-radius:999px; background:var(--surface-2); color:var(--text-2)}
+.look-tag.same{background:var(--brand-soft); color:var(--brand-2)}
+.tribe-rules{margin:14px 0 6px; padding:6px 16px 4px; border-radius:16px; background:var(--surface); box-shadow:0 0 0 1px var(--line)}
+.tribe-rules summary{cursor:pointer; font-weight:800; padding:8px 0; font-family:var(--display)}
+.tribe-rules ol{margin:0 0 10px; padding-left:20px; display:grid; gap:8px; font-size:14.5px; color:var(--text-2)} .tribe-rules b{color:var(--text)}
+.hunt-n{font-size:12px; background:var(--brand-soft); color:var(--brand-2); padding:1px 8px; border-radius:999px; vertical-align:2px; letter-spacing:0}
+/* ---------- help assistant */
+.help-fab{position:fixed; right:20px; bottom:22px; z-index:40; display:inline-flex; align-items:center; gap:8px; height:52px; padding:0 20px 0 16px; border:0; border-radius:999px;
+  background:var(--brand); color:#fff; font:800 15px var(--body); box-shadow:0 10px 28px rgba(11,124,130,.35); cursor:pointer; transition:transform .12s}
+.help-fab:hover{background:var(--brand-2)} .help-fab:active{transform:scale(.95)}
+.help-fab .badge{position:absolute; top:-4px; right:-4px; box-shadow:0 0 0 2px #fff}
+@media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none} }
+body:has(#view-splits:not([hidden]) #fsGroup:not([hidden])) .help-fab{display:none}
+#dlgHelp[open]{display:flex; flex-direction:column; height:min(700px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
+@media (max-width:640px){ #dlgHelp[open]{width:100vw; height:100dvh} }
+#dlgHelp .mhead{flex:none; margin-bottom:0}
+.hb-log{flex:1; overflow:auto; padding:16px 14px 8px; display:flex; flex-direction:column; gap:10px; background:var(--surface-2)}
+.hb-msg{display:flex; gap:8px; max-width:90%; align-items:flex-start}
+.hb-msg > div{padding:10px 13px; border-radius:16px; font-size:14.5px; line-height:1.5; min-width:0}
+.hb-msg.bot > div{background:#fff; border-top-left-radius:4px; box-shadow:0 1px 3px rgba(16,20,24,.06)}
+.hb-msg.usr{align-self:flex-end; max-width:82%} .hb-msg.usr > div{background:var(--brand); color:#fff; border-top-right-radius:4px; overflow-wrap:anywhere}
+.hb-av{flex:none; width:28px; height:28px; border-radius:50%; background:var(--brand-soft); color:var(--brand); display:grid; place-items:center; margin-top:2px}
+.hb-chips{display:flex; flex-wrap:wrap; gap:6px; padding:8px 14px 10px; background:var(--surface-2)}
+.hb-chips:empty{display:none}
+.hb-chips .chip{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line-2); font-weight:600; font-size:14px; padding:7px 13px}
+.hb-chips .chip:hover{box-shadow:inset 0 0 0 1.5px var(--brand); color:var(--brand-2)}
+.hb-form{flex:none; display:flex; gap:8px; padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px)); border-top:1px solid var(--line); background:var(--surface)}
+.hb-form input{flex:1; min-width:0}
+.hb-form .btn{padding:0 16px}
+.hb-sum{margin-top:8px; padding:10px 12px; border-radius:12px; background:var(--surface-2)} .hb-sum b, .hb-sum span{display:block} .hb-sum span{font-size:13px; color:var(--text-2)}
+.hb-sum p{margin:6px 0 0; white-space:pre-wrap}
+.hb-ticket{margin-top:8px; padding:10px 12px; border-radius:12px; background:var(--surface-2)}
+.hb-ticket > div{display:flex; justify-content:space-between; align-items:center; gap:8px} .hb-ticket small{display:block; color:var(--text-3); font-size:12.5px; margin-top:2px}
+.hb-ticket p{margin:6px 0 0; font-size:14px}
+.hb-st{font-size:11.5px; font-weight:800; padding:2px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent)}
+.hb-st.in_review{background:#FFF0D2; color:#9A5B00} .hb-st.resolved{background:var(--ok-soft); color:var(--ok)} .hb-st.closed{background:var(--surface-2); color:var(--text-3)}
 /* ---------- party invites: the card's colours (teal to blue, warm accents), like the Vibe Card */
 .pt-make{display:flex; gap:14px; align-items:center; padding:16px; border-radius:16px; background:var(--accent-soft); margin:14px 0 4px}
 .pt-make > div{flex:1; min-width:0} .pt-make b{display:block; font-family:var(--display)} .pt-make small{display:block; color:var(--text-2); font-size:13.5px; line-height:1.45}
@@ -1824,6 +1880,7 @@ html:has(> body.app){background:var(--app-bg)}
           <button type="button" class="ds-x" id="dsX" aria-label="Clear the place" hidden>×</button></div>
         <button class="btn btn-accent ds-go" type="button" id="dsGo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search</span></button>
       </div>
+      <div class="ds-look" id="dsLook" role="group" aria-label="Looking for"></div>
       <div class="ds-radius area-chips" id="dsRadius" role="group" aria-label="How far from the place" hidden></div>
       <div class="d-row">
         <button class="btn btn-ghost btn-sm" type="button" id="filtersBtn">
@@ -1871,6 +1928,7 @@ html:has(> body.app){background:var(--app-bg)}
     <div id="tribeWants"></div>
     <div id="tribeBonded"></div>
     <div class="cards" id="tribeShort"></div>
+    <div id="tribeRules"></div>
     <div id="tribeMatches"></div>
     <div class="cards" id="tribeHunt"></div>
     <p class="hint" style="margin:18px 0 28px">A tribe is up to 3 people. Only people looking in your city with a 70%+ vibe match see you here. Numbers are shared only when
@@ -1957,6 +2015,9 @@ html:has(> body.app){background:var(--app-bg)}
           <p class="hint" style="margin:0 0 10px">From your answers earlier. Seekers see who they'd live with and how well they'd fit.</p>
           <div class="field"><label for="hCount">People living there now (including you)</label>
             <select id="hCount"><option value="0">Nobody, it's a whole flat</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+          <div class="field" id="hFreeF"><label for="hFree">Private rooms free in this flat</label>
+            <select id="hFree"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+            <p class="hint" style="margin:6px 0 0">Friends looking together (a tribe of 2 or 3) see flats with that many rooms free.</p></div>
           <div id="fmRows"></div>
           <details><summary class="hint" style="cursor:pointer">Review living-style answers</summary><div class="quiz" id="hQuiz" style="margin-top:10px"></div></details>
           <details><summary class="hint" style="cursor:pointer">Music and hobbies</summary><div class="quiz" id="hInt" style="margin-top:10px"></div></details>
@@ -2125,12 +2186,6 @@ html:has(> body.app){background:var(--app-bg)}
         <div class="field"><label for="fMin">Min (₹)</label><input type="number" id="fMin" min="0" step="1" inputmode="numeric" placeholder="No minimum"></div>
         <div class="field"><label for="fMax">Max (₹)</label><input type="number" id="fMax" min="0" step="1" inputmode="numeric" placeholder="No maximum"></div>
       </div>
-      <h3 class="section-h">Looking for</h3>
-      <div class="chips">
-        <label class="chip"><input type="checkbox" name="fKind" value="room">Private room</label>
-        <label class="chip"><input type="checkbox" name="fKind" value="shared">Shared room</label>
-        <label class="chip"><input type="checkbox" name="fKind" value="flatmate">Flatmate to share with</label>
-        <label class="chip"><input type="checkbox" name="fKind" value="flat">Whole flat</label></div>
       <h3 class="section-h">Homes open to</h3>
       <div class="chips">
         <label class="chip"><input type="radio" name="fGender" value="" checked>Anyone</label>
@@ -2243,6 +2298,13 @@ html:has(> body.app){background:var(--app-bg)}
 
 <dialog id="dlgFs" aria-labelledby="fsdTitle"><div class="mhead"><div><h2 id="fsdTitle"></h2><div class="loc" id="fsdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="fsdBody"></div></dialog>
+
+<dialog id="dlgHelp" aria-labelledby="hbTitle"><div class="mhead"><div><h2 id="hbTitle">Help &amp; support</h2><div class="loc">Ask anything, or report a problem</div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="hb-log" id="hbLog" aria-live="polite"></div>
+  <div class="hb-chips" id="hbChips"></div>
+  <form class="hb-form" id="hbForm" autocomplete="off"><input type="text" id="hbIn" maxlength="600" aria-label="Your message" placeholder="Type your question…">
+    <button class="btn btn-primary" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button></form></dialog>
+<button class="help-fab" id="helpFab" type="button" aria-label="Help and support" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5M12 16.5h.01"/></svg><span>Help</span><i class="badge" id="helpBadge" hidden></i></button>
 
 <dialog id="dlgMk" aria-labelledby="mkdTitle"><div class="mhead"><div><h2 id="mkdTitle"></h2><div class="loc" id="mkdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="mkdBody"></div></dialog>
@@ -3027,7 +3089,7 @@ const demoApi = {
       return { id:t.id, other_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct:t.match_pct,
         interests:x.interests, vibe:x.vibe, my_yes:t.my_yes, their_yes:t.their_yes, status:t.status,
         phone: t.status === "bonded" ? "+91" + x.phone : null, created_at:t.created_at, bonded_at:t.bonded_at, unseen:!t.seen, on_time: hue(x.id) % 3 === 0,
-        kind:"match", my_size:this.tribeSize(), their_size:1 };
+        kind:"match", my_size:this.tribeSize(), their_size:1, looking: ["room", "room", "room", "shared", "shared", "flat", "flat", ""][hue("look" + x.id) % 8] };
     }).sort((a, b) => (b.status === "bonded") - (a.status === "bonded") || b.match_pct - a.match_pct);
   },
   async tribeAnswer(id, yes){
@@ -3695,6 +3757,35 @@ Object.assign(demoApi, {
     save(); return id;
   },
 
+  // New homes for me since a time: same rules as fm_listing_alerts.
+  async listingAlerts(since){
+    const f = prefs(), look = f.look || "", tribe = this.tribeSize ? this.tribeSize() : 1;
+    return this.all().filter(l => l.status !== "closed" && l.created_at > since && !this.view(l).is_owner && l.city === f.city
+        && (!f.areas.length || f.areas.includes(l.locality)) && (["", "shared"].includes(look) || l.kind !== "shared")
+        && (l.kind === "flat" || !(l.household || {}).residents || (vibeMatch(state.vibe, l.household) || { pct: 0 }).pct >= 70))
+      .map(l => ({ id:l.id, kind:l.kind, title:l.title, locality:l.locality, city:l.city, rent:l.rent, bhk:l.bhk, created_at:l.created_at,
+        match_pct: (l.household || {}).residents ? (vibeMatch(state.vibe, l.household) || {}).pct ?? null : null, for_tribe: l.kind === "flat" && tribe > 1 && l.bhk === tribe }))
+      .sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 10);
+  },
+  // Help tickets: same rules as fm_ticket_create / fm_my_tickets. In demo the "team" picks a ticket up after 20 seconds.
+  tickets(){ return state.tickets || (state.tickets = []); },
+  async ticketCreate(p){
+    const cats = Object.values(TICKET_CATS).flat().map(x => x[0]);
+    if(!["grievance", "report"].includes(p.kind) || !cats.includes(p.category)) throw new Error("bad-category");
+    if(String(p.message || "").trim().length < 10) throw new Error("too-short");
+    if(this.tickets().filter(t => Date.now() - new Date(t.created_at) < 864e5).length >= 10) throw new Error("too-many");
+    const now = new Date().toISOString(), code = "FMF-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    this.tickets().unshift({ code, kind:p.kind, category:p.category, subject_label:p.subject_label || null, message:String(p.message).trim().slice(0, 2000),
+      status:"open", reply:null, created_at:now, updated_at:now, seen_at:null, demoAt: Date.now() + 20000 });
+    save(); return code;
+  },
+  async myTickets(){
+    for(const t of this.tickets()) if(t.demoAt && Date.now() >= t.demoAt){ delete t.demoAt; Object.assign(t, { status:"in_review", updated_at:new Date().toISOString(),
+      reply:"Thanks for telling us. We're looking into it and will update you here within 15 days." }); save(); }
+    return this.tickets().map(t => Object.assign({}, t, { unseen: (t.status !== "open" || !!t.reply) && (!t.seen_at || t.updated_at > t.seen_at) }));
+  },
+  async ticketsSeen(){ this.tickets().forEach(t => t.seen_at = new Date().toISOString()); save(); },
+
   // Party invites: same rules as fm_party_save / fm_party_get / fm_party_rsvp / fm_party_feed.
   parties(){ return state.parties || (state.parties = []); },
   partyView(p, token){
@@ -3941,6 +4032,10 @@ function liveExtras(rpc){
     async marketBoost(id){ return rpc("fm_market_boost", { p_item:id }); },
     async marketSaleStart(until, title){ return (await rpc("fm_market_sale_start", { p_until:until, p_title:title }))[0] || {}; },
     async marketSale(code){ return rpc("fm_market_sale", { p_code:code }); },
+    async listingAlerts(since){ return rpc("fm_listing_alerts", { p_since: since }); },
+    async ticketCreate(p){ return rpc("fm_ticket_create", { p }); },
+    async myTickets(){ return rpc("fm_my_tickets"); },
+    async ticketsSeen(){ await rpc("fm_tickets_seen"); },
     async partyForGroup(gid){ return rpc("fm_party_for_group", { p_group:gid }); },
     async partyGet(code, token){ return rpc("fm_party_get", { p_code:code, p_token:token || null }); },
     async partySave(gid, p){ return rpc("fm_party_save", { p_group:gid, p }); },
@@ -4092,6 +4187,7 @@ function showScreen(name){
   $("view-party").hidden = name !== "party";
   $("view-onboard").hidden = name !== "onboard";
   $("appHead").hidden = $("appMain").hidden = name !== "app";
+  $("helpFab").hidden = name !== "app" && name !== "welcome";
   document.body.classList.toggle("app", name === "app");
   if(name === "welcome"){ startCity(); loadCaptcha(); } else stopCity();
 }
@@ -4102,6 +4198,7 @@ function route(){
   if(isHostRoute()){ currentView = null; showScreen("host"); renderHost(); return; }
   if(isSaleRoute()){ currentView = null; showScreen("sale"); renderSale(); return; }
   if(isPartyRoute()){ currentView = null; showScreen("party"); renderParty(); window.scrollTo(0, 0); return; }
+  if(location.hash === "#help"){ history.replaceState(null, "", location.pathname + location.search); setTimeout(() => openHelp(state.user ? "tickets" : null), 400); }
   // Came from a sale page to sign in: back to it once the account is set up.
   if(state.user && state.onboarded[isOwner() ? "owner" : "seeker"]){
     const back = readLS(AFTER_SIGNIN_KEY);
@@ -4146,11 +4243,16 @@ function renderNav(){
   // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
   const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
   // Requests and Tribe live in the top bar, next to the avatar, so the bottom bar has room for the rest.
-  const TOP = ["requests", "tribe"], count = n => n === "requests" ? unseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
-  $("nav").innerHTML = allowed.filter(n => !TOP.includes(n)).map(n => `<button class="tab" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
+  const TOP = ["requests"], count = n => n === "requests" ? unseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
+  // Tribe sits next to Discover on the website, and as a named button in the phone's top bar (the bottom bar keeps the rest).
+  const order = allowed.filter(n => !TOP.includes(n) && n !== "tribe"), at = order.indexOf("discover");
+  if(allowed.includes("tribe")) order.splice(at + 1, 0, "tribe");
+  $("nav").innerHTML = order.map(n => `<button class="tab${n === "tribe" ? " tab-tribe" : ""}" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
     count(n) ? `<i class="badge" aria-label="${count(n)} new">${count(n)}</i>` : ""}</button>`).join("");
   $("topActs").innerHTML = allowed.filter(n => TOP.includes(n)).map(n => `<button class="hd-ic" type="button" data-view="${n}" aria-current="${n === currentView}"
-    aria-label="${TAB[n][0]}${count(n) ? ` (${count(n)} new)` : ""}" title="${TAB[n][0]}">${TAB[n][1]}${count(n) ? `<i class="badge" aria-hidden="true">${count(n)}</i>` : ""}</button>`).join("");
+    aria-label="${TAB[n][0]}${count(n) ? ` (${count(n)} new)` : ""}" title="${TAB[n][0]}">${TAB[n][1]}${count(n) ? `<i class="badge" aria-hidden="true">${count(n)}</i>` : ""}</button>`).join("")
+    + (allowed.includes("tribe") ? `<button class="hd-tribe" type="button" data-view="tribe" aria-current="${currentView === "tribe"}">${TAB.tribe[1]}<span>Tribe</span>${
+      tribeUnseen ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : ""}</button>` : "");
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
 $("topActs").addEventListener("click", e => { const t = e.target.closest("[data-view]"); if(t) go(t.dataset.view); });
@@ -4387,6 +4489,7 @@ function tribeCardHtml(t){
       <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}${onTimeBadge(t)}${isSample(t) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
     <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
+    ${t.looking ? `<p class="look-tag${t.looking === prefs().look ? " same" : ""}">Looking for ${esc(lookLabel(t.looking).toLowerCase())}${t.looking === prefs().look ? " · same as you" : ""}</p>` : ""}
     ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
     ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
     <div class="acts">${acts}<button class="btn btn-ghost btn-sm" data-tcompat="${esc(t.id)}">Compatibility</button></div></article>`;
@@ -4398,7 +4501,8 @@ async function renderTribe(){
   noteTribeLeft(all);
   const bonded = tribeRows.filter(t => t.status === "bonded");
   const wants = tribeRows.filter(t => t.status === "open" && t.their_yes && !t.my_yes);
-  const open = tribeRows.filter(t => t.status === "open" && !wants.includes(t));
+  const myLook = prefs().look || "", sameLook = t => myLook && t.looking === myLook ? 1 : 0;
+  const open = tribeRows.filter(t => t.status === "open" && !wants.includes(t)).sort((a, b) => sameLook(b) - sameLook(a) || b.match_pct - a.match_pct);
   const step = bonded.length ? 3 : tribeRows.some(t => t.my_yes) || wants.length ? 1 : tribeRows.length ? 0 : -1;
   $("tribeOrbit").innerHTML = orbitSvg(tribeRows);
   $("tribeSave").innerHTML = await tribeSavings();
@@ -4426,13 +4530,15 @@ async function renderTribe(){
   // for 3), and for a tribe of 2, twin-sharing rooms the two of you can share.
   if(bonded.length){
     const h = tribeHomes(await api.search({ city: f.city }), bonded);
-    const sec = (title, sub, g, empty) => `<h2 class="section-h" style="grid-column:1 / -1">${title}</h2>
-      <p class="hint" style="grid-column:1 / -1;margin:-4px 0 0">${g.over ? "Nothing within your joint budget yet. These are the closest." : sub}</p>`
-      + (g.list.length ? g.list.map((l, i) => tribeHomeCard(l, i, size)).join("") : `<div class="empty" style="grid-column:1 / -1"><p>${empty}</p></div>`);
-    $("tribeHunt").innerHTML = sec(`Hunt together · ${size}BHK whole flats for ${size}`, `A bedroom each, in your areas${budget ? `, within your joint ${inr(budget)}` : ""}.`,
-        h.room, `No ${size}BHK whole flats in your areas right now. New ones are posted every day.`)
-      + (h.share.list.length ? sec("Share a room together", "Twin-sharing rooms the two of you can share.", h.share, "") : "");
+    $("tribeHunt").innerHTML = h.groups.map((g, gi) => {
+      const [title, sub] = TRIBE_GROUP_TEXT[g.fit](size);
+      if(!g.list.length && gi) return "";
+      return `<h2 class="section-h" style="grid-column:1 / -1">${gi ? "" : "Hunt together · "}${esc(title)} <span class="hunt-n">${g.list.length}</span></h2>
+        <p class="hint" style="grid-column:1 / -1;margin:-4px 0 0">${g.over ? "Nothing within your joint budget yet. These are the closest." : sub + (budget ? ` Within your joint ${inr(budget)}.` : "")}</p>`
+        + (g.list.length ? g.list.map((l, i) => tribeHomeCard(l, i, size, g.fit)).join("") : `<div class="empty" style="grid-column:1 / -1"><p>None in your areas right now. New homes are posted every day, and we'll tell you.</p></div>`);
+    }).join("");
   }else $("tribeHunt").innerHTML = "";
+  $("tribeRules").innerHTML = tribeRulesHtml(f.look || "", size);
   // The tribe's shortlist: every ♥ any of you taps, with who saved it.
   if(bonded.length){
     await syncSaves();
@@ -4629,6 +4735,10 @@ async function checkInbox(){
       if(state.notified[key]) continue;
       state.notified[key] = Date.now();
       if(t.status === "bonded") celebrateTribe(t);
+      else if(t.kind === "complete" && t.my_yes == null){
+        Notify.show(`${t.name} is joining your tribe`, "You're both teaming up with the same person. Say yes to each other to complete your tribe of 3.", "tribe");
+        toast(`✨ ${t.name} is joining your tribe. Say yes to complete it.`);
+      }
       else if(t.their_yes && !t.my_yes){
         Notify.show(`${t.name} wants to build a tribe with you`, "Say yes and you'll both get each other's numbers.", "tribe");
         toast(`✨ ${t.name} wants to build a tribe with you`);
@@ -4915,6 +5025,9 @@ function obStepsFor(role, full){
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true,
       opts: CITIES.map(c => ({ v:c, t:c })).concat({ v:"__other", t:"Other city", s:"Anywhere else in India" }) },
     { k:"areas", form:"areas", q:"", why:"" },
+    { k:"look", q:"What are you looking for?", why:"We show these first, then the next best kind of home. You can change it any time on Discover.",
+      opts:[{v:"room",t:"A private room",s:"My own bedroom in a shared flat"},{v:"shared",t:"A shared room",s:"A bed in a twin-sharing room, for less"},
+            {v:"flat",t:"A whole flat",s:"With friends, or a tribe I find here"},{v:"",t:"Open to anything"}] },
     { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
       opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
     ...vibe,
@@ -5108,7 +5221,7 @@ async function finishOnboarding(){
     $("obDone").onclick = () => { ob = null; go("post"); };
     return;
   }
-  setPrefs({ city: a.city || "", areas: a.areas || [], max: a.budget || 0 });
+  setPrefs({ city: a.city || "", areas: a.areas || [], max: a.budget || 0, look: a.look || "" });
   try{
     await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
     await api.setVibe(vibe);
@@ -5141,8 +5254,13 @@ async function finishOnboarding(){
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], near:null, min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
-const prefs = () => Object.assign({}, DEFAULT_PREFS, state.prefs);
+const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
+const prefs = () => {
+  const p = Object.assign({}, DEFAULT_PREFS, state.prefs);
+  // The old "Looking for" filter (several kinds) became one choice on Discover.
+  if(p.kinds && p.kinds.length){ if(!p.look) p.look = p.kinds.includes("flat") && p.kinds.length === 1 ? "flat" : p.kinds.includes("shared") ? "shared" : "room"; p.kinds = []; }
+  return p;
+};
 function setPrefs(p){ state.prefs = Object.assign(prefs(), p); save(); syncSearch(); }
 // Owners find seekers by city, areas and budget (The Empty Room Escape), so keep the server's copy current.
 let searchTimer = null;
@@ -5151,7 +5269,7 @@ function syncSearch(){
   searchTimer = setTimeout(() => {
     if(!state.user || isOwner()) return;
     const f = prefs();
-    api.setSearch({ city: f.city, areas: f.areas, budget: f.max || null }, state.discoverable !== false).catch(err => console.error(err));
+    api.setSearch({ city: f.city, areas: f.areas, budget: f.max || null, kind: f.look || "" }, state.discoverable !== false).catch(err => console.error(err));
   }, 800);
 }
 const CITY_AREAS = Object.fromEntries(Object.entries(DEMO_AREAS).map(([c, a]) => [c, a.map(x => x[0])]));
@@ -5172,7 +5290,6 @@ function applyFilters(rows, f){
     if(f.areas.length && !f.areas.includes(l.locality)) return false;
     if(f.min && cost < f.min) return false;
     if(f.max && cost > f.max) return false;
-    if(f.kinds.length && !f.kinds.includes(l.kind)) return false;
     if(f.gender && l.gender !== "any" && l.gender !== f.gender) return false;
     if(f.furn.length && !f.furn.includes(l.furnishing)) return false;
     if(f.moveBy && l.available_from > f.moveBy) return false;
@@ -5189,7 +5306,6 @@ const kfmt = n => "₹" + (n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + "k
 function activeFilters(f){
   const out = [];
   if(f.min || f.max) out.push(["budget", f.min && f.max ? `${kfmt(f.min)}–${kfmt(f.max)}` : f.max ? `Up to ${kfmt(f.max)}` : `From ${kfmt(f.min)}`]);
-  f.kinds.forEach(k => out.push(["kinds:" + k, KIND_LABEL[k]]));
   if(f.gender) out.push(["gender", f.gender === "female" ? "Open to women" : "Open to men"]);
   f.furn.forEach(k => out.push(["furn:" + k, FURN_LABEL[k]]));
   if(f.moveBy) out.push(["moveBy", "Move in by " + fmtDate(f.moveBy)]);
@@ -5239,6 +5355,24 @@ function giftPillHtml(){
   const n = contactsLeft();
   return `<button class="gift-pill" type="button" data-gift>${GIFT_SVG}${n ? contactsLabel(n) : "Get more contacts"}</button>`;
 }
+// What a seeker is looking for decides which kinds of home show and in what order:
+//   private room: private rooms first, then whole flats
+//   shared room:  shared rooms first, then private rooms, then whole flats
+//   whole flat:   whole flats first, then private rooms
+// Inside each group: best vibe match first, then the nearest. ("Flatmate wanted" is a private room.)
+const LOOKS = [["room", "Private room"], ["shared", "Shared room"], ["flat", "Whole flat"], ["", "Any"]];
+const PRIVATE_KINDS = ["room", "flatmate"];
+const LOOK_GROUPS = { room: [PRIVATE_KINDS, ["flat"]], shared: [["shared"], PRIVATE_KINDS, ["flat"]], flat: [["flat"], PRIVATE_KINDS] };
+const GROUP_NAME = { room: "Private rooms", flatmate: "Private rooms", shared: "Shared rooms", flat: "Whole flats" };
+const lookRank = (look, kind) => { const g = LOOK_GROUPS[look]; return g ? g.findIndex(x => x.includes(kind)) : 0; };
+const lookLabel = look => (LOOKS.find(x => x[0] === look) || ["", "Any"])[1];
+// How far a home is from what the seeker searched: the place, else the nearest chosen area, else the city centre.
+function distFrom(f){
+  if(f.near && f.near.lat) return g => kmBetween(f.near, g);
+  const pts = (f.areas || []).map(a => knownPlace(f.city, a)).filter(Boolean), c = knownPlace(f.city);
+  if(pts.length) return g => Math.min(...pts.map(p => kmBetween(p, g)));
+  return c ? g => kmBetween(c, g) : () => null;
+}
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), near = f.near && f.near.lat ? f.near : null;
@@ -5249,7 +5383,8 @@ async function renderDiscover(){
   renderProfilePromo(); renderVibePromo(); renderNudgeCards();
   const [rows, , bonded] = await Promise.all([near ? api.searchNear(near) : api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
   if(seq !== browseSeq) return;
-  if(near) rows.forEach(l => l._km = l.geo ? kmBetween(near, { lat: +l.geo.lat, lng: +l.geo.lng }) : null);
+  const dist = distFrom(f);
+  rows.forEach(l => { const g = l.geo ? { lat: +l.geo.lat, lng: +l.geo.lng } : null; l._d = g ? dist(g) : null; l._km = near && g ? l._d : null; });
   cityRows = rows; myTribeSize = bonded.length + 1;
   if(document.activeElement !== $("dsQ")) $("dsQ").value = near ? near.label : "";
   $("dsX").hidden = !near;
@@ -5265,13 +5400,15 @@ async function renderDiscover(){
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
 
-  let list = applyFilters(rows, near ? Object.assign({}, f, { areas: [] }) : f);
-  const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct;
-  if(sort === "near") list.sort((a, b) => (a._km ?? 999) - (b._km ?? 999));
-  else if(sort === "match") list.sort((a, b) => score(b) - score(a) || b.created_at.localeCompare(a.created_at));
-  else if(sort === "cost") list.sort((a, b) => a.rent - b.rent);
-  else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
-  list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));   // Featured listings first (stable sort)
+  const look = f.look || "";
+  $("dsLook").innerHTML = LOOKS.map(([k, t]) => `<button type="button" data-look="${k}" aria-pressed="${look === k}">${t}</button>`).join("");
+  let list = applyFilters(rows, near ? Object.assign({}, f, { areas: [] }) : f).filter(l => lookRank(look, l.kind) >= 0);
+  const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct, d = l => l._d ?? 999;
+  const within = { match: (a, b) => score(b) - score(a) || d(a) - d(b) || b.created_at.localeCompare(a.created_at),
+    near: (a, b) => d(a) - d(b) || score(b) - score(a), cost: (a, b) => a.rent - b.rent || score(b) - score(a),
+    new: (a, b) => b.created_at.localeCompare(a.created_at) }[sort] || ((a, b) => score(b) - score(a) || d(a) - d(b));
+  const order = (a, b) => lookRank(look, a.kind) - lookRank(look, b.kind) || within(a, b);
+  list.sort(order);
   const strong = list.filter(l => score(l) >= 75).length;
   const where = near ? `${near.km} km of ${near.label}` : f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
   $("greetTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
@@ -5281,15 +5418,22 @@ async function renderDiscover(){
   renderUrgent();
   extrasHtml().then(h => $("extrasD").innerHTML = h);
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
-  const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80).sort((a, b) => score(b) - score(a)).slice(0, 12);
+  const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80 && lookRank(look, l.kind) >= 0)
+    .sort((a, b) => lookRank(look, a.kind) - lookRank(look, b.kind) || score(b) - score(a) || d(a) - d(b)).slice(0, 12);
   $("vibeRow").hidden = !vibes.length;
   $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
   $("dMap").hidden = !mapView;
   if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
-  $("count").textContent = rest.length ? (vibes.length ? "More homes" : "") : "";
-  $("cards").innerHTML = rest.length ? rest.map(cardHtml).join("") : vibes.length && list.length ? "" : emptyHtml(rows, f);
+  $("count").textContent = rest.length && !look ? (vibes.length ? "More homes" : "") : "";
+  // With a choice made, the homes come in groups (private rooms, then whole flats...), each with a heading.
+  let lastGroup = null;
+  $("cards").innerHTML = rest.length ? rest.map((l, i) => {
+      const gname = look ? GROUP_NAME[l.kind] : null, n = gname ? rest.filter(x => GROUP_NAME[x.kind] === gname).length : 0;
+      const head = gname && gname !== lastGroup ? `<h2 class="d-group" style="grid-column:1 / -1">${esc(gname)} <span>${n}</span>${lastGroup === null && gname !== GROUP_NAME[(LOOK_GROUPS[look] || [[]])[0][0]]
+        ? `<small>No ${esc(lookLabel(look).toLowerCase())}s here yet, so these come next.</small>` : ""}</h2>` : "";
+      lastGroup = gname || lastGroup; return head + cardHtml(l, i); }).join("") : vibes.length && list.length ? "" : emptyHtml(rows, f);
 }
 // When nothing matches, offer the changes that would bring homes back, with counts.
 let suggestions = [];
@@ -5393,6 +5537,10 @@ async function drawDiscoverMap(list, near, city, score){
   $("dMapCard").innerHTML = `<p class="hint dm-hint">${pts.length ? `Tap a price to see the home. Pins show the area, not the building.` : "None of these homes are on the map yet."}${
     off > 0 ? ` ${off} ${off === 1 ? "home has" : "homes have"} no pin yet: switch to List to see ${off === 1 ? "it" : "them"}.` : ""}</p>`;
 }
+$("dsLook").addEventListener("click", e => {
+  const b = e.target.closest("[data-look]"); if(!b) return;
+  setPrefs({ look: b.dataset.look, kinds: [] }); renderDiscover();
+});
 $("dsRadius").addEventListener("click", e => {
   const b = e.target.closest("[data-km]"); if(!b) return;
   const f = prefs(); if(!f.near) return;
@@ -5473,6 +5621,8 @@ const REQ_ERR = { "vibe-required":"Answer the living-style questions first, from
   "profile-required":"Add what you do first, from your account.", "no-credits":"You're out of contacts.",
   "declined":"The owner already said no to this one.", "listing-not-found":"This listing is no longer available." };
 async function openListing(id){
+  const seen = (state.recentListings || []).filter(x => x.id !== id), lr = (cityRows || []).find(x => x.id === id);
+  if(lr){ state.recentListings = [{ id, title: lr.title }].concat(seen).slice(0, 5); save(); }
   currentId = id;
   const l = await api.get(id);
   if(!l){ toast("This listing is no longer available."); return; }
@@ -5575,10 +5725,10 @@ async function openListing(id){
       ${m.clash.map(t => `<li><span class="c">!</span>${esc(t)}</li>`).join("")}</ul></div></div>`;
   const items = expenseItems(l);
   // A whole flat or shared room: what it means for your tribe, or how a tribe could split it.
-  const tribe = isSeeker() && !l.is_owner && (l.kind === "flat" || l.kind === "shared") ? await bondedTribe() : [], tsize = tribe.length + 1;
+  const tribe = isSeeker() && !l.is_owner ? await bondedTribe() : [], tsize = tribe.length + 1;
   const tribeNote = !isSeeker() || l.is_owner ? ""
-    : tribe.length && tribeFit(l, tsize) ? `<div class="tribe-fit"><b>For your tribe of ${tsize}: ${tribeEach(l, tsize)}</b>
-        <span>${tribeFitLabel(l, tsize)} · you${tribe.map(t => " + " + esc(t.name)).join("")}</span></div>`
+    : tribe.length && tribeFit(l, tsize, prefs().look) ? `<div class="tribe-fit"><b>For your tribe of ${tsize}: ${tribeEach(l, tsize, tribeFit(l, tsize, prefs().look))}</b>
+        <span>${tribeFitLabel(l, tsize, tribeFit(l, tsize, prefs().look))} · you${tribe.map(t => " + " + esc(t.name)).join("")}</span></div>`
     : !tribe.length && l.kind === "flat" && l.bhk >= 2 ? `<div class="tribe-fit solo"><b>👯 Rent it with a tribe: ${inr(Math.round(l.rent / l.bhk / 50) * 50)} each</b>
         <span>Team up with ${l.bhk - 1 === 1 ? "someone" : l.bhk - 1 + " people"} looking in ${esc(l.city)} who ${l.bhk - 1 === 1 ? "matches" : "match"} your vibe, and split this ${l.bhk}BHK.</span>
         <a href="#tribe" data-close>Build your tribe&nbsp;→</a></div>`
@@ -6132,6 +6282,14 @@ function renderFmRows(){
   $("fmRows").innerHTML = fmRowsHtml(keep, n, "p");
 }
 $("hCount").addEventListener("change", renderFmRows);
+// Rooms free: shown for private rooms, guessed as bedrooms minus people living there until the owner picks.
+function syncRoomsFree(){
+  const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value;
+  $("hFreeF").hidden = !PRIVATE_KINDS.includes(kind);
+  if(!$("hFree").dataset.touched) $("hFree").value = String(Math.min(4, Math.max(1, Number($("pBhk").value) - Number($("hCount").value))));
+}
+["hCount", "pBhk"].forEach(id => $(id).addEventListener("change", syncRoomsFree));
+$("postForm").addEventListener("change", e => { if(e.target.name === "kind") syncRoomsFree(); if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
 function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
 attachAreaSuggest($("pLocality"), () => $("pCity").value);
@@ -6148,6 +6306,7 @@ function renderPost(){
   if(!$("pName").value) $("pName").value = state.user.name || "";
   if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
   if(!$("expList").children.length) renderExpenseRows();
+  syncRoomsFree();
 }
 $("postForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -6163,7 +6322,8 @@ $("postForm").addEventListener("submit", async e => {
       available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value, bachelors: $("pBach").checked,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
       description: $("pDesc").value.trim(),
-      household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") }, readQuiz($("hQuiz"), "h")),
+      household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
+        PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {}, readQuiz($("hQuiz"), "h")),
       costs: expensesFromForm(),
       // Public: rounded to about a kilometre. The exact pin stays in the private part below.
       geo: pinGeo ? { lat: Math.round(pinGeo.lat * 100) / 100, lng: Math.round(pinGeo.lng * 100) / 100 } : null
@@ -7224,6 +7384,24 @@ async function checkExtras(){
       if(!(currentView === "splits" && routeArg === g.id)) toast(`${g.emoji} New expense in ${g.name}. Overall, ${bal}.`);
     }
   }catch(err){}
+  // New homes that fit what I'm looking for (city, areas, kind, 70%+ vibe; whole flats for my tribe).
+  if(isSeeker() && api.listingAlerts){
+    try{
+      const since = state.alertSince || new Date().toISOString();
+      if(!state.alertSince){ state.alertSince = since; changed = true; }
+      const rows = (await api.listingAlerts(since)).filter(l => !state.notified["nl" + l.id]);
+      rows.forEach(l => state.notified["nl" + l.id] = Date.now());
+      if(rows.length){
+        changed = true;
+        state.alertSince = rows.reduce((m, l) => l.created_at > m ? l.created_at : m, since);
+        const top = rows[0], what = l => l.for_tribe ? `A ${l.bhk}BHK for your tribe in ${l.locality}` : `New ${(GROUP_NAME[l.kind] || "home").toLowerCase().replace(/s$/, "")} in ${l.locality}${l.match_pct != null ? ` · ${l.match_pct}% vibe` : ""}`;
+        Notify.show(rows.length === 1 ? (top.for_tribe ? "🏠 " : "") + what(top) : `${rows.length} new homes fit what you're looking for`,
+          rows.length === 1 ? `${top.title} · ${inr(top.rent)}/month. Have a look before it's gone.` : rows.slice(0, 3).map(what).join(" · "), "discover");
+        toast(rows.length === 1 ? `🏠 ${what(top)}: ${top.title}` : `🏠 ${rows.length} new homes fit what you're looking for`);
+        if(currentView === "discover") renderDiscover();
+      }
+    }catch(err){}
+  }
   try{
     for(const p of await api.partyFeed()){
       const key = "pt" + p.code + p.updated_at; if(state.notified[key]) continue;
@@ -7259,6 +7437,7 @@ async function checkExtras(){
   if(changed && $("dlgMk").open && mkCurrent) openItem(mkCurrent.id);
 }
 setInterval(checkExtras, LIVE ? 30000 : 3000);
+setInterval(checkTickets, LIVE ? 60000 : 4000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) checkExtras(); });
 
 /* ============================================================ PAN India */
@@ -7695,6 +7874,234 @@ function chooseArea(a){
 $("areaSugg").addEventListener("click", e => { const b = e.target.closest("[data-pick-area]"); if(b) chooseArea(b.dataset.pickArea); });
 $("areaForm").addEventListener("submit", e => { e.preventDefault(); chooseArea($("areaQ").value); });
 
+/* ============================================================ help assistant */
+// A built-in helper (no AI service): it answers common questions by keywords, takes people to the right
+// page, and files grievances and reports as tickets the team answers (fm_tickets).
+const HELP_OFFICER = { name: "Richa Wadhwani", email: "privacy@findmeflatmate.com" };
+const TICKET_CATS = {
+  report: [["broker", "A broker posing as an owner"], ["fake", "A fake or misleading listing"], ["scam", "Asked for money, or a scam"],
+           ["harassment", "Harassment or abuse"], ["spam", "Spam or unwanted messages"], ["other", "Something else"]],
+  grievance: [["payment", "A payment or refund"], ["account", "My account or signing in"], ["listing", "My listing"],
+              ["privacy", "Privacy or my data"], ["bug", "Something isn't working"], ["other", "Something else"]],
+};
+const TICKET_STATUS = { open: "Received", in_review: "Being looked at", resolved: "Resolved", closed: "Closed" };
+const catLabel = (kind, c) => ((TICKET_CATS[kind] || []).find(x => x[0] === c) || [c, c])[1];
+// Each topic: words that point to it, the answer, and buttons. Actions: "go:<view>", or a helper below.
+const HB_TOPICS = [
+  { id: "hello", words: ["hi", "hello", "hey", "namaste", "good morning", "good evening"], say: () => `Hi${firstName() ? " " + esc(firstName()) : ""}! What can I help you with?`, home: true },
+  { id: "thanks", words: ["thanks", "thank you", "thx", "great", "awesome", "dhanyavad", "shukriya"], say: () => "Happy to help! Anything else?", home: true },
+  { id: "about", words: ["how does", "how it works", "how it work", "what is this", "what is findmeflatmate", "about", "findmeflatmate", "explain", "kaise"],
+    say: () => `FindMeFlatMate matches you with flatmates who live like you. Answer 12 quick questions about how you live (bedtime, food, guests…), and every home shows a vibe match with the people already there. Ask to meet, and numbers are shared only when both say yes. Owners list rooms free, and no brokers are allowed.`,
+    acts: () => state.user ? [["🔎 Find a room", "t:find"], ["👯 How tribes work", "t:tribe"]] : [["Get started", "go:discover"], ["🏠 List my room", "t:post"]] },
+  { id: "find", words: ["find", "search", "room", "flat", "pg", "rent", "kamra", "ghar", "house", "home", "looking", "accommodation", "discover"],
+    say: () => `Discover shows homes by how well you'd live with the people there. Type a locality, landmark, society or metro station in the search bar, pick what you're looking for (private room, shared room or whole flat), and switch to <b>Map</b> to see prices on the map. Best vibe match comes first, then the nearest.`,
+    acts: () => isOwner() ? [["See who's looking (Escape)", "go:escape"]] : [["Search near a place", "near"], ["Open Discover", "go:discover"]] },
+  { id: "post", words: ["post", "list my", "listing", "advertise", "owner", "landlord", "spare room", "tenant", "let out", "my flat"],
+    say: () => isOwner() ? `Tap <b>Post</b>: start with "Where's the flat?" (it fills in the area and the pin), add photos and the rent, and you're live. Posting is free.`
+      : `To list a room you need to switch to "I have a flat" in Account. Posting is free, and you can switch back any time.`,
+    acts: () => isOwner() ? [["Post a room", "go:post"], ["My flat", "go:mine"]] : [["Open Account", "go:account"]] },
+  { id: "tribe", words: ["tribe", "team", "team up", "bond", "together", "friends", "group", "dost", "share a flat"],
+    say: () => `<b>Tribe</b> is for finding people first, then the flat. You see people looking in your areas who match your vibe 70%+, people wanting the same kind of home first. When you both say yes you're a tribe (up to 3), numbers are shared, and we show homes that fit all of you: whole flats with a bedroom each, or flats with that many rooms free.`,
+    acts: () => isOwner() ? [] : [["Open Tribe", "go:tribe"]] },
+  { id: "vibe", words: ["vibe", "match", "score", "compatib", "percent", "%", "quiz", "personality"],
+    say: () => `Your vibe score compares 12 answers about how you live (bedtime, cleanliness, food, guests, noise…) with each household. Food, smoking and pets count double. Open any home and tap the score for the full compatibility analysis: where you click and what to talk about.`,
+    acts: () => [["My Vibe Card", "vibe"]] },
+  { id: "contact", words: ["number", "phone", "contact", "call", "whatsapp", "reach owner", "talk to owner"],
+    say: () => isOwner() ? `People ask to meet you from your listing. Numbers are shared only when you say yes, both ways.`
+      : `Tap <b>Ask to meet</b> on a home. The owner sees your vibe and says yes or no. Numbers are shared only after a yes, so nobody gets your number without your say.`,
+    acts: () => [["My requests", "go:requests"]] },
+  { id: "price", words: ["price", "cost", "pass", "pay", "paid", "charge", "fee", "free", "subscription", "premium", "money", "paisa"],
+    say: () => CHARGES_ON ? `Browsing, matching, posting and Flatsplits are free. Passes (Room, Tribe, Escape) are one-time payments for a few weeks, no auto-renewal.` : `Everything is free right now: browsing, asking to meet, tribes, posting a room, Flatsplits and FlatMart.`,
+    acts: () => CHARGES_ON ? [["See passes", "go:plans"]] : [] },
+  { id: "splits", words: ["split", "flatsplit", "expense", "bill", "electricity", "groceries", "owe", "settle", "upi", "rent split", "hisab"],
+    say: () => `Flatsplits splits rent and bills with flatmates: add an expense, see who owes whom, and settle by UPI. Trips and house parties get their own groups, so household spending stays separate.`,
+    acts: () => [["Open Flatsplits", "go:splits"]] },
+  { id: "party", words: ["party", "invite", "movie night", "game night", "potluck", "birthday", "housewarming", "celebrat"],
+    say: () => `In Flatsplits tap <b>🎉 New house party</b>, then make an invite card: pick the occasion, the time, and "at my home" or the address. Share it on WhatsApp; friends say if they're coming without signing in, and your flatmates get a heads-up.`,
+    acts: () => [["Plan a party", "party"]] },
+  { id: "market", words: ["sell", "buy", "furniture", "fridge", "bed", "sofa", "market", "flatmart", "second hand", "moving out sale"],
+    say: () => `FlatMart is for buying and selling with people nearby: beds, fridges, cycles… Make an offer; numbers are shared only when the seller accepts.`,
+    acts: () => [["Open FlatMart", "go:market"]] },
+  { id: "map", words: ["map", "location", "near", "nearby", "distance", "km", "metro", "landmark", "society", "address"],
+    say: () => `On Discover, type a place in the search bar (or "Use my current location") and pick how far: 1 to 20 km. Switch to <b>Map</b> for price pins. Exact addresses are shared only after an owner says yes.`,
+    acts: () => isOwner() ? [] : [["Search near a place", "near"]] },
+  { id: "notify", words: ["notification", "notify", "alert", "updates", "ping"],
+    say: () => `We notify you about new requests, answers, tribe matches, new flats that fit you, Flatsplits expenses and updates on your tickets. Turn them on so you don't miss an owner's yes.`,
+    acts: () => [["Turn on notifications", "notify"]] },
+  { id: "account", words: ["account", "profile", "edit", "name", "gender", "delete", "remove my", "logout", "log out", "sign out", "switch"],
+    say: () => `Account has your profile, how you live (edit any answer), who can see you, switching between looking for a room and having a flat, signing out, and <b>Delete my account</b> at the bottom.`,
+    acts: () => [["Open Account", "go:account"]] },
+  { id: "privacy", words: ["privacy", "data", "personal", "safe data", "dpdp"],
+    say: () => `Your number and exact address stay private until you say yes to someone. You can see, correct or delete your data any time. The privacy policy has the details, and our grievance officer is ${HELP_OFFICER.name} (<a href="mailto:${HELP_OFFICER.email}">${HELP_OFFICER.email}</a>).`,
+    acts: () => [["Privacy policy", "privacy"], ["Raise a grievance", "grievance"]] },
+  { id: "safety", words: ["safe", "safety", "scam", "fraud", "broker", "fake", "cheat", "advance", "token money", "dhoka", "suspicious"],
+    say: () => `Stay safe: visit before you pay, never pay a "token" or deposit before seeing the flat and the owner, and check the owner's ID and the agreement. FindMeFlatMate never asks for money on WhatsApp. If something feels off, report it and we'll look into it.`,
+    acts: () => [["Report a problem", "report"]] },
+  { id: "report", words: ["report", "complain", "complaint", "abuse", "harass", "spam", "block", "shikayat"], flow: "report" },
+  { id: "grievance", words: ["grievance", "refund", "problem", "issue", "not working", "bug", "error", "help me", "support", "stuck"], flow: "grievance" },
+  { id: "tickets", words: ["ticket", "my report", "my complaint", "status", "fmf-"], flow: "tickets" },
+  { id: "human", words: ["human", "person", "agent", "talk to", "speak", "customer care", "email", "officer"],
+    say: () => `Raise a grievance here and a person from our team replies, within 24 hours. You can also write to our grievance officer, ${HELP_OFFICER.name}, at <a href="mailto:${HELP_OFFICER.email}">${HELP_OFFICER.email}</a>.`,
+    acts: () => [["Raise a grievance", "grievance"]] },
+];
+let hb = { log: [], flow: null, open: false };
+const HB_HOME = () => (state.user ? [["🔎 Find a room", "t:find"], ["👯 How tribes work", "t:tribe"], ["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["📋 My tickets", "tickets"]]
+    : [["🔎 How it works", "t:about"], ["🏠 List my room", "t:post"], ["⚠️ Report a problem", "report"], ["🔒 Privacy", "t:privacy"]]);
+function hbSay(html, chips){ hb.log.push({ who: "bot", html, chips: chips || [] }); drawHelp(); }
+function hbMine(text){ hb.log.push({ who: "usr", html: esc(text) }); }
+function drawHelp(){
+  const last = hb.log[hb.log.length - 1];
+  $("hbLog").innerHTML = hb.log.map(m => `<div class="hb-msg ${m.who}">${m.who === "bot" ? `<span class="hb-av" aria-hidden="true">${HB_ICON}</span>` : ""}<div>${m.html}</div></div>`).join("");
+  $("hbChips").innerHTML = (last && last.who === "bot" ? last.chips : []).map(([t, a], i) => `<button type="button" class="chip" data-hb="${i}">${esc(t)}</button>`).join("");
+  $("hbIn").placeholder = hb.flow && hb.flow.step === "text" ? "Tell us what happened…" : "Type your question…";
+  requestAnimationFrame(() => { const l = $("hbLog"); l.scrollTop = l.scrollHeight; });
+}
+const HB_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>`;
+function openHelp(start){
+  if(!hb.log.length) hbSay(`Hi${firstName() ? " " + esc(firstName()) : ""}! 👋 I can show you around FindMeFlatMate, answer questions, or take a complaint or report to our team. What would you like to do?`, HB_HOME());
+  if(!$("dlgHelp").open) $("dlgHelp").showModal();
+  drawHelp();
+  if(start) hbAct(start);
+  setTimeout(() => $("hbIn").focus(), 80);
+}
+// The best topic for what someone typed: most matching words (longer words count more).
+function hbTopic(text){
+  const t = " " + text.toLowerCase().replace(/[^a-z0-9%\- ]+/g, " ").replace(/\s+/g, " ") + " ";
+  let best = null, top = 0;
+  for(const x of HB_TOPICS){
+    let n = x.words.reduce((a, w) => a + (t.includes(" " + w) ? (w.length > 4 ? 2 : 1) : 0), 0);
+    if(n && x.flow) n += 1;   // "report a broker" files a report rather than explaining brokers
+    if(n > top){ top = n; best = x; }
+  }
+  return best;
+}
+function hbAnswer(x){
+  if(x.flow) return hbAct(x.flow);
+  hbSay(x.say(), (x.acts ? x.acts() : []).concat(x.home ? HB_HOME() : [["↩ Something else", "home"]]));
+}
+async function hbAct(a){
+  if(a === "home") return hbSay("What else can I help with?", HB_HOME());
+  if(a.startsWith("t:")) return hbAnswer(HB_TOPICS.find(x => x.id === a.slice(2)));
+  if(a.startsWith("go:")){ $("dlgHelp").close(); return go(a.slice(3)); }
+  if(a === "near"){ $("dlgHelp").close(); go("discover"); return setTimeout(() => { $("dsQ").focus(); $("dsQ").scrollIntoView({ block: "center" }); }, 400); }
+  if(a === "vibe"){ $("dlgHelp").close(); return state.vibe && answered(state.vibe) ? openVibeCard(state.vibe) : openQuiz(); }
+  if(a === "party"){ $("dlgHelp").close(); go("splits"); return setTimeout(() => openNewEvent("party", false), 500); }
+  if(a === "notify"){ const okN = await Notify.ask(); return hbSay(okN ? "Done: notifications are on. ✓" : "Your phone blocked them. You can allow notifications for the app in your phone's settings.", HB_HOME()); }
+  if(a === "privacy"){ window.open("privacy.html", "_blank", "noopener"); return; }
+  if(a === "report" || a === "grievance") return hbStartTicket(a);
+  if(a === "tickets") return hbTickets();
+  if(a.startsWith("cat:")) return hbPickCat(a.slice(4));
+  if(a.startsWith("about:")) return hbPickAbout(Number(a.slice(6)));
+  if(a === "send") return hbSend();
+  if(a === "edit"){ hb.flow.step = "text"; return hbSay("Sure, type it again and I'll update it.", [["Cancel", "cancel"]]); }
+  if(a === "cancel"){ hb.flow = null; return hbSay("No problem, I've dropped it. Anything else?", HB_HOME()); }
+}
+// ---- grievances and reports
+function hbStartTicket(kind){
+  if(!state.user) return hbSay(`Please sign in first, so our team can reply to you. It takes a minute with your mobile number.`, [["Sign in", "go:discover"], ["↩ Something else", "home"]]);
+  hb.flow = { kind, step: "cat" };
+  hbSay(kind === "report" ? "Sorry something went wrong. What would you like to report?" : "I'll pass this to our team. What's it about?",
+    TICKET_CATS[kind].map(([k, t]) => [t, "cat:" + k]).concat([["Cancel", "cancel"]]));
+}
+async function hbPickCat(cat){
+  const f = hb.flow; if(!f) return;
+  f.cat = cat; hbMine(catLabel(f.kind, cat));
+  if(f.kind === "report" && cat !== "other"){
+    // Who or what it's about: homes and people you've been in touch with, newest first.
+    const opts = [];
+    try{
+      for(const r of (await api.inbox()).slice(0, 6)){
+        if(r.direction === "incoming" && r.name) opts.push(["👤 " + r.name + " (asked about your home)", { subject_type: "person", subject_id: r.id, subject_label: r.name + " · request on " + r.listing_title }]);
+        else opts.push(["🏠 " + r.listing_title, { subject_type: "listing", subject_id: r.listing_id, subject_label: r.listing_title }]);
+      }
+    }catch(e){}
+    (state.recentListings || []).forEach(x => { if(!opts.some(o => o[1].subject_id === x.id)) opts.push(["🏠 " + x.title, { subject_type: "listing", subject_id: x.id, subject_label: x.title }]); });
+    try{ (await api.tribeList()).slice(0, 4).forEach(t => opts.push(["👤 " + t.name + " (tribe)", { subject_type: "person", subject_id: t.other_id, subject_label: t.name + " · tribe" }])); }catch(e){}
+    f.opts = opts.slice(0, 8);
+    f.step = "about";
+    return hbSay("Who or what is it about?", f.opts.map((o, i) => [o[0], "about:" + i]).concat([["It's not listed here", "about:-1"], ["Cancel", "cancel"]]));
+  }
+  f.step = "text";
+  hbSay(f.kind === "report" ? "Tell us what happened: who, when, and anything they asked for. Please don't share passwords or OTPs."
+    : "Tell us what happened. Include anything that helps us find it (a payment reference, the screen, the time).", [["Cancel", "cancel"]]);
+}
+function hbPickAbout(i){
+  const f = hb.flow; if(!f) return;
+  const o = i >= 0 ? f.opts[i] : null;
+  f.subject = o ? o[1] : null; hbMine(o ? o[0] : "It's not listed here");
+  f.step = "text";
+  hbSay(o ? "Got it. Now tell us what happened: who, when, and anything they asked for." : "No problem. Tell us who or what it's about (a name, a listing title or a link) and what happened.", [["Cancel", "cancel"]]);
+}
+function hbText(text){
+  const f = hb.flow;
+  if(text.trim().length < 10) return hbSay("Could you add a bit more detail? A sentence or two helps us act on it.", [["Cancel", "cancel"]]);
+  f.text = text.trim(); f.step = "confirm";
+  hbSay(`Here's what I'll send to our team:<div class="hb-sum"><b>${f.kind === "report" ? "Report" : "Grievance"}: ${esc(catLabel(f.kind, f.cat))}</b>${f.subject ? `<span>About: ${esc(f.subject.subject_label)}</span>` : ""}<p>${esc(f.text)}</p></div>`,
+    [["✓ Send it", "send"], ["Change the text", "edit"], ["Cancel", "cancel"]]);
+}
+async function hbSend(){
+  const f = hb.flow; if(!f || f.sending) return;
+  f.sending = true;
+  try{
+    const code = await api.ticketCreate(Object.assign({ kind: f.kind, category: f.cat, message: f.text }, f.subject || {}));
+    hb.flow = null;
+    hbSay(`✅ Sent. Your ticket is <b>${esc(code)}</b>.<br>Our team will reply within 24 hours and resolve it within 15 days. You'll get a notification, and you can check it any time in My tickets.${
+      f.kind === "report" && ["scam", "harassment"].includes(f.cat) ? `<br><br>If you're in danger or have lost money, please also call 112, or report cyber fraud on 1930 / cybercrime.gov.in.` : ""}`,
+      [["📋 My tickets", "tickets"], ["↩ Something else", "home"]]);
+    checkTickets();
+  }catch(err){
+    console.error(err); f.sending = false;
+    const m = String(err.message || "");
+    hbSay(m.includes("too-many") ? "You've sent a lot of tickets today. Please wait for our team's reply, or write to " + HELP_OFFICER.email + "." : "That didn't go through. Please try again.", [["Try again", "send"], ["Cancel", "cancel"]]);
+  }
+}
+async function hbTickets(){
+  if(!state.user) return hbSay("Sign in to see your tickets.", HB_HOME());
+  let rows = [];
+  try{ rows = await api.myTickets(); }catch(e){ return hbSay("Couldn't load your tickets. Please try again.", HB_HOME()); }
+  if(!rows.length) return hbSay("You haven't raised any tickets. If something's wrong, I can take a report or a grievance now.", [["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["↩ Something else", "home"]]);
+  hbSay(`Your tickets:${rows.slice(0, 6).map(t => `<div class="hb-ticket"><div><b>${esc(t.code)}</b><span class="hb-st ${esc(t.status)}">${esc(TICKET_STATUS[t.status] || t.status)}</span></div>
+      <small>${esc(catLabel(t.kind, t.category))}${t.subject_label ? " · " + esc(t.subject_label) : ""} · ${fmtDate(t.created_at)}</small>
+      ${t.reply ? `<p><b>Our reply:</b> ${esc(t.reply)}</p>` : `<p class="hint" style="margin:4px 0 0">We'll reply within 24 hours.</p>`}</div>`).join("")}`,
+    [["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["↩ Something else", "home"]]);
+  api.ticketsSeen().catch(() => {}); ticketUnseen = 0; drawHelpBadge();
+}
+$("helpFab").addEventListener("click", () => openHelp());
+$("hbChips").addEventListener("click", e => {
+  const b = e.target.closest("[data-hb]"); if(!b) return;
+  const last = hb.log[hb.log.length - 1], c = last && last.chips[Number(b.dataset.hb)]; if(!c) return;
+  if(!/^(cat:|about:|send|edit|cancel)/.test(c[1])) hbMine(c[0].replace(/^\W+\s*/, ""));
+  hbAct(c[1]);
+});
+$("hbLog").addEventListener("click", e => { const a = e.target.closest("a[href^='#']"); if(a) $("dlgHelp").close(); });
+$("hbForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const text = $("hbIn").value.trim(); if(!text) return;
+  $("hbIn").value = ""; hbMine(text);
+  if(hb.flow && hb.flow.step === "text") return hbText(text);
+  if(hb.flow && hb.flow.step !== "confirm"){ hb.flow = null; }
+  const x = /\bfmf-\w+/i.test(text) ? HB_TOPICS.find(t => t.id === "tickets") : hbTopic(text);
+  if(x) return hbAnswer(x);
+  hbSay("I'm not sure about that one. Try one of these, or raise a grievance and a person from our team will reply.", HB_HOME().concat([["🙋 Talk to a person", "t:human"]]));
+});
+// Ticket updates from the team: a badge on the help button and a notification.
+let ticketUnseen = 0;
+function drawHelpBadge(){ $("helpBadge").hidden = !ticketUnseen; $("helpBadge").textContent = ticketUnseen; }
+async function checkTickets(){
+  if(!state.user || !api.myTickets) return;
+  try{
+    const rows = await api.myTickets(), fresh = rows.filter(t => t.unseen);
+    ticketUnseen = fresh.length; drawHelpBadge();
+    state.notified = state.notified || {};
+    for(const t of fresh){
+      const key = "tk" + t.code + t.updated_at; if(state.notified[key]) continue;
+      state.notified[key] = Date.now(); save();
+      Notify.show(`Update on your ticket ${t.code}: ${TICKET_STATUS[t.status] || t.status}`, t.reply ? t.reply.slice(0, 140) : "Open Help to see it.", "help");
+      toast(`📋 ${t.code}: ${TICKET_STATUS[t.status] || t.status}${t.reply ? ". Our team replied." : ""}`);
+    }
+  }catch(e){}
+}
+
 /* ================================================== maps and place search */
 // Google Maps (the map and Places search) once FM_CONFIG.googleMapsKey is set; until then
 // OpenStreetMap (Leaflet tiles, Photon search). The two are never mixed: with a key, every map and
@@ -7972,30 +8379,67 @@ const bondedTribe = async () => isSeeker() ? (await api.tribeList().catch(() => 
    (a 2BHK for 2, a 3BHK for 3), and for a tribe of 2, twin-sharing rooms the two of them can share. */
 let myTribeSize = 1;   // you + your bonded tribemates, refreshed whenever Discover loads
 // "room": a bedroom each · "share": a twin-sharing room for two · null: doesn't match this tribe
-function tribeFit(l, size){
+// How many private rooms are free in a listing's flat: what the owner said, else bedrooms minus people living there.
+const roomsFree = l => l.kind === "flat" ? l.bhk : l.kind === "shared" ? 1
+  : Math.max(1, Number((l.household || {}).rooms_free) || (l.bhk || 1) - ((l.household || {}).residents || 0));
+// What a bonded tribe can take, by what they're looking for (yours decides):
+//   shared room:      twin-sharing rooms for the two of you, then private rooms you share as twins
+//   private / whole:  whole flats with a bedroom each (a 2BHK for 2), then flats with as many rooms free as there are of you
+const TRIBE_GROUPS = { shared: ["share", "twin"], room: ["flat", "rooms"], flat: ["flat", "rooms"], "": ["flat", "rooms", "share"] };
+const twinRooms = size => Math.ceil(size / 2);
+function tribeFit(l, size, look){
   if(size < 2) return null;
-  if(l.kind === "flat") return l.bhk === size ? "room" : null;
-  if(l.kind === "shared") return size === 2 ? "share" : null;
-  return null;
+  const priv = PRIVATE_KINDS.includes(l.kind), order = TRIBE_GROUPS[look || ""] || TRIBE_GROUPS[""];
+  const fit = l.kind === "flat" ? (l.bhk === size ? "flat" : null)
+    : l.kind === "shared" ? (size === 2 ? "share" : null)
+    : priv && look === "shared" ? (roomsFree(l) >= twinRooms(size) ? "twin" : null)
+    : priv ? (roomsFree(l) >= size ? "rooms" : null) : null;
+  return fit && order.includes(fit) ? fit : null;
 }
-const tribeEach = (l, size) => l.kind === "shared" ? `${inr(l.rent)} a bed` : `${inr(Math.round(l.rent / size / 50) * 50)} each`;
-const tribeFitLabel = (l, size) => l.kind === "shared" ? "👯 You two share this room" : `🛏️ ${l.bhk}BHK · a bedroom each`;
-function tribeHomeCard(l, i, size){
-  return cardHtml(l, i).replace(`<div class="price">`, `<div class="fit-line">${tribeFitLabel(l, size)}</div><div class="price">`)
-    .replace("<small> /month rent</small>", `<small> /month rent</small> <span class="each">${tribeEach(l, size)}</span>`);
+// What each of you pays a month, and what the whole tribe pays.
+const tribeEachN = (l, size, fit) => fit === "flat" ? Math.round(l.rent / size / 50) * 50 : fit === "twin" ? Math.round(l.rent * twinRooms(size) / size / 50) * 50 : l.rent;
+const tribeCost = (l, size, fit) => fit === "flat" ? l.rent : fit === "twin" ? l.rent * twinRooms(size) : l.rent * size;
+const tribeEach = (l, size, fit) => fit === "share" ? `${inr(l.rent)} a bed` : `${inr(tribeEachN(l, size, fit))} each`;
+const tribeFitLabel = (l, size, fit) => ({ flat: `🛏️ ${l.bhk}BHK whole flat · a bedroom each`, rooms: `🚪 ${roomsFree(l)} rooms free here · one each`,
+  share: "👯 You two share this twin room", twin: size === 2 ? "👯 Share this private room as twins" : `👯 ${twinRooms(size)} rooms free · share as twins` })[fit] || "";
+function tribeHomeCard(l, i, size, fit){
+  return cardHtml(l, i).replace(`<div class="price">`, `<div class="fit-line">${tribeFitLabel(l, size, fit)}</div><div class="price">`)
+    .replace("<small> /month rent</small>", `<small> /month rent</small> <span class="each">${tribeEach(l, size, fit)}</span>`);
 }
-// A bonded tribe's homes: in any member's areas, bachelors welcome, within the joint budget when there are any.
+const TRIBE_GROUP_TEXT = {
+  flat: size => [`Whole ${size}BHK flats · a bedroom each`, "Split the rent " + size + " ways."],
+  rooms: size => [`Flats with ${size} rooms free · one each`, "Move into the same flat, a room each."],
+  share: () => ["Twin-sharing rooms for the two of you", "Both beds in one room."],
+  twin: size => [size === 2 ? "Private rooms you can share as twins" : `Flats with ${twinRooms(size)} rooms free to share`, "Split a private room between you."],
+};
+// A bonded tribe's homes, in the order of TRIBE_GROUPS: in any member's areas, bachelors welcome, best vibe first, then the
+// nearest, and within the joint budget when there is one.
 function tribeHomes(rows, bonded){
-  const f = prefs(), size = bonded.length + 1, budget = (f.max || 0) + bonded.reduce((a, t) => a + (t.budget || 0), 0);
+  const f = prefs(), size = bonded.length + 1, look = f.look || "", budget = (f.max || 0) + bonded.reduce((a, t) => a + (t.budget || 0), 0);
   const areas = new Set(f.areas.concat(...bonded.map(t => t.areas || []))), anyArea = !f.areas.length || bonded.some(t => !(t.areas || []).length);
-  const ok = rows.filter(l => tribeFit(l, size) && l.bachelors !== false && !l.is_owner && (anyArea || areas.has(l.locality)));
-  const cost = l => l.kind === "shared" ? l.rent * size : l.rent;   // what the whole tribe pays a month
-  const pick = list => {
-    list.sort((a, b) => cost(a) - cost(b));
-    const fits = list.filter(l => !budget || cost(l) <= budget * 1.1);
-    return { list: fits.length ? fits : list.slice(0, 4), over: !fits.length && list.length > 0 };
-  };
-  return { size, budget, room: pick(ok.filter(l => tribeFit(l, size) === "room")), share: pick(ok.filter(l => tribeFit(l, size) === "share")) };
+  const dist = distFrom(Object.assign({}, f, { areas: anyArea ? [] : [...areas] }));
+  const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct, d = l => l.geo ? dist({ lat: +l.geo.lat, lng: +l.geo.lng }) ?? 999 : 999;
+  const ok = rows.filter(l => l.bachelors !== false && !l.is_owner && (anyArea || areas.has(l.locality)));
+  const groups = (TRIBE_GROUPS[look] || TRIBE_GROUPS[""]).map(fit => {
+    // Flats with exactly as many rooms free as there are of you come before bigger ones.
+    const exact = l => fit === "rooms" && roomsFree(l) !== size ? 1 : 0;
+    const list = ok.filter(l => tribeFit(l, size, look) === fit)
+      .sort((a, b) => exact(a) - exact(b) || score(b) - score(a) || d(a) - d(b) || tribeCost(a, size, fit) - tribeCost(b, size, fit));
+    const fits = list.filter(l => !budget || tribeCost(l, size, fit) <= budget * 1.1);
+    return { fit, list: fits.length ? fits : list.slice(0, 4), over: !fits.length && list.length > 0 };
+  });
+  return { size, budget, look, groups };
+}
+// The rules, as the Tribe page explains them.
+function tribeRulesHtml(look, size){
+  const what = { room: "a private room", shared: "a shared room", flat: "a whole flat" }[look] || "any kind of home";
+  const homes = look === "shared" ? "twin-sharing rooms for the two of you first, then private rooms you can share as twins"
+    : "whole flats with a bedroom each first (a 2BHK for 2, a 3BHK for 3), then flats with as many rooms free as there are of you";
+  return `<details class="tribe-rules"${size > 1 ? "" : " open"}><summary>How your tribe finds a home</summary>
+    <p class="hint" style="margin:6px 0 10px">You're looking for <b>${what}</b>. <a href="#discover">Change it on Discover</a>.</p>
+    <ol><li><b>Matches:</b> people looking for the same kind of home as you come first, best vibe first. Everyone has 70%+ vibe with you and looks in your areas.</li>
+      <li><b>Once you're a tribe:</b> we show ${homes}. Best vibe first, then the nearest, within your joint budget.</li>
+      <li><b>New flats:</b> when an owner lists a flat that fits your tribe, it shows up here and you all get a notification.</li></ol></details>`;
 }
 // Search together: Discover shows homes in every tribe member's areas.
 async function searchTogether(){

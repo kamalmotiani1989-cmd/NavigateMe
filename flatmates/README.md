@@ -107,6 +107,15 @@ the room comes second.
 13. **Tribes of up to 3.** Each person can bond with at most two others. When a third person bonds
     with one member, the other two get a "complete your tribe" match and must say yes to each other
     before their numbers are shared. A tribe can never go above 3; full tribes are marked.
+    **Tribe rules.** People looking for the same kind of home as you (private room, shared room, whole flat;
+    `search.kind` from `fm_set_search`, shown on each card) come first, best vibe first. Once bonded, the
+    tribe's homes follow what you're looking for: **shared room** tribes see twin-sharing rooms for the two of
+    them, then private rooms they can share as twins; **private room / whole flat** tribes see whole flats with
+    a bedroom each (a 2BHK for 2, a 3BHK for 3), then flats with exactly that many private rooms free, then
+    bigger ones. Best vibe first, then the nearest, within the joint budget. Owners say how many private rooms
+    are free when they post (`household.rooms_free`, guessed as bedrooms minus people living there). The Tribe
+    page explains the rules. On the website **Tribe** sits next to Discover; on phones it's a named button in
+    the top bar.
 14. **No brokers.** An owner can list at most **two different addresses** (several rooms in the same
     flat count once), and a contact number can't front for more than two addresses from any account.
     A seeker whose request the owner accepted can **report a broker** from the contact section; the
@@ -242,6 +251,22 @@ flat" button (two flatmates and a month of expenses; one of them adds another ex
   in demo mode) they get a "Don't lose this room" reminder.
 - **Seeker, when declined:** a gentle "Not this time", pointing back to their other matches.
 
+- **Seekers, new homes:** a new listing that fits what you're looking for (city, areas, kind, 70%+ vibe,
+  or a whole flat sized for your tribe): "New whole flat in Baner", or "A 2BHK for your tribe in Baner"
+  (`fm_listing_alerts` in the app; `fm_listing_audience` + the `fm_listings_notify` trigger for push).
+- **Tribes:** new 70%+ matches, someone saying yes, someone joining your tribe ("Riya is joining your
+  tribe", and "Riya joined your tribe" for the others), and anyone leaving.
+- **Help tickets:** when the team changes a ticket's status or replies.
+
+**Help & support.** A Help button (bottom right) opens a built-in assistant, no AI service: it answers common
+questions by keywords (finding a room, posting, tribes, vibe score, prices, Flatsplits, parties, FlatMart,
+maps, notifications, account and deletion, privacy, safety) with buttons to the right page, and files
+**reports** (a broker, a fake listing, a scam, harassment, spam) and **grievances** (payment, account, listing,
+privacy, a bug) step by step as tickets with a code (`FMF-XXXXXX`), up to 10 a day per person. "My tickets"
+shows the status and the team's reply. **The team** works tickets in Supabase → Table Editor → `fm_tickets`:
+set `status` (`open`, `in_review`, `resolved`, `closed`) and write `reply`; the person is notified. Reply
+within 24 hours and resolve within 15 days (India's IT Rules); the grievance officer is named in the privacy policy.
+
 How they're delivered:
 - **App open or in the background:** system notifications straight away, in the Android app
   (native, Android 13+ asks for permission) and in browsers that allow notifications.
@@ -249,6 +274,12 @@ How they're delivered:
   "Push notifications" under Go live. Until then the Android app builds and works without it.
 
 ## Search and filters
+
+**Looking for** (asked at sign-up, changeable on Discover): it decides which homes show and in what order.
+**Private room:** private rooms (and "flatmate wanted"), then whole flats, no shared rooms. **Shared room:**
+shared rooms, then private rooms, then whole flats. **Whole flat:** whole flats, then private rooms. **Any:**
+everything. With a choice, results come in groups with headings, and inside each group the **best vibe match
+comes first, then the nearest** (to the searched place, else the nearest chosen area, else the city centre).
 
 A **place search** (locality, landmark, society, metro station) with a distance (1 to 20 km), or the city
 and **any number of areas** as chips (set during onboarding, changeable any time), plus a
