@@ -11,9 +11,10 @@
 //   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
 //   approved / declined -> the owner
 //
-// Secrets (supabase secrets set ...):
-//   NOTIFY_SECRET          same value as fm_settings.notify_secret
-//   FCM_SERVICE_ACCOUNT    the Firebase service-account JSON (Project settings -> Service accounts)
+// Secrets: either as Edge Function secrets (supabase secrets set ...) or in the database:
+//   NOTIFY_SECRET          same value as fm_settings.notify_secret (read from there if not set)
+//   FCM_SERVICE_ACCOUNT    the Firebase service-account JSON (Project settings -> Service accounts),
+//                          or fm_server_keys.value where name = 'fcm_service_account'
 // Deploy: supabase functions deploy fm-notify --no-verify-jwt
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -52,10 +53,22 @@ async function accessToken(sa: { client_email: string; private_key: string }) {
   return cached.token;
 }
 
+// Keys from the environment, else from the database (cached while this instance runs).
+let keys: { notify: string; fcm: string } | null = null;
+async function serverKeys() {
+  if (keys) return keys;
+  const { data: st } = await admin.from("fm_settings").select("notify_secret").limit(1).maybeSingle();
+  const { data: k } = await admin.from("fm_server_keys").select("value").eq("name", "fcm_service_account").maybeSingle();
+  keys = { notify: env("NOTIFY_SECRET") || st?.notify_secret || "", fcm: env("FCM_SERVICE_ACCOUNT") || k?.value || "" };
+  return keys;
+}
+
 async function pushTo(userId: string, title: string, body: string, open: string) {
   const { data: rows } = await admin.from("fm_push_tokens").select("token").eq("user_id", userId);
   if (!rows?.length) return 0;
-  const sa = JSON.parse(env("FCM_SERVICE_ACCOUNT"));
+  const { fcm } = await serverKeys();
+  if (!fcm) return 0;
+  const sa = JSON.parse(fcm);
   const auth = await accessToken(sa);
   let sent = 0;
   for (const { token } of rows) {
@@ -162,7 +175,8 @@ async function ticketEvent(id: string) {
 }
 
 Deno.serve(async (req) => {
-  if (req.headers.get("x-notify-secret") !== env("NOTIFY_SECRET") || !env("NOTIFY_SECRET")) return json({ error: "forbidden" }, 403);
+  const { notify } = await serverKeys();
+  if (!notify || req.headers.get("x-notify-secret") !== notify) return json({ error: "forbidden" }, 403);
   try {
     const payload = await req.json();
     if (payload.tribe_id) return json(await tribeEvent(payload.tribe_id, payload.event));
