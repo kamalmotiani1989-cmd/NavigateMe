@@ -502,9 +502,10 @@ connection, so changes show up on the next open.
 
 ## Android app (APK)
 
-The app is called **FindMeFlatMate** (logo: three smiling flatmates in a house; tagline "Find your vibe. Find your flatmate."). The folder, Android
-package (`com.navigateme.flatmates`) and download link keep their old names so installed
-copies update in place.
+The app is called **FindMeFlatMate** (logo: three smiling flatmates in a house; tagline "Find your vibe. Find your flatmate."). The Android app ID is
+`com.findmeflatmate.app` (the permanent ID on Google Play and in Firebase; it was `com.navigateme.flatmates`
+before, so a phone with that older build installs this one as a new app: uninstall the old one and sign in
+again). The folder and download link keep their old names.
 
 Download on the phone: https://github.com/kamalmotiani1989-cmd/NavigateMe/releases/download/flatmates-apk/flatmates.apk
 
@@ -608,7 +609,7 @@ Keep a budget alert on the billing account.
 
 ### Push notifications (when the app is closed)
 
-1. Create a Firebase project, add an **Android app** with package name `com.navigateme.flatmates`,
+1. Create a Firebase project, add an **Android app** with package name `com.findmeflatmate.app`,
    and download `google-services.json`. Add its contents as the GitHub secret
    `GOOGLE_SERVICES_JSON`; the APK workflow picks it up automatically.
 2. In Firebase → Project settings → Service accounts, generate a private key (JSON) and set it as a

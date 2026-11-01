@@ -1180,6 +1180,16 @@ begin
 end $$;
 
 -- When a request is created, accepted or declined, ask the fm-notify function to push it.
+-- Keys only the server uses (the push function reads them with the service role; nobody else can):
+-- 'fcm_service_account' = the Firebase service-account JSON. An Edge Function secret of the same purpose
+-- (FCM_SERVICE_ACCOUNT) wins if it's set.
+create table if not exists public.fm_server_keys (
+  name       text primary key,
+  value      text not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.fm_server_keys enable row level security;   -- no policies
+revoke all on public.fm_server_keys from anon, authenticated;
 -- Off until fm_settings.notify_url / notify_secret are set (see README, "Push notifications").
 alter table public.fm_settings add column if not exists notify_url text;
 alter table public.fm_settings add column if not exists notify_secret text;

@@ -1,4 +1,4 @@
-package com.navigateme.flatmates;
+package com.findmeflatmate.app;
 
 import android.Manifest;
 import android.app.NotificationChannel;
