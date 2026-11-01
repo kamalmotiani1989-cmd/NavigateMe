@@ -48,6 +48,13 @@ alter table public.fm_profiles add column if not exists search_at timestamptz;
 alter table public.fm_profiles add column if not exists discoverable boolean not null default true;
 -- Seekers can also hide from other seekers' tribe matches (Build your tribe).
 alter table public.fm_profiles add column if not exists tribe_open boolean not null default true;
+-- Gender (asked at sign-up), and who a seeker is shown to in Build your tribe (other seekers) and The Empty
+-- Room Escape (owners): everyone, only women or only men. Both directions count in a tribe match.
+alter table public.fm_profiles add column if not exists gender text check (gender in ('male','female'));
+alter table public.fm_profiles add column if not exists tribe_show_to text not null default 'all' check (tribe_show_to in ('all','female','male'));
+alter table public.fm_profiles add column if not exists escape_show_to text not null default 'all' check (escape_show_to in ('all','female','male'));
+create or replace function public.fm_shows_to(p_pref text, p_gender text) returns boolean
+language sql immutable as $$ select coalesce(p_pref, 'all') = 'all' or p_pref = p_gender $$;
 
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -384,7 +391,8 @@ create or replace function public.fm_me()
 returns table (credits int, full_name text, phone text, role text, vibe jsonb, occupation jsonb,
                gift_given boolean, packs bigint, pending bigint, interests jsonb, discoverable boolean, tribe_open boolean,
                room_until timestamptz, tribe_until timestamptz, escape_until timestamptz,
-               ref_code text, ref_joined int, ref_bonus int, charges_on boolean)
+               ref_code text, ref_joined int, ref_bonus int, charges_on boolean,
+               gender text, tribe_show_to text, escape_show_to text)
 language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is null then return; end if;
@@ -398,8 +406,30 @@ begin
          p.interests, p.discoverable, p.tribe_open,
          fm_pass_until(p.id, 'room'), fm_pass_until(p.id, 'tribe'), fm_pass_until(p.id, 'escape'),
          p.ref_code, (select count(*)::int from fm_profiles f where f.referred_by = p.id and f.ref_rewarded), p.ref_bonus,
-         (select s.charges_enabled from fm_settings s)
+         (select s.charges_enabled from fm_settings s),
+         p.gender, p.tribe_show_to, p.escape_show_to
   from fm_profiles p where p.id = auth.uid();
+end $$;
+
+-- Gender, from sign-up (or Account). Only male or female.
+create or replace function public.fm_set_gender(p_gender text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if p_gender is null or p_gender not in ('male','female') then raise exception 'bad-gender'; end if;
+  update fm_profiles set gender = p_gender where id = auth.uid();
+end $$;
+
+-- Who sees me in Build your tribe and in The Empty Room Escape: 'all', 'female' or 'male' (null keeps it).
+create or replace function public.fm_set_show_to(p_tribe text, p_escape text) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if coalesce(p_tribe, 'all') not in ('all','female','male') or coalesce(p_escape, 'all') not in ('all','female','male') then
+    raise exception 'bad-choice';
+  end if;
+  update fm_profiles set tribe_show_to = coalesce(p_tribe, tribe_show_to), escape_show_to = coalesce(p_escape, escape_show_to)
+   where id = auth.uid();
 end $$;
 
 -- A seeker's city, areas and budget, so owners in those areas can find and invite them.
@@ -669,6 +699,7 @@ language sql security definer set search_path = public stable as $$
          r.status, r.initiated_by
   from fm_listings l
   join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
+   and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()))
    and lower(p.search->>'city') = lower(l.city)
    and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
   left join fm_requests r on r.listing_id = l.id and r.seeker_id = p.id
@@ -687,7 +718,8 @@ begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   select * into v_l from fm_listings where id = p_listing and owner_id = auth.uid() and fm_listings.status = 'active';
   if v_l.id is null then return query select null::text, 'listing-not-found'; return; end if;
-  select * into v_s from fm_profiles where id = p_seeker and role = 'seeker' and discoverable;
+  select * into v_s from fm_profiles where id = p_seeker and role = 'seeker' and discoverable
+    and fm_shows_to(escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()));
   if v_s.id is null then return query select null::text, 'seeker-not-found'; return; end if;
   select * into v_req from fm_requests where listing_id = p_listing and seeker_id = p_seeker;
   if v_req.status in ('pending','approved','declined') then return query select v_req.status, null::text; return; end if;
@@ -818,6 +850,7 @@ begin
   select least(v_me.id, p.id), greatest(v_me.id, p.id), fm_match(v_me.vibe, p.vibe)
   from fm_profiles p
   where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open
+    and fm_shows_to(p.tribe_show_to, v_me.gender) and fm_shows_to(v_me.tribe_show_to, p.gender)
     and lower(p.search->>'city') = lower(v_me.search->>'city')
     and fm_vibe_count(p.vibe) >= 6
     and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0
@@ -848,7 +881,10 @@ language sql security definer set search_path = public stable as $$
          t.kind, cardinality(fm_tribe_members(auth.uid())), cardinality(fm_tribe_members(o.id))
   from fm_tribe_links t
   join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
+  join fm_profiles me on me.id = auth.uid()
   where (t.a = auth.uid() or t.b = auth.uid()) and t.status <> 'closed'
+    and (t.status <> 'open' or t.kind = 'complete'
+         or (fm_shows_to(o.tribe_show_to, me.gender) and fm_shows_to(me.tribe_show_to, o.gender)))
     and (t.status <> 'left' or (t.left_by <> auth.uid() and case when t.a = auth.uid() then not t.seen_a else not t.seen_b end))
     and (t.status in ('bonded', 'left') or o.tribe_open)
   order by (t.status = 'bonded') desc, t.match_pct desc
