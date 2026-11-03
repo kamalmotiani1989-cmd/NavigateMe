@@ -927,7 +927,7 @@ div.cx-area{cursor:default}
 .ds-go{flex:none; height:46px; padding:0 18px; border-radius:12px}
 .ds-go svg{display:none}
 @media (max-width:560px){
-  .ds-city{padding-left:6px} .ds-city > svg{display:none} .ds-city select{max-width:96px; padding-right:14px}
+  .ds-city{padding-left:6px} .ds-city > svg{display:none} .ds-city select{max-width:124px; padding-right:18px; font-size:14.5px}
   .ds-q{padding-left:8px} .ds-q > svg{display:none}
   .ds-go{width:46px; padding:0} .ds-go span{display:none} .ds-go svg{display:block}
 }
@@ -1006,16 +1006,17 @@ div.cx-area{cursor:default}
 .help-fab .badge{position:absolute; top:-4px; right:-4px; box-shadow:0 0 0 2px #fff}
 @media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none} }
 body:has(#view-splits:not([hidden]) #fsGroup:not([hidden])) .help-fab{display:none}
-#dlgHelp[open]{display:flex; flex-direction:column; height:min(700px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
+#dlgHelp[open]{display:flex; flex-direction:column; height:min(640px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
 @media (max-width:640px){ #dlgHelp[open]{width:100vw; height:100dvh} }
 #dlgHelp .mhead{flex:none; margin-bottom:0}
-.hb-log{flex:1; overflow:auto; padding:16px 14px 8px; display:flex; flex-direction:column; gap:10px; background:var(--surface-2)}
+.hb-scroll{flex:1; overflow:auto; background:var(--surface-2); overscroll-behavior:contain}
+.hb-log{padding:16px 14px 6px; display:flex; flex-direction:column; gap:10px}
 .hb-msg{display:flex; gap:8px; max-width:90%; align-items:flex-start}
 .hb-msg > div{padding:10px 13px; border-radius:16px; font-size:14.5px; line-height:1.5; min-width:0}
 .hb-msg.bot > div{background:#fff; border-top-left-radius:4px; box-shadow:0 1px 3px rgba(16,20,24,.06)}
 .hb-msg.usr{align-self:flex-end; max-width:82%} .hb-msg.usr > div{background:var(--brand); color:#fff; border-top-right-radius:4px; overflow-wrap:anywhere}
 .hb-av{flex:none; width:28px; height:28px; border-radius:50%; background:var(--brand-soft); color:var(--brand); display:grid; place-items:center; margin-top:2px}
-.hb-chips{display:flex; flex-wrap:wrap; gap:6px; padding:8px 14px 10px; background:var(--surface-2)}
+.hb-chips{display:flex; flex-wrap:wrap; gap:6px; padding:2px 14px 16px 50px}
 .hb-chips:empty{display:none}
 .hb-chips .chip{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line-2); font-weight:600; font-size:14px; padding:7px 13px}
 .hb-chips .chip:hover{box-shadow:inset 0 0 0 1.5px var(--brand); color:var(--brand-2)}
@@ -1601,6 +1602,21 @@ html:has(> body.app){background:var(--app-bg)}
 .hold-screen h2{margin:20px 0 0; color:#fff; font-size:30px}
 .hold-screen p.hs-lead{margin:12px auto 0; max-width:420px; color:rgba(255,255,255,.88); font-size:16px}
 html.on-hold, html.on-hold body{overflow:hidden}
+/* Wider screens use their width: the room-kind switch is sized to its labels, tribe cards and passes sit side by side. */
+@media (min-width:721px){
+  .ds-look{display:inline-flex; width:max-content; max-width:100%}
+  .ds-look button{flex:none; padding:9px 20px}
+}
+@media (min-width:900px){
+  #tribeMatches, #tribeWants{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start}
+  #tribeMatches > :not(.tribe-card), #tribeWants > :not(.tribe-card){grid-column:1 / -1}
+  #tribeMatches .tribe-card, #tribeWants .tribe-card{margin:0}
+  .plans{grid-template-columns:repeat(3, minmax(0, 1fr)); align-items:stretch}
+  .plan{display:flex; flex-direction:column} .plan ul{flex:1}
+}
+/* Empty states: a next step, and centred where the list would be. */
+.empty p{margin:0 0 4px} .empty .btn{margin-top:14px}
+.seekers > .empty{grid-column:1 / -1; justify-self:center; width:min(100%, 480px); margin:12px auto}
 </style>
 </head>
 <body>
@@ -2326,8 +2342,8 @@ html.on-hold, html.on-hold body{overflow:hidden}
   <div class="mbody" id="fsdBody"></div></dialog>
 
 <dialog id="dlgHelp" aria-labelledby="hbTitle"><div class="mhead"><div><h2 id="hbTitle">Help &amp; support</h2><div class="loc">Ask anything, or report a problem</div></div><button class="x" data-close aria-label="Close">×</button></div>
-  <div class="hb-log" id="hbLog" aria-live="polite"></div>
-  <div class="hb-chips" id="hbChips"></div>
+  <div class="hb-scroll" id="hbScroll"><div class="hb-log" id="hbLog" aria-live="polite"></div>
+  <div class="hb-chips" id="hbChips"></div></div>
   <form class="hb-form" id="hbForm" autocomplete="off"><input type="text" id="hbIn" maxlength="600" aria-label="Your message" placeholder="Type your question…">
     <button class="btn btn-primary" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button></form></dialog>
 <button class="help-fab" id="helpFab" type="button" aria-label="Help and support" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5M12 16.5h.01"/></svg><span>Help</span><i class="badge" id="helpBadge" hidden></i></button>
@@ -4335,6 +4351,7 @@ let escSeekers = [], escListing = null;
 async function renderEscape(){
   const listings = (await api.myListings()).filter(l => l.status !== "closed");
   $("escRule").hidden = !listings.length;
+  $("escPick").closest(".d-controls").hidden = !listings.length;
   if(!listings.length){
     $("escStats").innerHTML = ""; $("escPick").hidden = true; $("escFilters").innerHTML = "";
     $("escList").innerHTML = `<div class="empty"><h3>Post your room first</h3><p>Then we'll show you everyone looking in your area.</p>
@@ -5513,8 +5530,8 @@ async function renderSaved(){
   const h = t => `<h2 class="section-h" style="grid-column:1 / -1;margin:6px 0 0">${t}</h2>`;
   $("savedCards").innerHTML = (theirs.length ? h(`Shortlisted by ${esc(names || "your tribe")}`) + theirs.map(cardHtml).join("") : "")
     + (mine.length ? (theirs.length ? h("Saved by you") : "") + mine.map(cardHtml).join("") : "")
-    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><div class="empty-ic" aria-hidden="true">♥</div><h3>No saved homes yet</h3>Tap ♥ on any flat to keep it here.${
-      bonded.length ? ` ${esc(names)} will see it too.` : ""}</div>`)
+    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><div class="empty-ic" aria-hidden="true">♥</div><h3>No saved homes yet</h3><p>Tap ♥ on any flat to keep it here.${
+      bonded.length ? ` ${esc(names)} will see it too.` : ""}</p><a class="btn btn-primary" href="#discover">Browse homes</a></div>`)
     + (bonded.length ? `<div style="grid-column:1 / -1;margin-bottom:24px"><button class="btn btn-primary" type="button" data-together>🔎 Search together with ${esc(names)}</button></div>` : "");
 }
 $("fCity").addEventListener("change", () => { if(!pickOtherCity($("fCity"))) return; setPrefs({ city: $("fCity").value, areas: [], near: null }); dMapAt = ""; renderDiscover(); });
@@ -5893,7 +5910,7 @@ async function renderRequests(){
   const invHomes = await Promise.all(invites.map(r => api.get(r.listing_id)));
   const rest = list.filter(r => !invites.includes(r));
   const empty = `<div class="empty"><div class="empty-ic" aria-hidden="true">🔔</div><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
-      : "Open a flat you like and tap “Send request”."}</div>`;
+      : `<p>Open a flat you like and tap “Send request”.</p><a class="btn btn-primary" href="#discover">Browse homes</a>`}</div>`;
   $("reqList").innerHTML = !list.length ? empty
     : (invites.length ? `<h2 class="section-h" style="margin-top:8px">Owners who invited you</h2>` + invites.map((r, i) => inviteHtml(r, invHomes[i])).join("")
         + (rest.length ? `<h2 class="section-h">Your requests</h2>` : "") : "")
@@ -7997,7 +8014,7 @@ function drawHelp(){
   $("hbLog").innerHTML = hb.log.map(m => `<div class="hb-msg ${m.who}">${m.who === "bot" ? `<span class="hb-av" aria-hidden="true">${HB_ICON}</span>` : ""}<div>${m.html}</div></div>`).join("");
   $("hbChips").innerHTML = (last && last.who === "bot" ? last.chips : []).map(([t, a], i) => `<button type="button" class="chip" data-hb="${i}">${esc(t)}</button>`).join("");
   $("hbIn").placeholder = hb.flow && hb.flow.step === "text" ? "Tell us what happened…" : "Type your question…";
-  requestAnimationFrame(() => { const l = $("hbLog"); l.scrollTop = l.scrollHeight; });
+  requestAnimationFrame(() => { const l = $("hbScroll"); l.scrollTop = l.scrollHeight; });
 }
 const HB_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>`;
 function openHelp(start){
@@ -8560,7 +8577,7 @@ async function renderAccount(){
     ? VIBE_QS.filter(x => Number.isInteger(state.vibe[x.k])).map(x => `<span>${esc(x.t[state.vibe[x.k]])}</span>`).join("")
     : `<p class="hint" style="margin:0">Not answered yet.</p>`;
   $("myInterests").innerHTML = allInterests(state.interests).length
-    ? `<p class="hint" style="margin:12px 0 0">Into</p>${interestsHtml(state.interests, {})}` : "";
+    ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;color:var(--text-2)">Interests</p>${interestsHtml(state.interests, {})}` : "";
   const gaps = profileGaps();
   $("accComplete").innerHTML = gaps.length ? `<div class="acc-complete"><span>${answered(state.vibe)} of 12 answered · profile ${profilePct()}% done</span>
     <button class="btn btn-primary btn-sm" type="button" data-complete>Complete my profile</button></div>` : "";
