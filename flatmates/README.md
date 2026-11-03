@@ -149,6 +149,18 @@ the room comes second.
     expense; people can only be removed once they're settled up. New expenses from others show as a badge
     on Splits and a notification. People who aren't on the app yet get a WhatsApp invite, and they see
     the group as soon as they sign in with that number.
+    - **Edit, history and undo.** Any expense or payment can be edited (the row says "edited", the detail
+      says who and when). Deleting keeps the row for a day, and anyone in the group can **Undo** it from the
+      Activity tab. **History** lists every add, payment, change ("amount ₹900 → ₹1,200, paid by Riya →
+      Kabir"), delete and undo, with who did it (`fm_split_edit`, `fm_split_restore`, `fm_split_log`).
+    - **The invite shows the balance.** The WhatsApp invite for someone not on the app says what they owe
+      or are owed right now and links to `findmeflatmate.com/#split/<code>` (a code per member,
+      `fm_split_members.invite_code`): a page with their first name, the group, their balance and who it's
+      with, first names and amounts only, never a number (`fm_split_invite`, counted so codes can't be
+      guessed). "Sign in with the number ending in 42" takes them through sign-in and straight to the group.
+    - **Export.** A CSV of the group (this month, a year, or everything): a row per expense and payment, a
+      column per person's share, who added it and whether it was edited. Shared through the share sheet
+      (the Android app's `shareFile` bridge), or downloaded.
     **Trips and house parties are kept apart from the flat.** A group is a *flat*, a *trip* (out of the
     house: travel, stay, food) or a *house party* (at home, with flatmates and friends), in
     `fm_split_groups.kind`. Start one from Splits (✈️ New trip / 🎉 New house party) or from inside the

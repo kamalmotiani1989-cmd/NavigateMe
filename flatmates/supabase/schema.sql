@@ -1393,6 +1393,25 @@ create table if not exists public.fm_split_bills (
 );
 -- What the group is for: the flat's household spending, or a trip / house party kept apart from it.
 alter table public.fm_split_groups add column if not exists kind text not null default 'flat' check (kind in ('flat','trip','party'));
+-- Each member has an invite code: the link (#split/<code>) shows them their balance before they sign in.
+alter table public.fm_split_members add column if not exists invite_code text default upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
+update public.fm_split_members set invite_code = upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8)) where invite_code is null;
+create unique index if not exists fm_split_members_invite on public.fm_split_members (invite_code);
+-- Edits are marked on the row; every add, edit, delete and undo is in the group's activity log.
+alter table public.fm_split_expenses add column if not exists edited_at timestamptz;
+alter table public.fm_split_expenses add column if not exists edited_by uuid references public.fm_split_members(id) on delete set null;
+create table if not exists public.fm_split_log (
+  id         uuid primary key default gen_random_uuid(),
+  group_id   uuid not null references public.fm_split_groups(id) on delete cascade,
+  expense_id uuid references public.fm_split_expenses(id) on delete cascade,
+  member_id  uuid references public.fm_split_members(id) on delete set null,
+  action     text not null check (action in ('add','settle','edit','delete','restore')),
+  before     jsonb,
+  after      jsonb,
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_split_log_group on public.fm_split_log (group_id, created_at desc);
+alter table public.fm_split_log enable row level security;
 alter table public.fm_split_groups   enable row level security;
 alter table public.fm_split_members  enable row level security;
 alter table public.fm_split_expenses enable row level security;
@@ -1517,16 +1536,91 @@ begin
           coalesce((p->>'spent_on')::date, current_date), v_me)
   returning id into v_id;
   update fm_split_members set seen_at = now() where id = v_me;
+  insert into fm_split_log (group_id, expense_id, member_id, action, after)
+  select p_group, v_id, v_me, case when e.kind = 'settle' then 'settle' else 'add' end,
+         jsonb_build_object('title', e.title, 'amount', e.amount, 'paid_by', e.paid_by, 'splits', e.splits, 'spent_on', e.spent_on, 'category', e.category)
+  from fm_split_expenses e where e.id = v_id;
   return v_id;
 end $$;
 
+-- Deleting keeps the row for a day so anyone in the group can undo it (fm_split_restore); the log says who.
 create or replace function public.fm_split_delete(p_expense uuid) returns void
 language plpgsql security definer set search_path = public as $$
-declare v_group uuid;
+declare v_group uuid; v_e fm_split_expenses%rowtype;
 begin
-  select group_id into v_group from fm_split_expenses where id = p_expense;
+  select * into v_e from fm_split_expenses where id = p_expense;
+  v_group := v_e.group_id;
   if v_group is null or fm_split_me(v_group) is null then raise exception 'not-found'; end if;
   update fm_split_expenses set deleted_at = now() where id = p_expense and deleted_at is null;
+  if found then
+    insert into fm_split_log (group_id, expense_id, member_id, action, before)
+    values (v_group, p_expense, fm_split_me(v_group), 'delete',
+            jsonb_build_object('title', v_e.title, 'amount', v_e.amount, 'paid_by', v_e.paid_by, 'splits', v_e.splits, 'spent_on', v_e.spent_on, 'category', v_e.category, 'kind', v_e.kind));
+  end if;
+end $$;
+create or replace function public.fm_split_restore(p_expense uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_e fm_split_expenses%rowtype;
+begin
+  select * into v_e from fm_split_expenses where id = p_expense;
+  if v_e.id is null or fm_split_me(v_e.group_id) is null then raise exception 'not-found'; end if;
+  if v_e.deleted_at is null then return; end if;
+  if v_e.deleted_at < now() - interval '24 hours' then raise exception 'too-late'; end if;
+  update fm_split_expenses set deleted_at = null where id = p_expense;
+  insert into fm_split_log (group_id, expense_id, member_id, action, after)
+  values (v_e.group_id, p_expense, fm_split_me(v_e.group_id), 'restore', jsonb_build_object('title', v_e.title, 'amount', v_e.amount));
+end $$;
+-- Change an expense (or a payment's amount and date). Same checks as adding; the log keeps what changed.
+create or replace function public.fm_split_edit(p_expense uuid, p jsonb) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_e fm_split_expenses%rowtype; v_me uuid; v_amount bigint; v_before jsonb; v_after jsonb;
+begin
+  select * into v_e from fm_split_expenses where id = p_expense and deleted_at is null;
+  if v_e.id is null then raise exception 'not-found'; end if;
+  v_me := fm_split_me(v_e.group_id);
+  if v_me is null then raise exception 'not-a-member'; end if;
+  if jsonb_typeof(p->'amount') <> 'number' then raise exception 'bad-amount'; end if;
+  v_amount := (p->>'amount')::bigint;
+  perform fm_split_check(v_e.group_id, v_amount, coalesce((p->>'paid_by')::uuid, v_e.paid_by), coalesce(p->'splits', v_e.splits));
+  if v_e.kind = 'settle' and (select count(*) from jsonb_object_keys(coalesce(p->'splits', v_e.splits))) <> 1 then raise exception 'bad-splits'; end if;
+  v_before := jsonb_build_object('title', v_e.title, 'amount', v_e.amount, 'paid_by', v_e.paid_by, 'splits', v_e.splits, 'spent_on', v_e.spent_on, 'category', v_e.category);
+  update fm_split_expenses set
+    title = case when v_e.kind = 'settle' then title else left(coalesce(nullif(trim(p->>'title'), ''), title), 80) end,
+    category = case when v_e.kind = 'settle' then category else left(coalesce(nullif(p->>'category', ''), category), 20) end,
+    amount = v_amount, paid_by = coalesce((p->>'paid_by')::uuid, paid_by), splits = coalesce(p->'splits', splits),
+    spent_on = coalesce((p->>'spent_on')::date, spent_on), edited_at = now(), edited_by = v_me
+  where id = p_expense;
+  select jsonb_build_object('title', e.title, 'amount', e.amount, 'paid_by', e.paid_by, 'splits', e.splits, 'spent_on', e.spent_on, 'category', e.category)
+    into v_after from fm_split_expenses e where e.id = p_expense;
+  if v_after <> v_before then
+    insert into fm_split_log (group_id, expense_id, member_id, action, before, after) values (v_e.group_id, p_expense, v_me, 'edit', v_before, v_after);
+  end if;
+end $$;
+-- The invite page (#split/<code>), for the person invited, before they sign in: first names and amounts
+-- only, never a number. Counted, so codes can't be guessed by trying them all.
+create or replace function public.fm_split_invite(p_code text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_m fm_split_members%rowtype; v_g fm_split_groups%rowtype; v_net bigint; v_month bigint; v_pays jsonb; v_who text;
+begin
+  perform fm_throttle('fsinvite', 120, 600);
+  select * into v_m from fm_split_members where invite_code = upper(trim(coalesce(p_code, '')));
+  if v_m.id is null then return null; end if;
+  select * into v_g from fm_split_groups where id = v_m.group_id;
+  v_net := fm_split_net(v_m.id);
+  select coalesce(sum(coalesce((e.splits->>v_m.id::text)::bigint, 0)), 0) into v_month from fm_split_expenses e
+   where e.group_id = v_g.id and e.deleted_at is null and e.kind = 'expense' and date_trunc('month', e.spent_on) = date_trunc('month', current_date);
+  -- Who they owe / who owes them: the biggest counter-balances, first names only.
+  select jsonb_agg(jsonb_build_object('name', split_part(x.name, ' ', 1), 'net', x.net) order by abs(x.net) desc) into v_pays
+  from (select m.name, fm_split_net(m.id) as net from fm_split_members m where m.group_id = v_g.id and m.id <> v_m.id) x
+  where (v_net < 0 and x.net > 0) or (v_net > 0 and x.net < 0);
+  select split_part(coalesce(p.full_name, m.name), ' ', 1) into v_who from fm_split_members m left join fm_profiles p on right(regexp_replace(coalesce(p.phone, ''), '\D', '', 'g'), 10) = m.phone
+   where m.group_id = v_g.id and m.id <> v_m.id order by m.created_at limit 1;
+  return jsonb_build_object('group_id', v_g.id, 'name', v_g.name, 'emoji', v_g.emoji, 'kind', v_g.kind, 'me', split_part(v_m.name, ' ', 1),
+    'phone_tail', right(v_m.phone, 2), 'net', v_net, 'month_share', v_month, 'others', v_pays,
+    'members', (select count(*) from fm_split_members m where m.group_id = v_g.id),
+    'names', (select jsonb_agg(split_part(m.name, ' ', 1) order by m.created_at) from fm_split_members m where m.group_id = v_g.id and m.id <> v_m.id),
+    'invited_by', v_who,
+    'on_app', exists (select 1 from fm_profiles p where right(regexp_replace(coalesce(p.phone, ''), '\D', '', 'g'), 10) = v_m.phone));
 end $$;
 
 create or replace function public.fm_split_bill_save(p_group uuid, p jsonb) returns uuid
@@ -1608,12 +1702,19 @@ begin
   return jsonb_build_object(
     'group', (select to_jsonb(g) - 'created_by' from fm_split_groups g where g.id = p_group),
     'me', v_me,
-    'members', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'name', m.name, 'phone', m.phone, 'upi', m.upi,
+    'members', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'name', m.name, 'phone', m.phone, 'upi', m.upi, 'invite_code', m.invite_code,
                  'on_app', exists (select 1 from fm_profiles p where right(regexp_replace(coalesce(p.phone, ''), '\D', '', 'g'), 10) = m.phone))
                  order by m.created_at) from fm_split_members m where m.group_id = p_group), '[]'),
     'expenses', coalesce((select jsonb_agg(to_jsonb(e) - 'deleted_at' - 'group_id' order by e.spent_on desc, e.created_at desc)
                  from (select * from fm_split_expenses where group_id = p_group and deleted_at is null
                        order by spent_on desc, created_at desc limit 500) e), '[]'),
+    -- Deleted in the last day: anyone can undo (fm_split_restore).
+    'deleted', coalesce((select jsonb_agg(jsonb_build_object('id', e.id, 'title', e.title, 'amount', e.amount, 'kind', e.kind, 'deleted_at', e.deleted_at,
+                 'by', (select l.member_id from fm_split_log l where l.expense_id = e.id and l.action = 'delete' order by l.created_at desc limit 1)) order by e.deleted_at desc)
+                 from fm_split_expenses e where e.group_id = p_group and e.deleted_at > now() - interval '24 hours'), '[]'),
+    'log', coalesce((select jsonb_agg(jsonb_build_object('id', l.id, 'expense_id', l.expense_id, 'member_id', l.member_id, 'action', l.action,
+                 'before', l.before, 'after', l.after, 'created_at', l.created_at) order by l.created_at desc)
+                 from (select * from fm_split_log where group_id = p_group order by created_at desc limit 100) l), '[]'),
     'bills', coalesce((select jsonb_agg(to_jsonb(x) - 'group_id' order by x.day_of_month) from fm_split_bills x where x.group_id = p_group), '[]'));
 end $$;
 
@@ -3119,6 +3220,7 @@ grant execute on function public.fm_seeker_audience(uuid) to service_role;
 grant execute on function public.fm_market_want_audience(uuid) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;
 grant execute on function public.fm_party_get(text, text) to anon;
+grant execute on function public.fm_split_invite(text) to anon;
 grant execute on function public.fm_party_rsvp(text, text, text, text, int) to anon;
 -- Every API request runs fm_pre_request first, whatever the role, so all three must be able to.
 grant execute on function public.fm_pre_request() to anon, authenticated, service_role;

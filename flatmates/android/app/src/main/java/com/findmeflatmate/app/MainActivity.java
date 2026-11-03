@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
 
     /**
      * Exposes `FlatmatesNative` to the app's own pages only (not to embedded maps).
-     * Messages are JSON: {type: hello | permission | notify | shareImage, ...}.
+     * Messages are JSON: {type: hello | permission | notify | shareImage | shareFile, ...}.
      */
     private void addNativeBridge() {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) return;
@@ -165,6 +165,9 @@ public class MainActivity extends Activity {
                                 break;
                             case "shareImage":
                                 shareImage(m.optString("png"), m.optString("text"));
+                                break;
+                            case "shareFile":
+                                shareFile(m.optString("b64"), m.optString("mime", "text/plain"), m.optString("name", "file.txt"), m.optString("text"), m.optString("title", "Share"));
                                 break;
                         }
                     } catch (Exception ignored) {
@@ -192,6 +195,28 @@ public class MainActivity extends Activity {
             startActivity(Intent.createChooser(send, "Share your Vibe Card"));
         } catch (Exception e) {
             Toast.makeText(this, "Couldn't share the card", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** Any small file (a Flatsplits CSV, for one): base64 content, its type and name, handed to the share sheet. */
+    private void shareFile(String base64, String mime, String name, String text, String title) {
+        try {
+            File dir = new File(getCacheDir(), "share");
+            if (!dir.isDirectory() && !dir.mkdirs()) throw new IllegalStateException("no cache dir");
+            File file = new File(dir, name.replaceAll("[^A-Za-z0-9._-]", "_"));
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                out.write(android.util.Base64.decode(base64, android.util.Base64.DEFAULT));
+            }
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".files", file);
+            Intent send = new Intent(Intent.ACTION_SEND)
+                    .setType(mime)
+                    .putExtra(Intent.EXTRA_STREAM, uri)
+                    .putExtra(Intent.EXTRA_TEXT, text)
+                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            send.setClipData(ClipData.newRawUri("", uri));
+            startActivity(Intent.createChooser(send, title));
+        } catch (Exception e) {
+            Toast.makeText(this, "Couldn't share the file", Toast.LENGTH_SHORT).show();
         }
     }
 
