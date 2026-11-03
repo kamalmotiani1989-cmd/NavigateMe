@@ -230,6 +230,31 @@ the room comes second.
       share or hide it), "How you live" on Account shows it, and **My Vibe Card** in Account settings opens
       it (owners take the quiz for themselves). A signed-in seeker who opens a friend's link sees the match
       straight away.
+22. **Listing strength and editing.** My flat scores each listing out of 100 (3+ photos 30, a description of
+    80+ letters 20, 3+ amenities 10, who lives there 15, the household's living-style answers 15, a map pin 10;
+    whole flats skip the household parts) and lists what's missing as buttons ("+ Add photos of the room,
+    kitchen and building") that open the **editor** at the right step. **Edit listing** is the Post form
+    filled in: the room, the photos (kept ones can be removed, new ones added, 6 in all), the household
+    and the description change; the name, number and address stay as posted (shown locked), and the map pin
+    can move (`fm_update_listing`: own listings only, own photos only, a delisted listing can't be edited).
+23. **Reply speed.** From the owner's median time to answer seekers' requests over the last four months
+    (`fm_reply_hours`, returned as `reply_hours` by the search and listing functions): **⚡ Replies within
+    hours** (6 h or less), **Usually replies within a day** (30 h) or **Usually replies in a few days** (80 h),
+    on cards, in the listing header and in the compare table; slower owners get no line. Owners see their
+    own line on My flat, and requests waiting more than a day bring a banner on My flat and Requests plus one
+    notification a day ("Arjun is waiting for your reply").
+24. **Compare saved homes.** With two or more saved homes, **⇄ Compare side by side** on Saved turns the
+    shortlist (first 5) into a table: rent, monthly expenses, deposit, to move in, vibe match, distance
+    from your areas, the owner's reply speed, type, furnishing, who it's for, available from, bachelors,
+    posted. The best of each number is marked ✓; a column heading opens the home.
+25. **Share a home.** The share button on a listing (and **Share** on My flat) draws a 1080 × 1350 picture:
+    the cover photo or the illustration, type and size, the title, area, rent with expenses and deposit, the
+    details as chips and, for a seeker, "87% vibe match with me". Shared like the Vibe Card (Android's share
+    sheet in the app, the phone's on the website, download + WhatsApp + copy link on a computer). The link
+    is `findmeflatmate.com/?l=<listing id>`: it opens that home once the person is signed in.
+26. **Invite friends after the first yes.** When an owner first accepts a seeker's request, Discover and
+    Requests show a one-time card ("Your first yes. Know someone else hunting for a room?") with **Share my
+    link** (the referral link, every 2 friends who join = 1 free contact) and **Not now**.
 
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
@@ -244,7 +269,9 @@ flat" button (two flatmates and a month of expenses; one of them adds another ex
 
 ## Notifications and urgency
 
-- **Owner:** a notification the moment someone asks to meet ("Riya wants to meet you · 92% match").
+- **Owner:** a notification the moment someone asks to meet ("Riya wants to meet you · 92% match"), and
+  once a day while requests have waited more than a day ("2 people are waiting for your reply"), so they
+  keep their reply-speed line.
 - **Seeker, when accepted:** "Asha said yes! Call now", with how many others asked about the home.
   An orange **Call now, before it's rented out** card stays at the top of Discover and Requests
   until they tap Call, WhatsApp or "I've called". If they haven't called after 2 hours (1 minute
@@ -529,7 +556,8 @@ How the app keeps accounts safe and stops people copying the inventory with a sc
   `fm_` functions, which check who's asking. That also closes what used to be open: reading every active
   listing in one request, and owners editing their own listing rows (they could have given themselves a
   free "featured" spot or reopened a listing taken down after a broker report). Owners now mark a
-  listing rented or reopen it with `fm_set_listing_status`, which leaves a delisted one down.
+  listing rented or reopen it with `fm_set_listing_status`, which leaves a delisted one down, and change
+  the public details with `fm_update_listing` (own listings only, own photos only, the private part untouched).
 - **Listings need an account.** `fm_search`, `fm_search_near`, `fm_listing_get` and `fm_my_listings`
   answer signed-in callers only. Signed out, only the host page's area counts (`fm_area_demand`), and
   party and sale pages by their link, answer.

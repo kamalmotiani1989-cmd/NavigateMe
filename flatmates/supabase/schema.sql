@@ -556,6 +556,18 @@ $$;
 
 -- Listings, with whether the caller can see the contact and where their request stands.
 -- Signed-in only, and counted (fm_throttle): Discover calls it once per search.
+-- How quickly an owner answers requests: the median hours from a seeker's request to the owner's yes or
+-- no over the last four months, null until they've answered one. Internal; the search and listing
+-- functions return it as reply_hours and the app shows "usually replies within a day" from it.
+create or replace function public.fm_reply_hours(p_owner uuid) returns numeric
+language sql stable security definer set search_path = public as $$
+  select round((percentile_cont(0.5) within group (order by extract(epoch from (r.decided_at - r.created_at)) / 3600))::numeric, 1)
+  from fm_requests r join fm_listings l on l.id = r.listing_id
+  where l.owner_id = p_owner and r.initiated_by = 'seeker' and r.decided_at is not null
+    and r.status in ('approved', 'declined') and r.created_at > now() - interval '120 days';
+$$;
+
+drop function if exists public.fm_search(text, text, int, text, text);
 create or replace function public.fm_search(
   p_city text default null, p_kind text default null,
   p_max_rent int default null, p_gender text default null, p_q text default null)
@@ -564,7 +576,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean)
+  featured boolean, reply_hours numeric)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
@@ -574,7 +586,7 @@ language sql security definer set search_path = public as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id)
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where auth.uid() is not null and (l.status = 'active' or l.owner_id = auth.uid())
@@ -590,13 +602,14 @@ $$;
 -- Homes near a spot picked in the place search (Discover): pinned homes within p_km (1 to 25 km) of it,
 -- nearest first, plus homes without a pin whose area is the place's area. Same columns as fm_search.
 -- Listings keep a rounded spot (about a kilometre), so distances are approximate.
+drop function if exists public.fm_search_near(double precision, double precision, int, text);
 create or replace function public.fm_search_near(p_lat double precision, p_lng double precision, p_km int default 5, p_area text default null)
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean)
+  featured boolean, reply_hours numeric)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   with p as (select least(25, greatest(1, coalesce(p_km, 5)))::double precision as km, nullif(trim(coalesce(p_area, '')), '') as area),
@@ -619,7 +632,7 @@ language sql security definer set search_path = public as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id)
   from l cross join p
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where l.dist is null or l.dist <= p.km
@@ -2575,13 +2588,14 @@ end $$;
 
 -- --------------------------------------------------------------- security --
 -- One listing, and my own, without fishing them out of a search (counted like searches are).
+drop function if exists public.fm_listing_get(uuid);
 create or replace function public.fm_listing_get(p_id uuid)
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean)
+  featured boolean, reply_hours numeric)
 language sql security definer set search_path = public as $$
   select fm_throttle('listing', 300, 2000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
@@ -2591,7 +2605,7 @@ language sql security definer set search_path = public as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id)
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid());
@@ -2616,7 +2630,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, views int, saves bigint)
+  featured boolean, views int, saves bigint, reply_hours numeric)
 language sql stable security definer set search_path = public as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -2627,7 +2641,8 @@ language sql stable security definer set search_path = public as $$
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false),
          case when l.owner_id = auth.uid() then l.views end,
-         case when l.owner_id = auth.uid() then (select count(*) from fm_saves s where s.listing_id = l.id) end
+         case when l.owner_id = auth.uid() then (select count(*) from fm_saves s where s.listing_id = l.id) end,
+         fm_reply_hours(l.owner_id)
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where l.owner_id = auth.uid()
@@ -2654,6 +2669,66 @@ begin
   if p_status not in ('active', 'closed') then raise exception 'bad-status'; end if;
   update fm_listings set status = p_status where id = p_listing and owner_id = auth.uid() and status <> 'delisted';
   if not found then raise exception 'not-found'; end if;
+end $$;
+
+-- Change a listing's public details: the room, the photos, the household. The private part (name,
+-- phone, address) stays as posted. A new map pin replaces the old one (p_geo is the rounded public
+-- spot, p_pin the exact one for people the owner accepts); without one the pins are kept. A listing
+-- taken down after a broker report can't be edited. Same limits as fm_post_listing.
+create or replace function public.fm_update_listing(
+  p_listing uuid, p_kind text, p_title text, p_city text, p_locality text, p_bhk int,
+  p_rent int, p_deposit int, p_available_from date, p_gender text,
+  p_furnishing text, p_amenities text[], p_description text, p_photos text[] default '{}',
+  p_household jsonb default '{}', p_costs jsonb default '{}', p_bachelors boolean default true,
+  p_geo jsonb default null, p_pin jsonb default null)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare v_photo text; v_geo jsonb;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if not exists (select 1 from fm_listings where id = p_listing and owner_id = auth.uid() and status <> 'delisted') then
+    raise exception 'not-found';
+  end if;
+  perform fm_throttle('edit', 30, 100);
+  if coalesce(array_length(p_photos, 1), 0) > 6 then raise exception 'too-many-photos'; end if;
+  if char_length(coalesce(p_city, '')) not between 2 and 60 or char_length(coalesce(p_locality, '')) not between 2 and 80
+     or char_length(coalesce(p_description, '')) > 1500 or coalesce(array_length(p_amenities, 1), 0) > 30
+     or exists (select 1 from unnest(coalesce(p_amenities, '{}')) a where char_length(a) > 40) then
+    raise exception 'too-long';
+  end if;
+  if jsonb_typeof(coalesce(p_household, '{}')) <> 'object' or pg_column_size(p_household) > 4096
+     or jsonb_typeof(coalesce(p_costs, '{}')) <> 'object' or pg_column_size(p_costs) > 1024 then
+    raise exception 'bad-details';
+  end if;
+  if p_geo is not null then
+    if jsonb_typeof(p_geo->'lat') <> 'number' or jsonb_typeof(p_geo->'lng') <> 'number'
+       or (p_geo->>'lat')::numeric not between 6 and 37 or (p_geo->>'lng')::numeric not between 68 and 98 then
+      raise exception 'bad-location';
+    end if;
+    v_geo := jsonb_build_object('lat', round((p_geo->>'lat')::numeric, 2), 'lng', round((p_geo->>'lng')::numeric, 2));
+  end if;
+  if p_pin is not null and (jsonb_typeof(p_pin->'lat') <> 'number' or jsonb_typeof(p_pin->'lng') <> 'number'
+     or (p_pin->>'lat')::numeric not between 6 and 37 or (p_pin->>'lng')::numeric not between 68 and 98) then
+    raise exception 'bad-location';
+  end if;
+  foreach v_photo in array coalesce(p_photos, '{}') loop
+    if position('/storage/v1/object/public/fm-photos/' || auth.uid()::text || '/' in v_photo) = 0 then
+      raise exception 'bad-photo-url';
+    end if;
+  end loop;
+  update fm_listings set kind = p_kind, title = p_title, city = p_city, locality = p_locality, bhk = p_bhk,
+         rent = p_rent, deposit = coalesce(p_deposit, 0), available_from = coalesce(p_available_from, available_from),
+         gender = p_gender, furnishing = p_furnishing, amenities = coalesce(p_amenities, '{}'),
+         description = coalesce(p_description, ''), photos = coalesce(p_photos, '{}'),
+         household = coalesce(p_household, '{}'), costs = coalesce(p_costs, '{}'),
+         bachelors = coalesce(p_bachelors, true), geo = coalesce(v_geo, geo)
+   where id = p_listing and owner_id = auth.uid() and status <> 'delisted';
+  if not found then raise exception 'not-found'; end if;
+  if p_pin is not null then
+    update fm_listing_private set address_parts = coalesce(address_parts, '{}')
+       || jsonb_build_object('lat', (p_pin->>'lat')::numeric, 'lng', (p_pin->>'lng')::numeric)
+     where listing_id = p_listing;
+  end if;
 end $$;
 
 -- Text people type can't carry HTML: < and > become ‹ and › before anything is saved, so a name, title,
@@ -2767,7 +2842,7 @@ begin
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
                      'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify',
-                     'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json') then
+                     'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
