@@ -1626,6 +1626,28 @@ html.on-hold, html.on-hold body{overflow:hidden}
   .d-row .ds-view{flex:0 0 auto} .ds-view button{flex:none; padding:0 10px}
 }
 @media (max-width:370px){ .d-row .btn span{display:none} .d-row .btn{width:46px; padding:0; justify-content:center} }
+/* The listing's bottom bar: rent and the main action, in reach however long the listing is. */
+.l-bar{position:sticky; bottom:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; margin:18px -20px -28px;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); background:var(--surface); box-shadow:0 -1px 0 var(--line), 0 -8px 24px rgba(16,20,24,.06)}
+.l-bar-price{min-width:0} .l-bar-price b{font-size:18px; font-family:var(--display); letter-spacing:-.02em} .l-bar-price small{color:var(--text-2); font-size:13px; margin-left:3px}
+.l-bar .btn{flex:none; max-width:62%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* Loading placeholders. */
+.skel-card{border-radius:var(--r-card); background:var(--card); box-shadow:var(--card-shadow); overflow:hidden; padding:0 0 16px; animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 60ms)}
+.skel-row{display:flex; gap:12px; align-items:center; padding:16px; margin:10px 0; border-radius:18px; background:#fff; box-shadow:0 1px 0 var(--line)} .skel-row > div:last-child{flex:1}
+.sk{background:linear-gradient(90deg, var(--surface-2) 25%, var(--line) 50%, var(--surface-2) 75%); background-size:200% 100%; animation:shimmer 1.4s linear infinite; border-radius:8px}
+.sk-img{aspect-ratio:4/3; border-radius:0} .sk-av{width:44px; height:44px; border-radius:50%; flex:none}
+.sk-l{height:16px; margin:14px 14px 0; width:70%} .sk-s{height:12px; margin:10px 14px 0; width:85%} .sk-s.w50{width:50%}
+.skel-row .sk-l, .skel-row .sk-s{margin-left:0; margin-right:0} .skel-row .sk-l{margin-top:0; width:55%}
+@keyframes shimmer{from{background-position:200% 0} to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){ .sk{animation:none} }
+/* Phones: the promos above the homes take less room, so the first home shows sooner. */
+@media (max-width:560px){
+  .extras{grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; margin:12px 0 2px}
+  .extras a{flex-direction:row; align-items:center; padding:9px 10px; gap:8px; border-radius:14px} .extras a > span{min-width:0}
+  .extras i{width:34px; height:34px; font-size:18px; border-radius:10px} .extras b{font-size:13.5px} .extras small{font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .vibe-promo{margin:12px 0 2px; padding:10px 36px 10px 12px; gap:10px; border-radius:14px}
+  .vp-emoji{font-size:24px} .vp-main b{font-size:15px} .vp-main small{font-size:11px} .vp-main span{display:none}
+}
 /* Empty states: a next step, and centred where the list would be. */
 .empty p{margin:0 0 4px} .empty .btn{margin-top:14px}
 .seekers > .empty{grid-column:1 / -1; justify-self:center; width:min(100%, 480px); margin:12px auto}
@@ -2414,6 +2436,11 @@ const isSample = x => Boolean(x && ((x.household && x.household.sample) || (x.oc
 const SAMPLE_TAG = `<span class="smp" title="A sample for testing. It answers straight away and has no real number.">Sample</span>`;
 
 const $ = id => document.getElementById(id);
+// Shimmering placeholders while a list loads (live mode only; the demo is instant). Rows for people, cards for homes.
+const skeletonHtml = (n, rows) => Array.from({ length: n }, (_, i) => rows
+  ? `<div class="skel-row" aria-hidden="true" style="--i:${i}"><div class="sk sk-av"></div><div><div class="sk sk-l"></div><div class="sk sk-s"></div></div></div>`
+  : `<div class="skel-card" aria-hidden="true" style="--i:${i}"><div class="sk sk-img"></div><div class="sk sk-l"></div><div class="sk sk-s"></div><div class="sk sk-s w50"></div></div>`).join("");
+const showSkeleton = (id, n, rows) => { const el = $(id); if(api.live && el && !el.children.length) el.innerHTML = skeletonHtml(n, rows); };
 // On hold (see README, "On hold"): the server answers every request with 'on-hold'; only Coming soon shows.
 function showHold(){
   const h = $("holdScreen"); if(!h || !h.hidden) return;
@@ -4557,6 +4584,7 @@ function tribeCardHtml(t){
     <div class="acts">${acts}<button class="btn btn-ghost btn-sm" data-tcompat="${esc(t.id)}">Compatibility</button></div></article>`;
 }
 async function renderTribe(){
+  showSkeleton("tribeMatches", 3, true);
   await api.tribeRefresh().catch(() => 0);
   const all = await api.tribeList();
   tribeRows = all.filter(t => t.status !== "left");
@@ -5448,6 +5476,7 @@ let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
   const seq = ++browseSeq, f = prefs(), near = f.near && f.near.lat ? f.near : null;
   nearNow = near;
+  showSkeleton("cards", 4);
   if(!near && $("fSort").value === "near") $("fSort").value = "match";
   $("fSort").querySelector("[value=near]").hidden = !near;
   const sort = $("fSort").value, mapView = state.dView === "map";
@@ -5704,8 +5733,9 @@ async function openListing(id){
   $("lLoc").textContent = l.locality + ", " + l.city;
   const contact = l.unlocked ? await api.contact(id) : null;
   const ph = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
-  let lock = "";
+  let lock = "", bar = "";
   if(contact){
+    if(!l.is_owner && contact.contact_phone) bar = listingBar(l, contact, `<a class="btn btn-accent" href="tel:+91${esc(contact.contact_phone)}">Call ${esc((contact.contact_name || "the owner").split(" ")[0])}</a>`);
     lock = `<div class="lock open">
       ${l.is_owner ? "" : `<p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ ${esc(contact.contact_name || "The owner")} accepted. Call now!</p>
         <p class="hint" style="margin:0 0 10px">${esc(othersLine(l))}Good homes get rented out within days, so don't wait.</p>`}
@@ -5736,6 +5766,7 @@ async function openListing(id){
     const inv = (await api.inbox()).find(r => r.listing_id === id && r.by === "owner" && r.status === "pending");
     if(inv){
       const owner = inv.name || "The owner";
+      bar = listingBar(l, null, `<button class="btn btn-primary" data-action="inv-yes" data-rid="${esc(inv.id)}">Yes, let's meet</button>`);
       lock = `<div class="lock invited"><p class="eyebrow">You're invited</p><h3>${esc(owner)} would like you to see this home</h3>
         ${inv.message ? `<p>“${esc(inv.message)}”</p>` : ""}
         <p class="inv-timer">Your number stays private. ${esc(owner)} only gets it if you say yes.</p>
@@ -5761,6 +5792,7 @@ async function openListing(id){
       const left = contactsLeft();
       const tribe = l.kind === "flat" ? (await api.tribeList()).filter(t => t.status === "bonded") : [];
       const note = tribe.length ? `We're a tribe of ${tribe.length + 1} (${[firstName() || "me"].concat(tribe.map(t => t.name)).join(", ")}) looking for a whole flat together. We match each other's vibe ${tribe[0].match_pct}%.` : "";
+      bar = listingBar(l, null, `<button class="btn btn-accent" data-action="request">${CHARGES_ON && !left && !roomPass() ? "Get a Room Pass" : "Send request"}</button>`);
       lock = `<div class="lock">
         <h3>Feel the vibe? Ask to meet them</h3>
         <p>We'll send the owner your vibe profile. If they feel it too, they accept, and you both get each other's number and the address.</p>
@@ -5847,9 +5879,14 @@ async function openListing(id){
          <div class="map-q">It's within this circle in ${esc(l.locality)}. The exact address and pin are shared once the owner accepts.</div>`
       : mapHtml(l.locality + ", " + l.city, 14, "Approximate area. The exact address is shared once the owner accepts.", false)}</div>`}
     <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} asked to meet` : ""}</p>
-    ${lock}`;
+    ${lock}${bar}`;
   if(!$("dlgListing").open) $("dlgListing").showModal();
   if(!contact && l.geo) drawApproxMap("approxMap", l.geo);
+}
+// The bar that stays at the bottom of the listing: the rent, and the one thing to do next.
+function listingBar(l, contact, cta){
+  if(!cta) return "";
+  return `<div class="l-bar"><div class="l-bar-price"><b>${inr(l.rent)}</b><small>/month${billsTotal(l) ? " + expenses" : ""}</small></div>${cta}</div>`;
 }
 $("lBody").addEventListener("click", async e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
@@ -5908,6 +5945,7 @@ function refreshCurrent(){
 const STATUS_TXT = { pending:"Waiting for reply", approved:"Accepted", declined:"Declined" };
 const INVITE_TXT = { pending:"Invite sent", approved:"Accepted your invite", declined:"Passed" };
 async function renderRequests(){
+  showSkeleton("reqList", 3, true);
   const rows = await api.inbox();
   const owner = isOwner();
   const list = rows.filter(r => r.direction === (owner ? "incoming" : "outgoing"));
@@ -7002,6 +7040,7 @@ async function renderMarket(){
 }
 async function renderMkBrowse(){
   const seq = ++mkSeq, city = $("mkCity").value, q = $("mkQ").value.trim();
+  showSkeleton("mkCards", 4);
   const rows = await api.marketSearch({ city, q });
   if(seq !== mkSeq) return;
   const forSale = rows.filter(i => i.status === "active" && !i.is_mine), week = forSale.filter(i => Date.now() - new Date(i.bumped_at || i.created_at) < 7 * 864e5).length;
