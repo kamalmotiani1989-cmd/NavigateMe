@@ -1614,6 +1614,18 @@ html.on-hold, html.on-hold body{overflow:hidden}
   .plans{grid-template-columns:repeat(3, minmax(0, 1fr)); align-items:stretch}
   .plan{display:flex; flex-direction:column} .plan ul{flex:1}
 }
+/* Phones: the Discover search bar and tools row fit their labels (the sort label and the placeholder were cut mid-word). */
+@media (max-width:560px){
+  .ds-city select{max-width:112px}
+  .ds-q input{text-overflow:ellipsis}
+  .d-row{flex-wrap:nowrap}
+  .d-row .btn{flex:0 0 auto; padding:0 12px}
+  .d-row #fSort{flex:1 1 0; min-width:0; height:46px; font-size:14px; padding:0 26px 0 10px; -webkit-appearance:none; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23101418' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 8px center; background-size:14px}
+  .d-row .ds-view{flex:0 0 auto} .ds-view button{flex:none; padding:0 10px}
+}
+@media (max-width:370px){ .d-row .btn span{display:none} .d-row .btn{width:46px; padding:0; justify-content:center} }
 /* Empty states: a next step, and centred where the list would be. */
 .empty p{margin:0 0 4px} .empty .btn{margin-top:14px}
 .seekers > .empty{grid-column:1 / -1; justify-self:center; width:min(100%, 480px); margin:12px auto}
@@ -1927,7 +1939,7 @@ html.on-hold, html.on-hold body{overflow:hidden}
       <div class="d-row">
         <button class="btn btn-ghost btn-sm" type="button" id="filtersBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-          Filters <i class="badge" id="fCount" hidden></i></button>
+          <span>Filters</span> <i class="badge" id="fCount" hidden></i></button>
         <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="near">Nearest</option><option value="new">Newest</option><option value="cost">Lowest rent</option></select>
         <div class="ds-view" id="dView" role="group" aria-label="Show as"><button type="button" data-dview="list" aria-pressed="true">List</button><button type="button" data-dview="map" aria-pressed="false">Map</button></div>
       </div>
@@ -5605,6 +5617,8 @@ $("dsRadius").addEventListener("click", e => {
   const f = prefs(); if(!f.near) return;
   setPrefs({ near: Object.assign({}, f.near, { km: Number(b.dataset.km) }) }); renderDiscover();
 });
+// Phones: a placeholder that fits the search field.
+if(matchMedia("(max-width:560px)").matches) $("dsQ").placeholder = "Area, landmark or metro";
 $("dsX").addEventListener("click", () => { $("dsQ").value = ""; setPrefs({ near: null }); if($("fSort").value === "near") $("fSort").value = "match"; renderDiscover(); $("dsQ").focus(); });
 $("dsGo").addEventListener("click", () => {
   const q = $("dsQ").value.trim();
