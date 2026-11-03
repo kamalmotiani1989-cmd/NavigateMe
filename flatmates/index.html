@@ -1691,6 +1691,39 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 /* Empty states: a next step, and centred where the list would be. */
 .empty p{margin:0 0 4px} .empty .btn{margin-top:14px}
 .seekers > .empty{grid-column:1 / -1; justify-self:center; width:min(100%, 480px); margin:12px auto}
+/* Reply speed, listing strength + editing, compare saved homes, share card, referral prompt */
+.reply{display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:var(--text-2); white-space:nowrap}
+.reply.fast{color:#12804A}
+.card .fresh{display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center}
+.wait-nudge{display:flex; gap:12px; align-items:flex-start; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:var(--accent-soft); color:var(--text)}
+.wait-nudge .ic{font-size:22px; line-height:1} .wait-nudge b{display:block} .wait-nudge small{color:var(--text-2); font-size:13.5px}
+.wait-nudge a{color:var(--accent); font-weight:800; text-decoration:none}
+.reply-line{font-size:13.5px; color:var(--text-2); margin:0 0 6px} .reply-line b{color:#12804A}
+.qm{margin:10px 0 12px; padding:12px 14px; border-radius:14px; background:var(--surface-2)}
+.qm-head{display:flex; justify-content:space-between; gap:10px; align-items:baseline; font-size:14.5px} .qm-head span{color:var(--text-2); font-size:13px; text-align:right}
+.qm-bar{height:8px; border-radius:999px; background:var(--line-2); margin:8px 0 10px; overflow:hidden} .qm-bar i{display:block; height:100%; border-radius:999px; background:var(--ok); transition:width .4s}
+.qm-bar.lo i{background:var(--accent)} .qm-bar.mid i{background:var(--mid)}
+.qm-tips{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
+.qm-tips button{border:0; background:var(--surface); color:var(--text); border-radius:999px; padding:7px 11px; font:inherit; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 0 0 1px var(--line-2) inset}
+.qm-tips button::before{content:"+ "; color:var(--brand)}
+.edit-bar{display:flex; justify-content:space-between; align-items:center; gap:10px; margin:0 0 14px; padding:10px 10px 10px 14px; border-radius:12px; background:var(--brand-soft); font-size:14px}
+.edit-bar b{font-weight:800}
+.private.kept input:disabled{background:var(--surface-2); color:var(--text-2)}
+.saved-tools{grid-column:1 / -1; min-width:0; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:-6px 0 -14px}
+.saved-tools .hint{margin:0}
+.cmp-wrap{grid-column:1 / -1; min-width:0; overflow:auto; -webkit-overflow-scrolling:touch; margin:0 0 24px}
+.cmp{border-collapse:separate; border-spacing:0; width:100%; table-layout:fixed; font-size:14px}
+.cmp th, .cmp td{padding:10px 12px; text-align:left; vertical-align:top; box-shadow:0 -1px 0 var(--line); min-width:150px}
+.cmp th:first-child, .cmp td:first-child{position:sticky; left:0; z-index:1; background:var(--bg); font-weight:700; color:var(--text-2); width:112px; font-size:13px}
+.cmp thead th{box-shadow:none; font-weight:800; cursor:pointer; line-height:1.3}
+.cmp thead th:focus-visible{outline:3px solid var(--brand); outline-offset:-3px; border-radius:12px}
+.cmp thead th img, .cmp thead th .art{display:block; width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; margin-bottom:8px; background:var(--surface-2); overflow:hidden; position:relative}
+.cmp thead th small{display:block; font-weight:500; color:var(--text-3); font-size:12.5px}
+.cmp td.best{color:#12804A; font-weight:800} .cmp td.best::after{content:" ✓"}
+.ref-card{display:grid; grid-template-columns:auto 1fr; gap:14px; margin:18px 0; padding:18px; border-radius:var(--radius); background:var(--brand-soft)}
+.ref-card .ref-ic{font-size:30px; line-height:1} .ref-card h3{font-size:19px; margin:0} .ref-card p{margin:4px 0 0; color:var(--text-2)} .ref-card .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+.sh-img{display:block; width:min(300px,72vw); aspect-ratio:4/5; height:auto; border-radius:18px; box-shadow:0 18px 40px rgba(16,30,50,.25); margin:6px auto 16px}
+.mhead .mh-acts{display:flex; gap:8px; flex:none}
 </style>
 </head>
 <body>
@@ -2083,8 +2116,9 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 
   <!-- owner: post -->
   <section id="view-post" hidden>
-    <div class="page-h"><h1>Describe your room</h1><p>Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
+    <div class="page-h"><h1 id="postH1">Describe your room</h1><p id="postIntro">Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
     <div class="panel">
+      <div class="edit-bar" id="editBar" hidden><span>Editing <b id="editTitle"></b></span><button class="btn btn-ghost btn-sm" type="button" id="editCancel">Cancel</button></div>
       <form id="postForm" novalidate autocomplete="on">
         <ol class="ps-steps" id="psSteps"><li class="now"><i>1</i><span><em>The room</em><b>Room</b></span></li><li><i>2</i><span><em>Your home</em><b>Home</b></span></li><li><i>3</i><span><em>Private details</em><b>Private</b></span></li></ol>
         <fieldset class="ps" data-step="1">
@@ -2149,6 +2183,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <fieldset class="ps" data-step="3" hidden>
         <div class="private">
           <h3>Private: shown only to people who unlock</h3>
+          <p class="hint" id="privKept" hidden style="margin:-4px 0 12px">Your name, number and address stay as posted. To change them, mark this listing as rented and post the room again. You can still move the map pin.</p>
           <div class="grid2">
             <div class="field"><label for="pName">Your name</label><input type="text" id="pName" required autocomplete="name"></div>
             <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
@@ -2168,7 +2203,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <div class="map-box" id="mapBox" hidden></div>
           <p class="hint" style="margin:0">Area and city come from the first step. Pin your building so people you accept get exact directions; everyone else only sees the area.</p>
         </div>
-        <div class="ps-nav"><button class="btn btn-ghost" type="button" data-ps="back">Back</button><button class="btn btn-primary" type="submit">Publish my listing</button></div>
+        <div class="ps-nav"><button class="btn btn-ghost" type="button" data-ps="back">Back</button><button class="btn btn-primary" type="submit" id="postSubmit">Publish my listing</button></div>
         </fieldset>
       </form>
     </div>
@@ -2280,8 +2315,13 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 </main>
 
 <!-- ================================================================ dialogs -->
-<dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+<dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><div class="mh-acts">
+    <button class="x" type="button" id="lShare" aria-label="Share this home" title="Share"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+    <button class="x" data-close aria-label="Close">×</button></div></div>
   <div class="mbody" id="lBody"></div></dialog>
+
+<dialog id="dlgShare" aria-labelledby="shTitle"><div class="mhead"><div><h2 id="shTitle">Share this home</h2><div class="loc" id="shSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="shBody" style="text-align:center"></div></dialog>
 
 <dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="cBody"></div></dialog>
@@ -3083,11 +3123,23 @@ const demoApi = {
   async setInterests(i){ state.interests = i; save(); },
   async setOccupation(o){ state.user.occupation = o; save(); },
   reqFor(id){ return state.requests.find(r => r.listing_id === id && r.seeker_phone === this.me_()); },
+  // Reply speed, like fm_reply_hours: the median hours an owner takes to answer seekers' requests.
+  // Sample owners get a fixed one (some fast, some slow, some unknown).
+  replyHours_(l){
+    const mine = state.myListings.filter(x => x.owner_phone === l.owner_phone);
+    if(!l.owner_phone || !mine.length) return [2, 14, null, 40][hue("reply" + l.id) % 4];
+    const ids = new Set(mine.map(x => x.id));
+    const hrs = state.requests.filter(r => ids.has(r.listing_id) && (r.by || "seeker") === "seeker" && r.decided_at && r.status !== "withdrawn")
+      .map(r => (new Date(r.decided_at) - new Date(r.created_at)) / 36e5).sort((a, b) => a - b);
+    if(!hrs.length) return null;
+    const m = hrs.length % 2 ? hrs[(hrs.length - 1) / 2] : (hrs[hrs.length / 2 - 1] + hrs[hrs.length / 2]) / 2;
+    return Math.round(m * 10) / 10;
+  },
   view(l){
     const mine = Boolean(state.user && l.owner_phone === state.user.phone);
     const { private: _p, ...pub } = l;
     const r = this.reqFor(l.id);
-    return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null,
+    return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null, reply_hours: this.replyHours_(l),
              unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length,
              views: (state.views || {})[l.id] || 0, saves: (state.saved.includes(l.id) ? 1 : 0) + (state.demoTribeSaves || []).filter(x => x.listing_id === l.id).length };
   },
@@ -3367,6 +3419,22 @@ const demoApi = {
     if(!save()){ state.myListings.pop(); delete state.demoIncoming[id]; throw new Error("storage-full"); }
     return { id, photos };
   },
+  // Same rules as fm_update_listing: the public details change, the private part stays, a new pin replaces the old.
+  async update(id, p){
+    const l = state.myListings.find(x => x.id === id && x.owner_phone === this.me_());
+    if(!l || l.status === "delisted") throw new Error("not-found");
+    const was = Object.assign({}, l);
+    Object.assign(l, p.listing, { geo: p.listing.geo || l.geo });
+    if(p.pin && l.private) l.private.address_parts = Object.assign({}, l.private.address_parts, p.pin);
+    let photos = "kept";
+    if(!save() && (l.photos || []).length){
+      l.photos = (await Promise.all(l.photos.map(u => resizeImage(u, 480, 0.5).then(blobToDataUrl).catch(() => null)))).filter(Boolean);
+      photos = "shrunk";
+      if(!save()){ l.photos = []; photos = "dropped"; }
+    }
+    if(!save()){ Object.assign(l, was); save(); throw new Error("storage-full"); }
+    return { id, photos };
+  },
   async myListings(){
     return state.myListings.filter(l => l.owner_phone === state.user.phone).map(l => this.view(l));
   },
@@ -3571,6 +3639,14 @@ function makeLiveApi(sb){
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
         p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
+      return { id, photos:"kept" };
+    },
+    async update(id, p){
+      const l = p.listing;
+      await rpc("fm_update_listing", { p_listing: id, p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
+        p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from, p_gender:l.gender, p_furnishing:l.furnishing,
+        p_amenities:l.amenities, p_description:l.description, p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {},
+        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await rpc("fm_my_listings")).filter(l => l.is_owner); },
@@ -4365,8 +4441,12 @@ function route(){
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
   setTimeout(maybeAskGender, 600);
+  if(editing && v !== "post") endEdit();
   ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount })[v]();
   window.scrollTo(0, 0);
+  // A home someone shared (?l=...): open it once the app is up.
+  const shared = readLS(OPEN_KEY);
+  if(shared){ writeLS(OPEN_KEY, null); setTimeout(() => openListing(shared), 400); }
 }
 let unseen = 0, tribeUnseen = 0;
 // Gender: asked at sign-up; accounts from before get one quick question (once per visit, until answered).
@@ -4871,9 +4951,19 @@ async function checkInbox(){
       Notify.show(`${owner} said yes! Call now`,
         `${othersLine(l)}Homes like “${r.listing_title}” get rented out fast. Call ${owner} before someone else does.`, "requests");
       toast(`${owner} accepted! Call now before it's rented out.`);
+      if(!state.refAsk) state.refAsk = Date.now();   // the first yes: a good moment to invite friends (renderUrgent)
     }else if(r.status === "declined"){
       Notify.show("Not this time", `The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact was used." : ""} Your other matches are waiting.`, "discover");
       toast(`The owner of “${r.listing_title}” went with someone else.${CHARGES_ON ? " No contact used." : ""}`);
+    }
+  }
+  if(isOwner()){
+    // Requests waiting more than a day: one reminder a day, so the owner keeps their reply-speed line.
+    const late = lateRequests(rows);
+    if(late.length && Date.now() - (state.waitNudged || 0) > (LIVE ? 864e5 : 120e3)){
+      state.waitNudged = Date.now();
+      Notify.show(`${late.length === 1 ? (late[0].name || "Someone").split(" ")[0] + " is" : late.length + " people are"} waiting for your reply`,
+        "Answer today: owners who reply within a day get a “replies fast” line on their listing, and seekers pick them first.", "requests");
     }
   }
   if(!isOwner()){
@@ -4969,9 +5059,26 @@ async function renderUrgent(){
           href="https://wa.me/91${esc(c.contact_phone)}?text=${encodeURIComponent("Hi " + first + ", I'm " + (state.user.name || "") + " from FindMeFlatMate. Thanks for accepting! When can I come and see the room?")}">WhatsApp</a>
         <button class="btn btn-ghost btn-sm" type="button" data-called="${esc(r.listing_id)}">I've called</button></div></div></article>`;
   }));
-  $("urgent").innerHTML = inviteCard + tribeCard + cards.join("");
-  $("urgentReq").innerHTML = cards.join("");
+  $("urgent").innerHTML = inviteCard + tribeCard + cards.join("") + refCardHtml();
+  $("urgentReq").innerHTML = cards.join("") + refCardHtml();
 }
+// After a seeker's first yes: invite friends (the link carries the referral code).
+function refCardHtml(){
+  if(!state.refAsk || state.refPrompted || !isSeeker()) return "";
+  return `<article class="ref-card"><div class="ref-ic" aria-hidden="true">🎉</div><div style="min-width:0"><p class="eyebrow">Your first yes</p>
+    <h3>Know someone else hunting for a room?</h3>
+    <p>Share your link. Every 2 friends who join with it earn you a free contact, and they skip the brokers too.</p>
+    <div class="acts"><button class="btn btn-accent btn-sm" type="button" data-ref-share>Share my link</button>
+      <button class="btn btn-ghost btn-sm" type="button" data-ref-hide>Not now</button></div></div></article>`;
+}
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-ref-share]")){
+    state.refPrompted = Date.now(); save();
+    if(navigator.share) navigator.share({ title: "FindMeFlatMate", text: inviteText() }).catch(() => {});
+    else window.open("https://wa.me/?text=" + encodeURIComponent(inviteText()), "_blank", "noopener");
+    renderUrgent();
+  }else if(e.target.closest("[data-ref-hide]")){ state.refPrompted = Date.now(); save(); renderUrgent(); }
+});
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-called]"); if(!b) return;
   state.called = state.called || {}; state.called[b.dataset.called] = Date.now(); save();
@@ -5568,6 +5675,44 @@ function removeFilter(key){
 function applyPrefs(){ if(![...$("fCity").options].some(o => o.value === prefs().city)) setCitySelect($("fCity"), prefs().city, "All cities"); $("fCity").value = prefs().city; }
 
 const REQ_TAG = { pending:"Request sent", approved:"Accepted", declined:"Not this time" };
+// "Usually replies within a day": from the owner's median time to answer requests (reply_hours, from
+// fm_reply_hours on the server or the demo). Slow owners simply get no line.
+function replyLabel(h){
+  if(h == null || h === "") return "";
+  h = Number(h);
+  return h <= 6 ? "Replies within hours" : h <= 30 ? "Usually replies within a day" : h <= 80 ? "Usually replies in a few days" : "";
+}
+const replyBadge = l => { const t = replyLabel(l.reply_hours); return t ? `<span class="reply${Number(l.reply_hours) <= 30 ? " fast" : ""}">⚡ ${t}</span>` : ""; };
+// A seeker's request counts as waiting too long after a day (90 seconds in the demo).
+const WAIT_MS = LIVE ? 24 * 36e5 : 90e3;
+const lateRequests = rows => rows.filter(r => r.direction === "incoming" && r.status === "pending" && r.by !== "owner" && Date.now() - new Date(r.created_at) > WAIT_MS);
+function waitNudgeHtml(late, link){
+  if(!late.length) return "";
+  const n = late.length;
+  return `<div class="wait-nudge"><span class="ic" aria-hidden="true">⏳</span><span><b>${n === 1 ? `${esc((late[0].name || "Someone").split(" ")[0])} has` : `${n} people have`} been waiting more than a day</b>
+    <small>Owners who answer within a day get a “replies fast” line on their listing, and seekers pick them first.${link ? ` <a href="#requests">Reply now&nbsp;→</a>` : ""}</small></span></div>`;
+}
+// Listing strength: what a good listing has (photos, a description, amenities, who lives there, the
+// living-style answers, a map pin) and what this one is missing, each a tap away in the editor.
+function listingScore(l){
+  const hh = l.household || {}, n = photosOf(l).length, whole = l.kind === "flat";
+  const checks = [
+    { pts: 30, got: n >= 3 ? 30 : n ? 15 : 0, tip: n ? "Add more photos (3 or more)" : "Add photos of the room, kitchen and building", step: 1 },
+    { pts: 20, got: (l.description || "").trim().length >= 80 ? 20 : 0, tip: "Describe the flat: house rules, the commute, what's included", step: 2 },
+    { pts: 10, got: (l.amenities || []).length >= 3 ? 10 : 0, tip: "Tick the amenities", step: 1 },
+    { pts: 15, got: whole || matesOf(hh).some(m => m.what || m.type) ? 15 : 0, tip: "Say who lives there and what they do", step: 2 },
+    { pts: 15, got: whole || answered(hh) >= MIN_VIBE ? 15 : 0, tip: "Answer the living-style questions for your home", step: 2 },
+    { pts: 10, got: l.geo && l.geo.lat ? 10 : 0, tip: "Pin the building on the map", step: 3 },
+  ];
+  const pct = Math.round(checks.reduce((a, c) => a + c.got, 0) / checks.reduce((a, c) => a + c.pts, 0) * 100);
+  return { pct, tips: checks.filter(c => c.got < c.pts).map(c => ({ t: c.tip, step: c.step })) };
+}
+function qualityHtml(l){
+  const q = listingScore(l), cls = q.pct < 50 ? " lo" : q.pct < 80 ? " mid" : "";
+  return `<div class="qm"><div class="qm-head"><b>Listing strength ${q.pct}%</b><span>${q.pct >= 100 ? "Complete. Seekers see everything they need." : q.pct >= 80 ? "Nearly there" : "Complete listings get far more requests"}</span></div>
+    <div class="qm-bar${cls}" role="progressbar" aria-valuenow="${q.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Listing strength"><i style="width:${q.pct}%"></i></div>
+    ${q.tips.length ? `<ul class="qm-tips">${q.tips.slice(0, 3).map(t => `<li><button type="button" data-edit="${esc(l.id)}" data-step="${t.step}">${esc(t.t)}</button></li>`).join("")}</ul>` : ""}</div>`;
+}
 function cardHtml(l, i){
   const m = vibeMatch(state.vibe, l.household), hh = l.household || {}, ph = photosOf(l), mates = matesOf(hh);
   const tag = l.is_owner ? "Your listing" : REQ_TAG[l.request_status] || "";
@@ -5591,7 +5736,7 @@ function cardHtml(l, i){
       ${tribeSavedLine(l)}
       <div class="price">${inr(l.rent)}<small> /month rent</small></div>
       <div class="allin">${esc(expensesLine(l))} · deposit ${inr(l.deposit)}</div>
-      <div class="fresh">Posted ${timeAgo(l.created_at)}</div>
+      <div class="fresh">Posted ${timeAgo(l.created_at)}${replyBadge(l)}</div>
     </div></article>`;
 }
 function giftPillHtml(){
@@ -5707,19 +5852,55 @@ function emptyHtml(rows, f){
   return `<div class="empty"><h3>No homes match all of that yet</h3><p>New homes are added every day. Meanwhile, try one of these:</p>
     <div class="suggest">${opts.map((o, i) => `<button class="btn btn-ghost btn-sm" type="button" data-suggest="${i}">${esc(o.label)}${o.n ? ` (${o.n})` : ""}</button>`).join("")}</div></div>`;
 }
+let compareOn = false;   // Saved: cards, or the side-by-side table
 async function renderSaved(){
   const [rows, bonded] = await Promise.all([api.search({}), bondedTribe()]);
   await syncSaves();
-  const mine = rows.filter(l => isSaved(l.id)), theirs = rows.filter(l => !isSaved(l.id) && tribeSaved.has(l.id));
+  const mine = rows.filter(l => isSaved(l.id)), theirs = rows.filter(l => !isSaved(l.id) && tribeSaved.has(l.id)), all = theirs.concat(mine);
   const names = bonded.map(t => t.name).join(" & ");
   $("savedSub").textContent = bonded.length ? `Shared with ${names}. Every ♥ any of you taps shows up here for the whole tribe.`
     : "Your shortlist. Compare them here before you decide which ones to contact.";
   const h = t => `<h2 class="section-h" style="grid-column:1 / -1;margin:6px 0 0">${t}</h2>`;
-  $("savedCards").innerHTML = (theirs.length ? h(`Shortlisted by ${esc(names || "your tribe")}`) + theirs.map(cardHtml).join("") : "")
-    + (mine.length ? (theirs.length ? h("Saved by you") : "") + mine.map(cardHtml).join("") : "")
+  const tools = all.length >= 2 ? `<div class="saved-tools"><p class="hint">${all.length} homes${compareOn && all.length > 5 ? " · comparing the first 5" : ""}</p>
+    <button class="btn btn-ghost btn-sm" type="button" data-compare aria-pressed="${compareOn}">${compareOn ? "Show as cards" : "⇄ Compare side by side"}</button></div>` : "";
+  $("savedCards").innerHTML = tools + (compareOn && all.length >= 2 ? compareHtml(all.slice(0, 5))
+    : (theirs.length ? h(`Shortlisted by ${esc(names || "your tribe")}`) + theirs.map(cardHtml).join("") : "")
+    + (mine.length ? (theirs.length ? h("Saved by you") : "") + mine.map(cardHtml).join("") : ""))
     + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><div class="empty-ic" aria-hidden="true">♥</div><h3>No saved homes yet</h3><p>Tap ♥ on any flat to keep it here.${
       bonded.length ? ` ${esc(names)} will see it too.` : ""}</p><a class="btn btn-primary" href="#discover">Browse homes</a></div>`)
     + (bonded.length ? `<div style="grid-column:1 / -1;margin-bottom:24px"><button class="btn btn-primary" type="button" data-together>🔎 Search together with ${esc(names)}</button></div>` : "");
+}
+$("savedCards").addEventListener("click", e => { if(e.target.closest("[data-compare]")){ compareOn = !compareOn; renderSaved(); } });
+// Saved homes side by side: the numbers that decide (rent, expenses, move-in, match, distance), the
+// best of each marked. A column's heading opens the home.
+function compareHtml(list){
+  const km = distFrom(prefs());
+  const ms = list.map(l => vibeMatch(state.vibe, l.household)), kms = list.map(l => l.geo && l.geo.lat ? km(l.geo) : null);
+  const costs = l => l.costs || {};
+  const rows = [
+    ["Rent / month", l => inr(l.rent), l => l.rent, "min"],
+    ["Expenses / month", l => billsTotal(l) ? inr(billsTotal(l)) + (expenseItems(l).some(([k]) => costs(l)[k] === "usage") ? " + as per use" : "")
+      : expenseItems(l).length ? "As per use" : "All included", l => billsTotal(l), "min"],
+    ["Deposit", l => inr(l.deposit), l => l.deposit, "min"],
+    ["To move in", l => inr(moveIn(l)), l => moveIn(l), "min"],
+    ["Vibe match", (l, i) => ms[i] ? ms[i].pct + "%" : "–", (l, i) => ms[i] ? ms[i].pct : null, "max"],
+    ...(kms.some(k => k != null) ? [["Distance", (l, i) => kms[i] != null ? kmLabel(kms[i]) : "–", (l, i) => kms[i], "min"]] : []),
+    ["Owner replies", l => replyLabel(l.reply_hours) || "–"],
+    ["Type", l => `${KIND_LABEL[l.kind]} · ${l.bhk} BHK`],
+    ["Furnishing", l => FURN_LABEL[l.furnishing]],
+    ["Preferred", l => GENDER_LABEL[l.gender]],
+    ["Available", l => fmtDate(l.available_from), l => +new Date(l.available_from), "min"],
+    ["Bachelors", l => l.bachelors === false ? "Not allowed" : "Welcome"],
+    ["Posted", l => timeAgo(l.created_at)],
+  ];
+  const head = list.map(l => `<th scope="col" data-id="${esc(l.id)}" tabindex="0" role="button">${photosOf(l).length
+      ? `<img src="${esc(photosOf(l)[0])}" alt="" loading="lazy">` : `<div class="art">${roomArt(l.id, l.kind)}</div>`}${esc(l.title)}<small>${esc(l.locality)}, ${esc(l.city)}</small></th>`).join("");
+  const body = rows.map(([label, show, val, best]) => {
+    const vals = val ? list.map((l, i) => val(l, i)) : [], nums = vals.filter(v => v != null && !Number.isNaN(v));
+    const top = best && nums.length > 1 && new Set(nums).size > 1 ? (best === "min" ? Math.min(...nums) : Math.max(...nums)) : null;
+    return `<tr><td>${label}</td>${list.map((l, i) => `<td${top != null && vals[i] === top ? ' class="best"' : ""}>${esc(show(l, i))}</td>`).join("")}</tr>`;
+  }).join("");
+  return `<div class="cmp-wrap"><table class="cmp" style="min-width:${112 + list.length * 160}px"><thead><tr><th scope="col"></th>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
 $("fCity").addEventListener("change", () => { if(!pickOtherCity($("fCity"))) return; setPrefs({ city: $("fCity").value, areas: [], near: null }); dMapAt = ""; renderDiscover(); });
 $("fSort").addEventListener("change", renderDiscover);
@@ -5876,7 +6057,7 @@ async function openListing(id){
   if(!l){ toast("This listing is no longer available."); return; }
   currentListing = l;
   $("lTitle").textContent = l.title;
-  $("lLoc").textContent = l.locality + ", " + l.city;
+  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · ⚡ " + replyLabel(l.reply_hours) : "");
   const contact = l.unlocked ? await api.contact(id) : null;
   const ph = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
   let lock = "", bar = "";
@@ -6053,6 +6234,7 @@ function listingBar(l, contact, cta){
   if(!cta) return "";
   return `<div class="l-bar"><div class="l-bar-price"><b>${inr(l.rent)}</b><small>/month${billsTotal(l) ? " + expenses" : ""}</small></div>${cta}</div>`;
 }
+$("lShare").addEventListener("click", () => { if(currentListing) shareListing(currentListing); });
 $("lBody").addEventListener("click", async e => {
   const a = e.target.closest("[data-action]"); if(!a) return;
   const act = a.dataset.action;
@@ -6120,6 +6302,7 @@ async function renderRequests(){
   $("notifReq").innerHTML = notifyCard(owner ? "Get a notification the moment someone asks to meet you, even when the app is closed."
     : "Get a notification the moment an owner says yes, so you can call before anyone else.");
   renderUrgent();
+  if(owner) $("urgentReq").innerHTML = waitNudgeHtml(lateRequests(rows), false);
   $("reqSub").textContent = owner
     ? (waiting ? `${waiting} waiting for your reply. Accepting shares your number and address with them, and theirs with you.` : "When someone who fits your home asks to meet you, they'll show up here.")
     : `${waiting ? waiting + " waiting for a reply. " : ""}${roomPass() ? `Room Pass: unlimited requests till ${untilLabel(passUntil("room"))}.` : CHARGES_ON ? `You have ${contactsLabel(contactsLeft())}.` : ""}`;
@@ -6448,7 +6631,10 @@ async function renderMine(){
   const promo = looking.length ? `<a class="esc-promo" href="#escape"><span><small>The Empty Room Escape</small>
       <b>${looking.length} ${looking.length === 1 ? "person is" : "people are"} looking for a room in ${esc(live[0].locality)} right now</b>
       ${looking.filter(x => x.match_pct >= 80).length ? `${looking.filter(x => x.match_pct >= 80).length} match your home's vibe 80%+. ` : ""}Invite them before someone else does&nbsp;→</span></a>` : "";
-  $("mineList").innerHTML = promo + ask + (mine.length ? mine.map(l => {
+  const replyNote = !mine.length ? "" : `<p class="reply-line">${replyLabel(mine[0].reply_hours)
+    ? `<b>⚡ ${esc(replyLabel(mine[0].reply_hours))}</b> · seekers see this on your listing. Keep it up!`
+    : `Answer requests within a day and seekers see <b>⚡ Usually replies within a day</b> on your listing.`}</p>`;
+  $("mineList").innerHTML = waitNudgeHtml(lateRequests(incoming), true) + promo + ask + replyNote + (mine.length ? mine.map(l => {
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
       <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
@@ -6461,11 +6647,14 @@ async function renderMine(){
         <div class="stat"><b>${reqs.filter(r => r.status === "pending").length}</b><span>waiting for you</span></div>
         <div class="stat"><b>${reqs.filter(r => r.status === "approved").length}</b><span>accepted</span></div>
         <div class="stat"><b>${vs.length}</b><span>visits booked</span></div></div>
+      ${l.status === "delisted" ? "" : qualityHtml(l)}
       ${vs.map(v => `<div class="row"><div><div class="t">Visit ${fmtDateTime(v.visit_at)}</div>${v.note ? `<div class="s">“${esc(v.note)}”</div>` : ""}</div>
         <div><span class="status ${esc(v.status)}">${esc(v.status)}</span>
         ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-confirm="${esc(v.id)}">Confirm</button>` : ""}</div></div>`).join("")}
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
         <button class="btn btn-ghost btn-sm" data-preview="${esc(l.id)}">See it as seekers do</button>
+        ${l.status === "delisted" ? "" : `<button class="btn btn-ghost btn-sm" data-edit="${esc(l.id)}">Edit listing</button>`}
+        <button class="btn btn-ghost btn-sm" data-share="${esc(l.id)}">Share</button>
         <button class="btn btn-ghost btn-sm" data-toggle="${esc(l.id)}" data-status="${closed ? "active" : "closed"}">${closed ? "Reopen" : "Mark as rented"}</button></div>
     </div></div>`;
   }).join("") + `<button class="btn btn-ghost" data-go="post" style="margin:4px 0 30px">+ Post another room</button>`
@@ -6477,6 +6666,8 @@ $("mineList").addEventListener("click", async e => {
   try{
     if(b.dataset.go) return go(b.dataset.go);
     if(b.dataset.preview) return openListing(b.dataset.preview);
+    if(b.dataset.edit) return startEdit(b.dataset.edit, Number(b.dataset.step) || 1);
+    if(b.dataset.share){ const l = await api.get(b.dataset.share); if(l) shareListing(l); return; }
     if(b.dataset.confirm){ await api.setVisitStatus(b.dataset.confirm, "confirmed"); return renderMine(); }
     if(b.dataset.toggle){ await api.setListingStatus(b.dataset.toggle, b.dataset.status); return renderMine(); }
   }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
@@ -6484,26 +6675,81 @@ $("mineList").addEventListener("click", async e => {
 
 /* ======================================================= owner: post */
 let photoFiles = [];   // File objects picked for the listing being posted
+let editing = null, keepPhotos = [], editStep = 1;   // editing: the listing being changed; keepPhotos: its photos still wanted
 function renderPhotos(){
   photoFiles.forEach(f => f.preview = f.preview || URL.createObjectURL(f));
-  $("pPreviews").innerHTML = photoFiles.map((f, i) =>
-    `<figure><img src="${f.preview}" alt="Photo ${i+1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
-  $("pDrop").hidden = photoFiles.length >= MAX_PHOTOS;
+  $("pPreviews").innerHTML = keepPhotos.map((u, i) =>
+    `<figure><img src="${esc(u)}" alt="Photo ${i+1}"><button type="button" data-rmk="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("")
+    + photoFiles.map((f, i) =>
+    `<figure><img src="${f.preview}" alt="Photo ${keepPhotos.length + i + 1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
+  $("pDrop").hidden = keepPhotos.length + photoFiles.length >= MAX_PHOTOS;
 }
 function addPhotos(list){
-  const imgs = [...list].filter(f => f.type.startsWith("image/") && f.size < 20e6);
+  const imgs = [...list].filter(f => f.type.startsWith("image/") && f.size < 20e6), room = MAX_PHOTOS - keepPhotos.length;
   if(imgs.length < list.length) toast("Some files were skipped. Use images under 20 MB.");
-  photoFiles = photoFiles.concat(imgs).slice(0, MAX_PHOTOS);
-  if(photoFiles.length === MAX_PHOTOS && imgs.length) toast("Up to " + MAX_PHOTOS + " photos per listing.");
+  photoFiles = photoFiles.concat(imgs).slice(0, room);
+  if(photoFiles.length === room && imgs.length) toast("Up to " + MAX_PHOTOS + " photos per listing.");
   renderPhotos();
 }
 $("pPhotos").addEventListener("change", e => { addPhotos(e.target.files); e.target.value = ""; });
 $("pPreviews").addEventListener("click", e => {
+  const k = e.target.closest("[data-rmk]");
+  if(k){ keepPhotos.splice(Number(k.dataset.rmk), 1); renderPhotos(); return; }
   const b = e.target.closest("[data-rm]"); if(!b) return;
   const [gone] = photoFiles.splice(Number(b.dataset.rm), 1);
   if(gone && gone.preview) URL.revokeObjectURL(gone.preview);
   renderPhotos();
 });
+/* ---- editing a listing: the same form, filled in. The private part stays as posted (read-only here),
+   the map pin can move. Leaving the page drops the edit. */
+const PRIVATE_IDS = ["pName", "pPhone", "aFlat", "aBuilding", "aStreet", "aLandmark", "aPin"];
+async function startEdit(id, step){
+  const l = await api.get(id).catch(() => null);
+  if(!l || !l.is_owner){ toast("Couldn't open that listing."); return; }
+  editing = l; editStep = step || 1;
+  if(currentView === "post") renderPost(); else go("post");
+}
+function endEdit(){
+  editing = null; keepPhotos = [];
+  $("postForm").reset();
+  photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  PRIVATE_IDS.forEach(id => $(id).disabled = false);
+  $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
+  if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null; $("mapBox").hidden = true; $("mapBox").innerHTML = "";
+  $("expList").innerHTML = ""; $("fmRows").innerHTML = ""; $("hFree").dataset.touched = "";
+  $("editBar").hidden = true; $("postH1").textContent = "Describe your room"; $("postIntro").hidden = false; $("postSubmit").textContent = "Publish my listing";
+}
+$("editCancel").addEventListener("click", () => { endEdit(); go("mine"); });
+async function fillPostForm(l){
+  const f = $("postForm"), hh = l.household || {};
+  f.reset();
+  (f.querySelector(`[name=kind][value="${l.kind}"]`) || f.querySelector("[name=kind]")).checked = true;
+  $("pTitle").value = l.title; setCitySelect($("pCity"), l.city); fillAreaList(); $("pLocality").value = l.locality;
+  $("pBhk").value = String(Math.min(4, Math.max(1, l.bhk || 2))); $("pRent").value = l.rent; $("pDeposit").value = l.deposit || 0;
+  $("pFrom").value = String(l.available_from || "").slice(0, 10); $("pGender").value = l.gender; $("pFurn").value = l.furnishing;
+  $("pBach").checked = l.bachelors !== false;
+  $("pAmen").querySelectorAll("input").forEach(i => i.checked = (l.amenities || []).includes(i.value));
+  renderExpenseRows(l.costs || {});
+  $("pDesc").value = l.description || "";
+  $("hCount").value = String(Math.min(4, Math.max(0, Number(hh.residents) || 0)));
+  $("hFree").value = String(Math.min(4, Math.max(1, Number(hh.rooms_free) || 1))); $("hFree").dataset.touched = "1";
+  $("fmRows").innerHTML = fmRowsHtml(hh.flatmates || [], Number($("hCount").value), "p");
+  $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
+  $("hInt").innerHTML = interestChips("hi", hh.interests);
+  syncRoomsFree();
+  keepPhotos = photosOf(l); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  // The private part, for reference and for the map pin: kept as posted.
+  const c = (await api.contact(l.id).catch(() => null)) || {}, ap = c.address_parts || {};
+  $("pName").value = c.contact_name || state.user.name || ""; $("pPhone").value = c.contact_phone || state.user.phone || "";
+  $("aFlat").value = ap.flat || ""; $("aBuilding").value = ap.building || ""; $("aStreet").value = ap.street || ""; $("aLandmark").value = ap.landmark || ""; $("aPin").value = ap.pin || "";
+  PRIVATE_IDS.forEach(id => $(id).disabled = true);
+  f.querySelector(".private").classList.add("kept"); $("privKept").hidden = false;
+  if(pinMap){ pinMap.remove(); pinMap = null; } $("mapBox").hidden = true; $("mapBox").innerHTML = "";
+  pinGeo = Number.isFinite(Number(ap.lat)) && ap.lat ? { lat: Number(ap.lat), lng: Number(ap.lng) } : null;
+  $("editBar").hidden = false; $("editTitle").textContent = l.title; $("postH1").textContent = "Edit your listing"; $("postIntro").hidden = true;
+  $("postSubmit").textContent = "Save changes";
+  showPostStep(editStep);
+}
 ["dragenter","dragover"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.add("over"); }));
 ["dragleave","drop"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.remove("over"); }));
 $("pDrop").addEventListener("drop", e => addPhotos(e.dataTransfer.files));
@@ -6574,6 +6820,7 @@ function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value]
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
 attachAreaSuggest($("pLocality"), () => $("pCity").value);
 function renderPost(){
+  if(editing) return fillPostForm(editing);
   showPostStep(1);
   const d = state.homeDraft || {};
   $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
@@ -6647,6 +6894,16 @@ $("postForm").addEventListener("submit", async e => {
       const up = await api.uploadPhotos(photoFiles);
       p.listing.photos = up.urls; skipped = up.skipped;
     }
+    if(editing){
+      btn.textContent = "Saving…";
+      p.listing.photos = keepPhotos.concat(p.listing.photos || []);
+      const res = await api.update(editing.id, { listing: p.listing, pin: pinGeo });
+      state.homeDraft = Object.assign({}, p.listing.household); save();
+      endEdit();
+      toast(res.photos === "dropped" ? "Saved, but this phone's demo storage is full, so the photos weren't kept."
+        : res.photos === "shrunk" ? "Saved. Photos were kept smaller to fit this phone's demo storage." : "Your changes are live.");
+      go("mine"); return;
+    }
     btn.textContent = "Publishing…";
     const res = await api.post(p);
     track("list_room", { city: p.listing.city, area: p.listing.locality, kind: p.listing.kind });
@@ -6665,7 +6922,7 @@ $("postForm").addEventListener("submit", async e => {
       : err.message === "storage-full" ? "This phone's demo storage is full. Mark an old listing as rented or remove some photos, then try again."
       : "Couldn't publish: " + (err.message || "please check your connection and try again.");
     showFormError(f, msg); toast(msg);
-  }finally{ btn.disabled = false; btn.textContent = "Publish my listing"; }
+  }finally{ btn.disabled = false; btn.textContent = editing ? "Save changes" : "Publish my listing"; }
 });
 
 /* ============================================================ Flatsplits */
@@ -8946,6 +9203,7 @@ function vibeFromCode(c){
 const SITE_LINK = "https://findmeflatmate.com/";
 const siteLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : SITE_LINK;
 // The quiz answers and a friend's invite live outside fm_state, so they survive signing in.
+const OPEN_KEY = "fm_open";   // a shared home (?l=...) to open once signed in
 const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite", REF_KEY = "fm_ref", CARD_PENDING_KEY = "fm_card_pending";
 const readLS = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
 const writeLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
@@ -9133,10 +9391,11 @@ $("hShare").addEventListener("click", () => {
 
 (function takeLinkParams(){
   const p = new URLSearchParams(location.search), v = vibeFromCode(p.get("vibe")), r = (p.get("r") || "").toUpperCase();
-  if(!p.has("vibe") && !p.has("r")) return;
+  if(!p.has("vibe") && !p.has("r") && !p.has("l")) return;
+  if(/^[\w-]{3,64}$/.test(p.get("l") || "")) writeLS(OPEN_KEY, p.get("l"));
   if(v) writeLS(VIBE_INVITE_KEY, { name: (p.get("n") || "").replace(/[^\p{L} .'-]/gu, "").trim().slice(0, 20) || "Your friend", vibe: v, at: Date.now() });
   if(/^[A-Z0-9]{6,12}$/.test(r)) writeLS(REF_KEY, { code: r, at: Date.now() });
-  ["vibe","n","r"].forEach(k => p.delete(k));   // other parameters (a host page link, ad tags) stay
+  ["vibe","n","r","l"].forEach(k => p.delete(k));   // other parameters (a host page link, ad tags) stay
   history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
 })();
 // After signing in, tell the server who invited this account (it only counts for a new account).
@@ -9212,6 +9471,118 @@ async function drawVibeCard(t, name, stat){
   x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, ""), W / 2, H - 130);
   return c;
 }
+/* ================================================= share a home */
+// A picture of a home for WhatsApp: the cover photo (or the illustration), the title, area, rent and,
+// for a seeker, their vibe match. Shared like the Vibe Card: Android's share sheet in the app, the
+// browser's where there is one, otherwise a download and a WhatsApp link. The link opens the home (?l=).
+const listingLink = l => siteLink() + "?l=" + encodeURIComponent(l.id);
+const loadImg = (src, cors) => new Promise(r => { const i = new Image(); if(cors) i.crossOrigin = "anonymous"; i.onload = () => r(i); i.onerror = () => r(null); i.src = src; });
+async function drawListingCard(l, m){
+  const W = 1080, H = 1350, c = document.createElement("canvas"), F = '"Plus Jakarta Sans", system-ui, sans-serif',
+    E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+  c.width = W; c.height = H;
+  const x = c.getContext("2d");
+  await Promise.race([Promise.all(["800 52px", "500 32px", "700 28px"].map(f => document.fonts.load(`${f} "Plus Jakarta Sans"`))).catch(() => {}),
+    new Promise(r => setTimeout(r, 2500))]);
+  const ph = photosOf(l)[0];
+  const [logo, pic] = await Promise.all([loadImg("icons/icon-192.png"), ph ? loadImg(ph, !ph.startsWith("data:")) : null]);
+  const g = x.createLinearGradient(0, 0, W * .45, H);
+  g.addColorStop(0, "#0E9AA0"); g.addColorStop(.5, "#0F8EA6"); g.addColorStop(1, "#1F6CC4");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = "rgba(255,255,255,.07)";
+  for(const [cx, cy, rr] of [[1000, 60, 300], [40, 1320, 240]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  x.textBaseline = "middle"; x.textAlign = "left";
+  if(logo){ roundRect(x, 60, 54, 84, 84, 22, "#fff"); x.drawImage(logo, 66, 60, 72, 72); }
+  x.fillStyle = "#fff"; x.font = `800 40px ${F}`; x.fillText("FindMeFlatMate", 164, 96);
+  x.font = `600 24px ${F}`; x.fillStyle = "rgba(255,255,255,.85)"; x.textAlign = "right"; x.fillText("No brokers · matched on how you live", W - 60, 98);
+  // The photo (or an illustration) in a rounded frame.
+  const PX = 60, PY = 168, PW = W - 120, PH = 520;
+  x.save(); x.beginPath(); x.roundRect(PX, PY, PW, PH, 36); x.clip();
+  let drew = false;
+  if(pic){ try{ const sc = Math.max(PW / pic.width, PH / pic.height), w = pic.width * sc, h = pic.height * sc; x.drawImage(pic, PX + (PW - w) / 2, PY + (PH - h) / 2, w, h); drew = true; }catch(e){} }
+  if(!drew){
+    x.fillStyle = "rgba(255,255,255,.14)"; x.fillRect(PX, PY, PW, PH);
+    x.textAlign = "center"; x.font = `200px ${E}`; x.fillStyle = "#fff"; x.fillText({ room:"🛏️", shared:"🛏️", flatmate:"🙋", flat:"🏠" }[l.kind] || "🏠", W / 2, PY + PH / 2 - 24);
+    x.font = `600 30px ${F}`; x.fillStyle = "rgba(255,255,255,.9)"; x.fillText(ph ? "Photos on the listing" : "The owner hasn't added photos yet", W / 2, PY + PH - 56);
+  }
+  x.restore();
+  x.textAlign = "left"; x.font = `800 26px ${F}`;
+  const tag = KIND_LABEL[l.kind] + " · " + l.bhk + " BHK", tw = x.measureText(tag).width + 44;
+  roundRect(x, PX + 24, PY + 24, tw, 56, 28, "rgba(255,255,255,.94)"); x.fillStyle = "#10264F"; x.fillText(tag, PX + 46, PY + 53);
+  if(m){ const mt = m.pct + "% vibe match with me", mw = x.measureText(mt).width + 44;
+    roundRect(x, PX + PW - 24 - mw, PY + 24, mw, 56, 28, "#F26B1D"); x.fillStyle = "#fff"; x.fillText(mt, PX + PW - 24 - mw + 22, PY + 53); }
+  // White panel: title, area, rent, the details as chips. Sized to its contents.
+  const top = PY + PH + 30, L = 100;
+  x.font = `800 52px ${F}`;
+  const titleLines = wrapLines(x, l.title, W - 2 * L).slice(0, 2);
+  x.font = `700 28px ${F}`;
+  const chips = [FURN_LABEL[l.furnishing], GENDER_LABEL[l.gender], "From " + fmtDate(l.available_from), l.bachelors === false ? "" : "Bachelors welcome", "No brokerage"].filter(Boolean);
+  const rows = [[]]; let rowW = 0;
+  for(const chip of chips){
+    const w = x.measureText(chip).width + 44;
+    if(rowW && rowW + 14 + w > W - 2 * L){ rows.push([]); rowW = 0; }
+    rows[rows.length - 1].push([chip, w]); rowW += (rowW ? 14 : 0) + w;
+  }
+  let y = top + 58;
+  const panelH = 58 + titleLines.length * 60 + 50 + 84 + rows.length * 68 + 4;
+  roundRect(x, 60, top, W - 120, panelH, 36, "#fff");
+  x.fillStyle = "#10264F"; x.font = `800 52px ${F}`;
+  for(const line of titleLines){ x.fillText(line, L, y); y += 60; }
+  x.font = `500 30px ${F}`; x.fillStyle = "#5B6472"; x.fillText(`${l.locality}, ${l.city}`, L, y); y += 50;
+  x.font = `800 60px ${F}`; x.fillStyle = "#0B7C82"; const rent = inr(l.rent); x.fillText(rent, L, y + 6);
+  const rw = x.measureText(rent).width;
+  x.font = `500 28px ${F}`; x.fillStyle = "#5B6472";
+  x.fillText("/month" + (billsTotal(l) ? ` + ${inr(billsTotal(l))} expenses` : "") + ` · deposit ${inr(l.deposit)}`, L + rw + 14, y + 12);
+  y += 84;
+  const tints = ["#E2F5F5", "#FFF2E8", "#EEF3FD", "#E3F6F0", "#F3EEFD"];
+  let n = 0;
+  for(const row of rows){
+    let cx = L;
+    for(const [chip, w] of row){
+      roundRect(x, cx, y - 28, w, 56, 28, tints[n++ % tints.length]);
+      x.fillStyle = "#10264F"; x.font = `700 28px ${F}`; x.fillText(chip, cx + 22, y + 1);
+      cx += w + 14;
+    }
+    y += 68;
+  }
+  x.textAlign = "center";
+  x.fillStyle = "#fff"; x.font = `800 40px ${F}`; x.fillText("See the photos and ask to meet", W / 2, H - 112);
+  x.fillStyle = "rgba(255,255,255,.78)"; x.font = `600 28px ${F}`; x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, ""), W / 2, H - 56);
+  return c;
+}
+async function shareListing(l){
+  const m = isSeeker() && !l.is_owner ? vibeMatch(state.vibe, l.household) : null, link = listingLink(l);
+  const text = l.is_owner
+    ? `${l.title} · ${inr(l.rent)}/month in ${l.locality}, ${l.city}. ${KIND_LABEL[l.kind]}, no brokers. See the photos and ask to meet me on FindMeFlatMate: ${link}`
+    : `Found this on FindMeFlatMate: ${l.title} in ${l.locality}, ${l.city} · ${inr(l.rent)}/month${m ? ` · ${m.pct}% vibe match with me` : ""}. Have a look: ${link}`;
+  track("share_listing", { kind: l.kind, city: l.city, own: Boolean(l.is_owner) });
+  let canvas = null, png = null, blob = null;
+  try{ canvas = await drawListingCard(l, m); png = canvas.toDataURL("image/png"); blob = await new Promise(r => canvas.toBlob(r, "image/png")); }
+  catch(err){ console.error(err); png = null; blob = null; }
+  if(png && Notify.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"shareImage", png: png.split(",")[1], text })); return; }
+  const file = blob ? new File([blob], "flat.png", { type: "image/png" }) : null;
+  if(file && navigator.canShare && navigator.canShare({ files: [file] })){
+    try{ await navigator.share({ files: [file], text, title: l.title }); return; }
+    catch(err){ if(err && err.name === "AbortError") return; }
+  }
+  if(!file && navigator.share){
+    try{ await navigator.share({ text, title: l.title }); return; }
+    catch(err){ if(err && err.name === "AbortError") return; }
+  }
+  // No share sheet (most desktops): the image to save, a WhatsApp link, the link to copy.
+  $("shSub").textContent = l.title;
+  $("shBody").innerHTML = `${png ? `<img class="sh-img" src="${png}" alt="${esc(l.title)}">` : ""}
+    <p class="hint" style="margin:0 0 10px">Save the image, then post it with the link so friends can see the home.</p>
+    <div class="vc-acts row">
+      ${blob ? `<a class="btn btn-ghost btn-sm" href="${URL.createObjectURL(blob)}" download="flat.png">Download image</a>` : ""}
+      <a class="btn btn-ghost btn-sm" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="btn btn-ghost btn-sm" type="button" data-copy="${esc(link)}">Copy link</button></div>`;
+  $("dlgShare").showModal();
+}
+$("shBody").addEventListener("click", async e => {
+  const b = e.target.closest("[data-copy]"); if(!b) return;
+  try{ await navigator.clipboard.writeText(b.dataset.copy); toast("Link copied"); }catch(err){ toast(b.dataset.copy); }
+});
 // "12 homes in Pune match my vibe 80%+", for a seeker with a city.
 async function vibeStat(v){
   const f = prefs();
