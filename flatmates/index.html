@@ -1762,6 +1762,18 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .sale-bundle{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:#fff; color:var(--text); box-shadow:0 6px 20px rgba(16,20,24,.08)}
 .sale-bundle b{font-size:17px} .sale-bundle small{display:block; color:var(--text-2); font-size:13px} .sale-bundle .btn{margin-left:auto}
 .mk-bundle-tag{display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:800; background:#FFF1E6; color:#C2410C; margin-right:6px}
+/* Flatsplits: edited marks, undo, history, export, the invite page */
+.fs-row .ed{display:inline-block; margin-left:6px; padding:1px 7px; border-radius:999px; font-size:11px; font-weight:800; font-style:normal; background:var(--surface-2); color:var(--text-3); vertical-align:middle}
+.fs-undo{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:12px 0 0; padding:10px 12px; border-radius:12px; background:var(--accent-soft); font-size:13.5px}
+.fs-undo b{color:var(--text)} .fs-undo .btn{margin-left:auto}
+.fs-tools{display:flex; gap:12px; justify-content:flex-end; margin:10px 0 -4px} .fs-tools .linkbtn{padding:4px 0; font-size:13.5px; color:var(--brand)}
+.fs-log{display:grid; grid-template-columns:auto 1fr; gap:12px; padding:12px 0; box-shadow:0 1px 0 var(--line); font-size:14px}
+.fs-log .ic{width:36px; height:36px; border-radius:10px; display:grid; place-items:center; background:var(--surface-2); font-size:17px}
+.fs-log .s{display:block; font-size:12.5px; color:var(--text-3); margin-top:2px} .fs-log .d{display:block; color:var(--text-2); font-size:13.5px; margin-top:2px}
+.fs-export .seg{margin:6px 0 14px}
+.sp-bal{text-align:center; padding:6px 0 2px} .sp-bal b{display:block; font-size:34px; letter-spacing:-.03em; line-height:1.1} .sp-bal span{display:block; color:var(--text-2); margin-top:4px}
+.sp-bal.neg b{color:var(--accent)} .sp-bal.pos b{color:var(--ok)}
+.sp-who{display:flex; justify-content:space-between; padding:9px 0; box-shadow:0 -1px 0 var(--line); font-size:14.5px} .sp-who b{font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -1965,6 +1977,10 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 <section id="view-party" hidden>
   <div class="wrap pt-top"><a class="logo" href="./"><i><img src="icons/icon-192.png" alt="" width="40" height="40"></i><span class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></a></div>
   <div class="pt-wrap" id="ptBody"></div>
+</section>
+<section id="view-split" hidden>
+  <div class="wrap pt-top"><a class="logo" href="./"><i><img src="icons/icon-192.png" alt="" width="40" height="40"></i><span class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></span></a></div>
+  <div class="pt-wrap" id="spBody"></div>
 </section>
 <section id="view-host" hidden>
   <div class="w-band">
@@ -3944,6 +3960,9 @@ Object.assign(demoApi, {
     if(keys.reduce((t, k) => t + p.splits[k], 0) !== p.amount) throw new Error("splits-dont-add-up");
   },
   newId(prefix){ return prefix + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); },
+  splitCode(){ return Math.random().toString(36).slice(2, 10).toUpperCase().padEnd(8, "X"); },
+  splitLog(g, e, action, before, after){ (g.log = g.log || []).unshift({ id:this.newId("l"), expense_id: e ? e.id : null, member_id: this.splitMeIn(g).id, action, before: before || null, after: after || null, created_at:new Date().toISOString() }); g.log = g.log.slice(0, 100); },
+  splitSnap(e){ return { title:e.title, amount:e.amount, paid_by:e.paid_by, splits:e.splits, spent_on:e.spent_on, category:e.category, kind:e.kind }; },
   // A sample flatmate adds an expense a little while after the sample group is made.
   splitTick(){
     const now = Date.now();
@@ -3977,10 +3996,30 @@ Object.assign(demoApi, {
     }
     me.seen_at = new Date().toISOString(); save();
     const onApp = phone => phone === this.me_() || DEMO_FLATMATES.some(f => f[1] === phone) || (() => { try{ return Boolean(localStorage.getItem("fm_state:" + phone)); }catch(e){ return false; } })();
+    const dayAgo = new Date(Date.now() - 864e5).toISOString();
     return JSON.parse(JSON.stringify({ group:{ id:g.id, name:g.name, emoji:g.emoji, created_at:g.created_at, kind:g.kind || "flat" }, me:me.id,
-      members: g.members.map(m => Object.assign({}, m, { on_app: onApp(m.phone) })),
+      members: g.members.map(m => Object.assign({ invite_code: m.invite_code || (m.invite_code = this.splitCode()) }, m, { on_app: onApp(m.phone) })),
       expenses: this.splitLive(g).sort((a, b) => b.spent_on.localeCompare(a.spent_on) || b.created_at.localeCompare(a.created_at)),
+      deleted: g.expenses.filter(e => e.deleted_at && e.deleted_at > dayAgo).map(e => ({ id:e.id, title:e.title, amount:e.amount, kind:e.kind, deleted_at:e.deleted_at,
+        by: ((g.log || []).find(l => l.expense_id === e.id && l.action === "delete") || {}).member_id || null })).sort((a, b) => b.deleted_at.localeCompare(a.deleted_at)),
+      log: g.log || [],
       bills: g.bills }));
+  },
+  // The invite page: any group on this device, by a member's code. First names and amounts only.
+  async splitInvite(code){
+    code = String(code || "").toUpperCase();
+    for(const g of this.splitAll()){
+      const m = g.members.find(x => x.invite_code === code); if(!m) continue;
+      const ex = this.splitLive(g), net = splitNets(g.members, ex), mine = net[m.id] || 0, ym = new Date().toISOString().slice(0, 7);
+      const others = g.members.filter(x => x.id !== m.id && ((mine < 0 && net[x.id] > 0) || (mine > 0 && net[x.id] < 0)))
+        .map(x => ({ name: x.name.split(" ")[0], net: net[x.id] })).sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
+      const first = g.members.find(x => x.id !== m.id);
+      return { group_id:g.id, name:g.name, emoji:g.emoji, kind:g.kind || "flat", me:m.name.split(" ")[0], phone_tail:m.phone.slice(-2), net:mine,
+        month_share: ex.filter(e => e.kind === "expense" && e.spent_on.startsWith(ym)).reduce((t, e) => t + Number(e.splits[m.id] || 0), 0),
+        others, members:g.members.length, names:g.members.filter(x => x.id !== m.id).map(x => x.name.split(" ")[0]), invited_by: first ? first.name.split(" ")[0] : null,
+        on_app: m.phone === this.me_() };
+    }
+    return null;
   },
   async splitCreate(name, emoji, members, kind){
     const me = this.me_(), now = new Date().toISOString();
@@ -3992,7 +4031,7 @@ Object.assign(demoApi, {
     for(const m of list){
       if(seen.has(m.phone)) continue;
       seen.add(m.phone);
-      mem.push({ id:this.newId("m"), name:m.name, phone:m.phone, upi: m.phone === me ? upi : null, seen_at:now, created_at:now });
+      mem.push({ id:this.newId("m"), name:m.name, phone:m.phone, upi: m.phone === me ? upi : null, invite_code:this.splitCode(), seen_at:now, created_at:now });
     }
     if(mem.length > (kind === "flat" ? 12 : 20)) throw new Error("too-many-members");
     const id = this.newId("g");
@@ -4006,7 +4045,7 @@ Object.assign(demoApi, {
     if(had){ had.name = name.trim().slice(0, 40); save(); return had.id; }
     if(g.members.length >= 12) throw new Error("too-many-members");
     const now = new Date().toISOString(), id = this.newId("m");
-    g.members.push({ id, name:name.trim().slice(0, 40), phone:p, upi:null, seen_at:now, created_at:now });
+    g.members.push({ id, name:name.trim().slice(0, 40), phone:p, upi:null, invite_code:this.splitCode(), seen_at:now, created_at:now });
     save(); return id;
   },
   async splitRemoveMember(gid, mid){
@@ -4019,13 +4058,38 @@ Object.assign(demoApi, {
   async splitAdd(gid, p){
     const g = this.splitFind(gid); this.splitCheck(g, p);
     const id = this.newId("e");
-    g.expenses.push({ id, kind:p.kind || "expense", title:(p.title || "Expense").slice(0, 80), category:p.category || "other", amount:p.amount,
+    const e = { id, kind:p.kind || "expense", title:(p.title || "Expense").slice(0, 80), category:p.category || "other", amount:p.amount,
       paid_by:p.paid_by, splits:p.splits, spent_on:p.spent_on || new Date().toISOString().slice(0, 10), created_by:this.splitMeIn(g).id,
-      bill_id:null, created_at:new Date().toISOString() });
+      bill_id:null, created_at:new Date().toISOString() };
+    g.expenses.push(e);
+    this.splitLog(g, e, e.kind === "settle" ? "settle" : "add", null, this.splitSnap(e));
     this.splitMeIn(g).seen_at = new Date().toISOString();
     save(); return id;
   },
-  async splitDelete(gid, eid){ const e = this.splitFind(gid).expenses.find(x => x.id === eid); if(e){ e.deleted_at = new Date().toISOString(); save(); } },
+  // Deleting keeps the row for a day (undo); edits are marked and logged, like fm_split_edit.
+  async splitDelete(gid, eid){
+    const g = this.splitFind(gid), e = g.expenses.find(x => x.id === eid);
+    if(e && !e.deleted_at){ e.deleted_at = new Date().toISOString(); this.splitLog(g, e, "delete", this.splitSnap(e), null); save(); }
+  },
+  async splitRestore(gid, eid){
+    const g = this.splitFind(gid), e = g.expenses.find(x => x.id === eid);
+    if(!e || !e.deleted_at) return;
+    if(Date.now() - new Date(e.deleted_at) > 864e5) throw new Error("too-late");
+    delete e.deleted_at; this.splitLog(g, e, "restore", null, { title:e.title, amount:e.amount }); save();
+  },
+  async splitEdit(gid, eid, p){
+    const g = this.splitFind(gid), e = g.expenses.find(x => x.id === eid && !x.deleted_at);
+    if(!e) throw new Error("not-found");
+    const next = Object.assign({}, e, { amount:p.amount, paid_by:p.paid_by || e.paid_by, splits:p.splits || e.splits });
+    this.splitCheck(g, next);
+    if(e.kind === "settle" && Object.keys(next.splits).length !== 1) throw new Error("bad-splits");
+    const before = this.splitSnap(e);
+    if(e.kind !== "settle"){ if(p.title) e.title = String(p.title).trim().slice(0, 80) || e.title; if(p.category) e.category = p.category; }
+    e.amount = next.amount; e.paid_by = next.paid_by; e.splits = next.splits; if(p.spent_on) e.spent_on = p.spent_on;
+    const after = this.splitSnap(e);
+    if(JSON.stringify(after) !== JSON.stringify(before)){ e.edited_at = new Date().toISOString(); e.edited_by = this.splitMeIn(g).id; this.splitLog(g, e, "edit", before, after); }
+    save();
+  },
   async splitBillSave(gid, p){
     const g = this.splitFind(gid); this.splitCheck(g, p);
     if(fsIsEvent(g)) throw new Error("bills-only-for-flats");
@@ -4429,7 +4493,7 @@ function liveExtras(rpc){
       return (await rpc("fm_split_groups")).map(g => Object.assign(g, { my_net:Number(g.my_net), unseen:Number(g.unseen), members:Number(g.members), names:g.names || [],
         kind: g.kind || "flat", month_share: Number(g.month_share || 0), people: g.people || [] }));
     },
-    async splitGet(id){ const d = await rpc("fm_split_get", { p_group:id }); d.expenses.forEach(num); d.bills.forEach(num); return d; },
+    async splitGet(id){ const d = await rpc("fm_split_get", { p_group:id }); d.expenses.forEach(num); d.bills.forEach(num); (d.deleted || []).forEach(num); d.deleted = d.deleted || []; d.log = d.log || []; return d; },
     async splitCreate(name, emoji, members, kind){
       return rpc("fm_split_create", { p_name:name, p_emoji:emoji, p_members:members.map(m => ({ name:m.name.trim(), phone:ten(m.phone) })), p_kind: kind || "flat" });
     },
@@ -4438,6 +4502,9 @@ function liveExtras(rpc){
     async splitRemoveMember(gid, mid){ return rpc("fm_split_remove_member", { p_member:mid }); },
     async splitAdd(gid, p){ return rpc("fm_split_add", { p_group:gid, p }); },
     async splitDelete(gid, eid){ await rpc("fm_split_delete", { p_expense:eid }); },
+    async splitRestore(gid, eid){ await rpc("fm_split_restore", { p_expense:eid }); },
+    async splitEdit(gid, eid, p){ await rpc("fm_split_edit", { p_expense:eid, p }); },
+    async splitInvite(code){ const r = await rpc("fm_split_invite", { p_code:code }); if(r){ r.net = Number(r.net || 0); r.month_share = Number(r.month_share || 0); (r.others || []).forEach(o => o.net = Number(o.net)); } return r; },
     async splitBillSave(gid, p){ return rpc("fm_split_bill_save", { p_group:gid, p }); },
     async splitBillDelete(gid, bid){ await rpc("fm_split_bill_delete", { p_bill:bid }); },
     async splitSetUpi(upi){ await rpc("fm_split_set_upi", { p_upi:upi || "" }); },
@@ -4624,6 +4691,7 @@ function showScreen(name){
   $("view-host").hidden = name !== "host";
   $("view-sale").hidden = name !== "sale";
   $("view-party").hidden = name !== "party";
+  $("view-split").hidden = name !== "split";
   $("view-onboard").hidden = name !== "onboard";
   $("appHead").hidden = $("appMain").hidden = name !== "app";
   $("helpFab").hidden = name !== "app" && name !== "welcome";
@@ -4637,6 +4705,7 @@ function route(){
   if(isHostRoute()){ currentView = null; showScreen("host"); renderHost(); return; }
   if(isSaleRoute()){ currentView = null; showScreen("sale"); renderSale(); return; }
   if(isPartyRoute()){ currentView = null; showScreen("party"); renderParty(); window.scrollTo(0, 0); return; }
+  if(isSplitRoute()){ currentView = null; showScreen("split"); renderSplitInvite(); window.scrollTo(0, 0); return; }
   if(location.hash === "#help"){ history.replaceState(null, "", location.pathname + location.search); setTimeout(() => openHelp(state.user ? "tickets" : null), 400); }
   // Came from a sale page to sign in: back to it once the account is set up.
   if(state.user && state.onboarded[isOwner() ? "owner" : "seeker"]){
@@ -7350,7 +7419,57 @@ function fsRowHtml(e){
   }
   return `<button class="fs-row" type="button" data-fs-exp="${esc(e.id)}"><span class="fs-date">${esc(mon)}<b>${dt.getDate()}</b></span>
     <span class="fs-ic${e.kind === "settle" ? " settle" : ""}" aria-hidden="true">${e.kind === "settle" ? "🤝" : catIcon(e.category)}</span>
-    <span style="min-width:0"><span class="t">${esc(title)}</span><span class="s">${esc(sub)}</span></span>${right}</button>`;
+    <span style="min-width:0"><span class="t">${esc(title)}${e.edited_at ? `<i class="ed">edited</i>` : ""}</span><span class="s">${esc(sub)}</span></span>${right}</button>`;
+}
+// What the group did: one line per add, payment, change, delete or undo (fm_split_log).
+function fsLogLine(l){
+  const who = fsName(l.member_id || ""), b = l.before || {}, a = l.after || {}, title = a.title || b.title || "an expense";
+  const money = v => rupees(Number(v || 0));
+  if(l.action === "add") return [`➕`, `${who} added ${title} · ${money(a.amount)}`, ""];
+  if(l.action === "settle") return [`🤝`, `${who === "You" ? "You" : who} recorded a payment: ${fsName(a.paid_by)} paid ${fsName(Object.keys(a.splits || {})[0])} ${money(a.amount)}`, ""];
+  if(l.action === "delete") return [`🗑️`, `${who} deleted ${title} · ${money(b.amount)}`, ""];
+  if(l.action === "restore") return [`↩️`, `${who} restored ${title} · ${money(a.amount)}`, ""];
+  const ch = [];
+  if(a.title !== b.title) ch.push(`name “${b.title}” → “${a.title}”`);
+  if(Number(a.amount) !== Number(b.amount)) ch.push(`amount ${money(b.amount)} → ${money(a.amount)}`);
+  if(a.paid_by !== b.paid_by) ch.push(`paid by ${fsName(b.paid_by)} → ${fsName(a.paid_by)}`);
+  if(a.category !== b.category) ch.push(`category ${(SPLIT_CAT[b.category] || SPLIT_CAT.other)[2]} → ${(SPLIT_CAT[a.category] || SPLIT_CAT.other)[2]}`);
+  if(a.spent_on !== b.spent_on) ch.push(`date ${fmtDate(b.spent_on)} → ${fmtDate(a.spent_on)}`);
+  if(JSON.stringify(a.splits) !== JSON.stringify(b.splits)) ch.push("the split");
+  return [`✏️`, `${who} changed ${title}`, ch.join(", ")];
+}
+function openHistory(){
+  const d = fsData;
+  openFs("History", d.group.name, d.log.length ? d.log.map(l => { const [ic, t, det] = fsLogLine(l);
+      return `<div class="fs-log"><span class="ic" aria-hidden="true">${ic}</span><span style="min-width:0"><span>${esc(t)}</span>${det ? `<span class="d">${esc(det)}</span>` : ""}<span class="s">${timeAgo(l.created_at)}</span></span></div>`; }).join("")
+    : `<div class="empty"><h3>Nothing yet</h3><p>Every expense, payment, change and delete shows up here.</p></div>`);
+}
+// Everything in the group as a spreadsheet: a row per expense and payment, a column per person's share.
+function fsCsv(period){
+  const d = fsData, q = v => `"${String(v ?? "").replace(/"/g, '""')}"`, inr2 = p => (Number(p || 0) / 100).toFixed(2);
+  const rows = d.expenses.filter(e => period === "all" || e.spent_on.startsWith(period)).slice().reverse();
+  const head = ["Date", "Type", "Title", "Category", "Paid by", "Amount (INR)"].concat(d.members.map(m => `${m.name} share (INR)`), ["Added by", "Edited"]);
+  const lines = [head.map(q).join(",")];
+  for(const e of rows) lines.push([e.spent_on, e.kind === "settle" ? "Payment" : "Expense", e.title, e.kind === "settle" ? "" : (SPLIT_CAT[e.category] || SPLIT_CAT.other)[2],
+    fsMember(e.paid_by).name, inr2(e.amount)].concat(d.members.map(m => e.kind === "settle" ? (e.splits[m.id] ? "received " + inr2(e.splits[m.id]) : "") : inr2(e.splits[m.id])),
+    [e.created_by ? fsMember(e.created_by).name : "Monthly bill", e.edited_at ? "yes" : ""]).map(q).join(","));
+  return { text: "\uFEFF" + lines.join("\r\n"), rows: rows.length };
+}
+async function shareCsv(name, text, title){
+  if(Notify.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"shareFile", b64: btoa(unescape(encodeURIComponent(text))), mime:"text/csv", name, text: title, title: "Share the expenses" })); return; }
+  const blob = new Blob([text], { type: "text/csv;charset=utf-8" }), file = new File([blob], name, { type: "text/csv" });
+  if(navigator.canShare && navigator.canShare({ files: [file] })){ try{ await navigator.share({ files: [file], title }); return; }catch(err){ if(err && err.name === "AbortError") return; } }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  toast("Downloaded " + name);
+}
+function openExport(){
+  const d = fsData, years = [...new Set(d.expenses.map(e => e.spent_on.slice(0, 4)))].sort().reverse(), ym = new Date().toISOString().slice(0, 7);
+  fsx = { period: ym };
+  const opts = [[ym, "This month"]].concat(years.map(y => [y, y])).concat([["all", "Everything"]]);
+  openFs("Export", d.group.name, `<div class="fs-export"><p class="hint" style="margin:0 0 8px">A spreadsheet (CSV) of every expense and payment, with each person's share. Opens in Excel, Google Sheets or Numbers.</p>
+    <div class="seg" id="fsExpPeriod">${opts.map(([k, t]) => `<button type="button" data-period="${esc(k)}" aria-pressed="${k === ym}">${esc(t)}</button>`).join("")}</div>
+    <p class="hint" id="fsExpCount" style="margin:0 0 12px">${fsCsv(ym).rows} rows</p>
+    <button class="btn btn-primary btn-block" type="button" data-fs-export>Share the spreadsheet</button></div>`);
 }
 function fsPanel(net, pays){
   const d = fsData, me = fsMe();
@@ -7419,8 +7538,11 @@ function fsPanel(net, pays){
       <h3 class="section-h">By category</h3><div class="fs-bars">${bars(byCat, k => catIcon(k) + " " + esc((SPLIT_CAT[k] || SPLIT_CAT.other)[2]))}</div>
       <h3 class="section-h">Who paid</h3><div class="fs-bars" style="margin-bottom:30px">${bars(byWho, k => esc(fsName(k)))}</div>`;
   }
-  if(!d.expenses.length) return `<div class="empty"><h3>No expenses yet</h3><p>Add the first one: rent, groceries, the Wi-Fi bill…</p></div>`;
-  let html = "", month = "";
+  const undo = (d.deleted || []).map(x => `<div class="fs-undo"><span>${esc(fsName(x.by || ""))} deleted <b>${esc(x.kind === "settle" ? "a payment" : x.title)} · ${rupees(x.amount)}</b> ${timeAgo(x.deleted_at)}</span>
+      <button class="btn btn-ghost btn-sm" type="button" data-fs-undo="${esc(x.id)}">Undo</button></div>`).join("");
+  const tools = d.expenses.length || d.log.length ? `<div class="fs-tools"><button class="linkbtn" type="button" data-fs="history">History</button>${d.expenses.length ? `<button class="linkbtn" type="button" data-fs="export">Export</button>` : ""}</div>` : "";
+  if(!d.expenses.length) return undo + tools + `<div class="empty"><h3>No expenses yet</h3><p>Add the first one: rent, groceries, the Wi-Fi bill…</p></div>`;
+  let html = undo + tools, month = "";
   for(const e of d.expenses){
     const m = e.spent_on.slice(0, 7);
     if(m !== month){ month = m; html += `<p class="fs-month">${new Date(m + "-01T00:00:00").toLocaleDateString("en-IN", { month:"long", year:"numeric" })}</p>`; }
@@ -7479,7 +7601,9 @@ async function openNewEvent(kind, fromFlat){
 }
 async function openMembers(){
   const d = fsData, net = splitNets(d.members, d.expenses), people = (await knownPeople()).filter(p => !d.members.some(m => m.phone === p.phone));
-  const invite = m => waLink(m.phone, `Hi ${m.name}! I've added you to “${d.group.name}” on Flatsplits in FindMeFlatMate, so we can split rent and bills without the maths. Get the app and sign in with this number: ${appLink()}`);
+  const invite = m => { const n = net[m.id] || 0, link = m.invite_code ? siteLink() + "#split/" + m.invite_code : appLink();
+    const bal = n < 0 ? `Right now you owe ${rupees(n)}` : n > 0 ? `Right now you're owed ${rupees(n)}` : "We're all settled so far";
+    return waLink(m.phone, `Hi ${m.name}! I've added you to “${d.group.name}” on Flatsplits (FindMeFlatMate), so we can split rent and bills without the maths. ${bal}. See the split here: ${link}`); };
   openFs("Members", d.group.name, `
     ${d.members.map(m => `<div class="fs-member">${fsAv(m)}<span class="grow"><b>${esc(m.id === d.me ? m.name + " (you)" : m.name)}</b>
         <span class="s" style="display:block">+91 ${esc(m.phone)} · ${m.on_app ? "on FindMeFlatMate" : `<a href="${esc(invite(m))}" target="_blank" rel="noopener">invite on WhatsApp</a>`}</span></span>
@@ -7496,27 +7620,33 @@ async function openMembers(){
 }
 
 // Add an expense, or (bill: true) a monthly bill. Amount first, then what for, who paid and how to split.
-function openExpense(bill){
+function openExpense(bill, edit){
   const d = fsData;
   if(d.members.length < 2){ toast("Add your flatmates first."); return openMembers(); }
-  fsx = { bill, cat: fsIsEvent(d.group) ? "food" : "groceries", how:"equal", incl:new Set(d.members.map(m => m.id)), exact:{}, shares:Object.fromEntries(d.members.map(m => [m.id, 1])) };
+  fsx = { bill, edit, cat: fsIsEvent(d.group) ? "food" : "groceries", how:"equal", incl:new Set(d.members.map(m => m.id)), exact:{}, shares:Object.fromEntries(d.members.map(m => [m.id, 1])) };
+  if(edit){
+    // Equal among the people in it when every share is within a paisa of the others; otherwise exact amounts.
+    const vals = Object.values(edit.splits).map(Number), equal = vals.length && Math.max(...vals) - Math.min(...vals) <= 1;
+    Object.assign(fsx, { cat: edit.category, how: equal ? "equal" : "exact", incl: new Set(Object.keys(edit.splits)),
+      exact: Object.fromEntries(Object.entries(edit.splits).map(([k, v]) => [k, (Number(v) / 100).toFixed(Number(v) % 100 ? 2 : 0)])) });
+  }
   const today = new Date().toISOString().slice(0, 10), dom = Math.min(28, new Date().getDate());
-  openFs(bill ? "Add a monthly bill" : "Add an expense", d.group.name, `<form id="fsAddForm" novalidate>
-    <div class="fs-amt"><span>₹</span><input type="text" id="fsAmt" inputmode="decimal" placeholder="0" aria-label="Amount" autocomplete="off"></div>
+  openFs(edit ? "Edit expense" : bill ? "Add a monthly bill" : "Add an expense", d.group.name, `<form id="fsAddForm" novalidate>
+    <div class="fs-amt"><span>₹</span><input type="text" id="fsAmt" inputmode="decimal" placeholder="0" aria-label="Amount" autocomplete="off" value="${edit ? (edit.amount / 100).toFixed(edit.amount % 100 ? 2 : 0) : ""}"></div>
     <div class="fs-cats" id="fsCats">${(fsIsEvent(d.group) ? EVENT_CATS.map(k => SPLIT_CAT[k]) : SPLIT_CATS.filter(c => !["travel", "stay", "drinks", "tickets"].includes(c[0])))
       .map(([k, ic, t]) => `<button type="button" data-cat="${k}" aria-pressed="${k === fsx.cat}"><i aria-hidden="true">${ic}</i>${t}</button>`).join("")}</div>
-    <div class="field"><label for="fsTitle">What for</label><input type="text" id="fsTitle" maxlength="80" placeholder="Groceries"></div>
+    <div class="field"><label for="fsTitle">What for</label><input type="text" id="fsTitle" maxlength="80" placeholder="Groceries" value="${edit ? esc(edit.title) : ""}"></div>
     <div class="field"><label>Paid by</label><div class="chips">${d.members.map(m => `<label class="chip"><input type="radio" name="fsPaid" value="${esc(m.id)}"${
-      m.id === d.me ? " checked" : ""}>${esc(fsName(m.id))}</label>`).join("")}</div></div>
+      m.id === (edit ? edit.paid_by : d.me) ? " checked" : ""}>${esc(fsName(m.id))}</label>`).join("")}</div></div>
     <div class="field"><label>Split</label><div class="seg">${[["equal", "Equally"], ["exact", "Exact amounts"], ["shares", "By shares"]].map(([k, t]) =>
-      `<button type="button" data-how="${k}" aria-pressed="${k === "equal"}">${t}</button>`).join("")}</div>
+      `<button type="button" data-how="${k}" aria-pressed="${k === fsx.how}">${t}</button>`).join("")}</div>
       <div class="fs-split" id="fsSplit"></div><p class="fs-left" id="fsLeft" aria-live="polite"></p></div>
     ${bill ? `<div class="field"><label for="fsDay">Add it on this day every month</label><select id="fsDay">${Array.from({ length:28 }, (_, i) =>
         `<option value="${i + 1}"${i + 1 === dom ? " selected" : ""}>${i + 1}</option>`).join("")}</select>
         <p class="hint">Starts this month if that day has already passed.</p></div>`
-      : `<div class="grid2"><div class="field"><label for="fsDate">Date</label><input type="date" id="fsDate" value="${today}"></div>
-        ${fsIsEvent(d.group) ? "" : `<div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="fsRepeat"><span>Repeats monthly</span></label></div>`}</div>`}
-    <button class="btn btn-primary btn-block" type="submit">${bill ? "Save monthly bill" : "Add expense"}</button></form>`);
+      : `<div class="grid2"><div class="field"><label for="fsDate">Date</label><input type="date" id="fsDate" value="${edit ? esc(edit.spent_on) : today}"></div>
+        ${fsIsEvent(d.group) || edit ? "" : `<div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="fsRepeat"><span>Repeats monthly</span></label></div>`}</div>`}
+    <button class="btn btn-primary btn-block" type="submit">${edit ? "Save changes" : bill ? "Save monthly bill" : "Add expense"}</button></form>`);
   drawSplitRows();
   setTimeout(() => $("fsAmt") && $("fsAmt").focus(), 60);
 }
@@ -7585,8 +7715,18 @@ function openExpenseDetail(id){
     <div class="fs-amt"><b style="font-size:38px;letter-spacing:-.03em">${rupees(e.amount)}</b></div>
     <p class="sub" style="text-align:center;margin:-6px 0 14px">${settle ? "" : catIcon(e.category) + " "}${esc(fsName(e.paid_by))} paid${settle ? " " + esc(fsName(Object.keys(e.splits)[0])) : ""}${e.bill_id ? " · monthly bill" : ""}</p>
     ${settle ? "" : Object.entries(e.splits).map(([mid, v]) => `<div class="fs-who"><span>${esc(fsName(mid))}</span><b>${rupees(v)}</b></div>`).join("")}
-    <p class="hint">${e.created_by ? `Added by ${esc(fsName(e.created_by))} ` + timeAgo(e.created_at) : "Added automatically " + timeAgo(e.created_at)}.</p>
-    <button class="btn btn-ghost btn-block" type="button" data-fs-del="${esc(e.id)}" style="margin-top:12px;color:var(--danger)">Delete</button></div>`);
+    <p class="hint">${e.created_by ? `Added by ${esc(fsName(e.created_by))} ` + timeAgo(e.created_at) : "Added automatically " + timeAgo(e.created_at)}.${e.edited_at ? ` Edited by ${esc(fsName(e.edited_by || ""))} ${timeAgo(e.edited_at)}.` : ""}</p>
+    <button class="btn btn-ghost btn-block" type="button" data-fs-edit="${esc(e.id)}" style="margin-top:12px">Edit</button>
+    <button class="btn btn-ghost btn-block" type="button" data-fs-del="${esc(e.id)}" style="margin-top:8px;color:var(--danger)">Delete</button></div>`);
+}
+// Change a payment: the amount and the date.
+function openSettleEdit(e){
+  const d = fsData, to = Object.keys(e.splits)[0];
+  fsx = { edit: e };
+  openFs("Change the payment", `${fsName(e.paid_by)} paid ${fsName(to)}`, `<form id="fsSettleEditForm" novalidate>
+    <div class="fs-amt"><span>₹</span><input type="text" id="fsSEAmt" inputmode="decimal" value="${(e.amount / 100).toFixed(e.amount % 100 ? 2 : 0)}" aria-label="Amount"></div>
+    <div class="field"><label for="fsSEDate">Date</label><input type="date" id="fsSEDate" value="${esc(e.spent_on)}"></div>
+    <button class="btn btn-primary btn-block" type="submit">Save changes</button></form>`);
 }
 function fsChanged(){ $("dlgFs").close(); renderSplitGroup(fsData.group.id); checkExtras(); }
 
@@ -7616,7 +7756,15 @@ $("view-splits").addEventListener("click", async e => {
     if(a === "bill") return openExpense(true);
     if(a === "settle") return openSettle();
     if(a === "members") return openMembers();
+    if(a === "history") return openHistory();
+    if(a === "export") return openExport();
   }catch(err){ console.error(err); toast(splitErr(err)); }
+});
+$("view-splits").addEventListener("click", async e => {
+  const u = e.target.closest("[data-fs-undo]"); if(!u) return;
+  u.disabled = true;
+  try{ await api.splitRestore(fsData.group.id, u.dataset.fsUndo); toast("Restored."); renderSplitGroup(fsData.group.id); }
+  catch(err){ console.error(err); toast(/too-late/.test(err.message || "") ? "That was deleted more than a day ago, so it can't be restored." : splitErr(err)); u.disabled = false; }
 });
 $("view-splits").addEventListener("submit", async e => {
   if(e.target.id !== "fsUpiForm") return;
@@ -7658,10 +7806,19 @@ $("dlgFs").addEventListener("click", async e => {
       if(me){ $("dlgFs").close(); toast("You left the group."); return go("splits"); }
       toast("Removed."); fsData = await api.splitGet(fsData.group.id); drawSplitGroup(); return openMembers();
     }
+    const ed = t.closest("[data-fs-edit]");
+    if(ed){ const e = fsData.expenses.find(x => x.id === ed.dataset.fsEdit); if(!e) return; return e.kind === "settle" ? openSettleEdit(e) : openExpense(false, e); }
+    const per = t.closest("[data-period]");
+    if(per){ fsx.period = per.dataset.period; per.parentNode.querySelectorAll("[data-period]").forEach(x => x.setAttribute("aria-pressed", x === per)); $("fsExpCount").textContent = fsCsv(fsx.period).rows + " rows"; return; }
+    if(t.closest("[data-fs-export]")){
+      const { text, rows } = fsCsv(fsx.period); if(!rows){ toast("Nothing in that period."); return; }
+      const name = `${fsData.group.name.replace(/[^\w]+/g, "-").replace(/^-|-$/g, "") || "flatsplits"}-${fsx.period}.csv`;
+      await shareCsv(name, text, `${fsData.group.name} · Flatsplits`); return;
+    }
     const del = t.closest("[data-fs-del]");
     if(del){
       if(fsDel !== del.dataset.fsDel){ fsDel = del.dataset.fsDel; del.textContent = "Tap again to delete for everyone"; return; }
-      await api.splitDelete(fsData.group.id, del.dataset.fsDel); toast("Deleted."); return fsChanged();
+      await api.splitDelete(fsData.group.id, del.dataset.fsDel); toast("Deleted. Undo from the Activity tab, for a day."); return fsChanged();
     }
   }catch(err){ console.error(err); toast(splitErr(err)); }
 });
@@ -7736,6 +7893,12 @@ $("dlgFs").addEventListener("submit", async e => {
         spent_on: new Date().toISOString().slice(0, 10) });
       toast(`Recorded: ${fsName(from)} paid ${to === fsData.me ? "you" : fsName(to)} ${rupees(amt)}.`); return fsChanged();
     }
+    if(f.id === "fsSettleEditForm"){
+      const amt = toPaise($("fsSEAmt").value); if(!amt) return bad("Enter the amount.");
+      btn.disabled = true;
+      await api.splitEdit(fsData.group.id, fsx.edit.id, { amount: amt, splits: { [Object.keys(fsx.edit.splits)[0]]: amt }, spent_on: $("fsSEDate").value || fsx.edit.spent_on });
+      toast("Payment updated."); return fsChanged();
+    }
     if(f.id === "fsAddForm"){
       const { amt, splits, left, none } = fsSplits();
       if(!amt) return bad("Enter the amount.");
@@ -7743,6 +7906,11 @@ $("dlgFs").addEventListener("submit", async e => {
       const p = { kind:"expense", title: $("fsTitle").value.trim() || SPLIT_CAT[fsx.cat][2], category: fsx.cat, amount: amt,
         paid_by: f.querySelector("[name=fsPaid]:checked").value, splits };
       btn.disabled = true;
+      if(fsx.edit){
+        p.spent_on = $("fsDate").value || fsx.edit.spent_on;
+        await api.splitEdit(fsData.group.id, fsx.edit.id, p);
+        toast("Saved. Everyone in the group sees the change in History."); fsTab = "activity"; return fsChanged();
+      }
       if(fsx.bill){
         await api.splitBillSave(fsData.group.id, Object.assign(p, { day: Number($("fsDay").value) }));
         toast(`Saved. ${p.title} is added on day ${$("fsDay").value} every month.`); fsTab = "bills";
@@ -8786,6 +8954,40 @@ function ptTellFlatmates(){
 
 // ---- the invite page (#party/<code>): anyone with the link, signed in or not
 const isPartyRoute = () => /^#party\/[A-Za-z0-9]+/.test(location.hash);
+// The Flatsplits invite page (#split/<code>): the person's balance before they sign in. First names and
+// amounts only. Signing in with that number lands in the group.
+const isSplitRoute = () => /^#split\/[A-Za-z0-9]+/.test(location.hash);
+let spGid = null;
+async function renderSplitInvite(){
+  const code = location.hash.slice(7).split(/[/?]/)[0].toUpperCase();
+  $("spBody").innerHTML = `<p class="hint" style="padding:60px 0;text-align:center">Opening your balance…</p>`;
+  let s = null; try{ s = await api.splitInvite(code); }catch(err){ console.error(err); }
+  if(!s){
+    $("spBody").innerHTML = `<div class="pt-hero"><span class="pt-emoji" aria-hidden="true">🧾</span><h1>This link isn't here</h1><p class="pt-tag">It may be mistyped, or the group was removed.</p></div>
+      <div class="pt-foot"><a class="btn btn-primary" href="./">Open FindMeFlatMate</a></div>`; return;
+  }
+  spGid = s.group_id;
+  const net = Number(s.net || 0), owes = net < 0, others = s.others || [];
+  const names = (s.names || []).join(", ");
+  const head = net === 0 ? "You're all settled up" : owes ? `You owe ${rupees(net)}` : `You get back ${rupees(net)}`;
+  const sub = others.length ? (owes ? `to ${others.map(o => o.name).join(" and ")}` : `from ${others.map(o => o.name).join(" and ")}`) : net === 0 ? "Nothing to pay right now" : "";
+  $("spBody").innerHTML = `<div class="pt-hero"><span class="pt-emoji" aria-hidden="true">${esc(s.emoji || "🧾")}</span>
+      <h1>Hi ${esc(s.me)}, you're in “${esc(s.name)}”</h1>
+      <p class="pt-tag">${esc(s.invited_by || "A flatmate")} added you on Flatsplits, where ${s.kind === "flat" ? "your flat splits rent and bills" : s.kind === "trip" ? "the trip's spending is split" : "the party's spending is split"} without the maths.</p></div>
+    <div class="pt-card"><div class="sp-bal ${owes ? "neg" : net > 0 ? "pos" : ""}"><b>${esc(head)}</b>${sub ? `<span>${esc(sub)}</span>` : ""}</div>
+      ${others.length > 1 ? others.map(o => `<div class="sp-who"><span>${owes ? "You owe " + esc(o.name) : esc(o.name) + " owes you"}</span><b>${rupees(Math.min(Math.abs(net), Math.abs(o.net)))}</b></div>`).join("") : ""}
+      ${s.month_share ? `<p class="hint" style="text-align:center;margin:12px 0 0">Your share this month so far: ${rupees(s.month_share)}</p>` : ""}</div>
+    <div class="pt-card"><div class="pt-row"><span aria-hidden="true">👥</span><div><b>${s.members} ${s.members === 1 ? "person" : "people"}</b><p>${names ? esc(names) + " and you" : "Just you so far"}</p></div></div>
+      <div class="pt-row"><span aria-hidden="true">🔒</span><div><b>Numbers stay private</b><p>Sign in with your own number to see every expense, pay by UPI and get told when something new is added.</p></div></div></div>
+    <div class="pt-foot">${state.user ? `<a class="btn btn-primary" href="#splits/${esc(s.group_id)}">Open the group</a>`
+      : `<button class="btn btn-primary" type="button" data-sp-signin>Sign in with the number ending in ${esc(s.phone_tail || "")}</button><p style="margin-top:12px">Free. Takes a minute.</p>`}</div>`;
+}
+$("view-split").addEventListener("click", e => {
+  if(!e.target.closest("[data-sp-signin]")) return;
+  writeLS(AFTER_SIGNIN_KEY, "#splits/" + spGid);
+  toast("Sign in with that number and we'll open the group.");
+  location.hash = "";
+});
 let ptNow = null, ptEditing = false;
 async function renderParty(){
   const code = location.hash.slice(7).split(/[/?]/)[0].toUpperCase();
