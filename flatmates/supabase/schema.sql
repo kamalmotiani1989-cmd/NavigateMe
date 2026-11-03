@@ -2712,6 +2712,30 @@ do $$ begin
 exception when others then raise notice 'API description left on: %', sqlerrm;
 end $$;
 
+-- ---------------------------------------------------------------- on hold --
+-- The whole app on hold ("Coming soon"): while fm_settings.on_hold is on, PostgREST refuses every request
+-- from the app, signed in or not, with 'on-hold' before it reaches any function (fm_pre_request), and the
+-- app shows only its Coming soon screen. The server side (service role: payments, notifications, test
+-- sign-in's own checks) carries on. Steps to hold and to lift it, website included: README, "On hold".
+alter table public.fm_settings add column if not exists on_hold boolean not null default false;
+create or replace function public.fm_on_hold() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select on_hold from fm_settings limit 1), false)
+$$;
+-- Runs as the caller's role (anon / authenticated / service_role) before each API request.
+create or replace function public.fm_pre_request() returns void
+language plpgsql stable set search_path = public as $$
+begin
+  if current_user in ('anon', 'authenticated') and fm_on_hold() then
+    raise exception 'on-hold' using hint = 'FindMeFlatMate is coming soon.';
+  end if;
+end $$;
+do $$ begin
+  execute 'alter role authenticator set pgrst.db_pre_request to ''public.fm_pre_request''';
+  perform pg_notify('pgrst', 'reload config');
+exception when others then raise notice 'Hold check not switched on: %', sqlerrm;
+end $$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me, fm_area_demand, fm_otp_request and the party and sale pages also answer signed-out callers,
@@ -2744,6 +2768,9 @@ grant execute on function public.fm_listing_audience(uuid) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;
 grant execute on function public.fm_party_get(text, text) to anon;
 grant execute on function public.fm_party_rsvp(text, text, text, text, int) to anon;
+-- Every API request runs fm_pre_request first, whatever the role, so all three must be able to.
+grant execute on function public.fm_pre_request() to anon, authenticated, service_role;
+grant execute on function public.fm_on_hold() to anon, authenticated, service_role;
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
 alter function public.fm_shows_to(text, text) set search_path = public;
 alter function public.fm_party_occasions() set search_path = public;

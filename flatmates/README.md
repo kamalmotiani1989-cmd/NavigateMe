@@ -493,6 +493,32 @@ For a deletion request by email, delete the auth user the same way:
 `delete from auth.users where id = (select id from fm_profiles where phone = '91XXXXXXXXXX');`
 (remove their photos in Storage → fm-photos → the folder named after their user id).
 
+## On hold
+
+The whole app can be put on hold behind a **Coming soon** page. Three switches, all on at the moment:
+
+1. **Website.** While `flatmates/ON_HOLD` exists, the website's publish job puts `hold.html` (Coming
+   soon) up as the home page instead of the app; the privacy policy stays up. The hold page also clears
+   the copy of the app that browsers keep for offline use.
+2. **Database.** `fm_settings.on_hold`: while it's on, every request from the app (website or Android,
+   signed in or not) is refused with `on-hold` before it reaches any function (`fm_pre_request`, run by
+   PostgREST before each request), and the app shows only its own Coming soon screen. Payments and
+   notifications (service role) carry on.
+3. **Sign-in.** `fm_settings.test_login` off, so nobody can sign in. To sign everyone out as well,
+   delete their sessions: `delete from auth.sessions; delete from auth.refresh_tokens;` (an already-issued
+   access token lasts up to an hour, but the database hold refuses it anyway).
+
+To bring the app back:
+
+1. In the SQL editor: `update fm_settings set on_hold = false, test_login = true;`
+2. Delete `flatmates/ON_HOLD` here (merge it to `main`), then run the website's publish job (findmeflatmate →
+   Actions → Publish FindMeFlatMate → Run workflow), or wait up to 30 minutes.
+
+Everyone signs in again with the test code. The Android app needs no new build: it comes back by itself.
+
+To put it on hold again: add `flatmates/ON_HOLD` back, publish, and run
+`update fm_settings set on_hold = true, test_login = false;`.
+
 ## Security
 
 How the app keeps accounts safe and stops people copying the inventory with a script:

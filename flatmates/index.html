@@ -1587,9 +1587,30 @@ html:has(> body.app){background:var(--app-bg)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important; transition:none!important}
 }
+/* On hold: the server refuses every request ('on-hold') and the app shows only this. */
+.hold-screen{position:fixed; inset:0; z-index:2147483000; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); background:var(--grad); color:#fff; text-align:center; overflow:auto}
+.hold-screen .hs-mark{display:grid; place-items:center; width:104px; height:104px; border-radius:28px; background:#fff; box-shadow:0 18px 40px rgba(6,40,70,.25)}
+.hold-screen .hs-mark img{width:76px; height:76px}
+.hold-screen .wordmark{margin:16px 0 0; color:#fff; font-size:26px}
+.hold-screen .wordmark b{color:#fff; -webkit-text-fill-color:currentColor; background:none}
+.hold-screen .wordmark .w-flat{color:#BFE1FF} .hold-screen .wordmark .w-mate{color:#B8F5DD}
+.hs-banner{display:inline-flex; align-items:center; gap:10px; margin:22px 0 0; padding:9px 20px; border-radius:999px; background:var(--accent);
+  font-weight:800; font-size:14px; letter-spacing:.14em; text-transform:uppercase; box-shadow:0 10px 24px rgba(242,107,29,.35)}
+.hs-banner i{width:8px; height:8px; border-radius:50%; background:#fff}
+.hold-screen h2{margin:20px 0 0; color:#fff; font-size:30px}
+.hold-screen p.hs-lead{margin:12px auto 0; max-width:420px; color:rgba(255,255,255,.88); font-size:16px}
+html.on-hold, html.on-hold body{overflow:hidden}
 </style>
 </head>
 <body>
+<section class="hold-screen" id="holdScreen" role="alert" hidden>
+  <span class="hs-mark" aria-hidden="true"><img src="icons/icon-192.png" alt="" width="76" height="76"></span>
+  <p class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></p>
+  <p class="hs-banner"><i aria-hidden="true"></i>Coming soon</p>
+  <h2>Find your vibe. Find your flatmate.</h2>
+  <p class="hs-lead">We're getting FindMeFlatMate ready for you. Rooms, and the people worth sharing them with, are almost here.</p>
+</section>
 
 <!-- ================================================================ welcome -->
 <section id="view-welcome" hidden>
@@ -2365,6 +2386,13 @@ const isSample = x => Boolean(x && ((x.household && x.household.sample) || (x.oc
 const SAMPLE_TAG = `<span class="smp" title="A sample for testing. It answers straight away and has no real number.">Sample</span>`;
 
 const $ = id => document.getElementById(id);
+// On hold (see README, "On hold"): the server answers every request with 'on-hold'; only Coming soon shows.
+function showHold(){
+  const h = $("holdScreen"); if(!h || !h.hidden) return;
+  h.hidden = false; document.documentElement.classList.add("on-hold");
+  document.querySelectorAll("dialog[open]").forEach(d => d.close());
+  setInterval(() => document.querySelectorAll("dialog[open]").forEach(d => d.close()), 1000);
+}
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const inr = n => "₹" + Number(n).toLocaleString("en-IN");
 const fmtDate = d => new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short"});
@@ -3292,6 +3320,7 @@ function makeLiveApi(sb){
     if(error){
       // The server's limits on searches, page views and posts (fm_throttle). Shown after the caller's own message.
       if(/rate-limited/.test(error.message || "")) setTimeout(() => toast("You're going a bit fast. Please wait a few minutes and try again."), 60);
+      if(/on-hold/.test(error.message || "")) showHold();   // fm_settings.on_hold: everything waits behind Coming soon
       throw error;
     }
     return data;
@@ -4063,6 +4092,8 @@ async function initApi(){
   });
   const sb = window.supabase.createClient(FM_CONFIG.supabaseUrl, FM_CONFIG.supabaseAnonKey);
   api = makeLiveApi(sb);
+  // On hold? Asked first, signed in or not: the server refuses it with 'on-hold' (showHold) while it is.
+  sb.rpc("fm_on_hold").then(({ data: held, error }) => { if(held === true || /on-hold/.test((error && error.message) || "")) showHold(); });
   const { data } = await sb.auth.getSession();
   if(data && data.session) await api.me(); else { state.user = null; state.credits = 0; save(); }
 }
