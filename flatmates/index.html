@@ -1671,6 +1671,23 @@ html.on-hold, html.on-hold body{overflow:hidden}
 fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{display:none}
 .ps-nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:22px; padding-top:16px; box-shadow:0 -1px 0 var(--line)}
 .ps-nav .btn-primary{min-width:48%}
+/* Onboarding: chapter bars, the intro and reveal cards, the live match count. */
+.ob-prog{flex:1; display:flex; flex-direction:column; gap:7px; min-width:0}
+.ob-segs{display:flex; gap:6px}
+.ob-segs i{flex:1; height:5px; border-radius:999px; background:rgba(255,255,255,.25); overflow:hidden}
+.ob-segs i b{display:block; height:100%; width:0; background:linear-gradient(90deg,#FF8A4C,#FF5E62); border-radius:inherit; transition:width .35s}
+.ob-segs i.done b{width:100%!important}
+.ob .ob-count{font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.ob-intro h1{font-size:clamp(28px, 7vw, 40px)}
+.ob-plan{list-style:none; margin:22px 0 26px; padding:0; display:grid; gap:10px}
+.ob-plan li{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.13)}
+.ob-plan li i{display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:#fff; color:var(--brand-2); font-style:normal; font-weight:800; flex:none}
+.ob-plan li b{display:block; font-size:16px} .ob-plan li small{color:rgba(255,255,255,.8); font-size:13px}
+.ob-intro .ob-type{display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; margin:8px 0 18px; color:#fff}
+.ob-intro .ob-type span{display:block; font-size:52px; line-height:1.1} .ob-intro .ob-type b{display:block; font-size:32px; line-height:1.15; color:#FFC86B; letter-spacing:-.02em}
+.ob-intro .ob-type small{display:block; font-size:16px; line-height:1.5; color:rgba(255,255,255,.88); max-width:44ch}
+.ob-live{margin:14px 0 0; padding:10px 14px; border-radius:12px; background:rgba(255,255,255,.14); color:#fff; font-size:14.5px; animation:rise .35s ease both}
+.ob-live b{font-size:17px}
 /* Empty states: a next step, and centred where the list would be. */
 .empty p{margin:0 0 4px} .empty .btn{margin-top:14px}
 .seekers > .empty{grid-column:1 / -1; justify-self:center; width:min(100%, 480px); margin:12px auto}
@@ -1951,8 +1968,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <div class="wrap" style="width:100%">
     <div class="ob-top">
       <button class="ob-back" type="button" id="obBack" aria-label="Previous question"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
-      <div class="ob-progress" aria-hidden="true"><i id="obBar"></i></div>
-      <span class="ob-count" id="obCount"></span>
+      <div class="ob-prog"><div class="ob-segs" id="obSegs" aria-hidden="true"></div><span class="ob-count" id="obCount"></span></div>
     </div>
   </div>
   <div class="wrap ob-stage" id="obStage" aria-live="polite"></div>
@@ -5122,20 +5138,20 @@ const OB_TEXT = {
              d:["Vegetarian only","Vegetarian, and eggs are fine","Non-veg too"] },
   cook:    { s:"How often do you cook?", o:"How much does the kitchen get used?", why:"Decides who needs the stove, and when.",
              d:["Most days, I like cooking","Sometimes, simple meals","Rarely, I mostly order in"], od:["Someone cooks most days","Sometimes, simple meals","Rarely, we mostly order in"] },
-  smoke:   { s:"Do you smoke?", o:"What's the rule on smoking?", why:"",
+  smoke:   { s:"Do you smoke?", o:"What's the rule on smoking?", why:"The one flatmates argue about most. Better settled now.",
              d:["No, and I'd like a smoke-free home","Sometimes, always outside","Yes, indoors is fine for me"], od:["No smoking anywhere","Outside or balcony only","Fine indoors"] },
-  drinks:  { s:"Drinks at home?", o:"Drinks at home?", why:"", d:["Never","Now and then, with friends","Regularly, it's part of the weekend"] },
-  guests:  { s:"How often do you have guests over, including overnight?", o:"How often do guests come over, including overnight?", why:"",
+  drinks:  { s:"Drinks at home?", o:"Drinks at home?", why:"No judgement. It just matches homes with the same weekends.", d:["Never","Now and then, with friends","Regularly, it's part of the weekend"] },
+  guests:  { s:"How often do you have guests over, including overnight?", o:"How often do guests come over, including overnight?", why:"Sets expectations about shared space before anyone moves in.",
              d:["Rarely, home is for resting","Sometimes, always with a heads-up","Often, we like a full house"] },
   noise:   { s:"How loud is your life at home?", o:"How loud is the flat usually?", why:"Calls, music, TV, late-night gaming.",
              d:["Quiet, I use headphones","Some noise is fine","Lively, music is usually on"] },
   social:  { s:"How much do you like to hang out with flatmates?", o:"How much do you all hang out at home?", why:"Some want a friend, some just want a peaceful home.",
              d:["I keep to myself mostly","Friendly chats, the odd meal together","I'd love flatmates who become friends"] },
-  sharing: { s:"Groceries and chores?", o:"How do you handle groceries and chores?", why:"",
+  sharing: { s:"Groceries and chores?", o:"How do you handle groceries and chores?", why:"Decides whether a shared grocery list feels like a relief or a chore.",
              d:["Split everything, keep a shared list","Share the basics like milk and cleaning","Keep it all separate"] },
   work:    { s:"What do your weekdays look like?", o:"What do weekdays look like in the flat?", why:"Decides who's home during the day, and who needs quiet.",
              d:["Out all day at work or college","Mixed, some days at home","Home most days, working or studying"] },
-  pets:    { s:"How do you feel about pets?", o:"Pets at home?", why:"",
+  pets:    { s:"How do you feel about pets?", o:"Pets at home?", why:"Allergies, fur and early walks: better to know now.",
              d:["I'd rather not live with pets","Happy to live with one","I have a pet who'd move with me"], od:["No pets, please","Happy to have one","We already have a pet"] },
 };
 const LETTERS = ["A","B","C","D","E","F","G","H"];
@@ -5167,19 +5183,38 @@ function obStepsFor(role, full){
     SEEKER_GEN_STEP,
     { k:"city", q:"Which city are you moving to?", why:"We'll show you homes there first.", cols:true,
       opts: CITIES.map(c => ({ v:c, t:c })).concat({ v:"__other", t:"Other city", s:"Anywhere else in India" }) },
+    ...vibe,
     { k:"areas", form:"areas", q:"", why:"" },
     { k:"look", q:"What are you looking for?", why:"We show these first, then the next best kind of home. You can change it any time on Discover.",
       opts:[{v:"room",t:"A private room",s:"My own bedroom in a shared flat"},{v:"shared",t:"A shared room",s:"A bed in a twin-sharing room, for less"},
             {v:"flat",t:"A whole flat",s:"With friends, or a tribe I find here"},{v:"",t:"Open to anything"}] },
     { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
       opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
-    ...vibe,
     ...(full ? [{ k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
       { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." }] : []) ];
 }
 const SEEKER_GEN_STEP = { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
   opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] };
 let ob = null;
+// The questions come in chapters: who you are, how you live, what you're looking for (owners: the home, how it lives).
+const OB_CHAPTERS = { seeker: ["About you", "How you live", "What you're looking for"], owner: ["About your home", "How your home lives"] };
+const obChapter = st => VIBE_BY_KEY[st.k] ? 1 : ["name", "sex", "occType", "occWhat", "gen", "city", "residents"].includes(st.k) ? 0 : 2;
+// The header: a bar per chapter, and "How you live · 3 of 12".
+function setObProgress(done){
+  const names = OB_CHAPTERS[ob.role], chapters = names.map((_, c) => ob.steps.map((st, i) => [st, i]).filter(([st]) => obChapter(st) === c).map(([, i]) => i));
+  const cur = done ? names.length : ob.intro ? -1 : obChapter(ob.steps[ob.i]);
+  $("obSegs").innerHTML = chapters.map((idx, c) => { const at = idx.indexOf(ob.i);
+    const pct = done || c < cur ? 100 : c === cur && idx.length ? Math.round(at / idx.length * 100) : 0;
+    return `<i class="${c < cur || done ? "done" : c === cur ? "now" : ""}"><b style="width:${pct}%"></b></i>`; }).join("");
+  $("obCount").textContent = done ? "" : ob.intro ? `${ob.steps.length} questions` : ob.reveal ? names[1]
+    : `${names[cur]} · ${chapters[cur].indexOf(ob.i) + 1} of ${chapters[cur].length}`;
+}
+// Sign-up progress survives closing the app: the same answers and the same question come back.
+function obRemember(){
+  if(!ob || ob.mode) return;
+  state.obSave = { role: ob.role, i: ob.i, a: ob.a, keys: ob.steps.map(st => st.k), intro: Boolean(ob.intro) }; save();
+}
+function obForget(){ if(state.obSave){ delete state.obSave; save(); } }
 // Lifestyle answers (the 12 questions and generation) only, from a seeker's profile or an owner's household.
 const vibeAnswers = o => Object.fromEntries(Object.entries(o || {}).filter(([k, v]) => (k === "gen" || VIBE_BY_KEY[k]) && v != null && v !== ""));
 async function startOnboarding(role){
@@ -5201,8 +5236,39 @@ async function startOnboarding(role){
         quizAnswers, vibeAnswers(state.vibe), allInterests(state.interests).length ? interestsOf(state.interests) : {});
   const asked = st => ((st.k === "gen" || VIBE_BY_KEY[st.k]) && prev[st.k] != null)
     || ((st.k === "music" || st.k === "hobbies") && (prev[st.k] || []).length > 0);
-  ob = { role, steps: obSteps(role).filter(st => !asked(st)), i: 0, a: Object.assign({}, prev) };
+  ob = { role, steps: obSteps(role).filter(st => !asked(st)), i: 0, a: Object.assign({}, prev), intro: true };
+  const saved = state.obSave;
+  if(saved && saved.role === role && JSON.stringify(saved.keys) === JSON.stringify(ob.steps.map(st => st.k))){
+    ob.i = Math.min(saved.i, ob.steps.length - 1); ob.a = Object.assign({}, prev, saved.a); ob.intro = saved.intro;
+  }
   renderOb();
+}
+// The intro card: how many questions, how long, and the chapters.
+function obIntroHtml(){
+  const names = OB_CHAPTERS[ob.role], n = ob.steps.length, mins = Math.max(1, Math.round(n * 8 / 60));
+  const counts = names.map((_, c) => ob.steps.filter(st => obChapter(st) === c).length);
+  return `<div class="ob-q ob-intro"><p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "let's describe your home" : "let's set up your profile"}</p>
+    <h1>${n} quick questions, about ${mins} ${mins === 1 ? "minute" : "minutes"}.</h1>
+    <p class="why">${ob.role === "owner" ? "Every answer helps the right person find your room: first your home, then how it lives." : "Every answer improves your matches: first who you are, then how you live, then what you're looking for."}</p>
+    <ol class="ob-plan">${names.map((nm, c) => `<li><i>${c + 1}</i><span><b>${esc(nm)}</b><small>${counts[c]} ${counts[c] === 1 ? "question" : "questions"}</small></span></li>`).join("")}</ol>
+    <button class="btn btn-primary" type="button" id="obGo">Let's go</button></div>`;
+}
+// Half-way, after "How you live": the type taking shape.
+function obRevealHtml(){
+  const t = vibeType(ob.a), left = ob.steps.length - ob.i;
+  return `<div class="ob-q ob-intro"><p class="eyebrow">Your type is taking shape</p>
+    ${t ? `<p class="ob-type"><span aria-hidden="true">${t.emoji}</span><b>${esc(t.title)}</b><small>${esc(t.desc)}</small></p>` : `<h1>That's how you live, noted.</h1>`}
+    <p class="why">${left} ${left === 1 ? "question" : "questions"} to go: what you're looking for.</p>
+    <button class="btn btn-primary" type="button" id="obGo">Continue</button></div>`;
+}
+// During "How you live": how many homes in the city match the answers so far (from the fourth answer on).
+async function obLiveCount(){
+  if(ob.role !== "seeker" || !ob.a.city || ob.a.city === "__other" || answered(ob.a) < 4) return;
+  if(ob.rowsFor !== ob.a.city){ ob.rowsFor = ob.a.city; ob.rows = null; ob.rows = await api.search({ city: ob.a.city }).catch(() => []); }
+  if(!ob.rows) return;
+  const n = ob.rows.filter(l => (vibeMatch(ob.a, l.household) || { pct: 0 }).pct >= 70).length, el = $("obLive");
+  if(!el || !n) return;
+  el.innerHTML = `🏠 <b>${n}</b> ${n === 1 ? "home" : "homes"} in ${esc(ob.a.city)} match you so far`; el.hidden = false;
 }
 function obTextStep(){
   const t = ob.a.occType;
@@ -5228,11 +5294,17 @@ function readFmRows(root, n, prefix){
     age: (root.querySelector(`[name=${prefix}age${i}]`) || {}).value || "" })).filter(m => m.type || m.what);
 }
 function renderOb(){
+  obRemember();
+  if(ob.intro || ob.reveal){
+    setObProgress(false); $("obBack").style.visibility = ob.reveal ? "visible" : "hidden";
+    $("obStage").innerHTML = ob.intro ? obIntroHtml() : obRevealHtml();
+    $("obGo").onclick = () => { ob.intro = false; ob.reveal = false; renderOb(); };
+    return;
+  }
   const st = ob.steps[ob.i];
   // Skip the flatmates form for a whole-flat listing.
   if(st.form === "flatmates" && !ob.a.residents){ ob.a.flatmates = []; ob.i++; return renderOb(); }
-  $("obBar").style.width = (ob.i / ob.steps.length * 100) + "%";
-  $("obCount").textContent = `${ob.i + 1} / ${ob.steps.length}`;
+  setObProgress(false);
   $("obBack").style.visibility = ob.i ? "visible" : "hidden";
   const intro = ob.mode === "complete" ? `<p class="eyebrow">Complete your profile · ${ob.steps.length - ob.i} to go
       <button class="linkbtn ob-later" type="button" data-ob-later>Finish later</button></p>`
@@ -5267,11 +5339,39 @@ function renderOb(){
   else inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why || "")}</p>
     <div class="opts${st.cols ? " cols" : ""}">${st.opts.map((o, i) => `<button class="opt" type="button" data-i="${i}" aria-pressed="${ob.a[st.k] === o.v}">
       ${st.cols ? "" : `<span class="dot" style="background:${AV_COLORS[(i * 2 + ob.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>`}
-      <span><b>${esc(o.t)}</b>${o.s ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div>`;
+      <span><b>${esc(o.t)}</b>${o.s && o.s !== o.t ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div>
+    ${VIBE_BY_KEY[st.k] && ob.role === "seeker" ? `<p class="ob-live" id="obLive" aria-live="polite" hidden></p>` : ""}`;
   $("obStage").innerHTML = `<div class="ob-q">${intro}${inner}</div>`;
-  const f = $("obWhat"); if(f) f.focus();
+  // Text steps start with the keyboard open; Enter continues.
+  const f = $("obWhat") || $("obName") || $("obCity"); if(f) requestAnimationFrame(() => f.focus());
+  if($("obLive")) obLiveCount();
 }
-function obNext(){ if(ob.i < ob.steps.length - 1){ ob.i++; renderOb(); } else finishOnboarding(); }
+function obNext(){
+  if(ob.i < ob.steps.length - 1){
+    const from = obChapter(ob.steps[ob.i]); ob.i++;
+    // Leaving "How you live" at sign-up: show the type taking shape.
+    if(!ob.mode && ob.role === "seeker" && from === 1 && obChapter(ob.steps[ob.i]) === 2) ob.reveal = true;
+    renderOb();
+  } else finishOnboarding();
+}
+// Swipe back (or forward, once the question is answered), and on a keyboard 1-8 answer, arrows and Enter move.
+let obTouch = null;
+$("obStage").addEventListener("touchstart", e => { obTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+$("obStage").addEventListener("touchend", e => {
+  if(!obTouch || !ob || ob.intro) return;
+  const dx = e.changedTouches[0].clientX - obTouch.x, dy = e.changedTouches[0].clientY - obTouch.y; obTouch = null;
+  if(Math.abs(dx) < 70 || Math.abs(dy) > 60 || e.target.closest("input, textarea, .ob-areas, .chips")) return;
+  if(dx > 0) $("obBack").click();
+  else if(!ob.reveal && ob.a[ob.steps[ob.i].k] != null) obNext();
+}, { passive: true });
+document.addEventListener("keydown", e => {
+  if(!ob || $("view-onboard").hidden || e.target.closest("input, textarea, select") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if(ob.intro || ob.reveal){ if(e.key === "Enter"){ e.preventDefault(); $("obGo").click(); } return; }
+  const st = ob.steps[ob.i];
+  if(/^[1-8]$/.test(e.key) && st.opts){ const b = $("obStage").querySelector(`.opt[data-i="${Number(e.key) - 1}"]`); if(b){ e.preventDefault(); b.click(); } }
+  else if(e.key === "ArrowLeft" || e.key === "Backspace"){ e.preventDefault(); $("obBack").click(); }
+  else if((e.key === "ArrowRight" || e.key === "Enter") && st.opts && ob.a[st.k] != null){ e.preventDefault(); obNext(); }
+});
 $("obStage").addEventListener("click", e => {
   if(e.target.closest("[data-ob-later]")) return finishCompletion(true);
   if(e.target.id === "obAnyArea"){ ob.a.areas = []; return obNext(); }
@@ -5304,7 +5404,9 @@ $("obStage").addEventListener("submit", async e => {
   if(e.target.id === "obAreaForm"){ ob.a.areas = [...e.target.querySelectorAll("input:checked")].map(x => x.value); obNext(); }
 });
 $("obBack").addEventListener("click", () => {
-  if(!ob || ob.i === 0) return;
+  if(!ob || ob.intro) return;
+  if(ob.reveal){ ob.reveal = false; ob.i--; renderOb(); return; }
+  if(ob.i === 0) return;
   ob.i--;
   if(ob.steps[ob.i].form === "flatmates" && !ob.a.residents) ob.i--;
   renderOb();
@@ -5324,7 +5426,7 @@ function profileGaps(){
 const profilePct = () => Math.round((21 - profileGaps().length) / 21 * 100);
 function startCompletion(){
   const gaps = profileGaps(), occ = state.user.occupation || {};
-  ob = { role: "seeker", mode: "complete", steps: obStepsFor("seeker", true).filter(st => gaps.includes(st.k)), i: 0,
+  ob = { role: "seeker", mode: "complete", intro: false, steps: obStepsFor("seeker", true).filter(st => gaps.includes(st.k)), i: 0,
     a: Object.assign({ occType: occ.type, occWhat: occ.what }, state.vibe, interestsOf(state.interests)) };
   renderOb();
 }
@@ -5333,7 +5435,7 @@ async function finishCompletion(later){
   const a = ob.a;
   const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
   if(a.gen) vibe.gen = a.gen;
-  $("obBar").style.width = "100%"; $("obCount").textContent = ""; $("obBack").style.visibility = "hidden";
+  setObProgress(true); $("obBack").style.visibility = "hidden";
   try{
     if(a.occType) await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
     await api.setVibe(vibe);
@@ -5353,7 +5455,7 @@ async function finishOnboarding(){
   const a = ob.a, role = ob.role;
   const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
   if(a.gen) vibe.gen = a.gen;
-  $("obBar").style.width = "100%"; $("obCount").textContent = ""; $("obBack").style.visibility = "hidden";
+  obForget(); setObProgress(true); $("obBack").style.visibility = "hidden";
   if(role === "owner"){
     state.homeDraft = Object.assign({ residents: Number.isInteger(a.residents) ? a.residents : 1, flatmates: a.flatmates || [],
       interests: { music: a.music || [], hobbies: a.hobbies || [] } }, vibe);
