@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
+<title>FindMeFlatMate</title>
+<meta name="description" content="FindMeFlatMate is coming soon: find a room, and the people worth sharing it with.">
+<meta name="theme-color" content="#0E9AA0">
+<meta property="og:title" content="FindMeFlatMate · Coming soon">
+<meta property="og:description" content="Find your vibe. Find your flatmate. Coming soon.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://findmeflatmate.com/">
+<meta property="og:image" content="https://findmeflatmate.com/icons/icon-512.png">
+<link rel="canonical" href="https://findmeflatmate.com/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23F26B1D'/%3E%3Cpath d='M3.5 10.5h4.5V20H3.5zM8.5 4.5h7V20h-7zM16 8.5h4.5V20H16z' fill='%23fff'/%3E%3Cpath d='M10 7h1.5v1.5H10zM12.5 7H14v1.5h-1.5zM10 10h1.5v1.5H10zM12.5 10H14v1.5h-1.5zM10 13h1.5v1.5H10zM12.5 13H14v1.5h-1.5zM11.2 17h1.6v3h-1.6z' fill='%23F26B1D'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{color-scheme:light; --brand:#0E9AA0; --brand-2:#0B7C82; --accent:#F26B1D; --ink:#10264F; --text-2:#4A5260;
+  --grad:linear-gradient(172deg,#0E9AA0 0%,#0F8EA6 45%,#1F6CC4 100%); --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0; min-height:100%}
+body{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); background:var(--grad); color:#fff;
+  font:16px/1.6 var(--font); -webkit-font-smoothing:antialiased; text-align:center; overflow-x:hidden; position:relative}
+body::before, body::after{content:""; position:fixed; border-radius:50%; pointer-events:none; background:rgba(255,255,255,.08)}
+body::before{width:520px; height:520px; top:-220px; right:-180px}
+body::after{width:420px; height:420px; bottom:-200px; left:-160px}
+.hold{position:relative; z-index:1; width:100%; max-width:520px}
+.mark{display:inline-grid; place-items:center; width:120px; height:120px; border-radius:32px; background:#fff;
+  box-shadow:0 18px 40px rgba(6,40,70,.25)}
+.wordmark{margin:18px 0 0; font-size:30px; font-weight:800; letter-spacing:-.03em; line-height:1.1}
+.wordmark b{font-weight:800} .wordmark .w-flat{color:#BFE1FF} .wordmark .w-mate{color:#B8F5DD}
+.banner{display:inline-flex; align-items:center; gap:10px; margin:26px 0 0; padding:10px 22px; border-radius:999px;
+  background:var(--accent); color:#fff; font-weight:800; font-size:15px; letter-spacing:.14em; text-transform:uppercase;
+  box-shadow:0 10px 24px rgba(242,107,29,.35)}
+.banner i{width:9px; height:9px; border-radius:50%; background:#fff; animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.35; transform:scale(.7)}}
+@media (prefers-reduced-motion:reduce){.banner i{animation:none}}
+h1{margin:22px 0 0; font-size:clamp(30px, 8vw, 44px); font-weight:800; letter-spacing:-.03em; line-height:1.12; text-wrap:balance}
+.lead{margin:14px auto 0; max-width:440px; color:rgba(255,255,255,.88); font-size:17px; text-wrap:pretty}
+.perks{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:24px 0 0; padding:0; list-style:none}
+.perks li{padding:7px 14px; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
+  font-size:14px; font-weight:600}
+footer{position:relative; z-index:1; margin-top:40px; font-size:13.5px; color:rgba(255,255,255,.75)}
+footer a{color:#fff; text-underline-offset:3px}
+@media (max-width:420px){ .mark{width:104px; height:104px; border-radius:28px} .mark svg{width:76px; height:76px} .wordmark{font-size:26px} .lead{font-size:16px} }
+</style>
+</head>
+<body>
+<main class="hold">
+  <span class="mark" aria-hidden="true"><svg width="88" height="88" viewBox="0 0 100 100" aria-hidden="true"><defs> <linearGradient id="fmRoof" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F80F0"/><stop offset="1" stop-color="#0A4FC4"/></linearGradient> <linearGradient id="fmSmile" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E6FD9"/><stop offset="1" stop-color="#14C08A"/></linearGradient> <clipPath id="fmIn"><path d="M23.5 10H76.5V70Q50 84 23.5 70Z"/></clipPath> </defs> <rect x="67.5" y="12" width="9.5" height="20" rx="1.5" fill="#0A4FC4"/> <path d="M19 62V40L50 13.5L81 40V62" fill="none" stroke="url(#fmRoof)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/> <path d="M50 21.5v5M43.2 23.6l2.4 4.2M56.8 23.6l-2.4 4.2" stroke="#F5A623" stroke-width="2.6" stroke-linecap="round"/> <g clip-path="url(#fmIn)"> <path d="M23.5 84V69.5a11 9.5 0 0 1 22 0V84z" fill="#1E6FD9"/> <path d="M54.5 84V69.5a11 9.5 0 0 1 22 0V84z" fill="#F0645A"/> <path d="M38 84V68a12 10 0 0 1 24 0V84z" fill="#F7B53B" stroke="#fff" stroke-width="2" paint-order="stroke"/> <circle cx="34" cy="47" r="8.3" fill="#F9C9A0"/> <path d="M25.6 47.5a8.5 8.5 0 0 1 14-7.4c-2.6.4-6.2 2.6-8.6 2.5c-1.6 1.6-3 3.3-5.4 4.9z" fill="#10264F"/> <path d="M25.7 46.2c-.6-5.6 3.4-9.6 8.6-9.6c3.4 0 6 1.4 7.2 3.4c-3 0-5.2 1.8-8.4 2.2c-2.4.3-4.5 1.6-7.4 4z" fill="#10264F"/> <circle cx="50" cy="44.5" r="8.6" fill="#F9C9A0" stroke="#fff" stroke-width="1.6" paint-order="stroke"/> <path d="M41.4 44c-.4-5.4 3.6-9.2 8.6-9.2s9 3.8 8.6 9.2c-1.6-2.8-4-4.2-6.6-4.6c-1 1.4-3 2.2-5.2 2.2c-2.3 0-4.1 1-5.4 2.4z" fill="#10264F"/> <path d="M70.5 44.5c4.6 1 6.4 6 4.6 11.5c-1-3-2.6-4.4-4.6-5z" fill="#10264F"/> <circle cx="66" cy="47" r="8.3" fill="#F9C9A0"/> <path d="M57.7 46.6c-.3-5.4 3.6-9.6 8.6-9.6c4.4 0 8.2 3.4 8.2 8.4c-2.2-1.6-4.4-3.8-6-5.6c-2.6 3-6.2 5.6-10.8 6.8z" fill="#10264F"/> <circle cx="72.6" cy="38.6" r="2.6" fill="#F0645A"/> <g fill="none" stroke="#10264F" stroke-width="1.3" stroke-linecap="round"> <path d="M30.2 48.4q1.3-1.4 2.6 0M35.6 48.4q1.3-1.4 2.6 0M32.4 51.6q1.6 1.4 3.2 0"/> <path d="M45.9 46q1.3-1.4 2.6 0M51.5 46q1.3-1.4 2.6 0M48.3 49.2q1.7 1.5 3.4 0"/> <path d="M61.8 48.4q1.3-1.4 2.6 0M67.2 48.4q1.3-1.4 2.6 0M64.4 51.6q1.6 1.4 3.2 0"/> </g> </g> <path d="M26 76Q50 91 74 76" fill="none" stroke="url(#fmSmile)" stroke-width="6" stroke-linecap="round"/> <circle cx="20" cy="69.5" r="3.6" fill="#1E6FD9"/> <circle cx="80" cy="69.5" r="3.6" fill="#14C08A"/></svg></span>
+  <p class="wordmark"><b>FindMe</b><b class="w-flat">Flat</b><b class="w-mate">Mate</b></p>
+  <p class="banner" role="status"><i aria-hidden="true"></i>Coming soon</p>
+  <h1>Find your vibe. Find your flatmate.</h1>
+  <p class="lead">We're getting FindMeFlatMate ready for you. Rooms, and the people worth sharing them with, are almost here.</p>
+  <ul class="perks" aria-label="What's coming">
+    <li>🏠 Rooms &amp; whole flats</li><li>🤝 Flatmates who live like you</li><li>💸 Split rent &amp; bills</li>
+  </ul>
+</main>
+<footer>© FindMeFlatMate · <a href="privacy.html">Privacy policy</a></footer>
+<script>
+// The app used to be here: forget any copy this browser kept for offline use, so it can't open from the cache.
+try{ if(navigator.serviceWorker) navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {}); }catch(e){}
+try{ if(window.caches) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(() => {}); }catch(e){}
+</script>
+</body>
+</html>
