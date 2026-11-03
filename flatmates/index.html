@@ -1648,6 +1648,29 @@ html.on-hold, html.on-hold body{overflow:hidden}
   .vibe-promo{margin:12px 0 2px; padding:10px 36px 10px 12px; gap:10px; border-radius:14px}
   .vp-emoji{font-size:24px} .vp-main b{font-size:15px} .vp-main small{font-size:11px} .vp-main span{display:none}
 }
+/* Photo gallery: dots, counter, arrows (mouse only). */
+.gal-dots{position:absolute; left:0; right:0; bottom:10px; display:flex; justify-content:center; gap:5px; z-index:2; pointer-events:none}
+.gal-dots button{pointer-events:auto; width:7px; height:7px; padding:0; border:0; border-radius:999px; background:rgba(255,255,255,.6); box-shadow:0 0 0 1px rgba(0,0,0,.12); cursor:pointer; transition:width .2s, background .2s}
+.gal-dots button[aria-selected="true"]{width:20px; background:#fff}
+.gal-n{position:absolute; top:10px; right:10px; z-index:2; padding:3px 9px; border-radius:999px; background:rgba(0,0,0,.45); color:#fff; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums}
+.gal-arr{position:absolute; top:50%; z-index:2; width:38px; height:38px; margin-top:-19px; border:0; border-radius:50%; background:rgba(255,255,255,.92); color:var(--text); display:none; place-items:center; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.gal-arr.prev{left:10px} .gal-arr.next{right:10px} .gal-arr.prev svg{transform:rotate(180deg)}
+@media (hover:hover){ .gal-arr{display:grid} .gal-arr[hidden]{display:none} }
+/* The owner's numbers for a listing. */
+.stats.six{grid-template-columns:repeat(3, 1fr); gap:10px 8px}
+.stats.six .stat{padding:10px 12px; border-radius:14px; background:var(--surface-2)} .stats.six .stat b{font-size:24px} .stats.six .stat span{font-size:12.5px; line-height:1.3; display:block}
+@media (min-width:720px){ .stats.six{grid-template-columns:repeat(6, 1fr)} }
+/* Posting a room in three steps. */
+.ps-steps{display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; list-style:none; margin:0 0 18px; padding:0}
+.ps-steps li{display:flex; align-items:center; gap:8px; min-width:0; padding:8px 10px; border-radius:12px; background:var(--surface-2); color:var(--text-2); font-size:13.5px; font-weight:700}
+.ps-steps li span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis} .ps-steps li em{font-style:normal} .ps-steps li b{display:none; font-weight:inherit}
+.ps-steps li i{display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--line-2); color:var(--text-2); font-style:normal; font-size:12.5px; flex:none}
+.ps-steps li.now{background:var(--brand-soft); color:var(--brand-2)} .ps-steps li.now i{background:var(--brand); color:#fff}
+.ps-steps li.done{cursor:pointer; color:var(--text)} .ps-steps li.done i{background:var(--ok); color:#fff}
+@media (max-width:480px){ .ps-steps li{padding:8px; gap:6px; font-size:13px} .ps-steps li em{display:none} .ps-steps li b{display:inline} }
+fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{display:none}
+.ps-nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:22px; padding-top:16px; box-shadow:0 -1px 0 var(--line)}
+.ps-nav .btn-primary{min-width:48%}
 /* Empty states: a next step, and centred where the list would be. */
 .empty p{margin:0 0 4px} .empty .btn{margin-top:14px}
 .seekers > .empty{grid-column:1 / -1; justify-self:center; width:min(100%, 480px); margin:12px auto}
@@ -2047,6 +2070,8 @@ html.on-hold, html.on-hold body{overflow:hidden}
     <div class="page-h"><h1>Describe your room</h1><p>Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
     <div class="panel">
       <form id="postForm" novalidate autocomplete="on">
+        <ol class="ps-steps" id="psSteps"><li class="now"><i>1</i><span><em>The room</em><b>Room</b></span></li><li><i>2</i><span><em>Your home</em><b>Home</b></span></li><li><i>3</i><span><em>Private details</em><b>Private</b></span></li></ol>
+        <fieldset class="ps" data-step="1">
         <div class="field"><label>What are you offering?</label>
           <div class="chips kind-grid">
             <label class="chip"><input type="radio" name="kind" value="room" checked>Private room</label>
@@ -2059,7 +2084,7 @@ html.on-hold, html.on-hold body{overflow:hidden}
         <div class="field ps-anchor p-where"><label for="pWhere">Where's the flat?</label>
           <div class="ps-box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             <input type="search" id="pWhere" placeholder="Search your society, building or area" aria-describedby="pWhereHint"></div>
-          <p class="hint" id="pWhereHint" style="margin:6px 0 0">Fills in the city, area and PIN, and drops a pin you can fine-tune below.</p></div>
+          <p class="hint" id="pWhereHint" style="margin:6px 0 0">Fills in the city, area and PIN, and drops a pin you can fine-tune in the last step.</p></div>
         <div class="grid2">
           <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
           <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout" list="areaList" autocomplete="off"><datalist id="areaList"></datalist></div>
@@ -2086,6 +2111,9 @@ html.on-hold, html.on-hold body{overflow:hidden}
         <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="pBach" checked><span>Bachelors welcome
           <small class="hint" style="display:block;margin:0;font-weight:500">Singles, or a group of friends renting together (a tribe). No brokers either way.</small></span></label>
         <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
+        <div class="ps-nav"><span></span><button class="btn btn-primary" type="button" data-ps="next">Next: your home</button></div>
+        </fieldset>
+        <fieldset class="ps" data-step="2" hidden>
         <div class="household" style="margin-bottom:14px">
           <h3 class="section-h" style="margin-top:0">Your household</h3>
           <p class="hint" style="margin:0 0 10px">From your answers earlier. Seekers see who they'd live with and how well they'd fit.</p>
@@ -2100,6 +2128,9 @@ html.on-hold, html.on-hold body{overflow:hidden}
         </div>
         <div class="field"><label for="pDesc">About the flat and flatmates</label>
           <textarea id="pDesc" maxlength="1200" placeholder="House rules, how far from the metro or office, what's included in rent..."></textarea></div>
+        <div class="ps-nav"><button class="btn btn-ghost" type="button" data-ps="back">Back</button><button class="btn btn-primary" type="button" data-ps="next">Next: private details</button></div>
+        </fieldset>
+        <fieldset class="ps" data-step="3" hidden>
         <div class="private">
           <h3>Private: shown only to people who unlock</h3>
           <div class="grid2">
@@ -2119,9 +2150,10 @@ html.on-hold, html.on-hold body{overflow:hidden}
             <div class="field"><label>&nbsp;</label><button class="btn btn-ghost btn-block" type="button" id="mapCheck">📍 Pin it on the map</button></div>
           </div>
           <div class="map-box" id="mapBox" hidden></div>
-          <p class="hint" style="margin:0">Area and city come from above. Pin your building so people you accept get exact directions; everyone else only sees the area.</p>
+          <p class="hint" style="margin:0">Area and city come from the first step. Pin your building so people you accept get exact directions; everyone else only sees the area.</p>
         </div>
-        <button class="btn btn-primary btn-block" type="submit">Publish my listing</button>
+        <div class="ps-nav"><button class="btn btn-ghost" type="button" data-ps="back">Back</button><button class="btn btn-primary" type="submit">Publish my listing</button></div>
+        </fieldset>
       </form>
     </div>
   </section>
@@ -2994,6 +3026,7 @@ const otpError = (code, wait) => Object.assign(new Error(code), { code, wait });
 // and a sample seeker asks to meet a flat ~8 s after you post it.
 const DEMO_REPLY_MS = 6000, DEMO_INCOMING_MS = 8000, DEMO_INVITE_MS = 12000, DEMO_TRIBE_MS = 5000;
 
+const demoSeen = new Set();   // listings opened this sitting (demo views)
 const demoApi = {
   live:false,
   me_(){ return state.user && state.user.phone; },
@@ -3039,7 +3072,8 @@ const demoApi = {
     const { private: _p, ...pub } = l;
     const r = this.reqFor(l.id);
     return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null,
-             unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length };
+             unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length,
+             views: (state.views || {})[l.id] || 0, saves: (state.saved.includes(l.id) ? 1 : 0) + (state.demoTribeSaves || []).filter(x => x.listing_id === l.id).length };
   },
   async search(f){
     this.tick();
@@ -3055,7 +3089,11 @@ const demoApi = {
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
       (l.geo ? kmBetween(n, l.geo) <= n.km : n.area && l.locality.toLowerCase() === n.area.toLowerCase())).map(l => this.view(l));
   },
-  async get(id){ const l = this.all().find(x => x.id === id); return l && this.view(l); },
+  async get(id){
+    const l = this.all().find(x => x.id === id);
+    if(l && state.user && l.owner_phone !== state.user.phone && !demoSeen.has(id)){ demoSeen.add(id); state.views = state.views || {}; state.views[id] = (state.views[id] || 0) + 1; save(); }
+    return l && this.view(l);
+  },
   async contact(id){
     const l = this.all().find(x => x.id === id);
     return l && this.view(l).unlocked ? l.private : null;
@@ -3370,6 +3408,7 @@ const demoApi = {
 };
 
 function makeLiveApi(sb){
+  const seenIds = new Set();
   const rpc = async (fn, args) => {
     const { data, error } = await sb.rpc(fn, args || {});
     if(error){
@@ -3473,7 +3512,12 @@ function makeLiveApi(sb){
       return rows;
     },
     async searchNear(n){ return rpc("fm_search_near", { p_lat:n.lat, p_lng:n.lng, p_km:n.km, p_area:n.area || null }); },
-    async get(id){ return (await rpc("fm_listing_get", { p_id: id }))[0]; },
+    // Opening someone else's listing counts as a view for its owner (once per sitting).
+    async get(id){
+      const l = (await rpc("fm_listing_get", { p_id: id }))[0];
+      if(l && !l.is_owner && !seenIds.has(id)){ seenIds.add(id); rpc("fm_listing_seen", { p_listing: id }).catch(() => {}); }
+      return l;
+    },
     async contact(id){ const c = one(await rpc("fm_contact", { p_listing: id })); return c.contact_phone ? c : null; },
     async sendRequest(id, message){ const r = one(await rpc("fm_request", { p_listing:id, p_message:message })); await this.me(); return r; },
     async withdraw(rid){ await rpc("fm_withdraw", { p_request: rid }); await this.me(); },
@@ -5881,7 +5925,26 @@ async function openListing(id){
     <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} asked to meet` : ""}</p>
     ${lock}${bar}`;
   if(!$("dlgListing").open) $("dlgListing").showModal();
+  wireGallery($("lBody").querySelector(".hero-pic"));
   if(!contact && l.geo) drawApproxMap("approxMap", l.geo);
+}
+// Photo gallery: dots and a counter over the photos, arrows for a mouse. The photos themselves scroll sideways.
+function wireGallery(pic){
+  const g = pic && pic.querySelector(".gallery"), imgs = g ? g.querySelectorAll("img") : [], n = imgs.length;
+  if(n < 2) return;
+  const chev = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
+  pic.insertAdjacentHTML("beforeend", `<div class="gal-dots" role="tablist" aria-label="Photos">${Array.from({ length: n }, (_, i) =>
+      `<button type="button" role="tab" aria-label="Photo ${i + 1}" aria-selected="${i === 0}"></button>`).join("")}</div>
+    <span class="gal-n" aria-live="polite">1 / ${n}</span>
+    <button class="gal-arr prev" type="button" aria-label="Previous photo" hidden>${chev}</button><button class="gal-arr next" type="button" aria-label="Next photo">${chev}</button>`);
+  const dots = [...pic.querySelectorAll(".gal-dots button")], num = pic.querySelector(".gal-n"), prev = pic.querySelector(".gal-arr.prev"), next = pic.querySelector(".gal-arr.next");
+  const step = () => (imgs[1].offsetLeft - imgs[0].offsetLeft) || g.clientWidth;
+  const at = () => Math.max(0, Math.min(n - 1, Math.round(g.scrollLeft / step())));
+  const go = i => g.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * step(), behavior: "smooth" });
+  const sync = () => { const i = at(); dots.forEach((d, k) => d.setAttribute("aria-selected", k === i)); num.textContent = `${i + 1} / ${n}`; prev.hidden = i === 0; next.hidden = i === n - 1; };
+  g.addEventListener("scroll", sync, { passive: true });
+  dots.forEach((d, i) => d.addEventListener("click", () => go(i)));
+  prev.addEventListener("click", () => go(at() - 1)); next.addEventListener("click", () => go(at() + 1));
 }
 // The bar that stays at the bottom of the listing: the rent, and the one thing to do next.
 function listingBar(l, contact, cta){
@@ -6278,7 +6341,8 @@ async function renderMine(){
   extrasHtml().then(h => $("extrasM").innerHTML = h);
   const ask = mine.length ? notifyCard("Turn on notifications so you never miss someone who wants to meet you.") : "";
   const live = mine.filter(l => l.status !== "closed");
-  const looking = live.length ? await api.findSeekers(live[0].id) : [];
+  const lookingBy = Object.fromEntries(await Promise.all(live.map(async l => [l.id, await api.findSeekers(l.id).catch(() => [])])));
+  const looking = live.length ? lookingBy[live[0].id] : [];
   const promo = looking.length ? `<a class="esc-promo" href="#escape"><span><small>The Empty Room Escape</small>
       <b>${looking.length} ${looking.length === 1 ? "person is" : "people are"} looking for a room in ${esc(live[0].locality)} right now</b>
       ${looking.filter(x => x.match_pct >= 80).length ? `${looking.filter(x => x.match_pct >= 80).length} match your home's vibe 80%+. ` : ""}Invite them before someone else does&nbsp;→</span></a>` : "";
@@ -6288,7 +6352,10 @@ async function renderMine(){
       <h3 style="font-size:20px">${esc(l.title)} ${closed ? '<span class="status cancelled">rented</span>' : ""}</h3>
       ${l.status === "delisted" ? `<p class="delisted">🚩 Taken down: a person you accepted reported this as a broker listing. If that's a mistake, write to us from your account and we'll look into it.</p>` : ""}
       <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${inr(l.rent)}/month rent</div>
-      <div class="stats" style="margin:12px 0">
+      <div class="stats six" style="margin:12px 0">
+        <div class="stat"><b>${l.views || 0}</b><span>views</span></div>
+        <div class="stat"><b>${l.saves || 0}</b><span>saved it</span></div>
+        <div class="stat"><b>${(lookingBy[l.id] || []).filter(x => x.match_pct >= 70).length}</b><span>vibe matches</span></div>
         <div class="stat"><b>${reqs.filter(r => r.status === "pending").length}</b><span>waiting for you</span></div>
         <div class="stat"><b>${reqs.filter(r => r.status === "approved").length}</b><span>accepted</span></div>
         <div class="stat"><b>${vs.length}</b><span>visits booked</span></div></div>
@@ -6405,6 +6472,7 @@ function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value]
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
 attachAreaSuggest($("pLocality"), () => $("pCity").value);
 function renderPost(){
+  showPostStep(1);
   const d = state.homeDraft || {};
   $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
   $("hInt").innerHTML = interestChips("hi", d.interests);
@@ -6419,10 +6487,37 @@ function renderPost(){
   if(!$("expList").children.length) renderExpenseRows();
   syncRoomsFree();
 }
+// The form is three steps. Each checks its own fields before the next; Publish checks them all and brings a
+// step with a gap back into view.
+let postStep = 1;
+function showPostStep(n){
+  postStep = n;
+  document.querySelectorAll("#postForm fieldset.ps").forEach(fs => fs.hidden = Number(fs.dataset.step) !== n);
+  document.querySelectorAll("#psSteps li").forEach((li, i) => li.className = i + 1 < n ? "done" : i + 1 === n ? "now" : "");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function stepOk(fs){
+  fs.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
+  const bad = [...fs.elements].filter(el => el.willValidate && !el.checkValidity());
+  let box = fs.querySelector(".form-err");
+  if(!box){ box = document.createElement("p"); box.className = "form-err"; box.setAttribute("role", "alert"); fs.querySelector(".ps-nav").before(box); }
+  if(!bad.length){ box.hidden = true; return true; }
+  const label = el => FIELD_LABEL[el.id] || el.getAttribute("aria-label") || "A field";
+  box.hidden = false; box.textContent = "Please check: " + [...new Set(bad.map(label))].join(", ") + ".";
+  bad.forEach(el => el.classList.add("bad"));
+  bad[0].scrollIntoView({ block: "center", behavior: "smooth" });
+  return false;
+}
+$("postForm").addEventListener("click", e => {
+  const b = e.target.closest("[data-ps]"); if(!b) return;
+  if(b.dataset.ps === "next"){ if(stepOk(b.closest("fieldset.ps"))) showPostStep(postStep + 1); }
+  else if(b.dataset.ps === "back") showPostStep(postStep - 1);
+});
+$("psSteps").addEventListener("click", e => { const li = e.target.closest("li.done"); if(li) showPostStep([...li.parentNode.children].indexOf(li) + 1); });
 $("postForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!isOwner()){ toast("Switch to posting a flat from your account first."); return; }
-  if(!formOk(e.target)) return;
+  for(const fs of e.target.querySelectorAll("fieldset.ps")){ if(!stepOk(fs)){ showPostStep(Number(fs.dataset.step)); return; } }
   const f = e.target, btn = f.querySelector("[type=submit]");
   const residents = Number($("hCount").value);
   const p = {
@@ -7180,6 +7275,7 @@ async function openItem(id){
     <div class="mk-seller">${fsAv({ name: i.is_mine ? firstName() : i.seller_name, id: i.id })}<div><b>${i.is_mine ? "You're selling this" : "Sold by " + esc(i.seller_name || "a flatmate")}</b>
       <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div></div></div>
     ${act}`;
+  wireGallery($("mkdBody").querySelector(".hero-pic"));
   if(!$("dlgMk").open) $("dlgMk").showModal();
 }
 
