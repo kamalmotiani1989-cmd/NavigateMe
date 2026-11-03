@@ -2597,14 +2597,26 @@ language sql security definer set search_path = public as $$
   where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid());
 $$;
 
+-- How many times a listing was opened by someone other than its owner (the app counts each opening
+-- once per sitting), for the owner's numbers on My flat.
+alter table public.fm_listings add column if not exists views int not null default 0;
+create or replace function public.fm_listing_seen(p_listing uuid) returns void
+language sql security definer set search_path = public as $$
+  select fm_throttle('seen', 300, 2000);
+  update fm_listings set views = views + 1
+   where id = p_listing and status = 'active' and auth.uid() is not null and owner_id <> auth.uid();
+$$;
+
 -- My listings (whatever their status) and the homes whose owners accepted me (while they're up).
+-- For my own: how many people opened and saved them.
+drop function if exists public.fm_my_listings();
 create or replace function public.fm_my_listings()
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean)
+  featured boolean, views int, saves bigint)
 language sql stable security definer set search_path = public as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -2613,7 +2625,9 @@ language sql stable security definer set search_path = public as $$
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
-         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false)
+         mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false),
+         case when l.owner_id = auth.uid() then l.views end,
+         case when l.owner_id = auth.uid() then (select count(*) from fm_saves s where s.listing_id = l.id) end
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where l.owner_id = auth.uid()
