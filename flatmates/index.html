@@ -1724,6 +1724,44 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .ref-card .ref-ic{font-size:30px; line-height:1} .ref-card h3{font-size:19px; margin:0} .ref-card p{margin:4px 0 0; color:var(--text-2)} .ref-card .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
 .sh-img{display:block; width:min(300px,72vw); aspect-ratio:4/5; height:auto; border-radius:18px; box-shadow:0 18px 40px rgba(16,30,50,.25); margin:6px auto 16px}
 .mhead .mh-acts{display:flex; gap:8px; flex:none}
+/* The Empty Room Escape: why-them line, invite stats, select several, lapsed invites; top matches on My flat */
+.why{margin:10px 0 0; font-size:13.5px; color:var(--text-2)} .why b{color:var(--brand); font-weight:800}
+.seek-card .meta2{display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:8px; font-size:12.5px; color:var(--text-3)} .seek-card .meta2 b{color:var(--text-2); font-weight:700}
+.esc-inv{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:12px 0 0; font-size:13.5px; color:var(--text-2)}
+.esc-inv b{color:var(--text)} .esc-inv .tip{flex-basis:100%; font-size:13px; color:var(--text-3)}
+.seek-card .sel{position:absolute; top:12px; right:12px; width:26px; height:26px; accent-color:var(--brand); cursor:pointer}
+.seek-card{position:relative} .seek-card.picked{box-shadow:0 0 0 2px var(--brand), var(--card-shadow, 0 6px 20px rgba(16,20,24,.06))}
+.esc-bar{position:sticky; bottom:calc(70px + env(safe-area-inset-bottom,0px)); z-index:5; display:flex; justify-content:space-between; align-items:center; gap:10px; margin:0 0 14px; padding:10px 12px 10px 16px; border-radius:16px; background:var(--teal); color:#fff; box-shadow:0 10px 30px rgba(16,30,50,.25)}
+@media (min-width:721px){ .esc-bar{bottom:16px} }
+.esc-bar b{font-size:15px} .esc-bar .btn-ghost{background:rgba(255,255,255,.18); color:#fff}
+.req-pill.expired{background:var(--surface-2); color:var(--text-3)}
+.inv-deadline{display:inline-block; margin:6px 0 0; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:700; background:var(--accent-soft); color:var(--accent)}
+.mine-esc{margin:16px 0 4px; padding:16px 18px; border-radius:18px; background:var(--grad); color:#fff}
+.mine-esc small{display:block; font-size:11.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:#FFD08A}
+.mine-esc > b{display:block; font-size:18px; letter-spacing:-.02em; margin:2px 0 10px}
+.mine-esc .row{display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid rgba(255,255,255,.18)}
+.mine-esc .row .av{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; flex:none; box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.mine-esc .row > div{flex:1; min-width:0} .mine-esc .row b{display:block; font-size:15px} .mine-esc .row span{font-size:12.5px; color:rgba(255,255,255,.85)}
+.mine-esc .row .btn{background:#fff; color:var(--teal); padding:7px 12px; flex:none}
+.mine-esc .row .req-pill{background:rgba(255,255,255,.2); color:#fff; flex:none}
+.mine-esc > a{display:inline-block; margin-top:8px; color:#fff; font-weight:800; text-decoration:none}
+.inv-form textarea{min-height:88px}
+/* FlatMart: price guide, wanted posts, pick-up, bundles, trust, the unsold nudge */
+.mk-guide{margin:6px 0 0; font-size:13px; color:var(--brand); font-weight:700} .mk-guide.none{color:var(--text-3); font-weight:500}
+.want-card{display:grid; grid-template-columns:auto 1fr; gap:12px; padding:14px 0; box-shadow:0 1px 0 var(--line)}
+.want-card .wi{width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-size:22px; background:var(--surface-2)}
+.want-card h3{font-size:16px} .want-card .s{font-size:13.5px; color:var(--text-2)} .want-card .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+.want-card.mine{background:var(--brand-soft); border-radius:14px; padding:14px; box-shadow:none; margin-bottom:6px}
+.mk-trust{display:flex; flex-wrap:wrap; gap:4px 10px; font-size:12.5px; color:var(--text-3); margin-top:2px} .mk-trust b{color:var(--text-2); font-weight:700}
+.pk-box{margin-top:10px; padding:10px 12px; border-radius:12px; background:var(--surface-2); font-size:14px}
+.pk-box b{display:block; margin-bottom:6px} .pk-box .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.pk-box input[type=datetime-local]{flex:1; min-width:180px; padding:8px 10px; border-radius:10px; border:1px solid var(--line-2); font:inherit; background:var(--surface)}
+.pk-box.done{background:var(--ok-soft); color:var(--ok)}
+.mk-nudge{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0 0; padding:10px 12px; border-radius:12px; background:var(--accent-soft); font-size:13.5px}
+.mk-nudge b{color:var(--text)} .mk-nudge .btn{margin-left:auto}
+.sale-bundle{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:#fff; color:var(--text); box-shadow:0 6px 20px rgba(16,20,24,.08)}
+.sale-bundle b{font-size:17px} .sale-bundle small{display:block; color:var(--text-2); font-size:13px} .sale-bundle .btn{margin-left:auto}
+.mk-bundle-tag{display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; font-weight:800; background:#FFF1E6; color:#C2410C; margin-right:6px}
 </style>
 </head>
 <body>
@@ -2107,10 +2145,12 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
       <div class="esc-stats" id="escStats"></div>
     </div>
     <div class="d-controls">
-      <div class="d-row"><select id="escPick" aria-label="Which room"></select></div>
+      <div class="d-row"><select id="escPick" aria-label="Which room"></select><button class="btn btn-ghost btn-sm" type="button" id="escSelect" hidden>Invite several</button></div>
       <div class="area-chips" id="escFilters" role="group" aria-label="Show"></div>
     </div>
     <p class="hint" id="escRule">Numbers stay private until they say yes to your invite.</p>
+    <div class="esc-inv" id="escInv"></div>
+    <div class="esc-bar" id="escBar" hidden><b id="escBarText">0 selected</b><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" type="button" id="escBarCancel">Cancel</button><button class="btn btn-accent btn-sm" type="button" id="escBarGo">Invite</button></div></div>
     <div id="escList" class="seekers"></div>
   </section>
 
@@ -2307,6 +2347,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
       <p class="count" id="mkCount"></p>
       <div class="cards mk-grid" id="mkCards"></div>
     </div>
+    <div id="mkWanted" hidden></div>
     <div id="mkMine" hidden></div>
     <div id="mkOffers" hidden></div>
   </section>
@@ -2362,6 +2403,10 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <label class="chip"><input type="checkbox" name="fFurn" value="none">Unfurnished</label></div>
       <h3 class="section-h">Move in by</h3>
       <input type="date" id="fMove" aria-label="Move in by">
+      <h3 class="section-h">When do you want to move?</h3>
+      <p class="hint" style="margin:-4px 0 8px">Owners see this when they look for people to invite.</p>
+      <select id="fMoveIn" aria-label="When do you want to move in"><option value="">Not sure yet</option><option value="asap">As soon as possible</option>
+        <option value="2w">Within 2 weeks</option><option value="1m">Within a month</option><option value="3m">In 1 to 3 months</option></select>
       <h3 class="section-h">Must-haves</h3>
       <div class="chips" id="fMust"></div>
       <h3 class="section-h">House rules that matter to you</h3>
@@ -2416,12 +2461,22 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <div id="bbOpts" class="bb-opts"></div>
   <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
 </div></dialog>
+<dialog id="dlgInvite" class="confirm" aria-labelledby="ivTitle"><form class="confirm-body inv-form" id="inviteForm" novalidate>
+  <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand);font-size:26px">✉️</span>
+  <h2 id="ivTitle">Invite</h2>
+  <p id="ivText"></p>
+  <label class="sl-f"><span>A note with the invite</span><textarea id="ivMsg" maxlength="300"></textarea></label>
+  <p class="hint" style="margin:4px 0 14px">They see your photos and details and answer in one tap. An invite nobody answers lapses after 3 days, and you can invite again. Numbers are shared only if they say yes.</p>
+  <button class="btn btn-accent btn-block" type="submit" id="ivGo">Send invite</button>
+  <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
+</form></dialog>
 <dialog id="dlgSale" class="confirm" aria-labelledby="slTitle"><form class="confirm-body" id="saleForm" novalidate>
   <span class="confirm-ic" style="background:#FFF1E6;color:#C2410C;font-size:30px">📦</span>
   <h2 id="slTitle">Start a moving-out sale</h2>
   <p>Everything you're selling on one page, with one link to share on WhatsApp. All of it shows first in FlatMart until the date you pick.</p>
   <label class="sl-f"><span>Name of the sale</span><input type="text" id="slName" required minlength="3" maxlength="60"></label>
   <label class="sl-f"><span>Until (up to 30 days from today)</span><input type="date" id="slUntil" required></label>
+  <label class="sl-f"><span>Take-the-lot price, ₹ (optional)</span><input type="number" id="slBundle" min="50" max="10000000" step="50" inputmode="numeric" placeholder="One price for everything"></label>
   <p class="hint" id="slPrice" style="margin:4px 0 14px"></p>
   <button class="btn btn-accent btn-block" type="submit" id="slGo">Start my sale</button>
   <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
@@ -2470,7 +2525,9 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
     <button class="btn btn-primary" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button></form></dialog>
 <button class="help-fab" id="helpFab" type="button" aria-label="Help and support" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5M12 16.5h.01"/></svg><span>Help</span><i class="badge" id="helpBadge" hidden></i></button>
 
-<dialog id="dlgMk" aria-labelledby="mkdTitle"><div class="mhead"><div><h2 id="mkdTitle"></h2><div class="loc" id="mkdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+<dialog id="dlgMk" aria-labelledby="mkdTitle"><div class="mhead"><div><h2 id="mkdTitle"></h2><div class="loc" id="mkdSub"></div></div><div class="mh-acts">
+    <button class="x" type="button" id="mkShare" aria-label="Share this item" title="Share" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
+    <button class="x" data-close aria-label="Close">×</button></div></div>
   <div class="mbody" id="mkdBody"></div></dialog>
 
 <script>
@@ -3045,7 +3102,8 @@ function demoSeekerPool(){
         occupation: { type, what: pick(DEMO_JOBS[type]) }, city, areas: mine,
         budget: Math.round((lo * .85 + r() * (hi * 1.15 - lo * .85)) / 500) * 500, vibe,
         interests: { music: INTERESTS.music.filter(() => r() < .2).slice(0, 3), hobbies: INTERESTS.hobbies.filter(() => r() < .18).slice(0, 4) },
-        active_at: new Date(Date.now() - Math.floor(r() * 72) * 36e5 - 6e5).toISOString() });
+        active_at: new Date(Date.now() - Math.floor(r() * 72) * 36e5 - 6e5).toISOString(),
+        move_in: ["asap", "2w", "1m", "3m", "asap", null][Math.floor(r() * 6)] });
     }
   }
   return demoSeekerCache = out;
@@ -3193,6 +3251,7 @@ const demoApi = {
   // Same rules as fm_decide: accepting uses one of the seeker's contacts.
   decideRaw(r, approve){
     if(r.status !== "pending") return { status:r.status, error:"already-decided" };
+    if(inviteLapsed(r)) return { status:"expired", error:"expired" };
     if(approve){
       const isMe = r.seeker_phone === this.me_();
       if(CHARGES_ON && isMe && r.by !== "owner" && !passUntil("room")){
@@ -3217,11 +3276,31 @@ const demoApi = {
   async findSeekers(lid){
     const l = this.all().find(x => x.id === lid); if(!l) return [];
     const reqs = new Map(state.requests.filter(r => r.listing_id === lid && r.status !== "withdrawn").map(r => [r.seeker_phone, r]));
+    const bumped = state.demoBumped || {};
     return demoSeekerPool().filter(x => x.city === l.city && (!x.areas.length || x.areas.includes(l.locality))).map(x => {
       const m = vibeMatch(x.vibe, l.household), r = reqs.get(x.phone);
+      // How they treat owners' invites, across every home on this device (like fm_find_seekers).
+      const got = state.requests.filter(y => y.seeker_phone === x.phone && y.by === "owner" && (y.status === "approved" || y.status === "declined" || inviteLapsed(y)));
       return { seeker_id:x.id, name:x.name, occupation:x.occupation, areas:x.areas, budget:x.budget, match_pct: m ? m.pct : null, on_time: hue(x.id) % 3 === 0,
-        interests:x.interests, vibe:x.vibe, active_at:x.active_at, invite_status: r ? r.status : null, invite_by: r ? r.by || "seeker" : null };
+        interests:x.interests, vibe:x.vibe, active_at: bumped[x.id] || x.active_at, invite_status: r ? (inviteLapsed(r) ? "expired" : r.status) : null, invite_by: r ? r.by || "seeker" : null,
+        move_in: x.move_in, invites_got: got.length, invites_answered: got.filter(y => y.status !== "pending").length };
     }).sort((a, b) => (b.match_pct ?? -1) - (a.match_pct ?? -1) || b.active_at.localeCompare(a.active_at));
+  },
+  // Seekers who just started looking where one of my listings is (like fm_seeker_alerts): in the demo a sample
+  // seeker "starts looking" about 15 seconds after a listing goes up (tick), and whenever areas change.
+  async seekerAlerts(since){
+    this.tick();
+    const bumped = state.demoBumped || {}, me = this.me_(), out = [];
+    for(const l of state.myListings.filter(x => x.owner_phone === me && x.status === "active")){
+      for(const x of demoSeekerPool()){
+        const at = bumped[x.id]; if(!at || at <= since) continue;
+        if(x.city !== l.city || (x.areas.length && !x.areas.includes(l.locality))) continue;
+        const m = vibeMatch(x.vibe, l.household); if(!m || m.pct < 70) continue;
+        if(state.requests.some(r => r.listing_id === l.id && r.seeker_phone === x.phone && r.status !== "withdrawn")) continue;
+        out.push({ seeker_id:x.id, name:x.name, listing_id:l.id, listing_title:l.title, locality:l.locality, match_pct:m.pct, budget:x.budget, search_at:at });
+      }
+    }
+    return out.sort((a, b) => b.search_at.localeCompare(a.search_at)).slice(0, 10);
   },
   // Same checks as fm_invite.
   async invite(lid, sid, message){
@@ -3229,14 +3308,16 @@ const demoApi = {
     if(!l) return { error:"listing-not-found" };
     if(!x) return { error:"seeker-not-found" };
     const r = state.requests.find(y => y.listing_id === lid && y.seeker_phone === x.phone && y.status !== "withdrawn");
-    if(r) return { status:r.status };
-    if(CHARGES_ON && !passUntil("escape") && state.requests.filter(y => y.listing_id === lid && y.by === "owner").length >= FREE_INVITES)
+    if(r && !inviteLapsed(r)) return { status:r.status };
+    // A lapsed invite doesn't use up the free one.
+    if(CHARGES_ON && !passUntil("escape") && state.requests.filter(y => y.listing_id === lid && y.by === "owner" && !inviteLapsed(y)).length >= FREE_INVITES)
       return { error:"escape-pass-required" };
     const m = vibeMatch(x.vibe, l.household);
-    state.requests.push({ id:"i" + Date.now() + sid, by:"owner", listing_id:lid, listing_title:l.title, seeker_phone:x.phone,
+    const row = { id: r ? r.id : "i" + Date.now() + sid, by:"owner", listing_id:lid, listing_title:l.title, seeker_phone:x.phone,
       seeker:{ name:x.name, occupation:x.occupation, vibe:x.vibe, phone:x.phone, interests:x.interests, on_time: hue(x.id) % 3 === 0 }, status:"pending",
       message:(message || "").slice(0, 300), match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null,
-      seen_owner:true, seen_seeker:false });
+      seen_owner:true, seen_seeker:false, demoDone:false };
+    if(r) Object.assign(r, row); else state.requests.push(row);
     save(); return { status:"pending" };
   },
   async setSearch(){ if(state.demoTribeAt === "done") await this.tribeRefresh(); },
@@ -3337,6 +3418,16 @@ const demoApi = {
         seeker:{ name:s.name, occupation:s.occupation, vibe:v, phone:s.phone, interests:s.interests || {}, on_time: hue(s.name) % 3 === 0 }, status:"pending", message:s.message,
         match_pct: m ? m.pct : null, created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true });
     }
+    // A sample seeker starts looking in the listing's area a little after it goes up (the owner hears about it).
+    for(const [lid, at] of Object.entries(state.demoSeekerAt || {})){
+      if(now < at) continue;
+      delete state.demoSeekerAt[lid];
+      const l = state.myListings.find(x => x.id === lid); if(!l) continue;
+      const x = demoSeekerPool().filter(y => y.city === l.city && (!y.areas.length || y.areas.includes(l.locality))
+          && !state.requests.some(r => r.listing_id === lid && r.seeker_phone === y.phone))
+        .map(y => [y, (vibeMatch(y.vibe, l.household) || { pct: 0 }).pct]).filter(([, p]) => p >= 70).sort((a, b) => b[1] - a[1])[0];
+      if(x) (state.demoBumped = state.demoBumped || {})[x[0].id] = new Date().toISOString();
+    }
     // Build your tribe: matches appear ~5 s after onboarding; a third of sample seekers say yes
     // first, and the rest answer your yes after a few seconds (yes to a 74%+ match).
     if(state.user && state.user.role === "seeker" && state.onboarded.seeker && state.demoTribeAt !== "done"){
@@ -3373,11 +3464,13 @@ const demoApi = {
   async inbox(){
     this.tick();
     const me = this.me_(), mine = new Set(state.myListings.filter(l => l.owner_phone === me).map(l => l.id));
-    return state.requests.filter(r => r.status !== "withdrawn" && (mine.has(r.listing_id) || r.seeker_phone === me)).map(r => {
+    return state.requests.filter(r => r.status !== "withdrawn" && (mine.has(r.listing_id) || r.seeker_phone === me)
+        && !(!mine.has(r.listing_id) && inviteLapsed(r))).map(r => {
       const incoming = mine.has(r.listing_id), by = r.by || "seeker";
       const l = by === "owner" && !incoming ? this.all().find(x => x.id === r.listing_id) : null;
       return { id:r.id, listing_id:r.listing_id, listing_title:r.listing_title, direction: incoming ? "incoming" : "outgoing",
-        status:r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at, by,
+        status: inviteLapsed(r) ? "expired" : r.status, match_pct:r.match_pct, message:r.message, created_at:r.created_at, decided_at:r.decided_at, by,
+        expires_at: by === "owner" && r.status === "pending" ? new Date(new Date(r.created_at).getTime() + INVITE_TTL).toISOString() : null,
         compromise:r.compromise || null, orig_match_pct:r.orig_match_pct ?? null,
         name: incoming ? r.seeker.name : l && l.private ? l.private.contact_name.split(" ")[0] : null,
         occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
@@ -3409,6 +3502,7 @@ const demoApi = {
       created_at: new Date().toISOString(), unlock_count:0, private: p.private };
     state.myListings.push(l);
     state.demoIncoming[id] = Date.now() + DEMO_INCOMING_MS;
+    (state.demoSeekerAt = state.demoSeekerAt || {})[id] = Date.now() + DEMO_INCOMING_MS + 7000;   // a sample seeker starts looking here
     let photos = "kept";
     if(!save() && (l.photos || []).length){
       // Device storage is full: try much smaller photos, then none, before giving up.
@@ -3576,7 +3670,7 @@ function makeLiveApi(sb){
       state.tribeShowTo = r.tribe_show_to || "all"; state.escapeShowTo = r.escape_show_to || "all";
       state.boostCredits = r.boost_credits || 0; state.saleCredits = r.sale_credits || 0;
       state.onTime = { months: r.on_time_months || 0, show: r.show_on_time === true };
-      state.mkSale = r.sale_code ? { code: r.sale_code, title: r.sale_title, ends_at: r.sale_until } : null;
+      state.mkSale = r.sale_code ? { code: r.sale_code, title: r.sale_title, ends_at: r.sale_until, bundle_price: (state.mkSale && state.mkSale.code === r.sale_code ? state.mkSale.bundle_price : null) } : null;
       save(); return state;
     },
     async setRole(role){ await rpc("fm_set_profile", { p_name:null, p_role:role }); await this.me(); },
@@ -3609,6 +3703,7 @@ function makeLiveApi(sb){
     // Supabase stores phone numbers without the "+" (919876543210); Call/WhatsApp need +91...
     async inbox(){ return (await rpc("fm_inbox")).map(r => Object.assign(r, { phone: plusPhone(r.phone) })); },
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
+    async seekerAlerts(since){ return rpc("fm_seeker_alerts", { p_since: since }); },
     async compromise(rid, changes, message){ return one(await rpc("fm_compromise", { p_request: rid, p_changes: changes, p_message: message })); },
     async reportBroker(lid, reason){ return rpc("fm_report_broker", { p_listing: lid, p_reason: reason }); },
     async invite(lid, sid, message){ return one(await rpc("fm_invite", { p_listing:lid, p_seeker:sid, p_message:message })); },
@@ -3802,6 +3897,17 @@ const MK_SAMPLE = [
   ["Mesh office chair","furniture","new",3800,"Lumbar support. Bought for WFH, used two months."],
   ["Electric kettle","kitchen","good",0,"Free. Works fine, we have two."],
 ];
+// Sample "wanted" posts per city (demo), so the Wanted tab isn't empty.
+const DEMO_WANTS = [["Single bed with mattress", "beds", 3500], ["Fridge, any size", "appliances", 7000], ["Study table", "furniture", 2000], ["Geared cycle", "bikes", 4000], ["Microwave", "kitchen", 2500]];
+let demoWantCache = null;
+function demoWants(){
+  if(demoWantCache) return demoWantCache;
+  const out = []; let n = 0;
+  for(const [city, areas] of Object.entries(DEMO_AREAS)) DEMO_WANTS.forEach(([title, category, max], k) => { n++;
+    out.push({ id:"w-" + n, name: DEMO_SEEKER_NAMES[(n * 5 + k) % DEMO_SEEKER_NAMES.length], city, locality: k % 2 ? areas[(n + k) % areas.length][0] : "", category, max_price: max,
+      title, public: true, status: "open", created_at: new Date(Date.now() - ((n * 13 + k * 7) % 120 + 2) * 36e5).toISOString() }); });
+  return demoWantCache = out;
+}
 let mkDemoCache = null;
 function demoMarketItems(){
   if(mkDemoCache) return mkDemoCache;
@@ -4064,13 +4170,90 @@ Object.assign(demoApi, {
 
   mk(){ return state.market || (state.market = { items:[], offers:[], status:{}, incoming:{} }); },
   mkAll(){ return demoMarketItems().concat(this.mk().items); },
+  mkAll(){ return demoMarketItems().concat(this.mk().items, this.mk().extra || []); },
+  // The seller's record: sample sellers get a fixed one; mine comes from this device.
+  mkSeller_(i){
+    const me = this.me_();
+    if(i.seller_phone === me) return { seller_since: state.mkSince || (state.mkSince = new Date().toISOString()), seller_sold: this.mk().items.filter(x => x.seller_phone === me && (this.mk().status[x.id] || x.status) === "sold").length, seller_on_time: !!(state.onTime && state.onTime.show && state.onTime.months >= 3) };
+    const h = hue("ms" + (i.seller_phone || i.id));
+    return { seller_since: new Date(Date.now() - (30 + h % 400) * 864e5).toISOString(), seller_sold: h % 5, seller_on_time: h % 4 === 0 };
+  },
   mkView(i){
     const me = this.me_(), m = this.mk(), o = m.offers.find(x => x.item_id === i.id && x.buyer_phone === me && x.status !== "withdrawn");
     const live = m.offers.filter(x => x.item_id === i.id && ["pending", "accepted"].includes(x.status)).length;
     const b = (m.boosts || {})[i.id], sale = i.seller_phone === me && state.mkSale && new Date(state.mkSale.ends_at) > new Date() ? state.mkSale : null;
-    return Object.assign({}, i, { status: m.status[i.id] || i.status, is_mine: i.seller_phone === me,
+    return Object.assign({}, i, this.mkSeller_(i), { status: m.status[i.id] || i.status, is_mine: i.seller_phone === me,
       my_offer_status: o ? o.status : null, my_offer: o ? o.offer : null, offer_count: live + (i.interested || 0),
-      boosted_until: b && new Date(b) > new Date() ? b : null, sale_code: sale ? sale.code : null, sale_until: sale ? sale.ends_at : null });
+      boosted_until: b && new Date(b) > new Date() ? b : null, sale_code: sale ? sale.code : null, sale_until: sale ? sale.ends_at : null,
+      bundle_price: sale ? sale.bundle_price || null : null });
+  },
+  // What things like this went for: the sample sales of this category, like fm_market_price_guide (3 or more).
+  async marketPriceGuide(city, category){
+    const prices = demoMarketItems().filter(x => x.category === category && x.price > 0).map(x => Math.round(x.price * .85 / 50) * 50).sort((a, b) => a - b);
+    if(prices.length < 3) return null;
+    const q = p => prices[Math.min(prices.length - 1, Math.floor(p * (prices.length - 1)))];
+    return { n: prices.length, lo: q(.25), hi: q(.75), scope: "all" };
+  },
+  // Pick-up and collected: either side of an accepted offer, like fm_market_pickup / fm_market_collected.
+  mkSides_(o){ const i = this.mkAll().find(x => x.id === o.item_id); return { i, me: this.me_(), seller: i && i.seller_phone === this.me_(), buyer: o.buyer_phone === this.me_() }; },
+  async marketPickup(oid, at){
+    const o = this.mk().offers.find(x => x.id === oid), sd = o && this.mkSides_(o);
+    if(!o || !(sd.seller || sd.buyer)) throw new Error("not-found");
+    if(o.status !== "accepted" || o.collected_at) throw new Error("not-accepted");
+    if(at && (new Date(at) < Date.now() - 36e5 || new Date(at) > Date.now() + 30 * 864e5)) throw new Error("bad-time");
+    o.pickup_at = at ? new Date(at).toISOString() : null; o.pickup_by = sd.seller ? "seller" : "buyer";
+    if(sd.seller) o.seen_buyer = false; else o.seen_seller = false;
+    save();
+  },
+  async marketCollected(oid){
+    const o = this.mk().offers.find(x => x.id === oid), sd = o && this.mkSides_(o), m = this.mk();
+    if(!o || !(sd.seller || sd.buyer)) throw new Error("not-found");
+    if(o.status !== "accepted") throw new Error("not-accepted");
+    o.collected_at = o.collected_at || new Date().toISOString(); o.seen_buyer = o.seen_seller = true;
+    const sold = i => { if(["active", "reserved"].includes(m.status[i.id] || i.status)) m.status[i.id] = "sold"; };
+    if(sd.i) sold(sd.i);
+    if(o.bundle && sd.i) this.mkAll().filter(x => x.seller_phone === sd.i.seller_phone).forEach(sold);
+    save();
+  },
+  // Wanted posts and saved searches (public = false), like fm_market_want_*. A few sample wants keep the list lively,
+  // and a sample seller posts something that fits a new want about 10 seconds later.
+  wants(){ const m = this.mk(); return m.wants || (m.wants = []); },
+  async marketWantSave(p){
+    const me = this.me_(), title = String(p.title || "").trim().slice(0, 80);
+    if(title.length < 3) throw new Error("too-long");
+    let w = p.id ? this.wants().find(x => x.id === p.id && x.user_phone === me) : null;
+    if(p.id && !w) throw new Error("not-found");
+    if(!w){
+      if(this.wants().filter(x => x.user_phone === me && x.status === "open").length >= 10) throw new Error("too-many-wants");
+      this.wants().push(w = { id: this.newId("w"), user_phone: me, name: firstName(), status: "open", notified_at: new Date().toISOString(), created_at: new Date().toISOString() });
+      (state.demoWantAt = state.demoWantAt || {})[w.id] = Date.now() + 10000;
+    }
+    Object.assign(w, { city: p.city, locality: String(p.locality || "").trim(), category: p.category, max_price: Number(p.max_price) || 0, title, public: p.public !== false, status: "open" });
+    save(); return w.id;
+  },
+  async marketWantClose(id){ const w = this.wants().find(x => x.id === id && x.user_phone === this.me_()); if(w){ w.status = "closed"; save(); } },
+  async marketWants(city){
+    const me = this.me_();
+    const samples = demoWants().filter(w => !city || w.city === city);
+    return this.wants().filter(w => w.status === "open" && (w.user_phone === me || (w.public && (!city || w.city === city))))
+      .map(w => Object.assign({}, w, { is_mine: w.user_phone === me })).concat(samples.map(w => Object.assign({}, w, { is_mine: false })))
+      .sort((a, b) => (b.is_mine - a.is_mine) || b.created_at.localeCompare(a.created_at));
+  },
+  async marketWantMatches(){
+    this.marketTick();
+    const me = this.me_(), out = [], now = new Date().toISOString();
+    for(const w of this.wants().filter(x => x.user_phone === me && x.status === "open")){
+      for(const i of this.mkAll()){
+        const v = this.mkView(i);
+        if(v.status !== "active" || v.is_mine || i.category !== w.category || i.city !== w.city || i.created_at <= w.notified_at) continue;
+        if(w.locality && i.locality.toLowerCase() !== w.locality.toLowerCase()) continue;
+        if(w.max_price && i.price > w.max_price) continue;
+        out.push({ want_id: w.id, want_title: w.title, id: i.id, title: i.title, category: i.category, price: i.price, city: i.city, locality: i.locality, photos: i.photos || [], created_at: i.created_at });
+      }
+      w.notified_at = now;
+    }
+    save();
+    return out.sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 10);
   },
   async marketSearch(f){
     this.marketTick();
@@ -4088,23 +4271,28 @@ Object.assign(demoApi, {
     m.boosts[id] = new Date(Math.max(Date.now(), new Date(m.boosts[id] || 0).getTime()) + 3 * 864e5).toISOString();
     i.bumped_at = new Date().toISOString(); save(); return "boosted";
   },
-  async marketSaleStart(until, title){
+  async marketSaleStart(until, title, bundle){
     title = String(title || "").trim().slice(0, 60);
     if(title.length < 3) return { error:"bad-title" };
+    bundle = bundle ? Number(bundle) : null;
+    if(bundle != null && !(bundle >= 1 && bundle <= 10000000)) return { error:"bad-bundle" };
     const today = new Date(); today.setHours(0, 0, 0, 0); const d = new Date(until + "T00:00:00");
     if(isNaN(d) || d < today || d > new Date(today.getTime() + 30 * 864e5)) return { error:"bad-date" };
     const me = this.me_();
     if(!this.mk().items.some(i => i.seller_phone === me && this.mkView(i).status === "active")) return { error:"no-items" };
     const ends = new Date(d.getTime() + 864e5).toISOString(), s = state.mkSale;
-    if(s && new Date(s.ends_at) > new Date()){ Object.assign(s, { title, ends_at: ends }); save(); return { code: s.code, ends_at: ends }; }
+    if(s && new Date(s.ends_at) > new Date()){ Object.assign(s, { title, ends_at: ends, bundle_price: bundle }); save(); return { code: s.code, ends_at: ends }; }
     if(CHARGES_ON){ if(!(state.saleCredits > 0)) return { error:"sale-required" }; state.saleCredits--; }
-    state.mkSale = { code: (s && s.code) || ("D" + Math.random().toString(36).slice(2, 7).toUpperCase()), title, ends_at: ends };
+    state.mkSale = { code: (s && s.code) || ("D" + Math.random().toString(36).slice(2, 7).toUpperCase()), title, ends_at: ends, bundle_price: bundle };
     save(); return { code: state.mkSale.code, ends_at: ends };
   },
   async marketSale(code){
     const s = state.mkSale; if(!s || s.code !== String(code || "").toUpperCase()) return null;
     const me = this.me_(), items = this.mk().items.filter(i => i.seller_phone === me).map(i => this.mkView(i)).filter(i => ["active", "reserved"].includes(i.status));
-    return { code: s.code, title: s.title, seller: firstName(), ends_at: s.ends_at, active: new Date(s.ends_at) > new Date(), is_mine: true, items };
+    const ids = new Set(this.mk().items.filter(i => i.seller_phone === me).map(i => i.id));
+    const b = this.mk().offers.find(o => o.bundle && ids.has(o.item_id) && o.status === "accepted" && !o.collected_at);
+    return { code: s.code, title: s.title, seller: firstName(), ends_at: s.ends_at, active: new Date(s.ends_at) > new Date(), is_mine: true, items,
+      bundle_price: s.bundle_price || null, bundle_status: b ? "accepted" : null, my_bundle: null };
   },
   async marketGet(id){ const i = this.mkAll().find(x => x.id === id); return i && this.mkView(i); },
   async marketPost(p){
@@ -4117,14 +4305,16 @@ Object.assign(demoApi, {
     if(!save()){ m.items[m.items.length - 1].photos = []; photos = "dropped"; if(!save()){ m.items.pop(); delete m.incoming[id]; throw new Error("storage-full"); } }
     return { id, photos };
   },
-  async marketOffer(id, offer, message){
+  async marketOffer(id, offer, message, bundle){
     const i = this.mkAll().find(x => x.id === id), m = this.mk(), me = this.me_();
     if(!i || this.mkView(i).status !== "active") return { error:"item-not-available" };
     if(i.seller_phone === me) return { error:"own-item" };
+    if(bundle && !(offer >= 1 && this.mkView(i).bundle_price)) return { error:"no-bundle" };
     const had = m.offers.find(o => o.item_id === id && o.buyer_phone === me);
     if(had && ["pending", "accepted"].includes(had.status)) return { status: had.status };
-    const o = { id: had ? had.id : this.newId("o"), item_id:id, buyer_phone:me, buyer_name:firstName(), offer, message:(message || "").slice(0, 300),
-      status:"pending", seen_seller:false, seen_buyer:true, created_at:new Date().toISOString(), decided_at:null };
+    const o = { id: had ? had.id : this.newId("o"), item_id:id, buyer_phone:me, buyer_name:firstName(), offer, message:(message || "").slice(0, 300), bundle: !!bundle,
+      bundle_items: bundle ? this.mkAll().filter(x => x.seller_phone === i.seller_phone && this.mkView(x).status === "active").length : null,
+      status:"pending", seen_seller:false, seen_buyer:true, created_at:new Date().toISOString(), decided_at:null, pickup_at:null, collected_at:null };
     if(had) Object.assign(had, o); else m.offers.push(o);
     save(); return { status:"pending" };
   },
@@ -4133,6 +4323,7 @@ Object.assign(demoApi, {
     o.status = accept ? "accepted" : "declined"; o.decided_at = new Date().toISOString(); o.seen_buyer = false; o.seen_seller = true;
     const m = this.mk(), i = this.mkAll().find(x => x.id === o.item_id);
     if(accept && i && (m.status[i.id] || i.status) === "active") m.status[i.id] = "reserved";
+    if(accept && o.bundle && i) this.mkAll().filter(x => x.seller_phone === i.seller_phone && (m.status[x.id] || x.status) === "active").forEach(x => m.status[x.id] = "reserved");
   },
   async marketDecide(oid, accept){
     const o = this.mk().offers.find(x => x.id === oid), i = o && this.mkAll().find(x => x.id === o.item_id);
@@ -4153,6 +4344,17 @@ Object.assign(demoApi, {
       const i = this.mkAll().find(x => x.id === o.item_id);
       if(i) this.mkDecide(o, !i.price || o.offer >= i.price * .8);
     }
+    for(const [wid, at] of Object.entries(state.demoWantAt || {})){
+      if(now < at) continue;
+      delete state.demoWantAt[wid];
+      const w = this.wants().find(x => x.id === wid); if(!w || w.status !== "open") continue;
+      const pick = MK_SAMPLE.filter(x => x[1] === w.category && (!w.max_price || Math.round(x[3] * .7 / 50) * 50 <= w.max_price))[0] || MK_SAMPLE.find(x => x[1] === w.category);
+      if(!pick) continue;
+      const t = new Date().toISOString(), price = pick[3] ? Math.min(w.max_price || 1e9, Math.round(pick[3] * .7 / 50) * 50) : 0;
+      (m.extra = m.extra || []).push({ id:"mk-w" + Date.now().toString(36), title:pick[0], category:pick[1], condition:pick[2], price, negotiable:true, city:w.city,
+        locality: w.locality || (DEMO_AREAS[w.city] || [["your area"]])[0][0], description:pick[4], photos:[], moving_by:null, status:"active", created_at:t, bumped_at:t,
+        seller_name: DEMO_SEEKER_NAMES[hue(wid) % DEMO_SEEKER_NAMES.length], seller_phone: "96" + String(10000000 + hue(wid) * 7919 % 89999999), interested:0 });
+    }
     for(const [id, at] of Object.entries(m.incoming)){
       if(now < at) continue;
       delete m.incoming[id];
@@ -4170,10 +4372,16 @@ Object.assign(demoApi, {
     return this.mk().offers.filter(o => o.status !== "withdrawn").map(o => {
       const i = items.get(o.item_id); if(!i) return null;
       const incoming = i.seller_phone === me; if(!incoming && o.buyer_phone !== me) return null;
+      const sl = this.mkSeller_(i), deals = incoming
+        ? this.mk().offers.filter(x => x.buyer_phone === o.buyer_phone && x.status === "accepted" && (x.collected_at || this.mkView(items.get(x.item_id) || {}).status === "sold")).length
+        : sl.seller_sold;
       return { id:o.id, item_id:i.id, item_title:i.title, item_photo:(i.photos || [])[0] || null, item_price:i.price, item_status:this.mkView(i).status,
         category:i.category, direction: incoming ? "incoming" : "outgoing", status:o.status, offer:o.offer, message:o.message,
         name: incoming ? o.buyer_name : i.seller_name, phone: o.status === "accepted" ? (incoming ? o.buyer_phone : i.seller_phone) : null,
-        unseen: incoming ? !o.seen_seller : !o.seen_buyer, created_at:o.created_at, decided_at:o.decided_at };
+        unseen: incoming ? !o.seen_seller : !o.seen_buyer, created_at:o.created_at, decided_at:o.decided_at,
+        pickup_at: o.pickup_at || null, pickup_by: o.pickup_by || null, collected_at: o.collected_at || null, bundle: !!o.bundle,
+        bundle_items: o.bundle ? o.bundle_items || null : null,
+        other_deals: deals, other_since: incoming ? new Date(Date.now() - (hue("bs" + o.buyer_phone) % 300 + 20) * 864e5).toISOString() : sl.seller_since };
     }).filter(Boolean).sort((a, b) => b.created_at.localeCompare(a.created_at));
   },
   async marketSeen(){
@@ -4246,13 +4454,20 @@ function liveExtras(rpc){
         p_city:p.city, p_locality:p.locality, p_description:p.description, p_photos:p.photos || [], p_moving_by:p.moving_by || null });
       return { id, photos:"kept" };
     },
-    async marketOffer(id, offer, message){ return (await rpc("fm_market_offer", { p_item:id, p_offer:offer, p_message:message }))[0] || {}; },
+    async marketOffer(id, offer, message, bundle){ return (await rpc("fm_market_offer", { p_item:id, p_offer:offer, p_message:message, p_bundle: Boolean(bundle) }))[0] || {}; },
+    async marketPickup(oid, at){ await rpc("fm_market_pickup", { p_offer:oid, p_at: at ? new Date(at).toISOString() : null }); },
+    async marketCollected(oid){ await rpc("fm_market_collected", { p_offer:oid }); },
+    async marketPriceGuide(city, category){ return (await rpc("fm_market_price_guide", { p_city:city || null, p_category:category }))[0] || null; },
+    async marketWantSave(p){ return rpc("fm_market_want_save", { p_id:p.id || null, p_city:p.city, p_locality:p.locality || "", p_category:p.category, p_max_price:Number(p.max_price) || 0, p_title:p.title, p_public:p.public !== false }); },
+    async marketWantClose(id){ await rpc("fm_market_want_close", { p_id:id }); },
+    async marketWants(city){ return rpc("fm_market_wants", { p_city:city || null }); },
+    async marketWantMatches(){ return rpc("fm_market_want_matches"); },
     async marketWithdraw(oid){ await rpc("fm_market_withdraw", { p_offer:oid }); },
     async marketDecide(oid, accept){ return rpc("fm_market_decide", { p_offer:oid, p_accept:accept }); },
     async marketSetStatus(id, status){ await rpc("fm_market_set_status", { p_item:id, p_status:status }); },
     async marketSetPrice(id, price){ await rpc("fm_market_set_price", { p_item:id, p_price:price }); },
     async marketBoost(id){ return rpc("fm_market_boost", { p_item:id }); },
-    async marketSaleStart(until, title){ return (await rpc("fm_market_sale_start", { p_until:until, p_title:title }))[0] || {}; },
+    async marketSaleStart(until, title, bundle){ return (await rpc("fm_market_sale_start", { p_until:until, p_title:title, p_bundle: bundle ? Number(bundle) : null }))[0] || {}; },
     async marketSale(code){ return rpc("fm_market_sale", { p_code:code }); },
     async listingAlerts(since){ return rpc("fm_listing_alerts", { p_since: since }); },
     async ticketCreate(p){ return rpc("fm_ticket_create", { p }); },
@@ -4447,6 +4662,8 @@ function route(){
   // A home someone shared (?l=...): open it once the app is up.
   const shared = readLS(OPEN_KEY);
   if(shared){ writeLS(OPEN_KEY, null); setTimeout(() => openListing(shared), 400); }
+  const sharedItem = readLS(OPEN_ITEM_KEY);
+  if(sharedItem){ writeLS(OPEN_ITEM_KEY, null); setTimeout(() => openItem(sharedItem), 400); }
 }
 let unseen = 0, tribeUnseen = 0;
 // Gender: asked at sign-up; accounts from before get one quick question (once per visit, until answered).
@@ -4541,8 +4758,17 @@ async function renderEscape(){
   escListing = listings.find(l => l.id === state.escListing);
   $("escPick").hidden = listings.length < 2;
   $("escPick").innerHTML = listings.map(l => `<option value="${esc(l.id)}"${l.id === escListing.id ? " selected" : ""}>${esc(l.title)}</option>`).join("");
-  escSeekers = await api.findSeekers(escListing.id);
+  const [seekers, inbox] = await Promise.all([api.findSeekers(escListing.id), api.inbox().catch(() => [])]);
+  escSeekers = seekers; escSel = new Set(); escSelecting = false;
   const fit = escSeekers.filter(x => x.budget && x.budget >= escListing.rent).length, hi = escSeekers.filter(x => x.match_pct >= 80).length;
+  // Your invites so far (every listing): sent, said yes, passed, lapsed, waiting.
+  const inv = inbox.filter(r => r.direction === "incoming" && r.by === "owner"), n = st => inv.filter(r => r.status === st).length;
+  $("escInv").innerHTML = inv.length ? `<span>Your invites: <b>${inv.length}</b> sent</span><span><b>${n("approved")}</b> said yes</span><span><b>${n("declined")}</b> passed</span>
+      ${n("expired") ? `<span><b>${n("expired")}</b> lapsed</span>` : ""}${n("pending") ? `<span><b>${n("pending")}</b> waiting</span>` : ""}
+      <span class="tip">💡 A note that mentions the room and when it's free gets answered more often than a bare invite.</span>` : "";
+  $("escSelect").hidden = escSeekers.filter(canInvite).length < 2;
+  $("escSelect").textContent = "Invite several";
+  $("escBar").hidden = true;
   $("escRule").textContent = !CHARGES_ON ? "Numbers stay private until they say yes to your invite."
     : passUntil("escape") ? `Escape Pass: invite as many people as you like till ${untilLabel(passUntil("escape"))}. Numbers stay private until they say yes.`
     : `Your first invite for each listing is free; after that, an Escape Pass (${money(50000)} + GST, 7 days) lets you invite as many as you like. Numbers stay private until they say yes.`;
@@ -4552,11 +4778,35 @@ async function renderEscape(){
   $("escFilters").innerHTML = ESC_FILTERS.map(([k, label]) => `<button type="button" data-ef="${k}" aria-pressed="${f === k}">${label}</button>`).join("");
   drawSeekers();
 }
+// Someone who can be invited now: never invited, or an earlier invite lapsed or was withdrawn.
+const canInvite = x => !x.invite_status || x.invite_status === "withdrawn" || x.invite_status === "expired";
+let escSel = new Set(), escSelecting = false;   // "Invite several": the people ticked
 function drawSeekers(){
   const l = escListing, f = state.escFilter || "all";
-  const rows = escSeekers.filter(x => f === "fit" ? x.budget && x.budget >= l.rent : f === "vibe" ? x.match_pct >= 80 : f === "new" ? !x.invite_status : true);
+  const rows = escSeekers.filter(x => f === "fit" ? x.budget && x.budget >= l.rent : f === "vibe" ? x.match_pct >= 80 : f === "new" ? canInvite(x) : true);
   $("escList").innerHTML = rows.length ? rows.map((x, i) => seekerHtml(x, l, i)).join("")
     : `<div class="empty"><h3>No one here yet</h3><p>${escSeekers.length ? "Try another filter." : `Nobody is searching in ${esc(l.locality)} right now. New people sign up every day, so check back soon.`}</p></div>`;
+  drawEscBar();
+}
+function drawEscBar(){
+  const n = escSel.size;
+  $("escBar").hidden = !escSelecting;
+  $("escBarText").textContent = n ? `${n} selected` : "Tick the people to invite";
+  $("escBarGo").disabled = !n; $("escBarGo").textContent = n > 1 ? `Invite ${n} people` : "Invite";
+  $("escSelect").textContent = escSelecting ? "Done" : "Invite several";
+}
+// One line on why this person fits: the answers you share, the budget, interests in common.
+const WHY_SAME = { sleep:"same bedtime", clean:"same tidiness", food:"same food habits", cook:"both cook alike", smoke:"same on smoking", drinks:"same on drinks",
+  guests:"same on guests", noise:"same noise level", social:"same social style", sharing:"same on sharing", work:"same work rhythm", pets:"same on pets" };
+function whyLine(x, l){
+  const hh = l.household || {}, v = x.vibe || {}, bits = [];
+  for(const q of VIBE_QS){ if(Number.isInteger(v[q.k]) && v[q.k] === hh[q.k] && bits.length < 2) bits.push(WHY_SAME[q.k]); }
+  if(x.budget && x.budget >= l.rent) bits.push("budget fits");
+  const sh = sharedInterests(hh.interests, x.interests);
+  if(sh.length && bits.length < 3) bits.push("both like " + sh[0].toLowerCase());
+  if(!bits.length) return "";
+  const t = bits.join(", ");
+  return `<p class="why"><b>Why them:</b> ${esc(t[0].toUpperCase() + t.slice(1))}.</p>`;
 }
 function seekerHtml(x, l, i){
   const hh = l.household || {}, shared = sharedInterests(hh.interests, x.interests), first = (x.name || "Someone").split(" ")[0];
@@ -4565,11 +4815,15 @@ function seekerHtml(x, l, i){
   const areas = (x.areas || []).length ? x.areas.map(a => a === l.locality ? `<strong>${esc(a)}</strong>` : esc(a)).join(", ") : `Anywhere in ${esc(l.city)}`;
   const st = x.invite_status, by = x.invite_by;
   const action = !st || st === "withdrawn" ? `<button class="btn btn-accent btn-sm" data-invite="${esc(x.seeker_id)}">Invite ${esc(first)}</button>`
+    : st === "expired" ? `<span class="req-pill expired">Invite lapsed</span><button class="btn btn-accent btn-sm" data-invite="${esc(x.seeker_id)}">Invite again</button>`
     : st === "pending" && by === "owner" ? `<span class="req-pill pending">Invite sent · waiting</span>`
     : st === "pending" ? `<a class="req-pill pending" href="#requests">${esc(first)} asked to meet you&nbsp;→</a>`
     : st === "approved" ? `<a class="req-pill approved" href="#requests">${by === "owner" ? "Accepted your invite" : "You accepted"} · call&nbsp;→</a>`
     : `<span class="req-pill">${by === "owner" ? "Passed this time" : "Declined"}</span>`;
-  return `<article class="seek-card" style="--i:${i}">
+  const pick = escSelecting && canInvite(x) ? `<input class="sel" type="checkbox" data-sel="${esc(x.seeker_id)}" aria-label="Select ${esc(first)}"${escSel.has(x.seeker_id) ? " checked" : ""}>` : "";
+  const facts = [x.move_in && MOVE_IN_TXT[x.move_in] ? `Moving in <b>${esc(MOVE_IN_TXT[x.move_in])}</b>` : "",
+    x.invites_got ? `Replied to <b>${x.invites_answered} of ${x.invites_got}</b> invite${x.invites_got === 1 ? "" : "s"}` : ""].filter(Boolean);
+  return `<article class="seek-card${escSel.has(x.seeker_id) ? " picked" : ""}" style="--i:${i}">${pick}
     <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
       <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${onTimeBadge(x)}${isSample(x) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
         <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
@@ -4578,10 +4832,20 @@ function seekerHtml(x, l, i){
       <div><span>Budget</span><b>${x.budget ? "Up to " + inr(x.budget) : "Not set"}</b>${fit}</div>
       <div><span>Looking in</span><b style="font-weight:600">${areas}</b></div>
     </div>
+    ${facts.length ? `<div class="meta2">${facts.map(f => `<span>${f}</span>`).join("")}</div>` : ""}
+    ${whyLine(x, l)}
     ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
     <div class="acts">${action}${x.match_pct != null ? `<button class="btn btn-ghost btn-sm" data-scompat="${esc(x.seeker_id)}">Compatibility</button>` : ""}</div>
   </article>`;
 }
+$("escSelect").addEventListener("click", () => { escSelecting = !escSelecting; if(!escSelecting) escSel = new Set(); drawSeekers(); });
+$("escBarCancel").addEventListener("click", () => { escSelecting = false; escSel = new Set(); drawSeekers(); });
+$("escBarGo").addEventListener("click", () => { if(escSel.size) openInvite([...escSel].map(id => escSeekers.find(y => y.seeker_id === id)).filter(Boolean), escListing); });
+$("escList").addEventListener("change", e => {
+  const c = e.target.closest("[data-sel]"); if(!c) return;
+  if(c.checked) escSel.add(c.dataset.sel); else escSel.delete(c.dataset.sel);
+  c.closest(".seek-card").classList.toggle("picked", c.checked); drawEscBar();
+});
 $("escPick").addEventListener("change", e => { state.escListing = e.target.value; save(); renderEscape(); });
 $("escFilters").addEventListener("click", e => {
   const b = e.target.closest("[data-ef]"); if(!b) return;
@@ -4599,20 +4863,49 @@ $("escList").addEventListener("click", async e => {
   }
   const b = e.target.closest("[data-invite]"); if(!b) return;
   const x = escSeekers.find(y => y.seeker_id === b.dataset.invite); if(!x) return;
-  b.disabled = true;
-  inviteSeeker(x);
+  openInvite([x], escListing);
 });
-async function inviteSeeker(x){
-  const first = (x.name || "They").split(" ")[0];
+// The invite, with a note: one person, or several at once (the same note goes to each).
+let inviteCtx = null;
+function openInvite(people, l){
+  if(!people.length || !l) return;
+  inviteCtx = { people, l };
+  const first = (people[0].name || "them").split(" ")[0], many = people.length > 1;
+  $("ivTitle").textContent = many ? `Invite ${people.length} people` : `Invite ${first}`;
+  $("ivText").textContent = many ? `${people.map(x => (x.name || "Someone").split(" ")[0]).join(", ")} each get your invite to “${l.title}”.`
+    : `${first} gets your invite to “${l.title}”${people[0].match_pct != null ? `, with your ${people[0].match_pct}% match` : ""}.`;
+  $("ivMsg").value = `Hi${many ? "" : " " + first}! ${!many && people[0].match_pct != null ? `Your vibe matches our home ${people[0].match_pct}%. ` : ""}The room is free from ${fmtDate(l.available_from)}${l.locality ? ", in " + l.locality : ""}. Would you like to come and see it?`;
+  $("ivGo").textContent = many ? `Send ${people.length} invites` : "Send invite";
+  $("dlgInvite").showModal();
+}
+$("inviteForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(!inviteCtx) return;
+  const { people, l } = inviteCtx, msg = $("ivMsg").value.trim(), btn = $("ivGo");
+  btn.disabled = true;
+  let sent = 0, fail = "";
+  for(const x of people){
+    const r = await inviteSeeker(x, l.id, msg);
+    if(r === "pass"){ btn.disabled = false; $("dlgInvite").close(); return openPay(() => openInvite(people.slice(sent), l), "escape7"); }
+    if(r === "daily-limit"){ fail = "daily-limit"; break; }
+    if(r === "sent") sent++; else fail = fail || r;
+  }
+  btn.disabled = false; $("dlgInvite").close();
+  const first = (people[0].name || "They").split(" ")[0];
+  toast(fail === "daily-limit" ? `${sent ? sent + " sent. " : ""}That's 30 invites today. You can send more tomorrow.`
+    : !sent ? "Couldn't send that invite. Please try again."
+    : sent === 1 ? `Invite sent. ${first} sees your photos and can say yes in one tap. Numbers are shared only if they accept.`
+    : `${sent} invites sent. Each of them sees your photos and can say yes in one tap.`);
+  escSelecting = false; escSel = new Set();
+  if(currentView === "escape") renderEscape(); else if(currentView === "mine") renderMine();
+});
+// One invite. Returns "sent", "pass" (an Escape Pass is needed), "daily-limit" or another error.
+async function inviteSeeker(x, lid, msg){
   try{
-    const r = await api.invite(escListing.id, x.seeker_id,
-      `Hi ${first}! ${x.match_pct != null ? `Your vibe matches our home ${x.match_pct}%. ` : ""}Would you like to come and see the room?`);
-    if(r.error === "escape-pass-required"){ renderEscape(); return openPay(() => inviteSeeker(x), "escape7"); }
-    toast(r.error === "daily-limit" ? "That's 30 invites today. You can send more tomorrow."
-      : r.error ? "Couldn't send that invite. Please try again."
-      : `Invite sent. ${first} sees your photos and can say yes in one tap. Numbers are shared only if they accept.`);
-  }catch(err){ console.error(err); toast("Couldn't send that invite. Please try again."); }
-  renderEscape();
+    const r = await api.invite(lid, x.seeker_id, msg);
+    if(r.error === "escape-pass-required") return "pass";
+    return r.error || "sent";
+  }catch(err){ console.error(err); return "error"; }
 }
 /* ============================================================ compromise */
 // After an owner declines, the seeker can change the answers that clash with the household, for this
@@ -5297,6 +5590,8 @@ function obStepsFor(role, full){
             {v:"flat",t:"A whole flat",s:"With friends, or a tribe I find here"},{v:"",t:"Open to anything"}] },
     { k:"budget", q:"What's your monthly rent budget?", why:"Just the rent. Expenses like electricity and maintenance are shown separately for every room.",
       opts:[{v:10000,t:"Up to ₹10,000"},{v:15000,t:"Up to ₹15,000"},{v:20000,t:"Up to ₹20,000"},{v:30000,t:"Up to ₹30,000"},{v:0,t:"I'm flexible"}] },
+    { k:"moveIn", q:"When do you want to move in?", why:"Owners invite people who are ready to move first. You can change it any time in Discover's filters.",
+      opts:[{v:"asap",t:"As soon as possible"},{v:"2w",t:"Within 2 weeks"},{v:"1m",t:"Within a month"},{v:"3m",t:"In 1 to 3 months"}] },
     ...(full ? [{ k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
       { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." }] : []) ];
 }
@@ -5527,14 +5822,14 @@ function profileGaps(){
   if(!state.user || !isSeeker()) return [];
   const occ = state.user.occupation || {}, v = state.vibe || {}, i = interestsOf(state.interests);
   return [...(occ.what ? [] : ["occWhat"]), ...VIBE_QS.filter(x => !Number.isInteger(v[x.k])).map(x => x.k),
-    ...(i.music.length ? [] : ["music"]), ...(i.hobbies.length ? [] : ["hobbies"])];
+    ...(prefs().moveIn ? [] : ["moveIn"]), ...(i.music.length ? [] : ["music"]), ...(i.hobbies.length ? [] : ["hobbies"])];
 }
-// Done out of everything a seeker's profile has: the 6 sign-up essentials plus the 15 above.
-const profilePct = () => Math.round((21 - profileGaps().length) / 21 * 100);
+// Done out of everything a seeker's profile has: the 6 sign-up essentials plus the 16 above.
+const profilePct = () => Math.round((22 - profileGaps().length) / 22 * 100);
 function startCompletion(){
   const gaps = profileGaps(), occ = state.user.occupation || {};
   ob = { role: "seeker", mode: "complete", intro: false, steps: obStepsFor("seeker", true).filter(st => gaps.includes(st.k)), i: 0,
-    a: Object.assign({ occType: occ.type, occWhat: occ.what }, state.vibe, interestsOf(state.interests)) };
+    a: Object.assign({ occType: occ.type, occWhat: occ.what, moveIn: prefs().moveIn || "" }, state.vibe, interestsOf(state.interests)) };
   renderOb();
 }
 // Saves what's been answered; "Finish later" (later = true) goes straight back to the app.
@@ -5547,6 +5842,7 @@ async function finishCompletion(later){
     if(a.occType) await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
     await api.setVibe(vibe);
     await api.setInterests({ music: a.music || [], hobbies: a.hobbies || [] });
+    if(a.moveIn) setPrefs({ moveIn: a.moveIn });
     await api.me();
   }catch(err){ console.error(err); toast("Couldn't save just now. Please try again."); }
   const left = profileGaps().length;
@@ -5573,7 +5869,7 @@ async function finishOnboarding(){
     $("obDone").onclick = () => { ob = null; go("post"); };
     return;
   }
-  setPrefs({ city: a.city || "", areas: a.areas || [], max: a.budget || 0, look: a.look || "" });
+  setPrefs({ city: a.city || "", areas: a.areas || [], max: a.budget || 0, look: a.look || "", moveIn: a.moveIn || "" });
   try{
     await api.setOccupation({ type: a.occType, what: a.occWhat || "" });
     await api.setVibe(vibe);
@@ -5606,7 +5902,7 @@ async function finishOnboarding(){
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", must:[], rules:[], minMatch:0 };
+const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], minMatch:0 };
 const prefs = () => {
   const p = Object.assign({}, DEFAULT_PREFS, state.prefs);
   // The old "Looking for" filter (several kinds) became one choice on Discover.
@@ -5621,7 +5917,7 @@ function syncSearch(){
   searchTimer = setTimeout(() => {
     if(!state.user || isOwner()) return;
     const f = prefs();
-    api.setSearch({ city: f.city, areas: f.areas, budget: f.max || null, kind: f.look || "" }, state.discoverable !== false).catch(err => console.error(err));
+    api.setSearch({ city: f.city, areas: f.areas, budget: f.max || null, kind: f.look || "", move_in: f.moveIn || null }, state.discoverable !== false).catch(err => console.error(err));
   }, 800);
 }
 const CITY_AREAS = Object.fromEntries(Object.entries(DEMO_AREAS).map(([c, a]) => [c, a.map(x => x[0])]));
@@ -5685,6 +5981,10 @@ function replyLabel(h){
 const replyBadge = l => { const t = replyLabel(l.reply_hours); return t ? `<span class="reply${Number(l.reply_hours) <= 30 ? " fast" : ""}">⚡ ${t}</span>` : ""; };
 // A seeker's request counts as waiting too long after a day (90 seconds in the demo).
 const WAIT_MS = LIVE ? 24 * 36e5 : 90e3;
+// An owner's invite lapses unanswered after 3 days (60 seconds in the demo): fm_inbox / fm_find_seekers say 'expired'.
+const INVITE_TTL = LIVE ? 3 * 864e5 : 60e3;
+const inviteLapsed = r => (r.by || r.initiated_by) === "owner" && r.status === "pending" && Date.now() - new Date(r.created_at) > INVITE_TTL;
+const MOVE_IN_TXT = { asap: "as soon as possible", "2w": "within 2 weeks", "1m": "within a month", "3m": "in 1 to 3 months" };
 const lateRequests = rows => rows.filter(r => r.direction === "incoming" && r.status === "pending" && r.by !== "owner" && Date.now() - new Date(r.created_at) > WAIT_MS);
 function waitNudgeHtml(late, link){
   if(!late.length) return "";
@@ -5998,7 +6298,7 @@ function openFilters(){
   const f = prefs(), form = $("filterForm");
   $("bandChips").innerHTML = BANDS.map(([lo, hi, label], i) => `<label class="chip"><input type="radio" name="fBand" value="${i}"${f.min === lo && f.max === hi && (lo || hi) ? " checked" : ""}>${label}</label>`).join("");
   $("fMust").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" name="fMust" value="${esc(a)}"${f.must.includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("");
-  $("fMin").value = f.min || ""; $("fMax").value = f.max || ""; $("fMove").value = f.moveBy || "";
+  $("fMin").value = f.min || ""; $("fMax").value = f.max || ""; $("fMove").value = f.moveBy || ""; $("fMoveIn").value = f.moveIn || "";
   form.querySelectorAll("[name=fKind]").forEach(x => x.checked = f.kinds.includes(x.value));
   form.querySelectorAll("[name=fFurn]").forEach(x => x.checked = f.furn.includes(x.value));
   form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
@@ -6010,7 +6310,7 @@ function openFilters(){
 function readFilterForm(){
   const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
   return { min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
-    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, must: vals("fMust"), rules: vals("fRule"), minMatch: Number(vals("fMatch")[0]) || 0 };
+    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), minMatch: Number(vals("fMatch")[0]) || 0 };
 }
 function updateFilterCount(){
   const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
@@ -6097,6 +6397,7 @@ async function openListing(id){
       lock = `<div class="lock invited"><p class="eyebrow">You're invited</p><h3>${esc(owner)} would like you to see this home</h3>
         ${inv.message ? `<p>“${esc(inv.message)}”</p>` : ""}
         <p class="inv-timer">Your number stays private. ${esc(owner)} only gets it if you say yes.</p>
+        ${inv.expires_at ? `<span class="inv-deadline">⏳ Answer by ${fmtDate(inv.expires_at)}, then the invite lapses</span>` : ""}
         <div class="acts"><button class="btn btn-primary" data-action="inv-yes" data-rid="${esc(inv.id)}">Yes, let's meet</button>
           <button class="btn btn-ghost" data-action="inv-no" data-rid="${esc(inv.id)}">Not for me</button></div>
         <div class="promise-line"><b>✓</b><span>Free: invites from owners never use your contacts. Saying yes shares numbers and the address both ways.</span></div></div>`;
@@ -6290,7 +6591,8 @@ function refreshCurrent(){
 
 /* ============================================================== requests */
 const STATUS_TXT = { pending:"Waiting for reply", approved:"Accepted", declined:"Declined" };
-const INVITE_TXT = { pending:"Invite sent", approved:"Accepted your invite", declined:"Passed" };
+const INVITE_TXT = { pending:"Invite sent", approved:"Accepted your invite", declined:"Passed", expired:"Invite lapsed" };
+STATUS_TXT.expired = "Invite lapsed";
 async function renderRequests(){
   showSkeleton("reqList", 3, true);
   const rows = await api.inbox();
@@ -6331,6 +6633,7 @@ function inviteHtml(r, l){
       ${l ? `<div class="loc">${esc(l.locality)}, ${esc(l.city)} · <b>${inr(l.rent)}</b>/month rent</div>` : ""}
       ${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <p class="inv-timer">Your number stays private. ${esc(owner)} only gets it if you say yes.</p>
+      ${r.expires_at ? `<span class="inv-deadline">⏳ Answer by ${fmtDate(r.expires_at)}, then the invite lapses</span>` : ""}
       <div class="acts"><button class="btn btn-primary btn-sm" data-inv-yes="${esc(r.id)}">Yes, let's meet</button>
         <button class="btn btn-ghost btn-sm" data-inv-no="${esc(r.id)}">Not for me</button>
         <button class="btn btn-ghost btn-sm" data-open="${esc(r.listing_id)}">Photos and details</button></div>
@@ -6628,9 +6931,14 @@ async function renderMine(){
   const live = mine.filter(l => l.status !== "closed");
   const lookingBy = Object.fromEntries(await Promise.all(live.map(async l => [l.id, await api.findSeekers(l.id).catch(() => [])])));
   const looking = live.length ? lookingBy[live[0].id] : [];
-  const promo = looking.length ? `<a class="esc-promo" href="#escape"><span><small>The Empty Room Escape</small>
-      <b>${looking.length} ${looking.length === 1 ? "person is" : "people are"} looking for a room in ${esc(live[0].locality)} right now</b>
-      ${looking.filter(x => x.match_pct >= 80).length ? `${looking.filter(x => x.match_pct >= 80).length} match your home's vibe 80%+. ` : ""}Invite them before someone else does&nbsp;→</span></a>` : "";
+  const top3 = looking.slice(0, 3), hi80 = looking.filter(x => x.match_pct >= 80).length;
+  const promo = looking.length ? `<div class="mine-esc"><small>The Empty Room Escape</small>
+      <b>${looking.length} ${looking.length === 1 ? "person is" : "people are"} looking for a room in ${esc(live[0].locality)} right now${hi80 ? `, ${hi80} at 80%+` : ""}</b>
+      ${top3.map(x => { const first = (x.name || "Someone").split(" ")[0]; return `<div class="row"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
+        <div><b>${esc(first)}${x.match_pct != null ? ` · ${x.match_pct}% match` : ""}</b><span>${esc(occLine(x.occupation))}${x.budget ? ` · up to ${inr(x.budget)}` : ""}</span></div>
+        ${canInvite(x) ? `<button class="btn btn-sm" type="button" data-esc-invite="${esc(x.seeker_id)}" data-lid="${esc(live[0].id)}">Invite</button>`
+          : `<span class="req-pill">${esc(x.invite_status === "pending" ? "Invited" : x.invite_status === "approved" ? "Said yes" : x.invite_status || "")}</span>`}</div>`; }).join("")}
+      <a href="#escape">See everyone looking&nbsp;→</a></div>` : "";
   const replyNote = !mine.length ? "" : `<p class="reply-line">${replyLabel(mine[0].reply_hours)
     ? `<b>⚡ ${esc(replyLabel(mine[0].reply_hours))}</b> · seekers see this on your listing. Keep it up!`
     : `Answer requests within a day and seekers see <b>⚡ Usually replies within a day</b> on your listing.`}</p>`;
@@ -6667,6 +6975,10 @@ $("mineList").addEventListener("click", async e => {
     if(b.dataset.go) return go(b.dataset.go);
     if(b.dataset.preview) return openListing(b.dataset.preview);
     if(b.dataset.edit) return startEdit(b.dataset.edit, Number(b.dataset.step) || 1);
+    if(b.dataset.escInvite){
+      const l = (await api.myListings()).find(x => x.id === b.dataset.lid), x = l && (await api.findSeekers(l.id)).find(y => y.seeker_id === b.dataset.escInvite);
+      if(x) openInvite([x], l); return;
+    }
     if(b.dataset.share){ const l = await api.get(b.dataset.share); if(l) shareListing(l); return; }
     if(b.dataset.confirm){ await api.setVisitStatus(b.dataset.confirm, "confirmed"); return renderMine(); }
     if(b.dataset.toggle){ await api.setListingStatus(b.dataset.toggle, b.dataset.status); return renderMine(); }
@@ -7483,11 +7795,12 @@ function mkCardHtml(i, n){
 async function renderMarket(){
   const inbox = await api.marketInbox().catch(() => []);
   marketUnseen = inbox.filter(r => r.unseen).length;
-  $("mkTabs").innerHTML = [["browse", "Browse"], ["mine", "My items"], ["offers", "Offers"]].map(([k, t]) => `<button type="button" role="tab" data-mk-tab="${k}" aria-pressed="${mkTab === k}">${t}${
+  $("mkTabs").innerHTML = [["browse", "Browse"], ["wanted", "Wanted"], ["mine", "My items"], ["offers", "Offers"]].map(([k, t]) => `<button type="button" role="tab" data-mk-tab="${k}" aria-pressed="${mkTab === k}">${t}${
     k === "offers" && marketUnseen ? `<i class="badge" aria-label="${marketUnseen} new">${marketUnseen}</i>` : ""}</button>`).join("");
-  $("mkBrowse").hidden = mkTab !== "browse"; $("mkMine").hidden = mkTab !== "mine"; $("mkOffers").hidden = mkTab !== "offers";
+  $("mkBrowse").hidden = mkTab !== "browse"; $("mkMine").hidden = mkTab !== "mine"; $("mkOffers").hidden = mkTab !== "offers"; $("mkWanted").hidden = mkTab !== "wanted";
   if(!$("mkCity").options.length || ![...$("mkCity").options].some(o => o.value === mkCityPref())) setCitySelect($("mkCity"), mkCityPref(), "All cities");
   $("mkCity").value = mkCityPref();
+  if(mkTab === "wanted") return renderMkWanted();
   if(mkTab === "mine") return renderMkMine();
   if(mkTab === "offers") return renderMkOffers(inbox);
   return renderMkBrowse();
@@ -7517,7 +7830,8 @@ async function renderMkBrowse(){
   $("mkCards").innerHTML = list.length ? list.map(mkCardHtml).join("")
     : `<div class="empty"><div class="empty-ic" aria-hidden="true">🛋️</div><h3>${mkCat === "saved" ? "Nothing saved yet" : q ? `Nothing matches “${esc(q)}” yet` : "Nothing here yet"}</h3>
        <p>${mkCat === "saved" ? "Tap ♥ on anything to keep it here." : `Be the first to sell something${city ? " in " + esc(city) : ""}. Moving out soon? List the things you won't take with you.`}</p>
-       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`;
+       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${mkCat !== "saved" && (q || (mkCat && mkCat !== "free")) ? `<button class="btn btn-accent" type="button" data-mk-want-new="${esc(q)}">🔔 Tell me when it appears</button>` : ""}
+       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div></div>`;
 }
 async function renderMkMine(){
   const mine = await api.marketSearch({ mine: true }), inbox = await api.marketInbox().catch(() => []);
@@ -7532,6 +7846,7 @@ async function renderMkMine(){
     + (forSale ? `<div class="mk-boostline"><span>⚡ ${!CHARGES_ON ? "Boosts and moving-out sales are free while we test."
       : state.boostCredits > 0 ? `You have <b>${state.boostCredits}</b> ${state.boostCredits === 1 ? "boost" : "boosts"} to use.` : "A Boost puts an item first for 3 days."}</span>
       ${CHARGES_ON ? `<button class="linkbtn" type="button" data-boost-pack>5 boosts for ₹199</button>` : ""}</div>` : "");
+  const nudges = Object.fromEntries(await Promise.all(mine.filter(i => !inbox.some(r => r.item_id === i.id && r.direction === "incoming" && r.status === "accepted")).slice(0, 6).map(async i => [i.id, await mkNudgeHtml(i)])));
   $("mkMine").innerHTML = top + (mine.length ? mine.map(i => {
     const offers = inbox.filter(r => r.item_id === i.id && r.direction === "incoming" && r.status === "pending").length;
     return `<div class="mk-offer"><div class="mk-mini">${mkPic(i, true)}</div><div style="min-width:0">
@@ -7541,7 +7856,7 @@ async function renderMkMine(){
           : `<button class="btn btn-ghost btn-sm mk-boost-btn" type="button" data-mk-boost="${esc(i.id)}">⚡ Boost</button>`) : ""}
         ${i.status === "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|active">Relist</button>`
           : `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|sold">Mark as sold</button>`}
-        <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed">Remove</button></div></div></div>`;
+        <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed">Remove</button></div>${nudges[i.id] || ""}</div></div>`;
   }).join("") + `<button class="btn btn-ghost" type="button" data-mk="sell" style="margin:16px 0 30px">+ Sell something else</button>`
   : `<div class="empty"><div class="empty-ic" aria-hidden="true">📦</div><h3>Sell what you won't take with you</h3>
       <p>A spare mattress, the fridge, a cycle you never ride. Someone a few streets away is looking for it.</p>
@@ -7551,24 +7866,84 @@ function mkContactActs(r, text){
   return `<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
     <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${esc(waLink(r.phone, text))}">WhatsApp</a>`;
 }
+// The other side's record, under an offer: deals done and since when.
+function mkRecord(r){
+  const bits = [];
+  if(r.other_deals) bits.push(`<b>${r.other_deals}</b> ${r.other_deals === 1 ? "deal" : "deals"} done here`);
+  if(r.other_since) bits.push(`on FindMeFlatMate since ${new Date(r.other_since).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}`);
+  return bits.length ? `<div class="mk-trust">${bits.join(" · ")}</div>` : "";
+}
+// Once accepted: the pick-up time (either side sets it) and "collected", which closes the deal.
+function pickupBox(r){
+  if(r.collected_at) return `<div class="pk-box done">✓ Collected ${timeAgo(r.collected_at)}. Deal done.</div>`;
+  const local = d => { const t = new Date(d); return new Date(t.getTime() - t.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };
+  const min = local(new Date()), def = (() => { const t = new Date(Date.now() + 864e5); t.setHours(18, 0, 0, 0); return local(t); })();
+  return `<div class="pk-box"><b>${r.pickup_at ? `📅 Pick-up: ${fmtDateTime(r.pickup_at)}` : "📅 Fix a pick-up time"}</b>
+    <div class="row"><input type="datetime-local" data-pk-at="${esc(r.id)}" value="${r.pickup_at ? local(r.pickup_at) : def}" min="${min}" aria-label="Pick-up time">
+      <button class="btn btn-ghost btn-sm" type="button" data-pk-save="${esc(r.id)}">${r.pickup_at ? "Change" : "Save"}</button>
+      <button class="btn btn-primary btn-sm" type="button" data-pk-done="${esc(r.id)}">${r.bundle ? "All collected" : "Collected"}</button></div></div>`;
+}
+const mkOfferWhat = r => r.bundle ? `everything in the sale${r.bundle_items ? ` (${r.bundle_items} ${r.bundle_items === 1 ? "thing" : "things"})` : ""}` : `“${esc(r.item_title)}”`;
 function mkOfferHtml(r){
   const img = safeImg(r.item_photo);
   const head = `<div class="mk-mini" data-item="${esc(r.item_id)}" style="cursor:pointer">${img ? `<img src="${esc(img)}" alt="">` : mkArt(r, true)}</div>`;
-  const offer = r.offer ? inr(r.offer) : "free";
+  const offer = r.offer ? inr(r.offer) : "free", tag = r.bundle ? `<span class="mk-bundle-tag">📦 Take the lot</span>` : "";
   if(r.direction === "incoming"){
     const acts = r.status === "pending" ? `<button class="btn btn-primary btn-sm" type="button" data-mk-accept="${esc(r.id)}">Accept · share numbers</button>
         <button class="btn btn-ghost btn-sm" type="button" data-mk-decline="${esc(r.id)}">Decline</button>`
-      : r.status === "accepted" ? mkContactActs(r, `Hi ${r.name}, it's ${firstName()} from FlatMart. “${r.item_title}” is yours for ${offer}. When would you like to pick it up?`)
-        + (r.item_status !== "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(r.item_id)}|sold">Mark as sold</button>` : "")
+      : r.status === "accepted" ? mkContactActs(r, `Hi ${r.name}, it's ${firstName()} from FlatMart. ${r.bundle ? "Everything in the sale is" : "“" + r.item_title + "” is"} yours for ${offer}. When would you like to pick it up?`)
       : `<span class="hint" style="margin:0">You declined this offer.</span>`;
-    return `<div class="mk-offer">${head}<div style="min-width:0"><h3>${esc(r.name || "Someone")} offered ${r.offer ? inr(r.offer) : "to take it"}${r.item_price && r.offer < r.item_price ? ` <small class="hint">(you asked ${inr(r.item_price)})</small>` : ""}</h3>
-      <div class="s">For “${esc(r.item_title)}” · ${timeAgo(r.created_at)}</div>${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}<div class="acts">${acts}</div></div></div>`;
+    return `<div class="mk-offer">${head}<div style="min-width:0"><h3>${tag}${esc(r.name || "Someone")} offered ${r.offer ? inr(r.offer) : "to take it"}${!r.bundle && r.item_price && r.offer < r.item_price ? ` <small class="hint">(you asked ${inr(r.item_price)})</small>` : ""}</h3>
+      <div class="s">For ${mkOfferWhat(r)} · ${timeAgo(r.created_at)}</div>${mkRecord(r)}${r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}<div class="acts">${acts}</div>${r.status === "accepted" ? pickupBox(r) : ""}</div></div>`;
   }
   const line = r.status === "pending" ? `Waiting for ${esc(r.name || "the seller")} to reply.` : r.status === "accepted"
-    ? `<b style="color:var(--ok)">✓ ${esc(r.name || "The seller")} accepted! Call now to fix a pickup time.</b>` : `${esc(r.name || "The seller")} passed on this offer.`;
-  return `<div class="mk-offer">${head}<div style="min-width:0"><h3>Your offer: ${offer} for “${esc(r.item_title)}”</h3><div class="s">${line}</div>
-    <div class="acts">${r.status === "accepted" ? mkContactActs(r, `Hi ${r.name}, it's ${firstName()} from FlatMart. Thanks for accepting my offer for “${r.item_title}”! When can I pick it up?`)
-      : r.status === "pending" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-withdraw="${esc(r.id)}">Withdraw</button>` : ""}</div></div></div>`;
+    ? `<b style="color:var(--ok)">✓ ${esc(r.name || "The seller")} accepted!${r.pickup_at ? "" : " Fix a pick-up time below."}</b>` : `${esc(r.name || "The seller")} passed on this offer.`;
+  return `<div class="mk-offer">${head}<div style="min-width:0"><h3>${tag}Your offer: ${offer} for ${mkOfferWhat(r)}</h3><div class="s">${line}</div>${mkRecord(r)}
+    <div class="acts">${r.status === "accepted" ? mkContactActs(r, `Hi ${r.name}, it's ${firstName()} from FlatMart. Thanks for accepting my offer${r.bundle ? "" : " for “" + r.item_title + "”"}! When can I pick it up?`)
+      : r.status === "pending" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-withdraw="${esc(r.id)}">Withdraw</button>` : ""}</div>${r.status === "accepted" ? pickupBox(r) : ""}</div></div>`;
+}
+// Wanted: what people nearby are looking for, and my own wants / saved searches.
+async function renderMkWanted(){
+  const city = $("mkCity").value, rows = await api.marketWants(city).catch(() => []);
+  const mine = rows.filter(w => w.is_mine), theirs = rows.filter(w => !w.is_mine);
+  const card = w => `<div class="want-card${w.is_mine ? " mine" : ""}"><div class="wi" aria-hidden="true">${(MK_CAT[w.category] || MK_CAT.other)[1]}</div><div style="min-width:0">
+      <h3>${w.is_mine ? (w.public ? "You want: " : "🔔 Saved search: ") : esc(w.name || "Someone") + " wants: "}${esc(w.title)}</h3>
+      <div class="s">${w.max_price ? `Up to ${inr(w.max_price)} · ` : ""}${esc(w.locality || "anywhere in " + w.city)}${w.is_mine && !w.public ? " · only you see this" : ""} · ${timeAgo(w.created_at)}</div>
+      <div class="acts">${w.is_mine ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-want-edit="${esc(w.id)}">Change</button><button class="btn btn-ghost btn-sm" type="button" data-mk-want-close="${esc(w.id)}">Found it / close</button>`
+        : `<button class="btn btn-primary btn-sm" type="button" data-mk="sell" data-mk-sell-cat="${esc(w.category)}">I have one to sell</button>`}</div></div></div>`;
+  $("mkWanted").innerHTML = `<div class="mk-salecard"><span class="sc-ic" aria-hidden="true">🔔</span><div><b>Looking for something?</b>
+      <small>Post what you want. Sellers nearby see it, and we tell you the moment something that fits is posted. Or keep it private as a saved search.</small>
+      <div class="acts"><button class="btn btn-primary btn-sm" type="button" data-mk-want-new="">Post what I'm looking for</button></div></div></div>`
+    + (mine.length ? `<h3 class="section-h">Yours</h3>${mine.map(card).join("")}` : "")
+    + `<h3 class="section-h">People${city ? " in " + esc(city) : ""} are looking for</h3>`
+    + (theirs.length ? theirs.map(card).join("") : `<div class="empty"><h3>Nothing yet</h3><p>Be the first to say what you're after.</p></div>`) + `<div style="height:30px"></div>`;
+}
+let wantCtx = null;
+function openWant(w){
+  wantCtx = w || {};
+  const city = w && w.city || mkCityPref() || prefs().city || CITIES[0];
+  $("mkdTitle").textContent = w && w.id ? "Change what you're looking for" : "What are you looking for?";
+  $("mkdSub").textContent = "Sellers nearby see it. We tell you when something fits."; $("mkShare").hidden = true; mkCurrent = null;
+  $("mkdBody").innerHTML = `<form id="mkWantForm" novalidate>
+    <div class="field"><label for="wTitle">I'm looking for</label><input type="text" id="wTitle" required minlength="3" maxlength="80" placeholder="Single bed with mattress" value="${esc(w && w.title || "")}"></div>
+    <div class="field"><label>Category</label><div class="chips">${MK_CATS.map(([k, ic, t], n) => `<label class="chip"><input type="radio" name="wCat" value="${k}"${(w && w.category ? w.category === k : !n) ? " checked" : ""}>${ic} ${t}</label>`).join("")}</div></div>
+    <div class="grid2"><div class="field"><label for="wMax">Up to (₹, optional)</label><input type="number" id="wMax" min="0" max="10000000" step="50" inputmode="numeric" placeholder="Any price" value="${w && w.max_price ? w.max_price : ""}"></div>
+      <div class="field"><label for="wCity">City</label><select id="wCity" required>${cityOptions(city)}</select></div></div>
+    <div class="field"><label for="wArea">Area (optional)</label><input type="text" id="wArea" maxlength="60" list="wAreaList" autocomplete="off" placeholder="Anywhere in the city" value="${esc(w && w.locality || "")}"><datalist id="wAreaList"></datalist></div>
+    <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="wPublic"${!w || w.public !== false ? " checked" : ""}><span>Show it on the Wanted list<small class="hint" style="display:block;margin:0;font-weight:500">Off: a private saved search. Either way we notify you when something fits.</small></span></label>
+    <button class="btn btn-primary btn-block" type="submit">${w && w.id ? "Save" : "Post it"}</button></form>`;
+  $("wAreaList").innerHTML = (CITY_AREAS[$("wCity").value] || []).map(a => `<option value="${esc(a)}">`).join("");
+  attachAreaSuggest($("wArea"), () => $("wCity").value);
+  if(!$("dlgMk").open) $("dlgMk").showModal();
+}
+// An unsold item after a week: what to drop it to (the price guide's lower quarter, else 15% off).
+async function mkNudgeHtml(i){
+  if(i.status !== "active" || !i.price || Date.now() - new Date(i.bumped_at || i.created_at) < (LIVE ? 7 * 864e5 : 30e3)) return "";
+  const g = await api.marketPriceGuide(i.city, i.category).catch(() => null);
+  const to = g && g.lo < i.price ? g.lo : Math.max(50, Math.round(i.price * .85 / 50) * 50);
+  if(to >= i.price) return "";
+  return `<div class="mk-nudge"><span>${g && g.lo < i.price ? `Still unsold. ${esc((MK_CAT[i.category] || MK_CAT.other)[2])} around <b>${inr(g.lo)}–${inr(g.hi)}</b> sold here recently.` : "Still unsold after a week. A lower price moves it back to the top."}</span>
+    <button class="btn btn-accent btn-sm" type="button" data-mk-drop="${esc(i.id)}|${to}">Drop to ${inr(to)}</button></div>`;
 }
 async function renderMkOffers(inbox){
   const inc = inbox.filter(r => r.direction === "incoming"), out = inbox.filter(r => r.direction === "outgoing");
@@ -7632,9 +8007,28 @@ async function openItem(id){
     ${i.description ? `<p style="white-space:pre-line">${esc(i.description)}</p>` : ""}
     ${i.sale_code && !i.is_mine && i.status === "active" ? `<a class="mk-salelink" href="#sale/${esc(i.sale_code)}" data-close>📦 Part of ${esc(i.seller_name || "a flatmate")}'s moving-out sale · see everything&nbsp;→</a>` : ""}
     <div class="mk-seller">${fsAv({ name: i.is_mine ? firstName() : i.seller_name, id: i.id })}<div><b>${i.is_mine ? "You're selling this" : "Sold by " + esc(i.seller_name || "a flatmate")}</b>
-      <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div></div></div>
+      <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div>
+      <div class="mk-trust">${i.seller_since ? `<span>on FindMeFlatMate since ${new Date(i.seller_since).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</span>` : ""}
+        ${i.seller_sold ? `<span><b>${i.seller_sold}</b> ${i.seller_sold === 1 ? "thing" : "things"} sold here</span>` : `<span>first sale here</span>`}${i.seller_on_time ? `<span class="ontime" style="margin:0">✓ Pays on time</span>` : ""}</div></div></div>
     ${act}`;
+  $("mkShare").hidden = false;
   wireGallery($("mkdBody").querySelector(".hero-pic"));
+  if(!$("dlgMk").open) $("dlgMk").showModal();
+}
+$("mkShare").addEventListener("click", () => { if(mkCurrent) shareItem(mkCurrent); });
+// The sale page's "take the lot": one offer for everything, made on the sale's first item.
+let bundleCtx = null;
+function openBundle(sale){
+  const first = (sale.items || []).find(i => i.status === "active"); if(!first) return;
+  bundleCtx = { sale, first };
+  $("mkdTitle").textContent = `Take the lot: ${inr(sale.bundle_price)}`; $("mkdSub").textContent = `${sale.title} · ${sale.items.filter(i => i.status === "active").length} things`; $("mkShare").hidden = true; mkCurrent = null;
+  $("mkdBody").innerHTML = `<form id="mkBundleForm" class="lock" style="margin-top:4px" novalidate>
+    <h3>Everything ${esc(sale.seller || "the seller")} is selling, in one go</h3>
+    <p>${sale.items.filter(i => i.status === "active").map(i => esc(i.title)).join(", ")}.</p>
+    <div class="fs-amt"><span>₹</span><input type="text" id="mkBundleOffer" inputmode="numeric" value="${sale.bundle_price}" aria-label="Your offer for the lot"></div>
+    <textarea id="mkBundleMsg" maxlength="300" style="margin-top:12px" placeholder="When could you collect it all? Do you have a vehicle?"></textarea>
+    <button class="btn btn-accent btn-block" type="submit" style="margin-top:10px">Offer for the lot</button>
+    <div class="promise-line"><b>✓</b><span>If ${esc(sale.seller || "the seller")} accepts, everything is reserved for you and you get each other's numbers.</span></div></form>`;
   if(!$("dlgMk").open) $("dlgMk").showModal();
 }
 
@@ -7698,6 +8092,7 @@ function openSale(){
   $("slUntil").min = iso(today); $("slUntil").max = iso(max);
   $("slUntil").value = live ? iso(saleLastDay(live)) : iso(new Date(today.getTime() + 14 * 864e5));
   $("slName").value = live ? live.title : `${firstName() || "My"}'s moving-out sale`.replace("My's", "My");
+  $("slBundle").value = live && live.bundle_price ? live.bundle_price : "";
   $("slTitle").textContent = live ? "Change your sale" : "Start a moving-out sale";
   $("slPrice").textContent = live ? "Changing your sale is free." : !CHARGES_ON ? "Free while we test." : state.saleCredits > 0 ? "Uses the moving-out sale you've bought."
     : "₹149 + ₹26.82 GST, once. Everything you add to FlatMart until then joins the sale too.";
@@ -7711,17 +8106,18 @@ $("saleForm").addEventListener("submit", async e => {
   btn.disabled = true;
   try{
     if(!live && CHARGES_ON && !(state.saleCredits > 0) && !(await buyExtra("mksale"))) return;
-    const r = await api.marketSaleStart($("slUntil").value, title);
+    const bundle = Math.round(Number($("slBundle").value)) || null;
+    const r = await api.marketSaleStart($("slUntil").value, title, bundle);
     if(r.error) throw new Error(r.error);
     await api.me().catch(() => {});
-    state.mkSale = Object.assign({}, state.mkSale, { code: r.code, title, ends_at: r.ends_at }); save();
+    state.mkSale = Object.assign({}, state.mkSale, { code: r.code, title, ends_at: r.ends_at, bundle_price: bundle }); save();
     $("dlgSale").close();
     toast(live ? "Sale updated." : "📦 Your moving-out sale is live! Share the link on WhatsApp.");
     if(currentView === "market") renderMarket();
   }catch(err){
     console.error(err);
     const m = err.message;
-    toast(m === "no-items" ? "Put something up for sale first." : m === "bad-date" ? "Pick a date in the next 30 days." : m === "bad-title" ? "Give your sale a name."
+    toast(m === "no-items" ? "Put something up for sale first." : m === "bad-date" ? "Pick a date in the next 30 days." : m === "bad-bundle" ? "The take-the-lot price must be at least ₹1." : m === "bad-title" ? "Give your sale a name."
       : m === "sale-required" ? "Get a moving-out sale to start one." : "Couldn't start the sale right now. Please try again.");
   }finally{ btn.disabled = false; }
 });
@@ -7731,7 +8127,18 @@ async function shareSale(){
   const free = items.filter(i => !i.price).length, area = items[0] ? items[0].locality : "";
   const text = `📦 ${s.title}: ${items.length} ${items.length === 1 ? "thing" : "things"} for sale${free ? `, ${free} free` : ""}${area ? " in " + area : ""}. `
     + `Pick up before ${fmtDate(saleLastDay(s))} 👉 ${saleLink(s.code)}`;
-  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+  shareCard({ title: s.title, sub: `${items.length} ${items.length === 1 ? "thing" : "things"} for sale${free ? `, ${free} free` : ""}${area ? " · " + area : ""}`,
+    big: s.bundle_price ? `Take the lot: ${inr(s.bundle_price)}` : `Ends ${fmtDate(saleLastDay(s))}`, chips: items.slice(0, 5).map(i => i.title), emoji: "📦",
+    eyebrow: "Moving-out sale", tag: `Ends ${fmtDate(saleLastDay(s))}`, link: saleLink(s.code), text, name: "sale" });
+}
+// An item for WhatsApp: photo or illustration, price, where, the link (?i=<id> opens it).
+const itemLink = i => siteLink() + "?i=" + encodeURIComponent(i.id);
+async function shareItem(i){
+  const link = itemLink(i);
+  const text = `${i.is_mine ? "I'm selling" : "Spotted on FlatMart:"} ${i.title}${i.price ? ` for ${inr(i.price)}` : " (free!)"} in ${i.locality}, ${i.city}. Pick up in person, no delivery charges 👉 ${link}`;
+  track("share_item", { category: i.category, city: i.city, own: Boolean(i.is_mine) });
+  shareCard({ title: i.title, sub: `${i.locality}, ${i.city}`, big: i.price ? inr(i.price) : "Free", chips: [MK_COND[i.condition] || "", (MK_CAT[i.category] || MK_CAT.other)[2], i.negotiable && i.price ? "Open to offers" : "", "Pick up in person"].filter(Boolean),
+    photo: mkPhotos(i)[0], emoji: (MK_CAT[i.category] || MK_CAT.other)[1], eyebrow: "FlatMart", tag: MK_COND[i.condition] || "", link, text, name: "item" });
 }
 document.addEventListener("click", e => {
   const t = e.target;
@@ -7762,7 +8169,9 @@ async function renderSale(){
     <p>${esc(s.seller || "A flatmate")} is moving out${where ? " · " + esc(where) : ""}. Pick up in person, and pay when you collect.</p>
     <div class="sale-chips"><span>${forSale.length} ${forSale.length === 1 ? "thing" : "things"} for sale</span>${free ? `<span>🎁 ${free} free</span>` : ""}
       <span>${s.active ? "⏳ Ends " + fmtDate(saleLastDay(s)) : "This sale has ended"}</span></div>
-    ${s.is_mine && s.active ? `<div class="acts"><button class="btn btn-accent btn-sm" type="button" data-sale-share>Share on WhatsApp</button><button class="btn btn-ghost btn-sm" type="button" data-sale-copy>Copy link</button></div>` : ""}`;
+    ${s.is_mine && s.active ? `<div class="acts"><button class="btn btn-accent btn-sm" type="button" data-sale-share>Share on WhatsApp</button><button class="btn btn-ghost btn-sm" type="button" data-sale-copy>Copy link</button></div>` : ""}
+    ${s.bundle_price && s.active && forSale.length > 1 ? `<div class="sale-bundle"><div><b>📦 Take the lot for ${inr(s.bundle_price)}</b><small>${s.bundle_status === "accepted" ? "Someone's collecting everything." : s.my_bundle === "pending" ? "Your offer for the lot is with the seller." : s.my_bundle === "accepted" ? "The lot is yours. See Offers." : s.is_mine ? "Buyers can take everything in one go." : `All ${forSale.length} things in one go, one pick-up.`}</small></div>
+      ${!s.is_mine && state.user && !s.bundle_status && !s.my_bundle ? `<button class="btn btn-accent btn-sm" type="button" data-sale-bundle>Offer for the lot</button>` : ""}</div>` : ""}`;
   $("saleCards").innerHTML = items.length ? items.map((i, n) => mkCardHtml(Object.assign({ seller_name: s.seller, is_mine: s.is_mine }, i, { sale_code: null }), n)).join("")
     : `<div class="empty"><h3>Everything's gone!</h3><p>All of it found a new home.</p></div>`;
   $("saleFoot").innerHTML = (state.user ? "" : `<p>Sign in with your mobile number to make an offer. Your number is shared only if the seller accepts.</p>`) + cta;
@@ -7770,6 +8179,7 @@ async function renderSale(){
 $("view-sale").addEventListener("click", e => {
   const t = e.target;
   if(t.closest("[data-mk-save]")) return;
+  if(t.closest("[data-sale-bundle]") && saleNow) return openBundle(saleNow);
   if(t.closest("[data-sale-signin]") || (!state.user && t.closest("[data-item]"))){
     writeLS(AFTER_SIGNIN_KEY, location.hash);
     toast("Sign in to make an offer. We'll bring you back to the sale.");
@@ -7781,7 +8191,7 @@ $("view-sale").addEventListener("click", e => {
 function mkPhotosHtml(){
   return mkFiles.map((f, n) => `<figure><img src="${f.preview}" alt="Photo ${n + 1}"><button type="button" data-mk-rm="${n}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
 }
-function openSell(){
+function openSell(cat){
   mkFiles.forEach(f => URL.revokeObjectURL(f.preview)); mkFiles = [];
   const city = mkCityPref() || prefs().city || "";
   $("mkdTitle").textContent = "Sell something"; $("mkdSub").textContent = "Free to post. People nearby see it straight away.";
@@ -7794,7 +8204,7 @@ function openSell(){
     <div class="field"><label for="mkTitle">What are you selling?</label><input type="text" id="mkTitle" required minlength="3" maxlength="80" placeholder="Queen bed with storage"></div>
     <div class="field"><label>Category</label><div class="chips">${MK_CATS.map(([k, ic, t], n) => `<label class="chip"><input type="radio" name="mkCat" value="${k}"${n ? "" : " checked"}>${ic} ${t}</label>`).join("")}</div></div>
     <div class="field"><label>Condition</label><div class="chips">${Object.entries(MK_COND).map(([k, t]) => `<label class="chip"><input type="radio" name="mkCond" value="${k}"${k === "good" ? " checked" : ""}>${t}</label>`).join("")}</div></div>
-    <div class="grid2"><div class="field"><label for="mkPrice">Price (₹)</label><input type="number" id="mkPrice" min="0" max="10000000" step="50" inputmode="numeric" placeholder="e.g. 2500"></div>
+    <div class="grid2"><div class="field"><label for="mkPrice">Price (₹)</label><input type="number" id="mkPrice" min="0" max="10000000" step="50" inputmode="numeric" placeholder="e.g. 2500"><p class="mk-guide none" id="mkGuide"></p></div>
       <div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="mkFree"><span>Give it away free</span></label></div></div>
     <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="mkNeg" checked><span>Open to offers</span></label>
     <div class="grid2"><div class="field"><label for="mkSCity">City</label><select id="mkSCity" required>${cityOptions(city || CITIES[0])}</select></div>
@@ -7807,7 +8217,23 @@ function openSell(){
   fillMkAreas();
   $("mkSCity").dataset.prev = $("mkSCity").value;
   attachAreaSuggest($("mkArea"), () => $("mkSCity").value);
+  $("mkShare").hidden = true; mkCurrent = null;
+  if(cat && $("mkSellForm").querySelector(`[name=mkCat][value="${cat}"]`)) $("mkSellForm").querySelector(`[name=mkCat][value="${cat}"]`).checked = true;
+  mkGuide();
   if(!$("dlgMk").open) $("dlgMk").showModal();
+}
+// Under the price: what things like this went for, and how many people nearby want one.
+let mkGuideSeq = 0;
+async function mkGuide(){
+  const f = $("mkSellForm"), el = $("mkGuide"); if(!f || !el) return;
+  const seq = ++mkGuideSeq, city = $("mkSCity").value, cat = (f.querySelector("[name=mkCat]:checked") || {}).value, label = (MK_CAT[cat] || MK_CAT.other)[2].toLowerCase();
+  const [g, wants] = await Promise.all([api.marketPriceGuide(city, cat).catch(() => null), api.marketWants(city).catch(() => [])]);
+  if(seq !== mkGuideSeq || !$("mkGuide")) return;
+  const n = wants.filter(w => w.category === cat && !w.is_mine && w.public).length;
+  const parts = [g ? `${label[0].toUpperCase() + label.slice(1)} ${g.scope === "city" ? "here" : "on FlatMart"} sold for ${inr(g.lo)}–${inr(g.hi)} (${g.n} sales)` : "",
+    n ? `${n} ${n === 1 ? "person nearby wants" : "people nearby want"} one` : ""].filter(Boolean);
+  el.className = "mk-guide" + (parts.length ? "" : " none");
+  el.textContent = parts.length ? parts.join(" · ") + "." : "Price it right and it goes in days.";
 }
 const fillMkAreas = () => { if($("mkAreaList")) $("mkAreaList").innerHTML = (CITY_AREAS[$("mkSCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); };
 function addMkPhotos(list){
@@ -7832,7 +8258,10 @@ $("view-market").addEventListener("click", async e => {
   }
   const tab = t.closest("[data-mk-tab]"); if(tab){ mkTab = tab.dataset.mkTab; return renderMarket(); }
   const cat = t.closest("[data-mk-cat]"); if(cat){ mkCat = cat.dataset.mkCat; return renderMkBrowse(); }
-  if(t.closest("[data-mk=sell]")) return openSell();
+  const sell = t.closest("[data-mk=sell]"); if(sell) return openSell(sell.dataset.mkSellCat || "");
+  const wn = t.closest("[data-mk-want-new]"); if(wn) return openWant({ title: wn.dataset.mkWantNew || "", category: mkCat && mkCat !== "free" && mkCat !== "saved" ? mkCat : "", city: $("mkCity").value, public: !wn.dataset.mkWantNew && !mkCat });
+  const we = t.closest("[data-mk-want-edit]"); if(we){ const w = (await api.marketWants(null).catch(() => [])).find(x => x.id === we.dataset.mkWantEdit); if(w) openWant(w); return; }
+  const wc = t.closest("[data-mk-want-close]"); if(wc){ await api.marketWantClose(wc.dataset.mkWantClose).catch(() => {}); toast("Closed. Glad you found it!"); return renderMkWanted(); }
   if(await mkAction(t)) return;
   const card = t.closest("[data-item]"); if(card) return openItem(card.dataset.item);
 });
@@ -7841,10 +8270,17 @@ $("view-market").addEventListener("keydown", e => {
 });
 // Accept / decline / withdraw / status changes, from the Offers tab or an item's dialog. True if handled.
 async function mkAction(t){
-  const b = t.closest("[data-mk-accept],[data-mk-decline],[data-mk-withdraw],[data-mk-status]"); if(!b) return false;
+  const b = t.closest("[data-mk-accept],[data-mk-decline],[data-mk-withdraw],[data-mk-status],[data-pk-save],[data-pk-done],[data-mk-drop]"); if(!b) return false;
   b.disabled = true;
   try{
-    if(b.dataset.mkAccept){ await api.marketDecide(b.dataset.mkAccept, true); toast("Accepted. You can call each other now, and the item is marked reserved."); }
+    if(b.dataset.pkSave){
+      const at = (document.querySelector(`[data-pk-at="${b.dataset.pkSave}"]`) || {}).value;
+      if(!at){ toast("Pick a time first."); b.disabled = false; return true; }
+      await api.marketPickup(b.dataset.pkSave, at); toast(`Pick-up set for ${fmtDateTime(at)}. The other side can see it.`);
+    }
+    else if(b.dataset.pkDone){ await api.marketCollected(b.dataset.pkDone); toast("Collected. Deal done! 🎉"); }
+    else if(b.dataset.mkDrop){ const [id, p] = b.dataset.mkDrop.split("|"); await api.marketSetPrice(id, Number(p)); toast(`Dropped to ${inr(Number(p))}. It's back at the top for people nearby.`); }
+    else if(b.dataset.mkAccept){ await api.marketDecide(b.dataset.mkAccept, true); toast("Accepted. You can call each other now, and the item is marked reserved. Fix a pick-up time under the offer."); }
     else if(b.dataset.mkDecline){ await api.marketDecide(b.dataset.mkDecline, false); toast("Declined."); }
     else if(b.dataset.mkWithdraw){ await api.marketWithdraw(b.dataset.mkWithdraw); toast("Offer withdrawn."); }
     else{
@@ -7854,7 +8290,7 @@ async function mkAction(t){
       toast(status === "sold" ? "Marked as sold. Nice one! 🎉" : status === "removed" ? "Removed." : "It's back on sale.");
       if(status === "removed" && $("dlgMk").open) $("dlgMk").close();
     }
-  }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); b.disabled = false; return true; }
+  }catch(err){ console.error(err); toast(err.message === "bad-time" ? "Pick a time in the next 30 days." : err.message === "not-accepted" ? "That offer isn't accepted yet." : "Couldn't do that right now. Please try again."); b.disabled = false; return true; }
   if($("dlgMk").open && mkCurrent) await openItem(mkCurrent.id);
   if(currentView === "market") renderMarket();
   checkExtras();
@@ -7875,7 +8311,9 @@ $("dlgMk").addEventListener("click", async e => {
 $("dlgMk").addEventListener("change", e => {
   const t = e.target;
   if(t.id === "mkPhotos"){ addMkPhotos(t.files); t.value = ""; }
-  if(t.id === "mkSCity"){ pickOtherCity(t); fillMkAreas(); }
+  if(t.id === "mkSCity"){ pickOtherCity(t); fillMkAreas(); mkGuide(); }
+  if(t.name === "mkCat") mkGuide();
+  if(t.id === "wCity"){ pickOtherCity(t); $("wAreaList").innerHTML = (CITY_AREAS[t.value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
   if(t.id === "mkFree"){ $("mkPrice").disabled = $("mkNeg").disabled = t.checked; if(t.checked) $("mkPrice").value = ""; }
 });
 $("dlgMk").addEventListener("submit", async e => {
@@ -7892,6 +8330,25 @@ $("dlgMk").addEventListener("submit", async e => {
       if(r.error) return bad(r.error === "item-not-available" ? "Someone got there first: this isn't available any more." : r.error === "daily-limit" ? "That's a lot of offers today. Try again tomorrow." : "Couldn't send that offer.");
       toast(`Offer sent to ${mkCurrent.seller_name || "the seller"}. We'll notify you when they reply.`);
       await openItem(mkCurrent.id); if(currentView === "market") renderMarket(); return;
+    }
+    if(f.id === "mkWantForm"){
+      if(!formOk(f)) return;
+      const p = { id: wantCtx && wantCtx.id || null, title: $("wTitle").value.trim(), category: f.querySelector("[name=wCat]:checked").value, max_price: Math.round(Number($("wMax").value)) || 0,
+        city: $("wCity").value, locality: $("wArea").value.trim(), public: $("wPublic").checked };
+      btn.disabled = true;
+      await api.marketWantSave(p);
+      $("dlgMk").close();
+      toast(p.public ? "Posted. Sellers nearby can see it, and we'll tell you when something fits." : "Saved. We'll tell you the moment something that fits is posted.");
+      mkTab = "wanted"; return currentView === "market" ? renderMarket() : go("market");
+    }
+    if(f.id === "mkBundleForm"){
+      const offer = Math.round(Number(String($("mkBundleOffer").value).replace(/\D/g, "")));
+      if(!(offer > 0)) return bad("Enter your offer for the lot.");
+      btn.disabled = true;
+      const r = await api.marketOffer(bundleCtx.first.id, offer, $("mkBundleMsg").value.trim(), true);
+      if(r.error) return bad(r.error === "no-bundle" ? "This sale doesn't offer the lot any more." : r.error === "daily-limit" ? "That's a lot of offers today. Try again tomorrow." : "Couldn't send that offer. Please try again.");
+      $("dlgMk").close(); toast(`Offer sent to ${bundleCtx.sale.seller || "the seller"} for the lot. We'll notify you when they reply.`);
+      if(isSaleRoute()) renderSale(); return;
     }
     if(f.id === "mkPriceForm"){
       const p = Math.round(Number($("mkNewPrice").value));
@@ -7919,7 +8376,8 @@ $("dlgMk").addEventListener("submit", async e => {
     }
   }catch(err){
     console.error(err);
-    bad(/too-many-items/.test(err.message || "") ? "You have 25 things for sale already. Mark some as sold first."
+    bad(/too-many-wants/.test(err.message || "") ? "You have 10 open wants already. Close one first."
+      : /too-many-items/.test(err.message || "") ? "You have 25 things for sale already. Mark some as sold first."
       : err.message === "storage-full" ? "This phone's demo storage is full. Remove an old item or post without photos."
       : "Couldn't save that. Please check your connection and try again.");
   }finally{ if(btn){ btn.disabled = false; if(f.id === "mkSellForm") btn.textContent = "Post it on FlatMart"; } }
@@ -7970,6 +8428,26 @@ async function checkExtras(){
       }
     }catch(err){}
   }
+  // Owners: someone just started looking where my listing is (city, area, 70%+ vibe, not in touch yet).
+  if(isOwner() && api.seekerAlerts){
+    try{
+      const since = state.seekerSince || new Date().toISOString();
+      if(!state.seekerSince){ state.seekerSince = since; changed = true; }
+      const rows = (await api.seekerAlerts(since)).filter(x => !state.notified["ns" + x.seeker_id + x.listing_id]);
+      rows.forEach(x => state.notified["ns" + x.seeker_id + x.listing_id] = Date.now());
+      if(rows.length){
+        changed = true;
+        state.seekerSince = rows.reduce((m, x) => x.search_at > m ? x.search_at : m, since);
+        const top = rows[0], names = [...new Set(rows.map(x => x.name))];
+        Notify.show(rows.length === 1 ? `${top.name} just started looking in ${top.locality}${top.match_pct != null ? ` · ${top.match_pct}% match` : ""}`
+            : `${rows.length} people just started looking in ${top.locality}`,
+          rows.length === 1 ? `${top.budget ? `Budget up to ${inr(top.budget)}. ` : ""}Invite them to see “${top.listing_title}” before someone else does.`
+            : `${names.slice(0, 3).join(", ")}. Invite them from The Empty Room Escape.`, "escape");
+        toast(rows.length === 1 ? `🔎 ${top.name} just started looking in ${top.locality}${top.match_pct != null ? ` · ${top.match_pct}% match` : ""}` : `🔎 ${rows.length} people just started looking in ${top.locality}`);
+        if(currentView === "mine") renderMine(); else if(currentView === "escape") renderEscape();
+      }
+    }catch(err){}
+  }
   try{
     for(const p of await api.partyFeed()){
       const key = "pt" + p.code + p.updated_at; if(state.notified[key]) continue;
@@ -7996,7 +8474,28 @@ async function checkExtras(){
         Notify.show("Offer not accepted", `The seller of “${r.item_title}” passed. There's plenty more on FlatMart.`, "market");
       }
     }
+    // The other side fixed a pick-up time; and a reminder two hours before any pick-up.
+    for(const r of rows.filter(x => x.status === "accepted" && x.pickup_at && !x.collected_at)){
+      const k1 = "pks" + r.id + r.pickup_at, k2 = "pkr" + r.id + r.pickup_at, left = new Date(r.pickup_at) - Date.now();
+      if(r.unseen && !state.notified[k1]){ state.notified[k1] = Date.now(); changed = true; toast(`📅 Pick-up for “${r.item_title}”: ${fmtDateTime(r.pickup_at)} with ${r.name || "them"}.`); }
+      if(left > 0 && left < 2 * 36e5 && !state.notified[k2]){
+        state.notified[k2] = Date.now(); changed = true;
+        Notify.show(`Pick-up at ${new Date(r.pickup_at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}: ${r.item_title}`, `With ${r.name || "them"}. Call if anything changes.`, "market");
+      }
+    }
   }catch(err){}
+  // Something that fits one of my wants was just posted.
+  if(api.marketWantMatches){
+    try{
+      const rows = await api.marketWantMatches();
+      for(const m of rows){
+        const key = "wm" + m.id + m.want_id; if(state.notified[key]) continue;
+        state.notified[key] = Date.now(); changed = true;
+        Notify.show(`${m.price ? inr(m.price) + ": " : "Free: "}${m.title} in ${m.locality}`, `Just posted on FlatMart, and it fits “${m.want_title}”. Make an offer before someone else does.`, "market");
+        toast(`🔔 ${m.title}${m.price ? " for " + inr(m.price) : " (free)"} in ${m.locality} fits “${m.want_title}”.`);
+      }
+    }catch(err){}
+  }
   save();
   if(!currentView) return;
   renderNav();
@@ -9203,7 +9702,7 @@ function vibeFromCode(c){
 const SITE_LINK = "https://findmeflatmate.com/";
 const siteLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : SITE_LINK;
 // The quiz answers and a friend's invite live outside fm_state, so they survive signing in.
-const OPEN_KEY = "fm_open";   // a shared home (?l=...) to open once signed in
+const OPEN_KEY = "fm_open", OPEN_ITEM_KEY = "fm_open_item";   // a shared home (?l=...) or FlatMart item (?i=...) to open once signed in
 const VIBE_QUIZ_KEY = "fm_vibe_quiz", VIBE_INVITE_KEY = "fm_vibe_invite", REF_KEY = "fm_ref", CARD_PENDING_KEY = "fm_card_pending";
 const readLS = k => { try{ return JSON.parse(localStorage.getItem(k) || "null"); }catch(e){ return null; } };
 const writeLS = (k, v) => { try{ v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
@@ -9391,11 +9890,12 @@ $("hShare").addEventListener("click", () => {
 
 (function takeLinkParams(){
   const p = new URLSearchParams(location.search), v = vibeFromCode(p.get("vibe")), r = (p.get("r") || "").toUpperCase();
-  if(!p.has("vibe") && !p.has("r") && !p.has("l")) return;
+  if(!p.has("vibe") && !p.has("r") && !p.has("l") && !p.has("i")) return;
   if(/^[\w-]{3,64}$/.test(p.get("l") || "")) writeLS(OPEN_KEY, p.get("l"));
+  if(/^[\w-]{3,64}$/.test(p.get("i") || "")) writeLS(OPEN_ITEM_KEY, p.get("i"));
   if(v) writeLS(VIBE_INVITE_KEY, { name: (p.get("n") || "").replace(/[^\p{L} .'-]/gu, "").trim().slice(0, 20) || "Your friend", vibe: v, at: Date.now() });
   if(/^[A-Z0-9]{6,12}$/.test(r)) writeLS(REF_KEY, { code: r, at: Date.now() });
-  ["vibe","n","r","l"].forEach(k => p.delete(k));   // other parameters (a host page link, ad tags) stay
+  ["vibe","n","r","l","i"].forEach(k => p.delete(k));   // other parameters (a host page link, ad tags) stay
   history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash);
 })();
 // After signing in, tell the server who invited this account (it only counts for a new account).
@@ -9577,6 +10077,80 @@ async function shareListing(l){
       ${blob ? `<a class="btn btn-ghost btn-sm" href="${URL.createObjectURL(blob)}" download="flat.png">Download image</a>` : ""}
       <a class="btn btn-ghost btn-sm" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">WhatsApp</a>
       <button class="btn btn-ghost btn-sm" type="button" data-copy="${esc(link)}">Copy link</button></div>`;
+  $("dlgShare").showModal();
+}
+// A simpler card (1080 x 1350) for a FlatMart item or a moving-out sale: photo or emoji, a big line (the price),
+// a title, chips and the link. Shared the same way as a home.
+async function drawSimpleCard(c){
+  const W = 1080, H = 1350, cv = document.createElement("canvas"), F = '"Plus Jakarta Sans", system-ui, sans-serif',
+    E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+  cv.width = W; cv.height = H;
+  const x = cv.getContext("2d");
+  await Promise.race([Promise.all(["800 52px", "500 32px", "700 28px"].map(f => document.fonts.load(`${f} "Plus Jakarta Sans"`))).catch(() => {}), new Promise(r => setTimeout(r, 2500))]);
+  const [logo, pic] = await Promise.all([loadImg("icons/icon-192.png"), c.photo ? loadImg(c.photo, !c.photo.startsWith("data:")) : null]);
+  const g = x.createLinearGradient(0, 0, W * .4, H);
+  g.addColorStop(0, "#F26B1D"); g.addColorStop(.55, "#E8505B"); g.addColorStop(1, "#B63BA8");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = "rgba(255,255,255,.08)";
+  for(const [cx, cy, rr] of [[1000, 60, 300], [40, 1320, 240]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  x.textBaseline = "middle"; x.textAlign = "left";
+  if(logo){ roundRect(x, 60, 54, 84, 84, 22, "#fff"); x.drawImage(logo, 66, 60, 72, 72); }
+  x.fillStyle = "#fff"; x.font = `800 40px ${F}`; x.fillText("FindMeFlatMate", 164, 96);
+  x.font = `600 24px ${F}`; x.fillStyle = "rgba(255,255,255,.88)"; x.textAlign = "right"; x.fillText(c.eyebrow + " · buy and sell with people nearby", W - 60, 98);
+  const PX = 60, PY = 168, PW = W - 120, PH = 520;
+  x.save(); x.beginPath(); x.roundRect(PX, PY, PW, PH, 36); x.clip();
+  let drew = false;
+  if(pic){ try{ const sc = Math.max(PW / pic.width, PH / pic.height), w = pic.width * sc, h = pic.height * sc; x.drawImage(pic, PX + (PW - w) / 2, PY + (PH - h) / 2, w, h); drew = true; }catch(e){} }
+  if(!drew){ x.fillStyle = "rgba(255,255,255,.16)"; x.fillRect(PX, PY, PW, PH); x.textAlign = "center"; x.font = `220px ${E}`; x.fillStyle = "#fff"; x.fillText(c.emoji || "📦", W / 2, PY + PH / 2); }
+  x.restore();
+  x.textAlign = "left"; x.font = `800 26px ${F}`;
+  if(c.tag){ const tw = x.measureText(c.tag).width + 44; roundRect(x, PX + 24, PY + 24, tw, 56, 28, "rgba(255,255,255,.94)"); x.fillStyle = "#10264F"; x.fillText(c.tag, PX + 46, PY + 53); }
+  const top = PY + PH + 30, L = 100;
+  x.font = `800 52px ${F}`;
+  const titleLines = wrapLines(x, c.title, W - 2 * L).slice(0, 2);
+  x.font = `700 28px ${F}`;
+  const rows = [[]]; let rowW = 0;
+  for(const chip of c.chips || []){
+    const w = x.measureText(chip).width + 44;
+    if(rowW && rowW + 14 + w > W - 2 * L){ rows.push([]); rowW = 0; }
+    rows[rows.length - 1].push([chip, w]); rowW += (rowW ? 14 : 0) + w;
+  }
+  let y = top + 58;
+  const panelH = 58 + titleLines.length * 60 + 50 + 84 + rows.length * 68 + 4;
+  roundRect(x, 60, top, W - 120, panelH, 36, "#fff");
+  x.fillStyle = "#10264F"; x.font = `800 52px ${F}`;
+  for(const line of titleLines){ x.fillText(line, L, y); y += 60; }
+  x.font = `500 30px ${F}`; x.fillStyle = "#5B6472"; x.fillText(c.sub, L, y); y += 50;
+  x.font = `800 60px ${F}`; x.fillStyle = "#C2410C"; x.fillText(c.big, L, y + 6); y += 84;
+  const tints = ["#FFF2E8", "#E2F5F5", "#EEF3FD", "#E3F6F0", "#F3EEFD"];
+  let n = 0;
+  for(const row of rows){
+    let cx = L;
+    for(const [chip, w] of row){ roundRect(x, cx, y - 28, w, 56, 28, tints[n++ % tints.length]); x.fillStyle = "#10264F"; x.font = `700 28px ${F}`; x.fillText(chip, cx + 22, y + 1); cx += w + 14; }
+    y += 68;
+  }
+  x.textAlign = "center";
+  x.fillStyle = "#fff"; x.font = `800 40px ${F}`; x.fillText("Make an offer on FlatMart", W / 2, H - 112);
+  x.fillStyle = "rgba(255,255,255,.8)"; x.font = `600 28px ${F}`; x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, ""), W / 2, H - 56);
+  return cv;
+}
+async function shareCard(c){
+  let canvas = null, png = null, blob = null;
+  try{ canvas = await drawSimpleCard(c); png = canvas.toDataURL("image/png"); blob = await new Promise(r => canvas.toBlob(r, "image/png")); }
+  catch(err){ console.error(err); png = null; blob = null; }
+  if(png && Notify.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"shareImage", png: png.split(",")[1], text: c.text })); return; }
+  const file = blob ? new File([blob], c.name + ".png", { type: "image/png" }) : null;
+  if(file && navigator.canShare && navigator.canShare({ files: [file] })){
+    try{ await navigator.share({ files: [file], text: c.text, title: c.title }); return; }catch(err){ if(err && err.name === "AbortError") return; }
+  }
+  if(!file && navigator.share){ try{ await navigator.share({ text: c.text, title: c.title }); return; }catch(err){ if(err && err.name === "AbortError") return; } }
+  $("shSub").textContent = c.title;
+  $("shBody").innerHTML = `${png ? `<img class="sh-img" src="${png}" alt="${esc(c.title)}">` : ""}
+    <p class="hint" style="margin:0 0 10px">Save the image, then post it with the link.</p>
+    <div class="vc-acts row">
+      ${blob ? `<a class="btn btn-ghost btn-sm" href="${URL.createObjectURL(blob)}" download="${esc(c.name)}.png">Download image</a>` : ""}
+      <a class="btn btn-ghost btn-sm" href="https://wa.me/?text=${encodeURIComponent(c.text)}" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="btn btn-ghost btn-sm" type="button" data-copy="${esc(c.link)}">Copy link</button></div>`;
   $("dlgShare").showModal();
 }
 $("shBody").addEventListener("click", async e => {

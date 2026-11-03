@@ -7,6 +7,8 @@
 // Tribe events ({tribe_id, event}) are handled by tribeEvent below.
 // Party invites ({party_id, event}) tell the host's flatmates: partyEvent below.
 // New listings ({listing_id}) go to seekers they fit (fm_listing_audience); ticket updates ({ticket_id}) to their owner.
+// A seeker who starts looking somewhere ({seeker_id}) goes to owners with a fitting listing there (fm_seeker_audience).
+// A new FlatMart item ({item_id}) goes to people whose "wanted" post it fits (fm_market_want_audience).
 // Owner invites (The Empty Room Escape) go the other way:
 //   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
 //   approved / declined -> the owner
@@ -166,6 +168,37 @@ async function listingEvent(id: string) {
   }
   return { sent };
 }
+// A seeker set or changed where they're looking: owners with a fitting listing there (city, area, 70%+ vibe,
+// not yet in touch) hear about them, so they can invite them from The Empty Room Escape.
+async function seekerEvent(id: string) {
+  const { data: p } = await admin.from("fm_profiles").select("full_name, search").eq("id", id).single();
+  if (!p) return { skipped: true };
+  const first = (p.full_name || "Someone").split(" ")[0];
+  const { data: rows, error } = await admin.rpc("fm_seeker_audience", { p_seeker: id });
+  if (error) throw error;
+  const seen = new Set<string>();
+  let sent = 0;
+  for (const r of (rows || []) as { owner_id: string; listing_title: string; locality: string; match_pct: number | null; budget: number | null }[]) {
+    if (seen.has(r.owner_id)) continue;   // one per owner, for their best-placed listing
+    seen.add(r.owner_id);
+    sent += await pushTo(r.owner_id, `${first} just started looking in ${r.locality}${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
+      `${r.budget ? `Budget up to ₹${Number(r.budget).toLocaleString("en-IN")}. ` : ""}Invite them to see “${r.listing_title}” before someone else does.`, "escape");
+  }
+  return { sent };
+}
+// A new FlatMart item: everyone whose open "wanted" post it fits.
+async function itemEvent(id: string) {
+  const { data: i } = await admin.from("fm_market_items").select("title, price, locality, status").eq("id", id).single();
+  if (!i || i.status !== "active") return { skipped: true };
+  const { data: rows, error } = await admin.rpc("fm_market_want_audience", { p_item: id });
+  if (error) throw error;
+  let sent = 0;
+  for (const r of (rows || []) as { user_id: string; want_title: string }[]) {
+    sent += await pushTo(r.user_id, `${i.price ? `₹${Number(i.price).toLocaleString("en-IN")}: ` : "Free: "}${i.title} in ${i.locality}`,
+      `Just posted on FlatMart, and it fits “${r.want_title}”. Make an offer before someone else does.`, "market");
+  }
+  return { sent };
+}
 // The team changed a ticket's status or replied.
 const TICKET_STATUS: Record<string, string> = { open: "Received", in_review: "Being looked at", resolved: "Resolved", closed: "Closed" };
 async function ticketEvent(id: string) {
@@ -183,6 +216,8 @@ Deno.serve(async (req) => {
     if (payload.party_id) return json(await partyEvent(payload.party_id, payload.event));
     if (payload.listing_id) return json(await listingEvent(payload.listing_id));
     if (payload.ticket_id) return json(await ticketEvent(payload.ticket_id));
+    if (payload.seeker_id) return json(await seekerEvent(payload.seeker_id));
+    if (payload.item_id) return json(await itemEvent(payload.item_id));
     const { request_id } = payload;
     const { data: r } = await admin.from("fm_requests")
       .select("id, status, match_pct, seeker_id, listing_id, initiated_by, fm_listings(title, owner_id)").eq("id", request_id).single();
@@ -194,7 +229,7 @@ Deno.serve(async (req) => {
         const { data: pv } = await admin.from("fm_listing_private").select("contact_name").eq("listing_id", r.listing_id).single();
         const owner = (pv?.contact_name || "An owner").split(" ")[0];
         const sent = await pushTo(r.seeker_id, `${owner} invited you to see their flat${r.match_pct != null ? ` · ${r.match_pct}% match` : ""}`,
-          `See the photos of “${listing.title}” and say yes or no in one tap. Your number stays private unless you say yes.`, "requests");
+          `See the photos of “${listing.title}” and say yes or no in one tap, within 3 days. Your number stays private unless you say yes.`, "requests");
         return json({ sent });
       }
       if (r.status === "approved" || r.status === "declined") {
