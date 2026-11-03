@@ -57,6 +57,20 @@ the room comes second.
    numbers and the address both ways and is free for the seeker (no contact used). **Numbers are
    shared only when the seeker accepts.** Seekers can hide themselves in Account
    ("Show me to owners in my areas"). Up to 30 invites per owner per day.
+   - **The invite carries a note** (prefilled with the room, when it's free and the match; editable) and
+     **lapses after 3 days** unanswered: the seeker stops seeing it ("Answer by 6 Nov, then the invite lapses"
+     on their card), the owner sees "Invite lapsed · Invite again", and a lapsed invite doesn't use up the
+     free one (`fm_inbox` / `fm_find_seekers` derive `expired`; `fm_invite` and `fm_decide` follow).
+   - **Invite several:** tick people and send one note to all of them (each invite still counts).
+   - **Why them:** one line per card from the shared answers, the budget and interests in common ("Same
+     bedtime, same tidiness, budget fits"), plus **Moving in within 2 weeks** (the seeker's move-in answer,
+     asked at sign-up and in Discover's filters) and **Replied to 3 of 4 invites** (how they treat invites).
+   - **Your invites:** sent, said yes, passed, lapsed and waiting, at the top of the Escape.
+   - **My flat** shows the top 3 people looking in the listing's area with an Invite button each.
+   - **New seekers in your area:** a seeker who sets or changes their city or areas (or whose answers become
+     enough to match) brings owners with a fitting listing there (70%+ vibe, not yet in touch) a notification
+     ("Riya just started looking in HSR Layout · 84% match"): in the app via `fm_seeker_alerts`, as a push
+     via the `fm_profiles_seeker_notify` trigger → fm-notify → `fm_seeker_audience`, at most once a day per seeker.
 
 8. **Build your tribe (seekers).** Two people looking in the same city and areas whose vibes
    match **70%+** are suggested to each other, and both get a notification ("Riya could be your
@@ -182,7 +196,24 @@ the room comes second.
     has for sale, and anything they add until the date they pick (up to 30 days), on one page with one link
     (`findmeflatmate.com/#sale/<code>`) to share on WhatsApp, all shown first with a "📦 Moving-out sale" tag; the
     page works for people who aren't signed in (no numbers on it), and tapping an item asks them to sign in and
-    brings them back. Changing a running sale's name or date is free. Bought boosts and sales are credits
+    brings them back. Changing a running sale's name or date is free.
+    - **Pick-up and collected.** Once an offer is accepted, either side sets a pick-up time under the offer (the
+      other side is told, and both get a reminder two hours before); **Collected** closes the deal and marks the
+      item sold (`fm_market_pickup`, `fm_market_collected`).
+    - **Take the lot.** A moving-out sale can carry one price for everything; the sale page offers it, one offer
+      covers all the items (`bundle` on the offer), accepting reserves everything, collected sells everything.
+    - **Price guide.** The sell form says what things like this went for: the middle half of accepted offers in
+      the category over 6 months, in the city when it has 3 or more sales (`fm_market_price_guide`), and how many
+      people nearby want one. An item unsold for a week gets "Drop to ₹2,600?" with one tap (the guide's lower
+      quarter, else 15% off).
+    - **Wanted.** A Wanted tab: "Riya wants: single bed under ₹3,000 · Baner". Anyone can post what they're after
+      (up to 10 open), sellers get "I have one to sell", and the moment a fitting item is posted the person is told
+      (in the app via `fm_market_want_matches`, push via the `fm_market_items_notify` trigger → `fm_market_want_audience`).
+      Switched off "Show it on the Wanted list" it's a private **saved search** (also offered from an empty search).
+    - **Trust.** Items show the seller's record (on FindMeFlatMate since, things sold here, the Pays-on-time
+      badge); offers show the other side's deals done and since when.
+    - **Share.** Items and sales have a share card like a home's (photo or category art, price, where, the link;
+      `?i=<id>` opens an item), through the share sheet or download + WhatsApp + copy link. Bought boosts and sales are credits
     (`fm_profiles.boost_credits` / `sale_credits`, added by `fm_credit_order`) used by `fm_market_boost` and
     `fm_market_sale_start`; while charges are off (`fm_settings.charges_enabled`), both are free.
     **Requests** and **Tribe** sit as icons in the top bar (with their badges), next to notifications and the
@@ -271,7 +302,10 @@ flat" button (two flatmates and a month of expenses; one of them adds another ex
 
 - **Owner:** a notification the moment someone asks to meet ("Riya wants to meet you · 92% match"), and
   once a day while requests have waited more than a day ("2 people are waiting for your reply"), so they
-  keep their reply-speed line.
+  keep their reply-speed line. Also when a seeker who fits starts looking in the listing's area
+  ("Riya just started looking in HSR Layout · 84% match").
+- **FlatMart:** a fitting item for one of your wants ("₹2,800: Single bed in Baner"), the other side setting a
+  pick-up time, and a reminder two hours before a pick-up.
 - **Seeker, when accepted:** "Asha said yes! Call now", with how many others asked about the home.
   An orange **Call now, before it's rented out** card stays at the top of Discover and Requests
   until they tap Call, WhatsApp or "I've called". If they haven't called after 2 hours (1 minute

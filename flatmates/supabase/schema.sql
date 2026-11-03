@@ -473,7 +473,9 @@ begin
                                 'areas', case when jsonb_typeof(p_search->'areas') = 'array' then p_search->'areas' else '[]'::jsonb end,
                                 'budget', case when p_search->>'budget' ~ '^[0-9]{1,7}$' then (p_search->>'budget')::int end,
                                 -- What they're looking for: a private room, a shared room or a whole flat ('' = anything).
-                                'kind', case when p_search->>'kind' in ('room', 'shared', 'flat') then p_search->>'kind' else '' end),
+                                'kind', case when p_search->>'kind' in ('room', 'shared', 'flat') then p_search->>'kind' else '' end,
+                                -- When they want to move in: as soon as possible, within 2 weeks, within a month, in 1-3 months.
+                                'move_in', case when p_search->>'move_in' in ('asap', '2w', '1m', '3m') then p_search->>'move_in' end),
     search_at = now(),
     discoverable = coalesce(p_discoverable, discoverable)
   where id = auth.uid();
@@ -764,6 +766,7 @@ begin
    for update of r;
   if v_req.id is null then return query select null::text, 'not-found'; return; end if;
   if v_req.status <> 'pending' then return query select v_req.status, 'already-decided'; return; end if;
+  if v_req.initiated_by = 'owner' and v_req.created_at < now() - interval '3 days' then return query select 'expired'::text, 'expired'; return; end if;
 
   if not p_approve then
     update fm_requests set status = 'declined', decided_at = now(),
@@ -790,15 +793,24 @@ end $$;
 -- The Empty Room Escape: seekers looking in this listing's city (and area, if they picked
 -- areas), with their budget and vibe match. Only the listing's owner can ask.
 drop function if exists public.fm_find_seekers(uuid);
+-- An owner's invite lapses after 3 days without an answer ('expired' here and in fm_inbox): the owner can
+-- invite again, and the lapsed one doesn't use up the free invite. move_in is when they want to move
+-- (asap, 2w, 1m, 3m); invites_got / invites_answered say how they treat owners' invites.
 create or replace function public.fm_find_seekers(p_listing uuid)
 returns table (seeker_id uuid, name text, occupation jsonb, areas jsonb, budget int, match_pct int,
-               interests jsonb, vibe jsonb, active_at timestamptz, invite_status text, invite_by text, on_time boolean)
+               interests jsonb, vibe jsonb, active_at timestamptz, invite_status text, invite_by text, on_time boolean,
+               move_in text, invites_got int, invites_answered int)
 language sql security definer set search_path = public as $$
   select fm_throttle('seekers', 60, 300);
   select p.id, split_part(coalesce(p.full_name, ''), ' ', 1), p.occupation,
          coalesce(p.search->'areas', '[]'::jsonb), (p.search->>'budget')::int,
          fm_match(p.vibe, l.household), p.interests, p.vibe, coalesce(p.search_at, p.created_at),
-         r.status, r.initiated_by, p.show_on_time and p.on_time_months >= 3 and p.on_time_at > now() - interval '40 days'
+         case when r.initiated_by = 'owner' and r.status = 'pending' and r.created_at < now() - interval '3 days' then 'expired' else r.status end,
+         r.initiated_by, p.show_on_time and p.on_time_months >= 3 and p.on_time_at > now() - interval '40 days',
+         p.search->>'move_in',
+         (select count(*)::int from fm_requests x where x.seeker_id = p.id and x.initiated_by = 'owner'
+           and (x.status in ('approved', 'declined') or (x.status = 'pending' and x.created_at < now() - interval '3 days'))),
+         (select count(*)::int from fm_requests x where x.seeker_id = p.id and x.initiated_by = 'owner' and x.status in ('approved', 'declined'))
   from fm_listings l
   join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
    and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()))
@@ -824,13 +836,18 @@ begin
     and fm_shows_to(escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()));
   if v_s.id is null then return query select null::text, 'seeker-not-found'; return; end if;
   select * into v_req from fm_requests where listing_id = p_listing and seeker_id = p_seeker;
-  if v_req.status in ('pending','approved','declined') then return query select v_req.status, null::text; return; end if;
+  if v_req.status in ('approved','declined')
+     or (v_req.status = 'pending' and not (v_req.initiated_by = 'owner' and v_req.created_at < now() - interval '3 days')) then
+    return query select v_req.status, null::text; return;
+  end if;
   if (select count(*) from fm_requests r join fm_listings l on l.id = r.listing_id
        where l.owner_id = auth.uid() and r.initiated_by = 'owner' and r.created_at > now() - interval '1 day') >= 30 then
     return query select null::text, 'daily-limit'; return;
   end if;
+  -- Invites that lapsed unanswered don't count against the free invite.
   if (select charges_enabled from fm_settings) and fm_pass_until(auth.uid(), 'escape') is null
-     and (select count(*) from fm_requests r where r.listing_id = p_listing and r.initiated_by = 'owner') >= (select free_invites from fm_settings) then
+     and (select count(*) from fm_requests r where r.listing_id = p_listing and r.initiated_by = 'owner'
+           and not (r.status = 'pending' and r.created_at < now() - interval '3 days')) >= (select free_invites from fm_settings) then
     return query select null::text, 'escape-pass-required'; return;
   end if;
   insert into fm_requests (listing_id, seeker_id, message, match_pct, initiated_by, seen_by_owner, seen_by_seeker)
@@ -1069,15 +1086,18 @@ end $$;
 -- Both sides' requests in one list, newest first. 'incoming' = on my listing,
 -- 'outgoing' = mine as a seeker; 'by' says who started it. The seeker's phone reaches the
 -- owner only once the request or invite is accepted.
+-- An owner's invite lapses 3 days after it was sent: the seeker no longer sees it, the owner sees
+-- 'expired' (and can invite again). expires_at is the deadline while it's open.
 create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
                name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb,
-               by text, compromise jsonb, orig_match_pct int, on_time boolean)
+               by text, compromise jsonb, orig_match_pct int, on_time boolean, expires_at timestamptz)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
-         r.status, r.match_pct, r.message, r.created_at, r.decided_at,
+         case when r.initiated_by = 'owner' and r.status = 'pending' and r.created_at < now() - interval '3 days' then 'expired' else r.status end,
+         r.match_pct, r.message, r.created_at, r.decided_at,
          case when l.owner_id = auth.uid() then sp.full_name
               when r.initiated_by = 'owner' then split_part(coalesce(pv.contact_name, ''), ' ', 1) end,
          case when l.owner_id = auth.uid() then sp.occupation end,
@@ -1087,12 +1107,14 @@ language sql security definer set search_path = public stable as $$
               else not r.seen_by_seeker end,
          case when l.owner_id = auth.uid() then sp.interests end,
          r.initiated_by, r.compromise, r.orig_match_pct,
-         case when l.owner_id = auth.uid() then sp.show_on_time and sp.on_time_months >= 3 and sp.on_time_at > now() - interval '40 days' end
+         case when l.owner_id = auth.uid() then sp.show_on_time and sp.on_time_months >= 3 and sp.on_time_at > now() - interval '40 days' end,
+         case when r.initiated_by = 'owner' and r.status = 'pending' then r.created_at + interval '3 days' end
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
   left join fm_listing_private pv on pv.listing_id = r.listing_id
   where (l.owner_id = auth.uid() or r.seeker_id = auth.uid()) and r.status <> 'withdrawn'
+    and not (l.owner_id <> auth.uid() and r.initiated_by = 'owner' and r.status = 'pending' and r.created_at < now() - interval '3 days')
   order by r.created_at desc
   limit 200;
 $$;
@@ -1892,6 +1914,61 @@ language sql stable security definer set search_path = public as $$
   order by l.created_at desc limit 10;
 $$;
 
+-- The other way round, for owners: seekers who just started looking where their listing is (city and area, 70%+
+-- vibe, not yet in touch). In the app since p_since (at most a week back); fm_seeker_audience is the push
+-- version (fm-notify, service role), fired by fm_seeker_notify when a seeker sets or changes their city or areas.
+create or replace function public.fm_seeker_alerts(p_since timestamptz)
+returns table (seeker_id uuid, name text, listing_id uuid, listing_title text, locality text, match_pct int, budget int, search_at timestamptz)
+language sql stable security definer set search_path = public as $$
+  select p.id, split_part(coalesce(p.full_name, ''), ' ', 1), l.id, l.title, l.locality, fm_match(p.vibe, l.household), (p.search->>'budget')::int, p.search_at
+  from fm_listings l
+  join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
+   and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()))
+   and lower(p.search->>'city') = lower(l.city)
+   and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
+  where l.owner_id = auth.uid() and l.status = 'active' and fm_vibe_count(p.vibe) >= 6
+    and coalesce(fm_match(p.vibe, l.household), 0) >= 70
+    and p.search_at > greatest(coalesce(p_since, now() - interval '1 day'), now() - interval '7 days')
+    and not exists (select 1 from fm_requests r where r.listing_id = l.id and r.seeker_id = p.id)
+  order by p.search_at desc limit 10;
+$$;
+create or replace function public.fm_seeker_audience(p_seeker uuid)
+returns table (owner_id uuid, listing_id uuid, listing_title text, locality text, match_pct int, budget int)
+language sql stable security definer set search_path = public as $$
+  select l.owner_id, l.id, l.title, l.locality, fm_match(p.vibe, l.household), (p.search->>'budget')::int
+  from fm_profiles p
+  join fm_listings l on l.status = 'active' and l.owner_id <> p.id
+   and lower(p.search->>'city') = lower(l.city)
+   and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
+   and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = l.owner_id))
+  where p.id = p_seeker and p.role = 'seeker' and p.discoverable and fm_vibe_count(p.vibe) >= 6
+    and coalesce(fm_match(p.vibe, l.household), 0) >= 70
+    and not exists (select 1 from fm_requests r where r.listing_id = l.id and r.seeker_id = p.id)
+  limit 200;
+$$;
+alter table public.fm_profiles add column if not exists seeker_alert_at timestamptz;
+create or replace function public.fm_seeker_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if new.role is distinct from 'seeker' or not new.discoverable or new.search->>'city' is null or fm_vibe_count(new.vibe) < 6 then return new; end if;
+  -- Only when the city or areas change (or the answers just became enough to match), and at most once a day.
+  if (old.search->>'city') is not distinct from (new.search->>'city') and (old.search->'areas') is not distinct from (new.search->'areas')
+     and not (fm_vibe_count(old.vibe) < 6 and fm_vibe_count(new.vibe) >= 6) then return new; end if;
+  if new.seeker_alert_at > now() - interval '1 day' then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  new.seeker_alert_at := now();
+  perform net.http_post(url := v_url, body := jsonb_build_object('seeker_id', new.id),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_profiles_seeker_notify on public.fm_profiles;
+create trigger fm_profiles_seeker_notify before update of search, vibe on public.fm_profiles
+  for each row execute function public.fm_seeker_notify();
+
 -- For fm-notify (service role only): everyone a new listing is for.
 create or replace function public.fm_listing_audience(p_listing uuid)
 returns table (user_id uuid, match_pct int, for_tribe boolean)
@@ -2044,6 +2121,12 @@ create table if not exists public.fm_market_offers (
 alter table public.fm_market_items  enable row level security;
 alter table public.fm_market_offers enable row level security;
 alter table public.fm_market_items add column if not exists boosted_until timestamptz;
+-- Pick-up: either side sets a time once an offer is accepted; collected_at closes the deal (the item is sold).
+-- bundle: an offer for everything in the seller's moving-out sale ("take the lot"), made on the sale's first item.
+alter table public.fm_market_offers add column if not exists pickup_at timestamptz;
+alter table public.fm_market_offers add column if not exists collected_at timestamptz;
+alter table public.fm_market_offers add column if not exists bundle boolean not null default false;
+alter table public.fm_market_offers add column if not exists bundle_items int;   -- how many things were in the lot when offered
 -- A seller's moving-out sale: one page (/#sale/<code>) with all their items, shown first until ends_at.
 create table if not exists public.fm_market_sales (
   id         uuid primary key default gen_random_uuid(),
@@ -2055,23 +2138,29 @@ create table if not exists public.fm_market_sales (
   created_at timestamptz not null default now()
 );
 alter table public.fm_market_sales enable row level security;   -- no policies: the fm_market_sale* functions only
+-- "Take the lot": one price for everything in the sale (null = not offered).
+alter table public.fm_market_sales add column if not exists bundle_price int;
 
 drop function if exists public.fm_market_search(text, text, text);
 drop function if exists public.fm_market_search(text, text, text, boolean);
--- Boosted items and items in a moving-out sale come first; boosted_until / sale_code say why.
+-- Boosted items and items in a moving-out sale come first; boosted_until / sale_code say why. The seller's
+-- record (since when, things sold, the on-time badge) and the sale's "take the lot" price come along.
 create or replace function public.fm_market_search(p_city text default null, p_category text default null, p_q text default null,
                                                    p_mine boolean default false)
 returns table (id uuid, title text, category text, condition text, price int, negotiable boolean, city text, locality text,
                description text, photos text[], moving_by date, status text, created_at timestamptz, bumped_at timestamptz,
                seller_name text, is_mine boolean, my_offer_status text, my_offer int, offer_count bigint,
-               boosted_until timestamptz, sale_code text, sale_until timestamptz)
+               boosted_until timestamptz, sale_code text, sale_until timestamptz,
+               seller_since timestamptz, seller_sold int, seller_on_time boolean, bundle_price int)
 language sql security definer set search_path = public as $$
   select fm_throttle('market', 200, 1000);
   select i.id, i.title, i.category, i.condition, i.price, i.negotiable, i.city, i.locality, i.description, i.photos,
          i.moving_by, i.status, i.created_at, i.bumped_at,
          split_part(coalesce(p.full_name, ''), ' ', 1), i.seller_id = auth.uid(), o.status, o.offer,
          (select count(*) from fm_market_offers x where x.item_id = i.id and x.status in ('pending','accepted')),
-         case when i.boosted_until > now() then i.boosted_until end, sl.code, sl.ends_at
+         case when i.boosted_until > now() then i.boosted_until end, sl.code, sl.ends_at,
+         p.created_at, (select count(*)::int from fm_market_items y where y.seller_id = i.seller_id and y.status = 'sold'),
+         coalesce(p.show_on_time and p.on_time_months >= 3 and p.on_time_at > now() - interval '40 days', false), sl.bundle_price
   from fm_market_items i
   left join fm_profiles p on p.id = i.seller_id
   left join fm_market_sales sl on sl.seller_id = i.seller_id and sl.ends_at > now()
@@ -2104,7 +2193,8 @@ end $$;
 
 -- Start (or change) my moving-out sale, until the end of p_until (India time), 30 days at most. Starting one
 -- uses a sale credit, except while charges are off; changing the title or date of a running sale is free.
-create or replace function public.fm_market_sale_start(p_until date, p_title text)
+drop function if exists public.fm_market_sale_start(date, text);
+create or replace function public.fm_market_sale_start(p_until date, p_title text, p_bundle int default null)
 returns table (code text, ends_at timestamptz, error text)
 language plpgsql security definer set search_path = public as $$
 declare v_today date := (now() at time zone 'Asia/Kolkata')::date; v_s fm_market_sales%rowtype; v_end timestamptz; v_code text;
@@ -2112,6 +2202,7 @@ declare v_today date := (now() at time zone 'Asia/Kolkata')::date; v_s fm_market
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   if char_length(v_title) < 3 then return query select null::text, null::timestamptz, 'bad-title'; return; end if;
+  if p_bundle is not null and p_bundle not between 1 and 10000000 then return query select null::text, null::timestamptz, 'bad-bundle'; return; end if;
   if p_until is null or p_until < v_today or p_until > v_today + 30 then return query select null::text, null::timestamptz, 'bad-date'; return; end if;
   if not exists (select 1 from fm_market_items where seller_id = auth.uid() and status = 'active') then
     return query select null::text, null::timestamptz, 'no-items'; return;
@@ -2120,7 +2211,7 @@ begin
   select * into v_s from fm_market_sales where seller_id = auth.uid() for update;
   if v_s.id is not null and v_s.ends_at > now() then
     if v_end > v_s.started_at + interval '31 days' then return query select null::text, null::timestamptz, 'bad-date'; return; end if;
-    update fm_market_sales set title = v_title, ends_at = v_end where id = v_s.id;
+    update fm_market_sales set title = v_title, ends_at = v_end, bundle_price = p_bundle where id = v_s.id;
     return query select v_s.code, v_end, null::text; return;
   end if;
   if (select charges_enabled from fm_settings) then
@@ -2128,14 +2219,14 @@ begin
     if not found then return query select null::text, null::timestamptz, 'sale-required'; return; end if;
   end if;
   if v_s.id is not null then
-    update fm_market_sales set title = v_title, ends_at = v_end, started_at = now() where id = v_s.id;
+    update fm_market_sales set title = v_title, ends_at = v_end, started_at = now(), bundle_price = p_bundle where id = v_s.id;
     return query select v_s.code, v_end, null::text; return;
   end if;
   loop
     v_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6));
     exit when not exists (select 1 from fm_market_sales where fm_market_sales.code = v_code);
   end loop;
-  insert into fm_market_sales (seller_id, code, title, ends_at) values (auth.uid(), v_code, v_title, v_end);
+  insert into fm_market_sales (seller_id, code, title, ends_at, bundle_price) values (auth.uid(), v_code, v_title, v_end, p_bundle);
   return query select v_code, v_end, null::text;
 end $$;
 
@@ -2146,6 +2237,11 @@ language sql security definer set search_path = public as $$
   select fm_throttle('sale', 120, 600);
   select jsonb_build_object('code', s.code, 'title', s.title, 'seller', split_part(coalesce(p.full_name, ''), ' ', 1),
     'ends_at', s.ends_at, 'active', s.ends_at > now(), 'is_mine', coalesce(s.seller_id = auth.uid(), false),
+    'bundle_price', s.bundle_price,
+    'bundle_status', (select o.status from fm_market_offers o join fm_market_items i on i.id = o.item_id
+                      where i.seller_id = s.seller_id and o.bundle and o.status = 'accepted' and o.collected_at is null limit 1),
+    'my_bundle', (select o.status from fm_market_offers o join fm_market_items i on i.id = o.item_id
+                  where i.seller_id = s.seller_id and o.bundle and o.buyer_id = auth.uid() and o.status in ('pending', 'accepted') limit 1),
     'items', coalesce((select jsonb_agg(jsonb_build_object('id', i.id, 'title', i.title, 'category', i.category, 'condition', i.condition,
         'price', i.price, 'negotiable', i.negotiable, 'city', i.city, 'locality', i.locality, 'photos', i.photos, 'status', i.status,
         'moving_by', i.moving_by, 'created_at', i.created_at, 'bumped_at', i.bumped_at) order by i.status = 'reserved', i.bumped_at desc)
@@ -2196,7 +2292,10 @@ begin
    where id = p_item and seller_id = auth.uid();
 end $$;
 
-create or replace function public.fm_market_offer(p_item uuid, p_offer int, p_message text)
+drop function if exists public.fm_market_offer(uuid, text, int);
+drop function if exists public.fm_market_offer(uuid, int, text);
+-- p_bundle: an offer for everything in the seller's moving-out sale, at or near its "take the lot" price.
+create or replace function public.fm_market_offer(p_item uuid, p_offer int, p_message text, p_bundle boolean default false)
 returns table (status text, error text)
 language plpgsql security definer set search_path = public as $$
 declare v_i fm_market_items%rowtype; v_o fm_market_offers%rowtype;
@@ -2206,16 +2305,20 @@ begin
   if v_i.id is null then return query select null::text, 'item-not-available'; return; end if;
   if v_i.seller_id = auth.uid() then return query select null::text, 'own-item'; return; end if;
   if p_offer is null or p_offer < 0 or p_offer > 10000000 then return query select null::text, 'bad-offer'; return; end if;
+  if coalesce(p_bundle, false) and (p_offer < 1 or not exists (select 1 from fm_market_sales s where s.seller_id = v_i.seller_id and s.ends_at > now() and s.bundle_price is not null)) then
+    return query select null::text, 'no-bundle'; return;
+  end if;
   select * into v_o from fm_market_offers where item_id = p_item and buyer_id = auth.uid();
   if v_o.status in ('pending','accepted') then return query select v_o.status, null::text; return; end if;
   if (select count(*) from fm_market_offers o where o.buyer_id = auth.uid() and o.created_at > now() - interval '1 day') >= 30 then
     return query select null::text, 'daily-limit'; return;
   end if;
-  insert into fm_market_offers (item_id, buyer_id, offer, message)
-  values (p_item, auth.uid(), p_offer, left(coalesce(p_message, ''), 300))
+  insert into fm_market_offers (item_id, buyer_id, offer, message, bundle, bundle_items)
+  values (p_item, auth.uid(), p_offer, left(coalesce(p_message, ''), 300), coalesce(p_bundle, false),
+          case when coalesce(p_bundle, false) then (select count(*)::int from fm_market_items y where y.seller_id = v_i.seller_id and y.status = 'active') end)
   on conflict (item_id, buyer_id) do update
-    set status = 'pending', offer = excluded.offer, message = excluded.message, seen_seller = false, seen_buyer = true,
-        created_at = now(), decided_at = null;
+    set status = 'pending', offer = excluded.offer, message = excluded.message, bundle = excluded.bundle, bundle_items = excluded.bundle_items,
+        seen_seller = false, seen_buyer = true, created_at = now(), decided_at = null, pickup_at = null, collected_at = null;
   return query select 'pending'::text, null::text;
 end $$;
 
@@ -2235,15 +2338,168 @@ begin
   if v_o.status <> 'pending' then return v_o.status; end if;
   update fm_market_offers set status = case when p_accept then 'accepted' else 'declined' end, decided_at = now(),
          seen_buyer = false, seen_seller = true where id = p_offer;
-  if p_accept then update fm_market_items set status = 'reserved' where id = v_o.item_id and status = 'active'; end if;
+  if p_accept then
+    update fm_market_items set status = 'reserved' where id = v_o.item_id and status = 'active';
+    if v_o.bundle then update fm_market_items set status = 'reserved' where seller_id = auth.uid() and status = 'active'; end if;
+  end if;
   return case when p_accept then 'accepted' else 'declined' end;
 end $$;
 
--- Offers on my items ('incoming') and my offers ('outgoing'). Numbers only once accepted.
+-- Pick-up: either side of an accepted offer sets (or clears) the time; the other side is told.
+create or replace function public.fm_market_pickup(p_offer uuid, p_at timestamptz) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_o fm_market_offers%rowtype; v_seller uuid;
+begin
+  select o.* into v_o from fm_market_offers o where o.id = p_offer;
+  select i.seller_id into v_seller from fm_market_items i where i.id = v_o.item_id;
+  if v_o.id is null or (v_seller <> auth.uid() and v_o.buyer_id <> auth.uid()) then raise exception 'not-found'; end if;
+  if v_o.status <> 'accepted' or v_o.collected_at is not null then raise exception 'not-accepted'; end if;
+  if p_at is not null and (p_at < now() - interval '1 hour' or p_at > now() + interval '30 days') then raise exception 'bad-time'; end if;
+  update fm_market_offers set pickup_at = p_at,
+         seen_buyer = case when v_seller = auth.uid() then false else seen_buyer end,
+         seen_seller = case when v_seller = auth.uid() then seen_seller else false end
+   where id = p_offer;
+end $$;
+-- Collected: the deal is done. The item (all of them, for a bundle) is marked sold.
+create or replace function public.fm_market_collected(p_offer uuid) returns void
+language plpgsql security definer set search_path = public as $$
+declare v_o fm_market_offers%rowtype; v_seller uuid;
+begin
+  select o.* into v_o from fm_market_offers o where o.id = p_offer;
+  select i.seller_id into v_seller from fm_market_items i where i.id = v_o.item_id;
+  if v_o.id is null or (v_seller <> auth.uid() and v_o.buyer_id <> auth.uid()) then raise exception 'not-found'; end if;
+  if v_o.status <> 'accepted' then raise exception 'not-accepted'; end if;
+  update fm_market_offers set collected_at = coalesce(collected_at, now()), seen_buyer = true, seen_seller = true where id = p_offer;
+  update fm_market_items set status = 'sold' where id = v_o.item_id and status in ('active', 'reserved');
+  if v_o.bundle then update fm_market_items set status = 'sold' where seller_id = v_seller and status in ('active', 'reserved'); end if;
+end $$;
+
+-- What things like this went for: the middle half of accepted offers in the last 6 months for this category,
+-- in the city when it has 3 or more, else everywhere. Nothing until there are 3.
+create or replace function public.fm_market_price_guide(p_city text, p_category text)
+returns table (n int, lo int, hi int, scope text)
+language sql stable security definer set search_path = public as $$
+  with sold as (
+    select o.offer as amt, i.city from fm_market_offers o join fm_market_items i on i.id = o.item_id
+    where o.status = 'accepted' and not o.bundle and i.category = p_category and i.price > 0 and o.offer > 0
+      and o.decided_at > now() - interval '180 days'),
+  c as (select count(*) as n, percentile_cont(0.25) within group (order by amt) as lo, percentile_cont(0.75) within group (order by amt) as hi
+        from sold where lower(city) = lower(coalesce(p_city, ''))),
+  a as (select count(*) as n, percentile_cont(0.25) within group (order by amt) as lo, percentile_cont(0.75) within group (order by amt) as hi from sold)
+  select case when c.n >= 3 then c.n else a.n end::int,
+         (round(case when c.n >= 3 then c.lo else a.lo end / 50) * 50)::int, (round(case when c.n >= 3 then c.hi else a.hi end / 50) * 50)::int,
+         case when c.n >= 3 then 'city' else 'all' end
+  from c, a where greatest(c.n, a.n) >= 3;
+$$;
+
+-- Wanted: "Looking for a single bed under ₹3,000 in Baner". Public ones show on FlatMart's Wanted tab;
+-- private ones are saved searches. Either way the person is told when a matching item is posted.
+create table if not exists public.fm_market_wants (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  city        text not null,
+  locality    text not null default '',
+  category    text not null check (category in ('furniture','beds','appliances','kitchen','electronics','decor','bikes','books','other')),
+  max_price   int  not null default 0 check (max_price between 0 and 10000000),
+  title       text not null check (char_length(title) between 3 and 80),
+  public      boolean not null default true,
+  status      text not null default 'open' check (status in ('open','closed')),
+  notified_at timestamptz not null default now(),
+  created_at  timestamptz not null default now()
+);
+alter table public.fm_market_wants enable row level security;
+create index if not exists fm_market_wants_city on public.fm_market_wants (city, status, created_at desc);
+create or replace function public.fm_market_want_save(p_id uuid, p_city text, p_locality text, p_category text, p_max_price int, p_title text, p_public boolean)
+returns uuid
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_title text := left(trim(coalesce(p_title, '')), 80);
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('mkpost', 20, 60);
+  if char_length(v_title) < 3 or char_length(coalesce(p_city, '')) not between 2 and 60 or char_length(coalesce(p_locality, '')) > 80 then raise exception 'too-long'; end if;
+  if p_id is null then
+    if (select count(*) from fm_market_wants where user_id = auth.uid() and status = 'open') >= 10 then raise exception 'too-many-wants'; end if;
+    insert into fm_market_wants (user_id, city, locality, category, max_price, title, public)
+    values (auth.uid(), p_city, trim(coalesce(p_locality, '')), p_category, coalesce(p_max_price, 0), v_title, coalesce(p_public, true))
+    returning id into v_id;
+    return v_id;
+  end if;
+  update fm_market_wants set city = p_city, locality = trim(coalesce(p_locality, '')), category = p_category, max_price = coalesce(p_max_price, 0),
+         title = v_title, public = coalesce(p_public, true), status = 'open'
+   where id = p_id and user_id = auth.uid();
+  if not found then raise exception 'not-found'; end if;
+  return p_id;
+end $$;
+create or replace function public.fm_market_want_close(p_id uuid) returns void
+language sql security definer set search_path = public as $$
+  update fm_market_wants set status = 'closed' where id = p_id and user_id = auth.uid();
+$$;
+-- Open wants: public ones in the city (all cities when null), plus all of mine.
+create or replace function public.fm_market_wants(p_city text default null)
+returns table (id uuid, city text, locality text, category text, max_price int, title text, public boolean, status text,
+               created_at timestamptz, name text, is_mine boolean)
+language sql security definer set search_path = public as $$
+  select fm_throttle('market', 200, 1000);
+  select w.id, w.city, w.locality, w.category, w.max_price, w.title, w.public, w.status, w.created_at,
+         split_part(coalesce(p.full_name, ''), ' ', 1), w.user_id = auth.uid()
+  from fm_market_wants w left join fm_profiles p on p.id = w.user_id
+  where auth.uid() is not null and w.status = 'open'
+    and (w.user_id = auth.uid() or (w.public and (p_city is null or lower(w.city) = lower(p_city))))
+  order by w.user_id = auth.uid() desc, w.created_at desc
+  limit 200;
+$$;
+-- Items posted since I last looked that fit one of my open wants (each is reported once).
+create or replace function public.fm_market_want_matches()
+returns table (want_id uuid, want_title text, id uuid, title text, category text, price int, city text, locality text, photos text[], created_at timestamptz)
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then return; end if;
+  return query
+  select w.id, w.title, i.id, i.title, i.category, i.price, i.city, i.locality, i.photos, i.created_at
+  from fm_market_wants w
+  join fm_market_items i on i.status = 'active' and i.seller_id <> w.user_id and i.category = w.category
+   and lower(i.city) = lower(w.city) and (w.locality = '' or lower(i.locality) = lower(w.locality))
+   and (w.max_price = 0 or i.price <= w.max_price) and i.created_at > w.notified_at
+  where w.user_id = auth.uid() and w.status = 'open'
+  order by i.created_at desc limit 10;
+  update fm_market_wants set notified_at = now() where user_id = auth.uid() and status = 'open';
+end $$;
+-- For fm-notify (service role only): everyone whose open want a new item fits.
+create or replace function public.fm_market_want_audience(p_item uuid)
+returns table (user_id uuid, want_title text)
+language sql stable security definer set search_path = public as $$
+  select w.user_id, w.title
+  from fm_market_items i
+  join fm_market_wants w on w.status = 'open' and w.user_id <> i.seller_id and w.category = i.category
+   and lower(w.city) = lower(i.city) and (w.locality = '' or lower(i.locality) = lower(w.locality))
+   and (w.max_price = 0 or i.price <= w.max_price)
+  where i.id = p_item and i.status = 'active'
+  limit 200;
+$$;
+create or replace function public.fm_market_item_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  if new.status <> 'active' then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(url := v_url, body := jsonb_build_object('item_id', new.id),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_market_items_notify on public.fm_market_items;
+create trigger fm_market_items_notify after insert on public.fm_market_items for each row execute function public.fm_market_item_notify();
+
+-- Offers on my items ('incoming') and my offers ('outgoing'). Numbers only once accepted. With the pick-up
+-- time, whether it's a bundle (and how many things), and the other side's record (deals done, since when).
+drop function if exists public.fm_market_inbox();
 create or replace function public.fm_market_inbox()
 returns table (id uuid, item_id uuid, item_title text, item_photo text, item_price int, item_status text, category text,
                direction text, status text, offer int, message text, name text, phone text, unseen boolean,
-               created_at timestamptz, decided_at timestamptz)
+               created_at timestamptz, decided_at timestamptz, pickup_at timestamptz, collected_at timestamptz,
+               bundle boolean, bundle_items int, other_deals int, other_since timestamptz)
 language sql stable security definer set search_path = public as $$
   select o.id, i.id, i.title, i.photos[1], i.price, i.status, i.category,
          case when i.seller_id = auth.uid() then 'incoming' else 'outgoing' end,
@@ -2251,7 +2507,11 @@ language sql stable security definer set search_path = public as $$
          split_part(coalesce(case when i.seller_id = auth.uid() then b.full_name else s.full_name end, ''), ' ', 1),
          case when o.status = 'accepted' then (case when i.seller_id = auth.uid() then b.phone else s.phone end) end,
          case when i.seller_id = auth.uid() then not o.seen_seller else not o.seen_buyer end,
-         o.created_at, o.decided_at
+         o.created_at, o.decided_at, o.pickup_at, o.collected_at, o.bundle, o.bundle_items,
+         case when i.seller_id = auth.uid()
+              then (select count(*)::int from fm_market_offers x join fm_market_items z on z.id = x.item_id where x.buyer_id = o.buyer_id and x.status = 'accepted' and (x.collected_at is not null or z.status = 'sold'))
+              else (select count(*)::int from fm_market_items y where y.seller_id = i.seller_id and y.status = 'sold') end,
+         case when i.seller_id = auth.uid() then b.created_at else s.created_at end
   from fm_market_offers o
   join fm_market_items i on i.id = o.item_id
   left join fm_profiles b on b.id = o.buyer_id
@@ -2842,7 +3102,8 @@ begin
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
                      'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify',
-                     'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours') then
+                     'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours',
+                     'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -2854,6 +3115,8 @@ grant execute on function public.fm_area_demand(text, text) to anon;
 grant execute on function public.fm_otp_request(text, text) to anon;
 grant execute on function public.fm_test_code_ok(text) to service_role;
 grant execute on function public.fm_listing_audience(uuid) to service_role;
+grant execute on function public.fm_seeker_audience(uuid) to service_role;
+grant execute on function public.fm_market_want_audience(uuid) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;
 grant execute on function public.fm_party_get(text, text) to anon;
 grant execute on function public.fm_party_rsvp(text, text, text, text, int) to anon;
