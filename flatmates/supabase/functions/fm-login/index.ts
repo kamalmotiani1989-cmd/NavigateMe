@@ -49,8 +49,10 @@ Deno.serve(async (req) => {
   const { phone, code, captcha } = await req.json().catch(() => ({}));
   if (!/^[6-9][0-9]{9}$/.test(String(phone ?? ""))) return json({ error: "bad-phone" }, 400);
 
-  const { data: settings } = await admin.from("fm_settings").select("test_login").single();
-  if (!settings?.test_login) return json({ error: "test-login-off" }, 403);
+  // Test login off: only numbers on the private-preview list (fm_settings.hold_allow) may still sign in.
+  const { data: settings } = await admin.from("fm_settings").select("test_login, hold_allow").single();
+  const allowed = ((settings?.hold_allow ?? []) as string[]).map((x) => String(x).replace(/\D/g, "").slice(-10));
+  if (!settings?.test_login && !allowed.includes(phone)) return json({ error: "test-login-off" }, 403);
 
   // Wrong codes in the last hour: 5 per number, 10 per network address, 30 in all.
   const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();

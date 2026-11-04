@@ -2606,11 +2606,20 @@ const skeletonHtml = (n, rows) => Array.from({ length: n }, (_, i) => rows
   : `<div class="skel-card" aria-hidden="true" style="--i:${i}"><div class="sk sk-img"></div><div class="sk sk-l"></div><div class="sk sk-s"></div><div class="sk sk-s w50"></div></div>`).join("");
 const showSkeleton = (id, n, rows) => { const el = $(id); if(api.live && el && !el.children.length) el.innerHTML = skeletonHtml(n, rows); };
 // On hold (see README, "On hold"): the server answers every request with 'on-hold'; only Coming soon shows.
+// Private preview: 7 taps on the logo of the Coming soon screen open the door to the sign-in. The server still
+// decides: only numbers in fm_settings.hold_allow get past it; anyone else is back on Coming soon on signing in.
+let holdDoor = false, holdTimer = null;
 function showHold(){
+  if(holdDoor) return;
   const h = $("holdScreen"); if(!h || !h.hidden) return;
   h.hidden = false; document.documentElement.classList.add("on-hold");
   document.querySelectorAll("dialog[open]").forEach(d => d.close());
-  setInterval(() => document.querySelectorAll("dialog[open]").forEach(d => d.close()), 1000);
+  if(!holdTimer) holdTimer = setInterval(() => document.querySelectorAll("dialog[open]").forEach(d => d.close()), 1000);
+}
+function openHoldDoor(){
+  holdDoor = true; const h = $("holdScreen"); if(h) h.hidden = true;
+  document.documentElement.classList.remove("on-hold");
+  if(holdTimer){ clearInterval(holdTimer); holdTimer = null; }
 }
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const inr = n => "₹" + Number(n).toLocaleString("en-IN");
@@ -3664,6 +3673,7 @@ function makeLiveApi(sb){
         const { error } = await sb.auth.verifyOtp({ phone: "+91" + pendingOtp.phone, token: code, type: "sms" });
         if(error) throw new Error("bad-code");
       }
+      holdDoor = false;   // from here the server decides: a number not on the preview list lands back on Coming soon
       await rpc("fm_set_profile", { p_name: pendingOtp.name || null, p_role: pendingOtp.role || null });
       pendingOtp = null; await this.me();
     },
@@ -9339,6 +9349,13 @@ async function hbTickets(){
   api.ticketsSeen().catch(() => {}); ticketUnseen = 0; drawHelpBadge();
 }
 $("helpFab").addEventListener("click", () => openHelp());
+// The private-preview door: 7 quick taps on the logo of the Coming soon screen (see showHold).
+(() => { let taps = 0, last = 0;
+  $("holdScreen").addEventListener("click", e => {
+    if(!e.target.closest(".hs-mark")) return;
+    const now = Date.now(); taps = now - last < 1500 ? taps + 1 : 1; last = now;
+    if(taps >= 7){ taps = 0; openHoldDoor(); }
+  }); })();
 $("hbChips").addEventListener("click", e => {
   const b = e.target.closest("[data-hb]"); if(!b) return;
   const last = hb.log[hb.log.length - 1], c = last && last.chips[Number(b.dataset.hb)]; if(!c) return;

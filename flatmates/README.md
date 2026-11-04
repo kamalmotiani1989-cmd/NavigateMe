@@ -581,6 +581,15 @@ The whole app can be put on hold behind a **Coming soon** page. Three switches, 
    delete their sessions: `delete from auth.sessions; delete from auth.refresh_tokens;` (an already-issued
    access token lasts up to an hour, but the database hold refuses it anyway).
 
+**Private preview while on hold.** Numbers in `fm_settings.hold_allow` get in while everyone else sees Coming
+soon: `update fm_settings set hold_allow = '{98XXXXXXXX}';` (10-digit numbers; several are fine). The Coming
+soon screen in the app (website copy and Android) has a door: 7 quick taps on the logo show the normal
+sign-in. A listed number signs in with the test code and uses the live app in full; the server lets its
+requests through (`fm_on_hold` reads the number from the sign-in token, `fm_otp_request` stays reachable
+and fm-login checks the list). Any other number is refused at sign-in, and would be back on Coming soon
+even with a token. The website itself keeps showing `hold.html`, so the preview is the Android app (or
+`index.html` opened directly). To end the preview: `update fm_settings set hold_allow = '{}';`
+
 To bring the app back:
 
 1. In the SQL editor: `update fm_settings set on_hold = false, test_login = true;`
