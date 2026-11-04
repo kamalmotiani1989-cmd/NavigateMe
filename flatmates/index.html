@@ -1003,8 +1003,11 @@ div.cx-area{cursor:default}
 .help-fab{position:fixed; right:20px; bottom:22px; z-index:40; display:inline-flex; align-items:center; gap:8px; height:52px; padding:0 20px 0 16px; border:0; border-radius:999px;
   background:var(--brand); color:#fff; font:800 15px var(--body); box-shadow:0 10px 28px rgba(11,124,130,.35); cursor:pointer; transition:transform .12s}
 .help-fab:hover{background:var(--brand-2)} .help-fab:active{transform:scale(.95)}
+.hf .hf-bubble{fill:currentColor} .hf .hf-eye{fill:var(--hf-face,#fff)} .hf .hf-mouth{fill:none; stroke:var(--hf-face,#fff); stroke-width:1.9; stroke-linecap:round}
+.help-fab{--hf-face:var(--brand)} .help-fab:hover{--hf-face:var(--brand-2)} .hb-av{--hf-face:var(--brand-soft)}
 .help-fab .badge{position:absolute; top:-4px; right:-4px; box-shadow:0 0 0 2px #fff}
-@media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none} }
+@media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none}
+  body:not(.app) .help-fab{bottom:calc(18px + env(safe-area-inset-bottom,0px))} }
 body:has(#view-splits:not([hidden]) #fsGroup:not([hidden])) .help-fab{display:none}
 #dlgHelp[open]{display:flex; flex-direction:column; height:min(640px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
 @media (max-width:640px){ #dlgHelp[open]{width:100vw; height:100dvh} }
@@ -1818,12 +1821,12 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <h2>Welcome! What brings you here?</h2>
           <p class="sub">Pick one. You can switch any time from your account.</p>
           <div class="roles">
-            <label class="role"><input type="radio" name="role" value="owner" required>
-              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
-              <span><b>I'm looking for a flatmate</b><span>I have a flat with a spare room or bed</span></span></label>
             <label class="role"><input type="radio" name="role" value="seeker" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/><path d="M8.5 12.5V10l2.5-2 2.5 2v2.5"/></svg></span>
-              <span><b>I'm looking for a room</b><span>A private or shared room, with people who match my vibe</span></span></label>
+              <span><b>I need a room</b><span>A private or shared room with people who live like you, or friends to take a flat together</span></span></label>
+            <label class="role"><input type="radio" name="role" value="owner" required>
+              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
+              <span><b>Posting a flat or a room</b><span>A spare room, a bed or a whole flat. See who'd fit in, then you choose</span></span></label>
           </div>
           <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
@@ -1951,7 +1954,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
       </div>
       <div><h4>Get started</h4>
         <button type="button" data-role-pick="seeker">Find a room</button>
-        <button type="button" data-role-pick="owner">Find a flatmate</button>
+        <button type="button" data-role-pick="owner">Post a flat or room</button>
         <button type="button" data-host-open>Who's looking near you</button></div>
       <div><h4>Flat life</h4>
         <button type="button" data-scroll="w-more">Flatsplits</button>
@@ -2539,7 +2542,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <div class="hb-chips" id="hbChips"></div></div>
   <form class="hb-form" id="hbForm" autocomplete="off"><input type="text" id="hbIn" maxlength="600" aria-label="Your message" placeholder="Type your question…">
     <button class="btn btn-primary" type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button></form></dialog>
-<button class="help-fab" id="helpFab" type="button" aria-label="Help and support" hidden><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1v.5M12 16.5h.01"/></svg><span>Help</span><i class="badge" id="helpBadge" hidden></i></button>
+<button class="help-fab" id="helpFab" type="button" aria-label="Help and support" hidden><svg class="hf" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path class="hf-bubble" d="M12 2.5c-5.4 0-9.5 3.6-9.5 8.1 0 2.3 1.1 4.4 3 5.8L4.6 21.5l5-2.3c.8.2 1.6.3 2.4.3 5.4 0 9.5-3.6 9.5-8.1S17.4 2.5 12 2.5z"/><circle class="hf-eye" cx="9.2" cy="10.2" r="1.25"/><circle class="hf-eye" cx="14.8" cy="10.2" r="1.25"/><path class="hf-mouth" d="M8.9 13.3c.8 1.1 1.9 1.7 3.1 1.7s2.3-.6 3.1-1.7"/></svg><span>Help</span><i class="badge" id="helpBadge" hidden></i></button>
 
 <dialog id="dlgMk" aria-labelledby="mkdTitle"><div class="mhead"><div><h2 id="mkdTitle"></h2><div class="loc" id="mkdSub"></div></div><div class="mh-acts">
     <button class="x" type="button" id="mkShare" aria-label="Share this item" title="Share" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
@@ -5557,7 +5560,7 @@ function loadCaptcha(){
   document.head.appendChild(sc);
 }
 
-// Website bits on the welcome page: in-page links, "Find a room" / "Find a flatmate" shortcuts
+// Website bits on the welcome page: in-page links, "Find a room" / "Post a flat or room" shortcuts
 // that pick the role and jump to the sign-in card, and the Android download links.
 document.querySelectorAll("[data-apk]").forEach(a => { a.href = APK_LINK; a.rel = "noopener"; });
 $("view-welcome").addEventListener("click", e => {
@@ -9167,7 +9170,7 @@ const HB_TOPICS = [
     acts: () => isOwner() ? [["See who's looking (Escape)", "go:escape"]] : [["Search near a place", "near"], ["Open Discover", "go:discover"]] },
   { id: "post", words: ["post", "list my", "listing", "advertise", "owner", "landlord", "spare room", "tenant", "let out", "my flat"],
     say: () => isOwner() ? `Tap <b>Post</b>: start with "Where's the flat?" (it fills in the area and the pin), add photos and the rent, and you're live. Posting is free.`
-      : `To list a room you need to switch to "I have a flat" in Account. Posting is free, and you can switch back any time.`,
+      : `To list a room you need to switch to "Posting a flat or a room" in Account. Posting is free, and you can switch back any time.`,
     acts: () => isOwner() ? [["Post a room", "go:post"], ["My flat", "go:mine"]] : [["Open Account", "go:account"]] },
   { id: "tribe", words: ["tribe", "team", "team up", "bond", "together", "friends", "group", "dost", "share a flat"],
     say: () => `<b>Tribe</b> is for finding people first, then the flat. You see people looking in your areas who match your vibe 70%+, people wanting the same kind of home first. When you both say yes you're a tribe (up to 3), numbers are shared, and we show homes that fit all of you: whole flats with a bedroom each, or flats with that many rooms free.`,
@@ -9225,7 +9228,7 @@ function drawHelp(){
   $("hbIn").placeholder = hb.flow && hb.flow.step === "text" ? "Tell us what happened…" : "Type your question…";
   requestAnimationFrame(() => { const l = $("hbScroll"); l.scrollTop = l.scrollHeight; });
 }
-const HB_ICON = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>`;
+const HB_ICON = `<svg class="hf" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="hf-bubble" d="M12 2.5c-5.4 0-9.5 3.6-9.5 8.1 0 2.3 1.1 4.4 3 5.8L4.6 21.5l5-2.3c.8.2 1.6.3 2.4.3 5.4 0 9.5-3.6 9.5-8.1S17.4 2.5 12 2.5z"/><circle class="hf-eye" cx="9.2" cy="10.2" r="1.25"/><circle class="hf-eye" cx="14.8" cy="10.2" r="1.25"/><path class="hf-mouth" d="M8.9 13.3c.8 1.1 1.9 1.7 3.1 1.7s2.3-.6 3.1-1.7"/></svg>`;
 function openHelp(start){
   if(!hb.log.length) hbSay(`Hi${firstName() ? " " + esc(firstName()) : ""}! 👋 I can show you around FindMeFlatMate, answer questions, or take a complaint or report to our team. What would you like to do?`, HB_HOME());
   if(!$("dlgHelp").open) $("dlgHelp").showModal();
