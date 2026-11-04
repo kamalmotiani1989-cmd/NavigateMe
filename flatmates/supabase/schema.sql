@@ -3168,15 +3168,24 @@ end $$;
 -- app shows only its Coming soon screen. The server side (service role: payments, notifications, test
 -- sign-in's own checks) carries on. Steps to hold and to lift it, website included: README, "On hold".
 alter table public.fm_settings add column if not exists on_hold boolean not null default false;
+-- Private preview: numbers in fm_settings.hold_allow get in while everything else waits (README, "On hold").
+-- fm_on_hold answers for the caller: true unless the signed-in number (from the token's claims) is on the list.
+alter table public.fm_settings add column if not exists hold_allow text[] not null default '{}';
 create or replace function public.fm_on_hold() returns boolean
 language sql stable security definer set search_path = public as $$
-  select coalesce((select on_hold from fm_settings limit 1), false)
+  select coalesce((select s.on_hold and not (
+            right(regexp_replace(coalesce(j.c -> 'user_metadata' ->> 'phone', j.c ->> 'phone', ''), '[^0-9]', '', 'g'), 10)
+            = any (select right(regexp_replace(a, '[^0-9]', '', 'g'), 10) from unnest(s.hold_allow) a where a ~ '[0-9]'))
+          from fm_settings s cross join (select nullif(current_setting('request.jwt.claims', true), '')::jsonb as c) j
+          limit 1), false)
 $$;
 -- Runs as the caller's role (anon / authenticated / service_role) before each API request.
 create or replace function public.fm_pre_request() returns void
 language plpgsql stable set search_path = public as $$
 begin
-  if current_user in ('anon', 'authenticated') and fm_on_hold() then
+  -- fm_otp_request stays reachable, so a listed number can ask for its sign-in code (fm-login checks the list).
+  if current_user in ('anon', 'authenticated') and fm_on_hold()
+     and coalesce(current_setting('request.path', true), '') <> '/rpc/fm_otp_request' then
     raise exception 'on-hold' using hint = 'FindMeFlatMate is coming soon.';
   end if;
 end $$;
