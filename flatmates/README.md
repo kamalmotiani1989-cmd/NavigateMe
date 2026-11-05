@@ -378,12 +378,6 @@ suggests the single change that brings most homes back ("Remove “No smoking”
   the area on a map; the exact address, map and directions appear once the owner accepts.
 - **Save before you spend.** A free ♥ shortlist, so seekers decide which owners to ask.
 - **Owners choose who they meet.** Numbers are only shared after the owner accepts a request.
-- **3D photo view.** On a listing, each photo is a card that floats in front of a blurred copy of itself, tilts
-  with the phone (or the mouse on a laptop) and turns like a stack as you swipe between photos; a tap opens the
-  full-screen viewer (swipe, tilt, double-tap to zoom). CSS transforms only, nothing to download; on iPhones the
-  tilt asks for motion permission on the first touch. The post form's photo previews lean the same way, with a
-  line saying the photos get the 3D view on the listing. A one-time hint ("Tilt your phone to look around") shows
-  on the first gallery.
 - **Illustrated rooms.** Listings without photos get a drawn room in place of a blank tile.
 
 ## Pricing
