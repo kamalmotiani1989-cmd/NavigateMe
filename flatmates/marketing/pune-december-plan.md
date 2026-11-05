@@ -1,6 +1,11 @@
 # FindMeFlatMate · Pune, December 2026 · listings plan and target
 
-Prepared 5 November 2026 for Kamal. Scope: 1 to 31 December, Pune only, listers (people with a room to fill).
+Prepared 5 November 2026 for Kamal. Scope: one month, Pune only, listers (people with a room to fill).
+
+**Decisions (5 Nov).** Full plan at ₹77,500, all 11 areas. Go-live month open: December or January, Kamal confirms.
+Dates below are written for December; for January, shift every date by one month (go-live 1 January, checkpoints
+7, 14, 21 and 31 January) and run the "launching soon" teasers from `pune-week-one-content.md` section C through
+December instead. Week-one copy, Pune carousel and reel cuts and the teasers are in `pune-week-one-content.md`.
 Budgets and copy build on `lister-campaign-pack.md`; the UTM and report details come from `../README.md`
 ("Ads and tracking"). Nothing here is live until Kamal lifts the hold and pastes it in.
 
