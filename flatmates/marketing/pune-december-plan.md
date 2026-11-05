@@ -59,7 +59,7 @@ pretend:
 ## 3 · Areas, budget and calendar
 
 **Areas (11).** Baner, Balewadi, Aundh, Wakad, Hinjewadi, Kothrud, Kharadi, Viman Nagar, Kalyani Nagar,
-Koregaon Park, Magarpatta. Baner is the area the spec already uses; the other ten are my pick of where
+Koregaon Park, Magarpatta (the app spells it "Hinjewadi Phase 1" in links). Baner is the area the spec already uses; the other ten are my pick of where
 people aged 21 to 35 rent in Pune. Cut to five (Baner, Wakad, Hinjewadi, Kharadi, Viman Nagar) if you
 want the ads to learn faster on the same money.
 
@@ -240,6 +240,11 @@ move for the week, and the test result with the next test.
 ---
 
 ## 9 · Needs a change in the app (for the tech employee, via Kamal)
+
+**Status 5 Nov, from the tech employee (read-only check, nothing built yet, waiting for Kamal's go-ahead):** items 2
+and 3 already work as typed; the app spells the area "Hinjewadi Phase 1", so per-area links use that name. Item 1 is
+coded in the app; what is missing is the **Meta Pixel ID** and the **Google tag and conversion IDs** from Kamal's Meta
+and Google Ads accounts, then a live check. Kamal: send those two IDs to the tech employee.
 
 1. Pixel `CompleteRegistration` on owner sign-up and a Google Ads conversion from it (needed for the
    Sales objective to learn).
