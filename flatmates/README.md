@@ -378,6 +378,9 @@ suggests the single change that brings most homes back ("Remove “No smoking”
   the area on a map; the exact address, map and directions appear once the owner accepts.
 - **Save before you spend.** A free ♥ shortlist, so seekers decide which owners to ask.
 - **Owners choose who they meet.** Numbers are only shared after the owner accepts a request.
+- **Photos loop.** Swiping on from the last photo of a listing brings you back to the first, and swiping back from
+  the first shows the last (a copy of each end photo sits just past the other end; landing on it jumps to the real
+  one). The dots, the counter and the arrows count only the real photos.
 - **Illustrated rooms.** Listings without photos get a drawn room in place of a blank tile.
 
 ## Pricing
