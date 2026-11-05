@@ -437,6 +437,9 @@ business is GST-registered; invoices need the GSTIN.
 - `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
   is made, accepted or declined (called by a database trigger).
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
+- `tests/demo/`: the browser suites that run against the app in demo mode (`tests/demo/run.sh`, see `tests/README.md`).
+- `marketing/`: the brand voice, audiences and the campaign packs; `team/`: the standing briefs for the AI employees
+  (`tech.md`, `marketing.md`) that Kamal runs as long-lived sessions on this repository.
 
 ## Run it locally
 
