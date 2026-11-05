@@ -1,25 +1,59 @@
 # Priorities · set by King
 
-_Updated by King after each weekly review. Employees read this at the start of every routine and task._
-_Last review: 5 Nov 2026 (onboarding)._
+_Updated by King after each weekly review and whenever Kamal changes direction. Employees read this at the start of
+every routine and task._
+_Last update: 5 Nov 2026, from Kamal's instructions._
+
+## Kamal's working hours (India time)
+6 to 10 in the morning, and 10 at night to midnight. Anything that needs Kamal (a decision, a pack to paste, a
+question) must be ready in the repo or the session before one of those windows starts. Outside them, carry on with
+the work that does not need him.
+
+## Sunday review
+Kamal sits with the team this Sunday (9 Nov); time to be shared. Mark and Salu bring the work below, written up and
+pushed, so the discussion is about choices, not reading.
 
 ## Teche (tech)
-1. Keep main green: the demo suites pass on every push, the Android build succeeds (build 74 was running at review time; confirm it).
-2. First report filed (112 demo checks, 0 failures). Keep it current: every entry names the tests run and the build number.
-3. Requests from Mark below, in order. Nothing is built until Kamal sends the IDs; say so in your report if they have not arrived.
+1. **Improve the app's UI and user experience, page by page.** Kamal's task, above everything else. Go through every
+   page and screen of `flatmates/index.html` (welcome and sign-in flow, the onboarding questions, Discover, a home's
+   page and the compatibility analysis, the posting form, Tribe, Escape, Flatsplits, FlatMart, Account, the Coming
+   soon screen). For each one write down what is hard, slow, unclear or ugly for a first-time user on a phone, then
+   fix it. User experience is the priority; "easy to change" is the second: make the fixes small, separate commits
+   with plain names, so Kamal can accept or drop each one. Keep the standing rules: the login process, the colours
+   and the onboarding questions do not change; the hold stays. Demo suites pass before every push; one PR per page or
+   per small group of pages, not one giant PR. Report after each page: what you changed, why, test counts.
+2. Keep main green: demo suites pass on every push, the Android build succeeds (last known build 74).
+3. Mark's Pixel and conversion wiring (below) waits on Kamal's IDs; do it when they arrive, between pages.
 4. Anything Kamal asks for directly comes first and is noted in your report.
 
 ## Mark (marketing)
-1. Open a PR for branch `marketing/pune-december-plan` (the December plan and week-one content) so Kamal can see and decide on it in the repo. No new content until it is in.
-2. The Tuesday content pack, ready to paste, within the README facts and the "launching soon" wording.
-3. Keep the lister and Gen Z packs current when the product changes.
+1. **Study the other flat-rental and flatmate companies and their ads, for Sunday.** Kamal's task. India first
+   (the flatmate apps, the no-broker rental sites, the PG and co-living brands, and the classifieds that carry rooms),
+   then the two or three best-known abroad. For each: what they say in one line, who they target, the ad words and
+   hooks they use (Google ad copy, Instagram and Facebook ads, reels), the campaigns and offers they run, what they
+   charge, and where they are weak. End with a one-page recommendation: what we copy, what we do differently, and
+   why. Facts only, each with its source and the date seen; no guesses about their numbers. Push it as a file in
+   `flatmates/marketing/` on a branch with a PR before Sunday morning. Nothing is spent and nothing is posted.
+2. Open a PR for branch `marketing/pune-december-plan` so Kamal can see the December plan in the repo.
+3. The Tuesday content pack stays, within the README facts and the "launching soon" wording.
 
 ## Salu (community)
-1. PR #43 (first tracker pass) waits for Kamal. Do not start a second pass until he merges it or answers the two questions in it.
-2. The Wednesday pack for Kamal, built only on groups with `rules read` or better; admin requests before any post. No posting until Kamal lifts the hold.
-3. Keep one post per group per week and different wording per group; the pack must show which variant goes where.
+1. **How to get into Pune's college groups without spending anything, for Sunday.** Kamal's task: colleges can give
+   an immediate boost. Work out the strategies and write them up: which colleges and which groups (official and
+   student-run, Facebook, WhatsApp and Telegram, hostel and PG groups, placement and fresher groups, alumni cells),
+   how each one is entered (admin request, a student ambassador, a society or fest tie-up, a helpful post in the
+   fresher season, a referral offer that costs nothing), what we offer the group in return, the rules and the risks,
+   and what Kamal would have to do himself. Rank them by expected reach for zero rupees and by how fast. Facts and
+   named sources; where you could not confirm a group, say so. Push it on a branch with a PR before Sunday morning.
+   No posting, no messaging members, no spend, and Pune only.
+2. PR #43 (first tracker pass) waits for Kamal; no second pass until he merges it or answers its two questions.
+3. The Wednesday pack, built only on groups with `rules read` or better; admin requests before any post. No posting
+   until Kamal lifts the hold.
 
 ## Requests between teams
-1. **Mark → Teche.** Wire the Meta Pixel `CompleteRegistration` event on owner sign-up and import it as a Google Ads conversion, so the December Pune ads can learn. Blocked until Kamal sends the Meta Pixel ID and the Google tag and conversion IDs. Then one live test: a phone sign-up through `?host=Pune` with a UTM link must show in `fm_source_report(7)`. Teche confirmed on 5 Nov that the `?host=Pune` page and UTM carry-through already work.
-2. **Mark → Teche, optional, January.** A `?host=Pune&area=<Area>` deep link per area for the area-named ads. Not before item 1.
-3. **Salu.** Nothing for Teche. Her open question (letting her session read public facebook.com pages) is Kamal's to answer.
+1. **Mark → Teche.** Wire the Meta Pixel `CompleteRegistration` event on owner sign-up and import it as a Google Ads
+   conversion, so the Pune ads can learn. Blocked until Kamal sends the Meta Pixel ID and the Google tag and
+   conversion IDs. Then one live test: a phone sign-up through `?host=Pune` with a UTM link must show in
+   `fm_source_report(7)`. Teche confirmed on 5 Nov that the `?host=Pune` page and UTM carry-through already work.
+2. **Mark → Teche, optional, later.** A `?host=Pune&area=<Area>` deep link per area for area-named ads. Not before item 1.
+3. **Salu.** Nothing for Teche. His open question (letting his session read public facebook.com pages) is Kamal's to answer.
