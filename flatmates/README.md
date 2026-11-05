@@ -439,7 +439,8 @@ business is GST-registered; invoices need the GSTIN.
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
 - `tests/demo/`: the browser suites that run against the app in demo mode (`tests/demo/run.sh`, see `tests/README.md`).
 - `marketing/`: the brand voice, audiences and the campaign packs; `team/`: the standing briefs for the AI employees
-  (`tech.md`, `marketing.md`, `community.md`) that Kamal runs as long-lived sessions on this repository;
+  (Teche `tech.md`, Mark `marketing.md`, Salu `community.md`, and their manager King `king.md`, who sets
+  `team/priorities.md` and reads `team/reports/`) that Kamal runs as long-lived sessions on this repository;
   `marketing/community/` holds the Pune Facebook-group tracker and post bank the community employee keeps.
 
 ## Run it locally
