@@ -6,8 +6,8 @@ _Last update: 5 Nov 2026, from Kamal's instructions._
 
 ## Kamal's working hours (India time)
 6 to 10 in the morning, and 10 at night to midnight. Anything that needs Kamal (a decision, a pack to paste, a
-question) must be ready in the repo or the session before one of those windows starts. Outside them, carry on with
-the work that does not need him.
+question, a report) must be ready in the repo or the session **before 10 pm** that day, so he reads it in the night
+window. Outside his hours, carry on with the work that does not need him.
 
 ## Sunday review
 Kamal sits with the team this Sunday (9 Nov); time to be shared. Mark and Salu bring the work below, written up and
