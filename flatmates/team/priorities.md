@@ -5,7 +5,7 @@ _Last review: 5 Nov 2026 (onboarding)._
 
 ## Teche (tech)
 1. Keep main green: the demo suites pass on every push, the Android build succeeds (build 74 was running at review time; confirm it).
-2. File your first report in `reports/teche.md`: the state of main, last build number, test counts from the demo suites.
+2. First report filed (112 demo checks, 0 failures). Keep it current: every entry names the tests run and the build number.
 3. Requests from Mark below, in order. Nothing is built until Kamal sends the IDs; say so in your report if they have not arrived.
 4. Anything Kamal asks for directly comes first and is noted in your report.
 
