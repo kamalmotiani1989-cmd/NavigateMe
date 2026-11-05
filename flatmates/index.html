@@ -6594,21 +6594,32 @@ async function openListing(id){
   wireGallery($("lBody").querySelector(".hero-pic"));
   if(!contact && l.geo) drawApproxMap("approxMap", l.geo);
 }
-// Photo gallery: dots and a counter over the photos, arrows for a mouse. The photos themselves scroll sideways.
+// Photo gallery: dots and a counter over the photos, arrows for a mouse. The photos themselves scroll sideways,
+// and they loop: a copy of the last photo sits before the first and a copy of the first after the last, so a swipe
+// past either end lands on a copy, and the gallery then jumps (without animation) to the real photo. Swiping on from
+// the last photo brings you back to the first; the dots, the counter and the arrows count only the real photos.
 function wireGallery(pic){
-  const g = pic && pic.querySelector(".gallery"), imgs = g ? g.querySelectorAll("img") : [], n = imgs.length;
+  const g = pic && pic.querySelector(".gallery"), real = g ? [...g.querySelectorAll("img")] : [], n = real.length;
   if(n < 2) return;
   const chev = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`;
   pic.insertAdjacentHTML("beforeend", `<div class="gal-dots" role="tablist" aria-label="Photos">${Array.from({ length: n }, (_, i) =>
       `<button type="button" role="tab" aria-label="Photo ${i + 1}" aria-selected="${i === 0}"></button>`).join("")}</div>
     <span class="gal-n" aria-live="polite">1 / ${n}</span>
-    <button class="gal-arr prev" type="button" aria-label="Previous photo" hidden>${chev}</button><button class="gal-arr next" type="button" aria-label="Next photo">${chev}</button>`);
+    <button class="gal-arr prev" type="button" aria-label="Previous photo">${chev}</button><button class="gal-arr next" type="button" aria-label="Next photo">${chev}</button>`);
   const dots = [...pic.querySelectorAll(".gal-dots button")], num = pic.querySelector(".gal-n"), prev = pic.querySelector(".gal-arr.prev"), next = pic.querySelector(".gal-arr.next");
-  const step = () => (imgs[1].offsetLeft - imgs[0].offsetLeft) || g.clientWidth;
-  const at = () => Math.max(0, Math.min(n - 1, Math.round(g.scrollLeft / step())));
-  const go = i => g.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * step(), behavior: "smooth" });
-  const sync = () => { const i = at(); dots.forEach((d, k) => d.setAttribute("aria-selected", k === i)); num.textContent = `${i + 1} / ${n}`; prev.hidden = i === 0; next.hidden = i === n - 1; };
-  g.addEventListener("scroll", sync, { passive: true });
+  const copyOf = img => { const c = img.cloneNode(true); c.classList.add("gal-clone"); c.setAttribute("aria-hidden", "true"); c.alt = ""; return c; };
+  g.prepend(copyOf(real[n - 1])); g.append(copyOf(real[0]));
+  const slides = [...g.children];                                   // copy of last, the n photos, copy of first
+  const step = () => (slides[1].offsetLeft - slides[0].offsetLeft) || g.clientWidth;
+  const pos = () => Math.round(g.scrollLeft / step());               // 0 .. n+1 (0 and n+1 are the copies)
+  const at = () => (pos() + n - 1) % n;                              // the real photo being looked at
+  const go = (i, smooth = true) => g.scrollTo({ left: (i + 1) * step(), behavior: smooth ? "smooth" : "auto" });
+  const sync = () => { const i = at(); dots.forEach((d, k) => d.setAttribute("aria-selected", k === i)); num.textContent = `${i + 1} / ${n}`; };
+  let settle = null;
+  const settled = () => { const p = pos(); if(p === 0) go(n - 1, false); else if(p === n + 1) go(0, false); };
+  g.addEventListener("scroll", () => { sync(); clearTimeout(settle); settle = setTimeout(settled, 120); }, { passive: true });
+  if("onscrollend" in g) g.addEventListener("scrollend", settled);
+  go(0, false);
   dots.forEach((d, i) => d.addEventListener("click", () => go(i)));
   prev.addEventListener("click", () => go(at() - 1)); next.addEventListener("click", () => go(at() + 1));
 }
