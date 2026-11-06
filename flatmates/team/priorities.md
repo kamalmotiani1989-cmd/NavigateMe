@@ -42,7 +42,7 @@ pushed, so the discussion is about choices, not reading.
 ## Salu (community)
 _Kamal lifted Salu's vacation hold on 5 Nov 2026, in King's session, by giving him the college-groups task below. Salu
 works from now._
-1. **How to get into Pune's college groups without spending anything, for Sunday.** Kamal's task: colleges can give
+1. **Done 6 Nov: PR #46, the college-groups strategies, waits for Kamal and Sunday.** The task was: how to get into Pune's college groups without spending anything. Kamal's task: colleges can give
    an immediate boost. Work out the strategies and write them up: which colleges and which groups (official and
    student-run, Facebook, WhatsApp and Telegram, hostel and PG groups, placement and fresher groups, alumni cells),
    how each one is entered (admin request, a student ambassador, a society or fest tie-up, a helpful post in the
@@ -60,4 +60,12 @@ works from now._
    conversion IDs. Then one live test: a phone sign-up through `?host=Pune` with a UTM link must show in
    `fm_source_report(7)`. Teche confirmed on 5 Nov that the `?host=Pune` page and UTM carry-through already work.
 2. **Mark → Teche, optional, later.** A `?host=Pune&area=<Area>` deep link per area for area-named ads. Not before item 1.
-3. **Salu.** Nothing for Teche. His open question (letting his session read public facebook.com pages) is Kamal's to answer.
+3. **Salu → Teche (questions, read-only, answer in your report).** (a) Does sign-up have an explicit 18+ check, or only
+   the 18 to 24 age bracket? Students may be under 18 and the data law treats them differently. (b) Does a link with
+   `utm_source=whatsapp&utm_medium=college&utm_campaign=pune_<college-slug>` show up in the attribution report as the
+   app stands today? No code change until Kamal says so.
+4. **Salu → Mark.** Two pieces for the college route, after the Sunday study is in: a student version of the deposit
+   checklist as an Instagram carousel, and a one-screen explainer of the campus-ambassador offer (the existing referral
+   reward: 2 friends = 1 free contact, nothing else promised). Salu supplies the facts and draft text from
+   `flatmates/marketing/community/pune-college-groups.md` (PR #46); Mark keeps the voice and the "launching soon" rule.
+5. **Salu's open question** (letting his session read public facebook.com pages) is Kamal's to answer; he declined on 5 Nov.
