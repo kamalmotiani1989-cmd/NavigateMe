@@ -4,10 +4,12 @@ _Updated by King after each weekly review and whenever Kamal changes direction. 
 every routine and task._
 _Last update: 5 Nov 2026, from Kamal's instructions._
 
-## Kamal's working hours (India time)
-6 to 10 in the morning, and 10 at night to midnight. Anything that needs Kamal (a decision, a pack to paste, a
-question, a report) must be ready in the repo or the session **before 10 pm** that day, so he reads it in the night
-window. Outside his hours, carry on with the work that does not need him.
+## Working hours (India time)
+**Employees:** every day, 6 to 8 in the morning and 10 at night to midnight. Your session is woken at the start of
+each shift; your weekly routine (Teche Monday, Mark Tuesday, Salu Wednesday) runs inside the morning shift. Push what
+is finished and file your report entry before the shift ends; nothing half-committed.
+**Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything that needs him (a decision, a pack to paste, a
+question, a report) is ready in the repo or the session before 10 pm that day.
 
 ## Sunday review
 Kamal sits with the team this Sunday (9 Nov); time to be shared. Mark and Salu bring the work below, written up and
