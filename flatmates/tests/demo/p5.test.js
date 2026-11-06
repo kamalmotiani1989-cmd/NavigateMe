@@ -96,6 +96,9 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await seed(ctx, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message));
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(2000); await closeDialogs(p);
+  // homes before nudges: the vibe-match row starts on the first screen, the profile and type cards come after it
+  const order = await p.evaluate(() => { const top = id => Math.round($(id).getBoundingClientRect().top); return { row: top('vibeRow'), rowShown: !$('vibeRow').hidden, promo: top('profilePromo'), extras: top('extrasD') }; });
+  ok(order.rowShown && order.row < 844 && order.promo > order.row && order.extras > order.row, 'seeker: vibe matches on the first screen, nudges after them: ' + JSON.stringify(order));
   const disc = await p.evaluate(() => ({ cards: document.querySelectorAll('#cards .card').length, badges: [...document.querySelectorAll('#cards .card .reply')].map(x => x.textContent),
     fast: document.querySelectorAll('#cards .card .reply.fast').length }));
   ok(disc.cards > 3 && disc.badges.length > 0 && disc.badges.length < disc.cards && disc.fast > 0, `seeker: reply-speed lines on some cards (${disc.badges.length} of ${disc.cards}, ${disc.fast} fast): ` + [...new Set(disc.badges)].join(' / '));
