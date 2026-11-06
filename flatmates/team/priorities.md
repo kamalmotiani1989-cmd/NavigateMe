@@ -24,6 +24,10 @@ pushed, so the discussion is about choices, not reading.
    with plain names, so Kamal can accept or drop each one. Keep the standing rules: the login process, the colours
    and the onboarding questions do not change; the hold stays. Demo suites pass before every push; one PR per page or
    per small group of pages, not one giant PR. Report after each page: what you changed, why, test counts.
+   _6 Nov: first batch is in, PRs #47 (welcome and sign-in card), #49 (help button), #50 (onboarding), #51 (Discover
+   and a home's page), tests green on each; waiting for Kamal. Merging: this first batch waits for Kamal's look. From
+   the next batch, your brief applies: merge when green, list every change in your report, and Kamal drops anything he
+   dislikes afterwards. The sign-in card is the exception: anything touching it waits for Kamal._
 2. Keep main green: demo suites pass on every push, the Android build succeeds (last known build 74).
 3. Mark's Pixel and conversion wiring (below) waits on Kamal's IDs; do it when they arrive, between pages.
 4. Anything Kamal asks for directly comes first and is noted in your report.
