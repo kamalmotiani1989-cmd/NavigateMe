@@ -9768,7 +9768,8 @@ window.fmBack = () => {
   return false;
 };
 // The close button: a back arrow on phones (dialogs are full screen there), a cross on bigger screens.
-document.querySelectorAll(".mhead .x").forEach(b => {
+// Only the close buttons: the share buttons in the same corner (a home, a FlatMart item) keep their own icon.
+document.querySelectorAll(".mhead .x[data-close]").forEach(b => {
   b.innerHTML = BACK_SVG.replace('class="ic"', 'class="ic x-back"') + CLOSE_SVG.replace('class="ic"', 'class="ic x-x"');
   b.setAttribute("aria-label", "Close");
 });
