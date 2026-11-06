@@ -1,5 +1,14 @@
 # Teche · reports
 
+## 2026-11-06, correction: video dropped
+
+King's message that Kamal dropped the video task (priorities.md, 6 Nov) reached me after I had built it. As asked:
+nothing from it is merged or live. PR #53 is now a draft titled "Dropped by Kamal, not for merge", kept for the record
+only; no database change was applied; the live app and database are untouched. The photo beautify PR #52 stands on
+its own and does not depend on it. Sorry for the noise: the two messages crossed while I was building.
+
+The publish-job exclusion (team/, marketing/, tests/ would be copied to the public site) still needs Kamal's decision.
+
 ## 2026-11-06, video and photos: both built
 
 **Done.** Both of Kamal's listing tasks are built, tested and up as PRs, one per task, waiting for Kamal (this batch
