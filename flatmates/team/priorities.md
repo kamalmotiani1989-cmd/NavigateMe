@@ -38,6 +38,8 @@ pushed, so the discussion is about choices, not reading.
 3. The Tuesday content pack stays, within the README facts and the "launching soon" wording.
 
 ## Salu (community)
+_Kamal lifted Salu's vacation hold on 5 Nov 2026, in King's session, by giving him the college-groups task below. Salu
+works from now._
 1. **How to get into Pune's college groups without spending anything, for Sunday.** Kamal's task: colleges can give
    an immediate boost. Work out the strategies and write them up: which colleges and which groups (official and
    student-run, Facebook, WhatsApp and Telegram, hostel and PG groups, placement and fresher groups, alumni cells),
