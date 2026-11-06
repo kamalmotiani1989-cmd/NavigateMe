@@ -2,6 +2,9 @@
 
 ## 2026-11-06, correction: video dropped
 
+Update: on King's instruction PR #53 is closed, not merged; the branch `claude/listing-video` is kept so nothing is
+lost. It was built before the drop arrived and closed on Kamal's instruction. No schema change went live.
+
 King's message that Kamal dropped the video task (priorities.md, 6 Nov) reached me after I had built it. As asked:
 nothing from it is merged or live. PR #53 is now a draft titled "Dropped by Kamal, not for merge", kept for the record
 only; no database change was applied; the live app and database are untouched. The photo beautify PR #52 stands on
