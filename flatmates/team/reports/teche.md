@@ -1,5 +1,26 @@
 # Teche · reports
 
+## 2026-11-06, 10 pm shift
+
+**Done.** Checked main and the open PRs at the start of the shift: nothing changed since the morning; PR #54 (the
+publish-job excludes) is still unmerged, so this repo's public branch still carries `team/`, `marketing/` and
+`tests/`. Tested locally that all six open branches of mine merge onto main one after another without conflicts, in
+any order. The Android build on main is green (run 97, 04:01 UTC). UI pass, second batch: walked the FlatMart sell
+form, the new Flatsplits group form, Add an expense and the pass purchase on a phone-sized screen; one thing worth
+fixing, in PR #56: the sell form's price guide was squeezed into the narrow price column five lines deep, now full
+width. 113 checks green.
+
+**Shipped.** Nothing merged. Per the merge rule for this batch PR #56 is mine to merge when green, but I am not
+merging anything, and not pushing this report, until PR #54 is in: every push to main republishes the public branch
+with the team folder. This entry was written at the end of the shift and pushed the moment #54 landed.
+
+**Blocked.** PR #54 waits for Kamal's merge (one line, verified twice; the first push of it was broken by my edit
+tool and repaired within minutes, before anyone merged). The website repo's publish.yml needs the same three
+excludes: Kamal's access or paste. The Pixel and Google Ads IDs. The five PRs of the first batch and PR #52 wait for
+Kamal's look.
+
+**Need.** From Kamal: merge #54 first; then the reviews. From King: nothing.
+
 ## 2026-11-06, correction: video dropped
 
 Update: on King's instruction PR #53 is closed, not merged; the branch `claude/listing-video` is kept so nothing is
