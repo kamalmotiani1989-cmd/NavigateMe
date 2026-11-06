@@ -58,6 +58,11 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, segs: [..
   await p.click('#obIntForm [type=submit]'); await p.waitForTimeout(2500);  // hobbies -> finale
   const fin = await p.evaluate(() => ({ finale: !!document.querySelector('.finale'), onboarded: state.onboarded.seeker, saved: 'obSave' in state, segs: [...document.querySelectorAll('#obSegs i')].map(i => i.className).join(','), moveIn: prefs().moveIn }));
   ok(fin.finale && fin.onboarded && !fin.saved && fin.segs === 'done,done,done' && fin.moveIn === 'asap', 'finale reached, progress cleared, move-in saved: ' + JSON.stringify(fin));
+  const ring = await p.evaluate(() => ({ ring: !!$('obRing'), strong: /match your vibe/.test($('obStage').innerText), go: $('obDone').getBoundingClientRect().height >= 52 }));
+  ok(ring.ring === ring.strong && ring.go, 'finale shows the match ring only with a strong match, and a thumb-sized button: ' + JSON.stringify(ring));
+  await p.hover('#obCard'); await p.waitForTimeout(200);
+  const ghost = await p.evaluate(() => { const c = getComputedStyle($('obCard')); return c.color + ' on ' + c.backgroundColor; });
+  ok(!/rgb\(247, 249, 251\)/.test(ghost) && /rgba?\(255, 255, 255, 0\./.test(ghost), 'the Vibe Card button stays readable under a finger: ' + ghost);
   await p.screenshot({ path: `${O}/ob-5-finale.png` });
   await ctx.close();
   // owner: two chapters
