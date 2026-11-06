@@ -129,8 +129,10 @@ in areas the app already lists.
 - **Age and data.** The app's age brackets start at 18 (README). The Digital Personal Data Protection Rules, 2025
   (notified 14 Nov 2025, fully in force by 14 May 2027) treat anyone under 18 as a child: verifiable parental consent,
   and no tracking or targeted advertising to children (India Briefing, EY, law-firm summaries; read the gazette text
-  before relying on detail). First-years can be 17. So: no sign-up drives on campus, no collecting student lists or
-  numbers, ambassadors from second year up, and a question for Teche below.
+  before relying on detail). First-years can be 17. **Teche confirms (6 Nov): sign-up has no explicit 18+ check, only
+  the generation bracket; the privacy policy says 18 and over but nothing enforces it.** Adding a check touches the
+  sign-in card or onboarding, so it is Kamal's decision, and until then it is an open risk for any student channel.
+  So: no sign-up drives on campus, no collecting student lists or numbers, ambassadors from second year up.
 - **Police tenant verification.** Pune Police's May 2026 order makes tenant and PG reporting mandatory (Pune Pulse); on
   9 Oct 2026 Vishrambaug police gave PG operators in Budhwar Peth 24 hours to submit student details, made online tenant
   verification mandatory and asked for 60 days of CCTV (Punekar News). This is a value-post topic for students and
@@ -156,6 +158,9 @@ in areas the app already lists.
 6. Keep the Facebook city groups going in parallel (PR #43); colleges add to them, they do not replace them.
 
 ## Decisions for Kamal
+- **Add an 18+ check at sign-up?** Nothing enforces the privacy policy's 18-and-over line today. For college channels
+  this is the one legal risk we cannot work around with wording; it changes the sign-in card or onboarding, which only
+  Kamal can approve.
 - **Is the referral reward enough to pay ambassadors?** It is the only zero-rupee currency we have. If he wants a
   bigger carrot (more free contacts for ambassadors), that is a pricing change for Teche and a fact change for the
   README, and must be decided before any ambassador is recruited.
@@ -165,9 +170,10 @@ in areas the app already lists.
 ## Requests
 - **For Mark (via King):** a student version of the deposit checklist as an Instagram carousel and a one-screen "campus
   ambassador" explainer, in the brand voice. Salu supplies the facts and the draft text.
-- **For Teche (via King):** confirm whether sign-up has an explicit 18+ check or only the 18-24 bracket; and whether a
-  UTM like `utm_source=whatsapp&utm_medium=college&utm_campaign=pune_<college-slug>` will show in the attribution
-  report as it stands (the lister pack's scheme lists instagram, facebook and google as sources).
+- **For Teche (answered 6 Nov via King):** no explicit 18+ check at sign-up (see rules above; Kamal's decision whether
+  to add one). College links work as the app stands: `utm_source=whatsapp&utm_campaign=pune_<college-slug>` shows in
+  the attribution report as source "whatsapp" with that campaign; `utm_medium` is saved but is not a report column; the
+  tags come from the first visit on that phone. So every ambassador link carries its college slug from day one.
 
 ## Where I could not confirm
 - Any Facebook group for a Pune college; any student-run WhatsApp group (private by nature).
