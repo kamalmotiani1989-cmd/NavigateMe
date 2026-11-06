@@ -64,10 +64,10 @@ works from now._
    conversion IDs. Then one live test: a phone sign-up through `?host=Pune` with a UTM link must show in
    `fm_source_report(7)`. Teche confirmed on 5 Nov that the `?host=Pune` page and UTM carry-through already work.
 2. **Mark → Teche, optional, later.** A `?host=Pune&area=<Area>` deep link per area for area-named ads. Not before item 1.
-3. **Salu → Teche (questions, read-only, answer in your report).** (a) Does sign-up have an explicit 18+ check, or only
-   the 18 to 24 age bracket? Students may be under 18 and the data law treats them differently. (b) Does a link with
-   `utm_source=whatsapp&utm_medium=college&utm_campaign=pune_<college-slug>` show up in the attribution report as the
-   app stands today? No code change until Kamal says so.
+3. **Salu → Teche: answered 6 Nov (Teche's report).** (a) No explicit 18+ check at sign-up, only the generation
+   bracket; the privacy policy says 18 and over but nothing enforces it. Adding a check touches the sign-in card or
+   onboarding, so it is Kamal's decision. (b) A WhatsApp college link shows in the attribution report as source
+   `whatsapp`, campaign `pune_<college-slug>`; the medium is saved but not a column; tags come from the phone's first visit.
 4. **Salu → Mark.** Two pieces for the college route, after the Sunday study is in: a student version of the deposit
    checklist as an Instagram carousel, and a one-screen explainer of the campus-ambassador offer (the existing referral
    reward: 2 friends = 1 free contact, nothing else promised). Salu supplies the facts and draft text from
