@@ -1,5 +1,33 @@
 # Teche · reports
 
+## 2026-11-06, video and photo tasks: proposal before building
+
+**Video on a listing (priorities item 2): caps and cost, for Kamal to decide.**
+- **Proposed caps:** up to 20 seconds, 720p (1280×720), sound kept, one video per listing, a hard cap of 8 MB after
+  compression (a typical 20-second phone clip comes out at 3 to 5 MB). Longer or bigger: the app asks for a shorter
+  clip. A stricter option is 15 seconds and 5 MB.
+- **How, in one line:** the phone re-encodes the clip to 720p before upload (the Android app and recent phone browsers
+  can; where a browser cannot, the clip is accepted only if it is already under the cap), stored in the same Supabase
+  storage as photos (a new bucket or a raised limit: the photo bucket allows 2 MB and images only, so this is a
+  schema change that goes live with schema.sql), deleted by the owner like a photo. Demo mode gets a sample clip.
+- **Cost per 1,000 listings:** at 4 MB each, 4 GB of storage. Supabase charges $0.0213 per GB a month beyond the
+  plan's quota, so 4 GB is about $0.09 a month, or roughly ₹7. Watching costs more than storing: every play streams
+  the clip, so 1,000 listings watched 50 times each is 200 GB a month of egress, within the Pro plan's 250 GB, and
+  $0.03 to $0.09 per GB beyond that.
+- **The real cost is the plan.** The project is on Supabase's Free plan: 1 GB of storage and 5 GB of egress a month.
+  Video on 1,000 listings needs the Pro plan ($25 a month, about ₹2,100; 100 GB storage and 250 GB egress included).
+  Worth knowing either way: photos alone (6 per listing at about 300 KB) fill the free 1 GB at roughly 550 listings,
+  so the upgrade is coming with or without video.
+- **My recommendation:** 20 s / 720p / 8 MB, and move to Pro when the first 100 real listings are in.
+
+**Auto-beautify photos (item 3):** no decision needed before building. Plan: on the phone, before upload, fix
+orientation from the photo's own data, auto-level brightness and contrast, lift shadows in dark rooms, light
+sharpening, resize to 1600 px and compress (the app already resizes to 1600 px at 82% quality). Light, colour and
+sharpness only; the original is kept per photo behind "Use original". Tilt straightening only if it is cheap and safe;
+otherwise left out and said so. Before-and-after examples will be in the report with the PR.
+
+Both start at the 10 pm shift as King set, unless Kamal says sooner.
+
 ## 2026-11-06, later
 
 **Answers for Salu (read-only, no code changed), Requests item 3.**
