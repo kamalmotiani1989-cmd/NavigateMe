@@ -1,5 +1,33 @@
 # Salu · reports
 
+## 6 November 2026, 10 pm shift
+
+**Done**
+- Read priorities.md and the brief. Item 1 (PR #46) is done and waiting; item 2 (PR #43) is blocked on Kamal; item 3
+  (the Wednesday pack) is not due until 12 Nov. Both PRs are open with no comments.
+- Wrote the outreach drafts PR #46 says Kamal needs on Sunday, so the sit-down is about choices:
+  `flatmates/marketing/community/pune-college-outreach.md` on the same branch. Six pieces: the E-Cell founder-session
+  email, the fest community-partner email (Pune Startup Fest'27 first), the one-page campus-ambassador terms (referral
+  reward only, nothing else promised), the admin ask for student-run Telegram and Instagram channels, a Campus Times
+  Pune story pitch, and one student value post with the college UTM scheme Teche confirmed. Kamal sends everything
+  himself; nothing goes out from me.
+
+**Delivered to Kamal:** PR #46 now carries the strategy and the drafts. PR #43 unchanged.
+
+**Blocked / waiting**
+- Kamal: PR #43's two questions; the three decisions in PR #46 (referral reward as the ambassador's pay, first three
+  campuses, an 18+ check at sign-up); the read-only access to facebook.com and flatandflatmates.org (King recommends
+  allowing it).
+- Mark's two college pieces come after his Sunday study, per priorities.md; the draft text he needs is in
+  `pune-college-outreach.md`, items 3 and 6.
+
+**Needed from King:** nothing new. Note from Teche's report: the website publish job would copy `team/` and
+`marketing/` (my tracker, drafts and this report) to findmeflatmate.com as plain files once it runs; his fix waits on
+Kamal. Until that is fixed I keep admin names and phone numbers out of my files.
+
+**Next:** 6 am shift on 7 Nov; Wednesday 12 Nov pack built only on Flat and Flatmates Pune (`rules read`), admin
+request first, no posting under the hold.
+
 ## 6 November 2026 · first entry (onboarding pass and the college-groups write-up)
 
 **Done**
