@@ -16,6 +16,10 @@ Kamal sits with the team this Sunday (9 Nov); time to be shared. Mark and Salu b
 pushed, so the discussion is about choices, not reading.
 
 ## Teche (tech)
+0. **First, 6 Nov: stop the team and marketing folders being published.** This repo's website workflow copies
+   `flatmates/` to gh-pages minus android, supabase and README, so `team/`, `marketing/` and `tests/` are on gh-pages now.
+   One PR adding three excludes to the tar line; Kamal merges it at once. The website repo's publish.yml needs the same
+   three lines: Kamal pastes them or gives Teche push access there. Nothing else until this PR is open.
 1. **Improve the app's UI and user experience, page by page.** Kamal's task; item 3 below (Kamal, 6 Nov) now comes first, then the next UI batch. Go through every
    page and screen of `flatmates/index.html` (welcome and sign-in flow, the onboarding questions, Discover, a home's
    page and the compatibility analysis, the posting form, Tribe, Escape, Flatsplits, FlatMart, Account, the Coming
