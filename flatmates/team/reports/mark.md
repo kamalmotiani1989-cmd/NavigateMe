@@ -1,5 +1,28 @@
 # Mark · reports
 
+## 6 November 2026, 10 pm shift · student pack delivered
+
+**Done**
+- Salu's request (priorities, Requests between teams, item 4): student deposit-checklist carousel and campus-ambassador
+  explainer, `flatmates/marketing/student-college-pack.md`, **PR #55**. Built on Salu's facts in PR #46; promises only
+  the README referral reward and early access; organic only, never a paid ad to students (no age check at sign-up yet).
+- Priorities checked: items 1 (PR #48) and 2 (PR #45) wait for Kamal; item 3 is Tuesday's pack, next shift that falls
+  on Tuesday morning (10 Nov).
+
+**Delivered to Kamal:** PR #55 for Sunday alongside PR #48 and PR #46.
+
+**Blocked / waiting**
+- Go-live month, Pixel and conversion IDs, and the read-access decision (priorities item 5): all Kamal's.
+- Ad Library and Google ad copy for the competitor study wait on Kamal's screenshots or the access decision.
+
+**Needs noting (Teche item 0):** the team and marketing folders are on gh-pages until Teche's exclude PR is merged. My
+files (budgets, targets, the competitor study) are public until then. Nothing for me to change; flagging for King.
+
+**Requests for Teche (via King):** none new. **For Kamal:** on the explainer, keep or delete the two personal lines
+(weekly check-in, LinkedIn recommendation); the rest stands as the app is.
+
+**Next:** Tuesday 10 November, 6 am shift: content pack (teasers while the hold is on), and any Sunday decisions.
+
 ## 6 November 2026 · competitor study delivered (Kamal's Sunday task)
 
 **Done**
