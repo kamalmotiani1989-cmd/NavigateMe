@@ -1,5 +1,31 @@
 # Mark · reports
 
+## 6 November 2026 · competitor study delivered (Kamal's Sunday task)
+
+**Done**
+- Competitor study of flat-rental and flatmate companies and their ads, India first then four abroad, with a
+  one-page recommendation: `flatmates/marketing/competitor-study-nov-2026.md`, **PR #48**. Every fact carries its
+  URL and the date seen; nothing spent, nothing posted.
+- PR #45 (Pune plan and week-one content) was already open; rebased on main.
+
+**Delivered to Kamal:** PR #48 for Sunday. Headline of the recommendation: keep one enemy (brokerage), lead owner ads
+with "see who's looking near you" (the Escape list, like SpareRoom's Rooms Wanted), run one line per moving season,
+and build ads on what competitors' reviews complain about: hidden prices and subscriptions, contacts burnt on dead
+listings, paying to reply, call floods. Two copy-only ads proposed for the Pune plan, waiting for Sunday.
+
+**Blocked / limits**
+- The session's network cannot open the brands' sites, app stores, Instagram or the Meta Ad Library, so the study is
+  built from search excerpts and third-party coverage. Google sponsored copy, Meta Ad Library ads and Instagram
+  captions are "could not confirm". Section 4 of the file gives two fixes: Kamal screenshots eight Ad Library pages
+  and three Google searches on his phone (about an hour), or the session is allowed to read those sites.
+- Still open from 5 Nov: go-live month (December or January), and the Meta Pixel and Google conversion IDs for Teche.
+
+**Requests for Teche (via King):** none new. **For King:** a decision on whether the marketing session may read
+competitor sites and the Meta Ad Library; that is an environment setting, Kamal's or Teche's to change.
+
+**Next:** Tuesday 10 November content pack (teasers while the hold is on); add the Ad Library findings to the study
+when screenshots arrive.
+
 ## 5 November 2026 · first entry
 
 **Done this session**
