@@ -125,6 +125,8 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await p.evaluate(() => { const r = document.querySelector('[name=mkCat][value="beds"]'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }); await p.waitForTimeout(800);
   const guide = await p.textContent('#mkGuide');
   ok(/sold for ₹[\d,]+–₹[\d,]+ \(\d+ sales\)/.test(guide) && /want(s)? one/.test(guide), 'seeker: price guide and demand under the price: ' + guide);
+  const gw = await p.evaluate(() => { const g = $('mkGuide'); return { guide: Math.round(g.getBoundingClientRect().width), form: Math.round(g.closest('form').getBoundingClientRect().width) }; });
+  ok(gw.guide >= gw.form - 2, 'seeker: the guide runs the full width of the form, not squeezed under the price box: ' + JSON.stringify(gw));
   await p.screenshot({ path: `${O}/p6-m-sell-guide.png` });
   await closeDialogs(p);
   // an item: trust line + share

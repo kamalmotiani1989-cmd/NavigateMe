@@ -1750,7 +1750,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .mine-esc > a{display:inline-block; margin-top:8px; color:#fff; font-weight:800; text-decoration:none}
 .inv-form textarea{min-height:88px}
 /* FlatMart: price guide, wanted posts, pick-up, bundles, trust, the unsold nudge */
-.mk-guide{margin:6px 0 0; font-size:13px; color:var(--brand); font-weight:700} .mk-guide.none{color:var(--text-3); font-weight:500}
+.mk-guide{margin:-6px 0 14px; font-size:13px; color:var(--brand); font-weight:700} .mk-guide.none{color:var(--text-3); font-weight:500}
 .want-card{display:grid; grid-template-columns:auto 1fr; gap:12px; padding:14px 0; box-shadow:0 1px 0 var(--line)}
 .want-card .wi{width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-size:22px; background:var(--surface-2)}
 .want-card h3{font-size:16px} .want-card .s{font-size:13.5px; color:var(--text-2)} .want-card .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
@@ -8396,8 +8396,9 @@ function openSell(cat){
     <div class="field"><label for="mkTitle">What are you selling?</label><input type="text" id="mkTitle" required minlength="3" maxlength="80" placeholder="Queen bed with storage"></div>
     <div class="field"><label>Category</label><div class="chips">${MK_CATS.map(([k, ic, t], n) => `<label class="chip"><input type="radio" name="mkCat" value="${k}"${n ? "" : " checked"}>${ic} ${t}</label>`).join("")}</div></div>
     <div class="field"><label>Condition</label><div class="chips">${Object.entries(MK_COND).map(([k, t]) => `<label class="chip"><input type="radio" name="mkCond" value="${k}"${k === "good" ? " checked" : ""}>${t}</label>`).join("")}</div></div>
-    <div class="grid2"><div class="field"><label for="mkPrice">Price (₹)</label><input type="number" id="mkPrice" min="0" max="10000000" step="50" inputmode="numeric" placeholder="e.g. 2500"><p class="mk-guide none" id="mkGuide"></p></div>
+    <div class="grid2"><div class="field"><label for="mkPrice">Price (₹)</label><input type="number" id="mkPrice" min="0" max="10000000" step="50" inputmode="numeric" placeholder="e.g. 2500"></div>
       <div class="field"><label>&nbsp;</label><label class="switch" style="margin:10px 0 0"><input type="checkbox" id="mkFree"><span>Give it away free</span></label></div></div>
+    <p class="mk-guide none" id="mkGuide"></p>
     <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="mkNeg" checked><span>Open to offers</span></label>
     <div class="grid2"><div class="field"><label for="mkSCity">City</label><select id="mkSCity" required>${cityOptions(city || CITIES[0])}</select></div>
       <div class="field"><label for="mkArea">Area</label><input type="text" id="mkArea" required maxlength="60" list="mkAreaList" autocomplete="off" placeholder="e.g. HSR Layout"
