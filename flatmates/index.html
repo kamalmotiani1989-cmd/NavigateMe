@@ -6198,6 +6198,8 @@ async function renderDiscover(){
   $("vibeRow").hidden = !vibes.length;
   $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
   $("dMap").hidden = !mapView;
+  // Nothing to show: the "no homes match" help goes straight under the controls, ahead of the nudges.
+  if(list.length) $("extrasD").after($("count"), $("cards")); else $("profilePromo").before($("count"), $("cards"));
   if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));

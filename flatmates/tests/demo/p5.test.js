@@ -99,6 +99,11 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   // homes before nudges: the vibe-match row starts on the first screen, the profile and type cards come after it
   const order = await p.evaluate(() => { const top = id => Math.round($(id).getBoundingClientRect().top); return { row: top('vibeRow'), rowShown: !$('vibeRow').hidden, promo: top('profilePromo'), extras: top('extrasD') }; });
   ok(order.rowShown && order.row < 844 && order.promo > order.row && order.extras > order.row, 'seeker: vibe matches on the first screen, nudges after them: ' + JSON.stringify(order));
+  // with filters that leave no homes, the "no homes match" help comes before the nudges
+  const empty = await p.evaluate(async () => { const keep = Object.assign({}, state.prefs); Object.assign(state.prefs, { max: 1000, look: 'room' }); save(); await renderDiscover();
+    const top = el => Math.round(el.getBoundingClientRect().top); const r = { help: top(document.querySelector('#cards .empty') || $('cards')), text: ($('cards').querySelector('.empty h3') || {}).textContent, promo: top($('profilePromo')), cards: document.querySelectorAll('#cards .card').length };
+    state.prefs = keep; save(); await renderDiscover(); return r; });
+  ok(empty.cards === 0 && /No homes match/.test(empty.text) && empty.help < empty.promo, 'seeker: with no homes, the help comes before the nudges: ' + JSON.stringify(empty));
   const disc = await p.evaluate(() => ({ cards: document.querySelectorAll('#cards .card').length, badges: [...document.querySelectorAll('#cards .card .reply')].map(x => x.textContent),
     fast: document.querySelectorAll('#cards .card .reply.fast').length }));
   ok(disc.cards > 3 && disc.badges.length > 0 && disc.badges.length < disc.cards && disc.fast > 0, `seeker: reply-speed lines on some cards (${disc.badges.length} of ${disc.cards}, ${disc.fast} fast): ` + [...new Set(disc.badges)].join(' / '));
