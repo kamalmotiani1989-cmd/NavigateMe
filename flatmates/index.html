@@ -318,6 +318,8 @@ textarea{min-height:96px; resize:vertical}
 .drop input{display:none}
 .previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
 .previews:empty{display:none}
+.vprev video, .l-video video{display:block; width:100%; max-height:300px; border-radius:12px; background:#000}
+.vprev{margin-top:10px} .l-video{margin:10px 0 0}
 .previews figure{margin:0; position:relative; aspect-ratio:4/3; max-width:100%; border-radius:10px; overflow:hidden; background:var(--surface-2)}
 .previews img{width:100%; height:100%; object-fit:cover; display:block}
 .previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700; background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
@@ -2203,6 +2205,13 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
             <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
           <div class="previews" id="pPreviews"></div></div>
+        <div class="field"><label>Video (optional, up to 20 seconds)</label>
+          <label class="drop" id="vDrop"><input type="file" id="pVideo" accept="video/*">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>
+            <b>Add a short walk-through</b><span class="hint" style="margin:0">One clip, up to 20 seconds, made small on your phone. The photos stay the cover.</span></label>
+          <div class="vprev" id="vPreview" hidden><video id="vPlayer" playsinline muted controls preload="metadata"></video>
+            <p class="hint" id="vStatus" style="margin:6px 0 0"></p>
+            <button class="btn btn-ghost btn-sm" type="button" id="vRemove" style="margin-top:6px">Remove video</button></div></div>
         <div class="grid3">
           <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="1" inputmode="numeric"></div>
           <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="1" value="0" inputmode="numeric"></div>
@@ -2915,6 +2924,63 @@ async function resizeAll(files, maxSide, quality){
 }
 const blobToDataUrl = b => new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(b); });
 
+/* ---- One short video per listing. Kamal's caps: length and size; how it is made small is ours: the phone
+   re-encodes the clip at 720p and about 1.5 Mbps before upload (a 20-second clip comes out at 3 to 5 MB).
+   Where the browser can't re-encode, the clip is taken as it is if it is already under the caps. */
+const VIDEO = { maxSec: 20, maxBytes: 8e6, short: 720, long: 1280, bps: 1.5e6, abps: 64e3 };
+const SAMPLE_VIDEO = "media/sample-room.mp4";   // demo mode's sample clip
+// Our storage URLs, a data URL from demo mode, or the sample clip: nothing else is ever put in a <video>.
+const safeVideo = u => /^(https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/fm-videos\/|data:video\/(mp4|webm);base64,)/.test(String(u)) || u === SAMPLE_VIDEO ? String(u) : "";
+// Length and size of a clip, from the browser's own decoder (a recording without a length header is seeked to find it).
+function videoInfo(blob){
+  return new Promise((res, rej) => {
+    const v = document.createElement("video"), url = URL.createObjectURL(blob);
+    const done = () => { const d = v.duration; URL.revokeObjectURL(url); res({ duration: Number.isFinite(d) ? d : 0, width: v.videoWidth, height: v.videoHeight }); };
+    v.preload = "metadata"; v.muted = true; v.playsInline = true;
+    let meta = false;
+    v.onerror = () => { if(meta && v.videoWidth){ v.duration; URL.revokeObjectURL(url); res({ duration: 0, width: v.videoWidth, height: v.videoHeight }); } else { URL.revokeObjectURL(url); rej(new Error("cant-read-video")); } };
+    v.onloadedmetadata = () => { meta = true; if(Number.isFinite(v.duration)) return done(); v.currentTime = 1e9; v.ontimeupdate = () => { v.ontimeupdate = null; done(); }; };
+    v.src = url;
+  });
+}
+const canRecord = () => window.MediaRecorder && ["video/mp4;codecs=avc1", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find(t => MediaRecorder.isTypeSupported(t));
+// Re-encode on the phone: the clip plays into a canvas at 720p and is recorded at a modest bitrate, sound kept.
+async function compressVideo(file, onProgress){
+  const info = await videoInfo(file);
+  if(info.duration > VIDEO.maxSec + 0.5) throw new Error("too-long");
+  if(!info.width || !info.height) throw new Error("cant-read-video");
+  const k = Math.min(1, VIDEO.short / Math.min(info.width, info.height), VIDEO.long / Math.max(info.width, info.height));
+  const mime = canRecord();
+  const fine = info.duration > 0 && file.size <= VIDEO.maxBytes && k === 1 && document.createElement("video").canPlayType(file.type);
+  if(fine || !mime){ if(file.size > VIDEO.maxBytes) throw new Error("too-big"); return Object.assign({ blob: file }, info); }
+  const v = document.createElement("video"), url = URL.createObjectURL(file);
+  v.src = url; v.playsInline = true; v.muted = false; v.volume = 1;
+  await new Promise((res, rej) => { v.onloadedmetadata = res; v.onerror = () => rej(new Error("cant-read-video")); });
+  const c = document.createElement("canvas"); c.width = Math.round(info.width * k / 2) * 2; c.height = Math.round(info.height * k / 2) * 2;
+  const ctx = c.getContext("2d"), stream = c.captureStream(30);
+  let ac = null;
+  try{ ac = new AudioContext(); const dest = ac.createMediaStreamDestination(); ac.createMediaElementSource(v).connect(dest); dest.stream.getAudioTracks().forEach(t => stream.addTrack(t)); }
+  catch(e){ ac = null; v.muted = true; }   // no sound track: the clip goes silent rather than failing
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VIDEO.bps, audioBitsPerSecond: VIDEO.abps }), chunks = [];
+  rec.ondataavailable = e => { if(e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(res => rec.onstop = res);
+  const draw = () => { ctx.drawImage(v, 0, 0, c.width, c.height); if(onProgress) onProgress(Math.min(1, v.currentTime / (info.duration || 1))); };
+  let tooLong = false;
+  const tick = () => { if(v.ended || v.paused) return; if(v.currentTime > VIDEO.maxSec + 0.5){ tooLong = true; v.pause(); return; } draw(); if(v.requestVideoFrameCallback) v.requestVideoFrameCallback(tick); else requestAnimationFrame(tick); };
+  rec.start(250);
+  await v.play(); tick();
+  await new Promise(res => { v.onended = res; v.onpause = res; });
+  draw(); rec.stop(); await stopped;
+  URL.revokeObjectURL(url); if(ac) ac.close().catch(() => {});
+  if(tooLong) throw new Error("too-long");
+  const blob = new Blob(chunks, { type: mime.split(";")[0] });
+  if(blob.size > VIDEO.maxBytes) throw new Error("too-big");
+  return { blob, duration: info.duration || v.currentTime, width: c.width, height: c.height };
+}
+const VIDEO_ERR = { "too-long": `Up to ${VIDEO.maxSec} seconds. Trim the clip and try again.`, "too-big": `That video is too big even after compressing (over ${Math.round(VIDEO.maxBytes / 1e6)} MB). Try a shorter clip.`,
+  "cant-read-video": "Couldn't read that video. Try a different clip." };
+const videoLabel = v => `${Math.round(v.duration)} s · ${(v.blob.size / 1e6).toFixed(1)} MB`;
+
 function hue(id){ let h = 0; for(const c of String(id)) h = (h*31 + c.charCodeAt(0)) % 360; return h; }
 
 /* ================================================================ state */
@@ -3089,6 +3155,7 @@ function demoListings(){
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
       out.push({
         id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        video: n % 12 === 1 ? SAMPLE_VIDEO : null,   // one home in twelve has a walk-through
         geo: (g => g ? { lat: Math.round((g[0] + (hue("la" + n) % 17 - 8) / 1000) * 100) / 100, lng: Math.round((g[1] + (hue("ln" + n) % 17 - 8) / 1000) * 100) / 100 } : null)((DEMO_GEO[city] || {})[area]),
         bachelors: hue("bach" + n) % 10 < 9,
         furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
@@ -3513,6 +3580,14 @@ const demoApi = {
     for(const r of state.requests){ if(mine.has(r.listing_id)) r.seen_owner = true; if(r.seeker_phone === me) r.seen_seeker = true; }
     save();
   },
+  async uploadVideo(blob){
+    // Demo keeps everything on this device (about 5 MB in all): a small clip is kept as it is, a bigger one is
+    // stood in for by the sample clip, and the app says so.
+    if(blob.size <= 1.5e6) return { url: await blobToDataUrl(blob) };
+    toast("Demo mode: a sample clip stands in for your video (the real app uploads it).");
+    return { url: SAMPLE_VIDEO };
+  },
+  async removeVideo(){},
   async uploadPhotos(files){
     // Demo keeps photos on this device (about 5 MB in all), so they're kept small.
     const { blobs, skipped } = await resizeAll(files, 800, 0.65);
@@ -3756,13 +3831,25 @@ function makeLiveApi(sb){
       }));
       return { urls, skipped };
     },
+    async uploadVideo(blob){
+      const me = await uid(), ext = blob.type.includes("webm") ? "webm" : blob.type.includes("quicktime") ? "mov" : "mp4";
+      const path = me + "/" + crypto.randomUUID() + "." + ext;
+      const { error } = await sb.storage.from("fm-videos").upload(path, blob, { contentType: blob.type || "video/mp4" });
+      if(error) throw error;
+      return { url: sb.storage.from("fm-videos").getPublicUrl(path).data.publicUrl };
+    },
+    // The owner's own clip, by its public URL (the bucket only lets people delete inside their own folder).
+    async removeVideo(url){
+      const m = /\/fm-videos\/(.+)$/.exec(String(url || "")); if(!m) return;
+      await sb.storage.from("fm-videos").remove([decodeURIComponent(m[1])]);
+    },
     async post(p){
       const l = p.listing, pv = p.private;
       const id = await rpc("fm_post_listing", { p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
-        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_video: l.video || null });
       return { id, photos:"kept" };
     },
     async update(id, p){
@@ -3770,7 +3857,7 @@ function makeLiveApi(sb){
       await rpc("fm_update_listing", { p_listing: id, p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from, p_gender:l.gender, p_furnishing:l.furnishing,
         p_amenities:l.amenities, p_description:l.description, p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {},
-        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null });
+        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null, p_video: l.video || null });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await rpc("fm_my_listings")).filter(l => l.is_owner); },
@@ -3791,9 +3878,11 @@ function makeLiveApi(sb){
     async deleteAccount(){
       const me = await uid(), phone = state.account;
       try{
-        const { data } = await sb.storage.from("fm-photos").list(me, { limit: 1000 });
-        const paths = (data || []).map(f => me + "/" + f.name);
-        for(let i = 0; i < paths.length; i += 100) await sb.storage.from("fm-photos").remove(paths.slice(i, i + 100));
+        for(const bucket of ["fm-photos", "fm-videos"]){
+          const { data } = await sb.storage.from(bucket).list(me, { limit: 1000 });
+          const paths = (data || []).map(f => me + "/" + f.name);
+          for(let i = 0; i < paths.length; i += 100) await sb.storage.from(bucket).remove(paths.slice(i, i + 100));
+        }
       }catch(err){ console.error(err); }
       await rpc("fm_delete_account");
       await sb.auth.signOut({ scope: "local" }).catch(() => {});
@@ -6555,6 +6644,8 @@ async function openListing(id){
     <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
+    ${safeVideo(l.video || "") ? `<div class="l-video"><video src="${esc(safeVideo(l.video))}" playsinline muted controls preload="metadata"${ph.length ? ` poster="${esc(ph[0])}"` : ""}></video>
+      <p class="hint" style="margin:4px 0 0">A short walk-through · tap to play, sound is off until you turn it on</p></div>` : ""}
     ${tribeNote}
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
@@ -7097,6 +7188,29 @@ function addPhotos(list){
   renderPhotos();
 }
 $("pPhotos").addEventListener("change", e => { addPhotos(e.target.files); e.target.value = ""; });
+// The listing's video: a new pick (compressed in the background) or, when editing, the one already posted.
+let videoPick = null, keepVideo = null;
+function renderVideo(){
+  const box = $("vPreview"), pl = $("vPlayer"), src = videoPick ? videoPick.url : keepVideo ? safeVideo(keepVideo) : "";
+  box.hidden = !src; $("vDrop").hidden = !!src;
+  if(pl.getAttribute("src") !== src){ if(src) pl.setAttribute("src", src); else pl.removeAttribute("src"); }
+  $("vStatus").textContent = videoPick ? (videoPick.result ? "Ready · " + videoLabel(videoPick.result) : videoPick.error ? VIDEO_ERR[videoPick.error] || "Couldn't prepare that video."
+    : "Making it small for upload… " + Math.round((videoPick.progress || 0) * 100) + "%") : keepVideo ? "The video on your listing. Remove it to add a different one." : "";
+}
+function clearVideoPick(){ if(videoPick && videoPick.url) URL.revokeObjectURL(videoPick.url); videoPick = null; }
+function addVideo(file){
+  if(!file || !file.type.startsWith("video/")){ toast("Choose a video file."); return; }
+  if(file.size > 300e6){ toast("That video is too big to work with here. Record a shorter one."); return; }
+  clearVideoPick(); keepVideo = null;
+  const pick = videoPick = { file, url: URL.createObjectURL(file), progress: 0, result: null, error: null };
+  pick.work = compressVideo(file, p => { if(videoPick === pick){ pick.progress = p; $("vStatus").textContent = "Making it small for upload… " + Math.round(p * 100) + "%"; } })
+    .then(r => { pick.result = r; if(pick.url) URL.revokeObjectURL(pick.url); pick.url = URL.createObjectURL(r.blob); return r; })
+    .catch(err => { console.error(err); pick.error = err.message || "cant-read-video"; toast(VIDEO_ERR[pick.error] || "Couldn't prepare that video."); if(videoPick === pick){ clearVideoPick(); } throw err; })
+    .finally(() => { if(videoPick === pick || !videoPick) renderVideo(); });
+  renderVideo();
+}
+$("pVideo").addEventListener("change", e => { addVideo(e.target.files[0]); e.target.value = ""; });
+$("vRemove").addEventListener("click", () => { clearVideoPick(); keepVideo = null; renderVideo(); });
 $("pPreviews").addEventListener("click", e => {
   const k = e.target.closest("[data-rmk]");
   if(k){ keepPhotos.splice(Number(k.dataset.rmk), 1); renderPhotos(); return; }
@@ -7117,7 +7231,7 @@ async function startEdit(id, step){
 function endEdit(){
   editing = null; keepPhotos = [];
   $("postForm").reset();
-  photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos(); clearVideoPick(); keepVideo = null; renderVideo();
   PRIVATE_IDS.forEach(id => $(id).disabled = false);
   $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
   if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null; $("mapBox").hidden = true; $("mapBox").innerHTML = "";
@@ -7143,6 +7257,7 @@ async function fillPostForm(l){
   $("hInt").innerHTML = interestChips("hi", hh.interests);
   syncRoomsFree();
   keepPhotos = photosOf(l); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  clearVideoPick(); keepVideo = safeVideo(l.video || "") || null; renderVideo();
   // The private part, for reference and for the map pin: kept as posted.
   const c = (await api.contact(l.id).catch(() => null)) || {}, ap = c.address_parts || {};
   $("pName").value = c.contact_name || state.user.name || ""; $("pPhone").value = c.contact_phone || state.user.phone || "";
@@ -7299,6 +7414,13 @@ $("postForm").addEventListener("submit", async e => {
       const up = await api.uploadPhotos(photoFiles);
       p.listing.photos = up.urls; skipped = up.skipped;
     }
+    if(videoPick){
+      btn.textContent = "Preparing the video…";
+      const v = await videoPick.work.catch(err => { throw new Error(VIDEO_ERR[err.message] || "Couldn't prepare the video."); });
+      btn.textContent = "Uploading the video…";
+      p.listing.video = (await api.uploadVideo(v.blob)).url;
+    } else p.listing.video = keepVideo || null;
+    if(editing && editing.video && editing.video !== p.listing.video) api.removeVideo(editing.video).catch(() => {});
     if(editing){
       btn.textContent = "Saving…";
       p.listing.photos = keepPhotos.concat(p.listing.photos || []);
@@ -7313,7 +7435,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     track("list_room", { city: p.listing.city, area: p.listing.locality, kind: p.listing.kind });
     state.homeDraft = Object.assign({}, p.listing.household); save();
-    f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+    f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos(); clearVideoPick(); keepVideo = null; renderVideo();
     if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null;
     $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderExpenseRows();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."

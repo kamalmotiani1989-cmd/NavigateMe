@@ -273,6 +273,14 @@ the room comes second.
       share or hide it), "How you live" on Account shows it, and **My Vibe Card** in Account settings opens
       it (owners take the quiz for themselves). A signed-in seeker who opens a friend's link sees the match
       straight away.
+21b. **A short video on a listing.** When posting or editing, an owner can add one clip (up to 20 seconds) next to
+    the photos, from the phone's gallery or camera. It is made small on the phone before upload (720p, about
+    1.5 Mbps, so a 20-second clip is 3 to 5 MB; the bucket refuses anything over 8 MB), kept in the `fm-videos`
+    storage bucket in the owner's own folder, and removable like a photo ("Remove video"; the file is deleted too).
+    On a home's page it sits under the photos, which stay the cover: tap to play, sound off until turned on. Where
+    the browser can't re-encode, a clip is taken as it is if it is already under the caps. Demo mode: one sample home
+    in twelve has a sample walk-through (`media/sample-room.mp4`), and a clip you add is kept on the device when small
+    enough, otherwise the sample stands in and the app says so. The caps are `VIDEO` in `index.html`.
 22. **Listing strength and editing.** My flat scores each listing out of 100 (3+ photos 30, a description of
     80+ letters 20, 3+ amenities 10, who lives there 15, the household's living-style answers 15, a map pin 10;
     whole flats skip the household parts) and lists what's missing as buttons ("+ Add photos of the room,
@@ -437,6 +445,7 @@ business is GST-registered; invoices need the GSTIN.
 - `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
   is made, accepted or declined (called by a database trigger).
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
+- `media/`: the demo's sample walk-through clip.
 - `tests/demo/`: the browser suites that run against the app in demo mode (`tests/demo/run.sh`, see `tests/README.md`).
 - `marketing/`: the brand voice, audiences and the campaign packs; `team/`: the standing briefs for the AI employees
   (Teche `tech.md`, Mark `marketing.md`, Salu `community.md`, and their manager King `king.md`, who sets
