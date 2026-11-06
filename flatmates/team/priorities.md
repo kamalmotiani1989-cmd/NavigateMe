@@ -29,14 +29,14 @@ pushed, so the discussion is about choices, not reading.
 4. Anything Kamal asks for directly comes first and is noted in your report.
 
 ## Mark (marketing)
-1. **Study the other flat-rental and flatmate companies and their ads, for Sunday.** Kamal's task. India first
+1. **Done 6 Nov: PR #48, the competitor and ad study, waits for Kamal and Sunday.** Add the Meta Ad Library and Google ad copy once Kamal sends screenshots or allows the session to read those sites. The task was: study the other flat-rental and flatmate companies and their ads. India first
    (the flatmate apps, the no-broker rental sites, the PG and co-living brands, and the classifieds that carry rooms),
    then the two or three best-known abroad. For each: what they say in one line, who they target, the ad words and
    hooks they use (Google ad copy, Instagram and Facebook ads, reels), the campaigns and offers they run, what they
    charge, and where they are weak. End with a one-page recommendation: what we copy, what we do differently, and
    why. Facts only, each with its source and the date seen; no guesses about their numbers. Push it as a file in
    `flatmates/marketing/` on a branch with a PR before Sunday morning. Nothing is spent and nothing is posted.
-2. Open a PR for branch `marketing/pune-december-plan` so Kamal can see the December plan in the repo.
+2. Done: PR #45 (December plan and week-one content) is open and rebased; waits for Kamal.
 3. The Tuesday content pack stays, within the README facts and the "launching soon" wording.
 
 ## Salu (community)
@@ -68,4 +68,6 @@ works from now._
    checklist as an Instagram carousel, and a one-screen explainer of the campus-ambassador offer (the existing referral
    reward: 2 friends = 1 free contact, nothing else promised). Salu supplies the facts and draft text from
    `flatmates/marketing/community/pune-college-groups.md` (PR #46); Mark keeps the voice and the "launching soon" rule.
-5. **Salu's open question** (letting his session read public facebook.com pages) is Kamal's to answer; he declined on 5 Nov.
+5. **Kamal's call, asked by both Mark and Salu:** whether their sessions may read public pages of competitor sites, the
+   app stores, Instagram and the Meta Ad Library (Mark) and facebook.com and flatandflatmates.org (Salu). Read-only, no
+   login. Kamal declined Salu's on 5 Nov; King recommends allowing both. It is an environment setting Kamal changes.
