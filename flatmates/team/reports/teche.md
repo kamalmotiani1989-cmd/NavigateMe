@@ -1,5 +1,35 @@
 # Teche · reports
 
+## 2026-11-06, video and photos: both built
+
+**Done.** Both of Kamal's listing tasks are built, tested and up as PRs, one per task, waiting for Kamal (this batch
+too, since both change what owners post):
+- **PR #52, auto-beautified photos (item 3).** On the phone before upload: orientation, levels, a lift for dark rooms
+  that keeps a bright photo's brightness, light sharpening, 1600 px. Light, colour and sharpness only, every pixel
+  the same, nothing in the room removed, added or moved. Tilt straightening left out: doing it safely crops part of
+  the room away, which the honesty rule forbids. The original stays behind "Use original" per photo. Before-and-after
+  examples were sent to Kamal in my session (synthetic room pictures: a dark room 49 to 125 on a 0 to 255 brightness
+  scale, a good one 147 to 141). Real phone photos will be the real test; please try it on a dark room.
+- **PR #53, video on a listing (item 2).** One clip up to 20 seconds, next to the photos, re-encoded on the phone to
+  720p at about 1.5 Mbps (3 to 5 MB for 20 s), 8 MB hard cap, stored in a new `fm-videos` bucket in the owner's own
+  folder, plays under the photos on the home's page (tap, sound off until turned on), "Remove video" deletes the file.
+  Demo mode has a sample walk-through on one home in twelve. The caps are in one place for Kamal to change.
+
+**Tests.** Photos: 120 checks green (8 new). Video: 124 checks green (6 new), and the schema applied twice to a local
+Postgres 16 with stand-ins for Supabase's pieces, where a video in the caller's folder is stored and read back, a
+video elsewhere is refused on post and on update, and removing works.
+
+**After merge, for the video PR.** The database change goes live by fetching the merged schema.sql and executing it
+(I do this once Kamal merges), then the Android build and the website publish follow by themselves.
+
+**Found on the way, for Kamal's decision.** The website's publish job copies the whole `flatmates/` folder except
+`android/`, `supabase/` and the README, so once it runs again it will put `team/` (these briefs and reports),
+`marketing/` and `tests/` on findmeflatmate.com as plain text files. It has not run since 3 Nov, so nothing is public
+yet. The fix is three exclude lines in the website repo's publish.yml; I need push access to that repo, or Kamal can
+paste them. I recommend doing it before the next publish.
+
+**Blocked.** Pixel and conversion IDs, as before.
+
 ## 2026-11-06, video and photo tasks: proposal before building
 
 **Video on a listing (priorities item 2): caps and cost, for Kamal to decide.**
