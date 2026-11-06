@@ -273,6 +273,11 @@ the room comes second.
       share or hide it), "How you live" on Account shows it, and **My Vibe Card** in Account settings opens
       it (owners take the quiz for themselves). A signed-in seeker who opens a friend's link sees the match
       straight away.
+21a. **Photos are beautified on the phone before upload.** Light, colour and sharpness only: the photo's own
+    orientation data, levels, a lift for dark rooms, a light sharpening, then 1600 px. Every pixel gets the same
+    treatment, so nothing in the room is removed, added or moved, and an already bright photo keeps its brightness.
+    The original is kept until posting: each thumbnail has "Use original" / "Use enhanced", per photo. (FlatMart
+    photos are not touched.)
 22. **Listing strength and editing.** My flat scores each listing out of 100 (3+ photos 30, a description of
     80+ letters 20, 3+ amenities 10, who lives there 15, the household's living-style answers 15, a map pin 10;
     whole flats skip the household parts) and lists what's missing as buttons ("+ Add photos of the room,
