@@ -138,6 +138,8 @@ alter table public.fm_listings add column if not exists bachelors boolean not nu
 -- Where it is on the map, rounded to about a kilometre ({lat, lng}). The exact pin is in
 -- fm_listing_private.address_parts and only reaches people the owner accepts.
 alter table public.fm_listings add column if not exists geo jsonb;
+-- One short video per listing (the fm-videos bucket, the owner's own folder), next to the photos.
+alter table public.fm_listings add column if not exists video text;
 -- 'shared' (a bed in a twin-sharing room) was added later; widen the check on existing databases.
 alter table public.fm_listings drop constraint if exists fm_listings_kind_check;
 alter table public.fm_listings add constraint fm_listings_kind_check check (kind in ('room','shared','flatmate','flat'));
@@ -408,6 +410,8 @@ drop function if exists public.fm_post_listing(text, text, text, text, int, int,
   text, text, text[], text, text, text, text, text[], jsonb, jsonb, jsonb);
 drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
   text, text, text[], text, text, text, text, text[], jsonb, jsonb, jsonb, boolean);
+drop function if exists public.fm_post_listing(text, text, text, text, int, int, int, date,
+  text, text, text[], text, text, text, text, text[], jsonb, jsonb, jsonb, boolean, jsonb);   -- video added
 
 drop function if exists public.fm_unlock(uuid);           -- contact now only via an accepted request
 drop function if exists public.fm_claim_refund(uuid, text); -- nothing to refund: contacts are used on acceptance
@@ -576,14 +580,14 @@ create or replace function public.fm_search(
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
-  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  amenities text[], description text, photos text[], video text, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
   featured boolean, reply_hours numeric)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
-         l.photos, l.household, l.costs, l.created_at,
+         l.photos, l.video, l.household, l.costs, l.created_at,
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
@@ -609,7 +613,7 @@ create or replace function public.fm_search_near(p_lat double precision, p_lng d
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
-  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  amenities text[], description text, photos text[], video text, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
   featured boolean, reply_hours numeric)
 language sql security definer set search_path = public as $$
@@ -629,7 +633,7 @@ language sql security definer set search_path = public as $$
   )
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
-         l.photos, l.household, l.costs, l.created_at,
+         l.photos, l.video, l.household, l.costs, l.created_at,
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
@@ -642,13 +646,23 @@ language sql security definer set search_path = public as $$
   limit 200;
 $$;
 
+-- A listing's video must be the caller's own upload in the fm-videos bucket (or none).
+create or replace function public.fm_check_video(p_video text) returns void
+language plpgsql set search_path = public as $$
+begin
+  if nullif(p_video, '') is not null
+     and position('/storage/v1/object/public/fm-videos/' || auth.uid()::text || '/' in p_video) = 0 then
+    raise exception 'bad-video-url';
+  end if;
+end $$;
+
 create or replace function public.fm_post_listing(
   p_kind text, p_title text, p_city text, p_locality text, p_bhk int,
   p_rent int, p_deposit int, p_available_from date, p_gender text,
   p_furnishing text, p_amenities text[], p_description text,
   p_contact_name text, p_contact_phone text, p_address text, p_photos text[] default '{}',
   p_household jsonb default '{}', p_costs jsonb default '{}', p_address_parts jsonb default '{}',
-  p_bachelors boolean default true, p_geo jsonb default null)
+  p_bachelors boolean default true, p_geo jsonb default null, p_video text default null)
 returns uuid
 language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_photo text; v_key text; v_geo jsonb;
@@ -698,13 +712,14 @@ begin
       raise exception 'bad-photo-url';
     end if;
   end loop;
+  perform fm_check_video(p_video);
   insert into fm_listings (owner_id, kind, title, city, locality, bhk, rent, deposit,
                            available_from, gender, furnishing, amenities, description, photos,
-                           household, costs, bachelors, geo)
+                           household, costs, bachelors, geo, video)
   values (auth.uid(), p_kind, p_title, p_city, p_locality, p_bhk, p_rent, p_deposit,
           p_available_from, p_gender, p_furnishing, coalesce(p_amenities, '{}'),
           coalesce(p_description, ''), coalesce(p_photos, '{}'),
-          coalesce(p_household, '{}'), coalesce(p_costs, '{}'), coalesce(p_bachelors, true), v_geo)
+          coalesce(p_household, '{}'), coalesce(p_costs, '{}'), coalesce(p_bachelors, true), v_geo, nullif(p_video, ''))
   returning id into v_id;
   insert into fm_listing_private (listing_id, contact_name, contact_phone, address, address_parts, address_key)
   values (v_id, p_contact_name, p_contact_phone, p_address, coalesce(p_address_parts, '{}'), v_key);
@@ -1214,6 +1229,21 @@ create policy fm_photos_delete on storage.objects for delete to authenticated
 drop policy if exists fm_photos_select_own on storage.objects;
 create policy fm_photos_select_own on storage.objects for select to authenticated
   using (bucket_id = 'fm-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Listing videos: one short clip per listing, compressed on the phone (the app's cap is 20 seconds; the
+-- bucket's is 8 MB). Public to watch, like photos; each user writes and deletes only inside their own folder.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('fm-videos', 'fm-videos', true, 8388608, array['video/mp4','video/webm','video/quicktime'])
+on conflict (id) do update set file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+drop policy if exists fm_videos_insert on storage.objects;
+create policy fm_videos_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'fm-videos' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists fm_videos_delete on storage.objects;
+create policy fm_videos_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'fm-videos' and (storage.foldername(name))[1] = auth.uid()::text);
+drop policy if exists fm_videos_select_own on storage.objects;
+create policy fm_videos_select_own on storage.objects for select to authenticated
+  using (bucket_id = 'fm-videos' and (storage.foldername(name))[1] = auth.uid()::text);
 
 -- ------------------------------------------------------ push notifications --
 -- Device tokens for Firebase Cloud Messaging (Android app). One row per device.
@@ -2954,14 +2984,14 @@ create or replace function public.fm_listing_get(p_id uuid)
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
-  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  amenities text[], description text, photos text[], video text, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
   featured boolean, reply_hours numeric)
 language sql security definer set search_path = public as $$
   select fm_throttle('listing', 300, 2000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
-         l.photos, l.household, l.costs, l.created_at,
+         l.photos, l.video, l.household, l.costs, l.created_at,
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
@@ -2989,13 +3019,13 @@ create or replace function public.fm_my_listings()
 returns table (
   id uuid, kind text, title text, city text, locality text, bhk int, rent int,
   deposit int, available_from date, gender text, furnishing text,
-  amenities text[], description text, photos text[], household jsonb, costs jsonb, created_at timestamptz,
+  amenities text[], description text, photos text[], video text, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
   featured boolean, views int, saves bigint, reply_hours numeric)
 language sql stable security definer set search_path = public as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
-         l.photos, l.household, l.costs, l.created_at,
+         l.photos, l.video, l.household, l.costs, l.created_at,
          l.owner_id = auth.uid(),
          l.owner_id = auth.uid() or exists (
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
@@ -3036,12 +3066,13 @@ end $$;
 -- phone, address) stays as posted. A new map pin replaces the old one (p_geo is the rounded public
 -- spot, p_pin the exact one for people the owner accepts); without one the pins are kept. A listing
 -- taken down after a broker report can't be edited. Same limits as fm_post_listing.
+drop function if exists public.fm_update_listing(uuid, text, text, text, text, int, int, int, date, text, text, text[], text, text[], jsonb, jsonb, boolean, jsonb, jsonb);   -- video added
 create or replace function public.fm_update_listing(
   p_listing uuid, p_kind text, p_title text, p_city text, p_locality text, p_bhk int,
   p_rent int, p_deposit int, p_available_from date, p_gender text,
   p_furnishing text, p_amenities text[], p_description text, p_photos text[] default '{}',
   p_household jsonb default '{}', p_costs jsonb default '{}', p_bachelors boolean default true,
-  p_geo jsonb default null, p_pin jsonb default null)
+  p_geo jsonb default null, p_pin jsonb default null, p_video text default null)
 returns void
 language plpgsql security definer set search_path = public as $$
 declare v_photo text; v_geo jsonb;
@@ -3077,12 +3108,13 @@ begin
       raise exception 'bad-photo-url';
     end if;
   end loop;
+  perform fm_check_video(p_video);
   update fm_listings set kind = p_kind, title = p_title, city = p_city, locality = p_locality, bhk = p_bhk,
          rent = p_rent, deposit = coalesce(p_deposit, 0), available_from = coalesce(p_available_from, available_from),
          gender = p_gender, furnishing = p_furnishing, amenities = coalesce(p_amenities, '{}'),
          description = coalesce(p_description, ''), photos = coalesce(p_photos, '{}'),
          household = coalesce(p_household, '{}'), costs = coalesce(p_costs, '{}'),
-         bachelors = coalesce(p_bachelors, true), geo = coalesce(v_geo, geo)
+         bachelors = coalesce(p_bachelors, true), geo = coalesce(v_geo, geo), video = nullif(p_video, '')
    where id = p_listing and owner_id = auth.uid() and status <> 'delisted';
   if not found then raise exception 'not-found'; end if;
   if p_pin is not null then
