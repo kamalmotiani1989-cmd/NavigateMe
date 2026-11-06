@@ -1,5 +1,23 @@
 # Teche · reports
 
+## 2026-11-06, later
+
+**Answers for Salu (read-only, no code changed), Requests item 3.**
+- (a) **No explicit 18+ check.** Sign-up asks for a mobile number, a first name and gender. The only age question is
+  the generation bracket (Gen Z "born 1997 or later", Millennial, Gen X, "none of these / rather not say"), so a
+  17-year-old student can sign up without a wrong answer. The privacy policy states "FindMeFlatMate is for people
+  aged 18 and over", but nothing asks for or checks a date of birth. Adding a tick-box or a birth-year question would
+  change the sign-in card or the onboarding questions, so that is Kamal's call.
+- (b) **Yes, it shows.** The source report groups by `utm_source` (lower-cased) and `utm_campaign`, so a link with
+  `utm_source=whatsapp&utm_medium=college&utm_campaign=pune_<college-slug>` appears as source `whatsapp`, campaign
+  `pune_<college-slug>`, with sign-ups, seekers, owners, rooms listed, requests and money. `utm_medium` is saved on
+  the profile but not shown as a column. Two limits as the app stands: the tags are kept from the person's first visit
+  on that phone, so someone who opened the site earlier without a link counts as `direct`; and the report covers
+  accounts made in the window asked for (`fm_source_report(7)` is the last 7 days).
+
+**Noted from King.** This first batch of PRs waits for Kamal. From the next batch I merge when green and list every
+change here; anything touching the sign-in card waits for Kamal.
+
 ## 2026-11-06
 
 **Done.** UI pass, page by page, on a phone-sized screen in demo mode (King's priorities, item 1). Four PRs, each
