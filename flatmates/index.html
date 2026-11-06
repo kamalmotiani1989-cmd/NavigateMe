@@ -4671,7 +4671,7 @@ function showFormError(form, text){
 function formOk(form){
   form.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
   const bad = [...form.elements].filter(el => el.willValidate && !el.checkValidity());
-  if(!bad.length){ showFormError(form, ""); return true; }
+  if(!bad.length){ showFormError(form, ""); document.querySelectorAll(".toast").forEach(t => t.remove()); return true; }
   const label = el => el.type === "radio" ? (el.name === "role" ? "What brings you here" : "A choice") : FIELD_LABEL[el.id] || el.getAttribute("aria-label") || "A field";
   const msg = "Please check: " + [...new Set(bad.map(label))].join(", ") + ".";
   showFormError(form, msg);
