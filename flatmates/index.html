@@ -5969,7 +5969,7 @@ async function finishOnboarding(){
   $("obStage").innerHTML = `<div class="ob-q finale">
     <p class="eyebrow">Your vibe profile is ready</p>
     ${vt ? `<p class="ob-type"><span aria-hidden="true">${vt.emoji}</span>You're <b>${esc(vt.title)}</b>${im ? `<small>and a ${im.pct}% match with ${esc(inv.name)}</small>` : ""}</p>` : ""}
-    <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
+    ${strong ? `<div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>` : ""}
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}
@@ -5979,7 +5979,7 @@ async function finishOnboarding(){
   if($("obCard")) $("obCard").onclick = () => openVibeCard(state.vibe);
   let n = 0;
   const tick = () => { n = Math.min(best, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 140)); if(n < best) requestAnimationFrame(tick); };
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
+  if(!$("obRing")){} else if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
   $("obDone").onclick = () => { ob = null; $("fSort").value = "match"; go("discover"); };
 }
 /* ====================================================== search preferences */
