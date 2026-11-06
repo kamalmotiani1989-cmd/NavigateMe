@@ -1828,7 +1828,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
               <span><b>Posting a flat or a room</b><span>A spare room, a bed or a whole flat. See who'd fit in, then you choose</span></span></label>
           </div>
-          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
           <div class="lg-captcha" id="lgCaptcha" hidden></div>
@@ -2245,7 +2245,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <p class="hint" id="privKept" hidden style="margin:-4px 0 12px">Your name, number and address stay as posted. To change them, mark this listing as rented and post the room again. You can still move the map pin.</p>
           <div class="grid2">
             <div class="field"><label for="pName">Your name</label><input type="text" id="pName" required autocomplete="name"></div>
-            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           </div>
           <div class="grid2">
             <div class="field"><label for="aFlat">Flat / house no.</label><input type="text" id="aFlat" required maxlength="30" placeholder="e.g. B-304"></div>
@@ -5543,6 +5543,17 @@ function otpCountdown(sec){
   };
   tick(); signin.timer = setInterval(tick, 1000);
 }
+// A number pasted or auto-filled from contacts arrives as "+91 98765 43210", "098765 43210" or "98765-43210":
+// keep the 10 digits, so it passes as typed. Every 10-digit mobile field in the app gets this.
+function tidyPhone(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(d.length > 10 && d.startsWith("91")) d = d.slice(2); else if(d.length === 11 && d.startsWith("0")) d = d.slice(1);
+  return d.slice(0, 10);
+}
+document.addEventListener("input", e => {
+  const el = e.target;
+  if(el.type === "tel" && el.inputMode === "numeric"){ const t = tidyPhone(el.value); if(t !== el.value) el.value = t; }
+});
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
@@ -7581,7 +7592,7 @@ function openFs(title, sub, html){
 }
 function memberRowsHtml(rows, ph = "Riya"){
   return rows.map((r, i) => `<div class="grid2 fs-new-row"><div class="field"><label for="fsN${i}">Name</label><input type="text" id="fsN${i}" maxlength="40" value="${esc(r.name)}" placeholder="${ph}"></div>
-    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" maxlength="10" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
+    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
 }
 function readMemberRows(root){
   return [...root.querySelectorAll(".fs-new-row")].map(r => ({ name: r.querySelector("[id^=fsN]").value.trim(), phone: ten(r.querySelector("[id^=fsP]").value) }))
