@@ -20,7 +20,18 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(500);
     const err1 = await p.evaluate(() => { const e = document.querySelector('fieldset[data-step="1"] .form-err'); return e && !e.hidden ? e.textContent : ''; });
     ok(/Please check/.test(err1) && await p.isVisible('fieldset[data-step="1"]'), tag + ': empty step 1 stays with a message: ' + err1.slice(0, 60));
-    await p.fill('#pTitle', 'Sunny room near the metro'); await p.selectOption('#pCity', 'Bengaluru'); await p.fill('#pLocality', 'HSR Layout'); await p.fill('#pRent', '15000');
+    // easier posting: the extras wait behind "More details", the title is optional and written from the answers
+    const easy0 = await p.evaluate(() => ({ closed: !$('pMore').open, titleInMore: $('pMore').contains($('pTitle')), sum: $('pMoreSum').textContent, req: [...document.querySelectorAll('fieldset[data-step="1"] [required]')].map(e => e.id).sort().join(),
+      height: document.querySelector('fieldset[data-step="1"]').getBoundingClientRect().height, vh: innerHeight }));
+    ok(easy0.closed && easy0.titleInMore && easy0.sum === 'Semi furnished · Anyone · Available now · Bachelors welcome' && easy0.req === 'pCity,pFrom,pLocality,pRent',
+      tag + ': More details closed, says what is assumed, title not required: ' + JSON.stringify({ sum: easy0.sum, req: easy0.req }));
+    if(tag === 'm') ok(easy0.height / easy0.vh < 1.6, tag + ': step 1 fits in about one and a half phone screens: ' + (easy0.height / easy0.vh).toFixed(2));
+    // a gap inside the closed section opens it, so the message points at something visible
+    await p.evaluate(() => { $('pFrom').value = ''; }); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(400);
+    const gap = await p.evaluate(() => ({ open: $('pMore').open, msg: document.querySelector('fieldset[data-step="1"] .form-err').textContent }));
+    ok(gap.open && /Available from/.test(gap.msg), tag + ': a gap inside More details opens it: ' + gap.msg.slice(0, 80));
+    await p.evaluate(() => { $('pFrom').value = new Date().toISOString().slice(0, 10); $('pMore').open = false; });
+    await p.selectOption('#pCity', 'Bengaluru'); await p.fill('#pLocality', 'HSR Layout'); await p.fill('#pRent', '15000');
     // photos are beautified on the phone: a dark room gets brighter, a good photo keeps its brightness, the original stays a tap away
     const ph = await p.evaluate(async () => {
       const draw = (dark) => { const c = document.createElement('canvas'); c.width = 800; c.height = 600; const x = c.getContext('2d');
@@ -55,20 +66,23 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(600);
     ok(await p.isVisible('fieldset[data-step="2"]') && await p.evaluate(() => $('psSteps').children[0].className === 'done' && $('psSteps').children[1].className === 'now'), tag + ': step 2 after a complete step 1');
     await p.click('fieldset[data-step="2"] [data-ps="back"]'); await p.waitForTimeout(400);
-    ok(await p.isVisible('fieldset[data-step="1"]') && (await p.inputValue('#pTitle')) === 'Sunny room near the metro', tag + ': back keeps what was typed');
+    ok(await p.isVisible('fieldset[data-step="1"]') && (await p.inputValue('#pRent')) === '15000' && (await p.inputValue('#pLocality')) === 'HSR Layout', tag + ': back keeps what was typed');
+    ok(await p.evaluate(() => $('pTitleAuto').textContent === 'Leave it empty to use: Private room with attached washroom in a 2BHK in HSR Layout'), tag + ': the title box shows the title that will be used');
     await p.click('#psSteps li:nth-child(1)'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(400);
     await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(500);
     ok(await p.isVisible('fieldset[data-step="3"]'), tag + ': step 3');
     await p.fill('#aFlat', 'B-304'); await p.fill('#aBuilding', 'Green Park'); await p.fill('#aPin', '560102');
     if(tag === 'm') await p.screenshot({ path: `${O}/p3-m-post-step3.png`, fullPage: true });
     // publish with a gap in step 1: jumps back there
-    await p.evaluate(() => { $('pTitle').value = ''; });
+    await p.evaluate(() => { $('pRent').value = ''; });
     await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(600);
     ok(await p.isVisible('fieldset[data-step="1"]') && await p.evaluate(() => !document.querySelector('fieldset[data-step="1"] .form-err').hidden), tag + ': publish with a gap goes back to step 1');
-    await p.fill('#pTitle', 'Sunny room near the metro'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
+    await p.fill('#pRent', '15000'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
     await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(2000);
     const posted = await p.evaluate(() => ({ hash: location.hash, cards: document.querySelectorAll('.mine-card').length, stats: [...document.querySelectorAll('.mine-card .stats.six .stat span')].map(s => s.textContent) }));
     ok(posted.cards === 1 && posted.stats.length === 6, tag + ': published, My flat shows 6 numbers: ' + posted.stats.join(' | '));
+    ok(await p.evaluate(() => state.myListings[0].title === 'Private room with attached washroom in a 2BHK in HSR Layout'), tag + ': an empty title is written from the answers: ' + await p.evaluate(() => state.myListings[0].title));
+    ok(await p.evaluate(() => !$('pMore').open && !$('pCosts').open), tag + ': after publishing the form starts closed again');
     ok(await p.evaluate(() => state.myListings[0].photos.length === 2 && state.myListings[0].photos.every(u => u.startsWith('data:image/jpeg'))), tag + ': the two photos were posted');
     ok(await p.evaluate(() => JSON.stringify(state.myListings[0].room) === '{"washroom":"attached","balcony":true,"master":false}'), tag + ': the answers were saved on the listing');
     await p.evaluate(() => openListing(state.myListings[0].id)); await p.waitForTimeout(1000);

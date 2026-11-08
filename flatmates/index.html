@@ -1677,6 +1677,21 @@ html.on-hold, html.on-hold body{overflow:hidden}
 .ps-steps li.done{cursor:pointer; color:var(--text)} .ps-steps li.done i{background:var(--ok); color:#fff}
 @media (max-width:480px){ .ps-steps li{padding:8px; gap:6px; font-size:13px} .ps-steps li em{display:none} .ps-steps li b{display:inline} }
 fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{display:none}
+.ps-lead{margin:-6px 0 16px; color:var(--text-2); font-size:14px}
+.ps-more-body .grid3{grid-template-columns:repeat(auto-fit, minmax(150px, 1fr))} .ps-more-body .grid3 > .field{min-width:0} .ps-more-body .grid3 input, .ps-more-body .grid3 select{min-width:0; width:100%}
+.ps-more{margin:4px 0 0; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface)}
+.ps-more > summary, .ps-costs > summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px}
+.ps-more > summary::-webkit-details-marker, .ps-costs > summary::-webkit-details-marker{display:none}
+.ps-more > summary{padding:14px 16px}
+.ps-more > summary span, .ps-costs > summary span{flex:1; min-width:0}
+.ps-more > summary b{display:block; font-size:15px} .ps-costs > summary b{display:block; font-size:14.5px}
+.ps-more > summary small, .ps-costs > summary small{display:block; margin-top:2px; color:var(--text-2); font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.ps-more > summary i{font-style:normal; font-size:12px; font-weight:700; color:var(--text-2); background:var(--surface-2); padding:3px 9px; border-radius:999px}
+.ps-more > summary::after, .ps-costs > summary::after{content:""; flex:none; width:8px; height:8px; border-right:2px solid var(--text-2); border-bottom:2px solid var(--text-2); transform:rotate(45deg); margin:-4px 2px 0 0; transition:transform .2s}
+.ps-more[open] > summary::after, .ps-costs[open] > summary::after{transform:rotate(225deg); margin-top:4px}
+.ps-more[open] > summary{box-shadow:0 1px 0 var(--line)}
+.ps-more-body{padding:16px 16px 2px}
+.ps-costs{margin:0 0 16px; padding:12px 14px; border-radius:var(--radius); background:var(--surface-2)}
 .ps-nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:22px; padding-top:16px; box-shadow:0 -1px 0 var(--line)}
 .ps-nav .btn-primary{min-width:48%}
 /* Onboarding: chapter bars, the intro and reveal cards, the live match count. */
@@ -2189,6 +2204,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
       <form id="postForm" novalidate autocomplete="on">
         <ol class="ps-steps" id="psSteps"><li class="now"><i>1</i><span><em>The room</em><b>Room</b></span></li><li><i>2</i><span><em>Your home</em><b>Home</b></span></li><li><i>3</i><span><em>Private details</em><b>Private</b></span></li></ol>
         <fieldset class="ps" data-step="1">
+        <p class="ps-lead">About two minutes. Only the area and the rent are needed; the rest gets you better requests.</p>
         <div class="field"><label>What are you offering?</label>
           <div class="chips kind-grid">
             <label class="chip"><input type="radio" name="kind" value="room" checked>Private room</label>
@@ -2208,8 +2224,6 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
             <label class="chip"><input type="radio" name="rMaster" value="yes">Yes</label>
             <label class="chip"><input type="radio" name="rMaster" value="no">No</label></div></div>
         </div>
-        <div class="field"><label for="pTitle">Title</label>
-          <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
         <div class="field ps-anchor p-where"><label for="pWhere">Where's the flat?</label>
           <div class="ps-box"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             <input type="search" id="pWhere" placeholder="Search your society, building or area" aria-describedby="pWhereHint"></div>
@@ -2218,20 +2232,19 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
           <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout" list="areaList" autocomplete="off"><datalist id="areaList"></datalist></div>
         </div>
-        <div class="field"><label>Photos (up to 6)</label>
-          <label class="drop" id="pDrop"><input type="file" id="pPhotos" accept="image/*" multiple>
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
-            <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
-          <div class="previews" id="pPreviews"></div></div>
         <div class="grid3">
           <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="1" inputmode="numeric"></div>
           <div class="field"><label for="pDeposit">Deposit (₹)</label><input type="number" id="pDeposit" min="0" step="1" value="0" inputmode="numeric"></div>
           <div class="field"><label for="pBhk">Flat size</label><select id="pBhk"><option value="1">1 BHK</option><option value="2" selected>2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></div>
         </div>
-        <div class="field"><label>Monthly expenses for this room (not part of rent)</label>
-          <p class="hint" style="margin:0 0 8px">Tick what the new person pays on top of rent and enter this room's amount.</p>
-          <div class="exp-list" id="expList"></div>
-          <div class="split" id="expSum" aria-live="polite"></div></div>
+        <div class="field"><label>Photos (up to 6)</label>
+          <label class="drop" id="pDrop"><input type="file" id="pPhotos" accept="image/*" multiple>
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 17l-5-5-8 7"/></svg>
+            <b>Add photos of the room, kitchen and building</b><span class="hint" style="margin:0">Listings with photos get far more interest. The first photo is the cover.</span></label>
+          <div class="previews" id="pPreviews"></div></div>
+        <!-- Everything below is optional, so it waits behind one row; the row says what is assumed until opened. -->
+        <details class="ps-more" id="pMore"><summary><span><b>More details</b><small id="pMoreSum"></small></span><i>Optional</i></summary>
+        <div class="ps-more-body">
         <div class="grid3">
           <div class="field"><label for="pFrom">Available from</label><input type="date" id="pFrom" required></div>
           <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
@@ -2240,6 +2253,14 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="pBach" checked><span>Bachelors welcome
           <small class="hint" style="display:block;margin:0;font-weight:500">Singles, or a group of friends renting together (a tribe). No brokers either way.</small></span></label>
         <div class="field"><label>Amenities</label><div class="chips" id="pAmen"></div></div>
+        <details class="ps-costs" id="pCosts"><summary><span><b>Monthly costs on top of rent</b><small id="pCostSum">Maintenance, electricity, Wi-Fi, cook…</small></span></summary>
+          <p class="hint" style="margin:6px 0 8px">Tick what the new person pays on top of rent and enter this room's amount.</p>
+          <div class="exp-list" id="expList"></div>
+          <div class="split" id="expSum" aria-live="polite"></div></details>
+        <div class="field"><label for="pTitle">Title (optional)</label>
+          <input type="text" id="pTitle" maxlength="90" placeholder="Private room in a 2BHK" aria-describedby="pTitleAuto">
+          <p class="hint" id="pTitleAuto" style="margin:6px 0 0"></p></div>
+        </div></details>
         <div class="ps-nav"><span></span><button class="btn btn-primary" type="button" data-ps="next">Next: your home</button></div>
         </fieldset>
         <fieldset class="ps" data-step="2" hidden>
@@ -7217,7 +7238,7 @@ async function startEdit(id, step){
 }
 function endEdit(){
   editing = null; keepPhotos = [];
-  $("postForm").reset(); syncRoomQs();
+  $("postForm").reset(); syncRoomQs(); closePostMore();
   photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
   PRIVATE_IDS.forEach(id => $(id).disabled = false);
   $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
@@ -7255,6 +7276,7 @@ async function fillPostForm(l){
   pinGeo = Number.isFinite(Number(ap.lat)) && ap.lat ? { lat: Number(ap.lat), lng: Number(ap.lng) } : null;
   $("editBar").hidden = false; $("editTitle").textContent = l.title; $("postH1").textContent = "Edit your listing"; $("postIntro").hidden = true;
   $("postSubmit").textContent = "Save changes";
+  $("pMore").open = true; $("pCosts").open = Object.keys(l.costs || {}).length > 0; syncPostMore();
   showPostStep(editStep);
 }
 ["dragenter","dragover"].forEach(t => $("pDrop").addEventListener(t, e => { e.preventDefault(); $("pDrop").classList.add("over"); }));
@@ -7324,6 +7346,31 @@ function syncRoomsFree(){
 ["hCount", "pBhk"].forEach(id => $(id).addEventListener("change", syncRoomsFree));
 // Room details: shown for a room, a bed or a flatmate listing; a whole flat has none to answer.
 function syncRoomQs(){ const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value; $("roomQs").hidden = kind === "flat"; }
+// A title written from the answers, used when the owner leaves the title empty (or shorter than 5 letters).
+function autoTitle(){
+  const f = $("postForm"), kind = (f.querySelector("[name=kind]:checked") || {}).value || "room", b = $("pBhk").value, bhk = b === "4" ? "4+ BHK" : b + "BHK";
+  const where = $("pLocality").value.trim() || $("pCity").value || "";
+  const wash = kind !== "flat" && (f.querySelector("[name=rWash]:checked") || {}).value === "attached" ? " with attached washroom" : "";
+  const base = kind === "flat" ? `Whole ${bhk} flat` : kind === "flatmate" ? `Flatmate wanted for a ${bhk}` : `${kind === "shared" ? "Shared room" : "Private room"}${wash} in a ${bhk}`;
+  return (base + (where ? ` in ${where}` : "")).slice(0, 90);
+}
+const postTitle = () => { const t = $("pTitle").value.trim(); return t.length >= 5 ? t : autoTitle(); };
+// The "More details" row says what is assumed while it is closed: furnishing, who it is for, the move-in date, bachelors,
+// and how many amenities and monthly costs are set. The title box shows the title that will be used.
+function syncPostMore(){
+  const today = new Date().toISOString().slice(0, 10), d = $("pFrom").value;
+  const amen = $("pAmen").querySelectorAll("input:checked").length, costs = $("expList").querySelectorAll('input[name^="exp_"]:checked').length;
+  const parts = [{ full: "Fully furnished", semi: "Semi furnished", none: "Unfurnished" }[$("pFurn").value] || "",
+    { any: "Anyone", female: "Women only", male: "Men only" }[$("pGender").value] || "",
+    !d || d <= today ? "Available now" : "From " + fmtDate(d), $("pBach").checked ? "Bachelors welcome" : "No bachelors"];
+  if(amen) parts.push(amen + (amen === 1 ? " amenity" : " amenities"));
+  if(costs) parts.push(costs + (costs === 1 ? " monthly cost" : " monthly costs"));
+  $("pMoreSum").textContent = parts.filter(Boolean).join(" · ");
+  $("pCostSum").textContent = costs ? costs + " ticked" : "Maintenance, electricity, Wi-Fi, cook…";
+  const t = autoTitle(); $("pTitle").placeholder = t; $("pTitleAuto").textContent = "Leave it empty to use: " + t;
+}
+function closePostMore(){ $("pMore").open = false; $("pCosts").open = false; syncPostMore(); }
+$("postForm").addEventListener("input", syncPostMore); $("postForm").addEventListener("change", syncPostMore);
 function roomFromForm(){
   const f = $("postForm"), kind = (f.querySelector("[name=kind]:checked") || {}).value, pick = n => (f.querySelector(`[name=${n}]:checked`) || {}).value;
   if(kind === "flat") return null;
@@ -7357,7 +7404,7 @@ function renderPost(){
   if(!$("pName").value) $("pName").value = state.user.name || "";
   if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
   if(!$("expList").children.length) renderExpenseRows();
-  syncRoomsFree();
+  syncRoomsFree(); syncPostMore();
 }
 // The form is three steps. Each checks its own fields before the next; Publish checks them all and brings a
 // step with a gap back into view.
@@ -7376,6 +7423,7 @@ function stepOk(fs){
   if(!bad.length){ box.hidden = true; return true; }
   const label = el => FIELD_LABEL[el.id] || el.getAttribute("aria-label") || "A field";
   box.hidden = false; box.textContent = "Please check: " + [...new Set(bad.map(label))].join(", ") + ".";
+  bad.forEach(el => { for(let d = el.closest("details"); d; d = d.parentElement && d.parentElement.closest("details")) d.open = true; });
   bad.forEach(el => el.classList.add("bad"));
   bad[0].scrollIntoView({ block: "center", behavior: "smooth" });
   return false;
@@ -7395,7 +7443,7 @@ $("postForm").addEventListener("submit", async e => {
   const p = {
     listing: {
       kind: f.querySelector("[name=kind]:checked").value,
-      title: $("pTitle").value.trim(), city: $("pCity").value, locality: $("pLocality").value.trim(),
+      title: postTitle(), city: $("pCity").value, locality: $("pLocality").value.trim(),
       bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
       available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value, bachelors: $("pBach").checked,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
@@ -7433,7 +7481,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     track("list_room", { city: p.listing.city, area: p.listing.locality, kind: p.listing.kind });
     state.homeDraft = Object.assign({}, p.listing.household); save();
-    f.reset(); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
+    f.reset(); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos(); closePostMore();
     if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null;
     $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderExpenseRows();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."

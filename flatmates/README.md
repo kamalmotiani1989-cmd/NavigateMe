@@ -285,6 +285,14 @@ the room comes second.
     panel has three optional ticks under "The room" (off by default; a whole flat always passes them). Saved on the
     listing as `room` ({washroom, balcony, master}, checked by `fm_clean_room`); listings from before have nothing set
     and show nothing. In India these three move the rent as much as the area, so seekers ask them first.
+21d. **Easy posting.** Step 1 of the posting form keeps only what a seeker decides on: what is offered, the three
+    room questions, where the flat is, rent, deposit, flat size and photos (about one and a half phone screens; only
+    the area and the rent have to be filled). The rest waits behind one **More details** row that says what is
+    assumed while it is closed ("Semi furnished · Anyone · Available now · Bachelors welcome"): move-in date, who it
+    is for, furnishing, bachelors, amenities, the monthly costs (folded on their own) and the title. The title is
+    optional: left empty, it is written from the answers ("Private room with attached washroom in a 2BHK in HSR
+    Layout"), and the title box shows the one that will be used. A gap inside the closed row opens it; editing a
+    listing opens it so the owner sees everything that is set.
 22. **Listing strength and editing.** My flat scores each listing out of 100 (3+ photos 30, a description of
     80+ letters 20, 3+ amenities 10, who lives there 15, the household's living-style answers 15, a map pin 10;
     whole flats skip the household parts) and lists what's missing as buttons ("+ Add photos of the room,
