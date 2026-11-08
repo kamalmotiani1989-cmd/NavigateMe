@@ -47,13 +47,22 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   await ctx.addInitScript(s => { if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message)); p.on('dialog', d => d.accept().catch(() => {}));
   // every visible text whose colour is --brand (#1C7F72) on a --brand-soft (#E5F3EF) background: 4.25:1, below 4.5
-  const lowGreen = () => p.evaluate(() => {
+  // text sizes in use on each screen (avatars and icon circles aside)
+  const sizes = new Set(), odd = new Set();
+  const scale = async () => (await p.evaluate(() => { const r = [];
+    document.querySelectorAll('body *').forEach(e => { if(!e.offsetParent) return; if(![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return;
+      const cs = getComputedStyle(e), f = parseFloat(cs.fontSize); if(f < 12 || f > 20) return;
+      if(cs.display === 'grid' && cs.placeItems.includes('center') && parseFloat(cs.width) <= 56) return;   // avatar and icon circles
+      if(/^H[1-3]$/.test(e.tagName) && !Number.isInteger(f * 2)) return;   // headlines scale with the screen (clamp)
+      r.push([String(f), (e.className || e.tagName) + ':' + e.textContent.trim().slice(0, 16)]); });
+    return r; })).forEach(([f, w]) => { sizes.add(f); if(!['12', '13.5', '15.5', '20'].includes(f)) odd.add(f + ' ' + w); });
+  const lowGreen = async () => { await scale(); return p.evaluate(() => {
     const bgOf = e => { for(; e && e !== document.documentElement; e = e.parentElement){ const c = getComputedStyle(e).backgroundColor; if(c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') return c; } return ''; };
     const out = [];
     document.querySelectorAll('body *').forEach(e => { if(!e.offsetParent && getComputedStyle(e).position !== 'fixed') return;
       const own = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()); if(!own) return;
       if(getComputedStyle(e).color === 'rgb(28, 127, 114)' && bgOf(e) === 'rgb(229, 243, 239)') out.push((e.className || e.tagName) + ': ' + e.textContent.trim().slice(0, 30)); });
-    return out; });
+    return out; }); };
   const found = [];
   for(const h of ['#discover', '#saved', '#tribe', '#account', '#passes', '#market']){
     await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen()); }
@@ -79,6 +88,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   await ctx.addInitScript(s => { if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }, owner);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('owner ' + e.message)); p.on('dialog', d => d.accept().catch(() => {}));
   for(const h of ['#mine', '#requests', '#account']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen()); }
+  ok(!sizes.size || [...sizes].every(x => ['12', '13.5', '15.5', '20'].includes(x)), 'seeker and owner: text between 12 and 20 px uses only the scale (12, 13.5, 15.5, 20): ' + [...sizes].join(', ') + ' ' + [...odd].slice(0, 6).join(' / '));
   ok(!found.length, 'seeker and owner: no green text below 4.5:1 on the pale green tips and labels: ' + [...new Set(found)].join(' / '));
   await ctx.close();
   await b.close();
