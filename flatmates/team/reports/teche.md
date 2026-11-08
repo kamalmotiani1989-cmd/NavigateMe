@@ -1,5 +1,27 @@
 # Teche · reports
 
+## 2026-11-08, nearby parties Phase 1: PR #67 up for Kamal
+
+**Done, not merged (Kamal merges). Not deployed:** the schema and fm-notify go live only on Kamal's word after the
+merge, app first, then the database. Kamal confirmed the build directly ("Yes"). One commit per part:
+1. Host side.
+2. Discovery.
+3. Request and accept.
+4. Safety: check-in codes, reports, thumbs, a block until Kamal reviews, rate limits.
+5. Notifications, plus the README party section and the privacy policy.
+
+The address, pin and numbers are shared only on accept; nothing private goes in a notification; no payments code.
+
+Kamal's review: `select * from fm_party_review_list();` and `select fm_party_clear('<user_id>', 'note');` (README).
+
+Tests:
+- `flatmates/tests/db/run.sh`: the schema applied twice to a fresh database, then 77 checks covering every function
+  and refusal.
+- All demo suites pass, including p9 (35 checks).
+
+Before and after screenshots at 390×844 (Account, Splits, a party before and after accept, the host's editor and
+requests): `flatmates/team/reports/shots/2026-11-08-nearby-parties-before-after.png`.
+
 ## 2026-11-08, sample homes, line icons, colour tokens: PR #66 up for Kamal
 
 **Done, not merged (Kamal merges).** These are the three changes Kamal approved via King. One commit each:
