@@ -1011,6 +1011,8 @@ div.cx-area{cursor:default}
 @media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none}
   body:not(.app) .help-fab{bottom:calc(18px + env(safe-area-inset-bottom,0px))} }
 body:has(#view-splits:not([hidden]) #fsGroup:not([hidden])) .help-fab{display:none}
+/* Out of the way while someone types: on a phone the button sat over the end of a field (area, title, number). */
+body.typing .help-fab{display:none}
 #dlgHelp[open]{display:flex; flex-direction:column; height:min(640px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
 @media (max-width:640px){ #dlgHelp[open]{width:100vw; height:100dvh} }
 #dlgHelp .mhead{flex:none; margin-bottom:0}
@@ -9414,6 +9416,9 @@ async function hbTickets(){
     [["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["↩ Something else", "home"]]);
   api.ticketsSeen().catch(() => {}); ticketUnseen = 0; drawHelpBadge();
 }
+const typingIn = el => el && el.matches && el.matches("input:not([type=radio]):not([type=checkbox]):not([type=range]):not([type=file]), textarea, select");
+document.addEventListener("focusin", e => { if(typingIn(e.target)) document.body.classList.add("typing"); });
+document.addEventListener("focusout", e => { if(typingIn(e.target)) document.body.classList.remove("typing"); });
 $("helpFab").addEventListener("click", () => openHelp());
 // The private-preview door: 7 quick taps on the logo of the Coming soon screen (see showHold).
 (() => { let taps = 0, last = 0;
