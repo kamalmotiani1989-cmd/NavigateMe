@@ -293,6 +293,10 @@ textarea{min-height:96px; resize:vertical}
 .empty{text-align:center; padding:48px 16px; color:var(--text-2)}
 .empty h3{color:var(--text); margin-bottom:6px}
 .art{position:absolute; inset:0; width:100%; height:100%}
+.nophoto{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:var(--brand-soft); color:var(--brand-2);
+  font-size:13.5px; font-weight:700; text-align:center}
+.mini .nophoto span, .cmp .nophoto span{display:none}
+.mini .nophoto svg{width:22px; height:22px}
 .pic > img,.mini > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
 
 /* ---------- sections, account, owner home: dividers, not boxes */
@@ -4766,7 +4770,9 @@ function toggleSaved(id){
   api.saveListing(id, isSaved(id)).catch(() => {});   // shared with your tribe
   return isSaved(id);
 }
-function picHtml(l){ const ph = photosOf(l); return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : roomArt(l.id, l.kind); }
+function picHtml(l){ const ph = photosOf(l); return ph.length ? `<img src="${esc(ph[0])}" alt="" loading="lazy">` : noPhoto(); }
+// A home without photos says so, instead of a drawn room that can pass for a real one.
+const noPhoto = () => `<div class="art nophoto" role="img" aria-label="No photos yet"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>No photos yet</span></div>`;
 // Contacts a seeker can still use: total minus those held by requests waiting on an owner.
 const contactsLeft = () => Math.max(0, (state.credits || 0) - (state.pending || 0));
 // Passes bought from Plans: {room, tribe, escape} -> the date each runs until (from fm_me).
@@ -6457,7 +6463,7 @@ function compareHtml(list){
     ["Posted", l => timeAgo(l.created_at)],
   ];
   const head = list.map(l => `<th scope="col" data-id="${esc(l.id)}" tabindex="0" role="button">${photosOf(l).length
-      ? `<img src="${esc(photosOf(l)[0])}" alt="" loading="lazy">` : `<div class="art">${roomArt(l.id, l.kind)}</div>`}${esc(l.title)}<small>${esc(l.locality)}, ${esc(l.city)}</small></th>`).join("");
+      ? `<img src="${esc(photosOf(l)[0])}" alt="" loading="lazy">` : noPhoto()}${esc(l.title)}<small>${esc(l.locality)}, ${esc(l.city)}</small></th>`).join("");
   const body = rows.map(([label, show, val, best]) => {
     const vals = val ? list.map((l, i) => val(l, i)) : [], nums = vals.filter(v => v != null && !Number.isNaN(v));
     const top = best && nums.length > 1 && new Set(nums).size > 1 ? (best === "min" ? Math.min(...nums) : Math.max(...nums)) : null;
@@ -6734,9 +6740,9 @@ async function openListing(id){
   $("lBody").innerHTML = `
     ${isSample(l) ? `<p class="smp-note">${SAMPLE_TAG}<span>A sample home for testing. Ask to meet and the owner accepts straight away, without using a contact.
       There's no real owner, number or address.</span></p>` : ""}
-    <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : roomArt(l.id, l.kind)}
+    <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : noPhoto()}
       ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
-    <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : "Illustration. The owner hasn't added photos yet."}</p>
+    <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : l.is_owner ? "Homes with photos get more requests. Add them from Edit." : "Ask about the room when you send a request."}</p>
     ${tribeNote}
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
