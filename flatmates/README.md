@@ -11,6 +11,15 @@ the room comes second.
    "Send it by SMS instead"; the code screen can send it again, or by SMS, after a minute. Their first
    name is the first question after sign-in, then **male or female** (each asked only once per number).
    See "Sign-in codes" below.
+   **Just Flatsplits & FlatMart** (third choice, Kamal, 8 Nov 2026): for people who only want to split bills and
+   buy or sell. The code steps are the same; set-up asks only name, gender and generation (Gen Z, Millennial,
+   Gen X), then they land on Splits. Tabs: Splits, Market, Discover, Account. Discover shows a lock card ("Answer
+   12 quick questions about how you live") with **I need a room** / **I'm posting a flat or a room**, which switches
+   them to that role and asks the usual questions (not name, gender or generation again). Until then rooms,
+   requests, Tribe, Escape, posting and **parties nearby** stay locked; Flatsplits, FlatMart and party invites for
+   friends work. On the server the role is `'splits'`: room requests need a seeker with the vibe answers
+   (`need-vibe`), posting and inviting were already owner-only, and parties nearby need `fm_party_vibe_ok` (an
+   owner, or a seeker with the answers). Picking it again at sign-in never turns a seeker or owner into `'splits'`.
 2. **Questions at sign-in, one per screen, short.** All 12 living-style questions (bedtime,
    cleanliness, food, cooking, smoking, drinks, guests, noise, time together, groceries and chores,
    weekday routine, pets; smoking, food and pets count double), so every new profile has a complete vibe.

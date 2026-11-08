@@ -1115,6 +1115,11 @@ body.typing .help-fab{display:none}
 .pr-main{flex:1; min-width:0} .pr-main small{display:flex; flex-wrap:wrap; gap:4px; align-items:center; color:var(--text-2); font-size:var(--fs-s)}
 .pr-note{margin:6px 0 0; font-size:var(--fs-s)} .pr-phone{margin:6px 0 0; font-size:var(--fs-s); font-weight:700} .pr-phone .ic{vertical-align:-2px}
 .pr-acts{display:flex; flex-direction:column; gap:6px}
+#view-discover.locked > :not(#roomLock){display:none !important}
+.room-lock{max-width:560px; margin:24px auto; padding:28px 22px; border-radius:var(--r-card); background:#fff; box-shadow:var(--card-shadow); text-align:center}
+.room-lock .rl-ic{width:64px; height:64px; margin:0 auto 12px; border-radius:50%; display:grid; place-items:center; background:var(--brand-soft); color:var(--brand-2)}
+.room-lock h1{font-size:clamp(22px, 5vw, 28px); margin:6px 0 10px} .room-lock > p{color:var(--text-2)}
+.rl-acts{display:grid; gap:10px; margin:18px 0 10px}
 .near-promo{display:flex; gap:12px; align-items:center; padding:14px; margin:0 0 16px; border-radius:16px; background:#fff; box-shadow:var(--card-shadow)}
 .near-promo > div{flex:1; min-width:0} .near-promo small{display:block; color:var(--text-2); font-size:var(--fs-s)} .near-promo .pt-mini-ic{color:var(--brand-2)}
 .near-h{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap} .near-h span{font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
@@ -1938,6 +1943,9 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
             <label class="role"><input type="radio" name="role" value="owner" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
               <span><b>Posting a flat or a room</b><span>A spare room, a bed or a whole flat. See who'd fit in, then you choose</span></span></label>
+            <label class="role"><input type="radio" name="role" value="splits" required>
+              <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5"/></svg></span>
+              <span><b>Just Flatsplits &amp; FlatMart</b><span>Split bills with flatmates, buy and sell with people nearby</span></span></label>
           </div>
           <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
@@ -2189,6 +2197,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 <main class="wrap" id="appMain" hidden>
   <!-- seeker: discover -->
   <section id="view-discover" hidden>
+    <div id="roomLock" hidden></div>
     <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
     <div class="d-controls">
       <div class="d-search ps-anchor" role="search">
@@ -3407,6 +3416,7 @@ const demoApi = {
     return state;
   },
   async setRole(role){
+    if(role === "splits" && ["owner", "seeker"].includes(state.user.role)) role = state.user.role;   // as fm_set_profile
     state.user.role = role;
     if(role === "seeker" && !state.giftGiven){ state.credits += WELCOME_CREDITS; state.giftGiven = true; }
     save();
@@ -4471,10 +4481,12 @@ Object.assign(demoApi, {
   },
   // Nearby parties, guests: same rules as fm_party_nearby_set / fm_party_cant_see / fm_party_nearby.
   async partyNearbyMe(){ return Object.assign({ on:false, pin:null, label:null }, state.partyNear); },
+  // As fm_party_vibe_ok: an owner, or a seeker who has answered the vibe questions.
+  partyVibeOk(){ return isOwner() || (isSeeker() && answered(state.vibe) >= MIN_VIBE); },
   async partyNearbySet(on, pin, label){
     if(!this.me_()) throw new Error("not-signed-in");
     const cur = state.partyNear || {};
-    if(on){ if(!state.user.adultAt) throw new Error("age-required"); if(!(pin && pin.lat) && !(cur.pin && cur.pin.lat)) throw new Error("need-pin"); }
+    if(on){ if(!state.user.adultAt) throw new Error("age-required"); if(!this.partyVibeOk()) throw new Error("need-vibe"); if(!(pin && pin.lat) && !(cur.pin && cur.pin.lat)) throw new Error("need-pin"); }
     state.partyNear = { on: !!on, pin: pin && pin.lat ? { lat:+pin.lat, lng:+pin.lng } : cur.pin || null, label: pin && pin.lat ? String(label || "").slice(0, 60) || null : cur.label || null };
     save(); return this.partyNearbyMe();
   },
@@ -4491,7 +4503,7 @@ Object.assign(demoApi, {
   partyTaken(p){ return (p.taken || 0) + this.partyReqs().filter(r => r.party_id === p.id && r.status === "accepted").reduce((t, r) => t + 1 + (r.plus || 0), 0); },
   partyCantSee(p){
     const me = this.me_(), n = state.partyNear || {};
-    if(!me) return "not-signed-in"; if(!state.user.adultAt) return "age-required"; if(!n.on) return "opted-out"; if(state.partyBlocked) return "blocked"; if(!(n.pin && n.pin.lat)) return "need-pin";
+    if(!me) return "not-signed-in"; if(!state.user.adultAt) return "age-required"; if(!this.partyVibeOk()) return "need-vibe"; if(!n.on) return "opted-out"; if(state.partyBlocked) return "blocked"; if(!(n.pin && n.pin.lat)) return "need-pin";
     if(!p || !p.open || !p.near_geo) return "not-open"; if(p.cancelled) return "party-cancelled"; if(new Date(p.starts_at) < new Date()) return "party-over";
     if(p.host_phone === me) return "own-party"; if(p.who !== "all" && p.who !== state.user.gender) return "wrong-gender";
     if(kmBetween(n.pin, p.near_geo) > p.radius_km) return "out-of-radius";
@@ -4609,6 +4621,7 @@ Object.assign(demoApi, {
     if(p.host_phone !== this.me_()) throw new Error("not-the-host");
     if(!x.open){ p.open = false; save(); return this.partyOpenView(p); }
     if(state.partyBlocked) throw new Error("blocked");
+    if(!this.partyVibeOk()) throw new Error("need-vibe");
     if(p.cancelled) throw new Error("party-cancelled");
     if(new Date(p.starts_at) < new Date()) throw new Error("party-over");
     const limit = Math.round(Number(x.guest_limit)); if(!(limit >= 2 && limit <= 50)) throw new Error("bad-limit");
@@ -4991,7 +5004,10 @@ const isOwner = () => Boolean(state.user && state.user.role === "owner");
 // Same normalisation as fm_post_listing's address_key: flat + building + PIN, letters and digits only.
 const addressKey = (parts, address) => ((parts && parts.flat || "") + "|" + (parts && parts.building || address || "") + "|" + (parts && parts.pin || ""))
   .replace(/[^a-zA-Z0-9|]/g, "").toLowerCase();
-const isSeeker = () => Boolean(state.user && state.user.role !== "owner");
+const isSeeker = () => Boolean(state.user && state.user.role !== "owner" && state.user.role !== "splits");
+// Signed up for Flatsplits and FlatMart only: rooms, flatmates and parties nearby open once they answer the vibe questions.
+const isSplits = () => Boolean(state.user && state.user.role === "splits");
+const roleKey = () => isOwner() ? "owner" : isSplits() ? "splits" : "seeker";
 const ringColor = p => p >= 80 ? "var(--ok)" : p >= 60 ? "var(--mid)" : "var(--text-3)";
 function ringSvg(pct, size, cls){
   const sw = Math.max(3, Math.round(size / 11)), r = size/2 - sw/2 - 1, c = 2 * Math.PI * r;
@@ -5090,7 +5106,8 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","plans","account"], owner:["mine","escape","requests","post","splits","market","plans","account"] };
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","plans","account"], owner:["mine","escape","requests","post","splits","market","plans","account"],
+  splits:["splits","market","discover","account"] };   // Discover shows the lock until the vibe questions are answered
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
@@ -5127,12 +5144,12 @@ function route(){
   if(isSplitRoute()){ currentView = null; showScreen("split"); renderSplitInvite(); window.scrollTo(0, 0); return; }
   if(location.hash === "#help"){ history.replaceState(null, "", location.pathname + location.search); setTimeout(() => openHelp(state.user ? "tickets" : null), 400); }
   // Came from a sale page to sign in: back to it once the account is set up.
-  if(state.user && state.onboarded[isOwner() ? "owner" : "seeker"]){
+  if(state.user && state.onboarded[roleKey()]){
     const back = readLS(AFTER_SIGNIN_KEY);
     if(back){ writeLS(AFTER_SIGNIN_KEY, null); if(location.hash !== back){ location.hash = back; return; } }
   }
   if(!state.user){ currentView = null; showScreen("welcome"); return; }
-  const role = isOwner() ? "owner" : "seeker";
+  const role = roleKey();
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
   const [h, arg] = location.hash.slice(1).split("/"), allowed = ROLE_VIEWS[role];
   if(h === "complete" && role === "seeker" && profileGaps().length){ currentView = null; showScreen("onboard"); startCompletion(); return; }
@@ -5141,6 +5158,8 @@ function route(){
   currentView = v;
   showScreen("app");
   VIEWS.forEach(n => $("view-" + n).hidden = n !== v);
+  $("view-discover").classList.toggle("locked", isSplits());
+  if(isSplits() && v === "discover"){ renderNav(); $("meBtn").textContent = (firstName()[0] || "?").toUpperCase(); renderRoomLock(); window.scrollTo(0, 0); return; }
   renderNav();
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
   setTimeout(maybeAskGender, 600);
@@ -5189,7 +5208,7 @@ $("dlgGender").addEventListener("click", async e => {
 });
 function renderNav(){
   // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
-  const allowed = ROLE_VIEWS[isOwner() ? "owner" : "seeker"].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
+  const allowed = ROLE_VIEWS[roleKey()].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
   // Requests and Tribe live in the top bar, next to the avatar, so the bottom bar has room for the rest.
   const TOP = ["requests"], count = n => n === "requests" ? unseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
   // Tribe sits next to Discover on the website, and as a named button in the phone's top bar (the bottom bar keeps the rest).
@@ -5701,7 +5720,7 @@ document.addEventListener("click", async e => {
 // Reminder if a seeker hasn't called an owner who accepted them.
 const REMIND_MS = LIVE ? 2 * 36e5 : 60e3;
 async function checkInbox(){
-  if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
+  if(!state.user || !state.onboarded[roleKey()]) return;
   let rows;
   try{ rows = await api.inbox(); await api.me(); }catch(err){ return; }
   // Only the current role's side: someone who switched roles shouldn't see the other side's alerts.
@@ -6036,6 +6055,7 @@ $("otpForm").addEventListener("submit", async e => {
   // Answered on another device already: no need to ask again. (Live: these come from the server.)
   if(isSeeker() && answered(state.vibe) >= MIN_VIBE && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
   if(api.live && isOwner() && (await api.myListings()).length) state.onboarded.owner = true;
+  if(isSplits() && state.user.name && state.user.gender && state.vibe && state.vibe.gen) state.onboarded.splits = true;
   save();
   $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
   location.hash = ""; route();
@@ -6080,6 +6100,7 @@ const SEX_STEP = { k:"sex", q:"Are you male or female?", why:"Many people look f
 // Sign-up asks everything: the name and gender once per account, then every question (a complete vibe from day one).
 function obSteps(role){
   const u = state.user || {};
+  if(role === "splits") return [].concat(u.name ? [] : [NAME_STEP], u.gender ? [] : [SEX_STEP], [SPLITS_GEN_STEP]);
   return [].concat(u.name ? [] : [NAME_STEP], u.gender ? [] : [SEX_STEP], obStepsFor(role, true));
 }
 // full = true is every step (sign-up, and "Complete your profile" for older accounts); full = false is the
@@ -6112,11 +6133,13 @@ function obStepsFor(role, full){
     ...(full ? [{ k:"music", form:"music", q:"What music do you like?", why:"Just for fun, it doesn't change your vibe score. Owners love finding someone with the same playlist." },
       { k:"hobbies", form:"hobbies", q:"What are you into?", why:"Pick as many as you like. We'll show you who shares them." }] : []) ];
 }
+const SPLITS_GEN_STEP = { k:"gen", q:"Which generation are you?", why:"So the people you split with and buy from know who you are. You can change it any time.",
+  opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"}] };
 const SEEKER_GEN_STEP = { k:"gen", q:"Which generation are you?", why:"People tend to click with their own generation. It nudges your match with each home.",
   opts:[{v:"z",t:"Gen Z",s:"Born 1997 or later"},{v:"m",t:"Millennial",s:"Born 1981–1996"},{v:"g",t:"Gen X",s:"Born 1965–1980"},{v:"x",t:"None of these",s:"Or I'd rather not say"}] };
 let ob = null;
 // The questions come in chapters: who you are, how you live, what you're looking for (owners: the home, how it lives).
-const OB_CHAPTERS = { seeker: ["About you", "How you live", "What you're looking for"], owner: ["About your home", "How your home lives"] };
+const OB_CHAPTERS = { seeker: ["About you", "How you live", "What you're looking for"], owner: ["About your home", "How your home lives"], splits: ["About you"] };
 const obChapter = st => VIBE_BY_KEY[st.k] ? 1 : ["name", "sex", "occType", "occWhat", "gen", "city", "residents"].includes(st.k) ? 0 : 2;
 // The header: a bar per chapter, and "How you live · 3 of 12".
 function setObProgress(done){
@@ -6166,9 +6189,9 @@ async function startOnboarding(role){
 function obIntroHtml(){
   const names = OB_CHAPTERS[ob.role], n = ob.steps.length, mins = Math.max(1, Math.round(n * 8 / 60));
   const counts = names.map((_, c) => ob.steps.filter(st => obChapter(st) === c).length);
-  return `<div class="ob-q ob-intro"><p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "let's describe your home" : "let's set up your profile"}</p>
+  return `<div class="ob-q ob-intro"><p class="eyebrow">${esc(firstName() ? "Hi " + firstName() + "," : "Hi,")} ${ob.role === "owner" ? "let's describe your home" : ob.role === "splits" ? "let's set you up" : "let's set up your profile"}</p>
     <h1>${n} quick questions, about ${mins} ${mins === 1 ? "minute" : "minutes"}.</h1>
-    <p class="why">${ob.role === "owner" ? "Every answer helps the right person find your room: first your home, then how it lives." : "Every answer improves your matches: first who you are, then how you live, then what you're looking for."}</p>
+    <p class="why">${ob.role === "splits" ? "Your name, gender and generation, so the people you split bills with and buy from know who you are. Rooms and flatmates come later, when you want them." : ob.role === "owner" ? "Every answer helps the right person find your room: first your home, then how it lives." : "Every answer improves your matches: first who you are, then how you live, then what you're looking for."}</p>
     <ol class="ob-plan">${names.map((nm, c) => `<li><i>${c + 1}</i><span><b>${esc(nm)}</b><small>${counts[c]} ${counts[c] === 1 ? "question" : "questions"}</small></span></li>`).join("")}</ol>
     <button class="btn btn-primary" type="button" id="obGo">Let's go</button></div>`;
 }
@@ -6376,6 +6399,16 @@ async function finishOnboarding(){
   const vibe = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(a[x.k])).map(x => [x.k, a[x.k]]));
   if(a.gen) vibe.gen = a.gen;
   obForget(); setObProgress(true); $("obBack").style.visibility = "hidden";
+  if(role === "splits"){
+    try{ await api.setVibe(Object.assign({}, state.vibe, a.gen ? { gen: a.gen } : {})); }catch(err){ console.error(err); }
+    state.onboarded.splits = true; save();
+    $("obStage").innerHTML = `<div class="ob-q finale"><p class="eyebrow">You're all set</p><h1>Split bills, buy and sell, plan parties.</h1>
+      <p>Make a group for your flat, a trip or a party and add everyone; FlatMart has things for sale near you. Looking for a room or a flatmate later?
+        Answer 12 quick questions about how you live and rooms open up.</p>
+      <div class="ob-finale-acts"><button class="btn btn-primary" type="button" id="obDone">Go to Flatsplits</button></div></div>`;
+    $("obDone").onclick = () => { ob = null; go("splits"); };
+    return;
+  }
   if(role === "owner"){
     state.homeDraft = Object.assign({ residents: Number.isInteger(a.residents) ? a.residents : 1, flatmates: a.flatmates || [],
       interests: { music: a.music || [], hobbies: a.hobbies || [] } }, vibe);
@@ -9099,7 +9132,7 @@ async function extrasHtml(){
 let splitsUnseen = 0, marketUnseen = 0;
 async function checkExtras(){
   savePushToken();
-  if(!state.user || !state.onboarded[isOwner() ? "owner" : "seeker"]) return;
+  if(!state.user || !state.onboarded[roleKey()]) return;
   state.notified = state.notified || {};
   let changed = false;
   try{
@@ -9495,7 +9528,8 @@ function ptNearRead(){
 }
 const ptNearError = m => m.includes("no-alcohol") ? "Alcohol can't be part of the chip-in. Guests bring their own." : m.includes("need-pin") ? "Pick your address from the list, so the map pin is set."
   : m.includes("bad-limit") ? "Say how many guests from nearby can come (2 to 50)." : m.includes("blocked") ? "Hosting for people nearby is paused on your account while we review a report."
-  : m.includes("age-required") ? "Only adults can open a party to people nearby." : "Couldn't open it to people nearby. Please try again.";
+  : m.includes("age-required") ? "Only adults can open a party to people nearby." : m.includes("need-vibe") ? "Answer the 12 questions about how you live (Discover) to open a party to people nearby."
+  : "Couldn't open it to people nearby. Please try again.";
 let ptx = null;
 $("dlgFs").addEventListener("click", async e => {
   const t = e.target;
@@ -9709,6 +9743,25 @@ const ptFeedHtml = feed => feed.length ? `<h3 class="section-h">Coming up at you
       <small>${p.cancelled ? "Called off" : `${esc(p.host || "A flatmate")} is hosting · ${esc(ptShort(p))}`} · ${esc(p.flat)}</small></span><span class="pt-go">${p.cancelled ? "" : "See invite"}</span></a>`; }).join("")}` : "";
 
 /* ========================================================= areas + maps */
+// ---- rooms locked: people who signed up for Flatsplits and FlatMart only answer the vibe questions first
+function renderRoomLock(){
+  $("roomLock").hidden = false;
+  $("roomLock").innerHTML = `<div class="room-lock"><span class="rl-ic" aria-hidden="true">${ic("home", 30, 1.8)}</span>
+    <p class="eyebrow">Rooms, flatmates and parties nearby</p>
+    <h1>Answer 12 quick questions about how you live.</h1>
+    <p>Then you can see rooms and how well you'd fit with the people in them, find flatmates, post your own room and join parties near you. About two minutes.</p>
+    <div class="rl-acts"><button class="btn btn-primary" type="button" data-unlock="seeker">I need a room</button>
+      <button class="btn btn-ghost" type="button" data-unlock="owner">I'm posting a flat or a room</button></div>
+    <p class="hint">Flatsplits and FlatMart stay just as they are.</p></div>`;
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-go-rooms]")) go("discover"); });
+document.addEventListener("click", async e => {
+  const u = e.target.closest("[data-unlock]"); if(!u) return;
+  u.disabled = true;
+  try{ await api.setRole(u.dataset.unlock); }catch(err){ console.error(err); u.disabled = false; return toast("Couldn't do that. Please try again."); }
+  $("view-discover").classList.remove("locked"); $("roomLock").hidden = true;
+  location.hash = ""; route();
+});
 // ---- parties near you (Phase 1): hosts open a party to people nearby; people switch "Show me parties nearby" on
 let nearMe = null, nearList = [];
 async function loadNear(){
@@ -9729,6 +9782,9 @@ function nearCardHtml(p){
     ${st ? `<span class="nc-st ${esc(p.my_request.status)}">${esc(st)}</span>` : `<span class="pt-go">See</span>`}</button>`;
 }
 function nearSectionHtml(n){
+  if(isSplits()) return `<div class="near-promo"><span class="pt-mini-ic" aria-hidden="true">${ic("party", 20)}</span><div><b>House parties near you</b>
+      <small>Answer 12 quick questions about how you live to see parties hosts open to people nearby.</small></div>
+      <button class="btn btn-ghost btn-sm" type="button" data-go-rooms>Answer</button></div>`;
   if(!n || !n.me) return "";
   if(!n.me.on) return `<div class="near-promo"><span class="pt-mini-ic" aria-hidden="true">${ic("party", 20)}</span><div><b>House parties near you</b>
       <small>See parties hosts have opened to people nearby. Off until you switch it on.</small></div>
@@ -9737,6 +9793,8 @@ function nearSectionHtml(n){
     ${n.list.length ? `<div class="near-list">${n.list.map(nearCardHtml).join("")}</div>` : `<p class="hint near-empty">No parties near you right now. Hosts open them a few days ahead, so check back.</p>`}`;
 }
 function renderNearPanel(){
+  $("nearToggle").disabled = isSplits();
+  if(isSplits()){ $("nearToggle").checked = false; $("nearWhere").innerHTML = `Answer the vibe questions first. <button class="linkbtn" type="button" data-go-rooms>Answer them</button>`; return; }
   api.partyNearbyMe().then(m => { nearMe = m; $("nearToggle").checked = !!(m && m.on);
     $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#splits">See parties</a>` : ""; })
     .catch(err => console.error(err));
@@ -9776,7 +9834,7 @@ async function nearSwitch(on, pin, label){
   }catch(err){
     console.error(err); const m = String(err.message || "");
     if(m.includes("need-pin")) return askNearPin(pl => nearSwitch(true, pl, pl.label));
-    toast(m.includes("age-required") ? "Parties nearby are for adults only." : "Couldn't change that. Please try again.");
+    toast(m.includes("age-required") ? "Parties nearby are for adults only." : m.includes("need-vibe") ? "Answer the 12 questions about how you live first." : "Couldn't change that. Please try again.");
   }
   if(currentView === "account") renderNearPanel(); if(currentView === "splits") renderSplits();
 }
@@ -10584,10 +10642,10 @@ async function renderAccount(){
   const phone = "+91 " + String(state.user.phone).replace(/^(\d{5})(\d{5})$/, "$1 $2");
   $("accPhone").textContent = $("accOutSub").textContent = $("soPhone").textContent = phone;
   const occ = state.user.occupation || {};
-  $("accRole").textContent = isOwner() ? "Posting a flat" : "Looking for a room";
-  $("accPhone").textContent = [!isOwner() && occLine(occ), phone].filter(Boolean).join(" · ");
-  $("accSwitchT").textContent = isOwner() ? "Look for a room instead" : "Post a flat instead";
-  $("accSwitchS").textContent = isOwner() ? "Find a room in a shared flat" : "List your spare room or bed, free";
+  $("accRole").textContent = isOwner() ? "Posting a flat" : isSplits() ? "Flatsplits & FlatMart" : "Looking for a room";
+  $("accPhone").textContent = [isSeeker() && occLine(occ), phone].filter(Boolean).join(" · ");
+  $("accSwitchT").textContent = isOwner() ? "Look for a room instead" : isSplits() ? "Look for a room or post one" : "Post a flat instead";
+  $("accSwitchS").textContent = isOwner() ? "Find a room in a shared flat" : isSplits() ? "Answer 12 questions about how you live and rooms open up" : "List your spare room or bed, free";
   $("accInvite").href = `https://wa.me/?text=${encodeURIComponent(inviteText())}`;
   $("accInviteSub").textContent = state.refCode && (state.refJoined || state.refBonus)
     ? `${state.refJoined} ${state.refJoined === 1 ? "friend" : "friends"} joined · ${state.refBonus} free ${state.refBonus === 1 ? "contact" : "contacts"} earned${state.refBonus >= 5 ? " (the most)" : ""}`
@@ -10596,7 +10654,7 @@ async function renderAccount(){
   $("accPlansSub").textContent = on.length ? on.map(k => `${PASS_NAMES[k]} till ${untilLabel(passUntil(k))}`).join(" · ")
     : isOwner() ? `First invite for each listing is free · Escape Pass ${money(50000)} + GST`
     : CHARGES_ON ? `Free plan · ${contactsLabel(contactsLeft())}` : "Everything is free right now";
-  $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner();
+  $("vibePanel").hidden = $("unlockedPanel").hidden = $("discPanel").hidden = isOwner() || isSplits();
   const mt = vibeType(myVibe());
   $("accVibeSub").textContent = mt ? `${mt.emoji} ${mt.title}` : "Take the 1-minute quiz and share your flatmate type";
   $("discToggle").checked = state.discoverable !== false;
@@ -10606,7 +10664,7 @@ async function renderAccount(){
   $("showTo").innerHTML = [["tribe", "In Build your tribe", state.tribeShowTo], ["escape", "In The Empty Room Escape (owners)", state.escapeShowTo]].map(([k, label, cur]) =>
     `<div class="st-row"><span>${label}, show me to</span><div class="seg" role="group" aria-label="${label}, show me to">${[["all", "Everyone"], ["female", "Women only"], ["male", "Men only"]].map(([v, t]) =>
       `<button type="button" data-show="${k}" data-v="${v}" aria-pressed="${(cur || "all") === v}">${t}</button>`).join("")}</div></div>`).join("");
-  if(isOwner()) return;
+  if(!isSeeker()) return;
   renderOnTime();
   const vt = vibeType(state.vibe);
   $("vibeType").innerHTML = vt ? `<button class="vt-line" type="button" data-quiz><span aria-hidden="true">${vt.emoji}</span>
@@ -10641,7 +10699,7 @@ $("view-account").addEventListener("click", async e => {
     if(b.dataset.action === "signout") return $("dlgSignOut").showModal();
     if(b.dataset.action === "delete"){ $("delType").value = ""; $("delYes").disabled = true; $("dlgDelete").showModal(); return $("delType").focus(); }
     if(b.id === "accPlans" || b.dataset.moreTime !== undefined) return openPay(null);
-    if(b.id === "accSwitch"){ await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
+    if(b.id === "accSwitch"){ if(isSplits()) return go("discover"); await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
   }catch(err){ console.error(err); toast("Something went wrong. Please try again."); }
@@ -10765,7 +10823,7 @@ function urlParams(){
 async function claimAttribution(){
   if(!state.user || !api.setAttribution || state.attrClaimed) return;
   try{
-    if(await api.setAttribution(readLS(ATTR_KEY) || {})) track("sign_up", { role: isOwner() ? "owner" : "seeker" });
+    if(await api.setAttribution(readLS(ATTR_KEY) || {})) track("sign_up", { role: roleKey() });
     state.attrClaimed = true; save();
   }catch(err){ console.error(err); }
 }

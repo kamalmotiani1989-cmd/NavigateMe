@@ -20,7 +20,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     const roles = [...document.querySelectorAll('.w-card .role')].map(e => Math.round(e.getBoundingClientRect().top + 30));
     return { h2: Math.round(r('.w-card h2').top), roles, lede: Math.round(r('.w-copy .lede').top), cardEnd: Math.round(r('.w-card').bottom),
       kids: [...document.querySelector('#loginForm').children].length, quiz: Math.round(r('.w-quiz').top) }; });
-  ok(lay.roles.length === 2 && lay.roles.every(y => y < 844) && lay.h2 > lay.quiz, 'visitor: the sign-in card\'s heading and both choices are on the first phone screen: ' + JSON.stringify(lay));
+  ok(lay.roles.length === 3 && lay.roles.slice(0, 2).every(y => y < 844) && lay.h2 > lay.quiz, 'visitor: the sign-in card\'s heading and the room choices are on the first phone screen (Just Flatsplits & FlatMart just below): ' + JSON.stringify(lay));
   ok(lay.lede > lay.cardEnd, 'visitor: the paragraph comes after the sign-in card on a phone');
   const city = await p.evaluate(() => { const c = $('city').getBoundingClientRect(), q = document.querySelector('.w-quiz').getBoundingClientRect(); return { w: Math.round(c.width), quiz: Math.round(q.width) }; });
   ok(city.w > 300 && city.w === city.quiz, 'visitor: the city picture with its match bubbles is full width on a phone, not squashed: ' + JSON.stringify(city));
