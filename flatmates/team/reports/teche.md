@@ -15,6 +15,8 @@
 has not run since, so #64, #65, #66 and #67 aren't on the site yet. The Android app loads the site, so it's the same
 there. This session can't start that job. Kamal (or anyone with access) can run it in the findmeflatmate repo:
 Actions → Publish FindMeFlatMate → Run workflow. Until it runs, the new database functions sit unused; nothing breaks.
+**Update:** the publish job has now run: findmeflatmate main and gh-pages are at d06d85e (18:59), with #64 to #67 in
+them, so the site and the Android app have nearby parties.
 
 ## 2026-11-08, nearby parties Phase 1: PR #67 up for Kamal
 
