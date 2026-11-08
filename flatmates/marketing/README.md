@@ -24,8 +24,9 @@ answer deadline) · the app stays after the move: Flatsplits (rent and bills by 
 · Featured listing ₹199 (built, off until launch) · FlatMart Boost ₹49, pack of 5 ₹199, Moving-out sale ₹149 · referrals:
 2 friends = 1 free contact.
 
-**Status.** The site shows Coming soon until launch; the Android app is in private preview. Say "launching soon", never
-"download now", until the hold is lifted.
+**Status.** The hold was lifted on 8 November 2026: findmeflatmate.com shows the app and the Android app is live. Sign-in
+still uses a shared test code until WhatsApp or SMS codes have keys, so strangers cannot sign up yet: keep saying
+"launching soon", never "download now", and drive no paid traffic until Kamal says sign-up is open.
 
 **Packs in this folder.**
 - `genz-ads-pack.md`: three 20-second seeker ads (scripts, on-screen text, AI-video prompts).

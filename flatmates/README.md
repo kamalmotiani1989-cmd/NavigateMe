@@ -588,7 +588,8 @@ For a deletion request by email, delete the auth user the same way:
 
 ## On hold
 
-The whole app can be put on hold behind a **Coming soon** page. Three switches, all on at the moment:
+The whole app can be put on hold behind a **Coming soon** page. Three switches, all off since 8 November 2026
+(the hold was lifted; sign-in uses the shared test code until WhatsApp or SMS codes have keys):
 
 1. **Website.** While `flatmates/ON_HOLD` exists, the website's publish job puts `hold.html` (Coming
    soon) up as the home page instead of the app; the privacy policy stays up. The hold page also clears
