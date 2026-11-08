@@ -96,8 +96,8 @@ the room comes second.
    shortlist stops being shared. In a tribe of 3, the two who stay remain a tribe if they're bonded to
    each other; half-agreed "complete your tribe" links are removed. People who left aren't suggested to
    each other again (`fm_tribe_leave`, status `left`).
-9. **Bachelors welcome.** Owners mark each listing (on by default). Cards show "Bachelors welcome ·
-   no brokers", the listing shows it, and Filters has a "Bachelors welcome" option.
+9. **Bachelors welcome.** Owners mark each listing (on by default). Cards show "Bachelors welcome"
+   (unless you share interests with the household, which shows instead), the listing shows it, and Filters has a "Bachelors welcome" option.
 
 10. **Gen Z, millennials and Gen X.** Seekers say which generation they are; owners say which
     generation their household mostly is (both editable later; "none of these" / "mixed" are options).
@@ -300,10 +300,18 @@ the room comes second.
     filled in: the room, the photos (kept ones can be removed, new ones added, 6 in all), the household
     and the description change; the name, number and address stay as posted (shown locked), and the map pin
     can move (`fm_update_listing`: own listings only, own photos only, a delisted listing can't be edited).
+22b. **Listing cards.** The card says what decides a tap: the rent and the match ring on the photo; under it the
+    title, area and expenses, the people living there, one highlight (shared interests or bachelors welcome),
+    "New this week" for a home posted in the last 7 days and a fast reply line. The last line says who listed it
+    and the promise: "Listed by a flatmate who lives here" for a room in a flat with people living in it,
+    "Owner-listed" for a whole flat (or a room nobody lives in yet), then "your number is shared only if you
+    both say yes". Furnishing, move-in date, deposit and when it was posted are on the home's page, not the card.
+
 23. **Reply speed.** From the owner's median time to answer seekers' requests over the last four months
     (`fm_reply_hours`, returned as `reply_hours` by the search and listing functions): **⚡ Replies within
     hours** (6 h or less), **Usually replies within a day** (30 h) or **Usually replies in a few days** (80 h),
-    on cards, in the listing header and in the compare table; slower owners get no line. Owners see their
+    in the listing header and in the compare table; slower owners get no line. Cards show only the fastest
+    ("Replies within hours"), never a slow one. Owners see their
     own line on My flat, and requests waiting more than a day bring a banner on My flat and Requests plus one
     notification a day ("Arjun is waiting for your reply").
 24. **Compare saved homes.** With two or more saved homes, **⇄ Compare side by side** on Saved turns the
@@ -391,8 +399,8 @@ suggests the single change that brings most homes back ("Remove “No smoking”
   their own, and seekers can filter for them.
 - **Rent is just rent.** Expenses are listed per room and never added into it: the owner ticks
   what applies (maintenance, electricity, water, Wi-Fi, cooking gas, cook, maid, parking) and
-  enters the room's amount, or "as per use" for electricity, water and gas. Cards show
-  "₹14,000/month rent · + ₹1,500 expenses". Budgets, filters and sorting use rent only.
+  enters the room's amount, or "as per use" for electricity, water and gas. Cards show the rent
+  on the photo ("₹14,000 /month") and "+ ₹1,500 expenses" after the area. Budgets, filters and sorting use rent only.
 - **Proper address + Google Maps.** Flat/house no., building, street, area, landmark, city and
   PIN code (checked). Owners can preview the pin on Google Maps before publishing. Seekers see
   the area on a map; the exact address, map and directions appear once the owner accepts.

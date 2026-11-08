@@ -1723,6 +1723,17 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .reply{display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; color:var(--text-2); white-space:nowrap}
 .reply.fast{color:#12804A}
 .card .fresh{display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center}
+/* Listing cards: rent on the photo (a white pill, never white text on a dark overlay), the trust line last. */
+.lcard .price-pill{position:absolute; left:12px; bottom:12px; z-index:2; background:#fff; color:var(--text); border-radius:12px; padding:5px 11px;
+  font-weight:800; font-size:17px; letter-spacing:-.02em; box-shadow:0 2px 8px rgba(27,36,64,.14)}
+.lcard .price-pill small{font-size:12.5px; font-weight:600; color:var(--text-2); letter-spacing:0}
+.lcard .thumb .tag.feat, .lcard .thumb .tag.r{top:44px; bottom:auto; left:12px}
+.lcard .thumb .tag.feat ~ .tag.r{top:76px}
+.lcard .count-ph{top:auto; left:auto; bottom:18px; right:56px}
+.lcard .people .gen{margin-left:2px}
+.lcard .fresh .new{font-size:12px; font-weight:700; color:var(--brand-2)}
+.lcard .trust{margin-top:8px; padding-top:8px; border-top:1px solid var(--hair); font-size:12.5px; line-height:1.45; color:var(--text-2)}
+.lcard .trust b{color:var(--brand-2)}
 .wait-nudge{display:flex; gap:12px; align-items:flex-start; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:var(--accent-soft); color:var(--text)}
 .wait-nudge .ic{font-size:22px; line-height:1} .wait-nudge b{display:block} .wait-nudge small{color:var(--text-2); font-size:13.5px}
 .wait-nudge a{color:var(--accent); font-weight:800; text-decoration:none}
@@ -6243,28 +6254,40 @@ function qualityHtml(l){
 function cardHtml(l, i){
   const m = vibeMatch(state.vibe, l.household), hh = l.household || {}, ph = photosOf(l), mates = matesOf(hh);
   const tag = l.is_owner ? "Your listing" : REQ_TAG[l.request_status] || "";
-  return `<article class="card" tabindex="0" data-id="${esc(l.id)}" style="--i:${Math.min(i || 0, 12)}">
+  // The card says what decides a tap: rent and match on the photo, then four or five short lines. Furnishing, dates,
+  // deposit and the rest are on the home's page. Only signals that help show: new this week, or a fast reply.
+  const both = sharedInterests(state.interests, hh.interests), fresh = cardFresh(l);
+  return `<article class="card lcard" tabindex="0" data-id="${esc(l.id)}" style="--i:${Math.min(i || 0, 12)}">
     <div class="thumb">${picHtml(l)}
       <span class="tag">${esc(KIND_LABEL[l.kind])}</span>${l.featured ? `<span class="tag feat">✨ Featured</span>` : ""}
       ${ph.length > 1 ? `<span class="count-ph">${ph.length} photos</span>` : ""}
       ${m ? `<span class="ring-wrap" title="How well your living style fits this household">${ringSvg(m.pct, 46)}</span>` : ""}
       ${tag ? `<span class="tag r${l.request_status === "approved" ? " ok" : ""}">${esc(tag)}</span>` : ""}
+      <span class="price-pill">${inr(l.rent)}<small> /month</small></span>
       <button class="heart" type="button" data-save="${esc(l.id)}" aria-pressed="${isSaved(l.id)}" aria-label="Save this flat">♥</button>
     </div>
     <div class="body">
       <h3>${esc(l.title)}</h3>
-      <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
+      <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${esc(expensesLine(l))}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
       ${nearNow && l._km != null ? `<div class="dist">${kmLabel(l._km)} from ${esc(nearNow.label)}</div>` : ""}
-      ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span></div>` : ""}
-      ${householdGen(hh) ? `<div class="gen-line">${genBadge(householdGen(hh), " household")}</div>` : ""}
-      ${sharedInterests(state.interests, hh.interests).length ? `<div class="both">♥ You both like ${esc(sharedInterests(state.interests, hh.interests).slice(0, 3).join(", "))}</div>` : ""}
-      <div class="meta"><span>${esc(FURN_LABEL[l.furnishing])}</span><span>${esc(GENDER_LABEL[l.gender])}</span><span>From ${fmtDate(l.available_from)}</span></div>
-      ${l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome · no brokers</div>` : ""}
+      ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span>${householdGen(hh) ? genBadge(householdGen(hh), "") : ""}</div>` : ""}
+      ${both.length ? `<div class="both">♥ You both like ${esc(both.slice(0, 3).join(", "))}</div>` : l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome</div>` : ""}
       ${tribeSavedLine(l)}
-      <div class="price">${inr(l.rent)}<small> /month rent</small></div>
-      <div class="allin">${esc(expensesLine(l))} · deposit ${inr(l.deposit)}</div>
-      <div class="fresh">Posted ${timeAgo(l.created_at)}${replyBadge(l)}</div>
+      ${fresh ? `<div class="fresh">${fresh}</div>` : ""}
+      <div class="trust">${trustLine(l)}</div>
     </div></article>`;
+}
+// Who listed it, and the promise every listing carries. Someone already living in the flat listing a room is a
+// flatmate; a whole flat, or a room in a flat nobody lives in yet, is listed by the owner.
+function trustLine(l){
+  const flatmate = l.kind !== "flat" && Number((l.household || {}).residents) > 0;
+  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b> · your number is shared only if you both say yes`;
+}
+// Only what helps a tap: "New this week" for a fresh listing, and the reply speed only when it is fast.
+function cardFresh(l){
+  const fast = Number(l.reply_hours) <= 6 ? replyBadge(l) : "";
+  const isNew = Date.now() - new Date(l.created_at) < 7 * 864e5;
+  return (isNew ? `<span class="new">New this week</span>` : "") + fast;
 }
 function giftPillHtml(){
   if(roomPass() && isSeeker()) return `<button class="gift-pill" type="button" data-gift>🏠 Room Pass till ${untilLabel(passUntil("room"))}</button>`;

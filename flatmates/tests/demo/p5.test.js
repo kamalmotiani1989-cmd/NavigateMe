@@ -123,7 +123,16 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await p.evaluate(() => { setPrefs({ room: [] }); }); await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1500); await closeDialogs(p);
   const disc = await p.evaluate(() => ({ cards: document.querySelectorAll('#cards .card').length, badges: [...document.querySelectorAll('#cards .card .reply')].map(x => x.textContent),
     fast: document.querySelectorAll('#cards .card .reply.fast').length }));
-  ok(disc.cards > 3 && disc.badges.length > 0 && disc.badges.length < disc.cards && disc.fast > 0, `seeker: reply-speed lines on some cards (${disc.badges.length} of ${disc.cards}, ${disc.fast} fast): ` + [...new Set(disc.badges)].join(' / '));
+  ok(disc.cards > 3 && disc.fast > 0 && disc.badges.length === disc.fast && disc.badges.length < disc.cards, `seeker: only fast reply speeds show on cards, never slow ones (${disc.fast} of ${disc.cards}): ` + [...new Set(disc.badges)].join(' / '));
+  // the card: rent on the photo, who listed it and the number promise, no "Posted N days ago", no deposit or furnishing line
+  const cardChk = await p.evaluate(() => [...document.querySelectorAll('#cards .card.lcard')].map(c => { const l = api.all().find(x => x.id === c.dataset.id);
+    return { kind: l.kind, res: Number((l.household || {}).residents) || 0, pill: (c.querySelector('.thumb .price-pill') || {}).textContent || '', rent: l.rent,
+      trust: (c.querySelector('.trust') || {}).textContent || '', text: c.textContent, newOk: !!c.querySelector('.fresh .new') === (Date.now() - new Date(l.created_at) < 7 * 864e5) }; }));
+  ok(cardChk.length > 3 && cardChk.every(c => c.pill.replace(/\D/g, '').startsWith(String(c.rent))), 'seeker: every card shows the rent on the photo: ' + cardChk.slice(0, 3).map(c => c.pill).join(' / '));
+  ok(cardChk.every(c => /your number is shared only if you both say yes/.test(c.trust) && (c.kind !== 'flat' && c.res > 0 ? /Listed by a flatmate who lives here/ : /Owner-listed/).test(c.trust)),
+    'seeker: trust line on every card, flatmate-listed for rooms with people living there, owner-listed for whole flats: ' + [...new Set(cardChk.map(c => c.kind + ': ' + c.trust.split(' · ')[0]))].join(' / '));
+  ok(cardChk.some(c => /Owner-listed/.test(c.trust)) && cardChk.some(c => /flatmate who lives here/.test(c.trust)), 'seeker: both kinds of trust line appear in the demo');
+  ok(cardChk.every(c => !/Posted |deposit|Usually replies|Furnished|From \d/.test(c.text) && c.newOk), 'seeker: no posted-ago, deposit, furnishing or slow-reply lines; "New this week" only on new homes' + cardChk.filter(c => /Posted |deposit|Usually replies|Furnished|From \d/.test(c.text) || !c.newOk).slice(0, 2).map(c => ' :: ' + c.newOk + ' ' + c.text.replace(/\s+/g, ' ')).join(''));
   // open a card with a fast reply line: the header says so; share from the header
   const fastId = await p.evaluate(() => document.querySelector('#cards .card:has(.reply.fast)').dataset.id);
   await p.evaluate(id => openListing(id), fastId); await p.waitForTimeout(1200);
