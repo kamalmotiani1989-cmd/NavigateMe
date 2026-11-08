@@ -5,7 +5,9 @@
 //   approved -> the seeker: "Asha said yes! Call now" (urgent: others are interested)
 //   declined -> the seeker: "Not this time"
 // Tribe events ({tribe_id, event}) are handled by tribeEvent below.
-// Party invites ({party_id, event}) tell the host's flatmates: partyEvent below.
+// Party invites ({party_id, event}) tell the host's flatmates: partyEvent below. A party called off with
+// requests from nearby ({party_id, event: "cancel_nearby"}) tells those guests.
+// Nearby parties ({party_request_id, event}): a new request goes to the host; accepted / declined to the guest.
 // New listings ({listing_id}) go to seekers they fit (fm_listing_audience); ticket updates ({ticket_id}) to their owner.
 // A seeker who starts looking somewhere ({seeker_id}) goes to owners with a fitting listing there (fm_seeker_audience).
 // A new FlatMart item ({item_id}) goes to people whose "wanted" post it fits (fm_market_want_audience).
@@ -136,6 +138,7 @@ const OCCASION: Record<string, string> = {
 };
 async function partyEvent(id: string, event: string) {
   const { data: p } = await admin.from("fm_parties").select("*").eq("id", id).single();
+  if (p && event === "cancel_nearby") return cancelNearby(p);
   if (!p || !p.flat_group) return { skipped: true };
   const { data: host } = await admin.from("fm_profiles").select("full_name, phone").eq("id", p.host_id).single();
   const first = (host?.full_name || "A flatmate").split(" ")[0];
@@ -150,6 +153,36 @@ async function partyEvent(id: string, event: string) {
   const body = p.cancelled ? "Nothing's happening at your place after all." : `${when}${event === "update" ? " (updated)" : ""}. See the invite and say if you're in.`;
   let sent = 0;
   for (const u of people || []) sent += await pushTo(u.id, title, body, "party/" + p.code);
+  return { sent };
+}
+
+// Nearby parties: requests, answers and a call-off. No address or number in a notification: they're in the app.
+const GEN: Record<string, string> = { z: "Gen Z", m: "Millennial", g: "Gen X" };
+async function partyRequestEvent(id: string, event: string) {
+  const { data: r } = await admin.from("fm_party_requests").select("id, party_id, user_id, plus, status").eq("id", id).single();
+  if (!r) return { skipped: true };
+  const { data: p } = await admin.from("fm_parties").select("id, group_id, host_id, title, code, cancelled").eq("id", r.party_id).single();
+  if (!p || p.cancelled) return { skipped: true };
+  const { data: g } = await admin.from("fm_profiles").select("full_name, vibe").eq("id", r.user_id).single();
+  const { data: h } = await admin.from("fm_profiles").select("full_name").eq("id", p.host_id).single();
+  const guest = (g?.full_name || "Someone").split(" ")[0], host = (h?.full_name || "The host").split(" ")[0];
+  if (event === "request" && r.status === "pending") {
+    const gen = GEN[g?.vibe?.gen] ? GEN[g.vibe.gen] + " · " : "";
+    return { sent: await pushTo(p.host_id, `${guest}${r.plus ? ` +${r.plus}` : ""} wants to join ${p.title}`,
+      `${gen}See their vibe match and say yes or no. Their number is shared only if you accept.`, "splits/" + p.group_id) };
+  }
+  if (event === "accepted" && r.status === "accepted")
+    return { sent: await pushTo(r.user_id, `${host} accepted you! ${p.title}`, `The address, ${host}'s number and your check-in code are in the app.`, "near/" + p.code) };
+  if (event === "declined" && r.status === "declined")
+    return { sent: await pushTo(r.user_id, "Not this time", `${host} went with other guests for ${p.title}. There are more parties near you.`, "splits") };
+  return { skipped: r.status };
+}
+async function cancelNearby(p: any) {
+  const { data: rows } = await admin.from("fm_party_requests").select("user_id").eq("party_id", p.id).in("status", ["pending", "accepted"]);
+  const { data: h } = await admin.from("fm_profiles").select("full_name").eq("id", p.host_id).single();
+  const host = (h?.full_name || "The host").split(" ")[0];
+  let sent = 0;
+  for (const r of rows || []) sent += await pushTo(r.user_id, `${p.title} is called off`, `${host} called off the party. Nothing's happening this time.`, "near/" + p.code);
   return { sent };
 }
 
@@ -214,6 +247,7 @@ Deno.serve(async (req) => {
     const payload = await req.json();
     if (payload.tribe_id) return json(await tribeEvent(payload.tribe_id, payload.event));
     if (payload.party_id) return json(await partyEvent(payload.party_id, payload.event));
+    if (payload.party_request_id) return json(await partyRequestEvent(payload.party_request_id, payload.event));
     if (payload.listing_id) return json(await listingEvent(payload.listing_id));
     if (payload.ticket_id) return json(await ticketEvent(payload.ticket_id));
     if (payload.seeker_id) return json(await seekerEvent(payload.seeker_id));

@@ -170,6 +170,10 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1500); await closeDialogs(p);
   const bl = await p.evaluate(() => ({ titles: [...document.querySelectorAll('.near-card b')].map(x => x.textContent), why: Object.fromEntries(demoNearParties().filter(x => x.city === 'Bengaluru').map(x => [x.code, api.partyCantSee(x)])) }));
   ok(bl.titles.join() === 'Karaoke night' && bl.why.NBBLR2 === 'wrong-gender' && bl.why.NBBLR3 === 'party-full', 'guest: a man sees the open party but not the women-only one (wrong gender) or the full one: ' + JSON.stringify(bl));
+  // ------------------------------------------------------------ 5. a notification opens #near/<code>: that party on Splits
+  await p.goto('http://localhost:8765/#near/NBBLR1'); await p.waitForTimeout(2500);
+  const nr = await p.evaluate(() => ({ open: $('dlgNear').open, title: $('nearTitle').textContent, hash: location.hash }));
+  ok(nr.open && nr.title === 'Karaoke night' && nr.hash === '#splits', 'notify: the link in a notification opens the party: ' + JSON.stringify(nr));
   await ctx.close();
   // far away: nothing in reach
   ctx = await b.newContext({ viewport: { width: 390, height: 844 } });

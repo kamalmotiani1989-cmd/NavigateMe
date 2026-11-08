@@ -9757,6 +9757,13 @@ document.addEventListener("click", async e => {
   catch(err){ console.error(err); const m = String(err.message || ""); toast(m.includes("party-full") ? "No spots left for them and their plus-ones." : "Couldn't do that. Please try again."); }
   await loadFsParty(); drawSplitGroup();
 });
+// A notification opens #near/<code>: Splits with that party on top.
+function nearRoute(){
+  const m = /^#near\/([A-Za-z0-9]+)/.exec(location.hash); if(!m || !state.user) return;
+  history.replaceState(null, "", "#splits"); window.dispatchEvent(new HashChangeEvent("hashchange"));
+  setTimeout(() => openNear(m[1].toUpperCase()), 600);
+}
+window.addEventListener("hashchange", nearRoute); setTimeout(nearRoute, 1200);
 // Switch it on: we need a place to measure from, picked once (not live location).
 let nearPinThen = null;
 function askNearPin(then){

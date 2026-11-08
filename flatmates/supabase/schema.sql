@@ -2003,6 +2003,15 @@ create or replace function public.fm_party_notify() returns trigger
 language plpgsql security definer set search_path = public as $$
 declare v_url text; v_secret text;
 begin
+  -- Called off: everyone from nearby who asked or was accepted is told (nearby parties, part 5).
+  if tg_op = 'UPDATE' and new.cancelled and not old.cancelled
+     and exists (select 1 from fm_party_requests where party_id = new.id and status in ('pending', 'accepted')) then
+    select notify_url, notify_secret into v_url, v_secret from fm_settings;
+    if v_url is not null and v_secret is not null then
+      perform net.http_post(url := v_url, body := jsonb_build_object('party_id', new.id, 'event', 'cancel_nearby'),
+        headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+    end if;
+  end if;
   if new.flat_group is null then return new; end if;
   if tg_op = 'UPDATE' and (new.flat_group is not distinct from old.flat_group and new.starts_at = old.starts_at
                            and new.cancelled = old.cancelled) then return new; end if;
@@ -2449,6 +2458,29 @@ language sql security definer set search_path = public as $$
   insert into fm_party_reviews (user_id, cleared_at, note) values (p_user, now(), p_note)
   on conflict (user_id) do update set cleared_at = now(), note = excluded.note;
 $$;
+
+-- Notifications through fm-notify: a new request goes to the host; accept and decline go to the guest; when the
+-- host calls the party off, everyone who asked or was accepted is told (fm_party_notify, below).
+create or replace function public.fm_party_request_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text; v_event text;
+begin
+  v_event := case when new.status = 'pending' and (tg_op = 'INSERT' or old.status is distinct from 'pending') then 'request'
+                  when tg_op = 'UPDATE' and new.status in ('accepted', 'declined') and old.status = 'pending' then new.status end;
+  if v_event is null then return new; end if;
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(
+    url := v_url,
+    body := jsonb_build_object('party_request_id', new.id, 'event', v_event),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_party_requests_notify on public.fm_party_requests;
+create trigger fm_party_requests_notify after insert or update of status on public.fm_party_requests
+  for each row execute function public.fm_party_request_notify();
 
 -- ------------------------------------------------- new-flat alerts --
 -- Who a new listing is for: seekers in its city and areas, still looking (searched in the last 60 days), who'd see
@@ -3690,7 +3722,8 @@ begin
                      'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours',
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
-                     'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear') then
+                     'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear',
+                     'fm_party_request_notify') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
