@@ -544,7 +544,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .ob .chip{background:rgba(255,255,255,.16); color:#fff}
 .ob .chip:has(input:checked){background:#fff; color:var(--brand-2)}
 .ob .btn-primary{background:#fff; color:var(--brand-2)} .ob .btn-primary:hover{background:#EFFAFA}
-.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff}
+.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff} .ob .btn-ghost:hover{background:rgba(255,255,255,.28)}
 .ob .form-err{color:#FFE1DC} .ob .fm-row{box-shadow:0 -1px 0 rgba(255,255,255,.2)}
 .ob .finale p{color:rgba(255,255,255,.88)}
 .mhead{background:var(--teal); color:#fff; padding-bottom:16px; margin-bottom:14px}
@@ -1686,6 +1686,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .ob-segs i.done b{width:100%!important}
 .ob .ob-count{font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .ob-intro h1{font-size:clamp(28px, 7vw, 40px)}
+.ob-intro #obGo, .ob-finale-acts .btn{min-width:min(100%, 200px); min-height:52px}
 .ob-plan{list-style:none; margin:22px 0 26px; padding:0; display:grid; gap:10px}
 .ob-plan li{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.13)}
 .ob-plan li i{display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:#fff; color:var(--brand-2); font-style:normal; font-weight:800; flex:none}
@@ -6003,7 +6004,7 @@ async function finishOnboarding(){
   $("obStage").innerHTML = `<div class="ob-q finale">
     <p class="eyebrow">Your vibe profile is ready</p>
     ${vt ? `<p class="ob-type"><span aria-hidden="true">${vt.emoji}</span>You're <b>${esc(vt.title)}</b>${im ? `<small>and a ${im.pct}% match with ${esc(inv.name)}</small>` : ""}</p>` : ""}
-    <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
+    ${strong ? `<div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>` : ""}
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}
@@ -6013,7 +6014,7 @@ async function finishOnboarding(){
   if($("obCard")) $("obCard").onclick = () => openVibeCard(state.vibe);
   let n = 0;
   const tick = () => { n = Math.min(best, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 140)); if(n < best) requestAnimationFrame(tick); };
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
+  if(!$("obRing")){} else if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
   $("obDone").onclick = () => { ob = null; $("fSort").value = "match"; go("discover"); };
 }
 /* ====================================================== search preferences */
