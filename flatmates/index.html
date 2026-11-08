@@ -2103,15 +2103,17 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
       <div class="active-f" id="activeF"></div>
     </div>
     <div id="urgent"></div>
-    <div id="profilePromo"></div>
-    <div id="vibePromo"></div>
-    <div id="passNudgeD"></div>
-    <div id="extrasD"></div>
     <div class="d-map" id="dMap" hidden><div class="d-map-el" id="dMapEl"></div><div id="dMapCard"></div></div>
     <section id="vibeRow" hidden>
       <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
       <div class="vrow" id="vibeCards"></div>
     </section>
+    <!-- Nudges (finish your profile, your type, a pass, Flatsplits and FlatMart) come after the first homes, so a
+         new person sees homes on the first screen; anything urgent (an answer, a visit) stays at the top. -->
+    <div id="profilePromo"></div>
+    <div id="vibePromo"></div>
+    <div id="passNudgeD"></div>
+    <div id="extrasD"></div>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
   </section>
@@ -6235,6 +6237,8 @@ async function renderDiscover(){
   $("vibeRow").hidden = !vibes.length;
   $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
   $("dMap").hidden = !mapView;
+  // Nothing to show: the "no homes match" help goes straight under the controls, ahead of the nudges.
+  if(list.length) $("extrasD").after($("count"), $("cards")); else $("profilePromo").before($("count"), $("cards"));
   if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
@@ -9827,7 +9831,8 @@ window.fmBack = () => {
   return false;
 };
 // The close button: a back arrow on phones (dialogs are full screen there), a cross on bigger screens.
-document.querySelectorAll(".mhead .x").forEach(b => {
+// Only the close buttons: the share buttons in the same corner (a home, a FlatMart item) keep their own icon.
+document.querySelectorAll(".mhead .x[data-close]").forEach(b => {
   b.innerHTML = BACK_SVG.replace('class="ic"', 'class="ic x-back"') + CLOSE_SVG.replace('class="ic"', 'class="ic x-x"');
   b.setAttribute("aria-label", "Close");
 });

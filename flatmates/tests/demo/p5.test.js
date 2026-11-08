@@ -96,6 +96,14 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await seed(ctx, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message));
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(2000); await closeDialogs(p);
+  // homes before nudges: the vibe-match row starts on the first screen, the profile and type cards come after it
+  const order = await p.evaluate(() => { const top = id => Math.round($(id).getBoundingClientRect().top); return { row: top('vibeRow'), rowShown: !$('vibeRow').hidden, promo: top('profilePromo'), extras: top('extrasD') }; });
+  ok(order.rowShown && order.row < 844 && order.promo > order.row && order.extras > order.row, 'seeker: vibe matches on the first screen, nudges after them: ' + JSON.stringify(order));
+  // with filters that leave no homes, the "no homes match" help comes before the nudges
+  const empty = await p.evaluate(async () => { const keep = Object.assign({}, state.prefs); Object.assign(state.prefs, { max: 1000, look: 'room' }); save(); await renderDiscover();
+    const top = el => Math.round(el.getBoundingClientRect().top); const r = { help: top(document.querySelector('#cards .empty') || $('cards')), text: ($('cards').querySelector('.empty h3') || {}).textContent, promo: top($('profilePromo')), cards: document.querySelectorAll('#cards .card').length };
+    state.prefs = keep; save(); await renderDiscover(); return r; });
+  ok(empty.cards === 0 && /No homes match/.test(empty.text) && empty.help < empty.promo, 'seeker: with no homes, the help comes before the nudges: ' + JSON.stringify(empty));
   // room filters: each tick keeps only homes whose room has it (whole flats pass), off by default, shown as a removable chip
   await p.click('#filtersBtn'); await p.waitForTimeout(500);
   const rf0 = await p.evaluate(() => ({ ticked: [...document.querySelectorAll('[name=fRoom]:checked')].length, labels: [...document.querySelectorAll('[name=fRoom]')].map(x => x.parentElement.textContent.trim()), count: $('fApply').textContent }));
@@ -121,6 +129,8 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await p.evaluate(id => openListing(id), fastId); await p.waitForTimeout(1200);
   const lhead = await p.evaluate(() => $('lLoc').textContent);
   ok(/⚡ (Replies within hours|Usually replies within a day)/.test(lhead), 'seeker: listing header shows the reply speed: ' + lhead);
+  const shareBtn = await p.evaluate(() => ({ label: $('lShare').getAttribute('aria-label'), own: !!$('lShare').querySelector('circle'), back: !!$('lShare').querySelector('.x-back') }));
+  ok(shareBtn.label === 'Share this home' && shareBtn.own && !shareBtn.back, 'seeker: the share button keeps its own icon and label: ' + JSON.stringify(shareBtn));
   await p.click('#lShare'); await p.waitForTimeout(3000);
   const sh2 = await p.evaluate(() => ({ open: $('dlgShare').open, img: !!document.querySelector('#shBody .sh-img'), wa: decodeURIComponent((document.querySelector('#shBody a[href^="https://wa.me"]') || {}).href || '') }));
   ok(sh2.open && sh2.img && /vibe match with me/.test(sh2.wa) && /\?l=demo-\d+/.test(sh2.wa), 'seeker: share card with the vibe match and the link: ' + sh2.wa.slice(0, 120));
