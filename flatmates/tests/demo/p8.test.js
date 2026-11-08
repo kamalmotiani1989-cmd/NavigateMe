@@ -35,6 +35,12 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     return { bg: cs.backgroundColor, ratio: Math.round((lum(cs.color) + .05) / (lum(cs.backgroundColor) + .05) * 100) / 100, text: bt.textContent.trim(),
       fields: [...document.querySelectorAll('#loginForm input')].map(i => i.name || i.id).join(',') }; });
   ok(wa.bg === 'rgb(23, 135, 65)' && wa.ratio >= 4.5 && wa.text === 'Get the code on WhatsApp', 'visitor: the WhatsApp button is #178741 with readable white text: ' + JSON.stringify(wa));
+  // colours are named: outside the :root token blocks the stylesheet and style="" attributes use var(--...), white aside
+  const hexes = await p.evaluate(async () => { const src = await (await fetch(location.pathname)).text();
+    const css = src.slice(src.indexOf('<style'), src.indexOf('</style>')).replace(/:root\{[\s\S]*?\n\}/g, '');
+    const attrs = (src.match(/style="[^"]*"/g) || []).join(' ');
+    return ((css + ' ' + attrs).match(/#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b/g) || []).filter(h => !/^#f{3}(f{3})?$/i.test(h)); });
+  ok(!hexes.length, 'visitor: every colour in the stylesheet is a named token: ' + [...new Set(hexes)].slice(0, 8).join(' '));
   // a wide screen keeps the two columns: words on the left, the card on the right
   await p.setViewportSize({ width: 1280, height: 900 }); await p.waitForTimeout(500);
   const wide = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect();
