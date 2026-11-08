@@ -19,6 +19,11 @@ _Last update: 8 Nov 2026._
 **Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything for him is ready before 10 pm that day.
 
 ## Teche (tech)
+0. **Kamal's approval, 8 Nov, in King's session ("All 4"), from the design study (PR #62):** (1) layout changes 1 to 3
+   and 5 to 8 plus the tips token swap; (2) hint grey `#8790A3` to `#5E6679`; (3) WhatsApp button `#1DA851` to `#178741`
+   on the sign-in card; (4) the sign-in card moved onto the welcome page's first phone screen, with the card, its steps
+   and the code flow unchanged. These are Kamal's own changes to the look and the sign-in card; update README "Look and
+   feel" to match. Changes 1 to 3 are already live (PR #64). One PR for the rest; Kamal merges.
 1. **Next blocker for real sign-up: the WhatsApp or SMS code keys.** When Kamal resumes you, list exactly what is
    needed from him (which provider, which keys, where he creates them, where they go: edge-function secrets, never the
    repo) and what you test before he opens sign-up. The login process itself does not change.
