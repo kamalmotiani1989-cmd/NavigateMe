@@ -54,6 +54,18 @@ Deno.serve(async (req) => {
   const allowed = ((settings?.hold_allow ?? []) as string[]).map((x) => String(x).replace(/\D/g, "").slice(-10));
   if (!settings?.test_login && !allowed.includes(phone)) return json({ error: "test-login-off" }, 403);
 
+  // The code must have been asked for through the app in the last 10 minutes (fm_otp_request, which refuses a
+  // request without the "I am 18 or older" tick), the same rule fm-send-otp keeps for real codes.
+  try {
+    const { count, error } = await admin.from("fm_otp_requests").select("id", { count: "exact", head: true })
+      .eq("phone", phone).gt("created_at", new Date(Date.now() - 600e3).toISOString());
+    if (error) throw error;
+    if (!count) return json({ error: "age-required" }, 403);
+  } catch (e) {
+    console.error(e);
+    return json({ error: "server" }, 500);
+  }
+
   // Wrong codes in the last hour: 5 per number, 10 per network address, 30 in all.
   const ip = req.headers.get("cf-connecting-ip") || (req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
   const since = new Date(Date.now() - 3600e3).toISOString();
