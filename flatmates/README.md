@@ -243,7 +243,7 @@ the room comes second.
 19. **Search by place, on a real map.** Discover opens with a search bar like the property sites: the city,
     then **"Search locality, landmark, society or metro"** with suggestions as you type (and "Use my current
     location"). Pick a place and you see homes **within 1, 3, 5, 10 or 20 km**, nearest first, each card saying
-    how far it is ("1.2 km from Hinjewadi Phase 1"), as a **List or a Map** with price pins (orange for 80%+
+    how far it is ("1.2 km from Hinjewadi Phase 1"), as a **List or a Map** with price pins (green for 80%+
     vibe matches; tap one for the home). Picking a place in another city switches the city. The search runs on
     the server (`fm_search_near`): homes with a pin within the distance, plus unpinned homes in that area.
     Posting a room starts with **"Where's the flat?"**: one search fills in the city, area, PIN and building
@@ -339,7 +339,7 @@ flat" button (two flatmates and a month of expenses; one of them adds another ex
 - **FlatMart:** a fitting item for one of your wants ("₹2,800: Single bed in Baner"), the other side setting a
   pick-up time, and a reminder two hours before a pick-up.
 - **Seeker, when accepted:** "Asha said yes! Call now", with how many others asked about the home.
-  An orange **Call now, before it's rented out** card stays at the top of Discover and Requests
+  A **Call now, before it's rented out** card with a red dot stays at the top of Discover and Requests
   until they tap Call, WhatsApp or "I've called". If they haven't called after 2 hours (1 minute
   in demo mode) they get a "Don't lose this room" reminder.
 - **Seeker, when declined:** a gentle "Not this time", pointing back to their other matches.
@@ -447,6 +447,20 @@ three secrets under Supabase → Edge Functions → Secrets: `RAZORPAY_KEY_ID`, 
 Account & Settings → API Keys) and its test cards or UPI `success@razorpay`; no money moves. Until
 the keys are set, buying shows "Payments aren't switched on yet". GST can only be charged once the
 business is GST-registered; invoices need the GSTIN.
+
+## Look and feel
+Calm and grown-up, set on 8 Nov 2026 to replace the earlier bright teal-to-blue look. Colour does one job at a time:
+- **Navy** (`--ink` #1B2440) for headings, body text and the main button on every screen. Selected options, chips and
+  tabs turn navy too.
+- **One muted green** (`--brand` #1C7F72) for links, small labels, progress bars, match rings and "what's new". The soft
+  version (`--brand-soft`) is the background for tips and highlights.
+- **A pale mint wash** (`--wash`) behind the welcome page and onboarding only; everything else is white cards on a
+  very light grey-green page (`--app-bg`), with thin borders and soft shadows.
+- **Feature cards** (Tribe, FlatMart, the Empty Room Escape, Passes, the quiz, share images) are navy, never orange,
+  pink or purple. **Red** is kept for notification dots and errors.
+- White top bar and white status bar on Android (dark icons); dialog headers are white with a grey close button.
+- Headlines are bold (700), not extra-bold; the welcome headline mixes a light and a heavy weight.
+New screens use the tokens in `:root` at the top of the stylesheet rather than new colours.
 
 ## Files
 

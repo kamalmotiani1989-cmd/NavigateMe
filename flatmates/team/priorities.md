@@ -23,7 +23,7 @@ _Last update: 8 Nov 2026._
    needed from him (which provider, which keys, where he creates them, where they go: edge-function secrets, never the
    repo) and what you test before he opens sign-up. The login process itself does not change.
 2. Mark's Pixel and Google Ads conversion wiring waits on Kamal's IDs.
-3. Standing rules: login, colours and onboarding questions do not change; no secrets; tests before every push.
+3. Standing rules: login and onboarding questions do not change; the look stays as in the README's "Look and feel"; no secrets; tests before every push.
 
 ## Mark (marketing)
 1. No "download now" and no paid spend until Kamal opens sign-up. Copy says "launching soon".
