@@ -1,5 +1,24 @@
 # Teche · reports
 
+## 2026-11-08, design study changes: PR #65 up for Kamal
+
+**Done, not merged (Kamal merges).** These are the remaining changes Kamal approved ("All 4", priorities.md Teche item 0).
+There is one commit per change:
+- the trust line on the welcome's first screen
+- the sign-in card on the first phone screen, with the paragraph below it (the card and the code flow are unchanged)
+- `--brand-2` for green text on the pale green tips
+- "No photos yet" instead of drawn rooms
+- hint grey `#5E6679`
+- WhatsApp button `#178741`
+- five text sizes
+
+Card changes 1 to 3 went out earlier in #64. Change 4 (icons) was not in the approval, so it is not built.
+
+README "Look and feel" is updated. Demo tests all pass; the new suite p8 adds 11 checks.
+
+Before and after screenshots at 390×844 (welcome first screen, sign-in card, Discover cards, a home's page):
+`flatmates/team/reports/shots/2026-11-08-design-study-before-after.png`.
+
 ## 2026-11-08, simpler listing cards (PR #64, merged)
 
 **Done.** Kamal's three card changes from the design study. The rent now sits on the photo. The card is title,
