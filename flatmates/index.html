@@ -265,6 +265,8 @@ textarea{min-height:96px; resize:vertical}
 .meta{display:flex; flex-wrap:wrap; gap:0; margin-top:2px; font-size:13px; color:var(--text-3)}
 .meta span{background:none; padding:0}
 .meta span + span::before{content:"·"; margin:0 6px}
+.room-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px} .room-tags span{font-size:12.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--brand-soft); color:var(--brand-2)}
+.room-qs .chips{gap:6px} .room-qs .chip{padding:7px 10px; font-size:13.5px}
 .fresh{font-size:12px; color:var(--text-3)}
 .heart{position:absolute; bottom:12px; right:12px; z-index:2; width:36px; height:36px; border-radius:50%; border:0; cursor:pointer;
   background:rgba(255,255,255,.94); color:#9AA0A8; font-size:17px; line-height:1; display:grid; place-items:center; transition:transform .15s}
@@ -542,7 +544,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .ob .chip{background:rgba(255,255,255,.16); color:#fff}
 .ob .chip:has(input:checked){background:#fff; color:var(--brand-2)}
 .ob .btn-primary{background:#fff; color:var(--brand-2)} .ob .btn-primary:hover{background:#EFFAFA}
-.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff}
+.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff} .ob .btn-ghost:hover{background:rgba(255,255,255,.28)}
 .ob .form-err{color:#FFE1DC} .ob .fm-row{box-shadow:0 -1px 0 rgba(255,255,255,.2)}
 .ob .finale p{color:rgba(255,255,255,.88)}
 .mhead{background:var(--teal); color:#fff; padding-bottom:16px; margin-bottom:14px}
@@ -1009,6 +1011,8 @@ div.cx-area{cursor:default}
 @media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none}
   body:not(.app) .help-fab{bottom:calc(18px + env(safe-area-inset-bottom,0px))} }
 body:has(#view-splits:not([hidden]) #fsGroup:not([hidden])) .help-fab{display:none}
+/* Out of the way while someone types: on a phone the button sat over the end of a field (area, title, number). */
+body.typing .help-fab{display:none}
 #dlgHelp[open]{display:flex; flex-direction:column; height:min(640px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
 @media (max-width:640px){ #dlgHelp[open]{width:100vw; height:100dvh} }
 #dlgHelp .mhead{flex:none; margin-bottom:0}
@@ -1682,6 +1686,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .ob-segs i.done b{width:100%!important}
 .ob .ob-count{font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .ob-intro h1{font-size:clamp(28px, 7vw, 40px)}
+.ob-intro #obGo, .ob-finale-acts .btn{min-width:min(100%, 200px); min-height:52px}
 .ob-plan{list-style:none; margin:22px 0 26px; padding:0; display:grid; gap:10px}
 .ob-plan li{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.13)}
 .ob-plan li i{display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:#fff; color:var(--brand-2); font-style:normal; font-weight:800; flex:none}
@@ -1828,7 +1833,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
               <span><b>Posting a flat or a room</b><span>A spare room, a bed or a whole flat. See who'd fit in, then you choose</span></span></label>
           </div>
-          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
           <div class="lg-captcha" id="lgCaptcha" hidden></div>
@@ -2190,6 +2195,18 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
             <label class="chip"><input type="radio" name="kind" value="flatmate">Looking for a flatmate</label>
             <label class="chip"><input type="radio" name="kind" value="flat">Whole flat takeover</label>
           </div></div>
+        <!-- Room details: three one-tap questions seekers ask first. Optional; a whole flat skips them. -->
+        <div class="grid3 room-qs" id="roomQs">
+          <div class="field"><label>Washroom</label><div class="chips">
+            <label class="chip"><input type="radio" name="rWash" value="attached">Attached</label>
+            <label class="chip"><input type="radio" name="rWash" value="shared">Shared</label></div></div>
+          <div class="field"><label>Balcony</label><div class="chips">
+            <label class="chip"><input type="radio" name="rBalc" value="yes">Yes</label>
+            <label class="chip"><input type="radio" name="rBalc" value="no">No</label></div></div>
+          <div class="field"><label>Master bedroom</label><div class="chips">
+            <label class="chip"><input type="radio" name="rMaster" value="yes">Yes</label>
+            <label class="chip"><input type="radio" name="rMaster" value="no">No</label></div></div>
+        </div>
         <div class="field"><label for="pTitle">Title</label>
           <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
         <div class="field ps-anchor p-where"><label for="pWhere">Where's the flat?</label>
@@ -2247,7 +2264,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <p class="hint" id="privKept" hidden style="margin:-4px 0 12px">Your name, number and address stay as posted. To change them, mark this listing as rented and post the room again. You can still move the map pin.</p>
           <div class="grid2">
             <div class="field"><label for="pName">Your name</label><input type="text" id="pName" required autocomplete="name"></div>
-            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           </div>
           <div class="grid2">
             <div class="field"><label for="aFlat">Flat / house no.</label><input type="text" id="aFlat" required maxlength="30" placeholder="e.g. B-304"></div>
@@ -2430,6 +2447,11 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <option value="2w">Within 2 weeks</option><option value="1m">Within a month</option><option value="3m">In 1 to 3 months</option></select>
       <h3 class="section-h">Must-haves</h3>
       <div class="chips" id="fMust"></div>
+      <h3 class="section-h">The room</h3>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="fRoom" value="wash">Attached washroom</label>
+        <label class="chip"><input type="checkbox" name="fRoom" value="balcony">Balcony</label>
+        <label class="chip"><input type="checkbox" name="fRoom" value="master">Master bedroom</label></div>
       <h3 class="section-h">House rules that matter to you</h3>
       <div class="chips">
         <label class="chip"><input type="checkbox" name="fRule" value="veg">Veg-only kitchen</label>
@@ -3091,6 +3113,8 @@ function demoListings(){
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
       out.push({
         id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        // Room details for most rooms (from a hash, so the rest of the demo data stays as it was); one in five unset.
+        room: kind === "flat" || hue("room" + n) % 5 === 0 ? null : { washroom: hue("wash" + n) % 3 ? "attached" : "shared", balcony: hue("balc" + n) % 7 < 3, master: hue("mast" + n) % 11 < 4 },
         geo: (g => g ? { lat: Math.round((g[0] + (hue("la" + n) % 17 - 8) / 1000) * 100) / 100, lng: Math.round((g[1] + (hue("ln" + n) % 17 - 8) / 1000) * 100) / 100 } : null)((DEMO_GEO[city] || {})[area]),
         bachelors: hue("bach" + n) % 10 < 9,
         furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
@@ -3764,7 +3788,7 @@ function makeLiveApi(sb){
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
-        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_room: l.room || null });
       return { id, photos:"kept" };
     },
     async update(id, p){
@@ -3772,7 +3796,7 @@ function makeLiveApi(sb){
       await rpc("fm_update_listing", { p_listing: id, p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from, p_gender:l.gender, p_furnishing:l.furnishing,
         p_amenities:l.amenities, p_description:l.description, p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {},
-        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null });
+        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null, p_room: l.room || null });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await rpc("fm_my_listings")).filter(l => l.is_owner); },
@@ -4673,7 +4697,7 @@ function showFormError(form, text){
 function formOk(form){
   form.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
   const bad = [...form.elements].filter(el => el.willValidate && !el.checkValidity());
-  if(!bad.length){ showFormError(form, ""); return true; }
+  if(!bad.length){ showFormError(form, ""); document.querySelectorAll(".toast").forEach(t => t.remove()); return true; }
   const label = el => el.type === "radio" ? (el.name === "role" ? "What brings you here" : "A choice") : FIELD_LABEL[el.id] || el.getAttribute("aria-label") || "A field";
   const msg = "Please check: " + [...new Set(bad.map(label))].join(", ") + ".";
   showFormError(form, msg);
@@ -5545,6 +5569,17 @@ function otpCountdown(sec){
   };
   tick(); signin.timer = setInterval(tick, 1000);
 }
+// A number pasted or auto-filled from contacts arrives as "+91 98765 43210", "098765 43210" or "98765-43210":
+// keep the 10 digits, so it passes as typed. Every 10-digit mobile field in the app gets this.
+function tidyPhone(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(d.length > 10 && d.startsWith("91")) d = d.slice(2); else if(d.length === 11 && d.startsWith("0")) d = d.slice(1);
+  return d.slice(0, 10);
+}
+document.addEventListener("input", e => {
+  const el = e.target;
+  if(el.type === "tel" && el.inputMode === "numeric"){ const t = tidyPhone(el.value); if(t !== el.value) el.value = t; }
+});
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
@@ -5971,7 +6006,7 @@ async function finishOnboarding(){
   $("obStage").innerHTML = `<div class="ob-q finale">
     <p class="eyebrow">Your vibe profile is ready</p>
     ${vt ? `<p class="ob-type"><span aria-hidden="true">${vt.emoji}</span>You're <b>${esc(vt.title)}</b>${im ? `<small>and a ${im.pct}% match with ${esc(inv.name)}</small>` : ""}</p>` : ""}
-    <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
+    ${strong ? `<div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>` : ""}
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}
@@ -5981,12 +6016,13 @@ async function finishOnboarding(){
   if($("obCard")) $("obCard").onclick = () => openVibeCard(state.vibe);
   let n = 0;
   const tick = () => { n = Math.min(best, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 140)); if(n < best) requestAnimationFrame(tick); };
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
+  if(!$("obRing")){} else if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
   $("obDone").onclick = () => { ob = null; $("fSort").value = "match"; go("discover"); };
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], minMatch:0 };
+const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], room:[], minMatch:0 };
+const ROOM_FILTERS = { wash: ["Attached washroom", l => (l.room || {}).washroom === "attached"], balcony: ["Balcony", l => (l.room || {}).balcony === true], master: ["Master bedroom", l => (l.room || {}).master === true] };
 const prefs = () => {
   const p = Object.assign({}, DEFAULT_PREFS, state.prefs);
   // The old "Looking for" filter (several kinds) became one choice on Discover.
@@ -6026,6 +6062,8 @@ function applyFilters(rows, f){
     if(f.furn.length && !f.furn.includes(l.furnishing)) return false;
     if(f.moveBy && l.available_from > f.moveBy) return false;
     if(f.must.length && !f.must.every(a => (l.amenities || []).includes(a))) return false;
+    // Room details are about the room on offer; a whole flat has all its rooms, so it passes.
+    if(l.kind !== "flat" && (f.room || []).some(k => ROOM_FILTERS[k] && !ROOM_FILTERS[k][1](l))) return false;
     // House rules only apply where someone already lives; a whole flat is yours to set.
     if(shared && f.rules.some(r => RULES[r] && !RULES[r][1](hh))) return false;
     if(f.rules.includes("bach") && l.bachelors === false) return false;
@@ -6043,6 +6081,7 @@ function activeFilters(f){
   if(f.moveBy) out.push(["moveBy", "Move in by " + fmtDate(f.moveBy)]);
   f.must.forEach(a => out.push(["must:" + a, a]));
   f.rules.forEach(r => RULES[r] && out.push(["rules:" + r, RULES[r][0]]));
+  (f.room || []).forEach(k => ROOM_FILTERS[k] && out.push(["room:" + k, ROOM_FILTERS[k][0]]));
   if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
@@ -6388,6 +6427,7 @@ function openFilters(){
   form.querySelectorAll("[name=fKind]").forEach(x => x.checked = f.kinds.includes(x.value));
   form.querySelectorAll("[name=fFurn]").forEach(x => x.checked = f.furn.includes(x.value));
   form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
+  form.querySelectorAll("[name=fRoom]").forEach(x => x.checked = (f.room || []).includes(x.value));
   form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
   form.querySelectorAll("[name=fMatch]").forEach(x => x.checked = Number(x.value) === f.minMatch);
   updateFilterCount();
@@ -6396,7 +6436,7 @@ function openFilters(){
 function readFilterForm(){
   const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
   return { min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
-    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), minMatch: Number(vals("fMatch")[0]) || 0 };
+    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), room: vals("fRoom"), minMatch: Number(vals("fMatch")[0]) || 0 };
 }
 function updateFilterCount(){
   const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
@@ -6579,7 +6619,7 @@ async function openListing(id){
     ${items.length ? `<div class="bill">${bill}${billsTotal(l) ? `<span class="tot">Fixed expenses per month</span><span class="tot">${inr(billsTotal(l))}</span>` : ""}</div>`
       : `<p style="margin:0">No extra expenses. Everything is included in the rent.</p>`}
     <div class="kv">
-      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
+      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b>${ROOM_LABELS(l).length ? `<div class="room-tags">${ROOM_LABELS(l).map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}</div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
       <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
@@ -7120,7 +7160,7 @@ async function startEdit(id, step){
 }
 function endEdit(){
   editing = null; keepPhotos = [];
-  $("postForm").reset();
+  $("postForm").reset(); syncRoomQs();
   photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
   PRIVATE_IDS.forEach(id => $(id).disabled = false);
   $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
@@ -7133,6 +7173,7 @@ async function fillPostForm(l){
   const f = $("postForm"), hh = l.household || {};
   f.reset();
   (f.querySelector(`[name=kind][value="${l.kind}"]`) || f.querySelector("[name=kind]")).checked = true;
+  fillRoomForm(l.room); syncRoomQs();
   $("pTitle").value = l.title; setCitySelect($("pCity"), l.city); fillAreaList(); $("pLocality").value = l.locality;
   $("pBhk").value = String(Math.min(4, Math.max(1, l.bhk || 2))); $("pRent").value = l.rent; $("pDeposit").value = l.deposit || 0;
   $("pFrom").value = String(l.available_from || "").slice(0, 10); $("pGender").value = l.gender; $("pFurn").value = l.furnishing;
@@ -7224,7 +7265,23 @@ function syncRoomsFree(){
   if(!$("hFree").dataset.touched) $("hFree").value = String(Math.min(4, Math.max(1, Number($("pBhk").value) - Number($("hCount").value))));
 }
 ["hCount", "pBhk"].forEach(id => $(id).addEventListener("change", syncRoomsFree));
-$("postForm").addEventListener("change", e => { if(e.target.name === "kind") syncRoomsFree(); if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+// Room details: shown for a room, a bed or a flatmate listing; a whole flat has none to answer.
+function syncRoomQs(){ const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value; $("roomQs").hidden = kind === "flat"; }
+function roomFromForm(){
+  const f = $("postForm"), kind = (f.querySelector("[name=kind]:checked") || {}).value, pick = n => (f.querySelector(`[name=${n}]:checked`) || {}).value;
+  if(kind === "flat") return null;
+  const r = {}, w = pick("rWash"), b = pick("rBalc"), m = pick("rMaster");
+  if(w) r.washroom = w; if(b) r.balcony = b === "yes"; if(m) r.master = m === "yes";
+  return Object.keys(r).length ? r : null;
+}
+function fillRoomForm(room){
+  const f = $("postForm"), r = room || {}, set = (n, v) => f.querySelectorAll(`[name=${n}]`).forEach(x => x.checked = v !== undefined && x.value === v);
+  set("rWash", r.washroom); set("rBalc", r.balcony === undefined ? undefined : r.balcony ? "yes" : "no"); set("rMaster", r.master === undefined ? undefined : r.master ? "yes" : "no");
+}
+// What a listing's answers say, in short labels (unset answers say nothing).
+const ROOM_LABELS = l => { const r = l.room || {}; return [r.washroom === "attached" ? "Attached washroom" : r.washroom === "shared" ? "Shared washroom" : "", r.balcony ? "Balcony" : "", r.master ? "Master bedroom" : ""].filter(Boolean); };
+$("postForm").addEventListener("change", e => { if(e.target.name === "kind"){ syncRoomsFree(); syncRoomQs(); } if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+syncRoomQs();
 function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
 attachAreaSuggest($("pLocality"), () => $("pCity").value);
@@ -7285,6 +7342,7 @@ $("postForm").addEventListener("submit", async e => {
       bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
       available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value, bachelors: $("pBach").checked,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
+      room: roomFromForm(),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
         PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {}, readQuiz($("hQuiz"), "h")),
@@ -7585,7 +7643,7 @@ function openFs(title, sub, html){
 }
 function memberRowsHtml(rows, ph = "Riya"){
   return rows.map((r, i) => `<div class="grid2 fs-new-row"><div class="field"><label for="fsN${i}">Name</label><input type="text" id="fsN${i}" maxlength="40" value="${esc(r.name)}" placeholder="${ph}"></div>
-    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" maxlength="10" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
+    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
 }
 function readMemberRows(root){
   return [...root.querySelectorAll(".fs-new-row")].map(r => ({ name: r.querySelector("[id^=fsN]").value.trim(), phone: ten(r.querySelector("[id^=fsP]").value) }))
@@ -9363,6 +9421,9 @@ async function hbTickets(){
     [["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["↩ Something else", "home"]]);
   api.ticketsSeen().catch(() => {}); ticketUnseen = 0; drawHelpBadge();
 }
+const typingIn = el => el && el.matches && el.matches("input:not([type=radio]):not([type=checkbox]):not([type=range]):not([type=file]), textarea, select");
+document.addEventListener("focusin", e => { if(typingIn(e.target)) document.body.classList.add("typing"); });
+document.addEventListener("focusout", e => { if(typingIn(e.target)) document.body.classList.remove("typing"); });
 $("helpFab").addEventListener("click", () => openHelp());
 // The private-preview door: 7 quick taps on the logo of the Coming soon screen (see showHold).
 (() => { let taps = 0, last = 0;
