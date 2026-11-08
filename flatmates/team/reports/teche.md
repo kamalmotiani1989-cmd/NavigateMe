@@ -1,5 +1,18 @@
 # Teche · reports
 
+## 2026-11-08, design study redone for the redesign
+
+**Done.** PR #62 updated on King's note after Kamal merged the calm redesign (#63). Section 1 now describes the new
+tokens with fresh contrast: the navy buttons read at 15.3:1 and green links at 4.85:1, so the redesign fixed the big
+problems; still below 4.5:1 are the hint grey (`#8790A3`, 3.21 on white, 2.68 on the mint wash), green text on the
+pale green tips (4.25) and the WhatsApp button (3.10). Section 3 re-checked on the redesigned screens: all eight
+layout suggestions still apply (the card still has eight lines with the rent seventh, "Posted 17 days ago", emoji);
+one is a token swap that keeps the look. Of the six colour points in the first draft, four are moot now; two remain
+for Kamal (hint grey `#8790A3` → `#5E6679`; WhatsApp `#1DA851` → `#178741`, on the sign-in card). The mock uses the
+new tokens. PR still only adds the two files in the root `design/` folder.
+
+**Open for Kamal.** PR #62; the competitor screenshots if he wants the gaps closed; the Pixel and Google Ads IDs.
+
 ## 2026-11-08, design study (the one task resumed)
 
 **Done.** PR #62, not merged by me: `flatmates/design/design-study-nov-2026.md` and a standalone listing-card mock.
