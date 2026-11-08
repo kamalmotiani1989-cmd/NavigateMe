@@ -400,7 +400,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .lock .blurred span{display:block; font-size:var(--fs-xs); color:var(--text-3)}
 .lock .blurred b{filter:blur(5px); user-select:none}
 .lock .promise-line{display:flex; gap:8px; align-items:start; font-size:var(--fs-s); color:var(--text-2); margin-top:12px}
-.lock .promise-line b{color:var(--brand)}
+.lock .promise-line b{color:var(--brand-2)}
 .lock.open h3, .lock.open > p:first-child{color:var(--ok)}
 .lock.wait h3{color:var(--accent)}
 .guarantee{margin-top:12px; padding-top:10px; box-shadow:0 -1px 0 var(--line)}
@@ -754,7 +754,9 @@ div.cx-area{cursor:default}
 /* ---------- generation badges: Gen Z electric, millennials avocado-toast warm */
 .gen{display:inline-flex; align-items:center; gap:4px; padding:2px 10px 2px 7px; border-radius:999px; font-size:11.5px; font-weight:800;
   line-height:1.6; white-space:nowrap; vertical-align:middle; font-style:normal}
-.gen em{font-style:normal; font-size:var(--fs-xs)}
+.gen em{font-style:normal; font-size:var(--fs-xs); display:inline-flex}
+.wq-faces i{color:var(--ink)} .extras i, .empty-ic, .ref-card .ref-ic, .mk-salecard .sc-ic, .mk-boostbox .bb-ic{color:var(--brand-2)}
+.reply .ic, .mk-flag .ic, .mk-move .ic, .mk-boosted .ic, .mk-bundle-tag .ic, .plans-free .ic, .fs-party-hint .ic{vertical-align:-2px; flex:none}
 .gen.gen-z, .gen.gen-m, .gen.gen-g{font-size:11.5px; display:inline-flex}
 .gen.gen-z{color:var(--brand-2); text-transform:uppercase; letter-spacing:.07em; background:var(--brand-soft); box-shadow:none}
 .gen-z em{filter:none}
@@ -1858,7 +1860,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <h1>Find flatmates who <em>match your vibe.</em></h1>
         <div class="w-invite" id="wInvite" hidden></div>
         <button class="w-quiz" type="button" data-quiz>
-          <span class="wq-faces" aria-hidden="true"><i>🦉</i><i>🍳</i><i>🦋</i></span>
+          <span class="wq-faces" aria-hidden="true"><i><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 13A9 9 0 1111 3a7 7 0 0010 10z"/></svg></i><i><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3v7a2 2 0 002 2 2 2 0 002-2V3M6 12v9M18 21V3c-2 0-4 2-4 6v4h4"/></svg></i><i><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 11a4 4 0 100-8 4 4 0 000 8zM22 20v-1a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/></svg></i></span>
           <span class="wq-text"><small>1-minute quiz</small><b>What's your flatmate type?</b>
             <span>6 quick questions. Get your Vibe Card and see which friends you'd live well with.</span></span>
           <span class="wq-go" aria-hidden="true"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></button>
@@ -2554,7 +2556,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <div class="mbody" id="vcBody"></div></dialog>
 
 <dialog id="dlgBoost" class="confirm" aria-labelledby="bbTitle"><div class="confirm-body">
-  <span class="confirm-ic" style="background:#FFF4D6;color:#B7791F;font-size:30px">⚡</span>
+  <span class="confirm-ic" style="background:#FFF4D6;color:#B7791F"><svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span>
   <h2 id="bbTitle">Boost this item</h2><p id="bbText"></p>
   <div id="bbOpts" class="bb-opts"></div>
   <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
@@ -2569,7 +2571,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
 </form></dialog>
 <dialog id="dlgSale" class="confirm" aria-labelledby="slTitle"><form class="confirm-body" id="saleForm" novalidate>
-  <span class="confirm-ic" style="background:#FFF1E6;color:#C2410C;font-size:30px">📦</span>
+  <span class="confirm-ic" style="background:#FFF1E6;color:#C2410C"><svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg></span>
   <h2 id="slTitle">Start a moving-out sale</h2>
   <p>Everything you're selling on one page, with one link to share on WhatsApp. All of it shows first in FlatMart until the date you pick.</p>
   <label class="sl-f"><span>Name of the sale</span><input type="text" id="slName" required minlength="3" maxlength="60"></label>
@@ -2641,6 +2643,10 @@ const svgIcon = (d, size, w) => `<svg class="ic" width="${size}" height="${size}
 const BACK_SVG = svgIcon("M15 5l-7 7 7 7", 22, 2.4);
 const CLOSE_SVG = svgIcon("M6 6l12 12M18 6L6 18", 18, 2.4);
 const LEFT_SVG = svgIcon("M19 12H5M11 6l-6 6 6 6", 18, 2.4);
+// Line icons that replace emoji in the app's own words (badges, notices, empty states), in the same style as the
+// navigation icons. Categories people pick (FlatMart, Flatsplits, party occasions) and share images keep their emoji.
+const ICON = { bolt:"M13 2L4 14h7l-1 8 9-12h-7l1-8z", gift:"M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 000 5h4zM12 8s1.5-5 4-5a2.5 2.5 0 010 5h-4z", sofa:"M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2zM5 18v2M19 18v2", box:"M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8", party:"M4 20l5-14 9 9-14 5zM14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0", moon:"M21 13A9 9 0 1111 3a7 7 0 0010 10z", cook:"M4 3v7a2 2 0 002 2 2 2 0 002-2V3M6 12v9M18 21V3c-2 0-4 2-4 6v4h4", users:"M16 20v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 11a4 4 0 100-8 4 4 0 000 8zM22 20v-1a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8", pin:"M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12zM12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z", heart:"M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z", bell:"M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0", receipt:"M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5", chat:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", leaf:"M11 20A7 7 0 014 13c0-5 4-9 16-10-1 12-5 16-10 16zM4 21c3-5 6-8 10-10", radio:"M4 9h16v11H4zM8 9l9-5M7 14.5h4M14 13h3M14 16h3", plane:"M2 16l20-8-8 14-2-6-10 0zM12 16l10-8", home:"M3 11l9-8 9 8M5 9.5V21h14V9.5" };
+const ic = (name, size = 16, w = 2) => svgIcon(ICON[name], size, w);
 /* ==================================================================== */
 /* CONFIGURATION: paste your Supabase project to go live                */
 /* ==================================================================== */
@@ -3972,7 +3978,7 @@ const SPLIT_CATS = [["groceries","🛒","Groceries"],["rent","🏠","Rent"],["el
 const EVENT_CATS = ["food", "travel", "stay", "drinks", "tickets", "groceries", "outing", "other"];
 const EVENT_EMOJI = { trip: ["✈️","🏖️","🏔️","🚗","🚆","🏕️","🌴","🎒"], party: ["🎉","🎂","🍻","🍕","🎶","🥳","🎁","🔥"] };
 const fsIsEvent = g => g && (g.kind === "trip" || g.kind === "party");
-const fsKindLabel = k => k === "trip" ? "✈️ Trip" : k === "party" ? "🎉 House party" : "🏠 Flat";
+const fsKindLabel = k => k === "trip" ? "Trip" : k === "party" ? "House party" : "Flat";
 const SPLIT_CAT = Object.fromEntries(SPLIT_CATS.map(c => [c[0], c]));
 const catIcon = k => (SPLIT_CAT[k] || SPLIT_CAT.other)[1];
 const GROUP_EMOJI = ["🏠","🏢","🌿","🌇","🎉","🍕","🐾","☕"];
@@ -4751,7 +4757,7 @@ const occLine = o => o && o.type ? (o.what ? `${o.what}` : OCC[o.type]) : "";
 // Gen Z = born 1997+, so up to ~29-30; millennials = 1981-1996). "40+" is kept for older listings.
 const AGES = ["18–24","25–30","31–40","41–45","46+"];
 const AGE_GEN = { "18–24":"z", "25–30":"z", "31–40":"m", "41–45":"m", "40+":"m", "46+":"g" };
-const GEN_BADGE = { z: ["⚡", "Gen Z"], m: ["🥑", "Millennial"], g: ["📻", "Gen X"] };
+const GEN_BADGE = { z: [ic("bolt", 12, 2.4), "Gen Z"], m: [ic("leaf", 12, 2.4), "Millennial"], g: [ic("radio", 12, 2.4), "Gen X"] };
 const genBadge = (g, suffix) => GEN_BADGE[g] ? `<span class="gen gen-${g}"><em aria-hidden="true">${GEN_BADGE[g][0]}</em>${GEN_BADGE[g][1]}${suffix || ""}</span>` : "";
 // A household's generation: what the owner said, else the most common one among the flatmates' ages.
 function householdGen(hh){
@@ -5598,7 +5604,7 @@ async function renderUrgent(){
 // After a seeker's first yes: invite friends (the link carries the referral code).
 function refCardHtml(){
   if(!state.refAsk || state.refPrompted || !isSeeker()) return "";
-  return `<article class="ref-card"><div class="ref-ic" aria-hidden="true">🎉</div><div style="min-width:0"><p class="eyebrow">Your first yes</p>
+  return `<article class="ref-card"><div class="ref-ic" aria-hidden="true">${ic("party", 30, 1.8)}</div><div style="min-width:0"><p class="eyebrow">Your first yes</p>
     <h3>Know someone else hunting for a room?</h3>
     <p>Share your link. Every 2 friends who join with it earn you a free contact, and they skip the brokers too.</p>
     <div class="acts"><button class="btn btn-accent btn-sm" type="button" data-ref-share>Share my link</button>
@@ -5940,7 +5946,7 @@ function fmRowsHtml(list, n, prefix){
     return `<div class="fm-row" data-i="${i}"><b>${i === 0 ? "You" : "Flatmate " + (i + 1)}</b>
       <div class="chips">${["working","student","self"].map(t => `<label class="chip"><input type="radio" name="${prefix}type${i}" value="${t}"${m.type === t ? " checked" : ""}>${OCC_SHORT[t]}</label>`).join("")}</div>
       <div class="grid2"><input type="text" name="${prefix}what${i}" maxlength="80" value="${esc(m.what || "")}" placeholder="${i === 0 ? "e.g. Designer at an agency" : "e.g. Final-year law student"}" aria-label="What they do">
-        <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option value="${a}"${m.age === a ? " selected" : ""}>${a} · ${GEN_BADGE[AGE_GEN[a]][1]} ${GEN_BADGE[AGE_GEN[a]][0]}</option>`).join("")}</select></div></div>`;
+        <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option value="${a}"${m.age === a ? " selected" : ""}>${a} · ${GEN_BADGE[AGE_GEN[a]][1]}</option>`).join("")}</select></div></div>`;
   }).join("");
 }
 function readFmRows(root, n, prefix){
@@ -6236,7 +6242,7 @@ function replyLabel(h){
   h = Number(h);
   return h <= 6 ? "Replies within hours" : h <= 30 ? "Usually replies within a day" : h <= 80 ? "Usually replies in a few days" : "";
 }
-const replyBadge = l => { const t = replyLabel(l.reply_hours); return t ? `<span class="reply${Number(l.reply_hours) <= 30 ? " fast" : ""}">⚡ ${t}</span>` : ""; };
+const replyBadge = l => { const t = replyLabel(l.reply_hours); return t ? `<span class="reply${Number(l.reply_hours) <= 30 ? " fast" : ""}">${ic("bolt", 13)} ${t}</span>` : ""; };
 // A seeker's request counts as waiting too long after a day (90 seconds in the demo).
 const WAIT_MS = LIVE ? 24 * 36e5 : 90e3;
 // An owner's invite lapses unanswered after 3 days (60 seconds in the demo): fm_inbox / fm_find_seekers say 'expired'.
@@ -6405,7 +6411,7 @@ function emptyHtml(rows, f){
   if(near){
     const wider = RADII.find(k => k > near.km);
     suggestions = [wider ? { near: Object.assign({}, near, { km: wider }) } : null, { near: null }].filter(Boolean);
-    return `<div class="empty"><div class="empty-ic" aria-hidden="true">📍</div><h3>No homes within ${near.km} km of ${esc(near.label)} yet</h3><p>New homes are added every day. Meanwhile:</p>
+    return `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("pin", 30, 1.8)}</div><h3>No homes within ${near.km} km of ${esc(near.label)} yet</h3><p>New homes are added every day. Meanwhile:</p>
       <div class="suggest">${wider ? `<button class="btn btn-ghost btn-sm" type="button" data-suggest="0">Look within ${wider} km</button>` : ""}
         <button class="btn btn-ghost btn-sm" type="button" data-suggest="${wider ? 1 : 0}">Show all of ${esc(f.city || "India")}</button></div></div>`;
   }
@@ -6438,7 +6444,7 @@ async function renderSaved(){
   $("savedCards").innerHTML = tools + (compareOn && all.length >= 2 ? compareHtml(all.slice(0, 5))
     : (theirs.length ? h(`Shortlisted by ${esc(names || "your tribe")}`) + theirs.map(cardHtml).join("") : "")
     + (mine.length ? (theirs.length ? h("Saved by you") : "") + mine.map(cardHtml).join("") : ""))
-    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><div class="empty-ic" aria-hidden="true">♥</div><h3>No saved homes yet</h3><p>Tap ♥ on any flat to keep it here.${
+    + (mine.length || theirs.length ? "" : `<div class="empty" style="grid-column:1 / -1"><div class="empty-ic" aria-hidden="true">${ic("heart", 30, 1.8)}</div><h3>No saved homes yet</h3><p>Tap ♥ on any flat to keep it here.${
       bonded.length ? ` ${esc(names)} will see it too.` : ""}</p><a class="btn btn-primary" href="#discover">Browse homes</a></div>`)
     + (bonded.length ? `<div style="grid-column:1 / -1;margin-bottom:24px"><button class="btn btn-primary" type="button" data-together>🔎 Search together with ${esc(names)}</button></div>` : "");
 }
@@ -6630,7 +6636,7 @@ async function openListing(id){
   if(!l){ toast("This listing is no longer available."); return; }
   currentListing = l;
   $("lTitle").textContent = l.title;
-  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · ⚡ " + replyLabel(l.reply_hours) : "");
+  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · " + replyLabel(l.reply_hours) : "");
   const contact = l.unlocked ? await api.contact(id) : null;
   const ph = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
   let lock = "", bar = "";
@@ -6895,7 +6901,7 @@ async function renderRequests(){
   const listings = owner ? await api.myListings() : [];
   const invHomes = await Promise.all(invites.map(r => api.get(r.listing_id)));
   const rest = list.filter(r => !invites.includes(r));
-  const empty = `<div class="empty"><div class="empty-ic" aria-hidden="true">🔔</div><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
+  const empty = `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("bell", 30, 1.8)}</div><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
       : `<p>Open a flat you like and tap “Send request”.</p><a class="btn btn-primary" href="#discover">Browse homes</a>`}</div>`;
   $("reqList").innerHTML = !list.length ? empty
     : (invites.length ? `<h2 class="section-h" style="margin-top:8px">Owners who invited you</h2>` + invites.map((r, i) => inviteHtml(r, invHomes[i])).join("")
@@ -7066,7 +7072,7 @@ async function openPay(then, focus, lead){
   $("payPlans").innerHTML = planCardsHtml(payPlans.filter(p => p.who === role), focus);
 }
 // While charges are off (testing), plans show but can't be bought yet.
-const FREE_NOTE = `<div class="plans-free">🎉 <span><b>Everything is free while we test.</b> Passes go on sale soon, and you'll see them here first.</span></div>`;
+const FREE_NOTE = `<div class="plans-free">${ic("party", 18)} <span><b>Everything is free while we test.</b> Passes go on sale soon, and you'll see them here first.</span></div>`;
 function planCardsHtml(list, focus){
   if(!list.length) return `<p class="hint">Plans couldn't load right now. Please try again in a moment.</p>`;
   return (CHARGES_ON ? "" : FREE_NOTE) + list.map(p => {
@@ -7224,8 +7230,8 @@ async function renderMine(){
           : `<span class="req-pill">${esc(x.invite_status === "pending" ? "Invited" : x.invite_status === "approved" ? "Said yes" : x.invite_status || "")}</span>`}</div>`; }).join("")}
       <a href="#escape">See everyone looking&nbsp;→</a></div>` : "";
   const replyNote = !mine.length ? "" : `<p class="reply-line">${replyLabel(mine[0].reply_hours)
-    ? `<b>⚡ ${esc(replyLabel(mine[0].reply_hours))}</b> · seekers see this on your listing. Keep it up!`
-    : `Answer requests within a day and seekers see <b>⚡ Usually replies within a day</b> on your listing.`}</p>`;
+    ? `<b>${ic("bolt", 13)} ${esc(replyLabel(mine[0].reply_hours))}</b> · seekers see this on your listing. Keep it up!`
+    : `Answer requests within a day and seekers see <b>${ic("bolt", 13)} Usually replies within a day</b> on your listing.`}</p>`;
   $("mineList").innerHTML = waitNudgeHtml(lateRequests(incoming), true) + promo + ask + replyNote + (mine.length ? mine.map(l => {
     const reqs = incoming.filter(r => r.listing_id === l.id), vs = visits.filter(v => v.listing_id === l.id), closed = l.status === "closed";
     return `<div class="mine-card"><div class="pic">${picHtml(l)}</div><div class="txt">
@@ -7624,13 +7630,13 @@ async function renderSplits(){
   // This month, your share: the flat's household spending, kept apart from trips and parties.
   const month = new Date().toLocaleDateString("en-IN", { month:"long" });
   $("fsGroups").innerHTML = ptFeedHtml(feed) + (groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
-        <div><span>🏠 Household</span><b>${rupees(share(flats))}</b></div><div><span>✈️🎉 Trips & parties</span><b>${rupees(share(events))}</b></div></div>
+        <div><span>${ic("home", 14)} Household</span><b>${rupees(share(flats))}</b></div><div><span>${ic("plane", 14)} Trips & parties</span><b>${rupees(share(events))}</b></div></div>
       <h3 class="section-h">Your flat</h3>${flats.length ? flats.map(groupBtn).join("") : `<p class="hint" style="margin:0 0 6px">No flat group yet.</p>`}
       <button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:10px">+ New flat group</button>
       <h3 class="section-h">Trips & parties</h3>${events.length ? events.map(groupBtn).join("")
         : `<p class="hint" style="margin:0 0 6px">Going away, or having people over? Split it here, apart from the flat's bills.</p>`}
-      <div class="fs-event-new"><button class="btn btn-ghost" type="button" data-fs-event="trip">✈️ New trip</button><button class="btn btn-ghost" type="button" data-fs-event="party">🎉 New house party</button></div>`
-    : `<div class="empty"><div class="empty-ic" aria-hidden="true">🧾</div><h3>Living with people? Split it fairly.</h3>
+      <div class="fs-event-new"><button class="btn btn-ghost" type="button" data-fs-event="trip">${ic("plane")} New trip</button><button class="btn btn-ghost" type="button" data-fs-event="party">${ic("party")} New house party</button></div>`
+    : `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("receipt", 30, 1.8)}</div><h3>Living with people? Split it fairly.</h3>
        <p>Make a group for your flat, add your flatmates by mobile number, and add the first expense. Everyone sees the same balance.</p>
        <button class="btn btn-primary" type="button" data-fs="new">Create your flat's group</button>
        ${api.splitDemoSeed ? `<p style="margin-top:6px"><button class="linkbtn" type="button" data-fs="sample">Or try it with a sample flat</button></p>` : ""}</div>`);
@@ -7663,13 +7669,13 @@ function drawSplitGroup(){
         <button class="linkbtn" type="button" data-fs="members">${others.length ? "Members" : ev ? "Add people" : "Add flatmates"}</button></p></div></div>
     ${d.group.kind === "party" ? fsPartyHtml() : ""}
     <div class="fs-bal ${mine > 0 ? "pos" : mine < 0 ? "neg" : ""}"><small>${mine > 0 ? "Overall, you get back" : mine < 0 ? "Overall, you owe" : "Your balance"}</small>
-      <b>${mine ? rupees(mine) : "All settled up 🎉"}</b>${lines.length ? `<ul>${lines.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
+      <b>${mine ? rupees(mine) : "All settled up"}</b>${lines.length ? `<ul>${lines.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
     <div class="fs-acts"><button class="btn btn-primary" type="button" data-fs="add">+ Add expense</button>
       ${pays.length ? `<button class="btn btn-ghost" type="button" data-fs="settle">Settle up</button>` : ""}</div>
     <div class="area-chips fs-tabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-fs-tab="${k}" aria-pressed="${fsTab === k}">${t}${
       k === "bills" && d.bills.length ? ` · ${d.bills.length}` : ""}</button>`).join("")}</div>
     <div id="fsPanel">${fsPanel(net, pays)}</div>
-    ${ev ? "" : `<p class="fs-party-hint">🎉 Having people over or going on a trip? <button class="linkbtn" type="button" data-fs-event="party" data-fs-from-flat>Start a separate group</button>
+    ${ev ? "" : `<p class="fs-party-hint">${ic("party", 16)} Having people over or going on a trip? <button class="linkbtn" type="button" data-fs-event="party" data-fs-from-flat>Start a separate group</button>
       so it stays out of the flat's monthly bills.</p>`}
     <button class="fs-fab" type="button" data-fs="add" aria-label="Add expense">+</button>`;
 }
@@ -7756,7 +7762,7 @@ function fsPanel(net, pays){
       return `<div class="fs-pay"><span class="who">${esc(fsName(p.from))} → ${esc(fsName(p.to))} · <b>${rupees(p.amount)}</b></span><span class="acts">${acts}</span></div>`;
     };
     return `<h3 class="section-h">Who pays whom</h3>
-      ${pays.length ? `<p class="hint" style="margin:0 0 4px">The fewest payments that settle everyone.</p>${pays.map(payRow).join("")}` : `<p class="sub">Everyone's settled up. 🎉</p>`}
+      ${pays.length ? `<p class="hint" style="margin:0 0 4px">The fewest payments that settle everyone.</p>${pays.map(payRow).join("")}` : `<p class="sub">Everyone's settled up.</p>`}
       <h3 class="section-h">Everyone's balance</h3>
       ${d.members.map(m => `<div class="fs-member">${fsAv(m)}<span class="grow"><b>${esc(fsName(m.id))}</b></span>${fsNetHtml(net[m.id] || 0)
         .replace(/you get back/, m.id === d.me ? "you get back" : "gets back").replace(/you owe/, m.id === d.me ? "you owe" : "owes")}</div>`).join("")}
@@ -7856,7 +7862,7 @@ async function openNewEvent(kind, fromFlat){
   fsx = { kind, rows: [{ name:"", phone:"" }], picked: new Set(fromFlat ? [...known.values()].filter(p => p.flat).map(p => p.phone) : []) };
   const people = [...known.values()];
   openFs(kind === "trip" ? "New trip" : "New house party", "Split it apart from the flat's bills", `<form id="fsEventForm" novalidate>
-    <div class="fs-kinds">${[["trip", "✈️", "Trip", "Out of the house: travel, stay, food"], ["party", "🎉", "House party", "At home, with flatmates and friends"]].map(([k, ic, t, sub]) =>
+    <div class="fs-kinds">${[["trip", ic("plane", 22), "Trip", "Out of the house: travel, stay, food"], ["party", ic("party", 22), "House party", "At home, with flatmates and friends"]].map(([k, ic, t, sub]) =>
       `<label class="fs-kindopt"><input type="radio" name="fsKind" value="${k}"${k === kind ? " checked" : ""}><span class="ic">${ic}</span><span><b>${t}</b><small>${sub}</small></span></label>`).join("")}</div>
     <div class="field"><label for="fsEName">Name</label><input type="text" id="fsEName" maxlength="60" required placeholder="${kind === "trip" ? "Goa weekend" : "Saturday house party"}"></div>
     <div class="field"><label>Icon</label><div class="chips" id="fsEEmoji">${EVENT_EMOJI[kind].map((e, i) => `<label class="chip"><input type="radio" name="fsEEmoji" value="${e}"${i ? "" : " checked"}>${e}</label>`).join("")}</div></div>
@@ -8215,8 +8221,8 @@ function mkPic(i, small){ const ph = mkPhotos(i); return ph.length ? `<img src="
 const mkLift = i => i.status === "active" && (i.boosted_until || i.sale_code) ? 1 : 0;
 function mkFlag(i){
   if(i.status !== "active") return "";
-  if(i.sale_code) return `<span class="mk-flag sale">📦 Moving-out sale</span>`;
-  return i.boosted_until ? `<span class="mk-flag">⚡ Boosted</span>` : "";
+  if(i.sale_code) return `<span class="mk-flag sale">${ic("box", 12, 2.2)} Moving-out sale</span>`;
+  return i.boosted_until ? `<span class="mk-flag">${ic("bolt", 12, 2.2)} Boosted</span>` : "";
 }
 function mkCardHtml(i, n){
   const st = i.status === "reserved" ? "Reserved" : i.status === "sold" ? "Sold" : "";
@@ -8227,7 +8233,7 @@ function mkCardHtml(i, n){
       <button class="heart" type="button" data-mk-save="${esc(i.id)}" aria-pressed="${mkSaved(i.id)}" aria-label="Save this item">♥</button></div>
     <div class="body">${mkFlag(i)}<h3>${esc(i.title)}</h3><div class="loc">${esc(i.locality)}, ${esc(i.city)}</div>
       <div class="price">${mkPrice(i)}${i.price && i.negotiable ? "<small> open to offers</small>" : ""}</div>
-      ${i.moving_by ? `<div><span class="mk-move" title="Moving out by ${fmtDate(i.moving_by)}">📦 Moving ${fmtDate(i.moving_by)}</span></div>` : ""}
+      ${i.moving_by ? `<div><span class="mk-move" title="Moving out by ${fmtDate(i.moving_by)}">${ic("box", 12, 2.2)} Moving ${fmtDate(i.moving_by)}</span></div>` : ""}
       <div class="seller">${i.is_mine ? "You" : esc(i.seller_name || "A flatmate")} · ${timeAgo(i.bumped_at || i.created_at)}${i.offer_count ? ` · ${i.offer_count} interested` : ""}</div></div></article>`;
 }
 async function renderMarket(){
@@ -8252,7 +8258,7 @@ async function renderMkBrowse(){
   $("mkStats").innerHTML = `<div><b>${forSale.length}</b><span>for sale${city ? " in " + esc(city) : ""}</span></div>
     <div><b>${forSale.filter(i => !i.price).length}</b><span>free to pick up</span></div><div><b>${week}</b><span>new this week</span></div>`;
   const count = k => forSale.filter(i => i.category === k).length;
-  const cats = [["", "All"], ["free", "🎁 Free"], ["saved", "♥ Saved"]].concat(MK_CATS.filter(([k]) => count(k) || mkCat === k).map(([k, ic, t]) => [k, `${ic} ${t}`]));
+  const cats = [["", "All"], ["free", "Free"], ["saved", "♥ Saved"]].concat(MK_CATS.filter(([k]) => count(k) || mkCat === k).map(([k, ic, t]) => [k, `${ic} ${t}`]));
   $("mkCats").innerHTML = cats.map(([k, t]) => `<button type="button" data-mk-cat="${k}" aria-pressed="${mkCat === k}">${esc(t)}</button>`).join("");
   let list = rows.filter(i => i.status !== "sold");
   if(mkCat === "free") list = list.filter(i => !i.price);
@@ -8266,7 +8272,7 @@ async function renderMkBrowse(){
   list.sort((a, b) => (a.status === "reserved") - (b.status === "reserved"));
   $("mkCount").textContent = list.length ? `${list.length} ${list.length === 1 ? "item" : "items"}${city ? " in " + city : ""}` : "";
   $("mkCards").innerHTML = list.length ? list.map(mkCardHtml).join("")
-    : `<div class="empty"><div class="empty-ic" aria-hidden="true">🛋️</div><h3>${mkCat === "saved" ? "Nothing saved yet" : q ? `Nothing matches “${esc(q)}” yet` : "Nothing here yet"}</h3>
+    : `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("sofa", 30, 1.8)}</div><h3>${mkCat === "saved" ? "Nothing saved yet" : q ? `Nothing matches “${esc(q)}” yet` : "Nothing here yet"}</h3>
        <p>${mkCat === "saved" ? "Tap ♥ on anything to keep it here." : `Be the first to sell something${city ? " in " + esc(city) : ""}. Moving out soon? List the things you won't take with you.`}</p>
        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">${mkCat !== "saved" && (q || (mkCat && mkCat !== "free")) ? `<button class="btn btn-accent" type="button" data-mk-want-new="${esc(q)}">🔔 Tell me when it appears</button>` : ""}
        <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div></div>`;
@@ -8274,14 +8280,14 @@ async function renderMkBrowse(){
 async function renderMkMine(){
   const mine = await api.marketSearch({ mine: true }), inbox = await api.marketInbox().catch(() => []);
   const live = saleLive(), forSale = mine.filter(i => i.status === "active").length;
-  const top = (live ? `<div class="mk-salecard live"><span class="sc-ic" aria-hidden="true">📦</span><div><b>Your moving-out sale is live</b>
+  const top = (live ? `<div class="mk-salecard live"><span class="sc-ic" aria-hidden="true">${ic("box", 26, 1.8)}</span><div><b>Your moving-out sale is live</b>
       <small>“${esc(live.title)}” · ${forSale} ${forSale === 1 ? "item" : "items"} · till ${fmtDate(saleLastDay(live))} · all shown first in FlatMart</small>
       <div class="acts"><button class="btn btn-accent btn-sm" type="button" data-sale-share>Share on WhatsApp</button><button class="btn btn-ghost btn-sm" type="button" data-sale-copy>Copy link</button>
         <a class="btn btn-ghost btn-sm" href="#sale/${esc(live.code)}">See the page</a><button class="btn btn-ghost btn-sm" type="button" data-sale-edit>Change</button></div></div></div>`
-    : forSale ? `<div class="mk-salecard"><span class="sc-ic" aria-hidden="true">📦</span><div><b>Moving out? Run a moving-out sale</b>
+    : forSale ? `<div class="mk-salecard"><span class="sc-ic" aria-hidden="true">${ic("box", 26, 1.8)}</span><div><b>Moving out? Run a moving-out sale</b>
       <small>Everything you're selling on one page, with one link to share on WhatsApp, and all of it shown first in FlatMart until you leave.</small>
       <div class="acts"><button class="btn btn-primary btn-sm" type="button" data-sale-edit>${!CHARGES_ON ? "Start my sale · free" : state.saleCredits > 0 ? "Start my sale" : "Start my sale · ₹149"}</button></div></div></div>` : "")
-    + (forSale ? `<div class="mk-boostline"><span>⚡ ${!CHARGES_ON ? "Boosts and moving-out sales are free while we test."
+    + (forSale ? `<div class="mk-boostline"><span>${ic("bolt", 14)} ${!CHARGES_ON ? "Boosts and moving-out sales are free while we test."
       : state.boostCredits > 0 ? `You have <b>${state.boostCredits}</b> ${state.boostCredits === 1 ? "boost" : "boosts"} to use.` : "A Boost puts an item first for 3 days."}</span>
       ${CHARGES_ON ? `<button class="linkbtn" type="button" data-boost-pack>5 boosts for ₹199</button>` : ""}</div>` : "");
   const nudges = Object.fromEntries(await Promise.all(mine.filter(i => !inbox.some(r => r.item_id === i.id && r.direction === "incoming" && r.status === "accepted")).slice(0, 6).map(async i => [i.id, await mkNudgeHtml(i)])));
@@ -8290,13 +8296,13 @@ async function renderMkMine(){
     return `<div class="mk-offer"><div class="mk-mini">${mkPic(i, true)}</div><div style="min-width:0">
       <h3>${esc(i.title)}</h3><div class="s">${mkPrice(i)} · ${esc(i.status === "active" ? "for sale" : i.status)} · posted ${timeAgo(i.created_at)}${offers ? ` · <b>${offers} new ${offers === 1 ? "offer" : "offers"}</b>` : ""}</div>
       <div class="acts"><button class="btn btn-ghost btn-sm" type="button" data-item="${esc(i.id)}">${offers ? "See offers" : "Open"}</button>
-        ${i.status === "active" ? (i.boosted_until ? `<span class="mk-boosted">⚡ Boosted till ${fmtDate(i.boosted_until)}</span>`
-          : `<button class="btn btn-ghost btn-sm mk-boost-btn" type="button" data-mk-boost="${esc(i.id)}">⚡ Boost</button>`) : ""}
+        ${i.status === "active" ? (i.boosted_until ? `<span class="mk-boosted">${ic("bolt", 12, 2.2)} Boosted till ${fmtDate(i.boosted_until)}</span>`
+          : `<button class="btn btn-ghost btn-sm mk-boost-btn" type="button" data-mk-boost="${esc(i.id)}">${ic("bolt", 14)} Boost</button>`) : ""}
         ${i.status === "sold" ? `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|active">Relist</button>`
           : `<button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|sold">Mark as sold</button>`}
         <button class="btn btn-ghost btn-sm" type="button" data-mk-status="${esc(i.id)}|removed">Remove</button></div>${nudges[i.id] || ""}</div></div>`;
   }).join("") + `<button class="btn btn-ghost" type="button" data-mk="sell" style="margin:16px 0 30px">+ Sell something else</button>`
-  : `<div class="empty"><div class="empty-ic" aria-hidden="true">📦</div><h3>Sell what you won't take with you</h3>
+  : `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("box", 30, 1.8)}</div><h3>Sell what you won't take with you</h3>
       <p>A spare mattress, the fridge, a cycle you never ride. Someone a few streets away is looking for it.</p>
       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`);
 }
@@ -8325,7 +8331,7 @@ const mkOfferWhat = r => r.bundle ? `everything in the sale${r.bundle_items ? ` 
 function mkOfferHtml(r){
   const img = safeImg(r.item_photo);
   const head = `<div class="mk-mini" data-item="${esc(r.item_id)}" style="cursor:pointer">${img ? `<img src="${esc(img)}" alt="">` : mkArt(r, true)}</div>`;
-  const offer = r.offer ? inr(r.offer) : "free", tag = r.bundle ? `<span class="mk-bundle-tag">📦 Take the lot</span>` : "";
+  const offer = r.offer ? inr(r.offer) : "free", tag = r.bundle ? `<span class="mk-bundle-tag">${ic("box", 12, 2.2)} Take the lot</span>` : "";
   if(r.direction === "incoming"){
     const acts = r.status === "pending" ? `<button class="btn btn-primary btn-sm" type="button" data-mk-accept="${esc(r.id)}">Accept · share numbers</button>
         <button class="btn btn-ghost btn-sm" type="button" data-mk-decline="${esc(r.id)}">Decline</button>`
@@ -8387,7 +8393,7 @@ async function renderMkOffers(inbox){
   const inc = inbox.filter(r => r.direction === "incoming"), out = inbox.filter(r => r.direction === "outgoing");
   $("mkOffers").innerHTML = (inc.length ? `<h3 class="section-h">Offers on your items</h3>${inc.map(mkOfferHtml).join("")}` : "")
     + (out.length ? `<h3 class="section-h">Your offers</h3>${out.map(mkOfferHtml).join("")}` : "")
-    + (inbox.length ? `<div style="height:30px"></div>` : `<div class="empty"><div class="empty-ic" aria-hidden="true">🤝</div><h3>No offers yet</h3><p>Offers you make, and offers on things you sell, show up here.
+    + (inbox.length ? `<div style="height:30px"></div>` : `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("chat", 30, 1.8)}</div><h3>No offers yet</h3><p>Offers you make, and offers on things you sell, show up here.
       Numbers are shared only when the seller accepts.</p></div>`)
     + notifyCard("Turn on notifications so you hear the moment someone wants your stuff.");
   if(inbox.some(r => r.unseen)){ await api.marketSeen().catch(() => {}); marketUnseen = 0; renderNav(); }
@@ -8441,9 +8447,9 @@ async function openItem(id){
     <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, n) => `<img src="${esc(u)}" alt="Photo ${n + 1} of ${ph.length}" loading="lazy">`).join("")}</div>` : mkArt(i)}</div>
     <div class="price" style="font-size:28px">${mkPrice(i)}${i.price && i.negotiable ? "<small> · open to offers</small>" : ""}</div>
     <div class="traits"><span>${esc(MK_COND[i.condition] || "")}</span><span>${(MK_CAT[i.category] || MK_CAT.other)[1]} ${esc((MK_CAT[i.category] || MK_CAT.other)[2])}</span>
-      ${i.moving_by ? `<span class="mk-move" style="margin:0">📦 Moving out by ${fmtDate(i.moving_by)}</span>` : ""}${i.offer_count && !i.is_mine ? `<span>${i.offer_count} interested</span>` : ""}</div>
+      ${i.moving_by ? `<span class="mk-move" style="margin:0">${ic("box", 12, 2.2)} Moving out by ${fmtDate(i.moving_by)}</span>` : ""}${i.offer_count && !i.is_mine ? `<span>${i.offer_count} interested</span>` : ""}</div>
     ${i.description ? `<p style="white-space:pre-line">${esc(i.description)}</p>` : ""}
-    ${i.sale_code && !i.is_mine && i.status === "active" ? `<a class="mk-salelink" href="#sale/${esc(i.sale_code)}" data-close>📦 Part of ${esc(i.seller_name || "a flatmate")}'s moving-out sale · see everything&nbsp;→</a>` : ""}
+    ${i.sale_code && !i.is_mine && i.status === "active" ? `<a class="mk-salelink" href="#sale/${esc(i.sale_code)}" data-close>${ic("box", 13)} Part of ${esc(i.seller_name || "a flatmate")}'s moving-out sale · see everything&nbsp;→</a>` : ""}
     <div class="mk-seller">${fsAv({ name: i.is_mine ? firstName() : i.seller_name, id: i.id })}<div><b>${i.is_mine ? "You're selling this" : "Sold by " + esc(i.seller_name || "a flatmate")}</b>
       <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div>
       <div class="mk-trust">${i.seller_since ? `<span>on FindMeFlatMate since ${new Date(i.seller_since).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</span>` : ""}
@@ -8477,8 +8483,8 @@ const saleLink = code => siteLink() + "#sale/" + code;
 const boostLabel = () => !CHARGES_ON ? "Boost free" : state.boostCredits > 0 ? `Use 1 of your ${state.boostCredits} boosts` : "Boost · ₹49";
 function boostBoxHtml(i){
   const on = i.boosted_until && new Date(i.boosted_until) > new Date();
-  return `<div class="mk-boostbox"><span class="bb-ic" aria-hidden="true">⚡</span><div><b>${on ? `Boosted till ${fmtDate(i.boosted_until)}` : "Boost this item"}</b>
-    <small>${on ? "It's first in FlatMart, with a ⚡ Boosted tag. Add 3 more days any time." : `First in FlatMart${i.city ? " in " + esc(i.city) : ""} for 3 days, with a ⚡ Boosted tag. More people see it, sooner.`}</small></div>
+  return `<div class="mk-boostbox"><span class="bb-ic" aria-hidden="true">${ic("bolt", 24, 1.8)}</span><div><b>${on ? `Boosted till ${fmtDate(i.boosted_until)}` : "Boost this item"}</b>
+    <small>${on ? "It's first in FlatMart, with a Boosted tag. Add 3 more days any time." : `First in FlatMart${i.city ? " in " + esc(i.city) : ""} for 3 days, with a Boosted tag. More people see it, sooner.`}</small></div>
     <button class="btn btn-accent btn-sm" type="button" data-mk-boost="${esc(i.id)}">${on ? "+3 days" : boostLabel()}</button></div>`;
 }
 // Buys a FlatMart plan (Razorpay live, instant in the demo) and refreshes the credits. True if paid.
@@ -8500,7 +8506,7 @@ function openBoost(id){
   boostFor = id;
   const item = id && mkCurrent && mkCurrent.id === id ? mkCurrent : null;
   $("bbTitle").textContent = id ? "Boost this item" : "Boost pack";
-  $("bbText").textContent = id ? `${item ? "“" + item.title + "” s" : "S"}hows first in FlatMart for 3 days, with a ⚡ Boosted tag. More people see it, sooner.`
+  $("bbText").textContent = id ? `${item ? "“" + item.title + "” s" : "S"}hows first in FlatMart for 3 days, with a Boosted tag. More people see it, sooner.`
     : "5 boosts to use on any of your items, whenever you like. Each puts an item first for 3 days.";
   $("bbOpts").innerHTML = !CHARGES_ON ? `<button class="btn btn-accent btn-block" type="button" data-bb="use">Boost free · while we test</button>`
     : id && state.boostCredits > 0 ? `<button class="btn btn-accent btn-block" type="button" data-bb="use">Use 1 of your ${state.boostCredits} boosts</button>`
@@ -8516,7 +8522,7 @@ $("dlgBoost").addEventListener("click", async e => {
     if(b.dataset.bb !== "use" && !(await buyExtra(b.dataset.bb))) return;
     if(id){ const r = await api.marketBoost(id); if(r !== "boosted") throw new Error(r); await api.me().catch(() => {}); }
     $("dlgBoost").close();
-    toast(id ? "⚡ Boosted! It's first in FlatMart for the next 3 days." : `You have ${state.boostCredits} boosts. Use them from any item.`);
+    toast(id ? "Boosted! It's first in FlatMart for the next 3 days." : `You have ${state.boostCredits} boosts. Use them from any item.`);
     if($("dlgMk").open && mkCurrent) openItem(mkCurrent.id);
     if(currentView === "market") renderMarket();
   }catch(err){
@@ -8550,7 +8556,7 @@ $("saleForm").addEventListener("submit", async e => {
     await api.me().catch(() => {});
     state.mkSale = Object.assign({}, state.mkSale, { code: r.code, title, ends_at: r.ends_at, bundle_price: bundle }); save();
     $("dlgSale").close();
-    toast(live ? "Sale updated." : "📦 Your moving-out sale is live! Share the link on WhatsApp.");
+    toast(live ? "Sale updated." : "Your moving-out sale is live! Share the link on WhatsApp.");
     if(currentView === "market") renderMarket();
   }catch(err){
     console.error(err);
@@ -8598,17 +8604,17 @@ async function renderSale(){
   saleNow = s; window.scrollTo(0, 0);
   const cta = state.user ? `<a class="btn btn-primary" href="#market">Open FlatMart</a>` : `<button class="btn btn-accent" type="button" data-sale-signin>Sign in to make an offer</button>`;
   if(!s){
-    $("saleHero").innerHTML = `<p class="eyebrow">📦 Moving-out sale</p><h1>This sale isn't here any more</h1><p>The link may be old. There's plenty more on FlatMart, from people who live nearby.</p>`;
+    $("saleHero").innerHTML = `<p class="eyebrow">Moving-out sale</p><h1>This sale isn't here any more</h1><p>The link may be old. There's plenty more on FlatMart, from people who live nearby.</p>`;
     $("saleFoot").innerHTML = cta; return;
   }
   const items = s.items || [], forSale = items.filter(i => i.status === "active"), free = forSale.filter(i => !i.price).length;
   const where = items[0] ? `${items[0].locality}, ${items[0].city}` : "";
-  $("saleHero").innerHTML = `<p class="eyebrow">📦 Moving-out sale</p><h1>${esc(s.title)}</h1>
+  $("saleHero").innerHTML = `<p class="eyebrow">Moving-out sale</p><h1>${esc(s.title)}</h1>
     <p>${esc(s.seller || "A flatmate")} is moving out${where ? " · " + esc(where) : ""}. Pick up in person, and pay when you collect.</p>
-    <div class="sale-chips"><span>${forSale.length} ${forSale.length === 1 ? "thing" : "things"} for sale</span>${free ? `<span>🎁 ${free} free</span>` : ""}
+    <div class="sale-chips"><span>${forSale.length} ${forSale.length === 1 ? "thing" : "things"} for sale</span>${free ? `<span>${ic("gift", 13)} ${free} free</span>` : ""}
       <span>${s.active ? "⏳ Ends " + fmtDate(saleLastDay(s)) : "This sale has ended"}</span></div>
     ${s.is_mine && s.active ? `<div class="acts"><button class="btn btn-accent btn-sm" type="button" data-sale-share>Share on WhatsApp</button><button class="btn btn-ghost btn-sm" type="button" data-sale-copy>Copy link</button></div>` : ""}
-    ${s.bundle_price && s.active && forSale.length > 1 ? `<div class="sale-bundle"><div><b>📦 Take the lot for ${inr(s.bundle_price)}</b><small>${s.bundle_status === "accepted" ? "Someone's collecting everything." : s.my_bundle === "pending" ? "Your offer for the lot is with the seller." : s.my_bundle === "accepted" ? "The lot is yours. See Offers." : s.is_mine ? "Buyers can take everything in one go." : `All ${forSale.length} things in one go, one pick-up.`}</small></div>
+    ${s.bundle_price && s.active && forSale.length > 1 ? `<div class="sale-bundle"><div><b>${ic("box", 15)} Take the lot for ${inr(s.bundle_price)}</b><small>${s.bundle_status === "accepted" ? "Someone's collecting everything." : s.my_bundle === "pending" ? "Your offer for the lot is with the seller." : s.my_bundle === "accepted" ? "The lot is yours. See Offers." : s.is_mine ? "Buyers can take everything in one go." : `All ${forSale.length} things in one go, one pick-up.`}</small></div>
       ${!s.is_mine && state.user && !s.bundle_status && !s.my_bundle ? `<button class="btn btn-accent btn-sm" type="button" data-sale-bundle>Offer for the lot</button>` : ""}</div>` : ""}`;
   $("saleCards").innerHTML = items.length ? items.map((i, n) => mkCardHtml(Object.assign({ seller_name: s.seller, is_mine: s.is_mine }, i, { sale_code: null }), n)).join("")
     : `<div class="empty"><h3>Everything's gone!</h3><p>All of it found a new home.</p></div>`;
@@ -8717,7 +8723,7 @@ async function mkAction(t){
       if(!at){ toast("Pick a time first."); b.disabled = false; return true; }
       await api.marketPickup(b.dataset.pkSave, at); toast(`Pick-up set for ${fmtDateTime(at)}. The other side can see it.`);
     }
-    else if(b.dataset.pkDone){ await api.marketCollected(b.dataset.pkDone); toast("Collected. Deal done! 🎉"); }
+    else if(b.dataset.pkDone){ await api.marketCollected(b.dataset.pkDone); toast("Collected. Deal done!"); }
     else if(b.dataset.mkDrop){ const [id, p] = b.dataset.mkDrop.split("|"); await api.marketSetPrice(id, Number(p)); toast(`Dropped to ${inr(Number(p))}. It's back at the top for people nearby.`); }
     else if(b.dataset.mkAccept){ await api.marketDecide(b.dataset.mkAccept, true); toast("Accepted. You can call each other now, and the item is marked reserved. Fix a pick-up time under the offer."); }
     else if(b.dataset.mkDecline){ await api.marketDecide(b.dataset.mkDecline, false); toast("Declined."); }
@@ -8726,7 +8732,7 @@ async function mkAction(t){
       const [id, status] = b.dataset.mkStatus.split("|");
       if(status === "removed" && !confirm("Remove this item from FlatMart?")) { b.disabled = false; return true; }
       await api.marketSetStatus(id, status);
-      toast(status === "sold" ? "Marked as sold. Nice one! 🎉" : status === "removed" ? "Removed." : "It's back on sale.");
+      toast(status === "sold" ? "Marked as sold. Nice one!" : status === "removed" ? "Removed." : "It's back on sale.");
       if(status === "removed" && $("dlgMk").open) $("dlgMk").close();
     }
   }catch(err){ console.error(err); toast(err.message === "bad-time" ? "Pick a time in the next 30 days." : err.message === "not-accepted" ? "That offer isn't accepted yet." : "Couldn't do that right now. Please try again."); b.disabled = false; return true; }
@@ -8829,8 +8835,8 @@ async function extrasHtml(){
   const week = items.filter(i => !i.is_mine && i.status === "active" && Date.now() - new Date(i.bumped_at || i.created_at) < 7 * 864e5).length;
   const fs = !groups.length ? "Split rent and bills with flatmates" : unseenN ? `${unseenN} new ${unseenN === 1 ? "expense" : "expenses"}`
     : net > 0 ? `You get back ${rupees(net)}` : net < 0 ? `You owe ${rupees(net)}` : "All settled up";
-  return `<div class="extras"><a href="#splits"><i aria-hidden="true">🧾</i><span><b>Flatsplits</b><small>${esc(fs)}</small></span></a>
-    <a href="#market"><i aria-hidden="true">🛋️</i><span><b>FlatMart</b><small>${week ? `${week} new ${week === 1 ? "thing" : "things"} for sale near you this week` : "Buy and sell with flatmates nearby"}</small></span></a></div>`;
+  return `<div class="extras"><a href="#splits"><i aria-hidden="true">${ic("receipt", 22, 1.8)}</i><span><b>Flatsplits</b><small>${esc(fs)}</small></span></a>
+    <a href="#market"><i aria-hidden="true">${ic("sofa", 22, 1.8)}</i><span><b>FlatMart</b><small>${week ? `${week} new ${week === 1 ? "thing" : "things"} for sale near you this week` : "Buy and sell with flatmates nearby"}</small></span></a></div>`;
 }
 let splitsUnseen = 0, marketUnseen = 0;
 async function checkExtras(){
@@ -8905,7 +8911,7 @@ async function checkExtras(){
       state.notified[key] = Date.now(); changed = true;
       if(r.direction === "incoming" && r.status === "pending"){
         Notify.show(`${r.name || "Someone"} wants your ${r.item_title}`, `${r.offer ? "Offer: " + inr(r.offer) + ". " : ""}Accept to share numbers and fix a pickup time.`, "market");
-        toast(`🛋️ ${r.name || "Someone"} offered ${r.offer ? inr(r.offer) : "to take"} your ${r.item_title}`);
+        toast(`${r.name || "Someone"} offered ${r.offer ? inr(r.offer) : "to take"} your ${r.item_title}`);
       }else if(r.direction === "outgoing" && r.status === "accepted"){
         Notify.show(`${r.name || "The seller"} accepted your offer!`, `Call now to pick up “${r.item_title}” before someone else does.`, "market");
         toast(`✓ ${r.name || "The seller"} accepted your offer for ${r.item_title}. Call now!`);
@@ -9283,7 +9289,7 @@ function drawParty(){
   if(p.chip_in) rows.push(["💸", `Chip in ${inr(p.chip_in)} each`, "Split on Flatsplits afterwards", ""]);
   if(p.plus_ones) rows.push(["👥", "Plus-ones welcome", "Bring a friend or two", ""]);
   if(p.note) rows.push(["💬", `A note from ${p.host || "the host"}`, p.note, ""]);
-  const ansTxt = { yes: "You're in! 🎉", maybe: "You said maybe 🤔", no: "You can't make it 😢" };
+  const ansTxt = { yes: "You're in!", maybe: "You said maybe", no: "You can't make it" };
   const rsvp = p.cancelled ? `<div class="pt-card pt-off"><b>This party's been called off.</b><p>Nothing's happening this time. Maybe next weekend?</p></div>`
     : over ? `<div class="pt-card pt-off"><b>This one's over.</b><p>Hope it was a good one!</p></div>`
     : mine && !ptEditing ? `<div class="pt-card pt-done"><b>${ansTxt[mine.answer]}</b><p>${mine.answer === "yes" ? `${esc(p.host || "The host")} knows you're coming${mine.plus ? ` with ${mine.plus} more` : ""}. See you ${esc(ptShort(p))}!`
@@ -9336,7 +9342,7 @@ $("view-party").addEventListener("submit", async e => {
   try{
     ptNow = await api.partyRsvp(ptNow.code, ptToken(), name, (ans && ans.ans) || "yes", $("ptPlusN") ? Number($("ptPlusN").textContent) : 0);
     writeLS("fm_party_name", name); ptEditing = false; drawParty();
-    toast(ptNow.mine && ptNow.mine.answer === "yes" ? "You're on the list! 🎉" : "Thanks, the host can see your answer.");
+    toast(ptNow.mine && ptNow.mine.answer === "yes" ? "You're on the list!" : "Thanks, the host can see your answer.");
   }catch(err){
     console.error(err); const m = String(err.message || "");
     showFormError(f, m.includes("party-full") ? "The guest list is full." : m.includes("cancelled") ? "This party's been called off." : m.includes("over") ? "This party's already over." : "Couldn't send that. Please try again.");
@@ -9457,7 +9463,7 @@ const HB_TOPICS = [
     say: () => `Flatsplits splits rent and bills with flatmates: add an expense, see who owes whom, and settle by UPI. Trips and house parties get their own groups, so household spending stays separate.`,
     acts: () => [["Open Flatsplits", "go:splits"]] },
   { id: "party", words: ["party", "invite", "movie night", "game night", "potluck", "birthday", "housewarming", "celebrat"],
-    say: () => `In Flatsplits tap <b>🎉 New house party</b>, then make an invite card: pick the occasion, the time, and "at my home" or the address. Share it on WhatsApp; friends say if they're coming without signing in, and your flatmates get a heads-up.`,
+    say: () => `In Flatsplits tap <b>New house party</b>, then make an invite card: pick the occasion, the time, and "at my home" or the address. Share it on WhatsApp; friends say if they're coming without signing in, and your flatmates get a heads-up.`,
     acts: () => [["Plan a party", "party"]] },
   { id: "market", words: ["sell", "buy", "furniture", "fridge", "bed", "sofa", "market", "flatmart", "second hand", "moving out sale"],
     say: () => `FlatMart is for buying and selling with people nearby: beds, fridges, cycles… Make an offer; numbers are shared only when the seller accepts.`,

@@ -13,6 +13,8 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     return { text: t ? t.textContent : '', bottom: r ? r.bottom : 9999 }; });
   ok(/Listed by owners and the flatmates who live there · your number is shared only if you both say yes/.test(w.text) && w.bottom < 844,
     'visitor: the trust line is on the welcome page\'s first phone screen: ' + JSON.stringify(w));
+  const faces = await p.evaluate(() => ({ svgs: document.querySelectorAll('.wq-faces i svg').length, text: document.querySelector('.wq-faces').textContent.trim() }));
+  ok(faces.svgs === 3 && !faces.text, 'visitor: the quiz card shows three line icons, not emoji faces: ' + JSON.stringify(faces));
   // the sign-in card on the first phone screen: both choices show, the paragraph follows the card, the card is the same
   const lay = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect();
     const roles = [...document.querySelectorAll('.w-card .role')].map(e => Math.round(e.getBoundingClientRect().top + 30));
@@ -56,7 +58,15 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
       if(/^H[1-3]$/.test(e.tagName) && !Number.isInteger(f * 2)) return;   // headlines scale with the screen (clamp)
       r.push([String(f), (e.className || e.tagName) + ':' + e.textContent.trim().slice(0, 16)]); });
     return r; })).forEach(([f, w]) => { sizes.add(f); if(!['12', '13.5', '15.5', '20'].includes(f)) odd.add(f + ' ' + w); });
-  const lowGreen = async () => { await scale(); return p.evaluate(() => {
+  // one icon style: none of these emoji left in the app's own words (categories people pick keep theirs)
+  const emo = new Set();
+  const emojiLeft = async () => (await p.evaluate(() => { const re = /[🎉🥳🎁⚡🦉🦋📦🛋📍🔔🧾🤝]/u, out = [];
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for(let t; (t = walk.nextNode());){ const e = t.parentElement; if(!re.test(t.textContent) || !e || !e.offsetParent) continue;
+      if(e.closest('[data-mk-cat], select, .mk-catpick, .fs-cats, .sp-cat, .fs-emoji, .pt-kinds, .mk-art, .split-cat')) continue;
+      out.push((e.className || e.tagName) + ': ' + t.textContent.trim().slice(0, 24)); }
+    return out; })).forEach(x => emo.add(x));
+  const lowGreen = async () => { await scale(); await emojiLeft(); return p.evaluate(() => {
     const bgOf = e => { for(; e && e !== document.documentElement; e = e.parentElement){ const c = getComputedStyle(e).backgroundColor; if(c && c !== 'rgba(0, 0, 0, 0)' && c !== 'transparent') return c; } return ''; };
     const out = [];
     document.querySelectorAll('body *').forEach(e => { if(!e.offsetParent && getComputedStyle(e).position !== 'fixed') return;
@@ -64,7 +74,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
       if(getComputedStyle(e).color === 'rgb(28, 127, 114)' && bgOf(e) === 'rgb(229, 243, 239)') out.push((e.className || e.tagName) + ': ' + e.textContent.trim().slice(0, 30)); });
     return out; }); };
   const found = [];
-  for(const h of ['#discover', '#saved', '#tribe', '#account', '#passes', '#market']){
+  for(const h of ['#discover', '#saved', '#tribe', '#account', '#passes', '#market', '#splits']){
     await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen()); }
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1500);
   // sample homes keep their drawn room and say "Sample"; a real home without photos says "No photos yet". Live, the 100
@@ -97,6 +107,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     if(h === '#mine'){ const mp = await p.evaluate(() => ({ panel: (document.querySelector('.mine-card .pic .nophoto') || {}).textContent || '', drawn: !!document.querySelector('.mine-card .pic svg.art') }));
       ok(mp.panel === 'No photos yet' && !mp.drawn, 'owner: a real home without photos says "No photos yet", no drawn room: ' + JSON.stringify(mp)); } }
   ok(!sizes.size || [...sizes].every(x => ['12', '13.5', '15.5', '20'].includes(x)), 'seeker and owner: text between 12 and 20 px uses only the scale (12, 13.5, 15.5, 20): ' + [...sizes].join(', ') + ' ' + [...odd].slice(0, 6).join(' / '));
+  ok(!emo.size, 'seeker and owner: badges, notices and empty states use line icons, not emoji: ' + [...emo].slice(0, 8).join(' / '));
   ok(!found.length, 'seeker and owner: no green text below 4.5:1 on the pale green tips and labels: ' + [...new Set(found)].join(' / '));
   await ctx.close();
   await b.close();
