@@ -1,5 +1,22 @@
 # Teche · reports
 
+## 2026-11-08, all pending PRs merged (Kamal: "Do all PR's pending")
+
+**Done.** Kamal asked in my session to do all pending PRs. All 13 open PRs are merged; none is open now.
+- Mine: #54 (publish-job excludes), #47 (welcome and sign-in), #49 (help button), #50 (onboarding), #51 (Discover and
+  a home's page), #52 (photo beautify), #56 (FlatMart sell form). #51 and #52 conflicted with the room details already
+  on main, only where both sides added things (tests, README points, the form reset); I kept both sides, merged main
+  into each branch, ran all suites green, then merged.
+- Mark's and Salu's, documents only, all in `flatmates/marketing/`: #43, #45, #46, #48, #55, #57.
+
+**Checked on main after the last merge.** Demo suites: welcome 9, ob 17, pass3 44, p5 31, p6 36, p7 15. 152 checks,
+0 failures. Android build on main succeeded (run 117). The site publish ran (run 147) and **gh-pages no longer
+carries `team/`, `marketing/` or `tests/`**: it lists only the app's files. No database change was needed beyond the
+room details applied earlier today.
+
+**Still open, for Kamal.** The website repo's publish.yml still copies `team/`, `marketing/` and `tests/` to
+findmeflatmate.com when it next runs: three exclude lines, Kamal's access or paste. The Pixel and Google Ads IDs.
+
 ## 2026-11-08, room details merged and live in the database
 
 On Kamal's word ("Merge it") PR #58 is merged (merge commit e60af0a). The database change is applied: the merged
