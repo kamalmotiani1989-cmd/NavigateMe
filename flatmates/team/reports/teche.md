@@ -12,13 +12,11 @@ complaints are clutter and distrust. Eight suggestions need no colour change (to
 photo, four lines under it; the trust promise on every card). Six colour changes are in a separate section for
 Kamal's decision, with before and after hex values. Nothing in the app, website or database changed.
 
-**Also in the PR.** One exclude in this repo's site publish so the `design/` folder stays off the public site.
+**Moved, on King's note.** Both files now sit in a repo-root `design/` folder, which neither publish job copies, so
+no exclude is needed anywhere; the workflow change was dropped. PR #62 now only adds the two files.
 
-**Needs Kamal before merging #62.** The website repo's publish.yml needs `--exclude=/design/` too, or the study goes
-public on findmeflatmate.com.
-
-**Open for Kamal.** PR #62 (and that exclude); the 15 minutes of competitor screenshots if he wants the gaps closed;
-the Pixel and Google Ads IDs.
+**Open for Kamal.** PR #62; the 15 minutes of competitor screenshots if he wants the gaps closed; the Pixel and Google
+Ads IDs.
 
 ## 2026-11-08, 18+ check live (Kamal: "Apply it")
 
