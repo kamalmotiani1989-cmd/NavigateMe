@@ -1,5 +1,15 @@
 # Teche · reports
 
+## 2026-11-08, simpler listing cards (PR #64, merged)
+
+**Done.** Kamal's three card changes from the design study. The rent now sits on the photo. The card is title,
+area + expenses, the people, one highlight, and "New this week" / "⚡ Replies within hours" only when true. Every
+card ends with who listed it: "Listed by a flatmate who lives here" for rooms with people living there, "Owner-listed"
+for whole flats, then "your number is shared only if you both say yes". Removed from the card: posted-ago, slow
+reply lines, deposit, furnishing and move-in date (all still on the home's page). Existing colours only; login and
+onboarding untouched. Demo tests: all suites pass, with new p5 checks for the pill, both trust wordings and the
+removed lines. Android build runs from the push to main; the website picks it up within 30 minutes.
+
 ## 2026-11-08, design study redone for the redesign
 
 **Done.** PR #62 updated on King's note after Kamal merged the calm redesign (#63). Section 1 now describes the new
