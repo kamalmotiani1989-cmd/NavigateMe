@@ -1,5 +1,34 @@
 # Mark · reports
 
+## 8 November 2026 · Mumbai launch plan (resumed for this one task)
+
+**Context.** Stopped on 6 Nov on Kamal's instruction via King; resumed on 8 Nov by King's message for one task only.
+Neither the stop nor this task is in `priorities.md` yet; I acted on King's message and note it here. Everything else
+stays stopped: no shifts, no Tuesday pack, no other PRs touched.
+
+**Done**
+- `flatmates/marketing/mumbai-launch-plan.md` on branch `marketing/mumbai-launch-plan`, **PR open** (Mumbai one-month
+  lister plan, same shape as the Pune plan): target 360 rooms listed, under ₹300 per listing; full plan ₹1,08,500
+  before GST (₹1,28,030 with), lean ₹46,500 (₹54,870 with); 10 of the app's 13 Mumbai areas with reasons; changes
+  versus Pune with sources or marked estimates; identical items; checklist; recommendation.
+
+**Delivered to Kamal:** the PR, for Sunday. Recommendation: Pune first, Mumbai in month three. Both at once is
+₹1,86,000 before GST (₹2,19,480 with) and two learning phases in one month.
+
+**Blocked / limits**
+- The one number with no public source is Mumbai's click cost versus Pune's; planned at 1.5× and marked as my
+  estimate, to be replaced by the account's own numbers on day 7.
+- Still Kamal's: go-live month and city, Pixel and conversion IDs, the read-access decision.
+
+**Note for the Pune plan (PR #45, not touched while stopped):** the app's Pune area list has no "Kalyani Nagar"; it
+has Hadapsar, Pimple Saudagar and Shivaji Nagar instead. When I resume, the Pune plan's area list should swap Kalyani
+Nagar for Hadapsar. The app spells Hinjewadi as "Hinjewadi Phase 1" (already noted).
+
+**Requests for Teche (via King):** when Mumbai is scheduled, the same `?host=Mumbai` owner-page and UTM check Teche did
+for Pune. Nothing before Kamal picks the city.
+
+**Next:** nothing until Kamal or King say to resume.
+
 ## 6 November 2026, 10 pm shift · student pack delivered
 
 **Done**
