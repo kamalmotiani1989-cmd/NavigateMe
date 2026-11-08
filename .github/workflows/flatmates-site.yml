@@ -33,7 +33,7 @@ jobs:
           # Keep the repo's home page as it is on main; fall back to this branch's copy.
           git fetch --depth=1 origin main && git show FETCH_HEAD:index.html > _site/index.html || cp index.html _site/index.html
           # The app, without the Android project, the database scripts or docs.
-          (cd flatmates && tar --exclude=./android --exclude=./supabase --exclude=./README.md --exclude=./team --exclude=./marketing --exclude=./tests -cf - .) | tar -xf - -C _site/flatmates
+          (cd flatmates && tar --exclude=./android --exclude=./supabase --exclude=./README.md --exclude=./team --exclude=./marketing --exclude=./tests --exclude=./design -cf - .) | tar -xf - -C _site/flatmates
           touch _site/.nojekyll
           find _site -type f | sort
 
