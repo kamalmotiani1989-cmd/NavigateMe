@@ -21,6 +21,27 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     const err1 = await p.evaluate(() => { const e = document.querySelector('fieldset[data-step="1"] .form-err'); return e && !e.hidden ? e.textContent : ''; });
     ok(/Please check/.test(err1) && await p.isVisible('fieldset[data-step="1"]'), tag + ': empty step 1 stays with a message: ' + err1.slice(0, 60));
     await p.fill('#pTitle', 'Sunny room near the metro'); await p.selectOption('#pCity', 'Bengaluru'); await p.fill('#pLocality', 'HSR Layout'); await p.fill('#pRent', '15000');
+    // photos are beautified on the phone: a dark room gets brighter, a good photo keeps its brightness, the original stays a tap away
+    const ph = await p.evaluate(async () => {
+      const draw = (dark) => { const c = document.createElement('canvas'); c.width = 800; c.height = 600; const x = c.getContext('2d');
+        x.fillStyle = '#d9cdb5'; x.fillRect(0, 0, 800, 370); x.fillStyle = '#8a6a48'; x.fillRect(0, 370, 800, 230); x.fillStyle = '#9fd0ea'; x.fillRect(470, 70, 240, 210);
+        x.fillStyle = '#5a3b8a'; x.fillRect(60, 300, 400, 180); x.fillStyle = '#f2efe6'; x.fillRect(80, 270, 150, 50); x.fillStyle = '#2f7d4a'; x.fillRect(720, 300, 50, 120);
+        const id = x.getImageData(0, 0, 800, 600), d = id.data; for(let i = 0; i < d.length; i += 4){ d[i] *= dark; d[i+1] *= dark; d[i+2] *= dark; } x.putImageData(id, 0, 0); return c; };
+      const mean = async (src) => { const img = await decodeImage(src); const k = document.createElement('canvas'); k.width = 200; k.height = 150; const x = k.getContext('2d'); x.drawImage(img, 0, 0, 200, 150); const d = x.getImageData(0, 0, 200, 150).data; let t = 0; for(let i = 0; i < d.length; i += 4) t += (d[i]*299 + d[i+1]*587 + d[i+2]*114) / 1000; return Math.round(t / (d.length / 4)); };
+      const file = async (c, name) => new File([await new Promise(r => c.toBlob(r, 'image/jpeg', 0.9))], name, { type: 'image/jpeg' });
+      addPhotos([await file(draw(0.3), 'dark.jpg'), await file(draw(0.95), 'good.jpg')]);
+      const pending = document.querySelectorAll('#pPreviews .ph-orig').length;
+      await Promise.all(photoFiles.map(f => f.enhancing));
+      const [dk, gd] = photoFiles;
+      return { pending, darkBefore: await mean(dk), darkAfter: await mean(dk.enhanced), goodBefore: await mean(gd), goodAfter: await mean(gd.enhanced), size: dk.enhanced.stats,
+        labels: [...document.querySelectorAll('#pPreviews .ph-orig')].map(b => b.textContent), showsEnhanced: document.querySelector('#pPreviews img').src === dk.enhancedUrl };
+    });
+    ok(ph.darkAfter - ph.darkBefore >= 40 && Math.abs(ph.goodAfter - ph.goodBefore) <= 6 && ph.size.width === 800, tag + ': dark photo brightened, good photo kept: ' + JSON.stringify(ph));
+    ok(ph.pending === 2 && ph.labels.join() === 'Use original,Use original' && ph.showsEnhanced, tag + ': previews show the enhanced photo with a Use original switch: ' + ph.labels.join());
+    await p.click('#pPreviews [data-orig="0"]'); await p.waitForTimeout(200);
+    const sw = await p.evaluate(() => ({ label: document.querySelector('#pPreviews [data-orig="0"]').textContent, original: document.querySelector('#pPreviews img').src === photoFiles[0].preview, sends: photoToSend(photoFiles[0]) === photoFiles[0] && photoToSend(photoFiles[1]) === photoFiles[1].enhanced }));
+    ok(sw.label === 'Use enhanced' && sw.original && sw.sends, tag + ': Use original shows and sends the original for that photo only: ' + JSON.stringify(sw));
+    if(tag === 'm') await p.screenshot({ path: `${O}/p3-m-photos-enhanced.png` });
     // room details: three one-tap questions for a room, none for a whole flat, nothing sent when unanswered
     const rq0 = await p.evaluate(() => ({ shown: !$('roomQs').hidden, labels: [...document.querySelectorAll('#roomQs .field > label')].map(l => l.textContent), unanswered: roomFromForm() }));
     await p.click('label.chip:has([name=kind][value=flat])'); await p.waitForTimeout(150);
@@ -48,6 +69,7 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(2000);
     const posted = await p.evaluate(() => ({ hash: location.hash, cards: document.querySelectorAll('.mine-card').length, stats: [...document.querySelectorAll('.mine-card .stats.six .stat span')].map(s => s.textContent) }));
     ok(posted.cards === 1 && posted.stats.length === 6, tag + ': published, My flat shows 6 numbers: ' + posted.stats.join(' | '));
+    ok(await p.evaluate(() => state.myListings[0].photos.length === 2 && state.myListings[0].photos.every(u => u.startsWith('data:image/jpeg'))), tag + ': the two photos were posted');
     ok(await p.evaluate(() => JSON.stringify(state.myListings[0].room) === '{"washroom":"attached","balcony":true,"master":false}'), tag + ': the answers were saved on the listing');
     await p.evaluate(() => openListing(state.myListings[0].id)); await p.waitForTimeout(1000);
     const tags = await p.evaluate(() => [...document.querySelectorAll('#dlgListing .room-tags span')].map(x => x.textContent));

@@ -320,6 +320,7 @@ textarea{min-height:96px; resize:vertical}
 .drop input{display:none}
 .previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
 .previews:empty{display:none}
+.previews .ph-orig{position:absolute; left:6px; bottom:6px; padding:3px 8px; border:0; border-radius:999px; background:rgba(16,20,24,.72); color:#fff; font:700 11px var(--body); cursor:pointer}
 .previews figure{margin:0; position:relative; aspect-ratio:4/3; max-width:100%; border-radius:10px; overflow:hidden; background:var(--surface-2)}
 .previews img{width:100%; height:100%; object-fit:cover; display:block}
 .previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700; background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
@@ -2930,6 +2931,53 @@ async function resizeImage(src, maxSide, quality){
   img.close && img.close();
   const blob = await new Promise(res => c.toBlob(res, "image/jpeg", quality));
   if(!blob) throw new Error("encode-failed");
+  return blob;
+}
+/* ---- Auto-beautify, on the phone, before upload. Light, colour and sharpness only: the photo's own orientation
+   data, levels (the darkest and lightest half-percent become black and white), a lift for dark rooms, a light
+   sharpening, then 1600 px. Every pixel gets the same treatment, so nothing in the room is removed, added or moved.
+   The original is kept so the owner can switch back per photo ("Use original"). */
+const ENHANCE = { maxSide: 1600, clip: 0.005, minSpan: 24, darkMean: 112, minGamma: 0.6, sharpen: 0.3 };
+async function decodeOriented(file){
+  try{ return await createImageBitmap(file, { imageOrientation: "from-image" }); }catch(e){}
+  return decodeImage(file);   // <img> honours the orientation data by itself
+}
+async function enhanceImage(file){
+  const img = await decodeOriented(file);
+  const w0 = img.naturalWidth || img.width, h0 = img.naturalHeight || img.height, k = Math.min(1, ENHANCE.maxSide / Math.max(w0, h0));
+  const c = document.createElement("canvas"), w = c.width = Math.round(w0 * k), h = c.height = Math.round(h0 * k);
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, w, h); img.close && img.close();
+  const id = ctx.getImageData(0, 0, w, h), d = id.data, n = w * h;
+  // Luminance histogram -> levels and a lift for dark rooms.
+  const hist = new Uint32Array(256); let sum = 0;
+  for(let i = 0; i < d.length; i += 4){ const y = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000 | 0; hist[y]++; sum += y; }
+  const mean = sum / n, cut = n * ENHANCE.clip;
+  let lo = 0, hi = 255, acc = 0;
+  for(let v = 0; v < 256; v++){ acc += hist[v]; if(acc > cut){ lo = v; break; } }
+  acc = 0; for(let v = 255; v >= 0; v--){ acc += hist[v]; if(acc > cut){ hi = v; break; } }
+  if(hi - lo < ENHANCE.minSpan){ lo = 0; hi = 255; }   // a flat image (one colour, fog): leave its levels alone
+  // Levels add contrast; the lift then brings the overall brightness back to where it was, or up to a sensible
+  // level for a dark room. A photo that was already bright keeps its brightness (gamma never darkens).
+  const stretched = Math.min(254, Math.max(1, (mean - lo) * 255 / (hi - lo))), target = Math.max(mean, ENHANCE.darkMean);
+  const gamma = Math.min(1, Math.max(ENHANCE.minGamma, Math.log(target / 255) / Math.log(stretched / 255)));
+  const lut = new Uint8ClampedArray(256);
+  for(let v = 0; v < 256; v++) lut[v] = Math.round(255 * Math.pow(Math.min(1, Math.max(0, (v - lo) / (hi - lo))), gamma));
+  for(let i = 0; i < d.length; i += 4){ d[i] = lut[d[i]]; d[i + 1] = lut[d[i + 1]]; d[i + 2] = lut[d[i + 2]]; }
+  // A light unsharp mask (3x3 box blur): edges a touch crisper, nothing new drawn.
+  const a = ENHANCE.sharpen, src = new Uint8ClampedArray(d);
+  for(let y = 1; y < h - 1; y++) for(let x = 1; x < w - 1; x++){
+    const o = (y * w + x) * 4;
+    for(let ch = 0; ch < 3; ch++){
+      const i = o + ch, s4 = w * 4;
+      const blur = (src[i - s4 - 4] + src[i - s4] + src[i - s4 + 4] + src[i - 4] + src[i] + src[i + 4] + src[i + s4 - 4] + src[i + s4] + src[i + s4 + 4]) / 9;
+      d[i] = src[i] + a * (src[i] - blur);
+    }
+  }
+  ctx.putImageData(id, 0, 0);
+  const blob = await new Promise(res => c.toBlob(res, "image/jpeg", 0.92));
+  if(!blob) throw new Error("encode-failed");
+  blob.stats = { lo, hi, mean: Math.round(mean), gamma: Math.round(gamma * 100) / 100, width: w, height: h };
   return blob;
 }
 // Resize every photo; ones that can't be read are skipped rather than failing the post.
@@ -7123,14 +7171,17 @@ $("mineList").addEventListener("click", async e => {
 });
 
 /* ======================================================= owner: post */
-let photoFiles = [];   // File objects picked for the listing being posted
+let photoFiles = [];   // File objects picked for the listing being posted (each with .enhanced once beautified)
 let editing = null, keepPhotos = [], editStep = 1;   // editing: the listing being changed; keepPhotos: its photos still wanted
+const photoToSend = f => f.useOriginal || !f.enhanced ? f : f.enhanced;
+function freePhoto(f){ if(f.preview) URL.revokeObjectURL(f.preview); if(f.enhancedUrl) URL.revokeObjectURL(f.enhancedUrl); }
 function renderPhotos(){
   photoFiles.forEach(f => f.preview = f.preview || URL.createObjectURL(f));
   $("pPreviews").innerHTML = keepPhotos.map((u, i) =>
     `<figure><img src="${esc(u)}" alt="Photo ${i+1}"><button type="button" data-rmk="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("")
     + photoFiles.map((f, i) =>
-    `<figure><img src="${f.preview}" alt="Photo ${keepPhotos.length + i + 1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
+    `<figure><img src="${f.useOriginal || !f.enhancedUrl ? f.preview : f.enhancedUrl}" alt="Photo ${keepPhotos.length + i + 1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button>
+      ${f.enhanced ? `<button type="button" class="ph-orig" data-orig="${i}">${f.useOriginal ? "Use enhanced" : "Use original"}</button>` : f.enhancing ? `<span class="ph-orig">Brightening…</span>` : ""}</figure>`).join("");
   $("pDrop").hidden = keepPhotos.length + photoFiles.length >= MAX_PHOTOS;
 }
 function addPhotos(list){
@@ -7138,15 +7189,21 @@ function addPhotos(list){
   if(imgs.length < list.length) toast("Some files were skipped. Use images under 20 MB.");
   photoFiles = photoFiles.concat(imgs).slice(0, room);
   if(photoFiles.length === room && imgs.length) toast("Up to " + MAX_PHOTOS + " photos per listing.");
+  // Beautify each new photo in the background; the preview switches to the result when it is ready.
+  photoFiles.forEach(f => { if(!f.enhancing) f.enhancing = enhanceImage(f)
+    .then(b => { f.enhanced = b; f.enhancedUrl = URL.createObjectURL(b); }).catch(err => { console.error(err); f.enhanced = null; })
+    .then(() => { f.enhancing = null; if(photoFiles.includes(f)) renderPhotos(); }); });
   renderPhotos();
 }
 $("pPhotos").addEventListener("change", e => { addPhotos(e.target.files); e.target.value = ""; });
 $("pPreviews").addEventListener("click", e => {
   const k = e.target.closest("[data-rmk]");
   if(k){ keepPhotos.splice(Number(k.dataset.rmk), 1); renderPhotos(); return; }
+  const o = e.target.closest("[data-orig]");
+  if(o){ const f = photoFiles[Number(o.dataset.orig)]; if(f){ f.useOriginal = !f.useOriginal; renderPhotos(); } return; }
   const b = e.target.closest("[data-rm]"); if(!b) return;
   const [gone] = photoFiles.splice(Number(b.dataset.rm), 1);
-  if(gone && gone.preview) URL.revokeObjectURL(gone.preview);
+  if(gone) freePhoto(gone);
   renderPhotos();
 });
 /* ---- editing a listing: the same form, filled in. The private part stays as posted (read-only here),
@@ -7161,7 +7218,7 @@ async function startEdit(id, step){
 function endEdit(){
   editing = null; keepPhotos = [];
   $("postForm").reset(); syncRoomQs();
-  photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
   PRIVATE_IDS.forEach(id => $(id).disabled = false);
   $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
   if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null; $("mapBox").hidden = true; $("mapBox").innerHTML = "";
@@ -7187,7 +7244,7 @@ async function fillPostForm(l){
   $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
   $("hInt").innerHTML = interestChips("hi", hh.interests);
   syncRoomsFree();
-  keepPhotos = photosOf(l); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  keepPhotos = photosOf(l); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
   // The private part, for reference and for the map pin: kept as posted.
   const c = (await api.contact(l.id).catch(() => null)) || {}, ap = c.address_parts || {};
   $("pName").value = c.contact_name || state.user.name || ""; $("pPhone").value = c.contact_phone || state.user.phone || "";
@@ -7358,7 +7415,8 @@ $("postForm").addEventListener("submit", async e => {
     let skipped = 0;
     if(photoFiles.length){
       btn.textContent = "Preparing photos…";
-      const up = await api.uploadPhotos(photoFiles);
+      await Promise.all(photoFiles.map(f => f.enhancing));
+      const up = await api.uploadPhotos(photoFiles.map(photoToSend));
       p.listing.photos = up.urls; skipped = up.skipped;
     }
     if(editing){
@@ -7375,7 +7433,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     track("list_room", { city: p.listing.city, area: p.listing.locality, kind: p.listing.kind });
     state.homeDraft = Object.assign({}, p.listing.household); save();
-    f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+    f.reset(); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
     if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null;
     $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderExpenseRows();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."
