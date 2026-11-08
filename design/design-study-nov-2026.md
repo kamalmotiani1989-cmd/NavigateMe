@@ -3,15 +3,19 @@
 Prepared by Teche for Kamal, 8 November 2026 (task from Kamal via King: "study the colors of app and website and
 design language of 99acres, NoBroker, Housing and others. Post that suggest the best changes.").
 
-**This is a study, not a change.** Nothing in the app, the website or the database was touched. Suggestions that
-change a colour are in their own section at the end, because the standing rule is that colours do not change
-without Kamal.
+**This is a study, not a change.** Nothing in the app, the website or the database was touched.
+
+**Updated the same day for the redesign.** Kamal merged a calm redesign on 8 Nov 2026 (PR #63: navy, one muted
+green, a mint wash, white cards), and the standing rule is now "keep this look; new screens use the `:root` tokens"
+(README, "Look and feel"). Section 1 describes the new look, and section 3 is re-checked against it: most of the
+first draft's colour suggestions are now done or moot, and the few colour points left are in their own section for
+Kamal's decision.
 
 **The limit to know about.** This session cannot open the competitors' sites or the app stores (Kamal kept the
 network closed; nobroker.in, 99acres.com, housing.com, magicbricks.com, spareroom.co.uk and flatmate.in were all
 refused on 8 Nov 2026). So:
-- **Our side** is exact: read from `flatmates/index.html`, `manifest.webmanifest` and phone-sized screenshots of
-  the app in demo mode, 6 to 8 Nov 2026.
+- **Our side** is exact: read from `flatmates/index.html` after the redesign (main at a0e11b4) and phone-sized
+  screenshots of the app in demo mode, 8 Nov 2026.
 - **Their side** comes from web search excerpts (seen 8 Nov 2026), Mark's study
   (`flatmates/marketing/competitor-study-nov-2026.md`, sources seen 6 Nov 2026), and design write-ups by others.
   Their exact colour values, fonts and current screens are **could not confirm**. Where I name a competitor's main
@@ -19,74 +23,70 @@ refused on 8 Nov 2026). So:
 
 ---
 
-## 1 · Our design language today
+## 1 · Our design language today (after the 8 Nov redesign)
 
 ### Colours (tokens in `index.html`, `:root`)
 
-| Token | Hex | Where it is used (count of uses in the page) |
+| Token | Hex | Where it is used (uses in the page) |
 |---|---|---|
-| `--brand` | `#0E9AA0` (teal) | Primary buttons, top bar, links, selected chips, tab highlight, browser bar (`theme-color`), app icon frame. 70 uses. |
-| `--brand-2` | `#0B7C82` (dark teal) | Hover and pressed states, text on light teal. 31 uses. |
-| `--brand-soft` | `#E2F5F5` | Light teal fills: selected cards, room-detail labels, info boxes. 31 uses. |
-| `--accent` | `#F26B1D` (orange) | "Send request", "Get a Room Pass", Passes tab, search button, "you both like" lines, active filter chips. 50 uses. |
-| `--accent-soft` | `#FFF2E8` | Light orange fills (gift pill, active filters). 21 uses. |
-| `--ok` | `#0E9F7E` (green) | "Same" answers, ticks, "Bachelors welcome", pays-on-time badge. 31 uses. |
-| `--warn` / `--danger` / `--mid` | `#B45309` / `#C2261D` / `#E08A00` | Warnings, errors, "Close" answers. |
-| `--text` / `--text-2` / `--text-3` | `#101418` / `#4A5260` / `#8A919C` | Body text, secondary text, hints and "Posted 20 days ago". |
-| `--app-bg` / `--card` / `--hair` | `#F3F6F9` / `#FFFFFF` / `#E1E6EC` | Signed-in background, cards, hairlines. |
-| `--grad` | `#0E9AA0` to `#0F8EA6` to `#1F6CC4` | Welcome band, onboarding screens, Tribe and Escape headers. 14 uses. |
-| Buttons, polished | `#12A9AE` to `#0B858B` (primary), `#FF7E2E` to `#EE5A12` (accent) | Gradients over the flat tokens on signed-in screens. |
-| WhatsApp button | `#1DA851` | "Get the code on WhatsApp" on the sign-in card. |
+| `--ink` / `--ink-2` | `#1B2440` / `#2A3760` (navy) | The main button on every screen (both `.btn-primary` and `.btn-accent` now render navy), selected chips and tabs, feature cards (quiz, Tribe, FlatMart, Escape, Passes). 40 / 6. |
+| `--accent` | `#1B2440` | Same navy, kept as a name so older rules follow it. 44. |
+| `--brand` / `--brand-2` | `#1C7F72` / `#156358` (muted green) | Links, small labels, progress bars, match rings, "what's new", the wordmark's "FlatMate". 84 / 23. |
+| `--brand-soft` | `#E5F3EF` | Tips, highlights, the "Gen Z household" badge, room-detail labels. 45. |
+| `--hi` | `#A6E0D2` (mint) | Accents on navy cards (the quiz arrow, ring tracks). 28. |
+| `--dot` | `#E0623E` (red-orange) | Notification dots. 4. |
+| `--ok` / `--warn` / `--danger` | `#14866E` / `#A16207` / `#C2261D` | Ticks and "same" answers, warnings, errors. |
+| `--text` / `--text-2` / `--text-3` | `#18213A` / `#4B566B` / `#8790A3` | Body, secondary text, hints and small print ("Posted 17 days ago", "+ expenses"). `--text-3` 58 uses. |
+| `--wash` | `#DCEFE9` to `#EAF6F2` to `#F8FBFA` | Behind the welcome page and onboarding only. |
+| `--grad` | `#1B2440` to `#253360` | Navy feature cards. 21. |
+| `--app-bg` / `--card` / `--hair` | `#F4F7F6` / `#FFFFFF` / `#E2E8EC` | Signed-in background, white cards, hairlines. |
+| WhatsApp button (not a token) | `#1DA851` | "Get the code on WhatsApp" on the sign-in card. |
 
-**Colours outside the tokens** (hard-coded, most used): navy `#10264F` (21 uses), yellows `#FFD08A`, `#FFC24D`,
-`#FFC86B` (Tribe savings box, flatmate-type name), pink-purple `#B63BA8` with `#F0645A` (the "Gen Z household"
-badge gradient), blues `#1E6FD9`, `#1F6CC4`, `#EEF3FD`, greens `#14C08A`. Each section of the app has picked up its
-own accent: Flatsplits green, FlatMart orange-to-pink, Passes orange, Tribe blue with yellow.
+**Outside the tokens:** 141 distinct hex values are still written into the page, most of them in the logo SVG (the
+old navy `#10264F` and the roof gradient), the drawn room illustrations, the share images drawn on a canvas, and a
+few one-off reds and blues (`#B42332`, `#1E6FD9`, `#F0645A`). The screens themselves now follow the tokens.
 
-**Readability (contrast against the usual 4.5:1 bar for normal-size text):**
+**Readability (against the usual 4.5:1 bar for normal-size text):**
 
 | Pair | Ratio | |
 |---|---|---|
-| White on teal `#0E9AA0` (primary buttons, top bar) | 3.42 | below |
-| White on the primary gradient's light end `#12A9AE` | 2.87 | below |
-| White on orange `#F26B1D` ("Send request", "Get a Room Pass") | 3.05 | below |
-| White on the accent gradient's light end `#FF7E2E` | 2.54 | below |
-| White on WhatsApp green `#1DA851` | 3.10 | below |
-| Teal `#0E9AA0` text on white (links) | 3.42 | below |
-| Orange `#F26B1D` text on white ("You both like Gym") | 3.05 | below |
-| Hint grey `#8A919C` on white / on the app background | 3.18 / 2.93 | below |
-| Secondary text `#4A5260` on white | 7.87 | passes |
-| Dark teal `#0B7C82` (`--brand-2`) | 4.98 | passes |
+| White on navy `#1B2440` (every main button) | 15.30 | passes, by far |
+| Navy text `#18213A` on white | 15.94 | passes |
+| Green `#1C7F72` links and labels on white / on the app background | 4.85 / 4.50 | passes, just |
+| White on green `#1C7F72` | 4.85 | passes |
+| Green `#1C7F72` on `--brand-soft` `#E5F3EF` (tips, highlight labels) | 4.25 | **below** |
+| `--brand-2` `#156358` on `--brand-soft` | 6.22 | passes |
+| Secondary text `#4B566B` on white / on the mint wash | 7.39 / 6.18 | passes |
+| Hint grey `#8790A3` on white / app background / mint wash | 3.21 / 2.98 / 2.68 | **below** |
+| White on WhatsApp green `#1DA851` | 3.10 | **below** |
+| Red `#E0623E` (dots only, not text) | 3.51 | fine for a dot |
 
-On a phone outdoors these are the lines people squint at: prices' small print, "Posted 20 days ago", "Usually
-replies in a few days", and the button labels.
+The redesign fixed the big ones (the first draft found white on our teal buttons at 3.42 and on orange at 3.05).
+What is left is the smallest text: hints and small print, and green text on the pale green tips.
 
 ### Type
-- One family, **Plus Jakarta Sans** (Google Fonts, weights 400 to 800), for headings and body.
-- Body 15.5 px, line height 1.6. Headings 800 weight, tight letter spacing (-0.025em). Hero headline
-  `clamp(34px, 5vw, 58px)`.
-- **Eleven text sizes between 12 and 20 px** are in use; the commonest are 13 (65 uses), 14 (57), 13.5 (45), 12 (37),
-  12.5 (34), 14.5 (25), 15 (24). Half-pixel steps a person can't tell apart.
+- One family, **Plus Jakarta Sans**. Headlines are now 700 instead of 800; the welcome headline mixes a light and a
+  heavy weight ("Find flatmates who **match your vibe.**").
+- Body 15.5 px, line height 1.6.
+- **Still eleven text sizes between 12 and 20 px**; the commonest are 13 (64 uses), 14 (57), 13.5 (45), 12 (37),
+  12.5 (35), 14.5 (25), 15 (24).
 
 ### Shapes, spacing, icons
-- Cards: white, 20 px corners, soft two-layer shadow on a pale blue-grey background. Buttons: 12 px corners, filled
-  gradients with a coloured glow. Chips: fully round, 8 by 14 px padding.
-- Icons: thin line icons (SVG, 1.8 to 2.2 stroke) in the navigation and buttons, **mixed with emoji** in content
-  (🦉🍳🦋 on the quiz card, 🎁 gift, 🛋 FlatMart, 🎉 parties, ✨, 🔔 in empty states) and drawn room illustrations
-  where there are no photos.
+- White cards with 20 px corners, thin borders and soft navy-tinted shadows on a very light grey-green page. White
+  top bar; dialog headers white with a grey close button. Buttons navy, 12 px corners.
+- Icons: thin line icons in navigation and buttons, **still mixed with emoji** in content (🦉🍳🦋 on the quiz card,
+  ⚡ on the Gen Z badge, 🎁, 🛋, 🎉, ✨) and drawn room illustrations where there are no photos.
 
 ### What the key screens lead with
-- **Welcome page (website):** a teal-to-blue gradient band; "FIND YOUR VIBE. FIND YOUR FLATMATE."; headline "Find
-  flatmates who match your vibe."; the pink 1-minute quiz card; a paragraph; three points ("Matched on 12 lifestyle
-  questions", "Meet the people before the room", "No brokers, ever"); then the sign-in card, which starts on the
-  second phone screen. Below: how it works, Flatsplits, FlatMart, a map teaser, the Android band. About 6,400 px tall.
-- **A listing card (Discover):** a 4:3 photo or drawn room with the room type tag and the match ring on top, ♥ save;
-  then title, area, the flatmate's job, a "Gen Z household" badge, "You both like Gym", furnishing · who · from date,
-  "Bachelors welcome · no brokers", rent in large type, "+ expenses · deposit", "Posted 20 days ago", "Usually replies
-  in a few days". **Eight lines of text under the photo; the rent is the sixth.**
-- **A home's page:** photo gallery with the match ring, "Who you'd live with" (traits as ticked chips), the vibe
-  analysis box, interests, rent table, expenses table, details grid, amenities, description, the map circle, the
-  request box; a sticky bar with rent and the main button.
+- **Welcome page:** a pale mint wash; "FIND YOUR VIBE. FIND YOUR FLATMATE." in green; the two-weight headline; the
+  navy 1-minute quiz card; a paragraph; three points; then the sign-in card, whose heading starts at 643 px on an
+  844 px phone screen, so its choices and the number field are on the second screen. About 6,500 px tall in all.
+- **A listing card (Discover):** a 4:3 photo or drawn room with the type tag, the match ring and ♥; then title, area,
+  the flatmate's job, the "Gen Z household" badge (now pale green), furnishing · who · from date, "Bachelors welcome ·
+  no brokers", rent, "+ expenses · deposit", "Posted 17 days ago". **Eight lines under the photo; the rent is the
+  seventh.** The redesign changed the colours, not the layout.
+- **A home's page:** the same order as before (gallery with match ring, who you'd live with, vibe analysis, rent and
+  expenses tables, details, map, request box, sticky bar), now on white with a white header.
 
 ---
 
@@ -159,9 +159,9 @@ All seen 8 Nov 2026 in search excerpts unless marked; Mark's study facts were se
   (https://medium.com/@sharikatayub/spareroom-app-concept-a-ux-case-study-c382fa4120).
 
 ### What the market looks like, in one paragraph
-The big Indian portals own red (NoBroker, Magicbricks), blue (99acres) and purple (Housing.com), all from general
-knowledge, hexes unconfirmed. **Nobody in the set leads with teal**, so our colour already stands apart; there is no
-case for chasing theirs. Their shared problem, in their own users' and researchers' words, is clutter and distrust:
+The big Indian portals own red (NoBroker, Magicbricks), bright blue (99acres) and purple (Housing.com), all from
+general knowledge, hexes unconfirmed. **Our new navy with one muted green is calmer than all of them** and still
+stands apart; there is no case for chasing theirs. Their shared problem, in their own users' and researchers' words, is clutter and distrust:
 too much on the first screen, ads in prime space, numbers going to brokers, listings that turn out to be gone. Our
 promise (owner-listed, numbers shared only on accept, vibe first) answers that; the design should make it visible
 faster and say less around it.
@@ -170,34 +170,38 @@ faster and say less around it.
 
 ## 3 · Suggested changes, ranked by impact on a first-time user on a phone
 
-Nothing here touches the sign-in steps or the onboarding questions. Colour changes are in section 3b.
+Re-checked against the redesigned screens on 8 Nov 2026. Nothing here touches the sign-in steps or the onboarding
+questions, and nothing in 3a changes a colour: everything uses the existing tokens.
 
-### 3a · No colour change needed
+### 3a · No colour change needed (all still open after the redesign)
 
 | # | Change | Why | Borrows or avoids | Effort |
 |---|---|---|---|---|
-| 1 | **Listing card: rent and match on the photo, four lines under it.** Put the rent ("₹21,500 / month") on the photo's bottom edge on a white pill (not white text on a dark overlay), keep the match ring; under the photo only title, area, one "who you'd live with" line, and one highlight (shared interest or bachelors welcome). Move furnishing, dates, posted-ago and reply speed to the home's page. | The rent is the sixth line today; every portal and SpareRoom put price first, and the card is too long to scan on a phone. | Borrows SpareRoom's plain rent; avoids Magicbricks' white-on-overlay text, which tested hard to read. | Medium |
-| 2 | **Say the trust promise on every card and the welcome's first screen**, in one short line with a tick: "Owner-listed · your number shared only if you both say yes". | Distrust is the category's top complaint (Magicbricks research; NoBroker and Housing reviews). We already work this way; it's just not said where people decide. | Borrows NoBroker's habit of leading with the promise; avoids their unprovable big numbers while we are pre-launch. | Small |
-| 3 | **Drop negative or stale signals from the card**: "Usually replies in a few days" and "Posted 20 days ago" read as reasons not to tap. Show reply speed only when it is fast ("Replies within hours"), and age only when new ("New this week"). | Every line on a card should help the decision; slow-reply and old-age lines mostly hurt good homes. | Avoids NoBroker's "90% already occupied" feeling. | Small |
-| 4 | **One kind of icon.** Keep the line icons; replace emoji in content (quiz faces, gift, FlatMart, parties, empty states) with matching line icons or the room illustrations. | Emoji render differently on every Android phone and make the app look less finished next to the drawn rooms. | Borrows Housing.com's "clean" reputation. | Medium |
-| 5 | **A type scale of five sizes** (12, 13.5, 15.5, 20, and the headline clamp) instead of eleven. | No visual change most people would notice, but every screen gets consistent and future pages stay tidy. | Avoids the "cluttered" verdict on Magicbricks. | Small |
-| 6 | **Name the colours already in use**: turn the hard-coded navy `#10264F`, the yellows and the badge gradient into tokens, without changing any hex. | Makes any later colour decision one line instead of forty, and stops each section inventing its own. | Internal only. | Small |
-| 7 | **Welcome page: shorter, and the sign-in card on the first screen on a phone.** Move the paragraph below the card and keep the quiz card and three points above it. | Today a phone visitor scrolls a full screen before they can start. Every portal leads with the action. **This moves the sign-in card, so it needs Kamal's yes even though the card itself stays the same.** | Borrows the portals' search-first first screen. | Small |
-| 8 | **A no-photo state that says what is missing and nudges the owner**, instead of an illustration that can look like a real room ("Illustration. The owner hasn't added photos yet." is easy to miss). Label the card "No photos yet". | Honest, and it pushes owners to add photos (which the beautify feature now makes look good). | Borrows SpareRoom's plain handling of no-photo ads. | Small |
+| 1 | **Listing card: rent and match on the photo, four lines under it.** Put the rent ("₹16,750 / month") on the photo's bottom edge on a white pill (not white text on a dark overlay), keep the match ring; under the photo only title, area, one "who you'd live with" line, and one highlight (shared interest or bachelors welcome). Move furnishing, dates, posted-ago and reply speed to the home's page. | The rent is still the seventh line after the redesign; every portal and SpareRoom put price first, and the card is too long to scan on a phone. | Borrows SpareRoom's plain rent; avoids Magicbricks' white-on-overlay text, which tested hard to read. | Medium |
+| 2 | **Say the trust promise on every card and the welcome's first screen**, in one short line with a tick: "Owner-listed · your number shared only if you both say yes". | Distrust is the category's top complaint (Magicbricks research; NoBroker and Housing reviews). We already work this way; it's not said where people decide. | Borrows NoBroker's habit of leading with the promise; avoids their unprovable big numbers while we are new. | Small |
+| 3 | **Drop negative or stale signals from the card**: "Posted 17 days ago" and "Usually replies in a few days" read as reasons not to tap. Show reply speed only when fast ("Replies within hours") and age only when new ("New this week"). | Every line on a card should help the decision. | Avoids NoBroker's "already occupied" feeling. | Small |
+| 4 | **One kind of icon.** Keep the line icons; replace emoji in content (the quiz faces, the ⚡ on the Gen Z badge, gift, FlatMart, parties, empty states) with matching line icons or the room illustrations. | The redesign made the app calm and grown-up; emoji are now the loudest thing on many screens and render differently on every Android phone. | Fits the new "Look and feel"; borrows Housing.com's "clean" reputation. | Medium |
+| 5 | **A type scale of five sizes** (12, 13.5, 15.5, 20, and the headline clamp) instead of eleven. | No visual change most people would notice; every screen gets consistent and new screens stay tidy. | Avoids the "cluttered" verdict on Magicbricks. | Small |
+| 6 | **Use `--brand-2` instead of `--brand` for green text on the pale green tips** (`--brand-soft`). | 4.25:1 today, 6.22:1 after, with tokens that already exist, so it keeps the look. | Internal. | Small |
+| 7 | **Welcome page: the sign-in card's choices on the first phone screen.** Move the paragraph below the card; keep the quiz card and three points above it. | Today only the card's heading shows on the first screen; the choice and the number field need a scroll. Every portal leads with the action. **This moves the sign-in card, so it needs Kamal's yes even though the card stays the same.** | Borrows the portals' action-first first screen. | Small |
+| 8 | **A no-photo state that says what is missing**, instead of an illustration that can look like a real room. Label the card "No photos yet" on a pale green panel. | Honest, and it nudges owners to add photos (which the beautify feature now makes look good). | Borrows SpareRoom's plain handling of no-photo ads. | Small |
 
-### 3b · Needs Kamal's decision (standing rule: colours do not change)
+**Done by the redesign, dropped from this list:** the first draft's "name the hard-coded colours" (the screens now
+follow the tokens; what remains is in the logo, illustrations and share images, which can stay).
+
+### 3b · Needs Kamal's decision (the look is set; these are the only colour points left)
 
 | # | Change | Before | After | Why | Effort |
 |---|---|---|---|---|---|
-| C1 | **Darker teal for buttons, top bar and links**, same hue. | `#0E9AA0` (3.42:1 with white) | `#0C8389` (4.54:1) | Button labels and links are under the readability bar on every screen. Keep `#0E9AA0` for large areas (gradients, illustrations) where it carries the brand. | Small |
-| C2 | **Darker orange for the main action**, same hue. | `#F26B1D` (3.05:1) and gradient `#FF7E2E`→`#EE5A12` | `#C9510C` (4.50:1), flat or a gradient `#D9560F`→`#C9510C` | "Send request" and "Get a Room Pass" are the money buttons and the hardest to read. | Small |
-| C3 | **Darker hint grey.** | `#8A919C` (3.18 on white, 2.93 on the app background) | `#636B77` (5.38 on white, 4.96 on the app background) | "Posted…", "+ expenses", form hints are the smallest text. | Small |
-| C4 | **One action colour.** Orange only for the one main action on a screen (request, invite, pay); teal for everything else. Today orange also marks shared interests, active filters, the search button and the Passes tab. | Two strong colours compete on most screens | Orange used about 15 times instead of 50 | People learn faster what to tap. | Medium |
-| C5 | **Retire the pink-purple "Gen Z" badge gradient** for a teal or neutral badge. | `#B63BA8`→`#F0645A` | `--brand-soft` `#E2F5F5` with `--brand-2` `#0B7C82` text | It is the only pink-purple in the app and pulls the eye on every card more than rent does. | Small |
-| C6 | **WhatsApp button text contrast** (on the sign-in card, so only on Kamal's word). | `#1DA851` (3.10:1) | `#178741` (4.59:1) | Readability; keeps WhatsApp's green family. | Small |
+| C1 | **Darker hint grey** for small print and form hints (`--text-3`). | `#8790A3`: 3.21 on white, 2.98 on the app background, 2.68 on the mint wash | `#5E6679`: 5.75, 5.33, 4.81 | The only text in the app still below 4.5:1 everywhere; it is "+ expenses", "Posted…", and the hints under form fields. Same grey family, a step darker. | Small |
+| C2 | **WhatsApp button contrast** (on the sign-in card, so only on Kamal's word). | `#1DA851` (3.10:1) | `#178741` (4.59:1) | Readability; keeps WhatsApp's green family. | Small |
 
-**Not suggested:** changing the brand hue. Teal is ours alone in this market (section 2); the gain is in contrast and
-in using fewer colours, not a new one.
+**Moot after the redesign** (from the first draft): darker teal for buttons (buttons are navy now, 15.3:1), darker
+orange for the main action (no orange buttons left), one action colour (navy is the only action colour now),
+retiring the pink-purple Gen Z badge (it is pale green now).
+
+**Not suggested:** any new hue. The new look already does what the first draft argued for: fewer colours, each with
+one job, and strong contrast where people tap.
 
 ---
 
@@ -219,5 +223,5 @@ read their pages directly.
 
 ## 5 · The mock
 
-`design/listing-card-mock.html` shows suggestions 1, 2, 3 and 8 next to with today's card, in today's
-colours. It is a standalone page, not wired into the app.
+`design/listing-card-mock.html` shows suggestions 1, 2, 3 and 8 next to today's card, in the new look's tokens
+(navy, muted green, white cards). It is a standalone page, not wired into the app.
