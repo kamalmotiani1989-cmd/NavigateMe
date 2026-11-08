@@ -51,6 +51,62 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   ok(!saved.pub.address && !('near_address' in saved.pub) && !('near_geo' in saved.pub), 'host: the invite link never carries the private address or pin');
   await p.screenshot({ path: O + '/p9-host-party.png' });
   await ctx.close();
+  // ------------------------------------------------------------ 2. discovery
+  const pickPlace = async (pg, q) => { await pg.fill('#npinPlace', q); await pg.waitForTimeout(900);
+    const hit = await pg.evaluate(() => { const o = document.querySelector('#dlgNearPin .ps-list [data-i], #dlgNearPin .ps-list button, #dlgNearPin .ps-item'); if(o){ o.dispatchEvent(new MouseEvent('mousedown', { bubbles:true })); o.click(); return true; } return false; });
+    await pg.waitForTimeout(800);
+    // map search needs the network; offline (as here) pick Baner's pin the way a chosen suggestion does
+    if(await pg.evaluate(() => $('dlgNearPin').open)) await pg.evaluate(() => { $('dlgNearPin').close(); const f = nearPinThen; nearPinThen = null; f({ lat: 18.559, lng: 73.7868, label: 'Baner' }); });
+    await pg.waitForTimeout(800); return true; };
+  ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  await seed(ctx, person('9822200002', 'Asha', 'female'));
+  p = await ctx.newPage(); p.on('pageerror', e => errs.push('asha ' + e.message)); p.on('dialog', d => d.accept().catch(() => {}));
+  await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1500); await closeDialogs(p);
+  const acc0 = await p.evaluate(() => ({ panel: !!$('nearPanel') && !$('nearPanel').hidden, on: $('nearToggle').checked }));
+  ok(acc0.panel && !acc0.on, 'guest: "Show me parties nearby" is in Account and off by default: ' + JSON.stringify(acc0));
+  await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1500); await closeDialogs(p);
+  const sp0 = await p.evaluate(() => ({ promo: !!document.querySelector('.near-promo'), cards: document.querySelectorAll('.near-card').length }));
+  ok(sp0.promo && !sp0.cards, 'guest: switched off, Splits shows no parties, only a "Show me" card: ' + JSON.stringify(sp0));
+  await p.click('[data-near-on]'); await p.waitForTimeout(500);
+  const asked = await p.evaluate(() => $('dlgNearPin').open);
+  const hit = await pickPlace(p, 'Baner');
+  await p.waitForTimeout(1200);
+  const list = await p.evaluate(() => [...document.querySelectorAll('.near-card')].map(c => c.textContent.replace(/\s+/g, ' ').trim()));
+  ok(asked && hit && list.length === 3 && list.every(t => /Baner|Balewadi|Aundh/.test(t)) && list.some(t => /Board games/.test(t)),
+    'guest: switching on asks for a place once; Asha near Baner sees the three Pune parties in reach: ' + list.map(t => t.slice(0, 50)).join(' / '));
+  ok(list.every(t => /\d+\.\d km/.test(t) && /(spots? left|Full)/.test(t) && /(Free entry|Chip in ₹)/.test(t)), 'guest: each card shows the area, the distance, the entry and the spots left');
+  await p.screenshot({ path: O + '/p9-near-list.png' });
+  await p.click('.near-card'); await p.waitForTimeout(600);
+  const det = await p.evaluate(() => { const t = $('nearBody').textContent, pp = demoNearParties().find(x => x.title === $('nearTitle').textContent);
+    return { title: $('nearTitle').textContent, text: t.replace(/\s+/g, ' '), addr: t.includes(pp.near_address) || t.includes(pp.near_address.split(',')[0]), phone: t.includes(pp.host_phone), lat: t.includes(String(pp.near_geo.lat)) }; });
+  ok(/Hosted by \w+/.test(det.text) && /The \w+/.test(det.text) && /km/.test(det.text) && /(spots? left|Full) of \d+/.test(det.text) && /House rules/.test(det.text),
+    'guest: the party shows what, when, area and distance, the host\'s first name and vibe type, spots left and house rules: ' + det.text.slice(0, 160));
+  ok(!det.addr && !det.phone && !det.lat, 'guest: before acceptance, no address, pin or number on the party');
+  await p.screenshot({ path: O + '/p9-near-detail.png' });
+  await closeDialogs(p);
+  // switching off hides them again
+  await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1200); await closeDialogs(p);
+  ok(await p.evaluate(() => $('nearToggle').checked && /Baner/.test($('nearWhere').textContent)), 'guest: Account shows it on, looking near Baner');
+  await p.click('#nearToggle'); await p.waitForTimeout(800);
+  await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1300);
+  ok(await p.evaluate(() => !document.querySelectorAll('.near-card').length && !!document.querySelector('.near-promo')), 'guest: switched off again, no parties show (opted out)');
+  await ctx.close();
+  // a man in Bengaluru near Domlur: the women-only party is hidden, and so is the full one
+  ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  await seed(ctx, Object.assign(person('9822200003', 'Bharat', 'male'), { partyNear: { on: true, pin: { lat: 12.955, lng: 77.635 }, label: 'Domlur' } }));
+  p = await ctx.newPage(); p.on('pageerror', e => errs.push('bharat ' + e.message));
+  await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1500); await closeDialogs(p);
+  const bl = await p.evaluate(() => ({ titles: [...document.querySelectorAll('.near-card b')].map(x => x.textContent), why: Object.fromEntries(demoNearParties().filter(x => x.city === 'Bengaluru').map(x => [x.code, api.partyCantSee(x)])) }));
+  ok(bl.titles.join() === 'Karaoke night' && bl.why.NBBLR2 === 'wrong-gender' && bl.why.NBBLR3 === 'party-full', 'guest: a man sees the open party but not the women-only one (wrong gender) or the full one: ' + JSON.stringify(bl));
+  await ctx.close();
+  // far away: nothing in reach
+  ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  await seed(ctx, Object.assign(person('9822200004', 'Chitra', 'female'), { partyNear: { on: true, pin: { lat: 18.5089, lng: 73.926 }, label: 'Hadapsar' } }));
+  p = await ctx.newPage(); p.on('pageerror', e => errs.push('chitra ' + e.message));
+  await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1500); await closeDialogs(p);
+  const cl = await p.evaluate(() => ({ cards: document.querySelectorAll('.near-card').length, empty: !!document.querySelector('.near-empty'), why: api.partyCantSee(demoNearParties()[0]) }));
+  ok(!cl.cards && cl.empty && cl.why === 'out-of-radius', 'guest: 12 km away in Hadapsar, nothing is in reach (out of radius): ' + JSON.stringify(cl));
+  await ctx.close();
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 })();

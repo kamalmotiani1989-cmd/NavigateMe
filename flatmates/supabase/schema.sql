@@ -2115,6 +2115,109 @@ begin
   return fm_party_open_for_group(p_group);
 end $$;
 
+-- Guests: "Show me parties nearby" (off by default) and the pin it measures from.
+alter table public.fm_profiles add column if not exists parties_nearby boolean not null default false;
+alter table public.fm_profiles add column if not exists party_pin jsonb;
+alter table public.fm_profiles add column if not exists party_pin_label text;
+-- Requests to join a party from nearby (made and answered in part 3; counted here for spots left).
+create table if not exists public.fm_party_requests (
+  id           uuid primary key default gen_random_uuid(),
+  party_id     uuid not null references public.fm_parties(id) on delete cascade,
+  user_id      uuid not null references auth.users(id) on delete cascade,
+  note         text check (char_length(note) <= 120),
+  plus         int not null default 0 check (plus between 0 and 3),
+  status       text not null default 'pending' check (status in ('pending', 'accepted', 'declined', 'withdrawn', 'cancelled')),
+  checkin_code text,
+  checked_in_at timestamptz,
+  created_at   timestamptz not null default now(),
+  decided_at   timestamptz,
+  unique (party_id, user_id)
+);
+create index if not exists fm_party_requests_user_idx on public.fm_party_requests (user_id);
+alter table public.fm_party_requests enable row level security;   -- no policies: fm_party_* only
+
+-- Places taken by accepted guests and their plus-ones.
+create or replace function public.fm_party_taken(p_party uuid) returns int
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum(1 + plus), 0)::int from fm_party_requests where party_id = p_party and status = 'accepted';
+$$;
+-- Why this person can't see (or ask to join) this party from nearby; null when they can. The checks, in order:
+-- signed in, 18+, switched on with a pin, the party open and coming up and not full, not their own, who can come,
+-- and within the host's radius of their pin.
+create or replace function public.fm_party_cant_see(p_party uuid, p_user uuid) returns text
+language plpgsql stable security definer set search_path = public as $$
+declare v fm_parties%rowtype; me fm_profiles%rowtype;
+begin
+  if p_user is null then return 'not-signed-in'; end if;
+  select * into me from fm_profiles where id = p_user;
+  if me.adult_at is null then return 'age-required'; end if;
+  if not coalesce(me.parties_nearby, false) then return 'opted-out'; end if;
+  if fm_india_pin(me.party_pin) is null then return 'need-pin'; end if;
+  select * into v from fm_parties where id = p_party;
+  if v.id is null or not v.open or v.near_geo is null then return 'not-open'; end if;
+  if v.cancelled then return 'party-cancelled'; end if;
+  if v.starts_at < now() then return 'party-over'; end if;
+  if v.host_id = p_user then return 'own-party'; end if;
+  if v.who <> 'all' and v.who is distinct from me.gender then return 'wrong-gender'; end if;
+  if fm_km((me.party_pin->>'lat')::float8, (me.party_pin->>'lng')::float8, (v.near_geo->>'lat')::float8, (v.near_geo->>'lng')::float8) > v.radius_km
+    then return 'out-of-radius'; end if;
+  if fm_party_taken(v.id) >= v.guest_limit then return 'party-full'; end if;
+  return null;
+end $$;
+
+-- A nearby party as someone who isn't accepted yet sees it: what, when, the area and how far, the chip-in and what it
+-- covers, places left, the host's first name and living style (for the vibe type), the house rules. Never the
+-- address, the pin or a number. Accepted guests also get those (fm_party_nearby_get, part 3).
+create or replace function public.fm_party_near_json(p_party uuid, p_user uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('code', v.code, 'occasion', v.occasion, 'title', v.title, 'starts_at', v.starts_at, 'ends_at', v.ends_at,
+    'area', v.area, 'km', case when fm_india_pin(me.party_pin) is not null then round(fm_km((me.party_pin->>'lat')::float8, (me.party_pin->>'lng')::float8,
+                                  (v.near_geo->>'lat')::float8, (v.near_geo->>'lng')::float8)::numeric, 1) end,
+    'entry', v.entry, 'entry_chip', v.entry_chip, 'covers', to_jsonb(v.covers), 'covers_other', v.covers_other,
+    'guest_limit', v.guest_limit, 'spots_left', greatest(0, v.guest_limit - fm_party_taken(v.id)), 'plus_ones', v.plus_ones,
+    'who', v.who, 'house_rules', v.house_rules, 'cancelled', v.cancelled,
+    'host', split_part(coalesce(h.full_name, ''), ' ', 1), 'host_vibe', coalesce(h.vibe, '{}'::jsonb),
+    'my_request', (select jsonb_build_object('id', r.id, 'status', r.status, 'plus', r.plus, 'note', r.note) from fm_party_requests r
+                   where r.party_id = v.id and r.user_id = p_user))
+  from fm_parties v left join fm_profiles h on h.id = v.host_id left join fm_profiles me on me.id = p_user
+  where v.id = p_party;
+$$;
+
+-- Switch "Show me parties nearby" on (with the pin to measure from) or off.
+create or replace function public.fm_party_nearby_set(p_on boolean, p_pin jsonb default null, p_label text default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_pin jsonb := fm_india_pin(p_pin);
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if coalesce(p_on, false) then
+    if (select adult_at from fm_profiles where id = auth.uid()) is null then raise exception 'age-required'; end if;
+    if v_pin is null and fm_india_pin((select party_pin from fm_profiles where id = auth.uid())) is null then raise exception 'need-pin'; end if;
+  end if;
+  update fm_profiles set parties_nearby = coalesce(p_on, false),
+         party_pin = coalesce(v_pin, party_pin), party_pin_label = case when v_pin is not null then nullif(left(trim(coalesce(p_label, '')), 60), '') else party_pin_label end
+   where id = auth.uid();
+  return (select jsonb_build_object('on', parties_nearby, 'pin', party_pin, 'label', party_pin_label) from fm_profiles where id = auth.uid());
+end $$;
+create or replace function public.fm_party_nearby_me() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('on', parties_nearby, 'pin', party_pin, 'label', party_pin_label) from fm_profiles where id = auth.uid();
+$$;
+
+-- Parties near me, soonest first; also the ones I've asked to join (whatever their state), so I can follow them.
+create or replace function public.fm_party_nearby() returns setof jsonb
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('party-near', 120, 600);
+  return query
+    select fm_party_near_json(v.id, auth.uid()) from fm_parties v
+     where v.open and (fm_party_cant_see(v.id, auth.uid()) is null
+           or exists (select 1 from fm_party_requests r where r.party_id = v.id and r.user_id = auth.uid() and r.status in ('pending', 'accepted')
+                      and coalesce(v.ends_at, v.starts_at + interval '12 hours') > now()))
+     order by v.starts_at
+     limit 50;
+end $$;
+
 -- ------------------------------------------------- new-flat alerts --
 -- Who a new listing is for: seekers in its city and areas, still looking (searched in the last 60 days), who'd see
 -- its kind (private room or whole flat: no shared rooms; shared room or anything: everything), and with 70%+
@@ -3354,7 +3457,7 @@ begin
                      'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify',
                      'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours',
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
-                     'fm_party_alcohol', 'fm_km', 'fm_india_pin') then
+                     'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);

@@ -1096,6 +1096,17 @@ body.typing .help-fab{display:none}
 .pt-covers{display:flex; flex-wrap:wrap; gap:6px 14px} .pt-covers .chk{display:flex; gap:6px; align-items:center; font-size:var(--fs-s)}
 .pt-money{margin:0 0 14px; padding:10px 12px; border-radius:12px; background:var(--brand-soft); color:var(--brand-2); font-size:var(--fs-s); font-weight:600}
 .pt-near input[type=range]{width:100%; accent-color:var(--brand)}
+.near-promo{display:flex; gap:12px; align-items:center; padding:14px; margin:0 0 16px; border-radius:16px; background:#fff; box-shadow:var(--card-shadow)}
+.near-promo > div{flex:1; min-width:0} .near-promo small{display:block; color:var(--text-2); font-size:var(--fs-s)} .near-promo .pt-mini-ic{color:var(--brand-2)}
+.near-h{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap} .near-h span{font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
+.near-list{display:grid; gap:10px; margin:0 0 18px}
+.near-card{display:flex; gap:12px; align-items:center; width:100%; padding:12px 14px; border:0; border-radius:16px; background:#fff; box-shadow:var(--card-shadow); text-align:left; font:inherit; color:var(--text); cursor:pointer}
+.near-card .nc-main{flex:1; min-width:0} .near-card b{display:block} .near-card small{display:block; color:var(--text-2); font-size:var(--fs-s)}
+.nc-st{font-size:var(--fs-xs); font-weight:800; padding:3px 9px; border-radius:999px; background:var(--surface-2); color:var(--text-2); white-space:nowrap}
+.nc-st.accepted{background:var(--brand-soft); color:var(--brand-2)}
+.near-empty{margin:0 0 18px}
+.near-host{display:flex; gap:12px; align-items:center; margin:0 0 12px} .near-host > div{flex:1} .near-host small{display:block; color:var(--text-2); font-size:var(--fs-s)}
+.nh-av{width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:var(--ink); color:#fff; font-weight:800}
 .pt-open-line{display:flex; gap:6px; align-items:flex-start; margin:10px 0 0; font-size:var(--fs-s); color:var(--text-2)} .pt-open-line .ic{flex:none; margin-top:2px; color:var(--brand-2)}
 .opt-l{font-weight:500; color:var(--text-3)}
 .danger-link{color:var(--danger)!important}
@@ -2403,6 +2414,10 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label>
       <div class="show-to" id="showTo"></div>
       <div class="ontime-box" id="onTimeBox"></div></div>
+    <div class="panel" id="nearPanel"><h2>Parties nearby</h2>
+      <p class="sub">House parties that hosts have opened to people nearby. You see the area and the distance; the address and numbers are shared only if the host accepts you.</p>
+      <label class="switch"><input type="checkbox" id="nearToggle"><span>Show me parties nearby</span></label>
+      <p class="hint" id="nearWhere" style="margin:8px 0 0"></p></div>
     <div class="panel" id="unlockedPanel"><h2>Flats you've contacted</h2>
       <p class="sub" id="creditLine"></p><div id="myUnlocked"></div></div>
 
@@ -2648,6 +2663,11 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <button class="btn btn-ghost btn-block" type="button" data-close>Keep my account</button>
 </div></dialog>
 
+<dialog id="dlgNearPin" aria-labelledby="npinTitle"><div class="mhead"><div><h2 id="npinTitle">Where should we look?</h2><div class="loc">Parties within each host's distance of this place</div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody"><div class="field ps-anchor"><label for="npinPlace">Your area or a landmark</label><input type="text" id="npinPlace" autocomplete="off" placeholder="e.g. Baner, Koramangala"></div>
+    <p class="hint" style="margin:0">We keep this place, not your live location. Only the distance shows to you; hosts never see it.</p></div></dialog>
+<dialog id="dlgNear" aria-labelledby="nearTitle"><div class="mhead"><div><h2 id="nearTitle"></h2><div class="loc" id="nearSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="nearBody"></div></dialog>
 <dialog id="dlgFs" aria-labelledby="fsdTitle"><div class="mhead"><div><h2 id="fsdTitle"></h2><div class="loc" id="fsdSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="fsdBody"></div></dialog>
 
@@ -4109,6 +4129,26 @@ function demoWants(){
   return demoWantCache = out;
 }
 let mkDemoCache = null;
+// Sample parties open to people nearby (demo mode): a few evenings in Pune and Bengaluru, hosted by sample people.
+let demoNearCache = null;
+function demoNearParties(){
+  if(demoNearCache) return demoNearCache;
+  const day = (n, h) => { const d = new Date(); d.setDate(d.getDate() + n); d.setHours(h, 0, 0, 0); return d.toISOString(); };
+  const at = (city, area, dlat, dlng) => { const g = DEMO_GEO[city][area]; return { lat: +(g[0] + dlat).toFixed(5), lng: +(g[1] + dlng).toFixed(5) }; };
+  const v = (o) => Object.assign({ sleep:1, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:2, noise:1, social:2, sharing:1, work:0, pets:1 }, o);
+  const list = [
+    ["NBPUN1", "Pune", "Baner", .004, -.003, "Ananya", v({ gen:"z" }), "games", "Board games and chai", 2, 19, "female", 3, 6, 1, "chip", 250, ["snacks", "games"], "", "Shoes off at the door. No smoking indoors. We wrap up by 11."],
+    ["NBPUN2", "Pune", "Balewadi", -.002, .003, "Kabir", v({ gen:"m", sleep:2 }), "match", "India vs Australia on the big screen", 4, 18, "all", 4, 10, 3, "free", null, [], "", "Bring your own drinks if you like. Quiet after 11 for the neighbours."],
+    ["NBPUN3", "Pune", "Aundh", .002, .002, "Meera", v({ gen:"z", cook:0 }), "potluck", "Sunday potluck brunch", 5, 12, "all", 5, 8, 0, "chip", 200, ["food", "soft_drinks"], "plates and cutlery", "Vegetarian kitchen. Kids and pets welcome."],
+    ["NBBLR1", "Bengaluru", "Koramangala", .003, -.002, "Rohan", v({ gen:"z", social:2 }), "karaoke", "Karaoke night", 3, 20, "all", 3, 8, 2, "chip", 300, ["snacks", "music"], "", "Wraps up at midnight. Be kind to the mic."],
+    ["NBBLR2", "Bengaluru", "HSR Layout", -.003, .002, "Priya", v({ gen:"m" }), "movie", "Movie night: 90s Bollywood", 2, 20, "female", 3, 5, 0, "free", null, [], "", "Women only. Snacks on us. No smoking."],
+    ["NBBLR3", "Bengaluru", "Indiranagar", .002, .003, "Arjun", v({ gen:"z", noise:2 }), "terrace", "Terrace jam session", 6, 19, "male", 4, 6, 6, "chip", 150, ["music", "decor"], "", "Bring an instrument if you play."],
+  ];
+  return demoNearCache = list.map(([code, city, area, dlat, dlng, host, hv, occasion, title, inDays, hour, who, radius_km, guest_limit, taken, entry, entry_chip, covers, covers_other, house_rules]) => ({
+    id: "np-" + code, code, sample: true, city, area, near_geo: at(city, area, dlat, dlng), near_address: `Flat ${10 + code.charCodeAt(5) % 40}, ${area} Residency, ${area}, ${city}`,
+    host_name: host, host_phone: "98000" + String(10000 + code.charCodeAt(5) * 37).slice(-5), host_vibe: hv, occasion, title, starts_at: day(inDays, hour), ends_at: day(inDays, hour + 4),
+    who, radius_km, guest_limit, taken, entry, entry_chip, covers, covers_other: covers_other || null, house_rules, plus_ones: true, open: true, cancelled: false }));
+}
 function demoMarketItems(){
   if(mkDemoCache) return mkDemoCache;
   const r = rng(20261027), pick = a => a[Math.floor(r() * a.length)], now = Date.now(), out = [];
@@ -4406,6 +4446,40 @@ Object.assign(demoApi, {
     if(!r){ if(p.rsvps.length >= 200) throw new Error("party-full"); p.rsvps.push(r = { token, created_at:new Date().toISOString() }); }
     Object.assign(r, { name, answer, plus: p.plus_ones && answer === "yes" ? Math.max(0, Math.min(5, plus || 0)) : 0 });
     save(); return this.partyView(p, token);
+  },
+  // Nearby parties, guests: same rules as fm_party_nearby_set / fm_party_cant_see / fm_party_nearby.
+  async partyNearbyMe(){ return Object.assign({ on:false, pin:null, label:null }, state.partyNear); },
+  async partyNearbySet(on, pin, label){
+    if(!this.me_()) throw new Error("not-signed-in");
+    const cur = state.partyNear || {};
+    if(on){ if(!state.user.adultAt) throw new Error("age-required"); if(!(pin && pin.lat) && !(cur.pin && cur.pin.lat)) throw new Error("need-pin"); }
+    state.partyNear = { on: !!on, pin: pin && pin.lat ? { lat:+pin.lat, lng:+pin.lng } : cur.pin || null, label: pin && pin.lat ? String(label || "").slice(0, 60) || null : cur.label || null };
+    save(); return this.partyNearbyMe();
+  },
+  partyReqs(){ return state.partyReqs || (state.partyReqs = []); },
+  partyTaken(p){ return (p.taken || 0) + this.partyReqs().filter(r => r.party_id === p.id && r.status === "accepted").reduce((t, r) => t + 1 + (r.plus || 0), 0); },
+  partyCantSee(p){
+    const me = this.me_(), n = state.partyNear || {};
+    if(!me) return "not-signed-in"; if(!state.user.adultAt) return "age-required"; if(!n.on) return "opted-out"; if(!(n.pin && n.pin.lat)) return "need-pin";
+    if(!p || !p.open || !p.near_geo) return "not-open"; if(p.cancelled) return "party-cancelled"; if(new Date(p.starts_at) < new Date()) return "party-over";
+    if(p.host_phone === me) return "own-party"; if(p.who !== "all" && p.who !== state.user.gender) return "wrong-gender";
+    if(kmBetween(n.pin, p.near_geo) > p.radius_km) return "out-of-radius";
+    if(this.partyTaken(p) >= p.guest_limit) return "party-full";
+    return null;
+  },
+  partyNearJson(p){
+    const n = state.partyNear || {}, r = this.partyReqs().find(x => x.party_id === p.id && x.user_phone === this.me_());
+    return { code:p.code, occasion:p.occasion, title:p.title, starts_at:p.starts_at, ends_at:p.ends_at, area:p.area,
+      km: n.pin && n.pin.lat ? Math.round(kmBetween(n.pin, p.near_geo) * 10) / 10 : null, entry:p.entry, entry_chip:p.entry_chip, covers:p.covers, covers_other:p.covers_other,
+      guest_limit:p.guest_limit, spots_left: Math.max(0, p.guest_limit - this.partyTaken(p)), plus_ones:p.plus_ones, who:p.who, house_rules:p.house_rules, cancelled:p.cancelled,
+      host:p.host_name, host_vibe:p.host_vibe, sample: !!p.sample, my_request: r ? { id:r.id, status:r.status, plus:r.plus, note:r.note } : null };
+  },
+  nearAll(){ return demoNearParties(); },
+  async partyNearby(){
+    if(!this.me_()) throw new Error("not-signed-in");
+    const mine = id => this.partyReqs().some(r => r.party_id === id && r.user_phone === this.me_() && ["pending", "accepted"].includes(r.status));
+    return this.nearAll().filter(p => p.open && (!this.partyCantSee(p) || (mine(p.id) && new Date(p.ends_at || p.starts_at) > new Date())))
+      .sort((a, b) => a.starts_at.localeCompare(b.starts_at)).map(p => this.partyNearJson(p));
   },
   // Nearby parties, host side: same rules as fm_party_open_save / fm_party_open_for_group.
   partyOpenView(p){ return { open: !!p.open, guest_limit: p.guest_limit || null, entry: p.entry || "free", entry_chip: p.entry_chip || null, covers: p.covers || [],
@@ -4755,6 +4829,9 @@ function liveExtras(rpc){
     async partyRsvp(code, token, name, answer, plus){ return rpc("fm_party_rsvp", { p_code:code, p_token:token, p_name:name, p_answer:answer, p_plus:plus || 0 }); },
     async partyFeed(){ return rpc("fm_party_feed"); },
     async partyOpenFor(gid){ return rpc("fm_party_open_for_group", { p_group:gid }); },
+    async partyNearbyMe(){ return rpc("fm_party_nearby_me"); },
+    async partyNearbySet(on, pin, label){ return rpc("fm_party_nearby_set", { p_on:!!on, p_pin:pin || null, p_label:label || null }); },
+    async partyNearby(){ return rpc("fm_party_nearby"); },
     async partyOpenSave(gid, p){ return rpc("fm_party_open_save", { p_group:gid, p }); },
     // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
     async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
@@ -7668,7 +7745,8 @@ async function renderSplits(){
   if(routeArg) return renderSplitGroup(routeArg);
   $("fsHome").hidden = false; $("fsGroup").hidden = true;
   let groups = [], feed = [];
-  try{ [groups, feed] = await Promise.all([api.splitGroups(), api.partyFeed().catch(() => [])]); }catch(err){ console.error(err); }
+  let near = { me: null, list: [] };
+  try{ [groups, feed, near] = await Promise.all([api.splitGroups(), api.partyFeed().catch(() => []), loadNear()]); }catch(err){ console.error(err); }
   if(currentView !== "splits" || routeArg) return;
   const owed = groups.reduce((t, g) => t + Math.max(0, g.my_net), 0), owe = groups.reduce((t, g) => t + Math.max(0, -g.my_net), 0);
   $("fsTot").innerHTML = groups.length ? `<div><b>${rupees(owed)}</b><span>you get back in all</span></div><div><b>${rupees(owe)}</b><span>you owe in all</span></div>` : "";
@@ -7681,7 +7759,7 @@ async function renderSplits(){
       ${fsNetHtml(g.my_net)}</button>`;
   // This month, your share: the flat's household spending, kept apart from trips and parties.
   const month = new Date().toLocaleDateString("en-IN", { month:"long" });
-  $("fsGroups").innerHTML = ptFeedHtml(feed) + (groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
+  $("fsGroups").innerHTML = nearSectionHtml(near) + ptFeedHtml(feed) + (groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
         <div><span>${ic("home", 14)} Household</span><b>${rupees(share(flats))}</b></div><div><span>${ic("plane", 14)} Trips & parties</span><b>${rupees(share(events))}</b></div></div>
       <h3 class="section-h">Your flat</h3>${flats.length ? flats.map(groupBtn).join("") : `<p class="hint" style="margin:0 0 6px">No flat group yet.</p>`}
       <button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:10px">+ New flat group</button>
@@ -9059,7 +9137,9 @@ const PT_ALCOHOL = /(alcohol|beer|wine|whisk(e)?y|vodka|\brum\b|\bgin\b|tequila|
 const PT_WHO = { all:"Everyone", female:"Women only", male:"Men only" };
 const PT_MONEY_LINE = "Paid to the host at the door or by UPI. FindMeFlatMate does not collect money. Alcohol: bring your own; it can't be part of the chip-in.";
 const ptEntryText = o => o.entry === "chip" && o.entry_chip ? `Chip in ${inr(o.entry_chip)}` : "Free entry";
-const ptCoversText = o => o.entry === "chip" ? (o.covers || []).map(c => PT_COVERS[c]).filter(Boolean).concat(o.covers_other ? [o.covers_other] : []).join(", ") : "";
+const ptCoversText = o => { if(o.entry !== "chip") return "";
+  const l = (o.covers || []).map(c => (PT_COVERS[c] || "").toLowerCase()).filter(Boolean).concat(o.covers_other ? [o.covers_other] : []);
+  return l.length > 1 ? l.slice(0, -1).join(", ") + " and " + l[l.length - 1] : l.join(""); };
 const ptLink = code => siteLink() + "#party/" + code;
 const ptDay = d => new Date(d).toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long" });
 const ptTime = d => new Date(d).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" }).replace(/\s?([ap])\.?m\.?/i, " $1m").toLowerCase();
@@ -9478,6 +9558,93 @@ const ptFeedHtml = feed => feed.length ? `<h3 class="section-h">Coming up at you
       <small>${p.cancelled ? "Called off" : `${esc(p.host || "A flatmate")} is hosting · ${esc(ptShort(p))}`} · ${esc(p.flat)}</small></span><span class="pt-go">${p.cancelled ? "" : "See invite"}</span></a>`; }).join("")}` : "";
 
 /* ========================================================= areas + maps */
+// ---- parties near you (Phase 1): hosts open a party to people nearby; people switch "Show me parties nearby" on
+let nearMe = null, nearList = [];
+async function loadNear(){
+  try{ nearMe = await api.partyNearbyMe(); }catch(err){ console.error(err); nearMe = null; }
+  nearList = [];
+  if(nearMe && nearMe.on) try{ nearList = await api.partyNearby() || []; }catch(err){ console.error(err); }
+  return { me: nearMe, list: nearList };
+}
+const nearWhen = p => new Date(p.starts_at).toLocaleDateString("en-IN", { weekday:"short", day:"numeric", month:"short" }) + ", " + ptTime(p.starts_at);
+const nearPlace = p => `${p.area}${p.km != null ? ", " + p.km.toFixed(1) + " km" : ""}`;
+const nearSpots = p => p.spots_left > 0 ? `${p.spots_left} ${p.spots_left === 1 ? "spot" : "spots"} left` : "Full";
+const NEAR_STATUS = { pending:"Asked to join", accepted:"You're in", declined:"Not this time", withdrawn:"", cancelled:"Called off" };
+function nearCardHtml(p){
+  const st = p.my_request && NEAR_STATUS[p.my_request.status];
+  return `<button class="near-card" type="button" data-near="${esc(p.code)}"><span class="pt-mini-ic" aria-hidden="true">${ptKind(p.occasion)[0]}</span>
+    <span class="nc-main"><b>${esc(p.title)}</b><small>${esc(nearWhen(p))} · ${esc(nearPlace(p))}</small>
+      <small>${esc(ptEntryText(p))} · ${esc(nearSpots(p))}${p.who !== "all" ? " · " + esc(PT_WHO[p.who]) : ""}${p.sample ? " " + SAMPLE_TAG : ""}</small></span>
+    ${st ? `<span class="nc-st ${esc(p.my_request.status)}">${esc(st)}</span>` : `<span class="pt-go">See</span>`}</button>`;
+}
+function nearSectionHtml(n){
+  if(!n || !n.me) return "";
+  if(!n.me.on) return `<div class="near-promo"><span class="pt-mini-ic" aria-hidden="true">${ic("party", 20)}</span><div><b>House parties near you</b>
+      <small>See parties hosts have opened to people nearby. Off until you switch it on.</small></div>
+      <button class="btn btn-ghost btn-sm" type="button" data-near-on>Show me</button></div>`;
+  return `<h3 class="section-h near-h">Parties near you <span>${n.me.label ? "near " + esc(n.me.label) : ""} · <button class="linkbtn" type="button" data-near-pin>Change</button></span></h3>
+    ${n.list.length ? `<div class="near-list">${n.list.map(nearCardHtml).join("")}</div>` : `<p class="hint near-empty">No parties near you right now. Hosts open them a few days ahead, so check back.</p>`}`;
+}
+function renderNearPanel(){
+  api.partyNearbyMe().then(m => { nearMe = m; $("nearToggle").checked = !!(m && m.on);
+    $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#splits">See parties</a>` : ""; })
+    .catch(err => console.error(err));
+}
+// Switch it on: we need a place to measure from, picked once (not live location).
+let nearPinThen = null;
+function askNearPin(then){
+  nearPinThen = then; $("npinPlace").value = ""; $("dlgNearPin").showModal(); setTimeout(() => $("npinPlace").focus(), 50);
+}
+async function nearSwitch(on, pin, label){
+  try{
+    nearMe = await api.partyNearbySet(on, pin || null, label || null);
+    toast(on ? "Parties near you are on. See them in Splits." : "Parties nearby switched off.");
+  }catch(err){
+    console.error(err); const m = String(err.message || "");
+    if(m.includes("need-pin")) return askNearPin(pl => nearSwitch(true, pl, pl.label));
+    toast(m.includes("age-required") ? "Parties nearby are for adults only." : "Couldn't change that. Please try again.");
+  }
+  if(currentView === "account") renderNearPanel(); if(currentView === "splits") renderSplits();
+}
+if(window.attachPlaceSearch || typeof attachPlaceSearch === "function") setTimeout(() => attachPlaceSearch($("npinPlace"), pl => {
+  $("dlgNearPin").close(); const f = nearPinThen; nearPinThen = null; if(f) f({ lat: pl.lat, lng: pl.lng, label: pl.area || String(pl.label || "").split(",")[0] });
+}, { here: true }), 0);
+$("nearToggle").addEventListener("change", e => {
+  if(!e.target.checked) return nearSwitch(false);
+  if(nearMe && nearMe.pin && nearMe.pin.lat) return nearSwitch(true);
+  e.target.checked = false; askNearPin(pl => nearSwitch(true, pl, pl.label));
+});
+document.addEventListener("click", e => {
+  if(e.target.closest("[data-near-on]")) return nearMe && nearMe.pin && nearMe.pin.lat ? nearSwitch(true) : askNearPin(pl => nearSwitch(true, pl, pl.label));
+  if(e.target.closest("[data-near-pin]")) return askNearPin(pl => nearSwitch(true, pl, pl.label));
+  const c = e.target.closest("[data-near]"); if(c) openNear(c.dataset.near);
+});
+// One party, as someone nearby sees it before the host accepts them: never the address, the pin or a number.
+let nearParty = null;
+function nearDetailHtml(p){
+  const vt = vibeType(p.host_vibe), covers = ptCoversText(p);
+  const rows = [
+    [ic("bell", 18), ptDay(p.starts_at), ptTimes(p)],
+    [ic("pin", 18), nearPlace(p), "The address is shared when the host accepts you."],
+    [ic("gift", 18), ptEntryText(p), (covers ? "Covers " + covers + ". " : "") + (p.entry === "chip" ? PT_MONEY_LINE : "Alcohol: bring your own.")],
+    [ic("users", 18), nearSpots(p) + ` of ${p.guest_limit}`, PT_WHO[p.who] + (p.plus_ones ? " · plus-ones count towards the spots" : "")],
+  ];
+  if(p.house_rules) rows.push([ic("chat", 18), "House rules", p.house_rules]);
+  return `<div class="near-host"><span class="nh-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span><div><b>Hosted by ${esc(p.host || "someone nearby")}</b>
+      <small>${vt ? esc(vt.emoji + " " + vt.title) : "Living style not shared yet"}</small></div>${p.sample ? SAMPLE_TAG : ""}</div>
+    <div class="pt-card pt-details">${rows.map(([icn, t, sub]) => `<div class="pt-row"><span class="pt-ic" aria-hidden="true">${icn}</span><div><b>${esc(t)}</b>${sub ? `<p>${esc(sub)}</p>` : ""}</div></div>`).join("")}</div>
+    <div id="nearAct"></div>`;
+}
+async function openNear(code){
+  nearParty = (nearList || []).find(x => x.code === code) || null;
+  if(!nearParty){ try{ nearParty = (await api.partyNearby()).find(x => x.code === code) || null; }catch(err){ console.error(err); } }
+  if(!nearParty) return toast("That party isn't open to you any more.");
+  drawNear(); if(!$("dlgNear").open) $("dlgNear").showModal();
+}
+function drawNear(){
+  const p = nearParty; $("nearTitle").textContent = p.title; $("nearSub").textContent = nearWhen(p) + " · " + nearPlace(p);
+  $("nearBody").innerHTML = nearDetailHtml(p);
+}
 // Areas and the map pin come from OpenStreetMap: Photon for search, OSM tiles for the map.
 // The known areas of the 8 big cities still show up first, and work offline.
 const PHOTON = "https://photon.komoot.io/api/";
@@ -10182,6 +10349,7 @@ async function renderAccount(){
   const mt = vibeType(myVibe());
   $("accVibeSub").textContent = mt ? `${mt.emoji} ${mt.title}` : "Take the 1-minute quiz and share your flatmate type";
   $("discToggle").checked = state.discoverable !== false;
+  renderNearPanel();
   $("tribeToggle").checked = state.tribeOpen !== false;
   $("accGenderSub").textContent = state.user.gender === "female" ? "Female" : state.user.gender === "male" ? "Male" : "Not set yet";
   $("showTo").innerHTML = [["tribe", "In Build your tribe", state.tribeShowTo], ["escape", "In The Empty Room Escape (owners)", state.escapeShowTo]].map(([k, label, cur]) =>
