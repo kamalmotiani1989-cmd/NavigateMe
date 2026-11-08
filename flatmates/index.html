@@ -663,7 +663,7 @@ div.cx-area{cursor:default}
 .inv-banner .urgent-dot{background:var(--hi); box-shadow:0 0 0 0 var(--hi); flex:none}
 .inv-banner b{display:block} .inv-banner small{color:rgba(255,255,255,.88); font-size:13px}
 .lock.invited{padding:18px; border-radius:18px; background:var(--brand-soft); box-shadow:none}
-.lock.invited .eyebrow{color:var(--brand); margin:0}
+.lock.invited .eyebrow{color:var(--brand-2); margin:0}
 .lock.invited .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
 .esc-promo{display:block; margin:16px 0 4px; padding:16px 18px; border-radius:18px; background:var(--grad); color:rgba(255,255,255,.9); text-decoration:none; font-size:14px}
 .esc-promo small{display:block; font-size:11.5px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--hi)}
@@ -713,7 +713,7 @@ div.cx-area{cursor:default}
 .tribe-card.wants{box-shadow:0 0 0 2px var(--brand), 0 10px 30px rgba(27,36,64,.10); background:linear-gradient(180deg,var(--brand-soft),#fff 60%)}
 .tribe-card .wants-line{margin:0 0 10px; font-weight:800; color:var(--accent)}
 .tribe-card .acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px}
-.tribe-card .seek-facts strong, .seek-facts strong{color:var(--brand)}
+.tribe-card .seek-facts strong, .seek-facts strong{color:var(--brand)} .tribe-card.wants .seek-facts strong{color:var(--brand-2)}
 .tribe-bond{margin:16px 0; padding:20px; border-radius:22px; color:#fff; background:var(--grad)}
 .tribe-bond .eyebrow{color:rgba(255,255,255,.85); margin:0}
 .tribe-bond h2{color:#fff; font-size:24px; margin:8px 0 4px}
@@ -960,7 +960,7 @@ div.cx-area{cursor:default}
 .ps-item:hover, .ps-item.on{background:var(--surface-2)}
 .ps-item i{flex:none; width:36px; height:36px; border-radius:50%; background:var(--surface-2); display:grid; place-items:center; font-style:normal; font-size:16px}
 .ps-item:hover i, .ps-item.on i{background:#fff}
-.ps-item.here i{background:var(--brand-soft); color:var(--brand); font-size:20px; font-weight:800}
+.ps-item.here i{background:var(--brand-soft); color:var(--brand-2); font-size:20px; font-weight:800}
 .ps-item span{min-width:0} .ps-item b{display:block; font-weight:700; line-height:1.3}
 .ps-item small{display:block; color:var(--text-3); font-size:13px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .ps-by{text-align:right; font-size:11px; color:var(--text-3); padding:6px 10px 2px} .ps-by b{font-weight:700; color:var(--text-2)}
@@ -1530,12 +1530,12 @@ html:has(> body.app){background:var(--app-bg)}
   background:var(--brand-soft); color:var(--text); font:inherit}
 .vt-line > span:first-child{font-size:28px}
 .vt-line span{flex:1} .vt-line small{display:block; font-size:12px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em}
-.vt-line b{font-size:16.5px} .vt-line em{font-style:normal; font-weight:800; color:var(--brand)}
+.vt-line b{font-size:16.5px} .vt-line em{font-style:normal; font-weight:800; color:var(--brand-2)}
 .pp-card{position:relative; margin:16px 0 4px; padding:14px 40px 14px 14px; border-radius:18px; background:var(--brand-soft);
   box-shadow:inset 0 0 0 1px rgba(28,127,114,.18)}
 .pp-main{display:flex; gap:14px; align-items:center; border:0; background:none; padding:0; text-align:left; cursor:pointer; font:inherit; color:var(--text); width:100%}
 .pp-main b{display:block; font-size:16.5px} .pp-main small{display:block; font-size:13.5px; color:var(--text-2); margin-top:2px}
-.pp-main em{display:block; font-style:normal; font-weight:800; color:var(--teal); font-size:14px; margin-top:6px}
+.pp-main em{display:block; font-style:normal; font-weight:800; color:var(--brand-2); font-size:14px; margin-top:6px}
 .pp-ring{flex:none; width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
   background:conic-gradient(var(--teal) calc(var(--p) * 1%), rgba(28,127,114,.15) 0)}
 .pp-ring b{display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:#fff; font-size:13px; color:var(--teal)}
@@ -2554,7 +2554,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
 </div></dialog>
 <dialog id="dlgInvite" class="confirm" aria-labelledby="ivTitle"><form class="confirm-body inv-form" id="inviteForm" novalidate>
-  <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand);font-size:26px">✉️</span>
+  <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand-2);font-size:26px">✉️</span>
   <h2 id="ivTitle">Invite</h2>
   <p id="ivText"></p>
   <label class="sl-f"><span>A note with the invite</span><textarea id="ivMsg" maxlength="300"></textarea></label>
