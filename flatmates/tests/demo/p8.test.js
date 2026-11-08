@@ -27,6 +27,12 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return Math.round((x + .05) / (y + .05) * 100) / 100; };
     return { v, white: ratio(v, '#FFFFFF'), wash: ratio(v, '#DCEFE9'), appBg: ratio(v, '#F4F7F6') }; });
   ok(grey.v.toUpperCase() === '#5E6679' && grey.white >= 4.5 && grey.wash >= 4.5 && grey.appBg >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better: ' + JSON.stringify(grey));
+  // the WhatsApp button: darker green, white text at 4.5:1 or better; the sign-in card's controls are the same
+  const wa = await p.evaluate(() => { const bt = document.querySelector('#loginForm .btn-wa'), cs = getComputedStyle(bt);
+    const lum = rgb => { const c = rgb.match(/\d+/g).slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+    return { bg: cs.backgroundColor, ratio: Math.round((lum(cs.color) + .05) / (lum(cs.backgroundColor) + .05) * 100) / 100, text: bt.textContent.trim(),
+      fields: [...document.querySelectorAll('#loginForm input')].map(i => i.name || i.id).join(',') }; });
+  ok(wa.bg === 'rgb(23, 135, 65)' && wa.ratio >= 4.5 && wa.text === 'Get the code on WhatsApp', 'visitor: the WhatsApp button is #178741 with readable white text: ' + JSON.stringify(wa));
   // a wide screen keeps the two columns: words on the left, the card on the right
   await p.setViewportSize({ width: 1280, height: 900 }); await p.waitForTimeout(500);
   const wide = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect();

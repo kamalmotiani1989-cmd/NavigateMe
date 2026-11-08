@@ -470,6 +470,8 @@ Calm and grown-up, set on 8 Nov 2026 to replace the earlier bright teal-to-blue 
 - Headlines are bold (700), not extra-bold; the welcome headline mixes a light and a heavy weight.
 - **Hints and small print** use `--text-3` #5E6679 (darkened from #8790A3 on 8 Nov 2026, Kamal's call), which reads at
   5.75:1 on white and 4.81:1 on the mint wash; green text on the pale green tips uses `--brand-2` #156358.
+- **The WhatsApp button** on the sign-in card is `--wa` #178741 (darkened from #1DA851 on 8 Nov 2026, Kamal's call),
+  so its white text reads at 4.59:1; it is the only place WhatsApp green is used.
 New screens use the tokens in `:root` at the top of the stylesheet rather than new colours.
 
 ## Files
