@@ -19,6 +19,11 @@ _Last update: 8 Nov 2026._
 **Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything for him is ready before 10 pm that day.
 
 ## Teche (tech)
+00. **Nearby parties, Phase 1: Kamal's approval, 8 Nov, in King's session.** His words: "Yes to all 3, build phase 1".
+   The three decisions: build Phase 1; the host picks the radius from 1 to 5 km, default 3 km; women-only parties are
+   allowed. Phase 1 means no money handled by the app (the chip-in is paid to the host at the door or by UPI),
+   alcohol is bring-your-own and never part of the chip-in, and the address and numbers are shared only when the host
+   accepts. Full brief in King's message of 8 Nov. One PR, Kamal merges, deploy on his word: app first, then database.
 0. **Kamal's approval, 8 Nov, in King's session ("All 4"), from the design study (PR #62):** (1) layout changes 1 to 3
    and 5 to 8 plus the tips token swap; (2) hint grey `#8790A3` to `#5E6679`; (3) WhatsApp button `#1DA851` to `#178741`
    on the sign-in card; (4) the sign-in card moved onto the welcome page's first phone screen, with the card, its steps
