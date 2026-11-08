@@ -186,6 +186,14 @@ textarea{min-height:96px; resize:vertical}
   .w-grid{grid-template-columns:1fr; grid-template-areas:"copy" "card" "city"; padding-block:12px 0}
   .city{height:190px; margin-top:0}
   .w-card{margin:28px 0 8px}
+  /* Phones: the sign-in card comes straight after the quiz, the points and the trust line, so its choices are on
+     the first screen; the paragraph follows the card. The card itself is unchanged. */
+  .w-grid{display:flex; flex-direction:column}
+  .w-copy{display:contents}
+  .w-points{gap:4px 18px; margin-top:14px} .w-trust{margin-top:10px}
+  .w-card{order:1; margin-top:16px}
+  .w-copy .lede{order:2; margin:20px 0 4px; font-size:16.5px}
+  .city{order:3}
 }
 .story{padding-block:72px 24px; box-shadow:0 -1px 0 var(--line)}
 .story-h{max-width:26ch; font-size:clamp(26px,3.4vw,38px)}
