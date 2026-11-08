@@ -193,6 +193,38 @@ the room comes second.
     The host can edit it or call it off; the page then says so. Tables `fm_parties` / `fm_party_rsvps`;
     `fm_party_save`, `fm_party_for_group`, `fm_party_cancel`, `fm_party_feed` (signed in) and `fm_party_get`,
     `fm_party_rsvp` (anyone, up to 200 replies a party); the `fm_parties_notify` trigger calls fm-notify.
+
+    **Nearby parties (Phase 1, approved by Kamal on 8 Nov 2026).** A host can mark a party **"Open to people
+    nearby"** (off by default): a guest limit (required), entry **Free** or a **chip-in** in ₹ with what it covers
+    (food, soft drinks, snacks, music, games, decor, plus an other line), **who can come** (everyone, women only,
+    men only), a radius of **1 to 5 km** (3 km to start), a private address with its map pin, the area people see,
+    and house rules. Next to the chip-in: "Paid to the host at the door or by UPI. FindMeFlatMate does not collect
+    money. Alcohol: bring your own; it can't be part of the chip-in." Alcohol is refused in the chip-in. No money
+    goes through the app.
+    Guests switch on **"Show me parties nearby"** in Account (off by default) and pick a place once (not live
+    location). Splits then lists **Parties near you**: open, coming up, not full, not their own, matching who can
+    come, within the host's radius of their place. Before acceptance: what, when, the area and distance ("Baner,
+    2.3 km"), the chip-in and what it covers, spots left, the host's first name and vibe type, the house rules;
+    never the address, the pin or a number. **Request to join** takes a one-line note (no numbers or links) and
+    plus-ones, who count towards the limit. The host sees first name, age group, gender, vibe match, parties
+    attended and thumbs-up count, and accepts or declines. **On accept** both get each other's number and the guest
+    gets the address and pin, as on a yes for rooms; accepts stop at the limit and a full party leaves the list.
+    Guests can withdraw; if the host calls the party off, everyone who asked or was accepted is told.
+    **Safety:** 18+ and signed in only; each accepted guest gets a **check-in code** the host types at the door;
+    **Report** on the party and on each person; a **thumbs up or down** after the party. Two reports from different
+    people, or three thumbs down, block that person from asking to join or hosting until Kamal reviews them.
+    Rate limits through `fm_throttle`. **Notifications** (fm-notify): a new request to the host; accept, decline
+    and a call-off to the guest; never an address or number in them.
+    Tables `fm_party_requests`, `fm_party_reports`, `fm_party_ratings`, `fm_party_reviews` and new columns on
+    `fm_parties` / `fm_profiles`; functions `fm_party_open_save`, `fm_party_open_for_group`, `fm_party_nearby_set`,
+    `fm_party_nearby_me`, `fm_party_nearby`, `fm_party_nearby_get`, `fm_party_request`, `fm_party_withdraw`,
+    `fm_party_host_requests`, `fm_party_decide`, `fm_party_checkin`, `fm_party_report`, `fm_party_rate`; triggers
+    `fm_party_requests_notify` and `fm_parties_notify`. Demo mode has six sample parties in Pune and Bengaluru.
+    **For Kamal, who is blocked and why** (Supabase → SQL editor):
+    `select * from fm_party_review_list();` lists everyone with reports or thumbs down (reasons, counts, blocked or
+    not). To lift a block after looking: `select fm_party_clear('<user_id>', 'what you decided');` (reports and thumbs
+    from before then stop counting). Signed-in users can't call either.
+    Tests: `flatmates/tests/db/run.sh` (schema applied twice, then every function and refusal) and demo suite p9.
 16. **FlatMart (everyone).** An OLX for flatmates: buy and sell furniture, beds, appliances, kitchen
     things, electronics, bikes and books with people nearby, so nobody pays full price to furnish a room
     and nobody dumps a fridge when they move out. Post in a minute: up to 4 photos, category, condition,
