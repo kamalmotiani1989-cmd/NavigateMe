@@ -21,6 +21,12 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   ok(lay.roles.length === 2 && lay.roles.every(y => y < 844) && lay.h2 > lay.quiz, 'visitor: the sign-in card\'s heading and both choices are on the first phone screen: ' + JSON.stringify(lay));
   ok(lay.lede > lay.cardEnd, 'visitor: the paragraph comes after the sign-in card on a phone');
   await p.screenshot({ path: O + '/p8-welcome.png' });
+  // hints and small print: the darker grey, 4.5:1 or better on white and on the mint wash
+  const grey = await p.evaluate(() => { const v = getComputedStyle(document.documentElement).getPropertyValue('--text-3').trim();
+    const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+    const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return Math.round((x + .05) / (y + .05) * 100) / 100; };
+    return { v, white: ratio(v, '#FFFFFF'), wash: ratio(v, '#DCEFE9'), appBg: ratio(v, '#F4F7F6') }; });
+  ok(grey.v.toUpperCase() === '#5E6679' && grey.white >= 4.5 && grey.wash >= 4.5 && grey.appBg >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better: ' + JSON.stringify(grey));
   // a wide screen keeps the two columns: words on the left, the card on the right
   await p.setViewportSize({ width: 1280, height: 900 }); await p.waitForTimeout(500);
   const wide = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect();
