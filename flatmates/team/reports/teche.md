@@ -1,5 +1,24 @@
 # Teche · reports
 
+## 2026-11-08, 18+ check (the one task resumed)
+
+**Done.** PR #60: an explicit "I am 18 or older" tick on the sign-in card, Kamal's decision of today. Not merged by me:
+it touches the sign-in card, so Kamal merges. The tick sits above the code button; without it no code is asked for and
+the form says why. On the server, `fm_otp_request` refuses a request without the tick and records nothing, so no
+code is sent (fm-send-otp needs a request row; fm-login now needs one from the last 10 minutes too). The confirmation
+is kept on the account with its first time (`adult_at`, `fm_confirm_adult`). Accounts from before are asked once in a
+"One quick question" box that can't be closed without ticking. Privacy policy section 11 now says the confirmation is
+kept with its date. Five plain commits. Sign-in steps, code flow and colours unchanged.
+
+**Tests.** 159 checks green (welcome 16, 7 new; seeded test accounts marked as confirmed). schema.sql applied twice to
+a local Postgres 16 with the functions exercised: refusal without the tick, row only with it, confirmation kept once,
+fm_me returns it, anon can't confirm, the old signature is gone.
+
+**After merge, only when Kamal says.** Let the Android build and the website publish run first, then apply schema.sql
+and deploy fm-login: an app without the tick can't get a code once the new function is live.
+
+**Everything else stays paused.** Open for Kamal: PR #60; the Pixel and Google Ads IDs.
+
 ## 2026-11-08, all pending PRs merged (Kamal: "Do all PR's pending")
 
 **Done.** Kamal asked in my session to do all pending PRs. All 13 open PRs are merged; none is open now.
