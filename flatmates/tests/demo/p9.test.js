@@ -64,7 +64,26 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   ok(hr3.pending === 1 && /No spots left/.test(hr3.toast), 'host: accepting past the guest limit is refused: ' + JSON.stringify(hr3));
   await p.click('#ptReqs [data-pr-no]'); await p.waitForTimeout(900);
   ok(await p.evaluate(() => !!document.querySelector('#ptReqs .pr-row.declined') && !document.querySelector('#ptReqs .pr-row.declined .pr-phone')), 'host: declining shows it, with no number');
+  // ------------------------------------------------------------ 4. host safety: door check-in, report a person, thumbs
+  await p.fill('#ptDoorCode', 'ZZZZZZ'); await p.click('#ptDoor [type=submit]'); await p.waitForTimeout(500);
+  const door0 = await p.evaluate(() => (document.querySelector('#ptDoor .form-err') || {}).textContent || '');
+  const riyaCode = await p.evaluate(() => api.partyReqs().find(r => r.status === 'accepted').checkin_code);
+  await p.fill('#ptDoorCode', riyaCode.toLowerCase()); await p.click('#ptDoor [type=submit]'); await p.waitForTimeout(900);
+  const door1 = await p.evaluate(() => ({ tag: !!document.querySelector('#ptReqs .pr-row.accepted .pr-in'), toast: (document.querySelector('.toast') || {}).textContent || '' }));
+  ok(/isn't on your guest list/.test(door0) && door1.tag && /checked in/.test(door1.toast), 'host: a wrong code is refused; the guest\'s code checks her in at the door: ' + JSON.stringify(door1));
+  await p.click('#ptReqs .pr-row.declined [data-pr-report]'); await p.waitForTimeout(400);
+  const repT = await p.evaluate(() => $('prpTitle').textContent);
+  await p.click('#prpForm [type=submit]'); await p.waitForTimeout(600);
+  ok(/Report Sneha/.test(repT) && await p.evaluate(() => (state.partyReports || []).some(r => r.request)), 'host: each person has a Report button: ' + repT);
+  await p.evaluate(async () => { const pp = api.parties()[0]; pp.starts_at = new Date(Date.now() - 6 * 36e5).toISOString(); pp.ends_at = new Date(Date.now() - 36e5).toISOString(); save(); await loadFsParty(); drawSplitGroup(); });
+  await p.waitForTimeout(600);
+  ok(await p.evaluate(() => !!document.querySelector('#ptReqs .pr-row.accepted [data-pr-rate]') && !document.querySelector('#ptReqs .pr-row.declined [data-pr-rate]')), 'host: after the party, accepted guests get a thumbs up or down');
+  await p.click('#ptReqs .pr-row.accepted [data-pr-rate][data-up="0"]'); await p.waitForTimeout(800);
+  ok(await p.evaluate(() => document.querySelector('#ptReqs .pr-row.accepted [data-pr-rate][data-up="0"]').getAttribute('aria-pressed') === 'true'), 'host: the thumbs down is saved');
   await p.screenshot({ path: O + '/p9-host-requests.png' });
+  // a blocked host can't open a party to people nearby
+  const hb = await p.evaluate(async id => { state.partyBlocked = true; const o = await api.partyOpenFor(id); return api.partyOpenSave(id, Object.assign(o, { open: true })).then(() => 'ok', e => e.message); }, gid);
+  ok(hb === 'blocked' || hb === 'party-over', 'host: a blocked host cannot open a party to people nearby: ' + hb);
   await ctx.close();
   // ------------------------------------------------------------ 2. discovery
   const pickPlace = async (pg, q) => { await pg.fill('#npinPlace', q); await pg.waitForTimeout(900);
@@ -110,10 +129,33 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   const inn = await p.evaluate(() => { const pp = demoNearParties().find(x => x.title === $('nearTitle').textContent), t = $('nearAct').textContent;
     return { text: t.replace(/\s+/g, ' ').trim(), addr: t.includes(pp.near_address), call: !!document.querySelector('#nearAct a[href^="tel:+91' + pp.host_phone + '"]'), maps: !!document.querySelector('#nearAct a[href*="google.com/maps"]'), spots: $('nearBody').textContent.match(/(\d+) spots? left/)[1] }; });
   ok(/You're in/.test(inn.text) && inn.addr && inn.call && inn.maps && inn.spots === '3', 'guest: on accept, the address, the map pin and the host\'s number appear; 2 spots taken: ' + JSON.stringify(inn).slice(0, 160));
+  // ------------------------------------------------------------ 4. guest safety: check-in code, report, thumbs
+  const code = await p.evaluate(() => ({ shown: ($('nearAct').querySelector('.near-code b') || {}).textContent || '', mine: api.partyReqs().find(r => r.user_phone === state.user.phone && r.status === 'accepted').checkin_code }));
+  ok(/^[0-9A-F]{6}$/.test(code.shown) && code.shown === code.mine, 'guest: accepted, Asha has a check-in code to show at the door: ' + code.shown);
   await p.screenshot({ path: O + '/p9-near-accepted.png' });
+  await p.click('[data-report-party]'); await p.waitForTimeout(400);
+  await p.click('[name=prpWhy][value="Not what was described"] + span'); await p.fill('#prpMore', 'Address did not match.'); await p.click('#prpForm [type=submit]'); await p.waitForTimeout(600);
+  const rep1 = await p.evaluate(() => ({ open: $('dlgPReport').open, reports: (state.partyReports || []).map(r => r.reason + (r.request ? ' (person)' : ' (party)')) }));
+  ok(!rep1.open && rep1.reports.join() === 'Not what was described: Address did not match. (party)', 'guest: "Report this party" sends a report with a reason: ' + JSON.stringify(rep1));
+  // after the party: thumbs up or down for the host
+  await p.evaluate(async () => { const pp = demoNearParties().find(x => x.title === $('nearTitle').textContent); pp.starts_at = new Date(Date.now() - 6 * 36e5).toISOString(); pp.ends_at = new Date(Date.now() - 36e5).toISOString(); await openNear(pp.code); });
+  await p.waitForTimeout(500);
+  const rt0 = await p.evaluate(() => ({ rate: !!$('nearAct').querySelector('[data-near-rate]'), drop: !!$('nearAct').querySelector('[data-near-withdraw]') }));
+  await p.click('[data-near-rate][data-up="1"]'); await p.waitForTimeout(600);
+  const rt1 = await p.evaluate(() => ({ pressed: $('nearAct').querySelector('[data-near-rate][data-up="1"]').getAttribute('aria-pressed'), saved: api.ratings().length }));
+  ok(rt0.rate && !rt0.drop && rt1.pressed === 'true' && rt1.saved === 1, 'guest: after the party, Asha gives the host a thumbs up: ' + JSON.stringify({ rt0, rt1 }));
+  await p.evaluate(async () => { const pp = demoNearParties().find(x => x.title === $('nearTitle').textContent); pp.starts_at = new Date(Date.now() + 2 * 864e5).toISOString(); pp.ends_at = new Date(Date.now() + 2 * 864e5 + 4 * 36e5).toISOString(); await openNear(pp.code); });
+  await p.waitForTimeout(400);
   await p.click('[data-near-withdraw]'); await p.waitForTimeout(900);
   ok(await p.evaluate(() => !!$('nearAsk') && !/You're in/.test($('nearAct').textContent)), 'guest: "I can\'t make it" withdraws, and the address is gone');
   await closeDialogs(p);
+  // blocked (two reports or three thumbs down, until Kamal reviews): no parties, no requests
+  await p.evaluate(() => { state.partyBlocked = true; save(); });
+  await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(800); await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1300); await closeDialogs(p);
+  const blk = await p.evaluate(async () => ({ cards: document.querySelectorAll('.near-card').length, list: (await api.partyNearby()).map(x => x.code + ':' + (x.my_request && x.my_request.status)).join(), why: api.partyCantSee(demoNearParties()[1]),
+    req: await api.partyRequest(demoNearParties()[1].code).then(() => 'ok', e => e.message) }));
+  ok(!blk.cards && blk.why === 'blocked' && blk.req === 'blocked', 'guest: a blocked person sees no parties and cannot ask to join: ' + JSON.stringify(blk));
+  await p.evaluate(() => { delete state.partyBlocked; save(); });
   // switching off hides them again
   await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1200); await closeDialogs(p);
   ok(await p.evaluate(() => $('nearToggle').checked && /Baner/.test($('nearWhere').textContent)), 'guest: Account shows it on, looking near Baner');
