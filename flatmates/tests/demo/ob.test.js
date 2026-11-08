@@ -62,7 +62,10 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, segs: [..
   ok(ring.ring === ring.strong && ring.go, 'finale shows the match ring only with a strong match, and a thumb-sized button: ' + JSON.stringify(ring));
   await p.hover('#obCard'); await p.waitForTimeout(200);
   const ghost = await p.evaluate(() => { const c = getComputedStyle($('obCard')); return c.color + ' on ' + c.backgroundColor; });
-  ok(!/rgb\(247, 249, 251\)/.test(ghost) && /rgba?\(255, 255, 255, 0\./.test(ghost), 'the Vibe Card button stays readable under a finger: ' + ghost);
+  // Text against background contrast (WCAG): the hover state must stay readable on the light onboarding wash.
+  const lum = c => { const [r, g, b2] = c.match(/\d+(\.\d+)?/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * r + .7152 * g + .0722 * b2; };
+  const [fg, bg] = ghost.split(' on '), L1 = lum(fg), L2 = lum(bg), cr = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05);
+  ok(cr >= 4.5, 'the Vibe Card button stays readable under a finger: ' + ghost + ' (contrast ' + cr.toFixed(1) + ')');
   await p.screenshot({ path: `${O}/ob-5-finale.png` });
   await ctx.close();
   // owner: two chapters
