@@ -1,5 +1,21 @@
 # Teche · reports
 
+## 2026-11-08, 18+ check live (Kamal: "Apply it")
+
+**Done.** On Kamal's word PR #60 is merged (ac78014) and applied, in the safe order: the Android build with the tick
+succeeded (run 123); I waited for the website to publish the page with the tick (findmeflatmate 6c12945, 15:46 UTC),
+because test sign-in is on and the old page would have been locked out; then applied schema.sql (fetched into the
+database, md5 fe34acfc… matches my file, executed) and deployed fm-login version 7 with the same settings as before
+(verify_jwt off, as its own code check is the gate).
+
+**Verified live.** A code request without the tick is refused (`age-required`); fm_otp_request takes the tick; the
+`adult_at` column, `fm_confirm_adult` and `fm_me`'s new field are there; anon can't confirm. fm-login, called from the
+database for a number that never asked for a code, answers 403 `age-required` and records no failed try. Settings
+unchanged: on_hold off, test_login on (Kamal's). 0 of 21 real accounts have confirmed yet: each is asked once at its
+next visit.
+
+**Note.** Older Android installs carry the old page and can't get a code until they update to the new build.
+
 ## 2026-11-08, 18+ check (the one task resumed)
 
 **Done.** PR #60: an explicit "I am 18 or older" tick on the sign-in card, Kamal's decision of today. Not merged by me:
