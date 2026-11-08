@@ -468,6 +468,12 @@ Calm and grown-up, set on 8 Nov 2026 to replace the earlier bright teal-to-blue 
   pink or purple. **Red** is kept for notification dots and errors.
 - White top bar and white status bar on Android (dark icons); dialog headers are white with a grey close button.
 - Headlines are bold (700), not extra-bold; the welcome headline mixes a light and a heavy weight.
+- **Five text sizes:** `--fs-xs` 12, `--fs-s` 13.5, `--fs-m` 15.5 (body), `--fs-l` 20, and the headline `clamp()`.
+  Icon circles and badges smaller than 12 px keep their own sizes.
+- **Hints and small print** use `--text-3` #5E6679 (darkened from #8790A3 on 8 Nov 2026, Kamal's call), which reads at
+  5.75:1 on white and 4.81:1 on the mint wash; green text on the pale green tips uses `--brand-2` #156358.
+- **The WhatsApp button** on the sign-in card is `--wa` #178741 (darkened from #1DA851 on 8 Nov 2026, Kamal's call),
+  so its white text reads at 4.59:1; it is the only place WhatsApp green is used.
 New screens use the tokens in `:root` at the top of the stylesheet rather than new colours.
 
 ## Files
