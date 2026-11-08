@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Listing card mock</title>
+<!-- Design study mock, 8 Nov 2026. Not part of the app: nothing links here and the app never loads it.
+     Today's colours and font; only the card's layout and wording change (suggestions 1, 2, 3 and 8). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --text:#101418; --text-2:#4A5260; --text-3:#8A919C; --brand:#0E9AA0; --brand-2:#0B7C82; --brand-soft:#E2F5F5;
+  --accent:#F26B1D; --ok:#0E9F7E; --app-bg:#F3F6F9; --card:#FFFFFF; --hair:#E1E6EC;
+  --card-shadow:0 1px 2px rgba(16,30,50,.05), 0 6px 18px rgba(16,30,50,.06);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--app-bg); color:var(--text); font:15.5px/1.5 "Plus Jakarta Sans",system-ui,sans-serif}
+main{max-width:860px; margin:0 auto; padding:24px 16px 48px}
+h1{font-size:24px; font-weight:800; letter-spacing:-.02em; margin:0 0 4px}
+.lede{color:var(--text-2); margin:0 0 24px}
+.pair{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start}
+.col h2{font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); margin:0 0 10px}
+.card{background:var(--card); border-radius:20px; box-shadow:var(--card-shadow); overflow:hidden; max-width:360px}
+.pic{position:relative; aspect-ratio:4/3; background:linear-gradient(#DCD3F0 0 62%, #C8A57A 62%)}
+.pic .win{position:absolute; left:36%; top:12%; width:30%; height:40%; background:#F6C99A; border:5px solid #fff; border-radius:3px}
+.pic .bed{position:absolute; left:46%; top:58%; width:50%; height:20%; background:#1E7A4A; border-radius:6px}
+.tag{position:absolute; left:12px; top:12px; color:var(--text); background:#fff; border-radius:999px; padding:4px 10px; font-size:13px; font-weight:700}
+.ring{position:absolute; right:12px; top:12px; width:46px; height:46px; border-radius:50%; background:#3B3F46; color:#fff; display:grid; place-items:center; font-weight:800; box-shadow:0 0 0 4px var(--ok)}
+.heart{position:absolute; right:12px; bottom:12px; width:36px; height:36px; border-radius:50%; background:#fff; display:grid; place-items:center; color:#8A919C}
+.price{position:absolute; left:12px; bottom:12px; color:var(--text); background:#fff; border-radius:12px; padding:6px 12px; font-weight:800; font-size:19px; box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.price small{font-size:13px; font-weight:600; color:var(--text-2)}
+.body{padding:14px 16px 16px}
+.body h3{font-size:18px; font-weight:800; letter-spacing:-.01em; margin:0}
+.loc{color:var(--text-2); margin:2px 0 8px}
+.line{font-size:14px; margin:4px 0; color:var(--text-2)}
+.gen{display:inline-block; font-size:12px; font-weight:800; color:#fff; padding:3px 10px; border-radius:999px; background:linear-gradient(90deg,#B63BA8,#F0645A)}
+.like{color:var(--accent); font-weight:700; font-size:14px; margin:6px 0}
+.ok{color:var(--brand-2); font-weight:700; font-size:14px}
+.rent{font-size:22px; font-weight:800; margin:8px 0 0}
+.rent small{font-size:14px; font-weight:500; color:var(--text-2)}
+.muted{color:var(--text-3); font-size:13px; margin:2px 0}
+.trust{display:flex; gap:6px; align-items:flex-start; margin-top:10px; padding-top:10px; border-top:1px solid var(--hair); font-size:13.5px; color:var(--text-2)}
+.trust b{color:var(--brand-2)}
+.nophoto{background:var(--brand-soft); display:grid; place-items:center; text-align:center; color:var(--brand-2); font-weight:700}
+.nophoto .sub{display:block; font-size:13px; font-weight:500; color:var(--text-2); margin-top:4px}
+.notes{margin-top:28px; color:var(--text-2); font-size:14.5px}
+.notes li{margin:4px 0}
+</style>
+</head>
+<body>
+<main>
+  <h1>Listing card: today and suggested</h1>
+  <p class="lede">Design study mock, 8 Nov 2026. Same colours and font as the app; only layout and wording change.</p>
+  <div class="pair">
+    <section class="col">
+      <h2>Today</h2>
+      <article class="card">
+        <div class="pic"><span class="win"></span><span class="bed"></span><span class="tag">Private room</span><span class="ring">87</span><span class="heart">♥</span></div>
+        <div class="body">
+          <h3>Private room in 3BHK in Electronic City</h3>
+          <p class="loc">Electronic City, Bengaluru</p>
+          <p class="line">● Architect</p>
+          <span class="gen">⚡ GEN Z HOUSEHOLD</span>
+          <p class="like">♥ You both like Gym</p>
+          <p class="muted">Semi furnished · Anyone · From 11 Nov</p>
+          <p class="ok">✓ Bachelors welcome · no brokers</p>
+          <p class="rent">₹21,500 <small>/month rent</small></p>
+          <p class="muted">+ ₹3,450 expenses · deposit ₹43,000</p>
+          <p class="muted">Posted 20 days ago</p>
+          <p class="line">⚡ Usually replies in a few days</p>
+        </div>
+      </article>
+    </section>
+    <section class="col">
+      <h2>Suggested</h2>
+      <article class="card">
+        <div class="pic"><span class="win"></span><span class="bed"></span><span class="tag">Private room · Attached washroom</span><span class="ring">87</span>
+          <span class="price">₹21,500 <small>/month</small></span><span class="heart">♥</span></div>
+        <div class="body">
+          <h3>Private room in 3BHK in Electronic City</h3>
+          <p class="loc">Electronic City, Bengaluru · + ₹3,450 expenses</p>
+          <p class="line">You'd live with an architect, Gen Z</p>
+          <p class="like">♥ You both like Gym</p>
+          <p class="trust">✓ <span><b>Owner-listed.</b> Your number is shared only if you both say yes.</span></p>
+        </div>
+      </article>
+      <h2 style="margin-top:24px">Suggested, no photos yet</h2>
+      <article class="card">
+        <div class="pic nophoto"><div>No photos yet<span class="sub">The owner hasn't added them</span></div><span class="tag">Shared room</span><span class="ring">79</span>
+          <span class="price">₹9,000 <small>/month</small></span><span class="heart">♥</span></div>
+        <div class="body">
+          <h3>Bed in a 2BHK near Baner</h3>
+          <p class="loc">Baner, Pune · New this week</p>
+          <p class="line">You'd live with a student, Gen Z</p>
+          <p class="trust">✓ <span><b>Owner-listed.</b> Your number is shared only if you both say yes.</span></p>
+        </div>
+      </article>
+    </section>
+  </div>
+  <ul class="notes">
+    <li>Rent sits on the photo on a white pill, never white text on a dark overlay.</li>
+    <li>Four short lines under the photo instead of eight; details move to the home's page.</li>
+    <li>Reply speed and age only when they help ("Replies within hours", "New this week").</li>
+    <li>The trust line says how the app works, in the place people decide.</li>
+    <li>Colours unchanged here; the colour suggestions are in section 3b of the study and need Kamal's decision.</li>
+  </ul>
+</main>
+</body>
+</html>
