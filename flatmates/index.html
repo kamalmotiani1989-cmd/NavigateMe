@@ -265,6 +265,8 @@ textarea{min-height:96px; resize:vertical}
 .meta{display:flex; flex-wrap:wrap; gap:0; margin-top:2px; font-size:13px; color:var(--text-3)}
 .meta span{background:none; padding:0}
 .meta span + span::before{content:"·"; margin:0 6px}
+.room-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px} .room-tags span{font-size:12.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--brand-soft); color:var(--brand-2)}
+.room-qs .chips{gap:6px} .room-qs .chip{padding:7px 10px; font-size:13.5px}
 .fresh{font-size:12px; color:var(--text-3)}
 .heart{position:absolute; bottom:12px; right:12px; z-index:2; width:36px; height:36px; border-radius:50%; border:0; cursor:pointer;
   background:rgba(255,255,255,.94); color:#9AA0A8; font-size:17px; line-height:1; display:grid; place-items:center; transition:transform .15s}
@@ -2188,6 +2190,18 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
             <label class="chip"><input type="radio" name="kind" value="flatmate">Looking for a flatmate</label>
             <label class="chip"><input type="radio" name="kind" value="flat">Whole flat takeover</label>
           </div></div>
+        <!-- Room details: three one-tap questions seekers ask first. Optional; a whole flat skips them. -->
+        <div class="grid3 room-qs" id="roomQs">
+          <div class="field"><label>Washroom</label><div class="chips">
+            <label class="chip"><input type="radio" name="rWash" value="attached">Attached</label>
+            <label class="chip"><input type="radio" name="rWash" value="shared">Shared</label></div></div>
+          <div class="field"><label>Balcony</label><div class="chips">
+            <label class="chip"><input type="radio" name="rBalc" value="yes">Yes</label>
+            <label class="chip"><input type="radio" name="rBalc" value="no">No</label></div></div>
+          <div class="field"><label>Master bedroom</label><div class="chips">
+            <label class="chip"><input type="radio" name="rMaster" value="yes">Yes</label>
+            <label class="chip"><input type="radio" name="rMaster" value="no">No</label></div></div>
+        </div>
         <div class="field"><label for="pTitle">Title</label>
           <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
         <div class="field ps-anchor p-where"><label for="pWhere">Where's the flat?</label>
@@ -3089,6 +3103,8 @@ function demoListings(){
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
       out.push({
         id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        // Room details for most rooms (from a hash, so the rest of the demo data stays as it was); one in five unset.
+        room: kind === "flat" || hue("room" + n) % 5 === 0 ? null : { washroom: hue("wash" + n) % 3 ? "attached" : "shared", balcony: hue("balc" + n) % 7 < 3, master: hue("mast" + n) % 11 < 4 },
         geo: (g => g ? { lat: Math.round((g[0] + (hue("la" + n) % 17 - 8) / 1000) * 100) / 100, lng: Math.round((g[1] + (hue("ln" + n) % 17 - 8) / 1000) * 100) / 100 } : null)((DEMO_GEO[city] || {})[area]),
         bachelors: hue("bach" + n) % 10 < 9,
         furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
@@ -3762,7 +3778,7 @@ function makeLiveApi(sb){
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
-        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_room: l.room || null });
       return { id, photos:"kept" };
     },
     async update(id, p){
@@ -3770,7 +3786,7 @@ function makeLiveApi(sb){
       await rpc("fm_update_listing", { p_listing: id, p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from, p_gender:l.gender, p_furnishing:l.furnishing,
         p_amenities:l.amenities, p_description:l.description, p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {},
-        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null });
+        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null, p_room: l.room || null });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await rpc("fm_my_listings")).filter(l => l.is_owner); },
@@ -6575,7 +6591,7 @@ async function openListing(id){
     ${items.length ? `<div class="bill">${bill}${billsTotal(l) ? `<span class="tot">Fixed expenses per month</span><span class="tot">${inr(billsTotal(l))}</span>` : ""}</div>`
       : `<p style="margin:0">No extra expenses. Everything is included in the rent.</p>`}
     <div class="kv">
-      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
+      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b>${ROOM_LABELS(l).length ? `<div class="room-tags">${ROOM_LABELS(l).map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}</div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
       <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
@@ -7116,7 +7132,7 @@ async function startEdit(id, step){
 }
 function endEdit(){
   editing = null; keepPhotos = [];
-  $("postForm").reset();
+  $("postForm").reset(); syncRoomQs();
   photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
   PRIVATE_IDS.forEach(id => $(id).disabled = false);
   $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
@@ -7129,6 +7145,7 @@ async function fillPostForm(l){
   const f = $("postForm"), hh = l.household || {};
   f.reset();
   (f.querySelector(`[name=kind][value="${l.kind}"]`) || f.querySelector("[name=kind]")).checked = true;
+  fillRoomForm(l.room); syncRoomQs();
   $("pTitle").value = l.title; setCitySelect($("pCity"), l.city); fillAreaList(); $("pLocality").value = l.locality;
   $("pBhk").value = String(Math.min(4, Math.max(1, l.bhk || 2))); $("pRent").value = l.rent; $("pDeposit").value = l.deposit || 0;
   $("pFrom").value = String(l.available_from || "").slice(0, 10); $("pGender").value = l.gender; $("pFurn").value = l.furnishing;
@@ -7220,7 +7237,23 @@ function syncRoomsFree(){
   if(!$("hFree").dataset.touched) $("hFree").value = String(Math.min(4, Math.max(1, Number($("pBhk").value) - Number($("hCount").value))));
 }
 ["hCount", "pBhk"].forEach(id => $(id).addEventListener("change", syncRoomsFree));
-$("postForm").addEventListener("change", e => { if(e.target.name === "kind") syncRoomsFree(); if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+// Room details: shown for a room, a bed or a flatmate listing; a whole flat has none to answer.
+function syncRoomQs(){ const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value; $("roomQs").hidden = kind === "flat"; }
+function roomFromForm(){
+  const f = $("postForm"), kind = (f.querySelector("[name=kind]:checked") || {}).value, pick = n => (f.querySelector(`[name=${n}]:checked`) || {}).value;
+  if(kind === "flat") return null;
+  const r = {}, w = pick("rWash"), b = pick("rBalc"), m = pick("rMaster");
+  if(w) r.washroom = w; if(b) r.balcony = b === "yes"; if(m) r.master = m === "yes";
+  return Object.keys(r).length ? r : null;
+}
+function fillRoomForm(room){
+  const f = $("postForm"), r = room || {}, set = (n, v) => f.querySelectorAll(`[name=${n}]`).forEach(x => x.checked = v !== undefined && x.value === v);
+  set("rWash", r.washroom); set("rBalc", r.balcony === undefined ? undefined : r.balcony ? "yes" : "no"); set("rMaster", r.master === undefined ? undefined : r.master ? "yes" : "no");
+}
+// What a listing's answers say, in short labels (unset answers say nothing).
+const ROOM_LABELS = l => { const r = l.room || {}; return [r.washroom === "attached" ? "Attached washroom" : r.washroom === "shared" ? "Shared washroom" : "", r.balcony ? "Balcony" : "", r.master ? "Master bedroom" : ""].filter(Boolean); };
+$("postForm").addEventListener("change", e => { if(e.target.name === "kind"){ syncRoomsFree(); syncRoomQs(); } if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+syncRoomQs();
 function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
 attachAreaSuggest($("pLocality"), () => $("pCity").value);
@@ -7281,6 +7314,7 @@ $("postForm").addEventListener("submit", async e => {
       bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
       available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value, bachelors: $("pBach").checked,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
+      room: roomFromForm(),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
         PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {}, readQuiz($("hQuiz"), "h")),
