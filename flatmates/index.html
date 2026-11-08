@@ -1431,6 +1431,10 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 .gd-opts{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 #gdTitle:focus{outline:none}
 #dlgGender .gd-opts .btn{margin:0}
+.age-tick{display:flex; align-items:center; gap:10px; margin:4px 0 14px; font-weight:700; cursor:pointer}
+.age-tick input{width:20px; height:20px; accent-color:var(--brand); flex:none}
+.age-tick.bad, .age-tick:has(input.bad){color:var(--danger, #C0392B)}
+#dlgAge .age-tick{justify-content:center; margin:6px 0 16px}
 .gd-opts .btn[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--brand); color:var(--brand)}
 .show-to{margin-top:16px; padding-top:14px; border-top:1px solid var(--hair); display:grid; gap:14px}
 .st-row > span{display:block; font-weight:700; font-size:14px; margin-bottom:6px}
@@ -1838,6 +1842,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
           <div class="lg-captcha" id="lgCaptcha" hidden></div>
+          <label class="age-tick"><input type="checkbox" id="lgAge" required><span>I am 18 or older</span></label>
           <button class="btn btn-wa btn-block" type="submit" data-channel="whatsapp"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-.7-.3-1.4-.7-2-1.2-.5-.5-1-1.1-1.3-1.7-.1-.2 0-.4.1-.5l.4-.5.3-.4v-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>Get the code on WhatsApp</button>
           <button class="linkbtn lg-sms" type="submit" data-channel="sms">Send it by SMS instead</button>
           <p class="hint">A 6-digit code signs you in. No password to remember.
@@ -2524,6 +2529,13 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
   <p class="hint" id="slPrice" style="margin:4px 0 14px"></p>
   <button class="btn btn-accent btn-block" type="submit" id="slGo">Start my sale</button>
   <button class="btn btn-ghost btn-block" type="button" data-close>Not now</button>
+</form></dialog>
+<dialog id="dlgAge" class="confirm" aria-labelledby="agTitle"><form class="confirm-body" id="agForm" novalidate>
+  <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+  <h2 id="agTitle" tabindex="-1" autofocus>One quick question</h2>
+  <p>FindMeFlatMate is for people 18 and over. Please confirm to carry on.</p>
+  <label class="age-tick"><input type="checkbox" id="agAge" required><span>I am 18 or older</span></label>
+  <button class="btn btn-primary btn-block" type="submit">Continue</button>
 </form></dialog>
 <dialog id="dlgGender" class="confirm" aria-labelledby="gdTitle"><div class="confirm-body">
   <span class="confirm-ic" style="background:var(--brand-soft);color:var(--brand)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg></span>
@@ -3249,11 +3261,12 @@ const demoApi = {
   all(){ const gone = new Set(state.delisted || []); return demoListings().concat(state.myListings).filter(l => !gone.has(l.id)); },
   // Same limits as fm_otp_request: a code a minute, 5 an hour per number.
   async sendOtp(phone, name, role, opts = {}){
+    if(opts.adult !== true) throw otpError("age-required");   // as fm_otp_request does
     const now = Date.now(), sent = (demoOtpLog[phone] || []).filter(t => now - t < 36e5);
     if(sent.length && now - sent[sent.length - 1] < 60e3) throw otpError("too-soon", Math.ceil((60e3 - (now - sent[sent.length - 1])) / 1000));
     if(sent.length >= 5) throw otpError("too-many");
     demoOtpLog[phone] = sent.concat(now);
-    pendingOtp = { phone, name, role, channel: opts.channel === "sms" ? "sms" : "whatsapp", code: String(Math.floor(100000 + Math.random()*900000)) };
+    pendingOtp = { phone, name, role, adult: true, channel: opts.channel === "sms" ? "sms" : "whatsapp", code: String(Math.floor(100000 + Math.random()*900000)) };
     return { demoCode: pendingOtp.code };
   },
   async verifyOtp(code){
@@ -3278,6 +3291,7 @@ const demoApi = {
   async setVibe(v){ state.vibe = v; save(); },
   async setName(n){ if(!state.user.name) state.user.name = n; save(); },   // set once, like the server
   async setGender(g){ state.user.gender = g; save(); },
+  async confirmAdult(){ state.user.adultAt = state.user.adultAt || new Date().toISOString(); save(); },
   async onTime(){ state.onTime = { show: Boolean((state.onTime || {}).show), months: this.onTimeMonths() }; save(); return state.onTime; },
   async setShowTo(tribe, escape){ if(tribe) state.tribeShowTo = tribe; if(escape) state.escapeShowTo = escape; save(); },
   async setInterests(i){ state.interests = i; save(); },
@@ -3726,7 +3740,7 @@ function makeLiveApi(sb){
     // fm_otp_request first (the abuse limits, and which channel fm-send-otp should use), then the code.
     async sendOtp(phone, name, role, opts = {}){
       const channel = opts.channel === "sms" ? "sms" : "whatsapp";
-      const r = await rpc("fm_otp_request", { p_phone: phone, p_channel: channel });
+      const r = await rpc("fm_otp_request", { p_phone: phone, p_channel: channel, p_adult: opts.adult === true });
       if(r && r.error) throw otpError(r.error, r.wait);
       pendingOtp = { phone, name, role, channel, captcha: opts.captcha || "" };
       if(FM_CONFIG.testLogin) return {};
@@ -3770,6 +3784,7 @@ function makeLiveApi(sb){
       state.discoverable = r.discoverable !== false;
       state.tribeOpen = r.tribe_open !== false;
       state.user.gender = r.gender || null;
+      state.user.adultAt = r.adult_at || null;
       state.tribeShowTo = r.tribe_show_to || "all"; state.escapeShowTo = r.escape_show_to || "all";
       state.boostCredits = r.boost_credits || 0; state.saleCredits = r.sale_credits || 0;
       state.onTime = { months: r.on_time_months || 0, show: r.show_on_time === true };
@@ -3780,6 +3795,7 @@ function makeLiveApi(sb){
     // The server keeps the first name it was given (it can't be changed later), so take its copy.
     async setName(n){ await rpc("fm_set_profile", { p_name:n, p_role:null }); state.user.name = one(await rpc("fm_me")).full_name || n; save(); },
     async setGender(g){ await rpc("fm_set_gender", { p_gender:g }); state.user.gender = g; save(); },
+    async confirmAdult(){ state.user.adultAt = await rpc("fm_confirm_adult") || new Date().toISOString(); save(); },
     async setShowOnTime(on){ const n = Number(await rpc("fm_set_show_on_time", { p_on: Boolean(on) })) || 0; state.onTime = { show: Boolean(on), months: n }; save(); return n; },
     async onTime(){ const r = (await rpc("fm_on_time_status"))[0] || {}; state.onTime = { months: r.months || 0, show: r.show === true }; save(); return state.onTime; },
     async setShowTo(tribe, escape){ await rpc("fm_set_show_to", { p_tribe: tribe || null, p_escape: escape || null });
@@ -4734,6 +4750,7 @@ const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocali
   pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)",
   aFlat:"Flat / house no.", aBuilding:"Building or society", aPin:"PIN code (6 digits)",
   obName:"Your first name", lgPhone:"Mobile number (10 digits, starting with 6–9)", lgOtp:"The 6-digit code",
+  lgAge:"Tick “I am 18 or older” (FindMeFlatMate is for adults)", agAge:"Tick “I am 18 or older” (FindMeFlatMate is for adults)",
   obWhat:"A few words about what you do", vAt:"Date and time",
   mkTitle:"What you're selling (at least 3 letters)", mkArea:"Area", mkSCity:"City" };
 function showFormError(form, text){
@@ -4822,9 +4839,24 @@ function route(){
   if(sharedItem){ writeLS(OPEN_ITEM_KEY, null); setTimeout(() => openItem(sharedItem), 400); }
 }
 let unseen = 0, tribeUnseen = 0;
+// 18 or older: ticked on the sign-in card; accounts from before are asked once, before anything else, and the box
+// can't be closed until they tick.
+function maybeAskAdult(){
+  if(!state.user || state.user.adultAt || !currentView || $("dlgAge").open) return false;
+  document.querySelectorAll("dialog[open]").forEach(d => d.close());
+  $("agForm").reset(); $("dlgAge").showModal(); return true;
+}
+$("dlgAge").addEventListener("cancel", e => e.preventDefault());
+$("agForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(!formOk(e.target)) return;
+  try{ await api.confirmAdult(); $("dlgAge").close(); setTimeout(maybeAskGender, 300); }
+  catch(err){ console.error(err); toast("Couldn't save that. Please try again."); }
+});
 // Gender: asked at sign-up; accounts from before get one quick question (once per visit, until answered).
 let genderAsked = false;
 function maybeAskGender(){
+  if(maybeAskAdult()) return;
   if(genderAsked || !state.user || state.user.gender || !currentView || document.querySelector("dialog[open]")) return;
   genderAsked = true; openGender(true);
 }
@@ -5578,6 +5610,7 @@ const OTP_ERR = {
   "whatsapp-failed": () => "WhatsApp didn't take the message. Try SMS instead.",
   "sms-failed": () => "The SMS didn't go through. Try WhatsApp instead.",
   "bot-check": () => "Please complete the check above, then ask for the code again.",
+  "age-required": () => "FindMeFlatMate is for people 18 and over. Tick “I am 18 or older” to get your code.",
 };
 const OTP_REASONS = Object.keys(OTP_ERR);
 function otpReason(m){ return OTP_REASONS.find(k => String(m || "").includes(k)) || "send-failed"; }
@@ -5587,7 +5620,7 @@ async function sendCode(channel){
   if($("lgHp").value || Date.now() - signin.shownAt < 1200){ toast("Couldn't send the code. Please try again in a moment."); return false; }
   if(FM_CONFIG.turnstileSiteKey && !signin.captcha){ toast(OTP_ERR["bot-check"]()); return false; }
   try{
-    const r = await api.sendOtp(signin.phone, signin.name, signin.role, { channel, captcha: signin.captcha });
+    const r = await api.sendOtp(signin.phone, signin.name, signin.role, { channel, captcha: signin.captcha, adult: signin.adult === true });
     signin.channel = channel; captchaReset();
     $("otpTo").textContent = "+91 " + signin.phone;
     $("otpTitle").textContent = channel === "sms" ? "Check your messages" : "Check your WhatsApp";
@@ -5634,6 +5667,7 @@ $("loginForm").addEventListener("submit", async e => {
   signin.phone = $("lgPhone").value.trim();
   signin.role = e.target.querySelector("[name=role]:checked").value;
   signin.name = quizName();   // otherwise the name is asked right after sign-in
+  signin.adult = $("lgAge").checked;   // formOk has made sure it is ticked
   const channel = e.submitter && e.submitter.dataset.channel === "sms" ? "sms" : "whatsapp";
   if(await sendCode(channel)){ $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus(); }
 });
@@ -5683,6 +5717,7 @@ $("otpForm").addEventListener("submit", async e => {
     toast("That code didn't match. Try again."); return;
   }
   clearInterval(signin.timer);
+  if(signin.adult && state.user && !state.user.adultAt) await api.confirmAdult().catch(err => console.error(err));
   // Answered on another device already: no need to ask again. (Live: these come from the server.)
   if(isSeeker() && answered(state.vibe) >= MIN_VIBE && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
   if(api.live && isOwner() && (await api.myListings()).length) state.onboarded.owner = true;
