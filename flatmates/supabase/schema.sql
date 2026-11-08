@@ -2218,6 +2218,102 @@ begin
      limit 50;
 end $$;
 
+-- One nearby party as I see it. Once the host has accepted me: the address, the pin and the host's number too.
+create or replace function public.fm_party_nearby_get(p_code text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v fm_parties%rowtype; r fm_party_requests%rowtype; out jsonb;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('party-near', 120, 600);
+  select * into v from fm_parties where code = upper(trim(p_code));
+  if v.id is null or not v.open then raise exception 'no-party'; end if;
+  select * into r from fm_party_requests where party_id = v.id and user_id = auth.uid();
+  if r.id is null and fm_party_cant_see(v.id, auth.uid()) is not null then raise exception 'no-party'; end if;
+  out := fm_party_near_json(v.id, auth.uid());
+  if r.status = 'accepted' and not v.cancelled then
+    out := out || jsonb_build_object('address', v.near_address, 'geo', v.near_geo,
+      'host_phone', (select right(regexp_replace(coalesce(phone, ''), '\D', '', 'g'), 10) from fm_profiles where id = v.host_id));
+  end if;
+  return out;
+end $$;
+
+-- Ask to join: an optional one-line note and plus-ones, who count towards the guest limit.
+create or replace function public.fm_party_request(p_code text, p_note text default null, p_plus int default 0) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v fm_parties%rowtype; r fm_party_requests%rowtype; v_why text; v_plus int; v_note text := nullif(left(regexp_replace(trim(coalesce(p_note, '')), '\s+', ' ', 'g'), 120), '');
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('party-req', 10, 30);
+  select * into v from fm_parties where code = upper(trim(p_code)) for update;
+  if v.id is null then raise exception 'no-party'; end if;
+  v_why := fm_party_cant_see(v.id, auth.uid());
+  if v_why is not null then raise exception '%', v_why; end if;
+  select * into r from fm_party_requests where party_id = v.id and user_id = auth.uid();
+  if r.status in ('pending', 'accepted') then raise exception 'already-asked'; end if;
+  if r.status = 'declined' then raise exception 'declined-before'; end if;
+  -- numbers and links go through the accept, not the note
+  if v_note ~ '[0-9]{7,}' or v_note ~* '(https?://|www\.|@)' then raise exception 'no-contacts-in-note'; end if;
+  v_plus := case when v.plus_ones then greatest(0, least(3, coalesce(p_plus, 0))) else 0 end;
+  if fm_party_taken(v.id) + 1 + v_plus > v.guest_limit then raise exception 'not-enough-spots'; end if;
+  insert into fm_party_requests (party_id, user_id, note, plus, status) values (v.id, auth.uid(), v_note, v_plus, 'pending')
+  on conflict (party_id, user_id) do update set note = excluded.note, plus = excluded.plus, status = 'pending', created_at = now(), decided_at = null;
+  return fm_party_near_json(v.id, auth.uid());
+end $$;
+
+-- Change my mind: withdraw a request, or drop out after being accepted.
+create or replace function public.fm_party_withdraw(p_code text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  select id into v_id from fm_parties where code = upper(trim(p_code));
+  update fm_party_requests set status = 'withdrawn', decided_at = now()
+   where party_id = v_id and user_id = auth.uid() and status in ('pending', 'accepted');
+  if not found then raise exception 'no-request'; end if;
+  return fm_party_near_json(v_id, auth.uid());
+end $$;
+
+-- The host's list: who asked, with first name, age group, gender, vibe match and how many parties they've been to.
+-- Accepted guests also come with their number.
+create or replace function public.fm_party_host_requests(p_group uuid) returns setof jsonb
+language plpgsql stable security definer set search_path = public as $$
+declare v fm_parties%rowtype;
+begin
+  select * into v from fm_parties where group_id = p_group;
+  if v.id is null or v.host_id is distinct from auth.uid() then raise exception 'not-the-host'; end if;
+  return query
+    select jsonb_build_object('id', r.id, 'status', r.status, 'note', r.note, 'plus', r.plus, 'created_at', r.created_at,
+      'name', split_part(coalesce(g.full_name, ''), ' ', 1), 'gen', g.vibe->>'gen', 'gender', g.gender, 'vibe', g.vibe,
+      'match', fm_match(h.vibe, g.vibe),
+      'parties', (select count(*) from fm_party_requests x join fm_parties y on y.id = x.party_id
+                  where x.user_id = r.user_id and x.status = 'accepted' and not y.cancelled and coalesce(y.ends_at, y.starts_at + interval '12 hours') < now()),
+      'phone', case when r.status = 'accepted' then right(regexp_replace(coalesce(g.phone, ''), '\D', '', 'g'), 10) end)
+    from fm_party_requests r join fm_profiles g on g.id = r.user_id left join fm_profiles h on h.id = v.host_id
+    where r.party_id = v.id and r.status in ('pending', 'accepted', 'declined')
+    order by case r.status when 'pending' then 0 when 'accepted' then 1 else 2 end, r.created_at;
+end $$;
+
+-- Accept or decline. On accept both sides get the other's number (and the guest the address), as on a yes for rooms.
+-- Accepts stop at the guest limit; once it's reached the party drops out of the nearby list.
+create or replace function public.fm_party_decide(p_request uuid, p_accept boolean) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare r fm_party_requests%rowtype; v fm_parties%rowtype;
+begin
+  select * into r from fm_party_requests where id = p_request for update;
+  if r.id is null then raise exception 'no-request'; end if;
+  select * into v from fm_parties where id = r.party_id for update;
+  if v.host_id is distinct from auth.uid() then raise exception 'not-the-host'; end if;
+  if r.status <> 'pending' then raise exception 'already-decided'; end if;
+  if v.cancelled then raise exception 'party-cancelled'; end if;
+  if coalesce(v.ends_at, v.starts_at + interval '12 hours') < now() then raise exception 'party-over'; end if;
+  if coalesce(p_accept, false) then
+    if fm_party_taken(v.id) + 1 + r.plus > v.guest_limit then raise exception 'party-full'; end if;
+    update fm_party_requests set status = 'accepted', decided_at = now() where id = r.id;
+  else
+    update fm_party_requests set status = 'declined', decided_at = now() where id = r.id;
+  end if;
+  return (select x from fm_party_host_requests(v.group_id) x where (x->>'id')::uuid = r.id);
+end $$;
+
 -- ------------------------------------------------- new-flat alerts --
 -- Who a new listing is for: seekers in its city and areas, still looking (searched in the last 60 days), who'd see
 -- its kind (private room or whole flat: no shared rooms; shared room or anything: everything), and with 70%+

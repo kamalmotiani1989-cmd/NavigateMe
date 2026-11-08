@@ -50,6 +50,21 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
     'host: the party shows it is open to people nearby: ' + saved.line.replace(/\s+/g, ' ').trim());
   ok(!saved.pub.address && !('near_address' in saved.pub) && !('near_geo' in saved.pub), 'host: the invite link never carries the private address or pin');
   await p.screenshot({ path: O + '/p9-host-party.png' });
+  // ------------------------------------------------------------ 3. host: requests from nearby, accept and decline
+  const hr = await p.evaluate(() => [...document.querySelectorAll('#ptReqs .pr-row')].map(r => ({ text: r.textContent.replace(/\s+/g, ' ').trim(), yes: !!r.querySelector('[data-pr-yes]'), phone: !!r.querySelector('.pr-phone') })));
+  ok(hr.length === 2 && hr.every(r => r.yes && !r.phone) && hr.every(r => /(Woman|Man)/.test(r.text) && /% vibe match/.test(r.text) && /attended/.test(r.text) && /GEN|MILLENNIAL/i.test(r.text)),
+    'host: requests show first name, age group, gender, vibe match and parties attended, with no number before accepting: ' + hr.map(r => r.text.slice(0, 70)).join(' / '));
+  await p.click('#ptReqs .pr-row:has-text("+1") [data-pr-yes]'); await p.waitForTimeout(900);
+  const hr2 = await p.evaluate(() => ({ phone: (document.querySelector('#ptReqs .pr-row.accepted .pr-phone') || {}).textContent || '', count: $('ptReqs').querySelector('.pr-count').textContent }));
+  ok(/\+91 \d{10}/.test(hr2.phone) && /2 of 4 spots taken/.test(hr2.count), 'host: on accept, the guest\'s number shows; the guest and her plus-one take 2 spots: ' + JSON.stringify(hr2));
+  // over the limit: with the limit lowered to 2, a second accept is refused
+  await p.evaluate(async id => { const o = await api.partyOpenFor(id); await api.partyOpenSave(id, Object.assign(o, { guest_limit: 2 })); await loadFsParty(); drawSplitGroup(); }, gid); await p.waitForTimeout(600);
+  await p.click('#ptReqs [data-pr-yes]'); await p.waitForTimeout(900);
+  const hr3 = await p.evaluate(() => ({ pending: document.querySelectorAll('#ptReqs .pr-row.pending').length, toast: (document.querySelector('.toast') || {}).textContent || '' }));
+  ok(hr3.pending === 1 && /No spots left/.test(hr3.toast), 'host: accepting past the guest limit is refused: ' + JSON.stringify(hr3));
+  await p.click('#ptReqs [data-pr-no]'); await p.waitForTimeout(900);
+  ok(await p.evaluate(() => !!document.querySelector('#ptReqs .pr-row.declined') && !document.querySelector('#ptReqs .pr-row.declined .pr-phone')), 'host: declining shows it, with no number');
+  await p.screenshot({ path: O + '/p9-host-requests.png' });
   await ctx.close();
   // ------------------------------------------------------------ 2. discovery
   const pickPlace = async (pg, q) => { await pg.fill('#npinPlace', q); await pg.waitForTimeout(900);
@@ -83,6 +98,21 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
     'guest: the party shows what, when, area and distance, the host\'s first name and vibe type, spots left and house rules: ' + det.text.slice(0, 160));
   ok(!det.addr && !det.phone && !det.lat, 'guest: before acceptance, no address, pin or number on the party');
   await p.screenshot({ path: O + '/p9-near-detail.png' });
+  // ------------------------------------------------------------ 3. guest: request to join, wait, accepted
+  await p.fill('#nearNote', 'Call me on 9876543210'); await p.click('#nearAsk [type=submit]'); await p.waitForTimeout(600);
+  const noNum = await p.evaluate(() => (document.querySelector('#nearAsk .form-err') || {}).textContent || '');
+  await p.fill('#nearNote', 'Board games fan!'); await p.click('[data-near-plus="1"]'); await p.click('#nearAsk [type=submit]'); await p.waitForTimeout(800);
+  const wait = await p.evaluate(() => { const pp = demoNearParties().find(x => x.title === $('nearTitle').textContent), t = $('nearBody').textContent;
+    return { text: $('nearAct').textContent.replace(/\s+/g, ' ').trim(), addr: t.includes(pp.near_address), phone: t.includes(pp.host_phone) }; });
+  ok(/numbers and links/i.test(noNum) && /Asked to join/.test(wait.text) && /Withdraw/.test(wait.text) && !wait.addr && !wait.phone,
+    'guest: the request goes in with a note and a plus-one (a number in the note is refused); still no address while waiting: ' + wait.text.slice(0, 60));
+  await p.waitForTimeout(5500);
+  const inn = await p.evaluate(() => { const pp = demoNearParties().find(x => x.title === $('nearTitle').textContent), t = $('nearAct').textContent;
+    return { text: t.replace(/\s+/g, ' ').trim(), addr: t.includes(pp.near_address), call: !!document.querySelector('#nearAct a[href^="tel:+91' + pp.host_phone + '"]'), maps: !!document.querySelector('#nearAct a[href*="google.com/maps"]'), spots: $('nearBody').textContent.match(/(\d+) spots? left/)[1] }; });
+  ok(/You're in/.test(inn.text) && inn.addr && inn.call && inn.maps && inn.spots === '3', 'guest: on accept, the address, the map pin and the host\'s number appear; 2 spots taken: ' + JSON.stringify(inn).slice(0, 160));
+  await p.screenshot({ path: O + '/p9-near-accepted.png' });
+  await p.click('[data-near-withdraw]'); await p.waitForTimeout(900);
+  ok(await p.evaluate(() => !!$('nearAsk') && !/You're in/.test($('nearAct').textContent)), 'guest: "I can\'t make it" withdraws, and the address is gone');
   await closeDialogs(p);
   // switching off hides them again
   await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1200); await closeDialogs(p);

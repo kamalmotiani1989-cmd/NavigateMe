@@ -1096,6 +1096,14 @@ body.typing .help-fab{display:none}
 .pt-covers{display:flex; flex-wrap:wrap; gap:6px 14px} .pt-covers .chk{display:flex; gap:6px; align-items:center; font-size:var(--fs-s)}
 .pt-money{margin:0 0 14px; padding:10px 12px; border-radius:12px; background:var(--brand-soft); color:var(--brand-2); font-size:var(--fs-s); font-weight:600}
 .pt-near input[type=range]{width:100%; accent-color:var(--brand)}
+.near-in{box-shadow:inset 0 0 0 2px var(--brand)} .near-in .pt-row{margin-top:10px} .near-call{display:flex; gap:8px; margin-top:12px}
+.near-ask h2{font-size:var(--fs-l); margin:0 0 10px} .near-wait p{margin:6px 0 10px; color:var(--text-2)}
+.pt-plus small{display:block; font-size:var(--fs-xs); color:var(--text-2)}
+.pt-reqs .pr-count{float:right; font-size:var(--fs-s); font-weight:600; color:var(--text-2); letter-spacing:0; text-transform:none}
+.pr-row{display:flex; gap:12px; align-items:flex-start; padding:12px 0; box-shadow:0 1px 0 var(--hair)} .pr-row.declined{opacity:.6}
+.pr-main{flex:1; min-width:0} .pr-main small{display:flex; flex-wrap:wrap; gap:4px; align-items:center; color:var(--text-2); font-size:var(--fs-s)}
+.pr-note{margin:6px 0 0; font-size:var(--fs-s)} .pr-phone{margin:6px 0 0; font-size:var(--fs-s); font-weight:700} .pr-phone .ic{vertical-align:-2px}
+.pr-acts{display:flex; flex-direction:column; gap:6px}
 .near-promo{display:flex; gap:12px; align-items:center; padding:14px; margin:0 0 16px; border-radius:16px; background:#fff; box-shadow:var(--card-shadow)}
 .near-promo > div{flex:1; min-width:0} .near-promo small{display:block; color:var(--text-2); font-size:var(--fs-s)} .near-promo .pt-mini-ic{color:var(--brand-2)}
 .near-h{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap} .near-h span{font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
@@ -2691,7 +2699,7 @@ const CLOSE_SVG = svgIcon("M6 6l12 12M18 6L6 18", 18, 2.4);
 const LEFT_SVG = svgIcon("M19 12H5M11 6l-6 6 6 6", 18, 2.4);
 // Line icons that replace emoji in the app's own words (badges, notices, empty states), in the same style as the
 // navigation icons. Categories people pick (FlatMart, Flatsplits, party occasions) and share images keep their emoji.
-const ICON = { bolt:"M13 2L4 14h7l-1 8 9-12h-7l1-8z", gift:"M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 000 5h4zM12 8s1.5-5 4-5a2.5 2.5 0 010 5h-4z", sofa:"M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2zM5 18v2M19 18v2", box:"M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8", party:"M4 20l5-14 9 9-14 5zM14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0", moon:"M21 13A9 9 0 1111 3a7 7 0 0010 10z", cook:"M4 3v7a2 2 0 002 2 2 2 0 002-2V3M6 12v9M18 21V3c-2 0-4 2-4 6v4h4", users:"M16 20v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 11a4 4 0 100-8 4 4 0 000 8zM22 20v-1a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8", pin:"M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12zM12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z", heart:"M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z", bell:"M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0", receipt:"M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5", chat:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", leaf:"M11 20A7 7 0 014 13c0-5 4-9 16-10-1 12-5 16-10 16zM4 21c3-5 6-8 10-10", radio:"M4 9h16v11H4zM8 9l9-5M7 14.5h4M14 13h3M14 16h3", plane:"M2 16l20-8-8 14-2-6-10 0zM12 16l10-8", home:"M3 11l9-8 9 8M5 9.5V21h14V9.5" };
+const ICON = { bolt:"M13 2L4 14h7l-1 8 9-12h-7l1-8z", gift:"M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 000 5h4zM12 8s1.5-5 4-5a2.5 2.5 0 010 5h-4z", sofa:"M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2zM5 18v2M19 18v2", box:"M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8", party:"M4 20l5-14 9 9-14 5zM14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0", moon:"M21 13A9 9 0 1111 3a7 7 0 0010 10z", cook:"M4 3v7a2 2 0 002 2 2 2 0 002-2V3M6 12v9M18 21V3c-2 0-4 2-4 6v4h4", users:"M16 20v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 11a4 4 0 100-8 4 4 0 000 8zM22 20v-1a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8", pin:"M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12zM12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z", heart:"M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z", bell:"M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0", receipt:"M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5", chat:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", leaf:"M11 20A7 7 0 014 13c0-5 4-9 16-10-1 12-5 16-10 16zM4 21c3-5 6-8 10-10", radio:"M4 9h16v11H4zM8 9l9-5M7 14.5h4M14 13h3M14 16h3", plane:"M2 16l20-8-8 14-2-6-10 0zM12 16l10-8", home:"M3 11l9-8 9 8M5 9.5V21h14V9.5", phone:"M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z" };
 const ic = (name, size = 16, w = 2) => svgIcon(ICON[name], size, w);
 /* ==================================================================== */
 /* CONFIGURATION: paste your Supabase project to go live                */
@@ -4457,6 +4465,15 @@ Object.assign(demoApi, {
     save(); return this.partyNearbyMe();
   },
   partyReqs(){ return state.partyReqs || (state.partyReqs = []); },
+  // Two sample guests ask to join a party the demo user opens, so the host side can be tried.
+  demoGuests(p){
+    const vb = o => Object.assign({ sleep:1, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:2, noise:1, social:2, sharing:1, work:0, pets:1 }, o);
+    const g = p.who === "male" ? [["Rahul", "male", vb({ gen:"z" }), 2], ["Vikram", "male", vb({ gen:"m", noise:2 }), 0]]
+      : [["Riya", "female", vb({ gen:"z" }), 3], ["Sneha", "female", vb({ gen:"m", social:1 }), 1]];
+    g.forEach(([name, gender, vibe, parties], i) => this.partyReqs().push({ id:this.newId("pr"), party_id:p.id, user_phone: "981" + (2345670 + i), status:"pending", plus: i ? 0 : 1,
+      note: i ? "New in the area, would love to meet people." : "Board games fan, bringing my sister.", created_at:new Date(Date.now() - (i + 1) * 6e5).toISOString(),
+      guest:{ name, gender, vibe, parties }, sample:true }));
+  },
   partyTaken(p){ return (p.taken || 0) + this.partyReqs().filter(r => r.party_id === p.id && r.status === "accepted").reduce((t, r) => t + 1 + (r.plus || 0), 0); },
   partyCantSee(p){
     const me = this.me_(), n = state.partyNear || {};
@@ -4474,7 +4491,66 @@ Object.assign(demoApi, {
       guest_limit:p.guest_limit, spots_left: Math.max(0, p.guest_limit - this.partyTaken(p)), plus_ones:p.plus_ones, who:p.who, house_rules:p.house_rules, cancelled:p.cancelled,
       host:p.host_name, host_vibe:p.host_vibe, sample: !!p.sample, my_request: r ? { id:r.id, status:r.status, plus:r.plus, note:r.note } : null };
   },
+  // Your own parties count as nearby parties for other people; samples are the demo's other hosts.
   nearAll(){ return demoNearParties(); },
+  nearFind(code){ code = String(code || "").toUpperCase(); return this.nearAll().find(x => x.code === code) || this.parties().find(x => x.code === code && x.open) || null; },
+  async partyNearbyGet(code){
+    const p = this.nearFind(code); if(!p || !p.open) throw new Error("no-party");
+    const r = this.partyReqs().find(x => x.party_id === p.id && x.user_phone === this.me_());
+    if(!r && this.partyCantSee(p)) throw new Error("no-party");
+    const out = this.partyNearJson(p);
+    if(r && r.status === "accepted" && !p.cancelled) Object.assign(out, { address:p.near_address, geo:p.near_geo, host_phone:p.host_phone });
+    return out;
+  },
+  async partyRequest(code, note, plus){
+    const p = this.nearFind(code); if(!p) throw new Error("no-party");
+    const why = this.partyCantSee(p); if(why) throw new Error(why);
+    let r = this.partyReqs().find(x => x.party_id === p.id && x.user_phone === this.me_());
+    if(r && ["pending", "accepted"].includes(r.status)) throw new Error("already-asked");
+    if(r && r.status === "declined") throw new Error("declined-before");
+    note = String(note || "").trim().replace(/\s+/g, " ").slice(0, 120) || null;
+    if(note && (/[0-9]{7,}/.test(note) || /(https?:\/\/|www\.|@)/i.test(note))) throw new Error("no-contacts-in-note");
+    plus = p.plus_ones ? Math.max(0, Math.min(3, Math.round(plus || 0))) : 0;
+    if(this.partyTaken(p) + 1 + plus > p.guest_limit) throw new Error("not-enough-spots");
+    if(!r) this.partyReqs().push(r = { id:this.newId("pr"), party_id:p.id, user_phone:this.me_() });
+    Object.assign(r, { note, plus, status:"pending", created_at:new Date().toISOString(), decided_at:null });
+    if(p.sample) r.sampleDecideAt = Date.now() + 4000;   // sample hosts answer within seconds
+    save(); return this.partyNearJson(p);
+  },
+  async partyWithdraw(code){
+    const p = this.nearFind(code), r = p && this.partyReqs().find(x => x.party_id === p.id && x.user_phone === this.me_() && ["pending", "accepted"].includes(x.status));
+    if(!r) throw new Error("no-request");
+    r.status = "withdrawn"; r.decided_at = new Date().toISOString(); save(); return this.partyNearJson(p);
+  },
+  // Sample hosts say yes (unless the party filled up meanwhile).
+  sampleDecide(){
+    let changed = false;
+    this.partyReqs().filter(r => r.status === "pending" && r.sampleDecideAt && r.sampleDecideAt <= Date.now()).forEach(r => {
+      const p = this.nearAll().find(x => x.id === r.party_id); if(!p) return;
+      r.status = this.partyTaken(p) + 1 + r.plus <= p.guest_limit ? "accepted" : "declined"; r.decided_at = new Date().toISOString(); delete r.sampleDecideAt; changed = true;
+    });
+    if(changed) save(); return changed;
+  },
+  async partyHostRequests(gid){
+    const p = this.parties().find(x => x.group_id === gid); if(!p || p.host_phone !== this.me_()) throw new Error("not-the-host");
+    const ended = id => { const q = this.nearAll().concat(this.parties()).find(y => y.id === id); return q && !q.cancelled && new Date(q.ends_at || new Date(q.starts_at).getTime() + 12 * 36e5) < new Date(); };
+    return this.partyReqs().filter(r => r.party_id === p.id && ["pending", "accepted", "declined"].includes(r.status))
+      .sort((a, b) => ["pending", "accepted", "declined"].indexOf(a.status) - ["pending", "accepted", "declined"].indexOf(b.status) || a.created_at.localeCompare(b.created_at))
+      .map(r => { const g = r.guest || {};
+        return { id:r.id, status:r.status, note:r.note, plus:r.plus, created_at:r.created_at, name:g.name, gen:(g.vibe || {}).gen || null, gender:g.gender, vibe:g.vibe || {},
+          match: vibeMatch(state.vibe, g.vibe) ? vibeMatch(state.vibe, g.vibe).pct : null,
+          parties: g.parties || this.partyReqs().filter(x => x.user_phone === r.user_phone && x.status === "accepted" && ended(x.party_id)).length,
+          phone: r.status === "accepted" ? r.user_phone : null }; });
+  },
+  async partyDecide(id, accept){
+    const r = this.partyReqs().find(x => x.id === id); if(!r) throw new Error("no-request");
+    const p = this.parties().find(x => x.id === r.party_id); if(!p || p.host_phone !== this.me_()) throw new Error("not-the-host");
+    if(r.status !== "pending") throw new Error("already-decided");
+    if(p.cancelled) throw new Error("party-cancelled");
+    if(accept && this.partyTaken(p) + 1 + (r.plus || 0) > p.guest_limit) throw new Error("party-full");
+    r.status = accept ? "accepted" : "declined"; r.decided_at = new Date().toISOString(); save();
+    return (await this.partyHostRequests(p.group_id)).find(x => x.id === id);
+  },
   async partyNearby(){
     if(!this.me_()) throw new Error("not-signed-in");
     const mine = id => this.partyReqs().some(r => r.party_id === id && r.user_phone === this.me_() && ["pending", "accepted"].includes(r.status));
@@ -4503,6 +4579,7 @@ Object.assign(demoApi, {
       who: ["female", "male"].includes(x.who) ? x.who : "all", radius_km: Math.max(1, Math.min(5, Math.round(Number(x.radius_km) || 3))),
       area: String(x.area).trim().slice(0, 60), house_rules: String(x.house_rules || "").trim().slice(0, 300) || null,
       near_address: String(x.near_address).trim().slice(0, 200), near_geo: { lat: +g.lat, lng: +g.lng }, updated_at: new Date().toISOString() });
+    if(!this.partyReqs().some(r => r.party_id === p.id)) this.demoGuests(p);
     save(); return this.partyOpenView(p);
   },
   async partyFeed(){
@@ -4832,6 +4909,11 @@ function liveExtras(rpc){
     async partyNearbyMe(){ return rpc("fm_party_nearby_me"); },
     async partyNearbySet(on, pin, label){ return rpc("fm_party_nearby_set", { p_on:!!on, p_pin:pin || null, p_label:label || null }); },
     async partyNearby(){ return rpc("fm_party_nearby"); },
+    async partyNearbyGet(code){ return rpc("fm_party_nearby_get", { p_code:code }); },
+    async partyRequest(code, note, plus){ return rpc("fm_party_request", { p_code:code, p_note:note || null, p_plus:plus || 0 }); },
+    async partyWithdraw(code){ return rpc("fm_party_withdraw", { p_code:code }); },
+    async partyHostRequests(gid){ return rpc("fm_party_host_requests", { p_group:gid }); },
+    async partyDecide(id, accept){ return rpc("fm_party_decide", { p_request:id, p_accept:!!accept }); },
     async partyOpenSave(gid, p){ return rpc("fm_party_open_save", { p_group:gid, p }); },
     // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
     async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
@@ -9225,7 +9307,7 @@ async function drawPartyCard(p){
 }
 
 // ---- inside the party's Flatsplits group
-let fsParty = null, fsPartyOpen = null, ptOpenAfter = null;
+let fsParty = null, fsPartyOpen = null, fsPartyReqs = [], ptOpenAfter = null;
 function fsPartyHtml(){
   const p = fsParty;
   if(!p) return `<div class="pt-make"><span class="pt-make-ic" aria-hidden="true">🎟️</span><div><b>Make an invite card</b>
@@ -9241,7 +9323,23 @@ function fsPartyHtml(){
       <div class="pt-mini-acts">${p.is_host ? `${p.cancelled ? `<button class="btn btn-ghost btn-sm" type="button" data-pt="revive">It's back on</button>`
           : `<button class="btn btn-accent btn-sm" type="button" data-pt="share">Share the card</button>`}
         <button class="btn btn-ghost btn-sm" type="button" data-pt="edit">Edit</button>` : ""}
-        <a class="btn btn-ghost btn-sm" href="#party/${esc(p.code)}">Guest list</a></div></div>`;
+        <a class="btn btn-ghost btn-sm" href="#party/${esc(p.code)}">Guest list</a></div></div>${ptHostReqsHtml()}`;
+}
+// Requests from people nearby: first name, age group, gender, vibe match, parties attended; accept or decline.
+// An accepted guest's number shows, as on a yes for rooms.
+function ptHostReqsHtml(){
+  if(!fsPartyOpen || !fsPartyOpen.near_geo) return "";
+  const list = fsPartyReqs || [], acc = list.filter(r => r.status === "accepted"), taken = acc.reduce((t, r) => t + 1 + (r.plus || 0), 0);
+  const row = r => `<div class="pr-row ${esc(r.status)}" data-pr="${esc(r.id)}"><span class="nh-av" aria-hidden="true">${esc((r.name || "?")[0].toUpperCase())}</span>
+      <div class="pr-main"><b>${esc(r.name || "Someone")}${r.plus ? ` +${r.plus}` : ""} ${r.gen ? genBadge(r.gen, "") : ""}</b>
+        <small>${[esc(r.gender === "female" ? "Woman" : r.gender === "male" ? "Man" : ""), r.match != null ? `${r.match}% vibe match` : "",
+          `${r.parties || 0} ${r.parties === 1 ? "party" : "parties"} attended`].filter(Boolean).join(" · ")}</small>
+        ${r.note ? `<p class="pr-note">“${esc(r.note)}”</p>` : ""}
+        ${r.status === "accepted" && r.phone ? `<p class="pr-phone"><a href="tel:+91${esc(r.phone)}">${ic("phone", 13)} +91 ${esc(r.phone)}</a> · <a href="https://wa.me/91${esc(r.phone)}" target="_blank" rel="noopener">WhatsApp</a></p>` : ""}</div>
+      ${r.status === "pending" ? `<div class="pr-acts"><button class="btn btn-accent btn-sm" type="button" data-pr-yes="${esc(r.id)}">Accept</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-pr-no="${esc(r.id)}">Decline</button></div>` : `<span class="nc-st ${esc(r.status)}">${r.status === "accepted" ? "Accepted" : "Declined"}</span>`}</div>`;
+  return `<div class="pt-reqs" id="ptReqs"><h3 class="section-h" style="margin-top:18px">Requests from nearby <span class="pr-count">${taken} of ${fsPartyOpen.guest_limit} spots taken</span></h3>
+    ${list.length ? list.map(row).join("") : `<p class="hint">No requests yet. People nearby who've switched parties on can find it now.</p>`}</div>`;
 }
 async function loadFsParty(){
   fsParty = null;
@@ -9249,6 +9347,8 @@ async function loadFsParty(){
   try{ fsParty = await api.partyForGroup(fsData.group.id); }catch(err){ console.error(err); }
   fsPartyOpen = null;
   if(fsParty && fsParty.is_host) try{ fsPartyOpen = await api.partyOpenFor(fsData.group.id); }catch(err){ console.error(err); }
+  fsPartyReqs = [];
+  if(fsPartyOpen && fsPartyOpen.near_geo) try{ fsPartyReqs = await api.partyHostRequests(fsData.group.id) || []; }catch(err){ console.error(err); }
 }
 function ptLocalParts(iso){
   const d = iso ? new Date(iso) : null, pad = n => String(n).padStart(2, "0");
@@ -9590,6 +9690,13 @@ function renderNearPanel(){
     $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#splits">See parties</a>` : ""; })
     .catch(err => console.error(err));
 }
+document.addEventListener("click", async e => {
+  const y = e.target.closest("[data-pr-yes]"), n = e.target.closest("[data-pr-no]"); if(!y && !n) return;
+  const id = (y || n).dataset.prYes || (y || n).dataset.prNo; (y || n).disabled = true;
+  try{ const r = await api.partyDecide(id, !!y); toast(y ? `${r.name} is in. You both have each other's numbers now.` : `Declined. ${r.name} won't get the address.`); }
+  catch(err){ console.error(err); const m = String(err.message || ""); toast(m.includes("party-full") ? "No spots left for them and their plus-ones." : "Couldn't do that. Please try again."); }
+  await loadFsParty(); drawSplitGroup();
+});
 // Switch it on: we need a place to measure from, picked once (not live location).
 let nearPinThen = null;
 function askNearPin(then){
@@ -9636,15 +9743,66 @@ function nearDetailHtml(p){
     <div id="nearAct"></div>`;
 }
 async function openNear(code){
-  nearParty = (nearList || []).find(x => x.code === code) || null;
-  if(!nearParty){ try{ nearParty = (await api.partyNearby()).find(x => x.code === code) || null; }catch(err){ console.error(err); } }
+  try{ nearParty = await api.partyNearbyGet(code); }catch(err){ console.error(err); nearParty = null; }
   if(!nearParty) return toast("That party isn't open to you any more.");
   drawNear(); if(!$("dlgNear").open) $("dlgNear").showModal();
 }
+let nearTimer = null;
 function drawNear(){
   const p = nearParty; $("nearTitle").textContent = p.title; $("nearSub").textContent = nearWhen(p) + " · " + nearPlace(p);
   $("nearBody").innerHTML = nearDetailHtml(p);
+  $("nearAct").innerHTML = nearActHtml(p);
+  clearTimeout(nearTimer);
+  // demo: sample hosts answer within seconds
+  if(p.my_request && p.my_request.status === "pending" && api.sampleDecide)
+    nearTimer = setTimeout(async () => { if(api.sampleDecide() && $("dlgNear").open && nearParty && nearParty.code === p.code){ await openNear(p.code); toast(nearParty.my_request.status === "accepted" ? `${p.host} accepted you. The address is below.` : "Not this time."); } }, 4500);
 }
+// What I can do: ask to join (a one-line note, plus-ones), wait, or, once accepted, the address, the pin and the host's number.
+function nearActHtml(p){
+  const r = p.my_request, host = esc(p.host || "The host");
+  if(p.cancelled) return `<div class="pt-card pt-off"><b>${host} called this party off.</b><p>Nothing's happening this time.</p></div>`;
+  if(r && r.status === "accepted") return `<div class="pt-card near-in"><b>You're in! ${host} accepted you.</b>
+      <div class="pt-row"><span class="pt-ic" aria-hidden="true">${ic("pin", 18)}</span><div><b>${esc(p.address || "")}</b>
+        ${p.geo ? `<p><a href="https://www.google.com/maps/dir/?api=1&destination=${p.geo.lat},${p.geo.lng}" target="_blank" rel="noopener">Directions in Google Maps</a></p>` : ""}</div></div>
+      ${p.host_phone ? `<div class="near-call"><a class="btn btn-accent btn-sm" href="tel:+91${esc(p.host_phone)}">Call ${host}</a>
+        <a class="btn btn-ghost btn-sm" href="https://wa.me/91${esc(p.host_phone)}" target="_blank" rel="noopener">WhatsApp</a></div>` : ""}
+      <p class="hint" style="margin:10px 0 0">${host} has your number too. ${r.plus ? `You're bringing ${r.plus} more. ` : ""}Can't make it after all? Let them know.</p>
+      <button class="linkbtn danger-link" type="button" data-near-withdraw>I can't make it</button></div>`;
+  if(r && r.status === "pending") return `<div class="pt-card near-wait"><b>Asked to join</b><p>${host} sees your first name, age group, gender and vibe match, and decides. Your number and the address are shared only if they accept.</p>
+      <button class="linkbtn danger-link" type="button" data-near-withdraw>Withdraw my request</button></div>`;
+  if(r && r.status === "declined") return `<div class="pt-card pt-off"><b>Not this time.</b><p>${host} went with other guests. There are more parties near you.</p></div>`;
+  if(p.spots_left <= 0) return `<div class="pt-card pt-off"><b>This party is full.</b></div>`;
+  return `<form class="pt-card near-ask" id="nearAsk" novalidate><h2>Request to join</h2>
+      <div class="field"><label for="nearNote">A line for ${host} <span class="opt-l">(optional)</span></label><input type="text" id="nearNote" maxlength="120" placeholder="Board games fan, new to the area"></div>
+      ${p.plus_ones ? `<div class="pt-plus"><span>Bringing anyone? <small>Each counts as a spot</small></span><div class="stepper"><button type="button" data-near-plus="-1" aria-label="One fewer">−</button>
+        <b id="nearPlusN">0</b><button type="button" data-near-plus="1" aria-label="One more">+</button></div></div>` : ""}
+      <button class="btn btn-accent btn-block" type="submit">Request to join</button>
+      <p class="hint" style="margin:8px 0 0;text-align:center">${host} sees your first name, age group, gender and vibe match. Your number and the address are shared only if they accept.</p></form>`;
+}
+const NEAR_ERR = { "party-full":"This party is full now.", "not-enough-spots":"Not enough spots left for you and your plus-ones.", "already-asked":"You've already asked.",
+  "declined-before":"The host has already answered your request.", "no-contacts-in-note":"Leave numbers and links out of the note. They're shared when the host accepts.",
+  "wrong-gender":"This party is for someone else.", "out-of-radius":"This party is too far from your place.", "opted-out":"Switch on “Show me parties nearby” first.",
+  "rate-limited":"That's a lot of requests. Try again in a while.", "blocked":"Party requests are paused on your account while we review a report.", "age-required":"Parties nearby are for adults only." };
+const nearErr = m => (Object.entries(NEAR_ERR).find(([k]) => m.includes(k)) || [0, "Couldn't do that. Please try again."])[1];
+$("dlgNear").addEventListener("click", async e => {
+  const pl = e.target.closest("[data-near-plus]");
+  if(pl){ const n = $("nearPlusN"); n.textContent = Math.max(0, Math.min(3, Number(n.textContent) + Number(pl.dataset.nearPlus))); return; }
+  if(e.target.closest("[data-near-withdraw]")){
+    if(!confirm(nearParty.my_request.status === "accepted" ? `Tell ${nearParty.host || "the host"} you can't make it?` : "Withdraw your request?")) return;
+    try{ await api.partyWithdraw(nearParty.code); await openNear(nearParty.code); toast("Done. The host can see it."); loadNear(); }
+    catch(err){ console.error(err); toast(nearErr(String(err.message || ""))); }
+  }
+});
+$("dlgNear").addEventListener("submit", async e => {
+  if(e.target.id !== "nearAsk") return;
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector("[type=submit]"); btn.disabled = true;
+  try{
+    await api.partyRequest(nearParty.code, $("nearNote").value.trim(), $("nearPlusN") ? Number($("nearPlusN").textContent) : 0);
+    await openNear(nearParty.code); toast(`Asked! ${nearParty.host || "The host"} will let you know.`); loadNear();
+  }catch(err){ console.error(err); showFormError(f, nearErr(String(err.message || ""))); }
+  finally{ btn.disabled = false; }
+});
 // Areas and the map pin come from OpenStreetMap: Photon for search, OSM tiles for the map.
 // The known areas of the 8 big cities still show up first, and work offline.
 const PHOTON = "https://photon.komoot.io/api/";
