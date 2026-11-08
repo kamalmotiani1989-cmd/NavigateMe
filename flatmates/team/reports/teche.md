@@ -1,8 +1,8 @@
 # Teche · reports
 
-## 2026-11-08, design study changes: PR #65 up for Kamal
+## 2026-11-08, design study changes: PR #65 merged
 
-**Done, not merged (Kamal merges).** These are the remaining changes Kamal approved ("All 4", priorities.md Teche item 0).
+**Done.** Kamal confirmed the grey, the WhatsApp green and the card move directly ("Yes to both") and asked for the merge; merged as cc29f14. The website picks it up within 30 minutes, and the Android build is running. These are the remaining changes Kamal approved ("All 4", priorities.md Teche item 0).
 There is one commit per change:
 - the trust line on the welcome's first screen
 - the sign-in card on the first phone screen, with the paragraph below it (the card and the code flow are unchanged)
