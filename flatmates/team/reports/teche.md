@@ -1,5 +1,21 @@
 # Teche · reports
 
+## 2026-11-08, sample homes, line icons, colour tokens: PR #66 up for Kamal
+
+**Done, not merged (Kamal merges).** These are the three changes Kamal approved via King. One commit each:
+- **Sample homes** keep their drawn room and Sample label. Live, all 100 seeded homes are samples without photos, so
+  #65 had turned every Discover card into "No photos yet". That panel is now only for real homes without photos.
+- **Line icons** replace emoji in badges, reply speed, empty states, notices, Flatsplits buttons and FlatMart tags.
+  Emoji stay where people pick them (categories, group emoji, party occasions), in onboarding answers, Vibe types
+  and share images.
+- **Colour tokens:** 63 colours written straight into the CSS are now named tokens with the same values. The computed
+  colours of about 17,000 elements on eight screens are identical before and after.
+
+README "Look and feel" is updated. Demo tests all pass; p8 now has 15 checks.
+
+Before and after screenshots at 390×844 (welcome, Discover, a home's page, Saved, FlatMart, account, Passes, Tribe):
+`flatmates/team/reports/shots/2026-11-08-icons-tokens-samples-before-after.png`.
+
 ## 2026-11-08, design study changes: PR #65 merged
 
 **Done.** Kamal confirmed the grey, the WhatsApp green and the card move directly ("Yes to both") and asked for the merge; merged as cc29f14. The website picks it up within 30 minutes, and the Android build is running. These are the remaining changes Kamal approved ("All 4", priorities.md Teche item 0).
