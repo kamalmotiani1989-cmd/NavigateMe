@@ -8,7 +8,7 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate</title>
 <meta name="description" content="FindMeFlatMate is coming soon: find a room, and the people worth sharing it with.">
-<meta name="theme-color" content="#0E9AA0">
+<meta name="theme-color" content="#1B2440">
 <meta property="og:title" content="FindMeFlatMate · Coming soon">
 <meta property="og:description" content="Find your vibe. Find your flatmate. Coming soon.">
 <meta property="og:type" content="website">
@@ -21,8 +21,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
-:root{color-scheme:light; --brand:#0E9AA0; --brand-2:#0B7C82; --accent:#F26B1D; --ink:#10264F; --text-2:#4A5260;
-  --grad:linear-gradient(172deg,#0E9AA0 0%,#0F8EA6 45%,#1F6CC4 100%); --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+:root{color-scheme:light; --brand:#1C7F72; --brand-2:#156358; --accent:#A6E0D2; --ink:#1B2440; --text-2:#4A5260;
+  --grad:linear-gradient(155deg,#1B2440 0%,#253360 100%); --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0; min-height:100%}
 body{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -35,11 +35,11 @@ body::after{width:420px; height:420px; bottom:-200px; left:-160px}
 .mark{display:inline-grid; place-items:center; width:120px; height:120px; border-radius:32px; background:#fff;
   box-shadow:0 18px 40px rgba(6,40,70,.25)}
 .wordmark{margin:18px 0 0; font-size:30px; font-weight:800; letter-spacing:-.03em; line-height:1.1}
-.wordmark b{font-weight:800} .wordmark .w-flat{color:#BFE1FF} .wordmark .w-mate{color:#B8F5DD}
+.wordmark b{font-weight:800} .wordmark .w-flat, .wordmark .w-mate{color:#A6E0D2}
 .banner{display:inline-flex; align-items:center; gap:10px; margin:26px 0 0; padding:10px 22px; border-radius:999px;
-  background:var(--accent); color:#fff; font-weight:800; font-size:15px; letter-spacing:.14em; text-transform:uppercase;
-  box-shadow:0 10px 24px rgba(242,107,29,.35)}
-.banner i{width:9px; height:9px; border-radius:50%; background:#fff; animation:pulse 1.6s ease-in-out infinite}
+  background:var(--accent); color:var(--ink); font-weight:800; font-size:15px; letter-spacing:.14em; text-transform:uppercase;
+  box-shadow:0 10px 24px rgba(0,0,0,.2)}
+.banner i{width:9px; height:9px; border-radius:50%; background:var(--ink); animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.35; transform:scale(.7)}}
 @media (prefers-reduced-motion:reduce){.banner i{animation:none}}
 h1{margin:22px 0 0; font-size:clamp(30px, 8vw, 44px); font-weight:800; letter-spacing:-.03em; line-height:1.12; text-wrap:balance}
