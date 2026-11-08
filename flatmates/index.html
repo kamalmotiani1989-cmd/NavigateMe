@@ -2442,6 +2442,11 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <option value="2w">Within 2 weeks</option><option value="1m">Within a month</option><option value="3m">In 1 to 3 months</option></select>
       <h3 class="section-h">Must-haves</h3>
       <div class="chips" id="fMust"></div>
+      <h3 class="section-h">The room</h3>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="fRoom" value="wash">Attached washroom</label>
+        <label class="chip"><input type="checkbox" name="fRoom" value="balcony">Balcony</label>
+        <label class="chip"><input type="checkbox" name="fRoom" value="master">Master bedroom</label></div>
       <h3 class="section-h">House rules that matter to you</h3>
       <div class="chips">
         <label class="chip"><input type="checkbox" name="fRule" value="veg">Veg-only kitchen</label>
@@ -6000,7 +6005,8 @@ async function finishOnboarding(){
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], minMatch:0 };
+const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], room:[], minMatch:0 };
+const ROOM_FILTERS = { wash: ["Attached washroom", l => (l.room || {}).washroom === "attached"], balcony: ["Balcony", l => (l.room || {}).balcony === true], master: ["Master bedroom", l => (l.room || {}).master === true] };
 const prefs = () => {
   const p = Object.assign({}, DEFAULT_PREFS, state.prefs);
   // The old "Looking for" filter (several kinds) became one choice on Discover.
@@ -6040,6 +6046,8 @@ function applyFilters(rows, f){
     if(f.furn.length && !f.furn.includes(l.furnishing)) return false;
     if(f.moveBy && l.available_from > f.moveBy) return false;
     if(f.must.length && !f.must.every(a => (l.amenities || []).includes(a))) return false;
+    // Room details are about the room on offer; a whole flat has all its rooms, so it passes.
+    if(l.kind !== "flat" && (f.room || []).some(k => ROOM_FILTERS[k] && !ROOM_FILTERS[k][1](l))) return false;
     // House rules only apply where someone already lives; a whole flat is yours to set.
     if(shared && f.rules.some(r => RULES[r] && !RULES[r][1](hh))) return false;
     if(f.rules.includes("bach") && l.bachelors === false) return false;
@@ -6057,6 +6065,7 @@ function activeFilters(f){
   if(f.moveBy) out.push(["moveBy", "Move in by " + fmtDate(f.moveBy)]);
   f.must.forEach(a => out.push(["must:" + a, a]));
   f.rules.forEach(r => RULES[r] && out.push(["rules:" + r, RULES[r][0]]));
+  (f.room || []).forEach(k => ROOM_FILTERS[k] && out.push(["room:" + k, ROOM_FILTERS[k][0]]));
   if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
@@ -6400,6 +6409,7 @@ function openFilters(){
   form.querySelectorAll("[name=fKind]").forEach(x => x.checked = f.kinds.includes(x.value));
   form.querySelectorAll("[name=fFurn]").forEach(x => x.checked = f.furn.includes(x.value));
   form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
+  form.querySelectorAll("[name=fRoom]").forEach(x => x.checked = (f.room || []).includes(x.value));
   form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
   form.querySelectorAll("[name=fMatch]").forEach(x => x.checked = Number(x.value) === f.minMatch);
   updateFilterCount();
@@ -6408,7 +6418,7 @@ function openFilters(){
 function readFilterForm(){
   const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
   return { min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
-    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), minMatch: Number(vals("fMatch")[0]) || 0 };
+    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), room: vals("fRoom"), minMatch: Number(vals("fMatch")[0]) || 0 };
 }
 function updateFilterCount(){
   const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
