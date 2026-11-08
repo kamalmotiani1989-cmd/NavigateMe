@@ -1,5 +1,25 @@
 # Teche · reports
 
+## 2026-11-08, design study (the one task resumed)
+
+**Done.** PR #62, not merged by me: `flatmates/design/design-study-nov-2026.md` and a standalone listing-card mock.
+Our design language read from the code (every colour token, hex and use; type; shapes; key screens) with contrast
+ratios: white on our teal buttons is 3.42:1 and on orange 3.05:1, under the usual 4.5:1. Competitors (NoBroker,
+99acres, Housing.com, Magicbricks, FlatMate.in, SpareRoom) from search excerpts, design write-ups and Mark's study,
+each fact sourced; their exact colours, fonts and cards are "could not confirm" because the session can't open their
+sites, with a 15-minute screenshot list to close it. Main finding: none of them leads with teal; their users' main
+complaints are clutter and distrust. Eight suggestions need no colour change (top: rent and match on the card's
+photo, four lines under it; the trust promise on every card). Six colour changes are in a separate section for
+Kamal's decision, with before and after hex values. Nothing in the app, website or database changed.
+
+**Also in the PR.** One exclude in this repo's site publish so the `design/` folder stays off the public site.
+
+**Needs Kamal before merging #62.** The website repo's publish.yml needs `--exclude=/design/` too, or the study goes
+public on findmeflatmate.com.
+
+**Open for Kamal.** PR #62 (and that exclude); the 15 minutes of competitor screenshots if he wants the gaps closed;
+the Pixel and Google Ads IDs.
+
 ## 2026-11-08, 18+ check live (Kamal: "Apply it")
 
 **Done.** On Kamal's word PR #60 is merged (ac78014) and applied, in the safe order: the Android build with the tick
