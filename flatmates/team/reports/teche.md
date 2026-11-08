@@ -1,5 +1,21 @@
 # Teche · reports
 
+## 2026-11-08, nearby parties live on the server; website publish stuck
+
+**Done:**
+- On Kamal's "Go live", I merged #67 (d06d85e) and applied schema.sql to the database. The md5 of the fetched file
+  matched the merged one: 85fc509f…
+- 16 new functions, 4 tables and 2 triggers are in place. Signed-in users can call the party functions; nobody but
+  the service role can call `fm_party_review_list` or `fm_party_clear`; signed-out callers get nothing.
+- A live refusal check, rolled back, returned age-required, no-party and not-signed-in.
+- fm-notify v6 is deployed, matches the repo, and returns 403 without the secret.
+- No real data was touched: 0 open parties, 0 people opted in.
+
+**Blocked: findmeflatmate.com hasn't published since 16:26 (c0a5f11).** The website repo's 30-minute publish job
+has not run since, so #64, #65, #66 and #67 aren't on the site yet. The Android app loads the site, so it's the same
+there. This session can't start that job. Kamal (or anyone with access) can run it in the findmeflatmate repo:
+Actions → Publish FindMeFlatMate → Run workflow. Until it runs, the new database functions sit unused; nothing breaks.
+
 ## 2026-11-08, nearby parties Phase 1: PR #67 up for Kamal
 
 **Done, not merged (Kamal merges). Not deployed:** the schema and fm-notify go live only on Kamal's word after the
