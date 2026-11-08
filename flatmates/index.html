@@ -1087,6 +1087,16 @@ body.typing .help-fab{display:none}
 .pt-tell{margin:4px 0 0}
 .pt-extra{margin:14px 0 0; border-radius:14px; background:var(--surface-2); padding:4px 14px 6px}
 .pt-extra summary{cursor:pointer; font-weight:700; padding:10px 0; color:var(--text-2)}
+.pt-near .seg{display:flex; flex-wrap:wrap; gap:6px} .pt-near .seg label{cursor:pointer}
+.pt-near .seg input{position:absolute; opacity:0; pointer-events:none}
+.pt-near .seg span{display:inline-block; padding:8px 14px; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px var(--hair); font-weight:600; font-size:var(--fs-s)}
+.pt-near .seg input:checked + span{background:var(--ink); color:#fff; box-shadow:none}
+.pt-near .seg input:focus-visible + span{outline:2px solid var(--brand); outline-offset:2px}
+.pt-near .lbl{display:block; font-weight:700; font-size:var(--fs-s); margin-bottom:6px}
+.pt-covers{display:flex; flex-wrap:wrap; gap:6px 14px} .pt-covers .chk{display:flex; gap:6px; align-items:center; font-size:var(--fs-s)}
+.pt-money{margin:0 0 14px; padding:10px 12px; border-radius:12px; background:var(--brand-soft); color:var(--brand-2); font-size:var(--fs-s); font-weight:600}
+.pt-near input[type=range]{width:100%; accent-color:var(--brand)}
+.pt-open-line{display:flex; gap:6px; align-items:flex-start; margin:10px 0 0; font-size:var(--fs-s); color:var(--text-2)} .pt-open-line .ic{flex:none; margin-top:2px; color:var(--brand-2)}
 .opt-l{font-weight:500; color:var(--text-3)}
 .danger-link{color:var(--danger)!important}
 .pt-feed{display:flex; gap:12px; align-items:center; padding:12px 14px; border-radius:16px; background:var(--accent-soft); color:var(--text); text-decoration:none; margin-bottom:8px}
@@ -4397,6 +4407,30 @@ Object.assign(demoApi, {
     Object.assign(r, { name, answer, plus: p.plus_ones && answer === "yes" ? Math.max(0, Math.min(5, plus || 0)) : 0 });
     save(); return this.partyView(p, token);
   },
+  // Nearby parties, host side: same rules as fm_party_open_save / fm_party_open_for_group.
+  partyOpenView(p){ return { open: !!p.open, guest_limit: p.guest_limit || null, entry: p.entry || "free", entry_chip: p.entry_chip || null, covers: p.covers || [],
+    covers_other: p.covers_other || null, who: p.who || "all", radius_km: p.radius_km || 3, area: p.area || null, house_rules: p.house_rules || null,
+    near_address: p.near_address || null, near_geo: p.near_geo || null }; },
+  async partyOpenFor(gid){ const p = this.parties().find(x => x.group_id === gid && x.host_phone === this.me_()); return p ? this.partyOpenView(p) : null; },
+  async partyOpenSave(gid, x){
+    const p = this.parties().find(y => y.group_id === gid); if(!p) throw new Error("no-party");
+    if(p.host_phone !== this.me_()) throw new Error("not-the-host");
+    if(!x.open){ p.open = false; save(); return this.partyOpenView(p); }
+    if(p.cancelled) throw new Error("party-cancelled");
+    if(new Date(p.starts_at) < new Date()) throw new Error("party-over");
+    const limit = Math.round(Number(x.guest_limit)); if(!(limit >= 2 && limit <= 50)) throw new Error("bad-limit");
+    const chip = x.entry === "chip" ? Math.round(Number(x.entry_chip)) : null; if(x.entry === "chip" && !(chip >= 1 && chip <= 5000)) throw new Error("bad-chip");
+    if(PT_ALCOHOL.test(x.covers_other || "")) throw new Error("no-alcohol");
+    const g = x.near_geo; if(!(g && g.lat >= 6 && g.lat <= 37 && g.lng >= 68 && g.lng <= 98)) throw new Error("need-pin");
+    if(String(x.area || "").trim().length < 2) throw new Error("bad-area");
+    if(String(x.near_address || "").trim().length < 5) throw new Error("bad-address");
+    Object.assign(p, { open:true, guest_limit:limit, entry: chip ? "chip" : "free", entry_chip:chip,
+      covers: chip ? [...new Set((x.covers || []).filter(c => PT_COVERS[c]))].sort() : [], covers_other: chip ? String(x.covers_other || "").trim().slice(0, 60) || null : null,
+      who: ["female", "male"].includes(x.who) ? x.who : "all", radius_km: Math.max(1, Math.min(5, Math.round(Number(x.radius_km) || 3))),
+      area: String(x.area).trim().slice(0, 60), house_rules: String(x.house_rules || "").trim().slice(0, 300) || null,
+      near_address: String(x.near_address).trim().slice(0, 200), near_geo: { lat: +g.lat, lng: +g.lng }, updated_at: new Date().toISOString() });
+    save(); return this.partyOpenView(p);
+  },
   async partyFeed(){
     const me = this.me_(), now = Date.now();
     return this.parties().filter(p => p.host_phone !== me && p.flat_group && this.splitMine().some(g => g.id === p.flat_group)
@@ -4720,6 +4754,8 @@ function liveExtras(rpc){
     async partyCancel(gid, on){ await rpc("fm_party_cancel", { p_group:gid, p_on:on !== false }); },
     async partyRsvp(code, token, name, answer, plus){ return rpc("fm_party_rsvp", { p_code:code, p_token:token, p_name:name, p_answer:answer, p_plus:plus || 0 }); },
     async partyFeed(){ return rpc("fm_party_feed"); },
+    async partyOpenFor(gid){ return rpc("fm_party_open_for_group", { p_group:gid }); },
+    async partyOpenSave(gid, p){ return rpc("fm_party_open_save", { p_group:gid, p }); },
     // Profiles store numbers as 91XXXXXXXXXX; screens use the 10 digits.
     async marketInbox(){ return (await rpc("fm_market_inbox")).map(r => Object.assign(r, { phone: r.phone ? ten(r.phone) : null })); },
     async marketSeen(){ await rpc("fm_market_seen"); },
@@ -9017,6 +9053,13 @@ const PARTY_KINDS = {
   welcome:     ["🙌", "Welcome party",   "Welcome party at {h}'s",   "Come and say hi to the newest flatmate!"],
 };
 const ptKind = k => PARTY_KINDS[k] || PARTY_KINDS.party;
+// Nearby parties (Phase 1): what a chip-in can cover; alcohol never can (the server refuses it too).
+const PT_COVERS = { food:"Food", soft_drinks:"Soft drinks", snacks:"Snacks", music:"Music", games:"Games", decor:"Decor" };
+const PT_ALCOHOL = /(alcohol|beer|wine|whisk(e)?y|vodka|\brum\b|\bgin\b|tequila|liquor|booze|daaru|daru|sharab|cocktail|\bpints?\b|\bbottles?\b|brew)/i;
+const PT_WHO = { all:"Everyone", female:"Women only", male:"Men only" };
+const PT_MONEY_LINE = "Paid to the host at the door or by UPI. FindMeFlatMate does not collect money. Alcohol: bring your own; it can't be part of the chip-in.";
+const ptEntryText = o => o.entry === "chip" && o.entry_chip ? `Chip in ${inr(o.entry_chip)}` : "Free entry";
+const ptCoversText = o => o.entry === "chip" ? (o.covers || []).map(c => PT_COVERS[c]).filter(Boolean).concat(o.covers_other ? [o.covers_other] : []).join(", ") : "";
 const ptLink = code => siteLink() + "#party/" + code;
 const ptDay = d => new Date(d).toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long" });
 const ptTime = d => new Date(d).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" }).replace(/\s?([ap])\.?m\.?/i, " $1m").toLowerCase();
@@ -9102,7 +9145,7 @@ async function drawPartyCard(p){
 }
 
 // ---- inside the party's Flatsplits group
-let fsParty = null, ptOpenAfter = null;
+let fsParty = null, fsPartyOpen = null, ptOpenAfter = null;
 function fsPartyHtml(){
   const p = fsParty;
   if(!p) return `<div class="pt-make"><span class="pt-make-ic" aria-hidden="true">🎟️</span><div><b>Make an invite card</b>
@@ -9113,6 +9156,8 @@ function fsPartyHtml(){
       <a class="pt-mini-top" href="#party/${esc(p.code)}"><span class="pt-mini-ic" aria-hidden="true">${k[0]}</span><span><small>${p.cancelled ? "Called off" : "Your invite"}</small>
         <b>${esc(p.title)}</b><em>${esc(ptShort(p))} · ${esc(p.place === "address" ? p.address : "at " + (p.host || "your") + "'s home")}</em></span></a>
       <div class="pt-counts"><span><b>${p.going || 0}</b> going</span><span><b>${p.maybe || 0}</b> maybe</span><span><b>${p.cant || 0}</b> can't</span></div>
+      ${p.is_host && fsPartyOpen && fsPartyOpen.open ? `<p class="pt-open-line" id="ptOpenLine">${ic("pin", 14)} <span><b>Open to people nearby</b> · ${esc(fsPartyOpen.area || "")}, within ${fsPartyOpen.radius_km} km
+        · ${esc(PT_WHO[fsPartyOpen.who])} · ${fsPartyOpen.guest_limit} guests · ${esc(ptEntryText(fsPartyOpen))}</span></p>` : ""}
       <div class="pt-mini-acts">${p.is_host ? `${p.cancelled ? `<button class="btn btn-ghost btn-sm" type="button" data-pt="revive">It's back on</button>`
           : `<button class="btn btn-accent btn-sm" type="button" data-pt="share">Share the card</button>`}
         <button class="btn btn-ghost btn-sm" type="button" data-pt="edit">Edit</button>` : ""}
@@ -9122,6 +9167,8 @@ async function loadFsParty(){
   fsParty = null;
   if(!fsData || fsData.group.kind !== "party") return;
   try{ fsParty = await api.partyForGroup(fsData.group.id); }catch(err){ console.error(err); }
+  fsPartyOpen = null;
+  if(fsParty && fsParty.is_host) try{ fsPartyOpen = await api.partyOpenFor(fsData.group.id); }catch(err){ console.error(err); }
 }
 function ptLocalParts(iso){
   const d = iso ? new Date(iso) : null, pad = n => String(n).padStart(2, "0");
@@ -9132,7 +9179,8 @@ async function openPartyEditor(){
   const next = new Date(); next.setDate(next.getDate() + ((6 - next.getDay() + 7) % 7 || 7)); next.setHours(20, 0, 0, 0);
   const s = ptLocalParts(p ? p.starts_at : next.toISOString()), e = p && p.ends_at ? ptLocalParts(p.ends_at) : null;
   const occ = p ? p.occasion : "party", title = p ? p.title : ptKind(occ)[2].replace("{h}", host);
-  ptx = { occ, auto: !p, geo: p && p.geo || null };
+  const o = p && p.is_host ? fsPartyOpen || {} : {};
+  ptx = { occ, auto: !p, geo: p && p.geo || null, nearGeo: o.near_geo || null, wasOpen: !!o.open };
   openFs(p ? "Edit the invite" : "Make an invite card", fsData.group.name, `<form id="ptForm" novalidate>
     <h3 class="section-h" style="margin-top:0">What's the plan?</h3>
     <div class="pt-occ" role="group" aria-label="Kind of get-together">${Object.entries(PARTY_KINDS).map(([key, [ic, label]]) =>
@@ -9160,11 +9208,63 @@ async function openPartyEditor(){
       <div class="field"><label for="ptChip">Chip in, each (₹) <span class="opt-l">(optional, split on Flatsplits after)</span></label><input type="text" id="ptChip" inputmode="numeric" maxlength="6" value="${p && p.chip_in || ""}" placeholder="0"></div>
       <label class="switch" style="margin:0 0 14px"><input type="checkbox" id="ptPlus"${!p || p.plus_ones ? " checked" : ""}><span>Plus-ones welcome</span></label>
       <div class="field"><label for="ptNote">A note for guests</label><textarea id="ptNote" rows="2" maxlength="300" placeholder="Wraps up by 11, the neighbours are lovely but light sleepers.">${esc(p && p.note || "")}</textarea></div></details>
+    ${ptNearHtml(o)}
     <button class="btn btn-accent btn-block" type="submit" style="margin-top:14px">${p ? "Save the invite" : "Make the card"}</button>
     ${p && p.is_host && !p.cancelled ? `<button class="linkbtn danger-link" type="button" data-pt="cancel" style="margin-top:8px">Call off the party</button>` : ""}</form>`);
   if(p && p.flat_group && $("ptFlat") && $("ptFlat").tagName === "SELECT") $("ptFlat").value = p.flat_group;
   if(window.attachPlaceSearch) attachPlaceSearch($("ptAddress"), pl => { ptx.geo = { lat: pl.lat, lng: pl.lng }; $("ptAddress").value = pl.address || pl.label; });
+  if(window.attachPlaceSearch) attachPlaceSearch($("ptNearAddr"), pl => { ptx.nearGeo = { lat: pl.lat, lng: pl.lng }; $("ptNearAddr").value = pl.address || pl.label;
+    if(!$("ptArea").value.trim()) $("ptArea").value = pl.area || String(pl.label || "").split(",")[0]; ptNearPinNote(); });
 }
+// "Open to people nearby": off by default. The address and pin here are private: people nearby see the area and the
+// distance, and the host's accepted guests get the address, the pin and the host's number.
+function ptNearHtml(o){
+  const on = !!o.open, chip = o.entry === "chip", r = o.radius_km || 3;
+  return `<details class="pt-extra pt-near" id="ptNear"${on ? " open" : ""}><summary>Open to people nearby <span class="opt-l">${on ? "on" : "off"}</span></summary>
+    <label class="switch" style="margin:4px 0 6px"><input type="checkbox" id="ptOpen"${on ? " checked" : ""}><span>Let people nearby ask to join</span></label>
+    <p class="hint" style="margin:0 0 12px">Only signed-in adults who've switched on “Show me parties nearby” see it. They see the area and the distance, never your address or number, until you accept them.</p>
+    <div id="ptOpenBox"${on ? "" : " hidden"}>
+      <div class="field"><label for="ptLimit">How many guests from nearby</label><input type="text" id="ptLimit" inputmode="numeric" maxlength="2" value="${o.guest_limit || ""}" placeholder="e.g. 6"></div>
+      <div class="field"><span class="lbl">Entry</span><div class="seg" role="radiogroup" aria-label="Entry">
+        <label><input type="radio" name="ptEntry" value="free"${chip ? "" : " checked"}><span>Free</span></label>
+        <label><input type="radio" name="ptEntry" value="chip"${chip ? " checked" : ""}><span>Chip-in</span></label></div></div>
+      <div id="ptChipBox"${chip ? "" : " hidden"}>
+        <div class="field"><label for="ptEntryChip">Chip-in, each (₹)</label><input type="text" id="ptEntryChip" inputmode="numeric" maxlength="4" value="${o.entry_chip || ""}" placeholder="e.g. 300"></div>
+        <div class="field"><span class="lbl">What it covers</span><div class="pt-covers">${Object.entries(PT_COVERS).map(([k, t]) =>
+          `<label class="chk"><input type="checkbox" name="ptCover" value="${k}"${(o.covers || []).includes(k) ? " checked" : ""}><span>${t}</span></label>`).join("")}</div>
+          <input type="text" id="ptCoverOther" maxlength="60" value="${esc(o.covers_other || "")}" placeholder="Anything else (optional)" style="margin-top:8px"></div>
+      </div>
+      <p class="pt-money" id="ptMoney">${esc(PT_MONEY_LINE)}</p>
+      <div class="field"><span class="lbl">Who can come</span><div class="seg" role="radiogroup" aria-label="Who can come">${Object.entries(PT_WHO).map(([k, t]) =>
+        `<label><input type="radio" name="ptWho" value="${k}"${(o.who || "all") === k ? " checked" : ""}><span>${t}</span></label>`).join("")}</div></div>
+      <div class="field"><label for="ptRadius">How far away guests can be: <b id="ptRadiusN">${r} km</b></label>
+        <input type="range" id="ptRadius" min="1" max="5" step="1" value="${r}" aria-describedby="ptRadiusN"></div>
+      <div class="field ps-anchor"><label for="ptNearAddr">Your address <span class="opt-l">(private: only guests you accept see it)</span></label>
+        <input type="text" id="ptNearAddr" maxlength="200" autocomplete="off" value="${esc(o.near_address || "")}" placeholder="Search your building or street, then pick it">
+        <p class="hint" id="ptPinNote" style="margin:4px 0 0">${o.near_geo ? "Pin set." : "Pick it from the list to set the map pin."}</p></div>
+      <div class="field"><label for="ptArea">Area people see</label><input type="text" id="ptArea" maxlength="60" value="${esc(o.area || "")}" placeholder="e.g. Baner"></div>
+      <div class="field"><label for="ptRules">House rules <span class="opt-l">(optional)</span></label><textarea id="ptRules" rows="2" maxlength="300" placeholder="No smoking indoors. Shoes off. Wraps up by 11.">${esc(o.house_rules || "")}</textarea></div>
+    </div></details>`;
+}
+const ptNearPinNote = () => { if($("ptPinNote")) $("ptPinNote").textContent = ptx && ptx.nearGeo ? "Pin set." : "Pick it from the list to set the map pin."; };
+// The nearby settings from the editor, checked the way the server checks them. {error} when something's missing.
+function ptNearRead(){
+  if(!$("ptOpen") || !$("ptOpen").checked) return ptx && ptx.wasOpen ? { open:false } : null;
+  const v = { open:true, guest_limit: Number($("ptLimit").value), entry: (document.querySelector("[name=ptEntry]:checked") || {}).value || "free",
+    entry_chip: Number($("ptEntryChip").value) || null, covers: [...document.querySelectorAll("[name=ptCover]:checked")].map(x => x.value),
+    covers_other: $("ptCoverOther").value.trim(), who: (document.querySelector("[name=ptWho]:checked") || {}).value || "all",
+    radius_km: Number($("ptRadius").value) || 3, near_address: $("ptNearAddr").value.trim(), near_geo: ptx.nearGeo, area: $("ptArea").value.trim(),
+    house_rules: $("ptRules").value.trim() };
+  if(!(v.guest_limit >= 2 && v.guest_limit <= 50)) return { error: "Say how many guests from nearby can come (2 to 50)." };
+  if(v.entry === "chip" && !(v.entry_chip >= 1 && v.entry_chip <= 5000)) return { error: "Add the chip-in amount, or pick Free." };
+  if(v.entry === "chip" && PT_ALCOHOL.test(v.covers_other)) return { error: "Alcohol can't be part of the chip-in. Guests bring their own." };
+  if(v.near_address.length < 5 || !v.near_geo) return { error: "Search your address and pick it from the list, so the map pin is set." };
+  if(v.area.length < 2) return { error: "Add the area people nearby will see." };
+  return v;
+}
+const ptNearError = m => m.includes("no-alcohol") ? "Alcohol can't be part of the chip-in. Guests bring their own." : m.includes("need-pin") ? "Pick your address from the list, so the map pin is set."
+  : m.includes("bad-limit") ? "Say how many guests from nearby can come (2 to 50)." : m.includes("blocked") ? "Hosting for people nearby is paused on your account while we review a report."
+  : m.includes("age-required") ? "Only adults can open a party to people nearby." : "Couldn't open it to people nearby. Please try again.";
 let ptx = null;
 $("dlgFs").addEventListener("click", async e => {
   const t = e.target;
@@ -9186,8 +9286,11 @@ $("dlgFs").addEventListener("click", async e => {
   if(a.dataset.pt === "flatmates") return ptTellFlatmates();
   if(a.dataset.pt === "copy"){ try{ await navigator.clipboard.writeText(ptLink(fsParty.code)); toast("Link copied"); }catch(err){ toast(ptLink(fsParty.code)); } }
 });
-$("dlgFs").addEventListener("input", e => { if(e.target.id === "ptTitle" && ptx) ptx.auto = false; if(e.target.id === "ptChip") e.target.value = e.target.value.replace(/\D/g, ""); if(e.target.id === "ptAddress" && ptx) ptx.geo = null; });
-$("dlgFs").addEventListener("change", e => { if(e.target.name === "ptPlace") $("ptAddr").hidden = e.target.value !== "address"; });
+$("dlgFs").addEventListener("input", e => { if(e.target.id === "ptTitle" && ptx) ptx.auto = false; if(["ptChip", "ptLimit", "ptEntryChip"].includes(e.target.id)) e.target.value = e.target.value.replace(/\D/g, ""); if(e.target.id === "ptAddress" && ptx) ptx.geo = null;
+  if(e.target.id === "ptNearAddr" && ptx){ ptx.nearGeo = null; ptNearPinNote(); } if(e.target.id === "ptRadius") $("ptRadiusN").textContent = e.target.value + " km"; });
+$("dlgFs").addEventListener("change", e => { if(e.target.name === "ptPlace") $("ptAddr").hidden = e.target.value !== "address";
+  if(e.target.id === "ptOpen"){ $("ptOpenBox").hidden = !e.target.checked; $("ptNear").querySelector(".opt-l").textContent = e.target.checked ? "on" : "off"; }
+  if(e.target.name === "ptEntry") $("ptChipBox").hidden = e.target.value !== "chip"; });
 $("dlgFs").addEventListener("submit", async e => {
   if(e.target.id !== "ptForm") return;
   e.preventDefault(); e.stopImmediatePropagation();
@@ -9200,6 +9303,7 @@ $("dlgFs").addEventListener("submit", async e => {
   let ends = end ? new Date(`${date}T${end}`) : null;
   if(ends && ends <= starts) ends = new Date(ends.getTime() + 864e5);   // past midnight
   if(place === "address" && $("ptAddress").value.trim().length < 5) return bad("Add the address, or pick “At my home”.");
+  const near = ptNearRead(); if(near && near.error) return bad(near.error);
   const p = { occasion: ptx.occ, title: $("ptTitle").value.trim(), starts_at: starts.toISOString(), ends_at: ends ? ends.toISOString() : null, place,
     address: $("ptAddress").value.trim(), directions: $("ptDir").value.trim(), geo: place === "address" ? ptx.geo : null,
     bring: $("ptBring").value.trim(), chip_in: Number($("ptChip").value) || 0, plus_ones: $("ptPlus").checked, note: $("ptNote").value.trim(),
@@ -9208,6 +9312,8 @@ $("dlgFs").addEventListener("submit", async e => {
   try{
     const first = !fsParty;
     await api.partySave(fsData.group.id, p);
+    if(near) try{ await api.partyOpenSave(fsData.group.id, near); }
+      catch(err){ console.error(err); await loadFsParty(); drawSplitGroup(); return bad(ptNearError(String(err.message || ""))); }
     await loadFsParty(); drawSplitGroup();
     toast(first ? (p.flat_group ? "Card ready, and your flatmates know. Now share it!" : "Card ready. Now share it!") : "Invite saved. Everyone with the link sees the change.");
     openPartyCard();

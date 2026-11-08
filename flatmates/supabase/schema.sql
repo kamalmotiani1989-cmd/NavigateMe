@@ -2020,6 +2020,101 @@ drop trigger if exists fm_parties_notify on public.fm_parties;
 create trigger fm_parties_notify after insert or update on public.fm_parties
   for each row execute function public.fm_party_notify();
 
+-- ------------------------------------------------ Nearby parties (Phase 1) --
+-- A host can open a party to people nearby: signed-in adults who have switched on "Show me parties nearby",
+-- within the host's radius, of the gender the host picked. Before the host accepts someone they see only the
+-- area and the distance; the address, the pin and the numbers are shared on accept, as numbers swap on a yes for
+-- rooms. Money never goes through the app: the chip-in is paid to the host at the door or by UPI, and alcohol
+-- is bring-your-own, never part of the chip-in. Off by default for hosts and for guests.
+alter table public.fm_parties add column if not exists open         boolean not null default false;
+alter table public.fm_parties add column if not exists guest_limit  int check (guest_limit between 2 and 50);
+alter table public.fm_parties add column if not exists entry        text not null default 'free' check (entry in ('free', 'chip'));
+alter table public.fm_parties add column if not exists entry_chip   int check (entry_chip between 1 and 5000);
+alter table public.fm_parties add column if not exists covers       text[] not null default '{}';
+alter table public.fm_parties add column if not exists covers_other text;
+alter table public.fm_parties add column if not exists who          text not null default 'all' check (who in ('all', 'female', 'male'));
+alter table public.fm_parties add column if not exists radius_km    int not null default 3 check (radius_km between 1 and 5);
+alter table public.fm_parties add column if not exists area         text;
+alter table public.fm_parties add column if not exists house_rules  text;
+-- Private: only the host and accepted guests ever see these (never in fm_party_json or the nearby list).
+alter table public.fm_parties add column if not exists near_address text;
+alter table public.fm_parties add column if not exists near_geo     jsonb;
+create index if not exists fm_parties_open_idx on public.fm_parties (starts_at) where open and not cancelled;
+
+-- What a chip-in can cover (the app has the wording). Alcohol is never one of them.
+create or replace function public.fm_party_covers() returns text[]
+language sql immutable as $$ select array['food','soft_drinks','snacks','music','games','decor'] $$;
+-- Words that mean alcohol, refused in "what it covers" and the house rules' chip-in line.
+create or replace function public.fm_party_alcohol(p text) returns boolean
+language sql immutable as $$
+  select coalesce(p, '') ~* '(alcohol|beer|wine|whisk(e)?y|vodka|rum\M|gin\M|tequila|liquor|booze|daaru|daru|sharab|cocktail|pints?\M|bottles?\M|brew)'
+$$;
+-- Distance in km between two points (haversine).
+create or replace function public.fm_km(a_lat double precision, a_lng double precision, b_lat double precision, b_lng double precision)
+returns double precision language sql immutable as $$
+  select 6371 * 2 * asin(sqrt(power(sin(radians(b_lat - a_lat) / 2), 2)
+         + cos(radians(a_lat)) * cos(radians(b_lat)) * power(sin(radians(b_lng - a_lng) / 2), 2)))
+$$;
+-- A {lat, lng} inside India, rounded; null otherwise.
+create or replace function public.fm_india_pin(p jsonb) returns jsonb
+language sql immutable as $$
+  select case when jsonb_typeof(p) = 'object' and jsonb_typeof(p->'lat') = 'number' and jsonb_typeof(p->'lng') = 'number'
+               and (p->>'lat')::numeric between 6 and 37 and (p->>'lng')::numeric between 68 and 98
+         then jsonb_build_object('lat', round((p->>'lat')::numeric, 6), 'lng', round((p->>'lng')::numeric, 6)) end
+$$;
+
+-- The host's nearby settings for a party group (with the private address and pin, for the host only).
+create or replace function public.fm_party_open_for_group(p_group uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  select jsonb_build_object('open', p.open, 'guest_limit', p.guest_limit, 'entry', p.entry, 'entry_chip', p.entry_chip,
+           'covers', to_jsonb(p.covers), 'covers_other', p.covers_other, 'who', p.who, 'radius_km', p.radius_km, 'area', p.area,
+           'house_rules', p.house_rules, 'near_address', p.near_address, 'near_geo', p.near_geo)
+  from fm_parties p where p.group_id = p_group and p.host_id = auth.uid();
+$$;
+
+-- Open a party to people nearby, change it, or close it again (p.open = false). The host only; adults only.
+create or replace function public.fm_party_open_save(p_group uuid, p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v fm_parties%rowtype; v_limit int; v_chip int; v_covers text[]; v_geo jsonb; v_entry text;
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  perform fm_throttle('party-open', 20, 60);
+  select * into v from fm_parties where group_id = p_group for update;
+  if v.id is null then raise exception 'no-party'; end if;
+  if v.host_id <> auth.uid() then raise exception 'not-the-host'; end if;
+  if not coalesce((p->>'open')::boolean, false) then
+    update fm_parties set open = false, updated_at = now() where id = v.id;
+    return fm_party_open_for_group(p_group);
+  end if;
+  if (select adult_at from fm_profiles where id = auth.uid()) is null then raise exception 'age-required'; end if;
+  if v.cancelled then raise exception 'party-cancelled'; end if;
+  if v.starts_at < now() then raise exception 'party-over'; end if;
+  begin v_limit := (p->>'guest_limit')::int; exception when others then v_limit := null; end;
+  if v_limit is null or v_limit not between 2 and 50 then raise exception 'bad-limit'; end if;
+  v_entry := case when p->>'entry' = 'chip' then 'chip' else 'free' end;
+  if v_entry = 'chip' then
+    begin v_chip := (p->>'entry_chip')::int; exception when others then v_chip := null; end;
+    if v_chip is null or v_chip not between 1 and 5000 then raise exception 'bad-chip'; end if;
+  end if;
+  select coalesce(array_agg(distinct x), '{}') into v_covers
+    from jsonb_array_elements_text(case when jsonb_typeof(p->'covers') = 'array' then p->'covers' else '[]'::jsonb end) x
+   where x = any (fm_party_covers());
+  if fm_party_alcohol(p->>'covers_other') then raise exception 'no-alcohol'; end if;
+  v_geo := fm_india_pin(p->'near_geo');
+  if v_geo is null then raise exception 'need-pin'; end if;
+  if char_length(trim(coalesce(p->>'area', ''))) < 2 then raise exception 'bad-area'; end if;
+  if char_length(trim(coalesce(p->>'near_address', ''))) < 5 then raise exception 'bad-address'; end if;
+  update fm_parties set open = true, guest_limit = v_limit, entry = v_entry, entry_chip = case when v_entry = 'chip' then v_chip end,
+         covers = case when v_entry = 'chip' then v_covers else '{}' end,
+         covers_other = case when v_entry = 'chip' then nullif(left(trim(coalesce(p->>'covers_other', '')), 60), '') end,
+         who = case when p->>'who' in ('female', 'male') then p->>'who' else 'all' end,
+         radius_km = greatest(1, least(5, coalesce(nullif(p->>'radius_km', '')::numeric, 3)::int)),
+         area = left(trim(p->>'area'), 60), house_rules = nullif(left(trim(coalesce(p->>'house_rules', '')), 300), ''),
+         near_address = left(trim(p->>'near_address'), 200), near_geo = v_geo, updated_at = now()
+   where id = v.id;
+  return fm_party_open_for_group(p_group);
+end $$;
+
 -- ------------------------------------------------- new-flat alerts --
 -- Who a new listing is for: seekers in its city and areas, still looking (searched in the last 60 days), who'd see
 -- its kind (private room or whole flat: no shared rooms; shared room or anything: everything), and with 70%+
@@ -3258,7 +3353,8 @@ begin
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
                      'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify',
                      'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours',
-                     'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience') then
+                     'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
+                     'fm_party_alcohol', 'fm_km', 'fm_india_pin') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -3282,3 +3378,7 @@ grant execute on function public.fm_on_hold() to anon, authenticated, service_ro
 alter function public.fm_match(jsonb, jsonb) set search_path = public;
 alter function public.fm_shows_to(text, text) set search_path = public;
 alter function public.fm_party_occasions() set search_path = public;
+alter function public.fm_party_covers() set search_path = public;
+alter function public.fm_party_alcohol(text) set search_path = public;
+alter function public.fm_km(double precision, double precision, double precision, double precision) set search_path = public;
+alter function public.fm_india_pin(jsonb) set search_path = public;
