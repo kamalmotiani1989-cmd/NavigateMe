@@ -14,8 +14,12 @@
 carries `team/`, `marketing/` or `tests/`**: it lists only the app's files. No database change was needed beyond the
 room details applied earlier today.
 
-**Still open, for Kamal.** The website repo's publish.yml still copies `team/`, `marketing/` and `tests/` to
-findmeflatmate.com when it next runs: three exclude lines, Kamal's access or paste. The Pixel and Google Ads IDs.
+**Still open, for Kamal.** The Pixel and Google Ads IDs.
+
+Update, 15:05 UTC: the website repo's publish job is fixed from Kamal's main session (findmeflatmate 17a1762). I
+checked it: publish.yml excludes `team/`, `marketing/` and `tests/` and removes leftovers, and both its main and
+gh-pages carry only the site's files. The three folders remain in that repo's public commit history; rewriting it is
+Kamal's call.
 
 ## 2026-11-08, room details merged and live in the database
 
