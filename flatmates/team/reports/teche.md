@@ -1,5 +1,18 @@
 # Teche · reports
 
+## 2026-11-08, "Just Flatsplits & FlatMart" sign-up: PR #69 up for Kamal to ship
+
+**Done, not merged.** Kamal will ship it in the morning.
+- A third choice on the sign-in card. Set-up asks name, gender and generation (Gen Z, Millennial, Gen X).
+- Rooms, requests, Tribe, Escape, posting and parties nearby are locked until the vibe questions are answered, in
+  the app and on the server. Flatsplits, FlatMart and invites for friends work.
+- A seeker or an owner is never downgraded by picking it again.
+
+**Ship order: database first, then the app.** Today's database refuses the new role. Tests: 89 database checks and
+all demo suites pass, including the new p10.
+
+Screens (sign-in card, set-up done, Discover locked, unlocking): `flatmates/team/reports/shots/2026-11-08-splits-signup.png`.
+
 ## 2026-11-08, welcome page fix (PR #68, merged)
 
 **Done.** Kamal saw the "Veg kitchen, tidy home" match bubbles piled up on the left on his phone. Cause: #65 made the
