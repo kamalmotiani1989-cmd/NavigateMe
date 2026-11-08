@@ -137,7 +137,7 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   const fastId = await p.evaluate(() => document.querySelector('#cards .card:has(.reply.fast)').dataset.id);
   await p.evaluate(id => openListing(id), fastId); await p.waitForTimeout(1200);
   const lhead = await p.evaluate(() => $('lLoc').textContent);
-  ok(/⚡ (Replies within hours|Usually replies within a day)/.test(lhead), 'seeker: listing header shows the reply speed: ' + lhead);
+  ok(/· (Replies within hours|Usually replies within a day)/.test(lhead), 'seeker: listing header shows the reply speed: ' + lhead);
   const shareBtn = await p.evaluate(() => ({ label: $('lShare').getAttribute('aria-label'), own: !!$('lShare').querySelector('circle'), back: !!$('lShare').querySelector('.x-back') }));
   ok(shareBtn.label === 'Share this home' && shareBtn.own && !shareBtn.back, 'seeker: the share button keeps its own icon and label: ' + JSON.stringify(shareBtn));
   await p.click('#lShare'); await p.waitForTimeout(3000);

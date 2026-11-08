@@ -474,7 +474,12 @@ Calm and grown-up, set on 8 Nov 2026 to replace the earlier bright teal-to-blue 
   5.75:1 on white and 4.81:1 on the mint wash; green text on the pale green tips uses `--brand-2` #156358.
 - **The WhatsApp button** on the sign-in card is `--wa` #178741 (darkened from #1DA851 on 8 Nov 2026, Kamal's call),
   so its white text reads at 4.59:1; it is the only place WhatsApp green is used.
-New screens use the tokens in `:root` at the top of the stylesheet rather than new colours.
+- **Icons are thin line icons** in navigation, badges, notices and empty states. Emoji stay only where people pick
+  them (FlatMart and Flatsplits categories, group emoji, party occasions), in onboarding answers, Vibe types and
+  share images. Homes without photos say "No photos yet"; sample homes keep their drawn room and a "Sample" label.
+New screens use the tokens in `:root` at the top of the stylesheet rather than new colours. Every colour in the
+stylesheet is a token: the main palette first, then the colours single screens use, named by hue and lightness
+(`--amber-92`). Drawn illustrations, the logo and share images keep their own colours.
 
 ## Files
 
