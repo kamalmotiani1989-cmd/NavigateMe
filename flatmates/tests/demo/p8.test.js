@@ -67,14 +67,20 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   for(const h of ['#discover', '#saved', '#tribe', '#account', '#passes', '#market']){
     await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen()); }
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1500);
-  // homes without photos say "No photos yet" on a pale green panel, not a drawn room
+  // sample homes keep their drawn room and say "Sample"; a real home without photos says "No photos yet". Live, the 100
+  // seeded homes are samples; the demo's homes are not, so mark every other one as a sample and draw Discover again.
+  await p.evaluate(async () => { demoListings().forEach((l, i) => { if(i % 2 === 0) l.household = Object.assign({}, l.household, { sample: true }); });
+    location.hash = '#saved'; await new Promise(r => setTimeout(r, 600)); location.hash = '#discover'; }); await p.waitForTimeout(1500);
+  await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   const np = await p.evaluate(() => [...document.querySelectorAll('#cards .card')].map(c => { const l = api.all().find(x => x.id === c.dataset.id);
-    return { photos: photosOf(l).length, panel: (c.querySelector('.thumb .nophoto') || {}).textContent || '', img: !!c.querySelector('.thumb > img'), drawn: !!c.querySelector('.thumb svg.art, .thumb .art rect') }; }));
-  ok(np.some(c => !c.photos) && np.every(c => c.photos ? c.img && !c.panel : c.panel === 'No photos yet' && !c.drawn),
-    'seeker: cards without photos say "No photos yet" and draw no room (' + np.filter(c => !c.photos).length + ' of ' + np.length + ')');
-  await p.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d => d.close()); openListing(document.querySelector('#cards .card').dataset.id); }); await p.waitForTimeout(1500);
+    return { sample: isSample(l), photos: photosOf(l).length, panel: !!c.querySelector('.thumb .nophoto'), img: !!c.querySelector('.thumb > img'),
+      drawn: !!c.querySelector('.thumb > svg.art'), label: !!c.querySelector('.body .smp') }; }));
+  ok(np.some(c => c.sample && !c.photos) && np.every(c => c.photos ? c.img && !c.panel : c.sample ? c.drawn && !c.panel && c.label : c.panel && !c.drawn),
+    'seeker: sample homes keep the drawn room with a Sample label; real homes without photos get the panel (' + np.filter(c => c.sample).length + ' samples of ' + np.length + ')');
+  await p.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d => d.close()); openListing([...document.querySelectorAll('#cards .card')].find(c => isSample(api.all().find(x => x.id === c.dataset.id))).dataset.id); }); await p.waitForTimeout(1500);
   const hero = await p.evaluate(() => { const h = document.querySelector('.hero-pic'); return h ? { text: (h.querySelector('.nophoto') || {}).textContent || '', gallery: !!h.querySelector('.gallery') } : null; });
-  ok(hero && (hero.gallery || hero.text === 'No photos yet'), "seeker: the home's page says No photos yet when it has none: " + JSON.stringify(hero));
+  const heroS = await p.evaluate(() => ({ drawn: !!document.querySelector('.hero-pic > svg.art'), label: !!document.querySelector('#dlgListing .smp, .smp-note .smp') }));
+  ok(hero && (hero.gallery || (heroS.drawn && heroS.label && !hero.text)), "seeker: a sample home's page keeps the drawn room and the Sample label: " + JSON.stringify({ hero, heroS }));
   await p.screenshot({ path: O + '/p8-home.png' });
   found.push(...await lowGreen());
   await ctx.close();
@@ -87,7 +93,9 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
   await ctx.addInitScript(s => { if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }, owner);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('owner ' + e.message)); p.on('dialog', d => d.accept().catch(() => {}));
-  for(const h of ['#mine', '#requests', '#account']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen()); }
+  for(const h of ['#mine', '#requests', '#account']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen());
+    if(h === '#mine'){ const mp = await p.evaluate(() => ({ panel: (document.querySelector('.mine-card .pic .nophoto') || {}).textContent || '', drawn: !!document.querySelector('.mine-card .pic svg.art') }));
+      ok(mp.panel === 'No photos yet' && !mp.drawn, 'owner: a real home without photos says "No photos yet", no drawn room: ' + JSON.stringify(mp)); } }
   ok(!sizes.size || [...sizes].every(x => ['12', '13.5', '15.5', '20'].includes(x)), 'seeker and owner: text between 12 and 20 px uses only the scale (12, 13.5, 15.5, 20): ' + [...sizes].join(', ') + ' ' + [...odd].slice(0, 6).join(' / '));
   ok(!found.length, 'seeker and owner: no green text below 4.5:1 on the pale green tips and labels: ' + [...new Set(found)].join(' / '));
   await ctx.close();
