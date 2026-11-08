@@ -265,6 +265,8 @@ textarea{min-height:96px; resize:vertical}
 .meta{display:flex; flex-wrap:wrap; gap:0; margin-top:2px; font-size:13px; color:var(--text-3)}
 .meta span{background:none; padding:0}
 .meta span + span::before{content:"·"; margin:0 6px}
+.room-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px} .room-tags span{font-size:12.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--brand-soft); color:var(--brand-2)}
+.room-qs .chips{gap:6px} .room-qs .chip{padding:7px 10px; font-size:13.5px}
 .fresh{font-size:12px; color:var(--text-3)}
 .heart{position:absolute; bottom:12px; right:12px; z-index:2; width:36px; height:36px; border-radius:50%; border:0; cursor:pointer;
   background:rgba(255,255,255,.94); color:#9AA0A8; font-size:17px; line-height:1; display:grid; place-items:center; transition:transform .15s}
@@ -318,6 +320,7 @@ textarea{min-height:96px; resize:vertical}
 .drop input{display:none}
 .previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
 .previews:empty{display:none}
+.previews .ph-orig{position:absolute; left:6px; bottom:6px; padding:3px 8px; border:0; border-radius:999px; background:rgba(16,20,24,.72); color:#fff; font:700 11px var(--body); cursor:pointer}
 .previews figure{margin:0; position:relative; aspect-ratio:4/3; max-width:100%; border-radius:10px; overflow:hidden; background:var(--surface-2)}
 .previews img{width:100%; height:100%; object-fit:cover; display:block}
 .previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700; background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
@@ -542,7 +545,7 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .ob .chip{background:rgba(255,255,255,.16); color:#fff}
 .ob .chip:has(input:checked){background:#fff; color:var(--brand-2)}
 .ob .btn-primary{background:#fff; color:var(--brand-2)} .ob .btn-primary:hover{background:#EFFAFA}
-.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff}
+.ob .btn-ghost{background:rgba(255,255,255,.16); color:#fff} .ob .btn-ghost:hover{background:rgba(255,255,255,.28)}
 .ob .form-err{color:#FFE1DC} .ob .fm-row{box-shadow:0 -1px 0 rgba(255,255,255,.2)}
 .ob .finale p{color:rgba(255,255,255,.88)}
 .mhead{background:var(--teal); color:#fff; padding-bottom:16px; margin-bottom:14px}
@@ -1009,6 +1012,8 @@ div.cx-area{cursor:default}
 @media (max-width:720px){ .help-fab{bottom:calc(86px + env(safe-area-inset-bottom,0px)); right:14px; width:52px; padding:0; justify-content:center} .help-fab span{display:none}
   body:not(.app) .help-fab{bottom:calc(18px + env(safe-area-inset-bottom,0px))} }
 body:has(#view-splits:not([hidden]) #fsGroup:not([hidden])) .help-fab{display:none}
+/* Out of the way while someone types: on a phone the button sat over the end of a field (area, title, number). */
+body.typing .help-fab{display:none}
 #dlgHelp[open]{display:flex; flex-direction:column; height:min(640px, calc(100dvh - 48px)); width:min(460px, calc(100vw - 32px))}
 @media (max-width:640px){ #dlgHelp[open]{width:100vw; height:100dvh} }
 #dlgHelp .mhead{flex:none; margin-bottom:0}
@@ -1682,6 +1687,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .ob-segs i.done b{width:100%!important}
 .ob .ob-count{font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .ob-intro h1{font-size:clamp(28px, 7vw, 40px)}
+.ob-intro #obGo, .ob-finale-acts .btn{min-width:min(100%, 200px); min-height:52px}
 .ob-plan{list-style:none; margin:22px 0 26px; padding:0; display:grid; gap:10px}
 .ob-plan li{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.13)}
 .ob-plan li i{display:grid; place-items:center; width:30px; height:30px; border-radius:50%; background:#fff; color:var(--brand-2); font-style:normal; font-weight:800; flex:none}
@@ -1828,7 +1834,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><path d="M9 20v-6h6"/></svg></span>
               <span><b>Posting a flat or a room</b><span>A spare room, a bed or a whole flat. See who'd fit in, then you choose</span></span></label>
           </div>
-          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+          <div class="field"><label for="lgPhone">Mobile number</label><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
           <div class="lg-captcha" id="lgCaptcha" hidden></div>
@@ -2098,15 +2104,17 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
       <div class="active-f" id="activeF"></div>
     </div>
     <div id="urgent"></div>
-    <div id="profilePromo"></div>
-    <div id="vibePromo"></div>
-    <div id="passNudgeD"></div>
-    <div id="extrasD"></div>
     <div class="d-map" id="dMap" hidden><div class="d-map-el" id="dMapEl"></div><div id="dMapCard"></div></div>
     <section id="vibeRow" hidden>
       <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
       <div class="vrow" id="vibeCards"></div>
     </section>
+    <!-- Nudges (finish your profile, your type, a pass, Flatsplits and FlatMart) come after the first homes, so a
+         new person sees homes on the first screen; anything urgent (an answer, a visit) stays at the top. -->
+    <div id="profilePromo"></div>
+    <div id="vibePromo"></div>
+    <div id="passNudgeD"></div>
+    <div id="extrasD"></div>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
   </section>
@@ -2188,6 +2196,18 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
             <label class="chip"><input type="radio" name="kind" value="flatmate">Looking for a flatmate</label>
             <label class="chip"><input type="radio" name="kind" value="flat">Whole flat takeover</label>
           </div></div>
+        <!-- Room details: three one-tap questions seekers ask first. Optional; a whole flat skips them. -->
+        <div class="grid3 room-qs" id="roomQs">
+          <div class="field"><label>Washroom</label><div class="chips">
+            <label class="chip"><input type="radio" name="rWash" value="attached">Attached</label>
+            <label class="chip"><input type="radio" name="rWash" value="shared">Shared</label></div></div>
+          <div class="field"><label>Balcony</label><div class="chips">
+            <label class="chip"><input type="radio" name="rBalc" value="yes">Yes</label>
+            <label class="chip"><input type="radio" name="rBalc" value="no">No</label></div></div>
+          <div class="field"><label>Master bedroom</label><div class="chips">
+            <label class="chip"><input type="radio" name="rMaster" value="yes">Yes</label>
+            <label class="chip"><input type="radio" name="rMaster" value="no">No</label></div></div>
+        </div>
         <div class="field"><label for="pTitle">Title</label>
           <input type="text" id="pTitle" required minlength="5" maxlength="90" placeholder="Sunny room in a 2BHK, 5 min from the metro"></div>
         <div class="field ps-anchor p-where"><label for="pWhere">Where's the flat?</label>
@@ -2245,7 +2265,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
           <p class="hint" id="privKept" hidden style="margin:-4px 0 12px">Your name, number and address stay as posted. To change them, mark this listing as rented and post the room again. You can still move the map pin.</p>
           <div class="grid2">
             <div class="field"><label for="pName">Your name</label><input type="text" id="pName" required autocomplete="name"></div>
-            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" maxlength="10" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
+            <div class="field"><label for="pPhone">Phone for visits</label><input type="tel" id="pPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div>
           </div>
           <div class="grid2">
             <div class="field"><label for="aFlat">Flat / house no.</label><input type="text" id="aFlat" required maxlength="30" placeholder="e.g. B-304"></div>
@@ -2428,6 +2448,11 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <option value="2w">Within 2 weeks</option><option value="1m">Within a month</option><option value="3m">In 1 to 3 months</option></select>
       <h3 class="section-h">Must-haves</h3>
       <div class="chips" id="fMust"></div>
+      <h3 class="section-h">The room</h3>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="fRoom" value="wash">Attached washroom</label>
+        <label class="chip"><input type="checkbox" name="fRoom" value="balcony">Balcony</label>
+        <label class="chip"><input type="checkbox" name="fRoom" value="master">Master bedroom</label></div>
       <h3 class="section-h">House rules that matter to you</h3>
       <div class="chips">
         <label class="chip"><input type="checkbox" name="fRule" value="veg">Veg-only kitchen</label>
@@ -2908,6 +2933,53 @@ async function resizeImage(src, maxSide, quality){
   if(!blob) throw new Error("encode-failed");
   return blob;
 }
+/* ---- Auto-beautify, on the phone, before upload. Light, colour and sharpness only: the photo's own orientation
+   data, levels (the darkest and lightest half-percent become black and white), a lift for dark rooms, a light
+   sharpening, then 1600 px. Every pixel gets the same treatment, so nothing in the room is removed, added or moved.
+   The original is kept so the owner can switch back per photo ("Use original"). */
+const ENHANCE = { maxSide: 1600, clip: 0.005, minSpan: 24, darkMean: 112, minGamma: 0.6, sharpen: 0.3 };
+async function decodeOriented(file){
+  try{ return await createImageBitmap(file, { imageOrientation: "from-image" }); }catch(e){}
+  return decodeImage(file);   // <img> honours the orientation data by itself
+}
+async function enhanceImage(file){
+  const img = await decodeOriented(file);
+  const w0 = img.naturalWidth || img.width, h0 = img.naturalHeight || img.height, k = Math.min(1, ENHANCE.maxSide / Math.max(w0, h0));
+  const c = document.createElement("canvas"), w = c.width = Math.round(w0 * k), h = c.height = Math.round(h0 * k);
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, w, h); img.close && img.close();
+  const id = ctx.getImageData(0, 0, w, h), d = id.data, n = w * h;
+  // Luminance histogram -> levels and a lift for dark rooms.
+  const hist = new Uint32Array(256); let sum = 0;
+  for(let i = 0; i < d.length; i += 4){ const y = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000 | 0; hist[y]++; sum += y; }
+  const mean = sum / n, cut = n * ENHANCE.clip;
+  let lo = 0, hi = 255, acc = 0;
+  for(let v = 0; v < 256; v++){ acc += hist[v]; if(acc > cut){ lo = v; break; } }
+  acc = 0; for(let v = 255; v >= 0; v--){ acc += hist[v]; if(acc > cut){ hi = v; break; } }
+  if(hi - lo < ENHANCE.minSpan){ lo = 0; hi = 255; }   // a flat image (one colour, fog): leave its levels alone
+  // Levels add contrast; the lift then brings the overall brightness back to where it was, or up to a sensible
+  // level for a dark room. A photo that was already bright keeps its brightness (gamma never darkens).
+  const stretched = Math.min(254, Math.max(1, (mean - lo) * 255 / (hi - lo))), target = Math.max(mean, ENHANCE.darkMean);
+  const gamma = Math.min(1, Math.max(ENHANCE.minGamma, Math.log(target / 255) / Math.log(stretched / 255)));
+  const lut = new Uint8ClampedArray(256);
+  for(let v = 0; v < 256; v++) lut[v] = Math.round(255 * Math.pow(Math.min(1, Math.max(0, (v - lo) / (hi - lo))), gamma));
+  for(let i = 0; i < d.length; i += 4){ d[i] = lut[d[i]]; d[i + 1] = lut[d[i + 1]]; d[i + 2] = lut[d[i + 2]]; }
+  // A light unsharp mask (3x3 box blur): edges a touch crisper, nothing new drawn.
+  const a = ENHANCE.sharpen, src = new Uint8ClampedArray(d);
+  for(let y = 1; y < h - 1; y++) for(let x = 1; x < w - 1; x++){
+    const o = (y * w + x) * 4;
+    for(let ch = 0; ch < 3; ch++){
+      const i = o + ch, s4 = w * 4;
+      const blur = (src[i - s4 - 4] + src[i - s4] + src[i - s4 + 4] + src[i - 4] + src[i] + src[i + 4] + src[i + s4 - 4] + src[i + s4] + src[i + s4 + 4]) / 9;
+      d[i] = src[i] + a * (src[i] - blur);
+    }
+  }
+  ctx.putImageData(id, 0, 0);
+  const blob = await new Promise(res => c.toBlob(res, "image/jpeg", 0.92));
+  if(!blob) throw new Error("encode-failed");
+  blob.stats = { lo, hi, mean: Math.round(mean), gamma: Math.round(gamma * 100) / 100, width: w, height: h };
+  return blob;
+}
 // Resize every photo; ones that can't be read are skipped rather than failing the post.
 async function resizeAll(files, maxSide, quality){
   const out = await Promise.all(files.map(f => resizeImage(f, maxSide, quality).catch(() => null)));
@@ -3089,6 +3161,8 @@ function demoListings(){
         building: pick(DEMO_BUILDINGS) + " " + pick(DEMO_SUFFIX), street: pick(DEMO_STREETS), landmark: "Near " + pick(DEMO_LANDMARKS), pin };
       out.push({
         id: "demo-" + n, kind, city, locality: area, bhk, rent, deposit: rent * pick([2, 2, 3]), gender,
+        // Room details for most rooms (from a hash, so the rest of the demo data stays as it was); one in five unset.
+        room: kind === "flat" || hue("room" + n) % 5 === 0 ? null : { washroom: hue("wash" + n) % 3 ? "attached" : "shared", balcony: hue("balc" + n) % 7 < 3, master: hue("mast" + n) % 11 < 4 },
         geo: (g => g ? { lat: Math.round((g[0] + (hue("la" + n) % 17 - 8) / 1000) * 100) / 100, lng: Math.round((g[1] + (hue("ln" + n) % 17 - 8) / 1000) * 100) / 100 } : null)((DEMO_GEO[city] || {})[area]),
         bachelors: hue("bach" + n) % 10 < 9,
         furnishing: pick(["full", "full", "semi", "semi", "none"]), amenities,
@@ -3762,7 +3836,7 @@ function makeLiveApi(sb){
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from,
         p_gender:l.gender, p_furnishing:l.furnishing, p_amenities:l.amenities, p_description:l.description,
         p_contact_name:pv.contact_name, p_contact_phone:pv.contact_phone, p_address:pv.address, p_address_parts:pv.address_parts || {},
-        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null });
+        p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {}, p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_room: l.room || null });
       return { id, photos:"kept" };
     },
     async update(id, p){
@@ -3770,7 +3844,7 @@ function makeLiveApi(sb){
       await rpc("fm_update_listing", { p_listing: id, p_kind:l.kind, p_title:l.title, p_city:l.city, p_locality:l.locality,
         p_bhk:l.bhk, p_rent:l.rent, p_deposit:l.deposit, p_available_from:l.available_from, p_gender:l.gender, p_furnishing:l.furnishing,
         p_amenities:l.amenities, p_description:l.description, p_photos:l.photos || [], p_household:l.household || {}, p_costs:l.costs || {},
-        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null });
+        p_bachelors: l.bachelors !== false, p_geo: l.geo || null, p_pin: p.pin || null, p_room: l.room || null });
       return { id, photos:"kept" };
     },
     async myListings(){ return (await rpc("fm_my_listings")).filter(l => l.is_owner); },
@@ -4671,7 +4745,7 @@ function showFormError(form, text){
 function formOk(form){
   form.querySelectorAll(".bad").forEach(el => el.classList.remove("bad"));
   const bad = [...form.elements].filter(el => el.willValidate && !el.checkValidity());
-  if(!bad.length){ showFormError(form, ""); return true; }
+  if(!bad.length){ showFormError(form, ""); document.querySelectorAll(".toast").forEach(t => t.remove()); return true; }
   const label = el => el.type === "radio" ? (el.name === "role" ? "What brings you here" : "A choice") : FIELD_LABEL[el.id] || el.getAttribute("aria-label") || "A field";
   const msg = "Please check: " + [...new Set(bad.map(label))].join(", ") + ".";
   showFormError(form, msg);
@@ -5543,6 +5617,17 @@ function otpCountdown(sec){
   };
   tick(); signin.timer = setInterval(tick, 1000);
 }
+// A number pasted or auto-filled from contacts arrives as "+91 98765 43210", "098765 43210" or "98765-43210":
+// keep the 10 digits, so it passes as typed. Every 10-digit mobile field in the app gets this.
+function tidyPhone(v){
+  let d = String(v || "").replace(/\D/g, "");
+  if(d.length > 10 && d.startsWith("91")) d = d.slice(2); else if(d.length === 11 && d.startsWith("0")) d = d.slice(1);
+  return d.slice(0, 10);
+}
+document.addEventListener("input", e => {
+  const el = e.target;
+  if(el.type === "tel" && el.inputMode === "numeric"){ const t = tidyPhone(el.value); if(t !== el.value) el.value = t; }
+});
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
@@ -5969,7 +6054,7 @@ async function finishOnboarding(){
   $("obStage").innerHTML = `<div class="ob-q finale">
     <p class="eyebrow">Your vibe profile is ready</p>
     ${vt ? `<p class="ob-type"><span aria-hidden="true">${vt.emoji}</span>You're <b>${esc(vt.title)}</b>${im ? `<small>and a ${im.pct}% match with ${esc(inv.name)}</small>` : ""}</p>` : ""}
-    <div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>
+    ${strong ? `<div class="ring-lg" id="obRing">${ringSvg(0, 140)}</div>` : ""}
     <h1>${rows.length ? `${rows.length} ${rows.length === 1 ? "home" : "homes"} in ${esc(where)} ${rows.length === 1 ? "fits" : "fit"} your budget.` : `We're still filling up ${esc(where)}.`}</h1>
     <p>${strong ? `${strong} of them ${strong === 1 ? "has" : "have"} flatmates who match your vibe. Your best match is ${best}%.`
         : "None is a perfect match yet, but you'll see exactly where each one fits and where it doesn't."}
@@ -5979,12 +6064,13 @@ async function finishOnboarding(){
   if($("obCard")) $("obCard").onclick = () => openVibeCard(state.vibe);
   let n = 0;
   const tick = () => { n = Math.min(best, n + 3); $("obRing") && ($("obRing").innerHTML = ringSvg(n, 140)); if(n < best) requestAnimationFrame(tick); };
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
+  if(!$("obRing")){} else if(matchMedia("(prefers-reduced-motion: reduce)").matches) $("obRing").innerHTML = ringSvg(best, 140); else setTimeout(tick, 900);
   $("obDone").onclick = () => { ob = null; $("fSort").value = "match"; go("discover"); };
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], minMatch:0 };
+const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], room:[], minMatch:0 };
+const ROOM_FILTERS = { wash: ["Attached washroom", l => (l.room || {}).washroom === "attached"], balcony: ["Balcony", l => (l.room || {}).balcony === true], master: ["Master bedroom", l => (l.room || {}).master === true] };
 const prefs = () => {
   const p = Object.assign({}, DEFAULT_PREFS, state.prefs);
   // The old "Looking for" filter (several kinds) became one choice on Discover.
@@ -6024,6 +6110,8 @@ function applyFilters(rows, f){
     if(f.furn.length && !f.furn.includes(l.furnishing)) return false;
     if(f.moveBy && l.available_from > f.moveBy) return false;
     if(f.must.length && !f.must.every(a => (l.amenities || []).includes(a))) return false;
+    // Room details are about the room on offer; a whole flat has all its rooms, so it passes.
+    if(l.kind !== "flat" && (f.room || []).some(k => ROOM_FILTERS[k] && !ROOM_FILTERS[k][1](l))) return false;
     // House rules only apply where someone already lives; a whole flat is yours to set.
     if(shared && f.rules.some(r => RULES[r] && !RULES[r][1](hh))) return false;
     if(f.rules.includes("bach") && l.bachelors === false) return false;
@@ -6041,6 +6129,7 @@ function activeFilters(f){
   if(f.moveBy) out.push(["moveBy", "Move in by " + fmtDate(f.moveBy)]);
   f.must.forEach(a => out.push(["must:" + a, a]));
   f.rules.forEach(r => RULES[r] && out.push(["rules:" + r, RULES[r][0]]));
+  (f.room || []).forEach(k => ROOM_FILTERS[k] && out.push(["room:" + k, ROOM_FILTERS[k][0]]));
   if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
@@ -6196,6 +6285,8 @@ async function renderDiscover(){
   $("vibeRow").hidden = !vibes.length;
   $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
   $("dMap").hidden = !mapView;
+  // Nothing to show: the "no homes match" help goes straight under the controls, ahead of the nudges.
+  if(list.length) $("extrasD").after($("count"), $("cards")); else $("profilePromo").before($("count"), $("cards"));
   if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
@@ -6384,6 +6475,7 @@ function openFilters(){
   form.querySelectorAll("[name=fKind]").forEach(x => x.checked = f.kinds.includes(x.value));
   form.querySelectorAll("[name=fFurn]").forEach(x => x.checked = f.furn.includes(x.value));
   form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
+  form.querySelectorAll("[name=fRoom]").forEach(x => x.checked = (f.room || []).includes(x.value));
   form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
   form.querySelectorAll("[name=fMatch]").forEach(x => x.checked = Number(x.value) === f.minMatch);
   updateFilterCount();
@@ -6392,7 +6484,7 @@ function openFilters(){
 function readFilterForm(){
   const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
   return { min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
-    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), minMatch: Number(vals("fMatch")[0]) || 0 };
+    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), room: vals("fRoom"), minMatch: Number(vals("fMatch")[0]) || 0 };
 }
 function updateFilterCount(){
   const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
@@ -6575,7 +6667,7 @@ async function openListing(id){
     ${items.length ? `<div class="bill">${bill}${billsTotal(l) ? `<span class="tot">Fixed expenses per month</span><span class="tot">${inr(billsTotal(l))}</span>` : ""}</div>`
       : `<p style="margin:0">No extra expenses. Everything is included in the rent.</p>`}
     <div class="kv">
-      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b></div>
+      <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b>${ROOM_LABELS(l).length ? `<div class="room-tags">${ROOM_LABELS(l).map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}</div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
       <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
@@ -7079,14 +7171,17 @@ $("mineList").addEventListener("click", async e => {
 });
 
 /* ======================================================= owner: post */
-let photoFiles = [];   // File objects picked for the listing being posted
+let photoFiles = [];   // File objects picked for the listing being posted (each with .enhanced once beautified)
 let editing = null, keepPhotos = [], editStep = 1;   // editing: the listing being changed; keepPhotos: its photos still wanted
+const photoToSend = f => f.useOriginal || !f.enhanced ? f : f.enhanced;
+function freePhoto(f){ if(f.preview) URL.revokeObjectURL(f.preview); if(f.enhancedUrl) URL.revokeObjectURL(f.enhancedUrl); }
 function renderPhotos(){
   photoFiles.forEach(f => f.preview = f.preview || URL.createObjectURL(f));
   $("pPreviews").innerHTML = keepPhotos.map((u, i) =>
     `<figure><img src="${esc(u)}" alt="Photo ${i+1}"><button type="button" data-rmk="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("")
     + photoFiles.map((f, i) =>
-    `<figure><img src="${f.preview}" alt="Photo ${keepPhotos.length + i + 1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button></figure>`).join("");
+    `<figure><img src="${f.useOriginal || !f.enhancedUrl ? f.preview : f.enhancedUrl}" alt="Photo ${keepPhotos.length + i + 1}"><button type="button" data-rm="${i}" aria-label="Remove photo">${CLOSE_SVG}</button>
+      ${f.enhanced ? `<button type="button" class="ph-orig" data-orig="${i}">${f.useOriginal ? "Use enhanced" : "Use original"}</button>` : f.enhancing ? `<span class="ph-orig">Brightening…</span>` : ""}</figure>`).join("");
   $("pDrop").hidden = keepPhotos.length + photoFiles.length >= MAX_PHOTOS;
 }
 function addPhotos(list){
@@ -7094,15 +7189,21 @@ function addPhotos(list){
   if(imgs.length < list.length) toast("Some files were skipped. Use images under 20 MB.");
   photoFiles = photoFiles.concat(imgs).slice(0, room);
   if(photoFiles.length === room && imgs.length) toast("Up to " + MAX_PHOTOS + " photos per listing.");
+  // Beautify each new photo in the background; the preview switches to the result when it is ready.
+  photoFiles.forEach(f => { if(!f.enhancing) f.enhancing = enhanceImage(f)
+    .then(b => { f.enhanced = b; f.enhancedUrl = URL.createObjectURL(b); }).catch(err => { console.error(err); f.enhanced = null; })
+    .then(() => { f.enhancing = null; if(photoFiles.includes(f)) renderPhotos(); }); });
   renderPhotos();
 }
 $("pPhotos").addEventListener("change", e => { addPhotos(e.target.files); e.target.value = ""; });
 $("pPreviews").addEventListener("click", e => {
   const k = e.target.closest("[data-rmk]");
   if(k){ keepPhotos.splice(Number(k.dataset.rmk), 1); renderPhotos(); return; }
+  const o = e.target.closest("[data-orig]");
+  if(o){ const f = photoFiles[Number(o.dataset.orig)]; if(f){ f.useOriginal = !f.useOriginal; renderPhotos(); } return; }
   const b = e.target.closest("[data-rm]"); if(!b) return;
   const [gone] = photoFiles.splice(Number(b.dataset.rm), 1);
-  if(gone && gone.preview) URL.revokeObjectURL(gone.preview);
+  if(gone) freePhoto(gone);
   renderPhotos();
 });
 /* ---- editing a listing: the same form, filled in. The private part stays as posted (read-only here),
@@ -7116,8 +7217,8 @@ async function startEdit(id, step){
 }
 function endEdit(){
   editing = null; keepPhotos = [];
-  $("postForm").reset();
-  photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  $("postForm").reset(); syncRoomQs();
+  photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
   PRIVATE_IDS.forEach(id => $(id).disabled = false);
   $("postForm").querySelector(".private").classList.remove("kept"); $("privKept").hidden = true;
   if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null; $("mapBox").hidden = true; $("mapBox").innerHTML = "";
@@ -7129,6 +7230,7 @@ async function fillPostForm(l){
   const f = $("postForm"), hh = l.household || {};
   f.reset();
   (f.querySelector(`[name=kind][value="${l.kind}"]`) || f.querySelector("[name=kind]")).checked = true;
+  fillRoomForm(l.room); syncRoomQs();
   $("pTitle").value = l.title; setCitySelect($("pCity"), l.city); fillAreaList(); $("pLocality").value = l.locality;
   $("pBhk").value = String(Math.min(4, Math.max(1, l.bhk || 2))); $("pRent").value = l.rent; $("pDeposit").value = l.deposit || 0;
   $("pFrom").value = String(l.available_from || "").slice(0, 10); $("pGender").value = l.gender; $("pFurn").value = l.furnishing;
@@ -7142,7 +7244,7 @@ async function fillPostForm(l){
   $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
   $("hInt").innerHTML = interestChips("hi", hh.interests);
   syncRoomsFree();
-  keepPhotos = photosOf(l); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+  keepPhotos = photosOf(l); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
   // The private part, for reference and for the map pin: kept as posted.
   const c = (await api.contact(l.id).catch(() => null)) || {}, ap = c.address_parts || {};
   $("pName").value = c.contact_name || state.user.name || ""; $("pPhone").value = c.contact_phone || state.user.phone || "";
@@ -7220,7 +7322,23 @@ function syncRoomsFree(){
   if(!$("hFree").dataset.touched) $("hFree").value = String(Math.min(4, Math.max(1, Number($("pBhk").value) - Number($("hCount").value))));
 }
 ["hCount", "pBhk"].forEach(id => $(id).addEventListener("change", syncRoomsFree));
-$("postForm").addEventListener("change", e => { if(e.target.name === "kind") syncRoomsFree(); if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+// Room details: shown for a room, a bed or a flatmate listing; a whole flat has none to answer.
+function syncRoomQs(){ const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value; $("roomQs").hidden = kind === "flat"; }
+function roomFromForm(){
+  const f = $("postForm"), kind = (f.querySelector("[name=kind]:checked") || {}).value, pick = n => (f.querySelector(`[name=${n}]:checked`) || {}).value;
+  if(kind === "flat") return null;
+  const r = {}, w = pick("rWash"), b = pick("rBalc"), m = pick("rMaster");
+  if(w) r.washroom = w; if(b) r.balcony = b === "yes"; if(m) r.master = m === "yes";
+  return Object.keys(r).length ? r : null;
+}
+function fillRoomForm(room){
+  const f = $("postForm"), r = room || {}, set = (n, v) => f.querySelectorAll(`[name=${n}]`).forEach(x => x.checked = v !== undefined && x.value === v);
+  set("rWash", r.washroom); set("rBalc", r.balcony === undefined ? undefined : r.balcony ? "yes" : "no"); set("rMaster", r.master === undefined ? undefined : r.master ? "yes" : "no");
+}
+// What a listing's answers say, in short labels (unset answers say nothing).
+const ROOM_LABELS = l => { const r = l.room || {}; return [r.washroom === "attached" ? "Attached washroom" : r.washroom === "shared" ? "Shared washroom" : "", r.balcony ? "Balcony" : "", r.master ? "Master bedroom" : ""].filter(Boolean); };
+$("postForm").addEventListener("change", e => { if(e.target.name === "kind"){ syncRoomsFree(); syncRoomQs(); } if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+syncRoomQs();
 function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
 attachAreaSuggest($("pLocality"), () => $("pCity").value);
@@ -7281,6 +7399,7 @@ $("postForm").addEventListener("submit", async e => {
       bhk: Number($("pBhk").value), rent: Number($("pRent").value), deposit: Number($("pDeposit").value) || 0,
       available_from: $("pFrom").value, gender: $("pGender").value, furnishing: $("pFurn").value, bachelors: $("pBach").checked,
       amenities: [...$("pAmen").querySelectorAll("input:checked")].map(i => i.value),
+      room: roomFromForm(),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
         PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {}, readQuiz($("hQuiz"), "h")),
@@ -7296,7 +7415,8 @@ $("postForm").addEventListener("submit", async e => {
     let skipped = 0;
     if(photoFiles.length){
       btn.textContent = "Preparing photos…";
-      const up = await api.uploadPhotos(photoFiles);
+      await Promise.all(photoFiles.map(f => f.enhancing));
+      const up = await api.uploadPhotos(photoFiles.map(photoToSend));
       p.listing.photos = up.urls; skipped = up.skipped;
     }
     if(editing){
@@ -7313,7 +7433,7 @@ $("postForm").addEventListener("submit", async e => {
     const res = await api.post(p);
     track("list_room", { city: p.listing.city, area: p.listing.locality, kind: p.listing.kind });
     state.homeDraft = Object.assign({}, p.listing.household); save();
-    f.reset(); photoFiles.forEach(x => URL.revokeObjectURL(x.preview)); photoFiles = []; renderPhotos();
+    f.reset(); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
     if(pinMap){ pinMap.remove(); pinMap = null; } pinGeo = null;
     $("mapBox").hidden = true; $("mapBox").innerHTML = ""; renderExpenseRows();
     toast(res.photos === "dropped" ? "Your listing is live, but this phone's demo storage is full, so the photos weren't kept."
@@ -7581,7 +7701,7 @@ function openFs(title, sub, html){
 }
 function memberRowsHtml(rows, ph = "Riya"){
   return rows.map((r, i) => `<div class="grid2 fs-new-row"><div class="field"><label for="fsN${i}">Name</label><input type="text" id="fsN${i}" maxlength="40" value="${esc(r.name)}" placeholder="${ph}"></div>
-    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" maxlength="10" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
+    <div class="field"><label for="fsP${i}">Mobile</label><input type="tel" id="fsP${i}" inputmode="numeric" value="${esc(r.phone)}" placeholder="10-digit mobile"></div></div>`).join("");
 }
 function readMemberRows(root){
   return [...root.querySelectorAll(".fs-new-row")].map(r => ({ name: r.querySelector("[id^=fsN]").value.trim(), phone: ten(r.querySelector("[id^=fsP]").value) }))
@@ -9360,6 +9480,9 @@ async function hbTickets(){
     [["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["↩ Something else", "home"]]);
   api.ticketsSeen().catch(() => {}); ticketUnseen = 0; drawHelpBadge();
 }
+const typingIn = el => el && el.matches && el.matches("input:not([type=radio]):not([type=checkbox]):not([type=range]):not([type=file]), textarea, select");
+document.addEventListener("focusin", e => { if(typingIn(e.target)) document.body.classList.add("typing"); });
+document.addEventListener("focusout", e => { if(typingIn(e.target)) document.body.classList.remove("typing"); });
 $("helpFab").addEventListener("click", () => openHelp());
 // The private-preview door: 7 quick taps on the logo of the Coming soon screen (see showHold).
 (() => { let taps = 0, last = 0;
@@ -9767,7 +9890,8 @@ window.fmBack = () => {
   return false;
 };
 // The close button: a back arrow on phones (dialogs are full screen there), a cross on bigger screens.
-document.querySelectorAll(".mhead .x").forEach(b => {
+// Only the close buttons: the share buttons in the same corner (a home, a FlatMart item) keep their own icon.
+document.querySelectorAll(".mhead .x[data-close]").forEach(b => {
   b.innerHTML = BACK_SVG.replace('class="ic"', 'class="ic x-back"') + CLOSE_SVG.replace('class="ic"', 'class="ic x-x"');
   b.setAttribute("aria-label", "Close");
 });

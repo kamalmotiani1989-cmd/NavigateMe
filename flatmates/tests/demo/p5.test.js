@@ -96,6 +96,31 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await seed(ctx, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message));
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(2000); await closeDialogs(p);
+  // homes before nudges: the vibe-match row starts on the first screen, the profile and type cards come after it
+  const order = await p.evaluate(() => { const top = id => Math.round($(id).getBoundingClientRect().top); return { row: top('vibeRow'), rowShown: !$('vibeRow').hidden, promo: top('profilePromo'), extras: top('extrasD') }; });
+  ok(order.rowShown && order.row < 844 && order.promo > order.row && order.extras > order.row, 'seeker: vibe matches on the first screen, nudges after them: ' + JSON.stringify(order));
+  // with filters that leave no homes, the "no homes match" help comes before the nudges
+  const empty = await p.evaluate(async () => { const keep = Object.assign({}, state.prefs); Object.assign(state.prefs, { max: 1000, look: 'room' }); save(); await renderDiscover();
+    const top = el => Math.round(el.getBoundingClientRect().top); const r = { help: top(document.querySelector('#cards .empty') || $('cards')), text: ($('cards').querySelector('.empty h3') || {}).textContent, promo: top($('profilePromo')), cards: document.querySelectorAll('#cards .card').length };
+    state.prefs = keep; save(); await renderDiscover(); return r; });
+  ok(empty.cards === 0 && /No homes match/.test(empty.text) && empty.help < empty.promo, 'seeker: with no homes, the help comes before the nudges: ' + JSON.stringify(empty));
+  // room filters: each tick keeps only homes whose room has it (whole flats pass), off by default, shown as a removable chip
+  await p.click('#filtersBtn'); await p.waitForTimeout(500);
+  const rf0 = await p.evaluate(() => ({ ticked: [...document.querySelectorAll('[name=fRoom]:checked')].length, labels: [...document.querySelectorAll('[name=fRoom]')].map(x => x.parentElement.textContent.trim()), count: $('fApply').textContent }));
+  const counts = {};
+  for(const k of ['wash', 'balcony', 'master']){ await p.click(`label.chip:has([name=fRoom][value=${k}])`); await p.waitForTimeout(300); counts[k] = await p.evaluate(() => $('fApply').textContent); }
+  await p.click('#fApply'); await p.waitForTimeout(1200);
+  const rf1 = await p.evaluate(() => ({ prefs: prefs().room, chips: [...document.querySelectorAll('#activeF [data-unfilter]')].map(c => c.textContent.trim()),
+    cards: document.querySelectorAll('#cards .card').length,
+    allPass: [...document.querySelectorAll('#cards .card')].every(c => { const l = api.all().find(x => x.id === c.dataset.id); return l && (l.kind === 'flat' || (l.room && l.room.washroom === 'attached' && l.room.balcony === true && l.room.master === true)); }),
+    sub: $('greetSub').textContent }));
+  const n = t => Number((t.match(/\d+/) || [0])[0]);
+  ok(rf0.ticked === 0 && rf0.labels.join() === 'Attached washroom,Balcony,Master bedroom', 'seeker: three room ticks in Filters, off by default: ' + rf0.labels.join(', '));
+  ok(n(rf0.count) > n(counts.wash) && n(counts.wash) >= n(counts.balcony) && n(counts.balcony) >= n(counts.master) && n(counts.master) > 0, 'seeker: each tick narrows the count and some homes still match: ' + JSON.stringify({ start: rf0.count, ...counts }));
+  ok(rf1.prefs.join() === 'wash,balcony,master' && rf1.chips.join() === 'Attached washroom,Balcony,Master bedroom' && rf1.allPass && rf1.cards > 0, 'seeker: applied, every home shown has all three (or is a whole flat), chips show: ' + JSON.stringify(rf1));
+  await p.evaluate(() => { document.querySelector('#activeF [data-unfilter="room:master"]').click(); }); await p.waitForTimeout(800);
+  ok(await p.evaluate(() => prefs().room.join() === 'wash,balcony'), 'seeker: removing one chip drops that filter only');
+  await p.evaluate(() => { setPrefs({ room: [] }); }); await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1500); await closeDialogs(p);
   const disc = await p.evaluate(() => ({ cards: document.querySelectorAll('#cards .card').length, badges: [...document.querySelectorAll('#cards .card .reply')].map(x => x.textContent),
     fast: document.querySelectorAll('#cards .card .reply.fast').length }));
   ok(disc.cards > 3 && disc.badges.length > 0 && disc.badges.length < disc.cards && disc.fast > 0, `seeker: reply-speed lines on some cards (${disc.badges.length} of ${disc.cards}, ${disc.fast} fast): ` + [...new Set(disc.badges)].join(' / '));
@@ -104,6 +129,8 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await p.evaluate(id => openListing(id), fastId); await p.waitForTimeout(1200);
   const lhead = await p.evaluate(() => $('lLoc').textContent);
   ok(/⚡ (Replies within hours|Usually replies within a day)/.test(lhead), 'seeker: listing header shows the reply speed: ' + lhead);
+  const shareBtn = await p.evaluate(() => ({ label: $('lShare').getAttribute('aria-label'), own: !!$('lShare').querySelector('circle'), back: !!$('lShare').querySelector('.x-back') }));
+  ok(shareBtn.label === 'Share this home' && shareBtn.own && !shareBtn.back, 'seeker: the share button keeps its own icon and label: ' + JSON.stringify(shareBtn));
   await p.click('#lShare'); await p.waitForTimeout(3000);
   const sh2 = await p.evaluate(() => ({ open: $('dlgShare').open, img: !!document.querySelector('#shBody .sh-img'), wa: decodeURIComponent((document.querySelector('#shBody a[href^="https://wa.me"]') || {}).href || '') }));
   ok(sh2.open && sh2.img && /vibe match with me/.test(sh2.wa) && /\?l=demo-\d+/.test(sh2.wa), 'seeker: share card with the vibe match and the link: ' + sh2.wa.slice(0, 120));

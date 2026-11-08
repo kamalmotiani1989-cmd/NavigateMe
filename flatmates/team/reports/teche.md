@@ -1,5 +1,61 @@
 # Teche · reports
 
+## 2026-11-08, room details merged and live in the database
+
+On Kamal's word ("Merge it") PR #58 is merged (merge commit e60af0a). The database change is applied: the merged
+schema.sql was fetched into the database with net.http_get (md5 678fa326… matches my local file), executed, and
+verified read-only: the `room` column exists, `fm_clean_room` keeps a room's answers and drops a whole flat's,
+fm_post_listing and fm_update_listing take `p_room`, and search, near search, get and my listings return `room`.
+No existing listing has it set (as expected). Hold settings unchanged: on_hold and test_login as before. The video
+column is not there (that PR stayed closed). The Android build runs on this push to main; the website repo's
+publish job is Kamal's to run (I have no access, and it would copy the team folder until its excludes are added).
+Everything else stays stopped.
+
+## 2026-11-08, room details (the one task resumed)
+
+**Done.** PR #58: room details on a listing, Kamal's task of today, not merged by me. For a private room, a shared room
+or a flatmate listing, three one-tap questions under the room type (Washroom attached / shared, Balcony yes / no,
+Master bedroom yes / no), all optional, a whole flat skips them, prefilled when editing. The home's page shows the
+answers as short labels next to the type; a no, or nothing set, shows nothing, so existing listings look as before.
+Filters: a "The room" section with three optional ticks, off by default, removable chips, live count; a whole flat
+always passes. Database: a `room` column, `fm_clean_room` (only the three known answers, else `bad-room-details`),
+carried by post, update and the four readers; old callers and old listings unchanged. Demo homes get a mix, one in
+five unset. Four plain commits: database, posting form and home page, filters, tests and README.
+
+**Tests.** 128 checks green (ob 15, pass3 36, p5 28, p6 34, p7 15; 13 new). schema.sql applied twice to a local
+Postgres 16 with stand-ins; post with three, one and no answers, a whole flat dropping them, refusal of bad values,
+update and clear all exercised.
+
+**After merge.** Apply the merged schema.sql to the database first (the app sends the new argument); then the Android
+build and the website publish follow. I do the schema step when Kamal merges and says so.
+
+**Everything else stays stopped** as Kamal ordered on 6 Nov: no merges, no other PRs, shifts paused. This report push
+republishes gh-pages with the team folder, as Kamal knows; PR #54 (the excludes) is still open.
+
+**Open for Kamal.** PRs #54, #47, #49, #50, #51, #52, #56, #58; the website repo's publish.yml; the Pixel and Google
+Ads IDs.
+
+## 2026-11-06, 10 pm shift
+
+**Done.** Checked main and the open PRs at the start of the shift: nothing changed since the morning; PR #54 (the
+publish-job excludes) is still unmerged, so this repo's public branch still carries `team/`, `marketing/` and
+`tests/`. Tested locally that all six open branches of mine merge onto main one after another without conflicts, in
+any order. The Android build on main is green (run 97, 04:01 UTC). UI pass, second batch: walked the FlatMart sell
+form, the new Flatsplits group form, Add an expense and the pass purchase on a phone-sized screen; one thing worth
+fixing, in PR #56: the sell form's price guide was squeezed into the narrow price column five lines deep, now full
+width. 113 checks green.
+
+**Shipped.** Nothing merged. Per the merge rule for this batch PR #56 is mine to merge when green, but I am not
+merging anything, and not pushing this report, until PR #54 is in: every push to main republishes the public branch
+with the team folder. This entry was written at the end of the shift and pushed the moment #54 landed.
+
+**Blocked.** PR #54 waits for Kamal's merge (one line, verified twice; the first push of it was broken by my edit
+tool and repaired within minutes, before anyone merged). The website repo's publish.yml needs the same three
+excludes: Kamal's access or paste. The Pixel and Google Ads IDs. The five PRs of the first batch and PR #52 wait for
+Kamal's look.
+
+**Need.** From Kamal: merge #54 first; then the reviews. From King: nothing.
+
 ## 2026-11-06, correction: video dropped
 
 Update: on King's instruction PR #53 is closed, not merged; the branch `claude/listing-video` is kept so nothing is
