@@ -7,7 +7,7 @@ Neither the stop nor this task is in `priorities.md` yet; I acted on King's mess
 stays stopped: no shifts, no Tuesday pack, no other PRs touched.
 
 **Done**
-- `flatmates/marketing/mumbai-launch-plan.md` on branch `marketing/mumbai-launch-plan`, **PR open** (Mumbai one-month
+- `flatmates/marketing/mumbai-launch-plan.md` on branch `marketing/mumbai-launch-plan`, **PR #57** (Mumbai one-month
   lister plan, same shape as the Pune plan): target 360 rooms listed, under ₹300 per listing; full plan ₹1,08,500
   before GST (₹1,28,030 with), lean ₹46,500 (₹54,870 with); 10 of the app's 13 Mumbai areas with reasons; changes
   versus Pune with sources or marked estimates; identical items; checklist; recommendation.
