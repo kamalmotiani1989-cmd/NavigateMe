@@ -96,6 +96,23 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await seed(ctx, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message));
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(2000); await closeDialogs(p);
+  // room filters: each tick keeps only homes whose room has it (whole flats pass), off by default, shown as a removable chip
+  await p.click('#filtersBtn'); await p.waitForTimeout(500);
+  const rf0 = await p.evaluate(() => ({ ticked: [...document.querySelectorAll('[name=fRoom]:checked')].length, labels: [...document.querySelectorAll('[name=fRoom]')].map(x => x.parentElement.textContent.trim()), count: $('fApply').textContent }));
+  const counts = {};
+  for(const k of ['wash', 'balcony', 'master']){ await p.click(`label.chip:has([name=fRoom][value=${k}])`); await p.waitForTimeout(300); counts[k] = await p.evaluate(() => $('fApply').textContent); }
+  await p.click('#fApply'); await p.waitForTimeout(1200);
+  const rf1 = await p.evaluate(() => ({ prefs: prefs().room, chips: [...document.querySelectorAll('#activeF [data-unfilter]')].map(c => c.textContent.trim()),
+    cards: document.querySelectorAll('#cards .card').length,
+    allPass: [...document.querySelectorAll('#cards .card')].every(c => { const l = api.all().find(x => x.id === c.dataset.id); return l && (l.kind === 'flat' || (l.room && l.room.washroom === 'attached' && l.room.balcony === true && l.room.master === true)); }),
+    sub: $('greetSub').textContent }));
+  const n = t => Number((t.match(/\d+/) || [0])[0]);
+  ok(rf0.ticked === 0 && rf0.labels.join() === 'Attached washroom,Balcony,Master bedroom', 'seeker: three room ticks in Filters, off by default: ' + rf0.labels.join(', '));
+  ok(n(rf0.count) > n(counts.wash) && n(counts.wash) >= n(counts.balcony) && n(counts.balcony) >= n(counts.master) && n(counts.master) > 0, 'seeker: each tick narrows the count and some homes still match: ' + JSON.stringify({ start: rf0.count, ...counts }));
+  ok(rf1.prefs.join() === 'wash,balcony,master' && rf1.chips.join() === 'Attached washroom,Balcony,Master bedroom' && rf1.allPass && rf1.cards > 0, 'seeker: applied, every home shown has all three (or is a whole flat), chips show: ' + JSON.stringify(rf1));
+  await p.evaluate(() => { document.querySelector('#activeF [data-unfilter="room:master"]').click(); }); await p.waitForTimeout(800);
+  ok(await p.evaluate(() => prefs().room.join() === 'wash,balcony'), 'seeker: removing one chip drops that filter only');
+  await p.evaluate(() => { setPrefs({ room: [] }); }); await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1500); await closeDialogs(p);
   const disc = await p.evaluate(() => ({ cards: document.querySelectorAll('#cards .card').length, badges: [...document.querySelectorAll('#cards .card .reply')].map(x => x.textContent),
     fast: document.querySelectorAll('#cards .card .reply.fast').length }));
   ok(disc.cards > 3 && disc.badges.length > 0 && disc.badges.length < disc.cards && disc.fast > 0, `seeker: reply-speed lines on some cards (${disc.badges.length} of ${disc.cards}, ${disc.fast} fast): ` + [...new Set(disc.badges)].join(' / '));
