@@ -1,5 +1,14 @@
 # Teche · reports
 
+## 2026-11-08, welcome page fix (PR #68, merged)
+
+**Done.** Kamal saw the "Veg kitchen, tidy home" match bubbles piled up on the left on his phone. Cause: #65 made the
+welcome layout a column on phones, and `align-items:start` gave the city picture zero width. The column now stretches
+its items. I checked it at 412, 360 and 1280 px; p8 has a new check and every suite passes.
+
+Also corrected: the Android app bundles its own copy of the web app, so changes reach phones only when the new APK
+is installed. It doesn't load findmeflatmate.com, as I wrongly said earlier.
+
 ## 2026-11-08, nearby parties live on the server; website publish stuck
 
 **Done:**
