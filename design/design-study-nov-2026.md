@@ -219,5 +219,5 @@ read their pages directly.
 
 ## 5 · The mock
 
-`flatmates/design/listing-card-mock.html` shows suggestions 1, 2, 3 and 8 next to with today's card, in today's
+`design/listing-card-mock.html` shows suggestions 1, 2, 3 and 8 next to with today's card, in today's
 colours. It is a standalone page, not wired into the app.
