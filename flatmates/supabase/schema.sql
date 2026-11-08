@@ -34,6 +34,10 @@ create table if not exists public.fm_profiles (
 -- Added after the first version; safe to re-run on an existing database.
 alter table public.fm_profiles add column if not exists role text
   check (role in ('owner','seeker'));
+-- 'splits': signed up for Flatsplits and FlatMart only (8 Nov 2026). Rooms, flatmates and parties nearby open once
+-- they answer the vibe questions as a seeker or an owner (the app switches the role and asks them).
+alter table public.fm_profiles drop constraint if exists fm_profiles_role_check;
+alter table public.fm_profiles add constraint fm_profiles_role_check check (role in ('owner','seeker','splits'));
 -- When the person confirmed they are 18 or older (the tick on the sign-in card, or the one-question box for
 -- accounts from before it). Null: not confirmed yet; the app asks before anything else.
 alter table public.fm_profiles add column if not exists adult_at timestamptz;
@@ -521,12 +525,13 @@ end $$;
 create or replace function public.fm_set_profile(p_name text, p_role text) returns void
 language plpgsql security definer set search_path = public as $$
 begin
-  if p_role is not null and p_role not in ('owner','seeker') then raise exception 'bad-role'; end if;
+  if p_role is not null and p_role not in ('owner','seeker','splits') then raise exception 'bad-role'; end if;
   update fm_profiles
      set full_name = case when coalesce(full_name, '') = ''
                           then coalesce(nullif(left(regexp_replace(trim(coalesce(p_name, '')), '\s+', ' ', 'g'), 60), ''), full_name)
                           else full_name end,
-         role      = coalesce(p_role, role)
+         -- Signing in again with "Just Flatsplits & FlatMart" never takes rooms away from a seeker or an owner.
+         role      = case when p_role = 'splits' and role in ('owner','seeker') then role else coalesce(p_role, role) end
    where id = auth.uid();
   if p_role = 'seeker' then
     update fm_profiles
@@ -755,6 +760,7 @@ begin
   perform fm_throttle('request', 60, 200);
   select * into v_me from fm_profiles where id = auth.uid() for update;
   if v_me.role is distinct from 'seeker' then return query select null::text, 'seekers-only'; return; end if;
+  if fm_vibe_count(v_me.vibe) < 6 then return query select null::text, 'need-vibe'; return; end if;
   if fm_vibe_count(v_me.vibe) < 6 then return query select null::text, 'vibe-required'; return; end if;
   if coalesce(v_me.occupation->>'type', '') = '' then return query select null::text, 'profile-required'; return; end if;
   select * into v_l from fm_listings where id = p_listing and fm_listings.status = 'active';
@@ -2097,6 +2103,7 @@ begin
   end if;
   if (select adult_at from fm_profiles where id = auth.uid()) is null then raise exception 'age-required'; end if;
   if fm_party_blocked(auth.uid()) then raise exception 'blocked'; end if;
+  if not fm_party_vibe_ok(auth.uid()) then raise exception 'need-vibe'; end if;
   if v.cancelled then raise exception 'party-cancelled'; end if;
   if v.starts_at < now() then raise exception 'party-over'; end if;
   begin v_limit := (p->>'guest_limit')::int; exception when others then v_limit := null; end;
@@ -2193,6 +2200,12 @@ language sql stable security definer set search_path = public as $$
   select coalesce(ends_at, starts_at + interval '4 hours') < now() from fm_parties where id = p_party;
 $$;
 
+-- Parties nearby open once someone has answered the vibe questions: a seeker with their answers, or an owner (whose
+-- answers describe their home). People on the Flatsplits-and-FlatMart account ('splits') answer them first.
+create or replace function public.fm_party_vibe_ok(p_user uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select role = 'owner' or (role = 'seeker' and fm_vibe_count(vibe) >= 6) from fm_profiles where id = p_user), false);
+$$;
 -- Places taken by accepted guests and their plus-ones.
 create or replace function public.fm_party_taken(p_party uuid) returns int
 language sql stable security definer set search_path = public as $$
@@ -2208,6 +2221,7 @@ begin
   if p_user is null then return 'not-signed-in'; end if;
   select * into me from fm_profiles where id = p_user;
   if me.adult_at is null then return 'age-required'; end if;
+  if not fm_party_vibe_ok(p_user) then return 'need-vibe'; end if;
   if not coalesce(me.parties_nearby, false) then return 'opted-out'; end if;
   if fm_party_blocked(p_user) then return 'blocked'; end if;
   if fm_india_pin(me.party_pin) is null then return 'need-pin'; end if;
@@ -2251,6 +2265,7 @@ begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
   if coalesce(p_on, false) then
     if (select adult_at from fm_profiles where id = auth.uid()) is null then raise exception 'age-required'; end if;
+    if not fm_party_vibe_ok(auth.uid()) then raise exception 'need-vibe'; end if;
     if v_pin is null and fm_india_pin((select party_pin from fm_profiles where id = auth.uid())) is null then raise exception 'need-pin'; end if;
   end if;
   update fm_profiles set parties_nearby = coalesce(p_on, false),
@@ -3722,7 +3737,7 @@ begin
                      'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours',
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
-                     'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear',
+                     'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
                      'fm_party_request_notify') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
