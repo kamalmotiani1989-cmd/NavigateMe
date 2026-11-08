@@ -188,5 +188,11 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   ok(dropped === Number(nd.to.split('|')[1]) && dropped < 8000, 'seller: one tap drops the price to ' + dropped);
   await p.click('[data-sale-edit]'); await p.waitForTimeout(500);
   ok((await p.inputValue('#slBundle')) === '12000', 'seller: the sale form keeps the take-the-lot price');
+  // the floating help button steps aside while someone types, and is back when they are done
+  await closeDialogs(p); await p.goto('http://localhost:8765/#market'); await p.waitForTimeout(800); await p.click('[data-mk-tab="browse"]'); await p.waitForTimeout(400);
+  const fab = () => p.evaluate(() => getComputedStyle($('helpFab')).display !== 'none');
+  const fabBefore = await fab(); await p.focus('#mkQ'); const fabTyping = await fab();
+  await p.evaluate(() => document.activeElement.blur()); const fabAfter = await fab();
+  ok(fabBefore && !fabTyping && fabAfter, `help button shown ${fabBefore}, hidden while typing ${!fabTyping}, back after ${fabAfter}`);
   await ctx.close(); await b.close(); console.log('errors', errs);
 })();

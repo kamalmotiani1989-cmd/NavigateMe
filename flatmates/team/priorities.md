@@ -16,7 +16,11 @@ Kamal sits with the team this Sunday (9 Nov); time to be shared. Mark and Salu b
 pushed, so the discussion is about choices, not reading.
 
 ## Teche (tech)
-1. **Improve the app's UI and user experience, page by page.** Kamal's task; items 2 and 3 below (Kamal, 6 Nov) now come first, then the next UI batch. Go through every
+0. **First, 6 Nov: stop the team and marketing folders being published.** This repo's website workflow copies
+   `flatmates/` to gh-pages minus android, supabase and README, so `team/`, `marketing/` and `tests/` are on gh-pages now.
+   One PR adding three excludes to the tar line; Kamal merges it at once. The website repo's publish.yml needs the same
+   three lines: Kamal pastes them or gives Teche push access there. Nothing else until this PR is open.
+1. **Improve the app's UI and user experience, page by page.** Kamal's task; item 3 below (Kamal, 6 Nov) now comes first, then the next UI batch. Go through every
    page and screen of `flatmates/index.html` (welcome and sign-in flow, the onboarding questions, Discover, a home's
    page and the compatibility analysis, the posting form, Tribe, Escape, Flatsplits, FlatMart, Account, the Coming
    soon screen). For each one write down what is hard, slow, unclear or ugly for a first-time user on a phone, then
@@ -28,14 +32,8 @@ pushed, so the discussion is about choices, not reading.
    and a home's page), tests green on each; waiting for Kamal. Merging: this first batch waits for Kamal's look. From
    the next batch, your brief applies: merge when green, list every change in your report, and Kamal drops anything he
    dislikes afterwards. The sign-in card is the exception: anything touching it waits for Kamal._
-2. **Video on a listing (Kamal, 6 Nov).** When someone posts a flat or a room, they can add a short video of it, from the
-   phone's gallery or camera, next to the photos. It plays on the home's page (tap to play, sound off by default) and the
-   photos stay the cover. Business reason: a 20-second walk-through answers "what is it really like" better than ten
-   photos and cuts dead visits. Keep it cheap and honest: one video per listing, compressed on the phone before upload,
-   stored in the same Supabase storage as the photos, deletable by the owner like a photo. Before you build, tell King
-   in your report the caps you propose (length in seconds, size in MB) and what they cost in storage per 1,000
-   listings, so Kamal can decide; Kamal's call on the caps, yours on the how. Demo mode gets a sample video. Tests cover
-   add, play, delete, and a listing with no video. Standing rules unchanged.
+2. **Video on a listing: dropped by Kamal, 6 Nov.** Not to be built. (Teche's costing, for the record: video at scale
+   needs the Supabase Pro plan; photos alone fill the Free plan at about 550 listings.)
 3. **Auto-beautify uploaded photos (Kamal, 6 Nov).** When photos are uploaded to a listing, improve them automatically
    so they look clear and bright: fix orientation, auto-level brightness and contrast, lift dark rooms, light sharpening,
    straighten obvious tilt if cheap to do, and resize and compress to a sensible size for phones. Done on the phone

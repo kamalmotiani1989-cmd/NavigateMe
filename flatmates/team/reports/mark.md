@@ -1,5 +1,57 @@
 # Mark · reports
 
+## 8 November 2026 · Mumbai launch plan (resumed for this one task)
+
+**Context.** Stopped on 6 Nov on Kamal's instruction via King; resumed on 8 Nov by King's message for one task only.
+Neither the stop nor this task is in `priorities.md` yet; I acted on King's message and note it here. Everything else
+stays stopped: no shifts, no Tuesday pack, no other PRs touched.
+
+**Done**
+- `flatmates/marketing/mumbai-launch-plan.md` on branch `marketing/mumbai-launch-plan`, **PR #57** (Mumbai one-month
+  lister plan, same shape as the Pune plan): target 360 rooms listed, under ₹300 per listing; full plan ₹1,08,500
+  before GST (₹1,28,030 with), lean ₹46,500 (₹54,870 with); 10 of the app's 13 Mumbai areas with reasons; changes
+  versus Pune with sources or marked estimates; identical items; checklist; recommendation.
+
+**Delivered to Kamal:** the PR, for Sunday. Recommendation: Pune first, Mumbai in month three. Both at once is
+₹1,86,000 before GST (₹2,19,480 with) and two learning phases in one month.
+
+**Blocked / limits**
+- The one number with no public source is Mumbai's click cost versus Pune's; planned at 1.5× and marked as my
+  estimate, to be replaced by the account's own numbers on day 7.
+- Still Kamal's: go-live month and city, Pixel and conversion IDs, the read-access decision.
+
+**Note for the Pune plan (PR #45, not touched while stopped):** the app's Pune area list has no "Kalyani Nagar"; it
+has Hadapsar, Pimple Saudagar and Shivaji Nagar instead. When I resume, the Pune plan's area list should swap Kalyani
+Nagar for Hadapsar. The app spells Hinjewadi as "Hinjewadi Phase 1" (already noted).
+
+**Requests for Teche (via King):** when Mumbai is scheduled, the same `?host=Mumbai` owner-page and UTM check Teche did
+for Pune. Nothing before Kamal picks the city.
+
+**Next:** nothing until Kamal or King say to resume.
+
+## 6 November 2026, 10 pm shift · student pack delivered
+
+**Done**
+- Salu's request (priorities, Requests between teams, item 4): student deposit-checklist carousel and campus-ambassador
+  explainer, `flatmates/marketing/student-college-pack.md`, **PR #55**. Built on Salu's facts in PR #46; promises only
+  the README referral reward and early access; organic only, never a paid ad to students (no age check at sign-up yet).
+- Priorities checked: items 1 (PR #48) and 2 (PR #45) wait for Kamal; item 3 is Tuesday's pack, next shift that falls
+  on Tuesday morning (10 Nov).
+
+**Delivered to Kamal:** PR #55 for Sunday alongside PR #48 and PR #46.
+
+**Blocked / waiting**
+- Go-live month, Pixel and conversion IDs, and the read-access decision (priorities item 5): all Kamal's.
+- Ad Library and Google ad copy for the competitor study wait on Kamal's screenshots or the access decision.
+
+**Needs noting (Teche item 0):** the team and marketing folders are on gh-pages until Teche's exclude PR is merged. My
+files (budgets, targets, the competitor study) are public until then. Nothing for me to change; flagging for King.
+
+**Requests for Teche (via King):** none new. **For Kamal:** on the explainer, keep or delete the two personal lines
+(weekly check-in, LinkedIn recommendation); the rest stands as the app is.
+
+**Next:** Tuesday 10 November, 6 am shift: content pack (teasers while the hold is on), and any Sunday decisions.
+
 ## 6 November 2026 · competitor study delivered (Kamal's Sunday task)
 
 **Done**

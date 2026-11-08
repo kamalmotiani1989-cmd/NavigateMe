@@ -1,5 +1,103 @@
 # Teche · reports
 
+## 2026-11-08, room details merged and live in the database
+
+On Kamal's word ("Merge it") PR #58 is merged (merge commit e60af0a). The database change is applied: the merged
+schema.sql was fetched into the database with net.http_get (md5 678fa326… matches my local file), executed, and
+verified read-only: the `room` column exists, `fm_clean_room` keeps a room's answers and drops a whole flat's,
+fm_post_listing and fm_update_listing take `p_room`, and search, near search, get and my listings return `room`.
+No existing listing has it set (as expected). Hold settings unchanged: on_hold and test_login as before. The video
+column is not there (that PR stayed closed). The Android build runs on this push to main; the website repo's
+publish job is Kamal's to run (I have no access, and it would copy the team folder until its excludes are added).
+Everything else stays stopped.
+
+## 2026-11-08, room details (the one task resumed)
+
+**Done.** PR #58: room details on a listing, Kamal's task of today, not merged by me. For a private room, a shared room
+or a flatmate listing, three one-tap questions under the room type (Washroom attached / shared, Balcony yes / no,
+Master bedroom yes / no), all optional, a whole flat skips them, prefilled when editing. The home's page shows the
+answers as short labels next to the type; a no, or nothing set, shows nothing, so existing listings look as before.
+Filters: a "The room" section with three optional ticks, off by default, removable chips, live count; a whole flat
+always passes. Database: a `room` column, `fm_clean_room` (only the three known answers, else `bad-room-details`),
+carried by post, update and the four readers; old callers and old listings unchanged. Demo homes get a mix, one in
+five unset. Four plain commits: database, posting form and home page, filters, tests and README.
+
+**Tests.** 128 checks green (ob 15, pass3 36, p5 28, p6 34, p7 15; 13 new). schema.sql applied twice to a local
+Postgres 16 with stand-ins; post with three, one and no answers, a whole flat dropping them, refusal of bad values,
+update and clear all exercised.
+
+**After merge.** Apply the merged schema.sql to the database first (the app sends the new argument); then the Android
+build and the website publish follow. I do the schema step when Kamal merges and says so.
+
+**Everything else stays stopped** as Kamal ordered on 6 Nov: no merges, no other PRs, shifts paused. This report push
+republishes gh-pages with the team folder, as Kamal knows; PR #54 (the excludes) is still open.
+
+**Open for Kamal.** PRs #54, #47, #49, #50, #51, #52, #56, #58; the website repo's publish.yml; the Pixel and Google
+Ads IDs.
+
+## 2026-11-06, 10 pm shift
+
+**Done.** Checked main and the open PRs at the start of the shift: nothing changed since the morning; PR #54 (the
+publish-job excludes) is still unmerged, so this repo's public branch still carries `team/`, `marketing/` and
+`tests/`. Tested locally that all six open branches of mine merge onto main one after another without conflicts, in
+any order. The Android build on main is green (run 97, 04:01 UTC). UI pass, second batch: walked the FlatMart sell
+form, the new Flatsplits group form, Add an expense and the pass purchase on a phone-sized screen; one thing worth
+fixing, in PR #56: the sell form's price guide was squeezed into the narrow price column five lines deep, now full
+width. 113 checks green.
+
+**Shipped.** Nothing merged. Per the merge rule for this batch PR #56 is mine to merge when green, but I am not
+merging anything, and not pushing this report, until PR #54 is in: every push to main republishes the public branch
+with the team folder. This entry was written at the end of the shift and pushed the moment #54 landed.
+
+**Blocked.** PR #54 waits for Kamal's merge (one line, verified twice; the first push of it was broken by my edit
+tool and repaired within minutes, before anyone merged). The website repo's publish.yml needs the same three
+excludes: Kamal's access or paste. The Pixel and Google Ads IDs. The five PRs of the first batch and PR #52 wait for
+Kamal's look.
+
+**Need.** From Kamal: merge #54 first; then the reviews. From King: nothing.
+
+## 2026-11-06, correction: video dropped
+
+Update: on King's instruction PR #53 is closed, not merged; the branch `claude/listing-video` is kept so nothing is
+lost. It was built before the drop arrived and closed on Kamal's instruction. No schema change went live.
+
+King's message that Kamal dropped the video task (priorities.md, 6 Nov) reached me after I had built it. As asked:
+nothing from it is merged or live. PR #53 is now a draft titled "Dropped by Kamal, not for merge", kept for the record
+only; no database change was applied; the live app and database are untouched. The photo beautify PR #52 stands on
+its own and does not depend on it. Sorry for the noise: the two messages crossed while I was building.
+
+The publish-job exclusion (team/, marketing/, tests/ would be copied to the public site) still needs Kamal's decision.
+
+## 2026-11-06, video and photos: both built
+
+**Done.** Both of Kamal's listing tasks are built, tested and up as PRs, one per task, waiting for Kamal (this batch
+too, since both change what owners post):
+- **PR #52, auto-beautified photos (item 3).** On the phone before upload: orientation, levels, a lift for dark rooms
+  that keeps a bright photo's brightness, light sharpening, 1600 px. Light, colour and sharpness only, every pixel
+  the same, nothing in the room removed, added or moved. Tilt straightening left out: doing it safely crops part of
+  the room away, which the honesty rule forbids. The original stays behind "Use original" per photo. Before-and-after
+  examples were sent to Kamal in my session (synthetic room pictures: a dark room 49 to 125 on a 0 to 255 brightness
+  scale, a good one 147 to 141). Real phone photos will be the real test; please try it on a dark room.
+- **PR #53, video on a listing (item 2).** One clip up to 20 seconds, next to the photos, re-encoded on the phone to
+  720p at about 1.5 Mbps (3 to 5 MB for 20 s), 8 MB hard cap, stored in a new `fm-videos` bucket in the owner's own
+  folder, plays under the photos on the home's page (tap, sound off until turned on), "Remove video" deletes the file.
+  Demo mode has a sample walk-through on one home in twelve. The caps are in one place for Kamal to change.
+
+**Tests.** Photos: 120 checks green (8 new). Video: 124 checks green (6 new), and the schema applied twice to a local
+Postgres 16 with stand-ins for Supabase's pieces, where a video in the caller's folder is stored and read back, a
+video elsewhere is refused on post and on update, and removing works.
+
+**After merge, for the video PR.** The database change goes live by fetching the merged schema.sql and executing it
+(I do this once Kamal merges), then the Android build and the website publish follow by themselves.
+
+**Found on the way, for Kamal's decision.** The website's publish job copies the whole `flatmates/` folder except
+`android/`, `supabase/` and the README, so once it runs again it will put `team/` (these briefs and reports),
+`marketing/` and `tests/` on findmeflatmate.com as plain text files. It has not run since 3 Nov, so nothing is public
+yet. The fix is three exclude lines in the website repo's publish.yml; I need push access to that repo, or Kamal can
+paste them. I recommend doing it before the next publish.
+
+**Blocked.** Pixel and conversion IDs, as before.
+
 ## 2026-11-06, video and photo tasks: proposal before building
 
 **Video on a listing (priorities item 2): caps and cost, for Kamal to decide.**

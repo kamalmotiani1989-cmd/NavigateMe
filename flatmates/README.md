@@ -278,6 +278,13 @@ the room comes second.
     treatment, so nothing in the room is removed, added or moved, and an already bright photo keeps its brightness.
     The original is kept until posting: each thumbnail has "Use original" / "Use enhanced", per photo. (FlatMart
     photos are not touched.)
+21c. **Room details.** For a private room, a shared room or a flatmate listing, three one-tap questions sit under the
+    room type in the posting form: Washroom (attached / shared), Balcony (yes / no), Master bedroom (yes / no). All
+    optional; a whole flat skips them. The answers show on the home's page next to the type as short labels
+    ("Attached washroom" or "Shared washroom", "Balcony", "Master bedroom"; a "no" says nothing), and the Filters
+    panel has three optional ticks under "The room" (off by default; a whole flat always passes them). Saved on the
+    listing as `room` ({washroom, balcony, master}, checked by `fm_clean_room`); listings from before have nothing set
+    and show nothing. In India these three move the rent as much as the area, so seekers ask them first.
 22. **Listing strength and editing.** My flat scores each listing out of 100 (3+ photos 30, a description of
     80+ letters 20, 3+ amenities 10, who lives there 15, the household's living-style answers 15, a map pin 10;
     whole flats skip the household parts) and lists what's missing as buttons ("+ Add photos of the room,
@@ -643,7 +650,7 @@ How the app keeps accounts safe and stops people copying the inventory with a sc
   into `‹` and `›` before saving, so a name, title, message or note can never become a script on someone
   else's screen. The app escapes text as well (tested with script-like text in every field).
 - **Sizes.** Listing fields have length limits on the server too (city 60, area 80, description 1500,
-  contact name 60, address 300, up to 30 amenities).
+  contact name 60, address 300, up to 30 amenities). Room details accept only the three known answers.
 - **Names are set once.** The name given at sign-up can't be changed afterwards: `fm_set_profile` only
   fills an empty name, and `fm_name_lock` keeps it whatever else tries. Deleting the account and signing
   up again is the only way to pick a new one. The team can still correct a name, in one transaction in

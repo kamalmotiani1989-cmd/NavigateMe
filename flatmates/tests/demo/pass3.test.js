@@ -42,6 +42,16 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     const sw = await p.evaluate(() => ({ label: document.querySelector('#pPreviews [data-orig="0"]').textContent, original: document.querySelector('#pPreviews img').src === photoFiles[0].preview, sends: photoToSend(photoFiles[0]) === photoFiles[0] && photoToSend(photoFiles[1]) === photoFiles[1].enhanced }));
     ok(sw.label === 'Use enhanced' && sw.original && sw.sends, tag + ': Use original shows and sends the original for that photo only: ' + JSON.stringify(sw));
     if(tag === 'm') await p.screenshot({ path: `${O}/p3-m-photos-enhanced.png` });
+    // room details: three one-tap questions for a room, none for a whole flat, nothing sent when unanswered
+    const rq0 = await p.evaluate(() => ({ shown: !$('roomQs').hidden, labels: [...document.querySelectorAll('#roomQs .field > label')].map(l => l.textContent), unanswered: roomFromForm() }));
+    await p.click('label.chip:has([name=kind][value=flat])'); await p.waitForTimeout(150);
+    const rqFlat = await p.evaluate(() => ({ hidden: $('roomQs').hidden, room: roomFromForm() }));
+    await p.click('label.chip:has([name=kind][value=room])'); await p.waitForTimeout(150);
+    await p.click('label.chip:has([name=rWash][value=attached])'); await p.click('label.chip:has([name=rBalc][value=yes])'); await p.click('label.chip:has([name=rMaster][value=no])');
+    const rq1 = await p.evaluate(() => roomFromForm());
+    ok(rq0.shown && rq0.labels.join() === 'Washroom,Balcony,Master bedroom' && rq0.unanswered === null && rqFlat.hidden && rqFlat.room === null, tag + ': room questions shown for a room, hidden for a whole flat, nothing sent when unanswered: ' + JSON.stringify({ rq0, rqFlat }));
+    ok(JSON.stringify(rq1) === '{"washroom":"attached","balcony":true,"master":false}', tag + ': three taps give the answers: ' + JSON.stringify(rq1));
+    if(tag === 'm'){ await p.evaluate(() => $('roomQs').scrollIntoView({ block: 'center' })); await p.screenshot({ path: `${O}/p3-m-room-questions.png` }); }
     await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(600);
     ok(await p.isVisible('fieldset[data-step="2"]') && await p.evaluate(() => $('psSteps').children[0].className === 'done' && $('psSteps').children[1].className === 'now'), tag + ': step 2 after a complete step 1');
     await p.click('fieldset[data-step="2"] [data-ps="back"]'); await p.waitForTimeout(400);
@@ -60,6 +70,20 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     const posted = await p.evaluate(() => ({ hash: location.hash, cards: document.querySelectorAll('.mine-card').length, stats: [...document.querySelectorAll('.mine-card .stats.six .stat span')].map(s => s.textContent) }));
     ok(posted.cards === 1 && posted.stats.length === 6, tag + ': published, My flat shows 6 numbers: ' + posted.stats.join(' | '));
     ok(await p.evaluate(() => state.myListings[0].photos.length === 2 && state.myListings[0].photos.every(u => u.startsWith('data:image/jpeg'))), tag + ': the two photos were posted');
+    ok(await p.evaluate(() => JSON.stringify(state.myListings[0].room) === '{"washroom":"attached","balcony":true,"master":false}'), tag + ': the answers were saved on the listing');
+    await p.evaluate(() => openListing(state.myListings[0].id)); await p.waitForTimeout(1000);
+    const tags = await p.evaluate(() => [...document.querySelectorAll('#dlgListing .room-tags span')].map(x => x.textContent));
+    ok(tags.join() === 'Attached washroom,Balcony', tag + ': the home page shows the answers as labels next to the type (a "no" says nothing): ' + tags.join(', '));
+    if(tag === 'm'){ await p.evaluate(() => document.querySelector('#dlgListing .kv').scrollIntoView({ block: 'center' })); await p.screenshot({ path: `${O}/p3-m-room-labels.png` }); }
+    await p.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d => d.close()); openListing(api.all().find(x => !x.room && !x.is_owner).id); }); await p.waitForTimeout(800);
+    ok(await p.evaluate(() => !document.querySelector('#dlgListing .room-tags')), tag + ': a listing with nothing set shows no labels');
+    await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
+    // editing: the answers come back prefilled; changing one and saving keeps the rest
+    await p.evaluate(() => startEdit(state.myListings[0].id, 1)); await p.waitForTimeout(1000);
+    const pre = await p.evaluate(() => roomFromForm());
+    await p.click('label.chip:has([name=rBalc][value=no])'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
+    await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(1500);
+    ok(JSON.stringify(pre) === '{"washroom":"attached","balcony":true,"master":false}' && await p.evaluate(() => JSON.stringify(state.myListings[0].room) === '{"washroom":"attached","balcony":false,"master":false}'), tag + ': edit prefills the answers and saves a change: ' + JSON.stringify(pre));
     await p.screenshot({ path: `${O}/p3-${tag}-mine.png`, fullPage: tag === 'm' });
     await ctx.close();
     // ---- seeker: gallery dots on a listing with photos
