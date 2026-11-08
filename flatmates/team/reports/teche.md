@@ -1,5 +1,16 @@
 # Teche · reports
 
+## 2026-11-08, room details merged and live in the database
+
+On Kamal's word ("Merge it") PR #58 is merged (merge commit e60af0a). The database change is applied: the merged
+schema.sql was fetched into the database with net.http_get (md5 678fa326… matches my local file), executed, and
+verified read-only: the `room` column exists, `fm_clean_room` keeps a room's answers and drops a whole flat's,
+fm_post_listing and fm_update_listing take `p_room`, and search, near search, get and my listings return `room`.
+No existing listing has it set (as expected). Hold settings unchanged: on_hold and test_login as before. The video
+column is not there (that PR stayed closed). The Android build runs on this push to main; the website repo's
+publish job is Kamal's to run (I have no access, and it would copy the team folder until its excludes are added).
+Everything else stays stopped.
+
 ## 2026-11-08, room details (the one task resumed)
 
 **Done.** PR #58: room details on a listing, Kamal's task of today, not merged by me. For a private room, a shared room
