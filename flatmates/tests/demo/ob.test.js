@@ -2,8 +2,8 @@
 // reload, swipe back, the half-way reveal, then the finale. Demo mode (port 8765).
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [];
-const fresh = { user:{ phone:'9833333333', name:'Asha', role:'seeker', gender:'female' }, account:'9833333333', onboarded:{}, attrClaimed:true };
-const ownerFresh = { user:{ phone:'9844444444', name:'Omi', role:'owner', gender:'male' }, account:'9844444444', onboarded:{}, attrClaimed:true };
+const fresh = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9833333333', name:'Asha', role:'seeker', gender:'female' }, account:'9833333333', onboarded:{}, attrClaimed:true };
+const ownerFresh = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9844444444', name:'Omi', role:'owner', gender:'male' }, account:'9844444444', onboarded:{}, attrClaimed:true };
 const head = p => p.evaluate(() => ({ count: $('obCount').textContent, segs: [...document.querySelectorAll('#obSegs i')].map(i => i.className + ':' + i.firstChild.style.width), q: (document.querySelector('#obStage h1') || {}).textContent, i: ob && ob.i, key: ob && ob.steps[ob.i] && ob.steps[ob.i].k, intro: ob && ob.intro, reveal: ob && ob.reveal }));
 (async () => {
   const b = await chromium.launch();

@@ -18,9 +18,9 @@ const requests = [
   { id:'rq2', by:'seeker', listing_id:'mine-p5a', listing_title:listing.title, seeker_phone:'9822033445', seeker: seekerOf('Arjun', '9822033445', vibe), status:'pending', message:'Hey',
     match_pct:85, created_at: iso(now - 5 * 60e3), decided_at:null, seen_owner:true, seen_seeker:true },
 ];
-const owner = { user:{ phone:'9822222222', name:'Rohit', role:'owner', gender:'male' }, account:'9822222222', onboarded:{ owner:true }, attrClaimed:true, giftSeen:true, vibe,
+const owner = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9822222222', name:'Rohit', role:'owner', gender:'male' }, account:'9822222222', onboarded:{ owner:true }, attrClaimed:true, giftSeen:true, vibe,
   homeDraft: Object.assign({ residents: 1 }, vibe), myListings:[listing], requests, demoIncoming:{}, notified:{ rq2pending:1 }, waitNudged: now };
-const seeker = { user:{ phone:'9811111111', name:'Neha', role:'seeker', gender:'female', occupation:{ type:'working', what:'x' } }, account:'9811111111', onboarded:{ seeker:true },
+const seeker = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name:'Neha', role:'seeker', gender:'female', occupation:{ type:'working', what:'x' } }, account:'9811111111', onboarded:{ seeker:true },
   giftSeen:true, attrClaimed:true, vibeCardSeen:true, vibe, interests:{ music:['Indie'], hobbies:['Gym'] }, prefs:{ city:'Bengaluru', areas:[] }, profilePromoHidden: now + 9e9 };
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAC0lEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC', 'base64');
 const closeDialogs = p => p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
