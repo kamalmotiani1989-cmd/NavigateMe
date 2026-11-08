@@ -7,7 +7,7 @@ the room comes second.
 
 1. **Welcome page = sign-in.** A short write-up, the **flatmate-type quiz** (the bright card under
    the headline) and the sign-in card, which asks what you came for: *post my flat* or *looking for a
-   room*, then their mobile number. The one-time code comes **on WhatsApp**, or by SMS when they tap
+   room*, then their mobile number, then a required **"I am 18 or older"** tick (Kamal, 8 Nov). The one-time code comes **on WhatsApp**, or by SMS when they tap
    "Send it by SMS instead"; the code screen can send it again, or by SMS, after a minute. Their first
    name is the first question after sign-in, then **male or female** (each asked only once per number).
    See "Sign-in codes" below.
@@ -745,6 +745,12 @@ number, so keep it private. The WhatsApp / SMS choice, the limits and the bot ch
 the message isn't sent.
 
 ### Sign-in codes: WhatsApp first, SMS on request
+
+**18 or older.** The sign-in card's tick travels with every code request (`p_adult`); `fm_otp_request` refuses a
+request without it (`age-required`), so no code is sent: `fm-send-otp` only sends to numbers with a request there, and
+`fm-login` (test login) only signs in a number that asked in the last 10 minutes. Once signed in, the confirmation is
+kept on the account with its first time (`fm_profiles.adult_at`, `fm_confirm_adult`). Accounts from before the tick
+are asked once, in a one-question box that can't be closed without ticking. The privacy policy says the same.
 
 Every code request goes through `fm_otp_request` first: one code a minute and 5 an hour per number, 40
 an hour per network address, and the channel the person picked. The sign-in card also has a hidden field

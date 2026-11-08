@@ -34,6 +34,9 @@ create table if not exists public.fm_profiles (
 -- Added after the first version; safe to re-run on an existing database.
 alter table public.fm_profiles add column if not exists role text
   check (role in ('owner','seeker'));
+-- When the person confirmed they are 18 or older (the tick on the sign-in card, or the one-question box for
+-- accounts from before it). Null: not confirmed yet; the app asks before anything else.
+alter table public.fm_profiles add column if not exists adult_at timestamptz;
 -- Seeker's living-style answers, used for the vibe match ({sleep:0..2, clean:0..2, ...}).
 alter table public.fm_profiles add column if not exists vibe jsonb not null default '{}';
 -- What they do: {type: working|student|self|between, what: "Analyst at Deloitte"}.
@@ -424,7 +427,7 @@ returns table (credits int, full_name text, phone text, role text, vibe jsonb, o
                ref_code text, ref_joined int, ref_bonus int, charges_on boolean,
                gender text, tribe_show_to text, escape_show_to text,
                boost_credits int, sale_credits int, sale_code text, sale_title text, sale_until timestamptz,
-               on_time_months int, show_on_time boolean)
+               on_time_months int, show_on_time boolean, adult_at timestamptz)
 language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is null then return; end if;
@@ -443,7 +446,7 @@ begin
          (select s.charges_enabled from fm_settings s),
          p.gender, p.tribe_show_to, p.escape_show_to,
          p.boost_credits, p.sale_credits, sl.code, sl.title, sl.ends_at,
-         p.on_time_months, p.show_on_time
+         p.on_time_months, p.show_on_time, p.adult_at
   from fm_profiles p left join fm_market_sales sl on sl.seller_id = p.id and sl.ends_at > now()
   where p.id = auth.uid();
 end $$;
@@ -2918,7 +2921,10 @@ language sql stable security definer set search_path = public, extensions as $$
   from (select (select hash from fm_secrets where name = 'test_login_code') as hash) s
 $$;
 
-create or replace function public.fm_otp_request(p_phone text, p_channel text) returns jsonb
+-- The sign-in card's "I am 18 or older" tick travels with every code request; without it no code is sent
+-- (fm-send-otp only sends to numbers with a request here, and fm-login only signs in such a number).
+drop function if exists public.fm_otp_request(text, text);
+create or replace function public.fm_otp_request(p_phone text, p_channel text, p_adult boolean default null) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
   v_phone text := right(regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g'), 10);
@@ -2927,6 +2933,7 @@ declare
 begin
   if v_phone !~ '^[6-9][0-9]{9}$' then return jsonb_build_object('error', 'bad-phone'); end if;
   if p_channel is null or p_channel not in ('whatsapp', 'sms') then return jsonb_build_object('error', 'bad-channel'); end if;
+  if p_adult is not true then return jsonb_build_object('error', 'age-required'); end if;
   select max(created_at), count(*) into v_last, v_hour from fm_otp_requests where phone = v_phone and created_at > now() - interval '1 hour';
   if v_last > now() - interval '60 seconds' then
     return jsonb_build_object('error', 'too-soon', 'wait', ceil(extract(epoch from v_last + interval '60 seconds' - now()))::int);
@@ -2940,6 +2947,14 @@ begin
   insert into fm_otp_requests (phone, channel, ip) values (v_phone, p_channel, v_ip);
   return jsonb_build_object('ok', true);
 end $$;
+
+-- The signed-in person confirms they are 18 or older: kept once, with the first time they said so.
+create or replace function public.fm_confirm_adult() returns timestamptz
+language sql security definer set search_path = public as $$
+  update fm_profiles set adult_at = coalesce(adult_at, now()) where id = auth.uid() returning adult_at;
+$$;
+revoke all on function public.fm_confirm_adult() from public, anon;
+grant execute on function public.fm_confirm_adult() to authenticated;
 
 -- --------------------------------------------------------------- ad spend --
 -- What each ad channel cost, for the team's ads dashboard (cost per sign-up and per room listed).
@@ -3252,7 +3267,7 @@ begin
 end $$;
 grant execute on function public.fm_me() to anon;
 grant execute on function public.fm_area_demand(text, text) to anon;
-grant execute on function public.fm_otp_request(text, text) to anon;
+grant execute on function public.fm_otp_request(text, text, boolean) to anon;
 grant execute on function public.fm_test_code_ok(text) to service_role;
 grant execute on function public.fm_listing_audience(uuid) to service_role;
 grant execute on function public.fm_seeker_audience(uuid) to service_role;
