@@ -3878,6 +3878,14 @@ const demoApi = {
     if(t.their_yes){ t.status = "bonded"; t.bonded_at = new Date().toISOString(); t.seen = false; }
     save(); return t.status;
   },
+  // Same rule as fm_tribe_withdraw: take back a yes they haven't answered; it goes back to unanswered.
+  async tribeWithdraw(id){
+    const t = (state.tribe || []).find(x => x.id === id);
+    if(!t) return "not-found";
+    if(t.status !== "open") return t.status;
+    if(!t.my_yes) return "not-asked";
+    t.my_yes = null; delete t.yesAt; save(); return "withdrawn";
+  },
   async tribeSeen(){ (state.tribe || []).forEach(t => t.seen = true); save(); },
   // Leave the tribe: every bond ends (sample people don't get told). Returns how many people I left.
   async tribeLeave(){
@@ -4214,6 +4222,7 @@ function makeLiveApi(sb){
     async tribeRefresh(){ return rpc("fm_tribe_refresh"); },
     async tribeList(){ return (await rpc("fm_tribe_list")).map(t => Object.assign(t, { phone: plusPhone(t.phone) })); },
     async tribeAnswer(id, yes){ return rpc("fm_tribe_answer", { p_link:id, p_yes:yes }); },
+    async tribeWithdraw(id){ return rpc("fm_tribe_withdraw", { p_link:id }); },
     async tribeSeen(){ await rpc("fm_tribe_seen"); },
     async tribeLeave(){ return Number(await rpc("fm_tribe_leave")) || 0; },
     async setTribeOpen(v){ state.tribeOpen = v; save(); await rpc("fm_set_tribe_open", { p_open:v }); },
@@ -5776,7 +5785,7 @@ function tribeCardHtml(t){
   const first = esc(t.name || "Someone");
   const full = t.kind !== "complete" && ((t.my_size || 1) + (t.their_size || 1) > 3);
   const acts = full ? `<span class="req-pill">${(t.my_size || 1) >= 3 ? "Your tribe is full (3 of 3)" : `${first}'s tribe is full`}</span>`
-    : t.my_yes ? `<span class="req-pill pending">You said yes · waiting for ${first}</span>`
+    : t.my_yes ? `<span class="req-pill pending">You said yes · waiting for ${first}</span><button class="btn btn-ghost btn-sm" type="button" data-tw="${esc(t.id)}">Take back</button>`
     : t.their_yes ? `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Yes, let's team up</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not for me</button>`
     : `<button class="btn btn-accent btn-sm" data-ty="${esc(t.id)}">Team up with ${first}${CHARGES_ON && !passUntil("tribe") && t.kind !== "complete" ? " · Tribe Pass" : ""}</button><button class="btn btn-ghost btn-sm" data-tn="${esc(t.id)}">Not now</button>`;
   return `<article class="tribe-card${t.their_yes && !t.my_yes ? " wants" : ""}">
@@ -5859,10 +5868,22 @@ $("view-tribe").addEventListener("click", async e => {
       title: "You + " + (t.name || "") + " · Build your tribe" });
     return;
   }
+  const w = e.target.closest("[data-tw]");
+  if(w){ w.disabled = true; return withdrawTribe(w.dataset.tw); }
   const b = e.target.closest("[data-ty],[data-tn]"); if(!b) return;
   b.disabled = true;
   answerTribe(b.dataset.ty || b.dataset.tn, Boolean(b.dataset.ty));
 });
+// Take back a yes they haven't answered: they stop seeing your request; you can say yes again any time.
+async function withdrawTribe(id){
+  const t = tribeRows.find(x => x.id === id), first = t && t.name ? t.name.split(" ")[0] : "they";
+  try{
+    const st = await api.tribeWithdraw(id);
+    toast(st === "withdrawn" ? `Taken back. ${first === "they" ? "They" : first} won't see a request from you. You can say yes again any time.`
+      : st === "bonded" ? `${first} said yes just now, so you're already a tribe.` : "That request isn't waiting any more.");
+  }catch(err){ console.error(err); toast(/rate-limited/.test(err.message || "") ? "That's a lot of changes. Try again in a while." : "Couldn't take it back right now. Please try again."); }
+  renderTribe();
+}
 async function answerTribe(id, yes){
   const t = tribeRows.find(x => x.id === id);
   try{

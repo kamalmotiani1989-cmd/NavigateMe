@@ -44,6 +44,17 @@ const audit = () => {
     d.close(); await openListing(ids[1]); await new Promise(r => setTimeout(r, 600)); const next = d.scrollTop;
     d.scrollTop = 500; await openListing(ids[1]); const same = d.scrollTop; return { down, next, same }; });
   ok(sc.down > 300 && sc.next === 0 && sc.same > 300, 'a home\'s page: another home opens at the top; the same home redrawn keeps its place: ' + JSON.stringify(sc));
+  // Tribe: take back a yes they haven't answered
+  await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1200);
+  const tid = await p.evaluate(async () => { await api.tribeRefresh(); const t = state.tribe.find(x => x.status === 'open' && !x.their_yes); t.my_yes = true; t.yesAt = Date.now(); save(); return t.id; });
+  await p.goto('http://localhost:8765/#tribe'); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
+  const tw0 = await p.evaluate(id => { const b = document.querySelector(`[data-tw="${id}"]`); if(!b) return null; b.scrollIntoView({ block: 'center' });
+    const card = b.closest('article'); return { pill: card.querySelector('.req-pill').textContent, btn: b.textContent }; }, tid);
+  await p.click(`[data-tw="${tid}"]`); await p.waitForTimeout(1200);
+  const tw1 = await p.evaluate(id => { const t = state.tribe.find(x => x.id === id); const b = document.querySelector(`[data-ty="${id}"]`);
+    return { mine: t.my_yes, status: t.status, again: b && b.textContent, toast: (document.querySelector('.toast') || {}).textContent || '' }; }, tid);
+  ok(tw0 && /You said yes · waiting for/.test(tw0.pill) && tw0.btn === 'Take back' && tw1.mine == null && tw1.status === 'open' && /^Team up with/.test(tw1.again || '') && /won't see a request from you/.test(tw1.toast),
+    'Tribe: Take back next to a yes they haven\'t answered; it goes back to "Team up": ' + JSON.stringify({ tw0, tw1 }));
   // every text readable on its background (pastel panels used to keep white text from the navy days)
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1200);
   await p.evaluate(async () => { await api.tribeRefresh(); const t = (state.tribe || [])[0]; if(t){ Object.assign(t, { my_yes: true, their_yes: true, status: 'bonded', bonded_at: new Date().toISOString(), phone: '9800000001' }); save(); } });
