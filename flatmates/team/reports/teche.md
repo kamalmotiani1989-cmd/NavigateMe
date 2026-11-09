@@ -1,5 +1,22 @@
 # Teche · reports
 
+## 2026-11-09, website publishing: access, #69 published, stall fix PR
+
+**Done.** On Kamal's word ("give yourself access to findmeflatmate") this session attached the website repo with push
+access.
+- I ran the publish job by hand: gh-pages is at NavigateMe 2f23eee, so #68 and #69 are on findmeflatmate.com.
+- The same run copied the newest Android build to the download link.
+
+**Why it stalled:** the `*/30` schedule fired only every 4 to 8 hours. GitHub runs scheduled jobs on a best-effort
+basis and drops many at :00 and :30.
+
+**Fix: findmeflatmate PR #1** (for Kamal to merge).
+- NavigateMe can trigger a publish directly. This needs Kamal to make one token and save it as a NavigateMe secret;
+  the README in that repo has the steps.
+- The fallback schedule moves to :17 and :47.
+
+**Until then:** I run the publish job after each NavigateMe merge that changes flatmates/.
+
 ## 2026-11-09, reel clips for nearby parties: PR #71 (not merged)
 
 Five demo-mode clips for Mark's reel are in `design/reel-nearby-parties/`: host opens, guest finds, request, host
