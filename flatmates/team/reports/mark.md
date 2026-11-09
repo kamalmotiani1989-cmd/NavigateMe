@@ -1,5 +1,28 @@
 # Mark · reports
 
+## 9 November 2026 · competitor research completed as far as search allows; parties reel v2
+
+**Done (Kamal, directly)**
+- PR #48 updated with a 9 Nov section. It adds flatmates.in, a new competitor with free compatibility scores and the
+  line "Find the right person, not just a room". It confirms FlatMate.in at 2.0 stars on Play from 3.66K reviews and
+  500K+ downloads. It adds FlatX's filter matching, the NoBroker tenant price range (from ₹1,499 + GST), NoBroker's
+  Meta ad activity (100 active ads per an ad tracker) and SpareRoom Bold prices.
+- Parties reel: draft cut and v2 (real demo-mode screens, two animated scenes, a music bed I wrote) sent to Kamal in
+  the session. Not committed; the video is in my scratchpad.
+
+**Needs a decision (Kamal)**
+- **Drop "only" from matching claims.** The Gen Z pack's Ad 1 says "the only room app that matches on how you live",
+  and `marketing/README.md` heads a list "What only we have". Both are no longer safe. I will fix them when told to resume.
+- **Free parties show "Alcohol: bring your own"** on the host form and the guest's party page. I cropped it out of the
+  reel. Whether it should show on a free party is a product question for Teche.
+
+**Blocked**
+- Direct reads of competitor sites, app stores, Instagram and the Meta Ad Library: I proposed a separate personal
+  environment allowing only those hosts; the environments service rejected it. Kamal can create it in Settings.
+- Reel voice-over: the session's safety check blocked running the downloaded voice model. Options are in the session.
+
+**Next:** paused.
+
 ## 9 November 2026 · PR #70 fixes from King
 
 **Done:** two fixes on PR #70, same branch. The end card now uses the 8 Nov look (white, navy #1B2440, muted green
