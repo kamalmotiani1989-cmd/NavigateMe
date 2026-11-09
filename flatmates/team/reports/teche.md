@@ -1,5 +1,18 @@
 # Teche · reports
 
+## 2026-11-09, text in the logo's colours: #83 live
+
+Kamal asked for the text colours to follow the logo, black and orange, and said merge once done.
+
+- **Black and grey:** text and black buttons use the logo's near-black #1C1917; secondary text uses its warm grey.
+- **Orange in headlines:** the bold words use the logo's exact orange #C2410C.
+- **Orange in small text:** links, the greeting and section labels use #B23A0A, a hair deeper so small text reads
+  at 4.5:1.
+- **Pastel panels:** no orange there; text stays near-black.
+
+The contrast check passes on every screen, and README Look and feel is updated. Merged and published:
+findmeflatmate.com runs NavigateMe 82ac857.
+
 ## 2026-11-09, Tribe take back and the new logo are live: #81 and #82
 
 Kamal said "merge both".
