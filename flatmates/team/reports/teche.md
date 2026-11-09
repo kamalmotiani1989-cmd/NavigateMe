@@ -4,7 +4,14 @@
 
 Five demo-mode clips for Mark's reel are in `design/reel-nearby-parties/`: host opens, guest finds, request, host
 accepts, guest unlocks. Each is MP4 at 720×1280, 4 to 6 seconds, with sample data only and a fake phone number.
-No app change.
+No app change. **Updated:** free parties only, with no chip-in anywhere on screen (Kamal via King).
+
+**#69 ship check (King's list, 9 Nov):**
+- Database applied first and verified. #69 merged at 02:13; the Android build with it succeeded at 02:19.
+- Live check, rolled back: a new Flatsplits-only account gets seekers-only on a room request, owners-only on posting,
+  no tribe matches, and need-vibe on parties nearby.
+- **The website has not published since 22:48** (gh-pages at 67517aa): #68 is live, #69 is not. King has been asked
+  to get Kamal to run the publish job.
 
 ## 2026-11-08, "Just Flatsplits & FlatMart" sign-up: PR #69 merged and live
 
