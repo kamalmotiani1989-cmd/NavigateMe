@@ -6989,7 +6989,7 @@ async function openListing(id){
       ${l.is_owner ? "" : `<p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ ${esc(contact.contact_name || "The owner")} accepted. Call now!</p>
         <p class="hint" style="margin:0 0 10px">${esc(othersLine(l))}Good homes get rented out within days, so don't wait.</p>`}
       <div class="kv" style="margin-top:0">
-        <div><span>Owner</span><b>${esc(contact.contact_name)}</b> <span class="verified">✓ Phone verified</span></div>
+        <div><span>Owner</span><b>${esc(contact.contact_name)}</b>${l.owner_verified && !isSample(l) ? ` <span class="verified">✓ Phone verified</span>` : ""}</div>
         <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
       </div>
       <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div></div>

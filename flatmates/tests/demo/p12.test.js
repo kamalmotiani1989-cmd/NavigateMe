@@ -12,7 +12,8 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
 (async () => {
   const b = await chromium.launch();
   const ctx = await b.newContext({ viewport:{ width:390, height:844 } });
-  await ctx.addInitScript(s => { if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }, st);
+  // (try: this also runs inside the map's sandboxed frame, which has no storage)
+  await ctx.addInitScript(s => { try{ if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }catch(e){} }, st);
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1800); await closeDlgs(p);
   // 6. one prompt at most, no Flatsplits / FlatMart shortcuts
@@ -53,6 +54,20 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
   ok(/Active (today|yesterday|\d+ days ago)/.test(safe.loc), 'home page: the line under the title says when they were last active: ' + safe.loc);
   await p.evaluate(() => document.querySelector('#dlgListing .safe-pay').scrollIntoView({ block: 'center' })); await p.waitForTimeout(300);
   await p.screenshot({ path: O + '/p12-safe.png' });
+  // once accepted, the owner's contact box follows the same flag
+  const box = await p.evaluate(async () => {
+    state.requests.push({ id:'rv1', listing_id:'demo-2', listing_title:'x', seeker_phone:state.user.phone, seeker:{ name:'Neha', vibe:state.vibe, phone:state.user.phone }, status:'approved',
+      message:'', match_pct:50, created_at:new Date().toISOString(), decided_at:new Date().toISOString(), seen_owner:true, seen_seeker:true });
+    state.unlocked = [...new Set((state.unlocked || []).concat('demo-2'))]; save();
+    const keep = api.get, out = {};
+    for(const v of [false, true]){
+      api.get = async function(id){ const l = await keep.call(this, id); return l && Object.assign(l, { owner_verified: v }); };
+      await openListing('demo-2'); await new Promise(r => setTimeout(r, 800));
+      const kv = document.querySelector('#dlgListing .lock.open .kv'); out[v] = kv ? !!kv.querySelector('.verified') : 'no box';
+      document.querySelectorAll('dialog[open]').forEach(d => d.close());
+    }
+    api.get = keep; return out; });
+  ok(box.false === false && box.true === true, 'accepted: the owner\'s contact shows phone verified only when the flag says so: ' + JSON.stringify(box));
   // owners see the tick on people who ask
   await closeDlgs(p);
   await p.evaluate(async () => { await api.sendRequest('demo-1', 'Hi'); const r = state.requests.find(x => x.listing_id === 'demo-1');
