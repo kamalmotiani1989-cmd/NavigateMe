@@ -1130,6 +1130,9 @@ body.typing .help-fab{display:none}
 .rl-acts{display:grid; gap:10px; margin:18px 0 10px}
 .near-promo{display:flex; gap:12px; align-items:center; padding:14px; margin:0 0 16px; border-radius:16px; background:#fff; box-shadow:var(--card-shadow)}
 .near-promo > div{flex:1; min-width:0} .near-promo small{display:block; color:var(--text-2); font-size:var(--fs-s)} .near-promo .pt-mini-ic{color:var(--brand-2)}
+/* Phones: icon, text and button side by side left the text a word wide. The button drops under the text. */
+@media (max-width:480px){ .near-promo{flex-wrap:wrap; align-items:flex-start} .near-promo .pt-mini-ic{width:44px; height:44px; background:var(--brand-soft)}
+  .near-promo > div{flex:1 1 calc(100% - 56px)} .near-promo > .btn{margin-left:56px} }
 .near-h{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap} .near-h span{font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
 .near-list{display:grid; gap:10px; margin:0 0 18px}
 .near-card{display:flex; gap:12px; align-items:center; width:100%; padding:12px 14px; border:0; border-radius:16px; background:#fff; box-shadow:var(--card-shadow); text-align:left; font:inherit; color:var(--text); cursor:pointer}
