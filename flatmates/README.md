@@ -507,9 +507,18 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
 - **Pastel panels** replace the navy feature cards, one colour per section, always with dark text: Flatsplits and
   Account lavender (`--lav`), FlatMart and parties butter (`--butter`), the Empty Room Escape and Tribe mint
   (`--mint`), Passes blush (`--blush`). Olive, coral and periwinkle (`--olive`, `--coral`, `--peri`) are for small
-  accents. **Red** is kept for notification dots and errors.
+  accents. **Coral** (`--coral` #E79078, dark text on it) is the colour of the count badges on the bell and Tribe
+  and of the small "new" dots (`--dot` #E48C74); **red** is kept for errors.
 - **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700.
 - **Shapes:** cards and panels have 28px corners (`--r-card`), inputs 18px, buttons and chips are pills.
+- **Top bar** (9 Nov, Kamal): no background or line of its own; it sits on the beige page and gets a soft shade only
+  once you scroll. The logo sits in a white rounded tile (the mark alone on phones under 420px); the bell and Tribe
+  are round white buttons with soft shadows; your initial is a black circle; badges are coral.
+- **Sign-up** (9 Nov, Kamal): a large light headline with the key words in bold; the three choices are pastel tiles
+  (I need a room lavender, Posting a flat or a room butter, side by side; Just Flatsplits & FlatMart mint across),
+  each with an ↗ corner that turns into a black check when picked. On phones the tiles show their titles and the
+  picked one's explanation shows under them; the number is a pill with +91 in front; the highlights are pastel chips
+  after the card, and the trust line stays above it.
 - **Bottom bar (phones):** a floating white pill above the bottom edge; the screen you're on shows as a black button.
   The help button sits just above it.
 - **A home's page (phones):** the photos run frameless, edge to edge from the top of the screen. Back and share float
