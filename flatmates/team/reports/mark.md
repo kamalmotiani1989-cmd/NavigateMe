@@ -1,5 +1,18 @@
 # Mark · reports
 
+## 9 November 2026 · PR #70 fixes from King
+
+**Done:** two fixes on PR #70, same branch. The end card now uses the 8 Nov look (white, navy #1B2440, muted green
+#1C7F72), and the posting notes say the link opens the app and sign-up opens soon. "Launching soon" stays. Both
+checked on main first: `ON_HOLD` is gone and README "On hold" says the switches are off since 8 Nov.
+
+**Knock-on, for when I resume:** my other packs still describe the old hold and the old teal. These are the Pune plan
+and week-one content (PR #45), the Mumbai plan (PR #57), the student pack (PR #55), and `marketing/README.md` ("Coming
+soon" status, "launching soon, never download now"). Each needs a pass. The README line is Kamal's call: is sign-up
+still not public, so "launching soon" holds, or is it open?
+
+**Next:** paused.
+
 ## 9 November 2026 · parties-near-you reel (resumed for this one task)
 
 **Context.** Kamal said start; King relayed the task and Kamal's change (free parties only). Everything else stays
