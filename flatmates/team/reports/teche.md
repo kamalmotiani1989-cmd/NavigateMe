@@ -1,5 +1,30 @@
 # Teche · reports
 
+## 2026-11-09, alignment pass: PR #74 (not merged); compromise fix is live
+
+**Compromise fix is live.** Kamal merged #72. I published the website, and it now runs NavigateMe de9e967, which
+includes the fix. The Android app has it from today's build; reinstall to get it.
+
+**Alignment.** I screenshotted every screen at 360, 390 and 412 wide: signed out, as a seeker and as an owner,
+21 screens in all. An automatic check found nothing running off the screen. By eye I found six misses, fixed with one
+commit per screen and the look unchanged:
+- **Discover:** the city name was cut off by the phone's dropdown arrow ("Bengalurı").
+- **A home's page:** the price bar left "expenses" alone on a line.
+- **Welcome:** "Get the app" wrapped onto two lines, and the three skyline pills overlapped.
+- **Splits:** "House parties near you" squeezed its text to a word per line.
+- **Account:** the flatmate-type emoji took a third of the box, and "See parties" broke across two lines.
+- **Posting form:** the third step read "Priva…".
+
+All demo suites pass. Each picture is before (left) and after (right) at 360 wide:
+
+| Discover | A home's page | Welcome |
+|---|---|---|
+| ![](shots/alignment/10-discover.png) | ![](shots/alignment/11-home.png) | ![](shots/alignment/01-welcome.png) |
+
+| Splits | Account | Posting form |
+|---|---|---|
+| ![](shots/alignment/16-splits.png) | ![](shots/alignment/22-account.png) | ![](shots/alignment/31-post.png) |
+
 ## 2026-11-09, compromise button fixed: PR #72 (not merged)
 
 **Fault found.** On Requests, "Compromise and ask again" showed on every declined request, including whole flats
