@@ -1,5 +1,23 @@
 # Teche · reports
 
+## 2026-11-09, Tribe take back and the new logo are live: #81 and #82
+
+Kamal said "merge both".
+
+**Database:** fm_tribe_withdraw went live first, from schema.sql at 9930c50 (md5 a3fd0eb1…). A rolled-back live
+check passed: a real waiting yes was taken back and went to unanswered, and the other side got "not-asked".
+
+**Merges:** #81 (take back) and #82 (Kamal's logo everywhere, from his PDFs).
+
+**Android:** built straight away, and I sent Kamal the APK.
+
+**Website:** the publish failed to start three times (18:12, 18:16, 18:27 UTC). Each run failed with no job created,
+during GitHub's Actions incident of 9 Nov. The fourth run at 18:32 worked:
+- findmeflatmate.com runs NavigateMe d13a5cf, with the new icons and wordmarks;
+- the download link has build 179.
+
+**Also:** Kamal asked for a JPG of the logo with the name; I sent one at 2867×832 on white.
+
 ## 2026-11-09, homes open at the top; readable tribe card: #80 live
 
 Kamal reported both and said merge.
