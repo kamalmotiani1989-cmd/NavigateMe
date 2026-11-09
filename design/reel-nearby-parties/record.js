@@ -16,7 +16,15 @@ async function clip(b, name, state, setup, act){
   const cdp = await ctx.newCDPSession(p), frames = [], dir = `${OUT}/raw/${name}`; fs.mkdirSync(dir, { recursive:true });
   cdp.on('Page.screencastFrame', async f => { frames.push({ t: f.metadata.timestamp, data: f.data }); cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); });
   await cdp.send('Page.startScreencast', { format:'png', maxWidth:720, maxHeight:1280, everyNthFrame:1 });
+  // Free parties only: every 100 ms, note any visible text mentioning a chip-in or rupees.
+  await p.evaluate(() => { window.__hits = []; window.__guard = setInterval(() => {
+    const vw = innerWidth, vh = innerHeight, w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for(let n; (n = w.nextNode());){ if(!/chip|₹/i.test(n.textContent)) continue; const e = n.parentElement; if(!e || !e.offsetParent && getComputedStyle(e).position !== 'fixed') continue;
+      const cs = getComputedStyle(e); if(cs.visibility === 'hidden' || cs.display === 'none') continue;
+      const r = document.createRange(); r.selectNodeContents(n); const b = r.getBoundingClientRect();
+      if(b.width && b.height && b.bottom > 0 && b.top < vh && b.right > 0 && b.left < vw) window.__hits.push(n.textContent.trim().slice(0, 60)); } }, 100); });
   const t0 = Date.now() / 1000; await act(p); await p.waitForTimeout(150); const t1 = Date.now() / 1000;
+  const hits = await p.evaluate(() => { clearInterval(window.__guard); return [...new Set(window.__hits)]; });
   await cdp.send('Page.stopScreencast');
   // ffmpeg concat list: each frame held until the next one
   let list = '';
@@ -26,7 +34,7 @@ duration ${Math.max(0.01, next - f.t).toFixed(3)}
 `; });
   if(frames.length) list += `file '${dir}/f${String(frames.length - 1).padStart(5, '0')}.png'
 `;
-  fs.writeFileSync(`${dir}/list.txt`, list); marks[name] = [frames.length, t1 - t0]; await ctx.close();
+  fs.writeFileSync(`${dir}/list.txt`, list); marks[name] = [frames.length, +(t1 - t0).toFixed(2), hits]; await ctx.close();
 }
 (async () => { const b = await chromium.launch();
   // (a) host opens a party to people nearby
@@ -56,8 +64,8 @@ duration ${Math.max(0.01, next - f.t).toFixed(3)}
   });
   // (c) request to join with a note
   await clip(b, 'c-request', person('9822200003', 'Asha', 'female', { partyNear:{ on:true, pin:{ lat:18.559, lng:73.7868 }, label:'Baner' } }), async p => {
-    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); });
-    await p.evaluate(() => openNear('NBPUN1')); await p.waitForTimeout(800);
+    await p.goto(U('#splits')); await p.waitForTimeout(800); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); }); await p.goto(U('#account')); await p.goto(U('#splits')); await p.waitForTimeout(1400); await close(p);
+    await p.evaluate(() => openNear('NBPUN2')); await p.waitForTimeout(800);
   }, async p => {
     await p.waitForTimeout(500); await smooth(p, '#nearAsk', 'start'); await p.waitForTimeout(1000);
     await p.type('#nearNote', 'Board games fan, new in Baner!', { delay: 55 }); await p.waitForTimeout(400);
@@ -77,8 +85,8 @@ duration ${Math.max(0.01, next - f.t).toFixed(3)}
   });
   // (e) guest's view unlocks: address, pin, check-in code
   await clip(b, 'e-guest-unlocks', person('9822200005', 'Asha', 'female', { partyNear:{ on:true, pin:{ lat:18.559, lng:73.7868 }, label:'Baner' } }), async p => {
-    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); });
-    await p.evaluate(async () => { await api.partyRequest('NBPUN1', 'Board games fan!', 0); api.partyReqs().forEach(r => r.sampleDecideAt = Date.now() + 2500); save(); await openNear('NBPUN1'); });
+    await p.goto(U('#splits')); await p.waitForTimeout(800); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); }); await p.goto(U('#account')); await p.goto(U('#splits')); await p.waitForTimeout(1400); await close(p);
+    await p.evaluate(async () => { await api.partyRequest('NBPUN2', 'Board games fan!', 0); api.partyReqs().forEach(r => r.sampleDecideAt = Date.now() + 2500); save(); await openNear('NBPUN2'); });
     await p.waitForTimeout(400); await p.evaluate(() => $('nearAct').scrollIntoView({ block:'end' }));
   }, async p => {
     await p.waitForTimeout(3400);
