@@ -3486,7 +3486,7 @@ const demoApi = {
     await this.me();
     if(CHARGES_ON && !passUntil("room") && state.credits - state.pending < 1) return { error:"no-credits" };
     const m = vibeMatch(state.vibe, l.household);
-    const fresh = { id:"r" + Date.now(), listing_id:id, listing_title:l.title, seeker_phone:me.phone,
+    const fresh = { id:"r" + Date.now() + Math.random().toString(36).slice(2, 6), listing_id:id, listing_title:l.title, seeker_phone:me.phone,
       seeker:{ name:me.name, occupation:me.occupation, vibe:state.vibe, phone:me.phone, interests:state.interests || {}, on_time:!!(state.onTime && state.onTime.show && state.onTime.months >= 3) },
       status:"pending", message:(message || "").slice(0, 300), match_pct: m ? m.pct : null,
       created_at:new Date().toISOString(), decided_at:null, seen_owner:false, seen_seeker:true };
@@ -5438,6 +5438,8 @@ async function openCompromise(rid, lid){
   const l = await api.get(lid), hh = (l && l.household) || {};
   const row = (await api.inbox()).find(r => r.id === rid);
   if(!l || !row){ toast("This home isn't available any more."); return; }
+  if(row.compromise){ toast("You already offered a compromise for this home."); return; }
+  if(!compromiseOptions(hh).length){ toast("Your answers don't clash with this home, so there's nothing to adjust. Your best matches are on Discover."); return; }
   cmCtx = { rid, l, hh, before: row.match_pct, changes: {} };
   $("cmSub").textContent = l.title;
   drawCompromise();
@@ -7191,6 +7193,11 @@ async function renderRequests(){
   const listings = owner ? await api.myListings() : [];
   const invHomes = await Promise.all(invites.map(r => api.get(r.listing_id)));
   const rest = list.filter(r => !invites.includes(r));
+  // "Compromise and ask again" only where there's something to adjust: a home whose household answers clash with yours
+  // (a whole flat nobody lives in yet has none). Same check as on the home's page.
+  cmHomes = {};
+  if(!owner) await Promise.all(rest.filter(r => r.status === "declined" && !r.compromise && r.by !== "owner").map(r => api.get(r.listing_id)
+    .then(l => { cmHomes[r.listing_id] = !!(l && compromiseOptions(l.household || {}).length); }).catch(() => {})));
   const empty = `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("bell", 30, 1.8)}</div><h3>Nothing yet</h3>${owner ? "Make sure your listing has photos and your household details. Requests appear here with a notification. Or don't wait: invite people yourself in <a href='#escape'>The Empty Room Escape</a>."
       : `<p>Open a flat you like and tap “Send request”.</p><a class="btn btn-primary" href="#discover">Browse homes</a>`}</div>`;
   $("reqList").innerHTML = !list.length ? empty
@@ -7268,6 +7275,7 @@ async function answerInvite(rid, yes){
   renderUrgent();
   if(currentView === "requests") renderRequests();
 }
+let cmHomes = {};
 function outgoingHtml(r){
   return `<article class="req${r.unseen ? " new" : ""}" data-open="${esc(r.listing_id)}" style="cursor:pointer">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 56) : ""}</div>
@@ -7275,7 +7283,7 @@ function outgoingHtml(r){
       <span class="req-pill ${esc(r.status)}">${esc(STATUS_TXT[r.status] || r.status)}</span></div>
       <div class="occ">${r.by === "owner" ? (r.status === "approved" ? `You accepted ${esc(r.name || "the owner")}'s invite. Tap to see their number and address.`
           : `You passed on ${esc(r.name || "the owner")}'s invite.`)
-        : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined" && !r.compromise
+        : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined" && !r.compromise && cmHomes[r.listing_id]
         ? `Declined.${CHARGES_ON ? " No contact used." : ""} <button class="btn btn-accent btn-sm" style="margin-top:8px" data-cm="${esc(r.id)}" data-cml="${esc(r.listing_id)}">🤝 Compromise and ask again</button>`
         : r.status === "declined"
         ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div></div></article>`;
