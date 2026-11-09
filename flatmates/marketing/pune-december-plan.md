@@ -58,7 +58,7 @@ pretend:
 
 ## 3 · Areas, budget and calendar
 
-**Areas (11).** Baner, Balewadi, Aundh, Wakad, Hinjewadi, Kothrud, Kharadi, Viman Nagar, Kalyani Nagar,
+**Areas (11).** Baner, Balewadi, Aundh, Wakad, Hinjewadi, Kothrud, Kharadi, Viman Nagar, Hadapsar,
 Koregaon Park, Magarpatta (the app spells it "Hinjewadi Phase 1" in links). Baner is the area the spec already uses; the other ten are my pick of where
 people aged 21 to 35 rent in Pune. Cut to five (Baner, Wakad, Hinjewadi, Kharadi, Viman Nagar) if you
 want the ads to learn faster on the same money.
@@ -142,12 +142,14 @@ P3 · owner
 
 ## 5 · Google Ads setup, Pune
 
-**Campaign.** Search, name `listers_pune`, ₹1,000 a day, manual CPC ₹8 to ₹15 to start, Maximise
+**Campaign.** Search, name `listers_pune`, ₹1,000 a day, manual CPC capped at ₹25 to start (raised 9 Nov; see `google-ads-keywords.md` section 5), Maximise
 conversions once there are 30 sign-ups in a rolling 30 days. Locations: the 11 areas, presence.
 Schedule all day, bid +20% Sunday and Monday evenings. Final URL `https://findmeflatmate.com/?host=Pune`;
 campaign URL suffix `utm_source=google&utm_medium=cpc&utm_campaign=listers_pune`; auto-tagging on.
 
-Keywords, headlines (30 characters max) and descriptions (90 max): take the three ad groups from
+**Keywords (updated 9 Nov):** use the tiered Pune list in `google-ads-keywords.md` (Tier A from day 1, Tier B from week 2, Tier C never), its negatives and its Keyword Planner check; the table below is kept for reference.
+
+Headlines (30 characters max) and descriptions (90 max): take the three ad groups from
 `lister-campaign-pack.md` section 3 as they are, and add these Pune lines to each group.
 
 | Ad group | Add keywords (phrase + exact) | Add headlines |

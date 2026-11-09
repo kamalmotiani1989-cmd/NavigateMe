@@ -110,9 +110,9 @@ answer. Link in bio.
 3. See how they live, and whether they pay on time. Vibe score and pays-on-time badge on every request. (screen: **a request with the badge**)
 4. Post in 3 steps, free. Your number stays private until you say yes. (screen: **step 1 of the posting form**)
 **Caption** A Pune broker takes a month's rent to send you strangers. FindMeFlatMate shows you who's looking in Baner,
-Kalyani Nagar or Magarpatta, what they can pay, how they live and whether they pay on time. You post free. You choose.
+Hadapsar or Magarpatta, what they can pay, how they live and whether they pay on time. You post free. You choose.
 Link in bio.
-**Hashtags** #rentmyflat #flatforrent #nobrokerage #zerobrokerage #landlord #punerent #punerooms #FindMeFlatMate #baner #kalyaninagar
+**Hashtags** #rentmyflat #flatforrent #nobrokerage #zerobrokerage #landlord #punerent #punerooms #FindMeFlatMate #baner #hadapsar
 
 ### Reel P3, Pune · "₹20,000 for a phone number" (15 s)
 | Time | On screen | Voice |
