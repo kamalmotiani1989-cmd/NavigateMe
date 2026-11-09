@@ -287,6 +287,61 @@ write in reviews that our spec already answers. The Pune plan needs two addition
 
 ---
 
+## 3a · Update, 9 November 2026: gaps closed, and one claim we must drop
+
+All sources below seen 9 Nov 2026 through search excerpts (direct page reads are still blocked; see section 4).
+
+**A new competitor on our exact line: flatmates.in.** Homepage title "flatmates.in — Find the right person, not just a
+room." Says it is "a Harmony Infotech product", made in Visakhapatnam; lists Bangalore, Hyderabad, Mumbai, Pune, Vizag
+and Chennai and "15 cities". Free tier: one listing, browsing, **compatibility scores**, five WhatsApp contacts a day.
+Premium ₹199 a month: "AI-powered matching", unlimited WhatsApp contacts, verified badge, featured placement
+(https://www.flatmates.in/). Size, ratings and reviews: could not confirm.
+
+**FlatMate.in, now confirmed.** Play Store listing (`in.flatmate`) shows **2.0 stars from 3.66K reviews, 500K+
+downloads**; one review: "Overpriced subscription and don't count on refund too much"
+(https://play.google.com/store/apps/details?id=in.flatmate&hl=en&gl=US). AppBrain, Feb 2026: 1.69 from 3.5K ratings
+(https://www.appbrain.com/app/find-flatmates-rent-rooms-flat-house-pg-colive/in.flatmate). India App Store lists
+"FlatMate.in Premium (One Month) ₹499" (https://apps.apple.com/in/app/flatmate-find-roommate-rooms/id1360260090; listing
+may be old).
+
+**FlatX, how it matches.** Filter-based "lifestyle" matching (diet, smoking, pets, gender, work schedule, budget),
+identity verification for every user, free trial for tenants, a paid "Pro" plan with no published price; says
+Mumbai, Pune, Hyderabad and Delhi NCR are "planned for 2025–2026" (https://www.flatx.co/flatmates;
+https://www.flatx.co/faq; https://www.flatx.co/blog/flatmate-in-vs-flatx). Not live in Pune as far as can be seen.
+
+**NoBroker tenant prices, the range.** Freedom ₹1,499 to ₹1,649, Relax ₹3,499 to ₹3,999, MoneyBack ₹5,999, all plus
+18% GST; MoneyBack refunds if no home in 45 days (https://www.nobroker.in/forum/what-is-the-difference-between-the-nobroker-tenant-plans/;
+https://www.cashaly.com/store/nobroker-coupons; https://coolbio.org/nobroker-customer-reviews-is-the-nobroker-tenant-plan-beneficial/).
+Quote "from ₹1,499 plus GST" if we ever compare; never one exact figure.
+
+**NoBroker's Meta ads.** An ad tracker shows **100 active ads, 120 tracked since June 2025**, video creative tested
+from September 2025, and one ad, "Find your dream home near KR Puram", running since March 2026; the rest is behind a
+paywall (https://adwhispr.com/library/brands/nobroker-com). Their 2024 "Heroes at Home" film ran on YouTube,
+Instagram, Facebook and OTT (https://www.afaqs.com/news/advertising/nobrokers-new-campaign-aims-to-bring-out-the-hero-in-every-customer-7574159).
+
+**SpareRoom Bold, settled.** Most current pages: 7 days £14, 14 days £25, 28 days £28, 6 months £149; the £99 figure
+appears on one page only (https://www.spareroom.co.uk/content/secure/flatshare-advert-options/).
+
+**Still not found:** a January 2026 Flatmates.com.au campaign (latest confirmed is "Find your people", 13 Jan 2025,
+https://www.bandt.com.au/flatmates-launches-2025-summer-campaign-find-your-people/); Housing.com rupee prices; any
+2026 Meta ads for Stanza Living, Zolo or Colive.
+
+**What this changes in the recommendation.**
+1. **Drop "only" from every claim about matching.** flatmates.in offers free compatibility scores and FlatMate.in
+   shows match percentages. Our Gen Z pack's Ad 1 says "the only room app that matches on how you live"; that line
+   must change, and the marketing README's "What only we have" heading should become "What we do". Safe wording:
+   "Both sides answer the same 12 questions, and every request shows the score." It is true and nobody else is shown
+   doing both sides.
+2. **What is still ours, as far as can be seen:** owners choose and numbers swap only on a yes (flatmates.in hands out
+   WhatsApp contacts by quota), the Escape list of people looking with an invite deadline, Tribe, and the app staying
+   after the move (Flatsplits, FlatMart, parties). Lead with those.
+3. **Pricing contrast holds.** Our Room Pass is ₹500 one-time for 30 days; flatmates.in is ₹199 a month, FlatMate.in
+   ₹499 a month, NoBroker from ₹1,499. Say "one-time, no subscription", not "cheapest".
+4. **Low ratings are an opening.** FlatMate.in at 2.0 stars on 3.66K reviews, with subscription and refund complaints,
+   is the incumbent flatmate app in India. Our launch should plan to ask for reviews early and answer every one.
+
+---
+
 ## 4 · Could not confirm, and how to close it in an hour
 
 Not seen, because the session cannot open those sites: Google sponsored ad text for "flatmate Pune", "rent flat
@@ -301,4 +356,5 @@ Two ways to close it:
    Instagram profiles and screenshot bio plus latest three posts. Send the screenshots to me and I add the copy to
    this file with dates.
 2. **Or allow this session to read those sites** (the environment's network rules; Teche or Kamal can set it). Then
-   I re-run the checks and update the file the same day.
+   I re-run the checks and update the file the same day. On 9 Nov a separate personal environment with only these hosts
+   was proposed from this session and the environments service rejected it; Kamal can create it in Settings.
