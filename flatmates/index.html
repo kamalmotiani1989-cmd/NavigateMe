@@ -2110,6 +2110,27 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
   .w-card h2{font-size:26px} .w-card .sub{font-size:var(--fs-s); margin-top:4px}
   .role{min-height:0; padding:12px 12px 14px} .role span{font-size:12.5px}
 }
+
+/* Sign-up, less on screen (Kamal, 9 Nov). On phones each choice shows its icon and title; the line explaining it
+   appears under the tiles once you pick it (screen readers still hear all three). The tagline repeats the headline,
+   so it hides; the labels and small print are quieter. */
+.role-hint{display:none}
+@media (max-width:900px){
+  .tagline{display:none}
+  .w-copy h1{margin-top:4px}
+  .w-card{padding:22px 18px 20px}
+  .w-card .sub{display:none}
+  .roles{margin:14px 0 8px}
+  .role{min-height:118px; justify-content:space-between}
+  .role:nth-of-type(3){min-height:0}
+  .role b{font-size:17px}
+  .role > span:last-of-type > span{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
+  .role-hint{display:block; margin:0 4px 14px; min-height:20px; font-size:var(--fs-s); color:var(--text-2); line-height:1.4}
+  .role-hint:empty::before{content:"Pick one. You can switch any time from your account."; color:var(--text-3)}
+  #loginForm .field > label[for="lgPhone"]{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+  #loginForm > .hint{font-size:12.5px; text-align:center; margin-top:10px}
+  .lg-sms{display:block; margin:8px auto 0}
+}
 </style>
 </head>
 <body>
@@ -2159,6 +2180,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5"/></svg></span>
               <span><b>Just Flatsplits &amp; FlatMart</b><span>Split bills with flatmates, buy and sell with people nearby</span></span></label>
           </div>
+          <p class="role-hint" id="roleHint" aria-hidden="true"></p>
           <div class="field"><label for="lgPhone">Mobile number</label><div class="ph-in"><span aria-hidden="true">+91</span><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
@@ -6258,7 +6280,7 @@ $("view-welcome").addEventListener("click", e => {
 });
 function pickRole(role){
   const radio = role && document.querySelector(`#loginForm input[name=role][value="${role}"]`);
-  if(radio) radio.checked = true;
+  if(radio){ radio.checked = true; radio.dispatchEvent(new Event("change", { bubbles: true })); }
   $("loginForm").hidden = false; $("otpForm").hidden = true;
   document.querySelector(".w-card").scrollIntoView({ behavior:"smooth", block:"center" });
   $("lgPhone").focus({ preventScroll:true });
@@ -11727,6 +11749,11 @@ new MutationObserver(() => { if(packQueued) return; packQueued = true; requestAn
   .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
 // The top bar gets a soft shade only once the page scrolls under it.
 addEventListener("scroll", () => { const h = $("appHead"); if(h) h.classList.toggle("scrolled", scrollY > 4); }, { passive: true });
+// Sign-up: the line explaining the picked choice shows under the tiles (on phones the tiles show only their titles).
+$("loginForm").addEventListener("change", e => {
+  const r = e.target.closest("input[name=role]"); if(!r) return;
+  const d = r.closest(".role").querySelector(":scope > span:last-of-type > span"); $("roleHint").textContent = d ? d.textContent : "";
+});
 /* ================================================================ boot */
 document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });

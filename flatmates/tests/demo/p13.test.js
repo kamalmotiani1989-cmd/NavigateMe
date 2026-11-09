@@ -25,6 +25,13 @@ const st = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name
   await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   const short = await p.evaluate(() => [...document.querySelectorAll('#view-account p.sub')].filter(e => e.offsetParent).map(e => ({ len: e.textContent.trim().length, packed: e.classList.contains('pk') })));
   ok(short.every(x => x.len >= 100 || !x.packed) && short.some(x => x.len < 100), 'Account: short sentences are never folded: ' + JSON.stringify(short));
+  // sign-up: tiles show titles; the picked one's explanation shows under them; screen readers still get all three
+  const v = await b.newPage({ viewport:{ width:390, height:844 } }); await v.goto('http://localhost:8765/'); await v.waitForTimeout(1200);
+  const s0 = await v.evaluate(() => ({ hint: getComputedStyle($('roleHint'), '::before').content, descs: [...document.querySelectorAll('#loginForm .role > span:last-of-type > span')].map(d => d.getBoundingClientRect().width <= 1 && d.textContent.length > 20) }));
+  await v.click('#loginForm input[value=owner]', { force: true });
+  const s1 = await v.evaluate(() => ({ hint: $('roleHint').textContent, phone: Math.round($('lgPhone').getBoundingClientRect().bottom), tagline: getComputedStyle(document.querySelector('.tagline')).display }));
+  ok(s0.descs.every(Boolean) && /Pick one/.test(s0.hint) && /spare room/.test(s1.hint) && s1.tagline === 'none' && s1.phone < 844,
+    'sign-up: titles only on the tiles, the picked one explained underneath, the number box on the first screen: ' + JSON.stringify({ s0, s1 }));
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));
 })();
