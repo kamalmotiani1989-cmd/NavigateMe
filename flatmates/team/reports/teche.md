@@ -1,5 +1,27 @@
 # Teche · reports
 
+## 2026-11-09, competitor research, six ideas built: PR #75 (not merged); #74 is live
+
+**#74 (alignment) is live.** Kamal merged it and I published the website, which now runs NavigateMe cac03e3.
+
+**Research.** I compared 99acres, Housing, NoBroker, Magicbricks, Flatmate.in, Stanza, SpareRoom, Flatmates.com.au
+and Roomster. The session couldn't open their sites, so this comes from reviews, store write-ups and case studies.
+
+**Built on Kamal's word ("build all 6"): PR #75.**
+- A phone-verified tick on homes and people (never on samples).
+- One-tap dealbreaker filters, each with a count.
+- "Active 2 days ago" on homes. Homes whose owner is away 30 days leave Discover. This needs a database change,
+  which goes live before the app.
+- A never-pay-before-you-visit warning on a home's page.
+- At most one prompt on Discover.
+- Photo first with the score on the photo was already how cards look.
+
+All suites pass, including the new p12, and 97 database checks pass.
+
+| Discover with quick filters | Safety note on a home |
+|---|---|
+| ![](shots/competitor-ideas/discover.png) | ![](shots/competitor-ideas/home-safety.png) |
+
 ## 2026-11-09, alignment pass: PR #74 (not merged); compromise fix is live
 
 **Compromise fix is live.** Kamal merged #72. I published the website, and it now runs NavigateMe de9e967, which
