@@ -29,7 +29,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return Math.round((x + .05) / (y + .05) * 100) / 100; };
     return { v, white: ratio(v, '#FFFFFF'), wash: ratio(v, '#DCEFE9'), appBg: ratio(v, '#F4F7F6') }; });
-  ok(grey.v.toUpperCase() === '#655F5A' && grey.white >= 4.5 && grey.wash >= 4.5 && grey.appBg >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better: ' + JSON.stringify(grey));
+  ok(grey.v.toUpperCase() === '#615A55' && grey.white >= 4.5 && grey.wash >= 4.5 && grey.appBg >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better: ' + JSON.stringify(grey));
   // the WhatsApp button: darker green, white text at 4.5:1 or better; the sign-in card's controls are the same
   const wa = await p.evaluate(() => { const bt = document.querySelector('#loginForm .btn-wa'), cs = getComputedStyle(bt);
     const lum = rgb => { const c = rgb.match(/\d+/g).slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
