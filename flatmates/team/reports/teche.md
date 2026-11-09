@@ -1,5 +1,23 @@
 # Teche · reports
 
+## 2026-11-09, #75 is live: database first, then the website
+
+Kamal merged #75. I applied schema.sql at 88e31bc to the live database (md5 ab06264c…, matching the file on
+GitHub), then published the website after the Android build for the merge finished.
+
+**Checked on the live database:**
+- every profile has an active date;
+- nobody is phone-verified yet, which is correct while sign-in uses the test code;
+- the 30-day check can't be called from the app;
+- a real seeker still sees all 104 active homes (rolled back).
+
+**After review (King), the "Phone verified" tick follows a server flag.** That flag is set only when a code was
+actually delivered to the phone. So no ticks show today, and they turn on by themselves when real WhatsApp/SMS
+codes go live. This includes the tick next to the owner's name after a request is accepted, which used to show
+for everyone.
+
+Android users get these changes by reinstalling the app.
+
 ## 2026-11-09, competitor research, six ideas built: PR #75 (not merged); #74 is live
 
 **#74 (alignment) is live.** Kamal merged it and I published the website, which now runs NavigateMe cac03e3.
