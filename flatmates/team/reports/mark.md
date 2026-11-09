@@ -1,5 +1,19 @@
 # Mark · reports
 
+## 9 November 2026 · Google Ads keyword plan (Kamal, directly)
+
+**Done**
+- `flatmates/marketing/google-ads-keywords.md`, **PR #73**: tiered Pune keywords per lister ad group plus a seeker set,
+  negatives, a ₹25 starting bid cap (up from ₹8 to ₹15), and a Keyword Planner check.
+- PR #45 updated: Google section points to the new file, ₹25 cap, Kalyani Nagar swapped for Hadapsar (the app's list).
+
+**Limits:** no public Indian search volumes or rental click costs; estimates are marked and wait for Kamal's Keyword
+Planner export. No housing-ad targeting restrictions found for India on Google or Meta.
+
+**Needs from Kamal:** the Keyword Planner export (section 6 of the file), about 20 minutes in his Ads account.
+
+**Next:** paused.
+
 ## 9 November 2026 · competitor research completed as far as search allows; parties reel v2
 
 **Done (Kamal, directly)**
