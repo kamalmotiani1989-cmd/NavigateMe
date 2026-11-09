@@ -129,7 +129,8 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
     return { kind: l.kind, res: Number((l.household || {}).residents) || 0, pill: (c.querySelector('.thumb .price-pill') || {}).textContent || '', rent: l.rent,
       trust: (c.querySelector('.trust') || {}).textContent || '', text: c.textContent, newOk: !!c.querySelector('.fresh .new') === (Date.now() - new Date(l.created_at) < 7 * 864e5) }; }));
   ok(cardChk.length > 3 && cardChk.every(c => c.pill.replace(/\D/g, '').startsWith(String(c.rent))), 'seeker: every card shows the rent on the photo: ' + cardChk.slice(0, 3).map(c => c.pill).join(' / '));
-  ok(cardChk.every(c => /your number is shared only if you both say yes/.test(c.trust) && (c.kind !== 'flat' && c.res > 0 ? /Listed by a flatmate who lives here/ : /Owner-listed/).test(c.trust)),
+  // (the both-say-yes promise moved off the cards on 9 Nov, to cut clutter; it's on the welcome page and on each home's page)
+  ok(cardChk.every(c => !/your number is shared only/.test(c.trust) && (c.kind !== 'flat' && c.res > 0 ? /Listed by a flatmate who lives here/ : /Owner-listed/).test(c.trust)),
     'seeker: trust line on every card, flatmate-listed for rooms with people living there, owner-listed for whole flats: ' + [...new Set(cardChk.map(c => c.kind + ': ' + c.trust.split(' · ')[0]))].join(' / '));
   ok(cardChk.some(c => /Owner-listed/.test(c.trust)) && cardChk.some(c => /flatmate who lives here/.test(c.trust)), 'seeker: both kinds of trust line appear in the demo');
   ok(cardChk.every(c => !/Posted |deposit|Usually replies|Furnished|From \d/.test(c.text) && c.newOk), 'seeker: no posted-ago, deposit, furnishing or slow-reply lines; "New this week" only on new homes' + cardChk.filter(c => /Posted |deposit|Usually replies|Furnished|From \d/.test(c.text) || !c.newOk).slice(0, 2).map(c => ' :: ' + c.newOk + ' ' + c.text.replace(/\s+/g, ' ')).join(''));
