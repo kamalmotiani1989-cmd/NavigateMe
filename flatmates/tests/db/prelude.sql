@@ -2,7 +2,7 @@
 create role anon nologin; create role authenticated nologin; create role service_role nologin; create role authenticator nologin;
 create schema auth; create schema storage; create schema extensions; create schema net;
 create extension if not exists pgcrypto with schema extensions;
-create table auth.users (id uuid primary key default gen_random_uuid(), phone text, email text, raw_user_meta_data jsonb default '{}', raw_app_meta_data jsonb default '{}', created_at timestamptz default now(), last_sign_in_at timestamptz);
+create table auth.users (id uuid primary key default gen_random_uuid(), phone text, email text, raw_user_meta_data jsonb default '{}', raw_app_meta_data jsonb default '{}', created_at timestamptz default now(), last_sign_in_at timestamptz, phone_confirmed_at timestamptz);
 create table auth.sessions (id uuid primary key default gen_random_uuid(), user_id uuid); create table auth.refresh_tokens (id bigserial primary key, user_id text);
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
 create function auth.role() returns text language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claim.role', true), ''), 'anon') $$;

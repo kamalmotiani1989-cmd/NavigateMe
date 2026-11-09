@@ -396,6 +396,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .bill{display:grid; grid-template-columns:1fr auto; gap:6px 12px; font-size:var(--fs-m); font-variant-numeric:tabular-nums}
 .bill .tot{font-weight:800; box-shadow:0 -1px 0 var(--line); padding-top:8px; margin-top:2px}
 .bill .muted{color:var(--text-2)}
+.safe-pay{display:flex; gap:10px; align-items:flex-start; margin-top:12px; padding:10px 12px; border-radius:12px; background:var(--amber-96); color:var(--text); font-size:var(--fs-s); line-height:1.45; text-align:left}
+.safe-pay > b{font-size:18px; line-height:1.2; flex:none} .safe-pay span b{font-weight:800}
 .verified{display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-xs); font-weight:700; color:var(--ok)}
 .lock{padding:24px 0 4px; margin-top:22px; box-shadow:0 -1px 0 var(--line); color:var(--text)}
 .lock h3{font-size:var(--fs-l)}
@@ -503,6 +505,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .area-chips button{flex:none; border:0; background:var(--surface-2); color:var(--text); border-radius:999px; padding:8px 15px;
   font:600 var(--fs-s) var(--body); cursor:pointer; white-space:nowrap}
 .area-chips button[aria-pressed="true"]{background:var(--text); color:#fff}
+.quick-f{margin-top:-2px} .quick-f:empty{display:none} .quick-f button{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.quick-f button small{margin-left:5px; font-weight:600; opacity:.7}
 .active-f{display:flex; flex-wrap:wrap; gap:6px}
 .active-f:empty{display:none}
 .active-f button{border:0; border-radius:999px; padding:5px 6px 5px 12px; background:var(--accent-soft); color:var(--text); font:600 var(--fs-s) var(--body); cursor:pointer}
@@ -1828,6 +1832,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .lcard .count-ph{top:auto; left:auto; bottom:18px; right:56px}
 .lcard .people .gen{margin-left:2px}
 .lcard .fresh .new{font-size:var(--fs-xs); font-weight:700; color:var(--brand-2)}
+.lcard .fresh .act{font-size:var(--fs-xs); font-weight:600; color:var(--text-2)}
 .lcard .trust{margin-top:8px; padding-top:8px; border-top:1px solid var(--hair); font-size:var(--fs-xs); line-height:1.45; color:var(--text-2)}
 .lcard .trust b{color:var(--brand-2)}
 .wait-nudge{display:flex; gap:12px; align-items:flex-start; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:var(--accent-soft); color:var(--text)}
@@ -2232,6 +2237,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <div class="ds-view" id="dView" role="group" aria-label="Show as"><button type="button" data-dview="list" aria-pressed="true">List</button><button type="button" data-dview="map" aria-pressed="false">Map</button></div>
       </div>
       <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
+      <div class="area-chips quick-f" id="quickF" role="group" aria-label="Quick filters"></div>
       <div class="active-f" id="activeF"></div>
     </div>
     <div id="urgent"></div>
@@ -2782,6 +2788,9 @@ const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurni
 const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
 // Sample homes and people (supabase/samples.sql) for testing: they answer straight away and have no real number.
 const isSample = x => Boolean(x && ((x.household && x.household.sample) || (x.occupation && x.occupation.sample)));
+// "Phone verified" only when the server says the number was confirmed by a code actually delivered to it
+// (fm_profiles.phone_verified_at, set by the WhatsApp / SMS sign-in, never by the shared test code).
+const verTag = x => isSample(x) ? SAMPLE_TAG : x && x.verified ? `<span class="verified" title="Confirmed with a code sent to their number">✓ Phone verified</span>` : "";
 const SAMPLE_TAG = `<span class="smp" title="A sample for testing. It answers straight away and has no real number.">Sample</span>`;
 
 const $ = id => document.getElementById(id);
@@ -3458,11 +3467,15 @@ const demoApi = {
     const m = hrs.length % 2 ? hrs[(hrs.length - 1) / 2] : (hrs[hrs.length / 2 - 1] + hrs[hrs.length / 2]) / 2;
     return Math.round(m * 10) / 10;
   },
+  // Same rule as fm_listing_fresh: an owner away 30 days drops out of Discover, unless it's yours, you asked, or a sample.
+  fresh_(v){ return v.is_owner || v.request_status || isSample(v) || Date.now() - new Date(v.owner_active_at) < 30 * 864e5; },
   view(l){
     const mine = Boolean(state.user && l.owner_phone === state.user.phone);
     const { private: _p, ...pub } = l;
     const r = this.reqFor(l.id);
     return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null, reply_hours: this.replyHours_(l),
+             owner_verified: l.owner_verified ?? true,
+             owner_active_at: mine ? new Date().toISOString() : l.owner_active_at || new Date(Date.now() - (hue(l.id) % 6) * 864e5 - (hue(l.id) % 20) * 36e5).toISOString(),
              unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length,
              views: (state.views || {})[l.id] || 0, saves: (state.saved.includes(l.id) ? 1 : 0) + (state.demoTribeSaves || []).filter(x => x.listing_id === l.id).length };
   },
@@ -3472,13 +3485,13 @@ const demoApi = {
       (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
       (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
       (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
-    ).map(l => this.view(l));
+    ).map(l => this.view(l)).filter(v => this.fresh_(v));
   },
   // Same rule as fm_search_near: pinned homes within km of the spot, and unpinned ones in that area.
   async searchNear(n){
     this.tick();
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
-      (l.geo ? kmBetween(n, l.geo) <= n.km : n.area && l.locality.toLowerCase() === n.area.toLowerCase())).map(l => this.view(l));
+      (l.geo ? kmBetween(n, l.geo) <= n.km : n.area && l.locality.toLowerCase() === n.area.toLowerCase())).map(l => this.view(l)).filter(v => this.fresh_(v));
   },
   async get(id){
     const l = this.all().find(x => x.id === id);
@@ -3741,6 +3754,7 @@ const demoApi = {
         occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
         interests: incoming ? r.seeker.interests || {} : null,
         on_time: incoming && !!r.seeker.on_time,
+        verified: incoming ? r.seeker.verified ?? true : null,
         phone: incoming && r.status === "approved" ? "+91" + r.seeker.phone : null,
         unseen: incoming ? !r.seen_owner && (r.status === "pending") === (by === "seeker") : !r.seen_seeker };
     }).sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -6534,6 +6548,12 @@ function activeFilters(f){
   if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
+const QUICK = [["gender", "female", "For women"], ["gender", "male", "For men"], ["rules", "veg", "Veg kitchen"], ["rules", "noSmoke", "No smoking"], ["max", 15000, "Under ₹15k"]];
+const quickOn = (f, [k, v]) => k === "rules" ? f.rules.includes(v) : k === "max" ? f.max === v && !f.min : f[k] === v;
+function quickToggle(f, q){
+  const [k, v] = q, on = quickOn(f, q);
+  return k === "rules" ? { rules: on ? f.rules.filter(x => x !== v) : f.rules.concat(v) } : k === "max" ? { min: 0, max: on ? 0 : v } : { [k]: on ? "" : v };
+}
 function removeFilter(key){
   const [k, v] = key.split(":"), f = prefs();
   if(k === "budget") setPrefs({ min:0, max:0 });
@@ -6613,15 +6633,23 @@ function cardHtml(l, i){
 }
 // Who listed it, and the promise every listing carries. Someone already living in the flat listing a room is a
 // flatmate; a whole flat, or a room in a flat nobody lives in yet, is listed by the owner.
+// Shown before a request and again once the number is shared: the scam people actually hit is a "token" over UPI.
+const SAFE_PAY = `<div class="safe-pay" role="note"><b aria-hidden="true">${"\u{1F6E1}\uFE0F"}</b><span><b>Never pay before you visit.</b> No token, deposit or "booking amount" until you've seen the flat and met the owner. FindMeFlatMate never asks for money on WhatsApp.</span></div>`;
 function trustLine(l){
   const flatmate = l.kind !== "flat" && Number((l.household || {}).residents) > 0;
-  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b> · your number is shared only if you both say yes`;
+  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b>${l.owner_verified && !isSample(l) ? ` · <span class="verified">phone verified</span>` : ""} · your number is shared only if you both say yes`;
 }
 // Only what helps a tap: "New this week" for a fresh listing, and the reply speed only when it is fast.
 function cardFresh(l){
   const fast = Number(l.reply_hours) <= 6 ? replyBadge(l) : "";
   const isNew = Date.now() - new Date(l.created_at) < 7 * 864e5;
-  return (isNew ? `<span class="new">New this week</span>` : "") + fast;
+  return (isNew ? `<span class="new">New this week</span>` : "") + fast + activeLine(l);
+}
+// When whoever listed it last opened the app; homes whose owner has been away 30 days aren't shown at all.
+function activeLine(l){
+  if(!l.owner_active_at || l.is_owner || isSample(l)) return "";
+  const days = Math.floor((Date.now() - new Date(l.owner_active_at)) / 864e5);
+  return `<span class="act">● Active ${days < 1 ? "today" : days === 1 ? "yesterday" : days + " days ago"}</span>`;
 }
 function giftPillHtml(){
   if(roomPass() && isSeeker()) return `<button class="gift-pill" type="button" data-gift>🏠 Room Pass till ${untilLabel(passUntil("room"))}</button>`;
@@ -6655,7 +6683,7 @@ async function renderDiscover(){
   if(!near && $("fSort").value === "near") $("fSort").value = "match";
   $("fSort").querySelector("[value=near]").hidden = !near;
   const sort = $("fSort").value, mapView = state.dView === "map";
-  renderProfilePromo(); renderVibePromo(); renderNudgeCards();
+  renderProfilePromo(); renderVibePromo(); renderNudgeCards(); oneDiscoverNudge();
   const [rows, , bonded] = await Promise.all([near ? api.searchNear(near) : api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
   if(seq !== browseSeq) return;
   const dist = distFrom(f);
@@ -6674,6 +6702,11 @@ async function renderDiscover(){
   const act = activeFilters(f);
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
+  // One tap each for the usual dealbreakers, with how many homes you'd see. The ones already on are in the row above.
+  const qBase = near ? Object.assign({}, f, { areas: [] }) : f, qLook = f.look || "";
+  $("quickF").innerHTML = mapView ? "" : QUICK.filter(q => !quickOn(f, q)).map(q => {
+    const n = applyFilters(rows, Object.assign({}, qBase, quickToggle(f, q))).filter(l => lookRank(qLook, l.kind) >= 0).length;
+    return `<button type="button" data-quick="${QUICK.indexOf(q)}">${esc(q[2])}<small>${n}</small></button>`; }).join("");
 
   const look = f.look || "";
   $("dsLook").innerHTML = LOOKS.map(([k, t]) => `<button type="button" data-look="${k}" aria-pressed="${look === k}">${t}</button>`).join("");
@@ -6691,7 +6724,6 @@ async function renderDiscover(){
   $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} ${near ? "within" : "in"} ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
   renderUrgent();
-  extrasHtml().then(h => $("extrasD").innerHTML = h);
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
   const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80 && lookRank(look, l.kind) >= 0)
     .sort((a, b) => lookRank(look, a.kind) - lookRank(look, b.kind) || score(b) - score(a) || d(a) - d(b)).slice(0, 12);
@@ -6800,6 +6832,8 @@ $("areaChips").addEventListener("click", e => {
   setPrefs({ areas: !a ? [] : cur.includes(a) ? cur.filter(x => x !== a) : cur.concat(a) });
   renderDiscover();
 });
+$("quickF").addEventListener("click", e => { const b = e.target.closest("[data-quick]"); if(!b) return;
+  setPrefs(quickToggle(prefs(), QUICK[+b.dataset.quick])); renderDiscover(); });
 $("activeF").addEventListener("click", e => { const b = e.target.closest("[data-unfilter]"); if(b){ removeFilter(b.dataset.unfilter); renderDiscover(); } });
 // ---- Discover's place search: like the search on property sites. Pick a city, type a locality,
 // landmark, society or metro station, and see homes within a few km, nearest first, as a list or on a map.
@@ -6944,7 +6978,8 @@ async function openListing(id){
   if(!l){ toast("This listing is no longer available."); return; }
   currentListing = l;
   $("lTitle").textContent = l.title;
-  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · " + replyLabel(l.reply_hours) : "");
+  const act = activeLine(l).replace(/<[^>]+>|● /g, "");
+  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · " + replyLabel(l.reply_hours) : "") + (act ? " · " + act : "");
   const contact = l.unlocked ? await api.contact(id) : null;
   const ph = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
   let lock = "", bar = "";
@@ -6954,13 +6989,13 @@ async function openListing(id){
       ${l.is_owner ? "" : `<p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ ${esc(contact.contact_name || "The owner")} accepted. Call now!</p>
         <p class="hint" style="margin:0 0 10px">${esc(othersLine(l))}Good homes get rented out within days, so don't wait.</p>`}
       <div class="kv" style="margin-top:0">
-        <div><span>Owner</span><b>${esc(contact.contact_name)}</b> <span class="verified">✓ Phone verified</span></div>
+        <div><span>Owner</span><b>${esc(contact.contact_name)}</b>${l.owner_verified && !isSample(l) ? ` <span class="verified">✓ Phone verified</span>` : ""}</div>
         <div><span>Phone</span><b><a href="tel:+91${esc(contact.contact_phone)}">+91 ${esc(contact.contact_phone)}</a></b></div>
       </div>
       <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div></div>
       <div class="map-box" style="margin-top:10px">${(cp => cp.lat ? mapHtml(cp.lat + "," + cp.lng, 17, "📍 The owner's exact pin", !l.is_owner)
         : mapHtml(cp.building ? mapsQuery(cp, l.locality, l.city) : contact.address, 16, "", !l.is_owner))(contact.address_parts || {})}</div>
-      ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      ${l.is_owner ? "" : `${SAFE_PAY}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <a class="btn btn-accent btn-sm" href="tel:+91${esc(contact.contact_phone)}" data-called="${esc(l.id)}">Call ${esc((contact.contact_name || "").split(" ")[0])}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(l.id)}" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from FindMeFlatMate. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>
@@ -7020,6 +7055,7 @@ async function openListing(id){
           : `<div class="promise-line"><b>${GIFT_SVG.replace("<svg", '<svg width="16" height="16"')}</b><span>${left
           ? `You have ${contactsLabel(left)}. One is used only if the owner accepts.`
           : "You've used your free contacts. Requests that aren't accepted never cost anything."}</span></div>`}
+        ${SAFE_PAY}
         ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:12px" data-action="save">♥ Not sure yet? Save it</button>`}
       </div>`;
     }
@@ -7257,7 +7293,7 @@ function incomingHtml(r, l){
   return `<article class="req${r.unseen ? " new" : ""}">
     <div>${r.match_pct != null ? ringSvg(r.match_pct, 64) : `<span class="av" style="background:${colorFor(r.id)}">${esc((r.name || "?")[0])}</span>`}</div>
     <div style="min-width:0">
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}${onTimeBadge(r)}${isSample(r) ? SAMPLE_TAG : ""}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3>${esc(r.name || "Someone")}</h3>${genBadge(v.gen)}${onTimeBadge(r)}${verTag(r)}<span class="req-pill ${esc(r.status)}">${esc((r.by === "owner" ? INVITE_TXT : STATUS_TXT)[r.status] || r.status)}</span></div>
       <div class="occ">${esc([OCC[occ.type], occ.what].filter(Boolean).join(" · "))}</div>
       <div class="occ">For “${esc(r.listing_title)}” · ${timeAgo(r.created_at)}</div>
       ${r.compromise ? `<div class="cm-banner"><b>🤝 Ready to compromise · ${r.orig_match_pct ?? "?"}% → ${r.match_pct}%</b>
@@ -11456,6 +11492,12 @@ function maybeProfileNudge(){
      || now - (state.profileNudgeAt || 0) < (LIVE ? 24 * 36e5 : 90e3)) return;
   Object.assign(state, { profileNudgeAt: now, profileNudges: (state.profileNudges || 0) + 1 }); save();
   Notify.show("Owners reply sooner to complete profiles", `${profileGaps().length} quick questions left. It takes about a minute.`, "complete");
+}
+// Discover is about homes: at most one prompt between them, the most useful first (finish your profile, then a
+// pass, then your flatmate type). Flatsplits and FlatMart have their own tabs, so their shortcuts aren't here.
+function oneDiscoverNudge(){
+  let shown = false;
+  for(const id of ["profilePromo", "passNudgeD", "vibePromo"]){ const el = $(id); if(shown) el.innerHTML = ""; else if(el.innerHTML.trim()) shown = true; }
 }
 function renderVibePromo(){
   const t = isSeeker() && vibeType(state.vibe), hide = !t || state.vibeShared || state.vibePromoHidden;
