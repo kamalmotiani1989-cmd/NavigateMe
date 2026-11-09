@@ -1725,6 +1725,8 @@ html.on-hold, html.on-hold body{overflow:hidden}
 .l-bar{position:sticky; bottom:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; margin:18px -20px -28px;
   padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); background:var(--surface); box-shadow:0 -1px 0 var(--line), 0 -8px 24px rgba(16,20,24,.06)}
 .l-bar-price{min-width:0} .l-bar-price b{font-size:var(--fs-l); font-family:var(--display); letter-spacing:-.02em} .l-bar-price small{color:var(--text-2); font-size:var(--fs-s); margin-left:3px}
+/* Phones: "/month + expenses" broke mid-phrase with "expenses" alone on a second line. Keep it whole, under the price. */
+@media (max-width:440px){ .l-bar-price small{display:block; margin:0; white-space:nowrap} }
 .l-bar .btn{flex:none; max-width:62%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 /* Loading placeholders. */
 .skel-card{border-radius:var(--r-card); background:var(--card); box-shadow:var(--card-shadow); overflow:hidden; padding:0 0 16px; animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 60ms)}
