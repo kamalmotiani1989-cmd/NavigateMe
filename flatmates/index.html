@@ -187,6 +187,11 @@ textarea{min-height:96px; resize:vertical}
 @media (max-width:900px){
   .w-grid{grid-template-columns:1fr; grid-template-areas:"copy" "card" "city"; padding-block:12px 0}
   .city{height:190px; margin-top:0}
+  /* The three pills ran into each other on phones: one line each, stepped down the skyline. */
+  .city .float{white-space:nowrap; padding-right:12px}
+  .city .float:nth-of-type(1){left:3%!important; top:2%!important}
+  .city .float:nth-of-type(2){left:auto!important; right:3%!important; top:25%!important}
+  .city .float:nth-of-type(3){right:auto!important; left:8%!important; top:48%!important}
   .w-card{margin:28px 0 8px}
   /* Phones: the sign-in card comes straight after the quiz, the points and the trust line, so its choices are on
      the first screen; the paragraph follows the card. The card itself is unchanged. */
@@ -1309,7 +1314,8 @@ body.app .foot{box-shadow:none}
 a.w-link{text-decoration:none}
 .w-get{background:#fff; color:var(--brand-2); box-shadow:0 6px 18px rgba(4,40,70,.18)}
 .w-get:hover{background:var(--teal-96)}
-.w-nav .w-get{margin-left:6px}
+.w-nav .w-get{margin-left:6px} .w-get{white-space:nowrap; flex:none}
+@media (max-width:380px){ .w-get svg{display:none} }   /* 360-wide: keeps it one line inside the margin */
 @media (max-width:720px){ .w-link{display:none} }
 
 .w-more{padding-block:72px 8px}
