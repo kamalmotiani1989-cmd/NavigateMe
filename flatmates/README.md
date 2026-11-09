@@ -498,29 +498,34 @@ the keys are set, buying shows "Payments aren't switched on yet". GST can only b
 business is GST-registered; invoices need the GSTIN.
 
 ## Look and feel
-Calm and grown-up, set on 8 Nov 2026 to replace the earlier bright teal-to-blue look. Colour does one job at a time:
-- **Navy** (`--ink` #1B2440) for headings, body text and the main button on every screen. Selected options, chips and
-  tabs turn navy too.
-- **One muted green** (`--brand` #1C7F72) for links, small labels, progress bars, match rings and "what's new". The soft
-  version (`--brand-soft`) is the background for tips and highlights.
-- **A pale mint wash** (`--wash`) behind the welcome page and onboarding only; everything else is white cards on a
-  very light grey-green page (`--app-bg`), with thin borders and soft shadows.
-- **Feature cards** (Tribe, FlatMart, the Empty Room Escape, Passes, the quiz, share images) are navy, never orange,
-  pink or purple. **Red** is kept for notification dots and errors.
-- White top bar and white status bar on Android (dark icons); dialog headers are white with a grey close button.
-- Headlines are bold (700), not extra-bold; the welcome headline mixes a light and a heavy weight.
-- **Five text sizes:** `--fs-xs` 12, `--fs-s` 13.5, `--fs-m` 15.5 (body), `--fs-l` 20, and the headline `clamp()`.
+Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it replaces the navy-and-green look of
+8 Nov. Every screen keeps its layout and words; the look lives in one style layer at the end of the stylesheet.
+- **Page and cards:** a warm blush-beige page (`--bg` #EFE4DC) with off-white cards (`--surface` #FBF8F6) and soft
+  warm shadows. The status bar and the Android window match the beige.
+- **Near-black** (`--ink` #141414) for text, the main buttons, the active tab, selected chips and the help button.
+  Main buttons are **pills** (fully rounded); quiet buttons are white with a thin outline.
+- **Pastel panels** replace the navy feature cards, one colour per section, always with dark text: Flatsplits and
+  Account lavender (`--lav`), FlatMart and parties butter (`--butter`), the Empty Room Escape and Tribe mint
+  (`--mint`), Passes blush (`--blush`). Olive, coral and periwinkle (`--olive`, `--coral`, `--peri`) are for small
+  accents. **Red** is kept for notification dots and errors.
+- **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700.
+- **Shapes:** cards and panels have 28px corners (`--r-card`), inputs 18px, buttons and chips are pills.
+- **Bottom bar (phones):** a floating white pill above the bottom edge; the screen you're on shows as a black button.
+  The help button sits just above it.
+- **A home's page (phones):** the photos run frameless, edge to edge from the top of the screen. Back and share float
+  over them as round white buttons, the title and area sit on the photo over a soft shade, and the details start on a
+  rounded sheet. Larger screens keep the framed photo.
+- **Four text sizes:** `--fs-xs` 12.5, `--fs-s` 14, `--fs-m` 16 (body), `--fs-l` 21, and the headline `clamp()`.
   Icon circles and badges smaller than 12 px keep their own sizes.
-- **Hints and small print** use `--text-3` #5E6679 (darkened from #8790A3 on 8 Nov 2026, Kamal's call), which reads at
-  5.75:1 on white and 4.81:1 on the mint wash; green text on the pale green tips uses `--brand-2` #156358.
-- **The WhatsApp button** on the sign-in card is `--wa` #178741 (darkened from #1DA851 on 8 Nov 2026, Kamal's call),
-  so its white text reads at 4.59:1; it is the only place WhatsApp green is used.
+- **Hints and small print** use `--text-3` #655F5A, which reads at 6.29:1 on white and 5.26:1 on the beige page.
+- **The WhatsApp button** on the sign-in card stays `--wa` #178741, so its white text reads at 4.59:1; it is the only
+  place WhatsApp green is used.
 - **Icons are thin line icons** in navigation, badges, notices and empty states. Emoji stay only where people pick
   them (FlatMart and Flatsplits categories, group emoji, party occasions), in onboarding answers, Vibe types and
   share images. Homes without photos say "No photos yet"; sample homes keep their drawn room and a "Sample" label.
-New screens use the tokens in `:root` at the top of the stylesheet rather than new colours. Every colour in the
-stylesheet is a token: the main palette first, then the colours single screens use, named by hue and lightness
-(`--amber-92`). Drawn illustrations, the logo and share images keep their own colours.
+New screens use the tokens in `:root` rather than new colours. Every colour in the stylesheet is a token: the main
+palette first, then the colours single screens use, named by hue and lightness (`--amber-92`). Drawn illustrations,
+the logo and share images keep their own colours.
 
 ## Files
 

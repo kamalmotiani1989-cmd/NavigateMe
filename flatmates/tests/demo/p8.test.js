@@ -29,7 +29,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return Math.round((x + .05) / (y + .05) * 100) / 100; };
     return { v, white: ratio(v, '#FFFFFF'), wash: ratio(v, '#DCEFE9'), appBg: ratio(v, '#F4F7F6') }; });
-  ok(grey.v.toUpperCase() === '#5E6679' && grey.white >= 4.5 && grey.wash >= 4.5 && grey.appBg >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better: ' + JSON.stringify(grey));
+  ok(grey.v.toUpperCase() === '#655F5A' && grey.white >= 4.5 && grey.wash >= 4.5 && grey.appBg >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better: ' + JSON.stringify(grey));
   // the WhatsApp button: darker green, white text at 4.5:1 or better; the sign-in card's controls are the same
   const wa = await p.evaluate(() => { const bt = document.querySelector('#loginForm .btn-wa'), cs = getComputedStyle(bt);
     const lum = rgb => { const c = rgb.match(/\d+/g).slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
@@ -60,11 +60,11 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   const sizes = new Set(), odd = new Set();
   const scale = async () => (await p.evaluate(() => { const r = [];
     document.querySelectorAll('body *').forEach(e => { if(!e.offsetParent) return; if(![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return;
-      const cs = getComputedStyle(e), f = parseFloat(cs.fontSize); if(f < 12 || f > 20) return;
+      const cs = getComputedStyle(e), f = parseFloat(cs.fontSize); if(f < 12 || f > 21) return;
       if(cs.display === 'grid' && cs.placeItems.includes('center') && parseFloat(cs.width) <= 56) return;   // avatar and icon circles
       if(/^H[1-3]$/.test(e.tagName) && !Number.isInteger(f * 2)) return;   // headlines scale with the screen (clamp)
       r.push([String(f), (e.className || e.tagName) + ':' + e.textContent.trim().slice(0, 16)]); });
-    return r; })).forEach(([f, w]) => { sizes.add(f); if(!['12', '13.5', '15.5', '20'].includes(f)) odd.add(f + ' ' + w); });
+    return r; })).forEach(([f, w]) => { sizes.add(f); if(!['12.5', '14', '16', '21'].includes(f)) odd.add(f + ' ' + w); });
   // one icon style: none of these emoji left in the app's own words (categories people pick keep theirs)
   const emo = new Set();
   const emojiLeft = async () => (await p.evaluate(() => { const re = /[🎉🥳🎁⚡🦉🦋📦🛋📍🔔🧾🤝]/u, out = [];
@@ -113,7 +113,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   for(const h of ['#mine', '#requests', '#account']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); found.push(...await lowGreen());
     if(h === '#mine'){ const mp = await p.evaluate(() => ({ panel: (document.querySelector('.mine-card .pic .nophoto') || {}).textContent || '', drawn: !!document.querySelector('.mine-card .pic svg.art') }));
       ok(mp.panel === 'No photos yet' && !mp.drawn, 'owner: a real home without photos says "No photos yet", no drawn room: ' + JSON.stringify(mp)); } }
-  ok(!sizes.size || [...sizes].every(x => ['12', '13.5', '15.5', '20'].includes(x)), 'seeker and owner: text between 12 and 20 px uses only the scale (12, 13.5, 15.5, 20): ' + [...sizes].join(', ') + ' ' + [...odd].slice(0, 6).join(' / '));
+  ok(!sizes.size || [...sizes].every(x => ['12.5', '14', '16', '21'].includes(x)), 'seeker and owner: text between 12 and 21 px uses only the scale (12.5, 14, 16, 21; pastel look, 9 Nov): ' + [...sizes].join(', ') + ' ' + [...odd].slice(0, 6).join(' / '));
   ok(!emo.size, 'seeker and owner: badges, notices and empty states use line icons, not emoji: ' + [...emo].slice(0, 8).join(' / '));
   ok(!found.length, 'seeker and owner: no green text below 4.5:1 on the pale green tips and labels: ' + [...new Set(found)].join(' / '));
   await ctx.close();

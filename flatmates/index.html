@@ -10,7 +10,7 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate</title>
 <meta name="description" content="Find a room and the people worth sharing it with. Owners post their spare room free; seekers see who lives there, how they live and what it really costs.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#EFE4DC">
 <meta property="og:title" content="FindMeFlatMate">
 <meta property="og:description" content="Find a room, and the people worth sharing it with.">
 <meta property="og:locale" content="en_IN">
@@ -31,7 +31,7 @@
 <meta name="apple-mobile-web-app-title" content="FindMeFlatMate">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Urbanist:wght@300;400;500;600;700;800&display=swap">
 <style>
 /* Frameless, white and quiet. Content sits directly on the page: hairline dividers,
    light grey fills for inputs and chips, and photos with rounded corners carry the
@@ -1914,6 +1914,119 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .sp-bal{text-align:center; padding:6px 0 2px} .sp-bal b{display:block; font-size:34px; letter-spacing:-.03em; line-height:1.1} .sp-bal span{display:block; color:var(--text-2); margin-top:4px}
 .sp-bal.neg b{color:var(--accent)} .sp-bal.pos b{color:var(--ok)}
 .sp-who{display:flex; justify-content:space-between; padding:9px 0; box-shadow:0 -1px 0 var(--line); font-size:var(--fs-m)} .sp-who b{font-variant-numeric:tabular-nums}
+
+/* =====================================================================================================
+   Pastel look (Kamal, 9 Nov): a warm blush-beige page, soft off-white cards with big round corners,
+   pastel tiles (lavender, butter, mint, blush, olive, coral, periwinkle), near-black for buttons, the
+   active tab and the help button, and light headlines with the key words in bold. Same screens and words;
+   only the look changes. Everything below overrides the older rules above.
+   ===================================================================================================== */
+:root{
+  --bg:#EFE4DC; --surface:#FBF8F6; --surface-2:#F1EAE5; --line:#E6DCD5; --line-2:#D9CDC5; --hair:#E6DCD5;
+  --text:#161514; --text-2:#55504C; --text-3:#655F5A;
+  --ink:#141414; --ink-2:#2B2928;
+  --brand:#141414; --brand-2:#000000; --brand-soft:#DCEBE5; --on-brand:#FFFFFF;
+  --accent:#141414; --accent-soft:#E9E2F7; --on-accent:#FFFFFF;
+  --hi:#BFDDD4; --dot:#E48C74;
+  --ok:#3E6B4E; --ok-soft:#DCEBE1;
+  --lav:#C3C9F6; --lav-2:#A9B0EC; --butter:#EBD981; --mint:#C3E0D6; --blush:#EEDDD3; --olive:#8D9B62; --coral:#E79078; --peri:#86A6E0;
+  --band:#F1EAE5; --band-2:#E3D6CD; --on-band:#161514; --on-band-2:#55504C; --lit:#FFFFFF; --unlit:#F6EFEA;
+  --shadow:0 14px 36px rgba(60,40,30,.10); --card-shadow:0 10px 30px rgba(60,40,30,.07);
+  --grad:var(--lav); --wash:#EFE4DC;
+  --radius:24px; --r-card:28px;
+  --display:"Urbanist",system-ui,-apple-system,"Segoe UI",sans-serif; --body:"Urbanist",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --fs-xs:12.5px; --fs-s:14px; --fs-m:16px; --fs-l:21px;
+}
+html, body{background:var(--bg)}
+body{font-weight:500}
+h1{font-weight:400; letter-spacing:-.03em}
+h1 em, h1 b, h1 strong{font-style:normal; font-weight:800}
+h2, h3{font-weight:700; letter-spacing:-.02em}
+.eyebrow{text-transform:none; letter-spacing:0; font-weight:500; font-size:var(--fs-s); color:var(--text-3)}
+a{color:var(--text)}
+
+/* buttons: black pills; quiet ones are soft round fills */
+.btn{border-radius:999px; font-weight:700}
+.btn-sm{border-radius:999px}
+.btn-primary, .btn-accent{background:var(--ink); color:#fff; box-shadow:0 8px 20px rgba(20,20,20,.18)}
+.btn-primary:hover, .btn-accent:hover{background:var(--ink-2); filter:none}
+.btn-ghost{background:#fff; color:var(--text); box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn-ghost:hover{background:var(--surface-2)}
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],select,textarea{border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
+:focus-visible{outline-color:var(--ink)}
+.chip{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
+.chip:has(input:checked), .chip[aria-pressed="true"], .area-chips button[aria-pressed="true"], .ds-look button[aria-pressed="true"], .seg button[aria-pressed="true"],
+.ds-radius button[aria-pressed="true"], .fs-cats button[aria-pressed="true"]{background:var(--ink); color:#fff; box-shadow:none}
+.area-chips button{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
+
+/* cards and panels: off-white, big corners, a soft warm shadow */
+.card, .lcard, .req, .pp-card, .vibe-promo, .pass-nudge, .near-promo, .w-card, .lock, .plan, .acc-card, .panel, .mk-card, .fs-card, .tb-card, .esc-card, .set-list{border-radius:var(--r-card)}
+.card, .lcard, .req, .w-card{background:var(--surface); box-shadow:var(--card-shadow)}
+.lcard .thumb, .card .thumb{border-radius:22px}
+.price-pill, .tag{border-radius:999px}
+
+/* header and the floating bottom bar */
+.app-head{background:rgba(239,228,220,.92); box-shadow:none}
+.me, .hd-ic[aria-current="true"], .hd-tribe[aria-current="true"]{background:var(--ink); color:#fff}
+.hd-ic, .hd-tribe{background:#fff}
+@media (max-width:720px){
+  .app-head{background:var(--bg)}
+  .nav{left:14px; right:14px; bottom:calc(10px + env(safe-area-inset-bottom,0px)); padding:8px; border-radius:30px; background:#fff;
+    box-shadow:0 16px 40px rgba(60,40,30,.16); gap:4px}
+  .tab{border-radius:20px; color:var(--text-3)}
+  .tab[aria-current="true"]{background:var(--ink); color:#fff}
+  .tab[aria-current="true"]::before{display:none}
+  body.app{padding-bottom:104px}
+  .help-fab{bottom:calc(98px + env(safe-area-inset-bottom,0px))}
+  .toast{bottom:150px}
+}
+.help-fab{background:var(--ink); --hf-face:var(--ink); box-shadow:0 12px 30px rgba(20,20,20,.28)}
+.help-fab:hover{background:var(--ink-2); --hf-face:var(--ink-2)}
+.toast{background:var(--ink); border-radius:18px}
+
+/* the big panels that were navy: pastel tiles with dark text, each section its own colour */
+.fs-hero{background:var(--lav)} .mk-hero{background:var(--butter)} .esc-hero, .esc-promo{background:var(--mint)}
+.plans-hero{background:var(--blush)} .acc-hero{background:var(--lav)} .tribe-hero, .tribe-bond, .inv-banner, .inv-banner.tribe{background:var(--mint)}
+.pt-hero, .pt-mini-top{background:var(--butter)} .h-end, .w-app{background:var(--lav)} .offline{background:var(--bg)}
+.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app, .offline{
+  color:var(--text); box-shadow:none; border-radius:var(--r-card)}
+:is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app, .offline)
+  :is(h1, h2, h3, p, small, span, b, strong, em, li, div, .eyebrow, a:not(.btn)){color:inherit}
+:is(.fs-hero, .mk-hero, .esc-hero, .plans-hero, .acc-hero, .tribe-hero, .pt-hero) :is(p, small, li){color:var(--text-2)}
+:is(.fs-hero, .mk-hero, .esc-hero, .plans-hero, .tribe-hero, .pt-hero) .eyebrow{color:var(--text-2)}
+.acc-hero::after, .fs-hero::after, .mk-hero::after{background:rgba(255,255,255,.35)}
+:is(.mk-hero, .fs-hero, .plans-hero) .btn:not(.btn-ghost){background:var(--ink); color:#fff}
+.profile .me, .wm-upi{background:var(--ink); color:#fff; box-shadow:none}
+
+/* welcome */
+.w-band, .ob{background:var(--bg)}
+.w-get{background:#fff; color:var(--text)}
+.w-points li::before{background:var(--olive)}
+.city .float{background:#fff; border-radius:999px}
+
+/* A home's page on phones (Kamal, 9 Nov): the photos run edge to edge from the top of the screen, frameless;
+   back and share float over them, the title sits on the photo, and the details start on a rounded sheet. */
+.hp-title{display:none}
+@media (max-width:640px){
+  #dlgListing{padding-top:0; background:var(--surface)}
+  #dlgListing .mhead{height:0; padding:0; margin:0; overflow:visible; background:none; box-shadow:none; display:block}
+  #dlgListing .mhead > div:first-child{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+  #dlgListing .mh-acts{position:absolute; top:calc(14px + env(safe-area-inset-top,0px)); left:16px; right:16px; display:flex; justify-content:space-between; flex-direction:row-reverse}
+  #dlgListing .mh-acts .x{width:46px; height:46px; background:rgba(255,255,255,.88); backdrop-filter:blur(8px); box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  #dlgListing .mbody{padding-top:0}
+  #dlgListing .hero-pic{height:min(62vh, 520px); margin:0 -20px 0; border-radius:0; box-shadow:none}
+  #dlgListing .gallery img{width:100%; min-width:0}   /* a tall photo mustn't grow wider than the screen (it broke the swipe loop) */
+  #dlgListing .hero-pic::after{content:""; position:absolute; left:0; right:0; bottom:-1px; height:30px; border-radius:30px 30px 0 0; background:var(--surface); z-index:3}
+  #dlgListing .hero-pic::before{content:""; position:absolute; inset:auto 0 0 0; height:45%; background:linear-gradient(transparent, rgba(0,0,0,.55)); z-index:1; pointer-events:none}
+  #dlgListing .hp-title{display:block; position:absolute; left:20px; right:20px; bottom:46px; z-index:2; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,.35)}
+  #dlgListing .hp-title b{display:block; font:500 26px/1.15 var(--display); letter-spacing:-.02em}
+  #dlgListing .hp-title span{display:block; margin-top:4px; font-size:var(--fs-s); opacity:.92}
+  #dlgListing .hero-pic .ring-wrap{left:auto; right:16px; bottom:46px}
+  #dlgListing .hp-title{right:110px}
+  #dlgListing .gal-dots{bottom:36px; z-index:2}
+  #dlgListing .gal-n{top:calc(72px + env(safe-area-inset-top,0px))}
+}
 </style>
 </head>
 <body>
@@ -2540,7 +2653,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 <dialog id="dlgListing"><div class="mhead"><div><h2 id="lTitle"></h2><div class="loc" id="lLoc"></div></div><div class="mh-acts">
     <button class="x" type="button" id="lShare" aria-label="Share this home" title="Share"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
     <button class="x" data-close aria-label="Close">×</button></div></div>
-  <div class="mbody" id="lBody"></div></dialog>
+  <div class="mbody" id="lBody" tabindex="-1" autofocus style="outline:0"></div></dialog>
 
 <dialog id="dlgShare" aria-labelledby="shTitle"><div class="mhead"><div><h2 id="shTitle">Share this home</h2><div class="loc" id="shSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="shBody" style="text-align:center"></div></dialog>
@@ -7086,10 +7199,11 @@ async function openListing(id){
     : "";
   const bill = items.map(([k, label]) => `<span class="muted">${label}</span><span>${l.costs[k] === "usage" ? "As per use" : inr(l.costs[k])}</span>`).join("");
   $("lBody").innerHTML = `
+    <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : noPhoto(l)}
+      ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}
+      <div class="hp-title" aria-hidden="true"><b>${esc(l.title)}</b><span>${esc($("lLoc").textContent)}</span></div></div>
     ${isSample(l) ? `<p class="smp-note">${SAMPLE_TAG}<span>A sample home for testing. Ask to meet and the owner accepts straight away, without using a contact.
       There's no real owner, number or address.</span></p>` : ""}
-    <div class="hero-pic">${ph.length ? `<div class="gallery">${ph.map((u, i) => `<img src="${esc(u)}" alt="Photo ${i+1} of ${ph.length}" loading="lazy">`).join("")}</div>` : noPhoto(l)}
-      ${m ? `<span class="ring-wrap">${ringSvg(m.pct, 72)}</span>` : ""}</div>
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : isSample(l) ? "Illustration of a sample home." : l.is_owner ? "Homes with photos get more requests. Add them from Edit." : "Ask about the room when you send a request."}</p>
     ${tribeNote}
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
