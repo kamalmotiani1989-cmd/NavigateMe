@@ -2,7 +2,8 @@
 
 Written by Mark, 9 November 2026, on Kamal's request via King. Facts from `../README.md`, section 15, "Nearby
 parties" (Phase 1, approved 8 Nov 2026). **Free parties only** (Kamal, 9 Nov): no chip-in, fee or money anywhere in
-this reel. No alcohol in any shot, line, caption or hashtag. Sign-up is not open: the reel ends on "launching soon".
+this reel. No alcohol in any shot, line, caption or hashtag. The site serves the app since 8 Nov, but sign-up is not open to the
+public yet: the reel ends on "launching soon". Look: navy and muted green (README, "Look and feel", 8 Nov).
 Nothing here is posted or spent.
 
 **One benefit:** meet the people around your new flat, safely. **The moment:** you've just moved in and know nobody
@@ -21,7 +22,7 @@ in the area. **The safety line it leads with:** the address comes only after the
 | 5 | 12.5–15.5 | **App, host side: the request.** First name, age group, vibe match, thumbs-up count. Thumb taps **Accept**. | **The host sees your vibe. Then decides.** | "The host sees your vibe match, and says yes or no." |
 | 6 | 15.5–19.5 | **App: the address and map pin unlock**, the check-in code below them. | **Address only after the host says yes.** | "Only on a yes do you get the address. And a code for the door." |
 | 7 | 19.5–23.0 | **AI shot B.** The terrace from shot 1, string lights, chai in cutting glasses, a speaker playing. Kabir arrives, shows his phone, the host types the code, smiles, waves him in. | **18+ · Check-in at the door · Thumbs up after** | "Eighteen plus. Checked in at the door. Thumbs up after." |
-| 8 | 23.0–25.0 | End card: logo on teal (#0E9AA0). | **Parties near you. Meet your neighbours.** · Launching soon · findmeflatmate.com | "FindMeFlatMate. Meet your neighbours. Launching soon." |
+| 8 | 23.0–25.0 | End card: white background, navy (#1B2440) logo and text, muted green (#1C7F72) underline under "Meet your neighbours". | **Parties near you. Meet your neighbours.** · Launching soon · findmeflatmate.com | "FindMeFlatMate. Meet your neighbours. Launching soon." |
 
 Every line is on screen, so the reel works muted. Beat drop on the first app screen at 2.0 s.
 
@@ -42,7 +43,7 @@ Meet your neighbours. Launching soon.
 
 ## Posting notes
 
-- **Link in bio** while the hold is on (it opens the Coming soon page; say so if anyone asks):
+- **Link in bio.** It opens the app: people can look around; sign-up opens soon. Say so if anyone asks:
   `https://findmeflatmate.com/?utm_source=instagram&utm_medium=social&utm_campaign=parties_reel`
 - **Organic only for now.** Not boosted while sign-up is closed. When it runs as an ad later: age 18 and over only,
   and the copy stays as written.
@@ -53,7 +54,7 @@ Meet your neighbours. Launching soon.
     door, and you can report anyone."
   - "Can anyone see my address?" (host) → "No. People nearby see the area and the distance. The address goes only to the
     guests you accept."
-  - "When can I use it?" → "Launching soon. We'll post here first."
+  - "When can I use it?" → "You can look around the app now. Sign-up opens soon; we'll post here first."
 - **Do not reply** with numbers of parties or people; there are none to claim yet.
 
 ---
