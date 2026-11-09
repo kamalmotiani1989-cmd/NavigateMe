@@ -1,5 +1,11 @@
 # Teche · reports
 
+## 2026-11-09, top bar and sign-up are live: #79
+
+Kamal said "merge it". #79 is merged: the new top bar, the pastel sign-up tiles and the less cluttered sign-up
+(plus the README Look and feel update King asked for). I published the website after the Android build;
+findmeflatmate.com runs NavigateMe 6af14e9. Android users get it by reinstalling.
+
 ## 2026-11-09, top bar and sign-in page in the pastel style: PR #79 (not merged)
 
 **Top bar:**
