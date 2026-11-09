@@ -511,6 +511,10 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   and of the small "new" dots (`--dot` #E48C74); **red** is kept for errors.
 - **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700.
 - **Shapes:** cards and panels have 28px corners (`--r-card`), inputs 18px, buttons and chips are pills.
+- **Logo** (9 Nov, Kamal's own files, kept in `marketing/`): an orange tile (#C2410C) with a white roof over "fm"
+  (`icons/logo-icon.svg`), and the wordmark findme (#1C1917) + flatmate (#C2410C) + .com (#57534E)
+  (`icons/wordmark.svg`; `wordmark-app.svg` without .com for small phones; `wordmark-light.svg` on dark backgrounds).
+  The tile is the logo itself: it never sits on another tile. All app and home-screen icons are made from it.
 - **Top bar** (9 Nov, Kamal): no background or line of its own; it sits on the beige page and gets a soft shade only
   once you scroll. The logo sits in a white rounded tile (the mark alone on phones under 420px); the bell and Tribe
   are round white buttons with soft shadows; your initial is a black circle; badges are coral.
