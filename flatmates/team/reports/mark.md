@@ -1,5 +1,24 @@
 # Mark · reports
 
+## 9 November 2026 · parties-near-you reel (resumed for this one task)
+
+**Context.** Kamal said start; King relayed the task and Kamal's change (free parties only). Everything else stays
+paused: no shifts, no Tuesday pack, no other PRs touched.
+
+**Done**
+- `flatmates/marketing/nearby-parties-reel.md`, **PR #70**, not merged. 25-second 9:16 reel in 8 shots built on the real
+  nearby-parties screens, caption, 10 hashtags, posting notes and comment replies, AI prompts for the two non-app shots,
+  two test hooks. Facts from README section 15 only.
+- Checked: no chip-in, fee or money in any shot, line, caption or hashtag; no alcohol on screen or in words; never
+  "stranger"; ends on "launching soon"; no counts of parties or people.
+
+**Needs from Teche (via King):** the five demo-mode recordings listed in the file. The host form must be recorded with
+Free selected and without the chip-in fields or the line beside them on screen; if they show, crop or tell me.
+
+**Blocked:** production waits on those recordings. Still Kamal's: city and month, Pixel and conversion IDs, read access.
+
+**Next:** nothing until Kamal or King say to resume.
+
 ## 8 November 2026 · Mumbai launch plan (resumed for this one task)
 
 **Context.** Stopped on 6 Nov on Kamal's instruction via King; resumed on 8 Nov by King's message for one task only.
