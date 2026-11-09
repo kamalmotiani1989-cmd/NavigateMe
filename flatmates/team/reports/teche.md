@@ -1,5 +1,31 @@
 # Teche · reports
 
+## 2026-11-09, new pastel look and frameless home photos: PR #77 (not merged)
+
+Kamal sent a reference design and asked for the app to look and feel like it, colours included, with a home's
+photos running frameless from the top of the phone.
+
+**The look:**
+- a warm beige page with off-white cards;
+- pastel panels instead of navy, one colour per section;
+- black pill buttons;
+- Urbanist type with light headlines;
+- big rounded corners;
+- a floating white bottom bar with the active tab in black.
+
+**A home's page:** the photos fill the top of the screen, back and share float over them, the title sits on the
+photo, and the details start on a rounded sheet.
+
+Every screen keeps its layout and words. All suites pass. Each picture below is before (left) and after (right).
+
+| A home's page | Discover | Splits |
+|---|---|---|
+| ![](shots/pastel-look/home.png) | ![](shots/pastel-look/discover.png) | ![](shots/pastel-look/splits.png) |
+
+| FlatMart | Account | Passes |
+|---|---|---|
+| ![](shots/pastel-look/market.png) | ![](shots/pastel-look/account.png) | ![](shots/pastel-look/passes.png) |
+
 ## 2026-11-09, Vibe Card quiz removed from the welcome page: #76 live
 
 On Kamal's word, the quiz card is gone from the welcome page, so sign-in comes up first. On a phone, the sign-in
