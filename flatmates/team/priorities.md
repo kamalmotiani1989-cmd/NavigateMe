@@ -19,6 +19,10 @@ _Last update: 8 Nov 2026._
 **Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything for him is ready before 10 pm that day.
 
 ## Teche (tech)
+000. **Ship PR #69 (Flatsplits & FlatMart sign-up): Kamal, 9 Nov, in King's session: "Ship PR 69".** Order: database
+   first (the live database refuses the new role today), verify read-only, then merge, then the Android build and the
+   website publish. This sign-up postpones the 12 vibe questions until the person wants rooms or parties; Kamal accepts
+   that change to the onboarding rule.
 00. **Nearby parties, Phase 1: Kamal's approval, 8 Nov, in King's session.** His words: "Yes to all 3, build phase 1".
    The three decisions: build Phase 1; the host picks the radius from 1 to 5 km, default 3 km; women-only parties are
    allowed. Phase 1 means no money handled by the app (the chip-in is paid to the host at the door or by UPI),
