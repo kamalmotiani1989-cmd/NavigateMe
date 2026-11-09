@@ -515,6 +515,11 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   (`icons/logo-icon.svg`), and the wordmark findme (#1C1917) + flatmate (#C2410C) + .com (#57534E)
   (`icons/wordmark.svg`; `wordmark-app.svg` without .com for small phones; `wordmark-light.svg` on dark backgrounds).
   The tile is the logo itself: it never sits on another tile. All app and home-screen icons are made from it.
+- **Text in the logo's colours** (9 Nov, Kamal): text and black buttons are the logo's near-black (`--text`/`--ink`
+  #1C1917); secondary text its warm grey (`--text-2` #57534E; hints `--text-3` #615A55). Orange marks what matters:
+  the bold words in headlines in the logo's exact orange (`--orange` #C2410C, big text only), and links, the greeting
+  and small section labels in `--orange-text` #B23A0A, a hair deeper so small text reads at 4.5:1 on the beige.
+  Orange text sits only on beige, white and off-white; inside pastel panels and tiles text stays near-black.
 - **Top bar** (9 Nov, Kamal): no background or line of its own; it sits on the beige page and gets a soft shade only
   once you scroll. The logo sits in a white rounded tile (the mark alone on phones under 420px); the bell and Tribe
   are round white buttons with soft shadows; your initial is a black circle; badges are coral.

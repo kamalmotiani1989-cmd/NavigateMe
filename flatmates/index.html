@@ -2157,6 +2157,26 @@ p.wordmark img{height:26px; width:auto; max-width:90vw}
 .hold-screen .hs-mark{background:none; box-shadow:none; width:auto; height:auto}
 .hold-screen .hs-mark img{border-radius:22%; box-shadow:0 18px 40px rgba(196,69,23,.25)}
 .hold-screen p.hs-lead{color:var(--text-2)} .hold-screen .hs-banner{background:var(--mint); color:var(--text)} .hs-banner i{background:var(--ink)}
+
+/* Text in the logo's colours (Kamal, 9 Nov): its near-black for text and black buttons, its warm grey for secondary
+   text, and its orange for the words that matter: the bold words in headlines (the logo's exact orange, big text),
+   links and the small labels over headings (--orange-text, a hair deeper, so small text reads at 4.5:1 on the beige).
+   Orange text only sits on the beige, white and off-white; inside the pastel panels text stays near-black. */
+:root{
+  --text:#1C1917; --ink:#1C1917; --ink-2:#0C0A09; --text-2:#57534E; --text-3:#615A55; --orange:#C2410C; --orange-text:#B23A0A;
+}
+h1 em, h1 b, h1 strong, .w-copy h1 em{color:var(--orange)}
+.eyebrow{color:var(--orange-text); font-weight:700}
+a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:var(--orange-text)}
+.pk-more{opacity:1}
+/* the greeting over each home screen and the small section labels on a home's page are orange too */
+.greet .eyebrow, .greet p.eyebrow, .section-h{color:var(--orange-text)}
+/* links that are whole cards or panels keep their own colours; the dark footer keeps light links */
+.w-footer a:not([class]), .w-footer .linkbtn{color:inherit}
+/* inside the pastel panels and tiles: back to near-black */
+:is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app,
+    .role, .w-points li, .notice, .pp-card, .vibe-promo, .pass-nudge, .near-promo, .cm-banner, .safe-pay)
+  :is(.eyebrow, a:not([class]), .linkbtn, .pk-more, h1 em, h1 b, h1 strong){color:var(--text)}
 </style>
 </head>
 <body>
