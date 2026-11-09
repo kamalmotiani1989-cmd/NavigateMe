@@ -1,5 +1,11 @@
 # Teche · reports
 
+## 2026-11-09, reel clips for nearby parties: PR #71 (not merged)
+
+Five demo-mode clips for Mark's reel are in `design/reel-nearby-parties/`: host opens, guest finds, request, host
+accepts, guest unlocks. Each is MP4 at 720×1280, 4 to 6 seconds, with sample data only and a fake phone number.
+No app change.
+
 ## 2026-11-08, "Just Flatsplits & FlatMart" sign-up: PR #69 merged and live
 
 **Done.** On Kamal's "Merge it" (9 Nov), I applied the database first (md5 7bec4106… matched; the role check now
