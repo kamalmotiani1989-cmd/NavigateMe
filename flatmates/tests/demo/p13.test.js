@@ -6,6 +6,18 @@ const vibe = { sleep:0, clean:0, food:2, cook:0, smoke:2, drinks:2, guests:2, no
 const st = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name:'Neha', role:'seeker', gender:'female', occupation:{ type:'working', what:'Designer' } },
   account:'9811111111', onboarded:{ seeker:true }, giftSeen:true, attrClaimed:true, vibeCardSeen:true, vibe, prefs:{ city:'Bengaluru', areas:[] },
   notified:{}, demoInvites:'done', demoTribeAt:'done', credits:5, giftGiven:true };
+const audit = () => {
+  const rgb = s => (s.match(/[\d.]+/g) || []).map(Number); const lum = c => { const a = c.slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
+  const bgOf = el => { for(let e = el; e; e = e.parentElement){ const cs = getComputedStyle(e); if(cs.backgroundImage !== 'none' && !/gradient/.test(cs.backgroundImage)) return null; const c = rgb(cs.backgroundColor); if(c.length >= 3 && (c[3] === undefined || c[3] > .5)) return c; } return [255, 255, 255]; };
+  const root = document.querySelector('dialog[open]') || document.body, out = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
+  while((n = walker.nextNode())){ const t = n.textContent.trim(); if(t.length < 2) continue; const el = n.parentElement; if(!el || !el.offsetParent) continue;
+    const r = el.getBoundingClientRect(); if(!r.width || r.bottom < 0) continue; const cs = getComputedStyle(el); if(+cs.opacity < .2 || el.closest('[aria-hidden="true"], .city, svg')) continue;
+    const fg = rgb(cs.color), bg = bgOf(el); if(!bg) continue; const a = fg[3] === undefined ? 1 : fg[3]; const mix = fg.slice(0, 3).map((v, i) => v * a + bg[i] * (1 - a));
+    const L1 = lum(mix), L2 = lum(bg), ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05); const big = parseFloat(cs.fontSize) >= 18.5 || (parseFloat(cs.fontSize) >= 14 && +cs.fontWeight >= 700);
+    if(ratio < (big ? 3 : 4.5)) out.push(`${ratio.toFixed(2)} ${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${t.slice(0, 40)}"`); }
+  return [...new Set(out)];
+};
 (async () => {
   const b = await chromium.launch(); const ctx = await b.newContext({ viewport:{ width:390, height:844 } });
   await ctx.addInitScript(s => { try{ if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }catch(e){} }, st);
@@ -25,11 +37,28 @@ const st = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name
   await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   const short = await p.evaluate(() => [...document.querySelectorAll('#view-account p.sub')].filter(e => e.offsetParent).map(e => ({ len: e.textContent.trim().length, packed: e.classList.contains('pk') })));
   ok(short.every(x => x.len >= 100 || !x.packed) && short.some(x => x.len < 100), 'Account: short sentences are never folded: ' + JSON.stringify(short));
+  // a home's page always opens at the top: scroll down one home, go back, open another
+  await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
+  const sc = await p.evaluate(async () => { const ids = api.all().filter(l => l.city === 'Bengaluru').slice(0, 2).map(l => l.id), d = $('dlgListing');
+    await openListing(ids[0]); await new Promise(r => setTimeout(r, 600)); d.scrollTop = 900; const down = d.scrollTop;
+    d.close(); await openListing(ids[1]); await new Promise(r => setTimeout(r, 600)); const next = d.scrollTop;
+    d.scrollTop = 500; await openListing(ids[1]); const same = d.scrollTop; return { down, next, same }; });
+  ok(sc.down > 300 && sc.next === 0 && sc.same > 300, 'a home\'s page: another home opens at the top; the same home redrawn keeps its place: ' + JSON.stringify(sc));
+  // every text readable on its background (pastel panels used to keep white text from the navy days)
+  await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1200);
+  await p.evaluate(async () => { await api.tribeRefresh(); const t = (state.tribe || [])[0]; if(t){ Object.assign(t, { my_yes: true, their_yes: true, status: 'bonded', bonded_at: new Date().toISOString(), phone: '9800000001' }); save(); } });
+  const low = [];
+  for(const h of ['#discover', '#tribe', '#splits', '#market', '#account', '#plans', '#requests']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1400);
+    await p.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d => d.close()); document.querySelectorAll('.pk-more').forEach(b => b.click()); });
+    low.push(...(await p.evaluate(audit)).map(x => h + ' ' + x)); }
+  ok(!low.length && await p.evaluate(() => getComputedStyle(document.querySelector('.bond-avs .av')).color === 'rgb(255, 255, 255)'),
+    'contrast: all text reads at 4.5:1 (3:1 for big text), including a tribe card\'s WhatsApp and Leave tribe: ' + low.slice(0, 5).join(' | '));
   // sign-up: tiles show titles; the picked one's explanation shows under them; screen readers still get all three
   const v = await b.newPage({ viewport:{ width:390, height:844 } }); await v.goto('http://localhost:8765/'); await v.waitForTimeout(1200);
   const s0 = await v.evaluate(() => ({ hint: getComputedStyle($('roleHint'), '::before').content, descs: [...document.querySelectorAll('#loginForm .role > span:last-of-type > span')].map(d => d.getBoundingClientRect().width <= 1 && d.textContent.length > 20) }));
   await v.click('#loginForm input[value=owner]', { force: true });
   const s1 = await v.evaluate(() => ({ hint: $('roleHint').textContent, phone: Math.round($('lgPhone').getBoundingClientRect().bottom), tagline: getComputedStyle(document.querySelector('.tagline')).display }));
+  ok(!(await v.evaluate(audit)).length, 'contrast: the welcome page reads everywhere');
   ok(s0.descs.every(Boolean) && /Pick one/.test(s0.hint) && /spare room/.test(s1.hint) && s1.tagline === 'none' && s1.phone < 844,
     'sign-up: titles only on the tiles, the picked one explained underneath, the number box on the first screen: ' + JSON.stringify({ s0, s1 }));
   await b.close();

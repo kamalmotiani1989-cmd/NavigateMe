@@ -2131,6 +2131,14 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
   #loginForm > .hint{font-size:12.5px; text-align:center; margin-top:10px}
   .lg-sms{display:block; margin:8px auto 0}
 }
+
+/* Leftovers from the navy panels (Kamal, 9 Nov: "check the colours of WhatsApp and Leave tribe"): white text and
+   see-through white buttons were nearly invisible on the pastel tiles. */
+.tribe-bond .btn-ghost, .w-app .w-ghost{background:#fff; color:var(--text); box-shadow:0 6px 16px rgba(60,40,30,.10)}
+.tribe-bond .btn-ghost:hover, .w-app .w-ghost:hover{background:var(--surface-2)}
+.tribe-leave-btn, .tribe-leave-btn:hover{color:var(--text)} .tribe-leave-btn:hover{background:rgba(255,255,255,.5)}
+.bond-avs .av, :is(.tribe-bond, .tribe-hero) .bond-avs span.av{color:#fff; border-color:var(--surface)}
+.ontime{color:var(--ok)}
 </style>
 </head>
 <body>
@@ -7183,6 +7191,7 @@ let currentId = null, currentListing = null;
 const REQ_ERR = { "vibe-required":"Answer the living-style questions first, from your account.",
   "profile-required":"Add what you do first, from your account.", "no-credits":"You're out of contacts.",
   "declined":"The owner already said no to this one.", "listing-not-found":"This listing is no longer available." };
+let listingShownId = null;
 async function openListing(id){
   const seen = (state.recentListings || []).filter(x => x.id !== id), lr = (cityRows || []).find(x => x.id === id);
   if(lr){ state.recentListings = [{ id, title: lr.title }].concat(seen).slice(0, 5); save(); }
@@ -7345,7 +7354,12 @@ async function openListing(id){
       : mapHtml(l.locality + ", " + l.city, 14, "Approximate area. The exact address is shared once the owner accepts.", false)}</div>`}
     <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} asked to meet` : ""}</p>
     ${lock}${bar}`;
+  // A different home (or the page opened afresh) starts at the top, at its photos; the same home redrawn after an
+  // action (a request, a compromise) keeps its place.
+  const fresh = !$("dlgListing").open || listingShownId !== id;
   if(!$("dlgListing").open) $("dlgListing").showModal();
+  if(fresh){ $("dlgListing").scrollTop = 0; $("lBody").scrollTop = 0; }
+  listingShownId = id;
   wireGallery($("lBody").querySelector(".hero-pic"));
   if(!contact && l.geo) drawApproxMap("approxMap", l.geo);
 }
