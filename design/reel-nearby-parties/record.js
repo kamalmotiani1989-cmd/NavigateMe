@@ -34,29 +34,29 @@ duration ${Math.max(0.01, next - f.t).toFixed(3)}
     await p.goto(U('#splits')); await p.waitForTimeout(1200); await close(p);
     const gid = await p.evaluate(() => api.splitCreate('Diwali night', '🪔', [], 'party'));
     await p.goto(U('#splits/' + gid)); await p.waitForTimeout(1200); await p.click('[data-pt="edit"]'); await p.waitForTimeout(600);
+    // Free parties only in the reel: the recording hides the chip-in choice, the money line and the friends' chip-in row.
+    await p.addStyleTag({ content: '#ptMoney, #ptChipBox, .pt-near .field:has([name=ptEntry]), #ptForm .pt-extra:not(.pt-near){display:none !important}' });
     await p.evaluate(() => { $('ptNear').open = true; const sc = $('ptNear').closest('.mbody') || document.scrollingElement; $('ptNear').scrollIntoView({ block:'start' }); }); await p.waitForTimeout(500);
   }, async p => {
     await p.waitForTimeout(400);
     await p.click('#ptOpen + span'); await p.waitForTimeout(600);
     await p.type('#ptLimit', '6', { delay: 120 }); await p.waitForTimeout(300);
-    await p.click('[name=ptEntry][value=chip] + span'); await p.waitForTimeout(400);
-    await p.type('#ptEntryChip', '300', { delay: 120 });
-    for(const c of ['food', 'snacks', 'music']){ await p.click(`[name=ptCover][value=${c}] + span`); await p.waitForTimeout(180); }
-    await smooth(p, '#ptMoney', 'start'); await p.waitForTimeout(900);
+    await p.waitForTimeout(500);
+    await smooth(p, '#ptRadius', 'center'); await p.waitForTimeout(700);
     await p.click('[name=ptWho][value=female] + span'); await p.waitForTimeout(400);
     await p.evaluate(async () => { const r = $('ptRadius'); for(const v of [3, 2]){ r.value = v; r.dispatchEvent(new Event('input', { bubbles:true })); await new Promise(x => setTimeout(x, 300)); } });
     await p.waitForTimeout(700);
   });
   // (b) a nearby person scrolls to a party card
   await clip(b, 'b-guest-finds', person('9822200002', 'Asha', 'female', { partyNear:{ on:true, pin:{ lat:18.559, lng:73.7868 }, label:'Baner' } }), async p => {
-    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p); await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(300);
+    await p.goto(U('#splits')); await p.waitForTimeout(800); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); }); await p.goto(U('#account')); await p.goto(U('#splits')); await p.waitForTimeout(1400); await close(p); await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(300);
   }, async p => {
     await p.waitForTimeout(500); await smooth(p, '.near-h', 'start'); await p.waitForTimeout(1800);
     await p.evaluate(() => window.scrollBy({ top: 120, behavior:'smooth' })); await p.waitForTimeout(1300);
   });
   // (c) request to join with a note
   await clip(b, 'c-request', person('9822200003', 'Asha', 'female', { partyNear:{ on:true, pin:{ lat:18.559, lng:73.7868 }, label:'Baner' } }), async p => {
-    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p);
+    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); });
     await p.evaluate(() => openNear('NBPUN1')); await p.waitForTimeout(800);
   }, async p => {
     await p.waitForTimeout(500); await smooth(p, '#nearAsk', 'start'); await p.waitForTimeout(1000);
@@ -67,8 +67,8 @@ duration ${Math.max(0.01, next - f.t).toFixed(3)}
   await clip(b, 'd-host-accepts', person('9822200004', 'Hema', 'female'), async p => {
     await p.goto(U('#splits')); await p.waitForTimeout(1200); await close(p);
     const gid = await p.evaluate(async () => { const id = await api.splitCreate('Diwali night', '🪔', [], 'party');
-      await api.partySave(id, { occasion:'festival', title:"Diwali night at Hema's", starts_at: new Date(Date.now() + 3 * 864e5).toISOString(), place:'home', plus_ones:true });
-      await api.partyOpenSave(id, { open:true, guest_limit:6, entry:'chip', entry_chip:300, covers:['food','snacks','music'], who:'female', radius_km:2, area:'Baner', near_address:'B-12 Green Woods, Baner', near_geo:{ lat:18.559, lng:73.7868 } });
+      await api.partySave(id, { occasion:'festival', title:"Diwali night at Hema's", starts_at: (d => { d.setDate(d.getDate() + 3); d.setHours(20, 0, 0, 0); return d.toISOString(); })(new Date()), place:'home', plus_ones:true });
+      await api.partyOpenSave(id, { open:true, guest_limit:6, entry:'free', who:'female', radius_km:2, area:'Baner', near_address:'B-12 Green Woods, Baner', near_geo:{ lat:18.559, lng:73.7868 } });
       api.partyReqs().forEach((r, i) => r.user_phone = '000000000' + (i + 1)); save(); return id; });   // no real-looking numbers on screen
     await p.goto(U('#splits/' + gid)); await p.waitForTimeout(1500); await p.evaluate(() => window.scrollTo(0, 0));
   }, async p => {
@@ -77,7 +77,7 @@ duration ${Math.max(0.01, next - f.t).toFixed(3)}
   });
   // (e) guest's view unlocks: address, pin, check-in code
   await clip(b, 'e-guest-unlocks', person('9822200005', 'Asha', 'female', { partyNear:{ on:true, pin:{ lat:18.559, lng:73.7868 }, label:'Baner' } }), async p => {
-    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p);
+    await p.goto(U('#splits')); await p.waitForTimeout(1600); await close(p); await p.evaluate(() => { demoNearParties().forEach(x => { x.entry = 'free'; x.entry_chip = null; x.covers = []; x.covers_other = null; }); });
     await p.evaluate(async () => { await api.partyRequest('NBPUN1', 'Board games fan!', 0); api.partyReqs().forEach(r => r.sampleDecideAt = Date.now() + 2500); save(); await openNear('NBPUN1'); });
     await p.waitForTimeout(400); await p.evaluate(() => $('nearAct').scrollIntoView({ block:'end' }));
   }, async p => {
