@@ -1,5 +1,12 @@
 # Teche · reports
 
+## 2026-11-09, Vibe Card quiz removed from the welcome page: #76 live
+
+On Kamal's word, the quiz card is gone from the welcome page, so sign-in comes up first. On a phone, the sign-in
+card now starts about a third of the way down the first screen, with all three choices visible. Sign-in itself is
+unchanged. The quiz still works from links and from Account. Merged and published: the website runs NavigateMe
+6a14257, and Android users get it by reinstalling.
+
 ## 2026-11-09, #75 is live: database first, then the website
 
 Kamal merged #75. I applied schema.sql at 88e31bc to the live database (md5 ab06264c…, matching the file on
