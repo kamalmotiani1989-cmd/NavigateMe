@@ -187,6 +187,11 @@ textarea{min-height:96px; resize:vertical}
 @media (max-width:900px){
   .w-grid{grid-template-columns:1fr; grid-template-areas:"copy" "card" "city"; padding-block:12px 0}
   .city{height:190px; margin-top:0}
+  /* The three pills ran into each other on phones: one line each, stepped down the skyline. */
+  .city .float{white-space:nowrap; padding-right:12px}
+  .city .float:nth-of-type(1){left:3%!important; top:2%!important}
+  .city .float:nth-of-type(2){left:auto!important; right:3%!important; top:25%!important}
+  .city .float:nth-of-type(3){right:auto!important; left:8%!important; top:48%!important}
   .w-card{margin:28px 0 8px}
   /* Phones: the sign-in card comes straight after the quiz, the points and the trust line, so its choices are on
      the first screen; the paragraph follows the card. The card itself is unchanged. */
@@ -943,6 +948,9 @@ div.cx-area{cursor:default}
 .d-search:focus-within{box-shadow:0 0 0 2px var(--brand), 0 6px 20px rgba(16,20,24,.08)}
 .ds-city{display:flex; align-items:center; gap:4px; flex:none; padding-left:10px; color:var(--brand); position:relative}
 .ds-city select{border:0; background:transparent; box-shadow:none!important; font-weight:800; padding:10px 22px 10px 2px; max-width:140px; color:var(--text); cursor:pointer}
+/* The phone's own dropdown arrow sat on top of the city name ("Bengalurı"): draw our own, inside the padding. */
+.ds-city select{-webkit-appearance:none; appearance:none; text-overflow:ellipsis;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318213A' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 2px center/14px}
 .ds-city::after{content:""; width:1.5px; height:26px; background:var(--line-2); margin-left:4px}
 .ds-q{flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:0 4px 0 12px; color:var(--text-3)}
 .ds-q input{flex:1; min-width:0; width:0; border:0; background:transparent; box-shadow:none!important; padding:12px 0; font-weight:600; color:var(--text)}
@@ -1122,6 +1130,9 @@ body.typing .help-fab{display:none}
 .rl-acts{display:grid; gap:10px; margin:18px 0 10px}
 .near-promo{display:flex; gap:12px; align-items:center; padding:14px; margin:0 0 16px; border-radius:16px; background:#fff; box-shadow:var(--card-shadow)}
 .near-promo > div{flex:1; min-width:0} .near-promo small{display:block; color:var(--text-2); font-size:var(--fs-s)} .near-promo .pt-mini-ic{color:var(--brand-2)}
+/* Phones: icon, text and button side by side left the text a word wide. The button drops under the text. */
+@media (max-width:480px){ .near-promo{flex-wrap:wrap; align-items:flex-start} .near-promo .pt-mini-ic{width:44px; height:44px; background:var(--brand-soft)}
+  .near-promo > div{flex:1 1 calc(100% - 56px)} .near-promo > .btn{margin-left:56px} }
 .near-h{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap} .near-h span{font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
 .near-list{display:grid; gap:10px; margin:0 0 18px}
 .near-card{display:flex; gap:12px; align-items:center; width:100%; padding:12px 14px; border:0; border-radius:16px; background:#fff; box-shadow:var(--card-shadow); text-align:left; font:inherit; color:var(--text); cursor:pointer}
@@ -1306,7 +1317,8 @@ body.app .foot{box-shadow:none}
 a.w-link{text-decoration:none}
 .w-get{background:#fff; color:var(--brand-2); box-shadow:0 6px 18px rgba(4,40,70,.18)}
 .w-get:hover{background:var(--teal-96)}
-.w-nav .w-get{margin-left:6px}
+.w-nav .w-get{margin-left:6px} .w-get{white-space:nowrap; flex:none}
+@media (max-width:380px){ .w-get svg{display:none} }   /* 360-wide: keeps it one line inside the margin */
 @media (max-width:720px){ .w-link{display:none} }
 
 .w-more{padding-block:72px 8px}
@@ -1597,7 +1609,7 @@ html:has(> body.app){background:var(--app-bg)}
 .vc-more{width:100%; max-width:420px; margin-top:14px; text-align:center}
 .vt-line{display:flex; align-items:center; gap:12px; width:100%; margin:12px 0 2px; padding:12px 14px; border:0; border-radius:14px; cursor:pointer; text-align:left;
   background:var(--brand-soft); color:var(--text); font:inherit}
-.vt-line > span:first-child{font-size:28px}
+.vt-line > span:first-child{font-size:28px; flex:none}   /* the emoji was taking a third of the width */
 .vt-line span{flex:1} .vt-line small{display:block; font-size:var(--fs-xs); font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em}
 .vt-line b{font-size:var(--fs-m)} .vt-line em{font-style:normal; font-weight:800; color:var(--brand-2)}
 .pp-card{position:relative; margin:16px 0 4px; padding:14px 40px 14px 14px; border-radius:18px; background:var(--brand-soft);
@@ -1722,6 +1734,8 @@ html.on-hold, html.on-hold body{overflow:hidden}
 .l-bar{position:sticky; bottom:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; margin:18px -20px -28px;
   padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); background:var(--surface); box-shadow:0 -1px 0 var(--line), 0 -8px 24px rgba(16,20,24,.06)}
 .l-bar-price{min-width:0} .l-bar-price b{font-size:var(--fs-l); font-family:var(--display); letter-spacing:-.02em} .l-bar-price small{color:var(--text-2); font-size:var(--fs-s); margin-left:3px}
+/* Phones: "/month + expenses" broke mid-phrase with "expenses" alone on a second line. Keep it whole, under the price. */
+@media (max-width:440px){ .l-bar-price small{display:block; margin:0; white-space:nowrap} }
 .l-bar .btn{flex:none; max-width:62%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 /* Loading placeholders. */
 .skel-card{border-radius:var(--r-card); background:var(--card); box-shadow:var(--card-shadow); overflow:hidden; padding:0 0 16px; animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 60ms)}
@@ -1760,6 +1774,8 @@ html.on-hold, html.on-hold body{overflow:hidden}
 .ps-steps li.now{background:var(--brand-soft); color:var(--brand-2)} .ps-steps li.now i{background:var(--brand); color:#fff}
 .ps-steps li.done{cursor:pointer; color:var(--text)} .ps-steps li.done i{background:var(--ok); color:#fff}
 @media (max-width:480px){ .ps-steps li{padding:8px; gap:6px; font-size:var(--fs-s)} .ps-steps li em{display:none} .ps-steps li b{display:inline} }
+/* 360-wide phones: "3 Private" was cut to "Priva…". Smaller number circles and padding give the word room. */
+@media (max-width:380px){ .ps-steps{gap:4px} .ps-steps li{padding:7px 6px; gap:5px} .ps-steps li i{width:20px; height:20px; font-size:11px} }
 fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{display:none}
 .ps-lead{margin:-6px 0 16px; color:var(--text-2); font-size:var(--fs-s)}
 .ps-more-body .grid3{grid-template-columns:repeat(auto-fit, minmax(150px, 1fr))} .ps-more-body .grid3 > .field{min-width:0} .ps-more-body .grid3 input, .ps-more-body .grid3 select{min-width:0; width:100%}
@@ -9804,7 +9820,7 @@ function renderNearPanel(){
   $("nearToggle").disabled = isSplits();
   if(isSplits()){ $("nearToggle").checked = false; $("nearWhere").innerHTML = `Answer the vibe questions first. <button class="linkbtn" type="button" data-go-rooms>Answer them</button>`; return; }
   api.partyNearbyMe().then(m => { nearMe = m; $("nearToggle").checked = !!(m && m.on);
-    $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#splits">See parties</a>` : ""; })
+    $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#splits" style="white-space:nowrap">See parties</a>` : ""; })
     .catch(err => console.error(err));
 }
 document.addEventListener("submit", async e => {
