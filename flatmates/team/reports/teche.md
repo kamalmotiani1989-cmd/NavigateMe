@@ -1,8 +1,10 @@
 # Teche · reports
 
-## 2026-11-08, "Just Flatsplits & FlatMart" sign-up: PR #69 up for Kamal to ship
+## 2026-11-08, "Just Flatsplits & FlatMart" sign-up: PR #69 merged and live
 
-**Done, not merged.** Kamal will ship it in the morning.
+**Done.** On Kamal's "Merge it" (9 Nov), I applied the database first (md5 7bec4106… matched; the role check now
+allows 'splits'). A live check, rolled back, confirmed a seeker picking it stays a seeker. Then I merged (f99a6be);
+the merge left schema.sql unchanged. The website picks it up on its next publish; Android needs the new APK installed.
 - A third choice on the sign-in card. Set-up asks name, gender and generation (Gen Z, Millennial, Gen X).
 - Rooms, requests, Tribe, Escape, posting and parties nearby are locked until the vibe questions are answered, in
   the app and on the server. Flatsplits, FlatMart and invites for friends work.
