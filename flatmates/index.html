@@ -6655,7 +6655,7 @@ async function renderDiscover(){
   if(!near && $("fSort").value === "near") $("fSort").value = "match";
   $("fSort").querySelector("[value=near]").hidden = !near;
   const sort = $("fSort").value, mapView = state.dView === "map";
-  renderProfilePromo(); renderVibePromo(); renderNudgeCards();
+  renderProfilePromo(); renderVibePromo(); renderNudgeCards(); oneDiscoverNudge();
   const [rows, , bonded] = await Promise.all([near ? api.searchNear(near) : api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
   if(seq !== browseSeq) return;
   const dist = distFrom(f);
@@ -6691,7 +6691,6 @@ async function renderDiscover(){
   $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} ${near ? "within" : "in"} ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
   renderUrgent();
-  extrasHtml().then(h => $("extrasD").innerHTML = h);
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
   const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80 && lookRank(look, l.kind) >= 0)
     .sort((a, b) => lookRank(look, a.kind) - lookRank(look, b.kind) || score(b) - score(a) || d(a) - d(b)).slice(0, 12);
@@ -11456,6 +11455,12 @@ function maybeProfileNudge(){
      || now - (state.profileNudgeAt || 0) < (LIVE ? 24 * 36e5 : 90e3)) return;
   Object.assign(state, { profileNudgeAt: now, profileNudges: (state.profileNudges || 0) + 1 }); save();
   Notify.show("Owners reply sooner to complete profiles", `${profileGaps().length} quick questions left. It takes about a minute.`, "complete");
+}
+// Discover is about homes: at most one prompt between them, the most useful first (finish your profile, then a
+// pass, then your flatmate type). Flatsplits and FlatMart have their own tabs, so their shortcuts aren't here.
+function oneDiscoverNudge(){
+  let shown = false;
+  for(const id of ["profilePromo", "passNudgeD", "vibePromo"]){ const el = $(id); if(shown) el.innerHTML = ""; else if(el.innerHTML.trim()) shown = true; }
 }
 function renderVibePromo(){
   const t = isSeeker() && vibeType(state.vibe), hide = !t || state.vibeShared || state.vibePromoHidden;
