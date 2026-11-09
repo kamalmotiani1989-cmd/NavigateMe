@@ -1,5 +1,15 @@
 # Teche · reports
 
+## 2026-11-09, homes open at the top; readable tribe card: #80 live
+
+Kamal reported both and said merge.
+- **Scroll:** a home's page now opens at the top whenever it's a different home.
+- **Tribe card:** WhatsApp, Leave tribe and your initial are readable on the mint card.
+- **Two more fixed:** an automatic contrast check found "Use it in your browser" and the Pays on time badge.
+- **Guard:** that check is now part of p13.
+
+Merged and published after the Android build; findmeflatmate.com runs NavigateMe 7afe135.
+
 ## 2026-11-09, top bar and sign-up are live: #79
 
 Kamal said "merge it". #79 is merged: the new top bar, the pastel sign-up tiles and the less cluttered sign-up
