@@ -50,6 +50,7 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
   await p.evaluate(() => openListing('demo-1')); await p.waitForTimeout(1500);
   const safe = await p.evaluate(() => { const n = document.querySelector('#dlgListing .safe-pay'); const req = document.querySelector('#dlgListing .lock [data-action="request"]');
     return { text: n && n.textContent, after: !!(n && req && (req.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_FOLLOWING)), loc: $('lLoc').textContent }; });
+  ok(await p.evaluate(() => /you both get each other's number/.test(document.querySelector('#dlgListing .lock').textContent)), 'home page: says numbers are shared only when you both say yes');
   ok(safe.text && /Never pay before you visit/.test(safe.text) && safe.after, 'home page: the never-pay warning sits under Send request: ' + (safe.text || '').slice(0, 60));
   ok(/Active (today|yesterday|\d+ days ago)/.test(safe.loc), 'home page: the line under the title says when they were last active: ' + safe.loc);
   await p.evaluate(() => document.querySelector('#dlgListing .safe-pay').scrollIntoView({ block: 'center' })); await p.waitForTimeout(300);

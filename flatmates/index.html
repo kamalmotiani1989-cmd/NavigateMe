@@ -2027,6 +2027,14 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
   #dlgListing .gal-dots{bottom:36px; z-index:2}
   #dlgListing .gal-n{top:calc(72px + env(safe-area-inset-top,0px))}
 }
+
+/* Less on screen (Kamal, 9 Nov): long explanations show their first lines and a "More" link that opens the rest in
+   place. Nothing is removed: the full text stays in the page (screen readers read all of it). See packText(). */
+.pk{display:-webkit-box!important; -webkit-box-orient:vertical; -webkit-line-clamp:var(--pk,2); line-clamp:var(--pk,2); overflow:hidden}
+.pk.open{display:block!important; -webkit-line-clamp:unset; line-clamp:none}
+.pk-more{display:inline-block; border:0; background:none; padding:2px 0; margin:2px 0 0; font:700 var(--fs-s) var(--body); color:inherit; opacity:.85;
+  text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+.pk-more:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -6745,7 +6753,7 @@ function cardHtml(l, i){
 const SAFE_PAY = `<div class="safe-pay" role="note"><b aria-hidden="true">${"\u{1F6E1}\uFE0F"}</b><span><b>Never pay before you visit.</b> No token, deposit or "booking amount" until you've seen the flat and met the owner. FindMeFlatMate never asks for money on WhatsApp.</span></div>`;
 function trustLine(l){
   const flatmate = l.kind !== "flat" && Number((l.household || {}).residents) > 0;
-  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b>${l.owner_verified && !isSample(l) ? ` · <span class="verified">phone verified</span>` : ""} · your number is shared only if you both say yes`;
+  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b>${l.owner_verified && !isSample(l) ? ` · <span class="verified">phone verified</span>` : ""}`;
 }
 // Only what helps a tap: "New this week" for a fresh listing, and the reply speed only when it is fast.
 function cardFresh(l){
@@ -10758,7 +10766,7 @@ function tribeRulesHtml(look, size){
   const what = { room: "a private room", shared: "a shared room", flat: "a whole flat" }[look] || "any kind of home";
   const homes = look === "shared" ? "twin-sharing rooms for the two of you first, then private rooms you can share as twins"
     : "whole flats with a bedroom each first (a 2BHK for 2, a 3BHK for 3), then flats with as many rooms free as there are of you";
-  return `<details class="tribe-rules"${size > 1 ? "" : " open"}><summary>How your tribe finds a home</summary>
+  return `<details class="tribe-rules"><summary>How your tribe finds a home</summary>
     <p class="hint" style="margin:6px 0 10px">You're looking for <b>${what}</b>. <a href="#discover">Change it on Discover</a>.</p>
     <ol><li><b>Matches:</b> people looking for the same kind of home as you come first, best vibe first. Everyone has 70%+ vibe with you and looks in your areas.</li>
       <li><b>Once you're a tribe:</b> we show ${homes}. Best vibe first, then the nearest, within your joint budget.</li>
@@ -11615,6 +11623,33 @@ function renderVibePromo(){
     <button class="vp-x" type="button" data-vp-hide aria-label="Hide">${CLOSE_SVG}</button></div>`;
 }
 $("vibePromo").addEventListener("click", e => { if(e.target.closest("[data-vp-hide]")){ state.vibePromoHidden = true; save(); renderVibePromo(); } });
+
+/* ============================================================ less on screen
+   Long explanations are packed to their first lines with a "More" link (Kamal, 9 Nov: "keep the important things,
+   pack the rest, without missing anything"). Which text: the paragraph in each section's big panel, page intros,
+   tips, notices and settings notes. Headlines, prices, buttons, warnings and anything you must read stay whole. */
+const PACK = [
+  [".fs-hero p, .mk-hero p, .plans-hero > p, .esc-hero p, .tribe-hero .lede, .pt-hero p", 2],
+  [".page-h > p", 2], [".notice.notif-ask p", 1], [".pp-card small", 1], [".near-promo small", 1],
+  ["#view-account p.sub, #view-account p.hint, #view-account small.hint", 1],
+  ["#view-tribe p.hint, .ps-lead, .empty p, #view-post .field .hint", 2],
+  ["#lBody .lock > p:not(.safe-pay)", 2]
+];
+function packText(){
+  for(const [sel, n] of PACK) document.querySelectorAll(sel).forEach(el => {
+    if(el.dataset.pk || !el.offsetParent || el.closest(".pk")) return;
+    if(el.textContent.trim().length < 100){ el.dataset.pk = "short"; return; }   // a "More" link for a short sentence saves nothing
+    el.dataset.pk = "1"; el.classList.add("pk"); el.style.setProperty("--pk", n);
+    if(el.scrollHeight <= el.clientHeight + 2){ el.classList.remove("pk"); return; }
+    const b = document.createElement("button");
+    Object.assign(b, { type: "button", className: "pk-more", textContent: "More" }); b.setAttribute("aria-expanded", "false");
+    b.addEventListener("click", () => { const o = el.classList.toggle("open"); b.textContent = o ? "Less" : "More"; b.setAttribute("aria-expanded", String(o)); });
+    el.after(b);
+  });
+}
+let packQueued = false;
+new MutationObserver(() => { if(packQueued) return; packQueued = true; requestAnimationFrame(() => { packQueued = false; packText(); }); })
+  .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
 /* ================================================================ boot */
 document.querySelectorAll("dialog").forEach(d => {
   d.addEventListener("click", e => { if(e.target === d || e.target.closest("[data-close]")) d.close(); });
