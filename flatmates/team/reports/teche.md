@@ -1,5 +1,27 @@
 # Teche · reports
 
+## 2026-11-09, compromise button fixed: PR #72 (not merged)
+
+**Fault found.** On Requests, "Compromise and ask again" showed on every declined request, including whole flats
+nobody lives in yet. Those homes have no household answers, so the screen opened empty: 0 → 0, nothing to change,
+and a grey Send button that could never work. The button on a home's own page was already right.
+
+**Fix.** The list now shows the button only when there's something to adjust, and the screen never opens empty or
+twice for the same home. No database change.
+
+**Checked:**
+- A new test suite (p11) runs the whole flow at three phone sizes: the button is tappable, not under the bottom bar or
+  the help button; the score rises live; Send works once; the owner sees "Ready to compromise · 40% → 43%".
+- All suites pass: 272 checks.
+- The live database check was rolled back, so nothing was saved. The server rules already worked: 67% → 73%, and the
+  owner sees it.
+
+| Before: the empty screen | After: Requests | After: the screen | After: owner sees |
+|---|---|---|---|
+| ![](shots/compromise/before-empty-screen.png) | ![](shots/compromise/after-requests.png) | ![](shots/compromise/after-screen-390.png) | ![](shots/compromise/after-owner-390.png) |
+
+**Next:** the alignment pass, as a separate PR.
+
 ## 2026-11-09, website publishing: access, #69 published, stall fix PR
 
 **Done.** On Kamal's word ("give yourself access to findmeflatmate") this session attached the website repo with push
