@@ -2788,8 +2788,9 @@ const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurni
 const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
 // Sample homes and people (supabase/samples.sql) for testing: they answer straight away and have no real number.
 const isSample = x => Boolean(x && ((x.household && x.household.sample) || (x.occupation && x.occupation.sample)));
-// Everyone signs in with a one-time code to their number, so every real person's phone is verified. Samples aren't people.
-const verTag = x => isSample(x) ? SAMPLE_TAG : `<span class="verified" title="Signed in with a one-time code sent to their number">✓ Phone verified</span>`;
+// "Phone verified" only when the server says the number was confirmed by a code actually delivered to it
+// (fm_profiles.phone_verified_at, set by the WhatsApp / SMS sign-in, never by the shared test code).
+const verTag = x => isSample(x) ? SAMPLE_TAG : x && x.verified ? `<span class="verified" title="Confirmed with a code sent to their number">✓ Phone verified</span>` : "";
 const SAMPLE_TAG = `<span class="smp" title="A sample for testing. It answers straight away and has no real number.">Sample</span>`;
 
 const $ = id => document.getElementById(id);
@@ -3473,6 +3474,7 @@ const demoApi = {
     const { private: _p, ...pub } = l;
     const r = this.reqFor(l.id);
     return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null, reply_hours: this.replyHours_(l),
+             owner_verified: l.owner_verified ?? true,
              owner_active_at: mine ? new Date().toISOString() : l.owner_active_at || new Date(Date.now() - (hue(l.id) % 6) * 864e5 - (hue(l.id) % 20) * 36e5).toISOString(),
              unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length,
              views: (state.views || {})[l.id] || 0, saves: (state.saved.includes(l.id) ? 1 : 0) + (state.demoTribeSaves || []).filter(x => x.listing_id === l.id).length };
@@ -3752,6 +3754,7 @@ const demoApi = {
         occupation: incoming ? r.seeker.occupation : null, vibe: incoming ? r.seeker.vibe : null,
         interests: incoming ? r.seeker.interests || {} : null,
         on_time: incoming && !!r.seeker.on_time,
+        verified: incoming ? r.seeker.verified ?? true : null,
         phone: incoming && r.status === "approved" ? "+91" + r.seeker.phone : null,
         unseen: incoming ? !r.seen_owner && (r.status === "pending") === (by === "seeker") : !r.seen_seeker };
     }).sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -5374,7 +5377,7 @@ function seekerHtml(x, l, i){
     x.invites_got ? `Replied to <b>${x.invites_answered} of ${x.invites_got}</b> invite${x.invites_got === 1 ? "" : "s"}` : ""].filter(Boolean);
   return `<article class="seek-card${escSel.has(x.seeker_id) ? " picked" : ""}" style="--i:${i}">${pick}
     <div class="seek-top"><span class="av" style="background:${colorFor(x.seeker_id)}">${esc(first[0] || "?")}</span>
-      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${onTimeBadge(x)}${verTag(x)}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
+      <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${onTimeBadge(x)}${isSample(x) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
         <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
       ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="Compatibility with ${esc(first)}">${ringSvg(x.match_pct, 58)}</button>` : ""}</div>
     <div class="seek-facts">
@@ -5559,7 +5562,7 @@ function tribeCardHtml(t){
     ${t.kind === "complete" ? `<p class="wants-line">✨ Complete your tribe of 3: you're both teaming up with the same person. Say yes to each other to share numbers.</p>`
       : t.their_yes && !t.my_yes ? `<p class="wants-line">✨ ${first} wants to build a tribe with you</p>` : ""}
     <div class="seek-top"><span class="av" style="background:${colorFor(t.other_id)}">${esc((t.name || "?")[0])}</span>
-      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}${onTimeBadge(t)}${verTag(t)}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
+      <div style="min-width:0;flex:1"><h3>${first} ${genBadge((t.vibe || {}).gen)}${onTimeBadge(t)}${isSample(t) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(t.occupation))}</div></div>
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
     <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
     ${t.looking ? `<p class="look-tag${t.looking === prefs().look ? " same" : ""}">Looking for ${esc(lookLabel(t.looking).toLowerCase())}${t.looking === prefs().look ? " · same as you" : ""}</p>` : ""}
@@ -6634,7 +6637,7 @@ function cardHtml(l, i){
 const SAFE_PAY = `<div class="safe-pay" role="note"><b aria-hidden="true">${"\u{1F6E1}\uFE0F"}</b><span><b>Never pay before you visit.</b> No token, deposit or "booking amount" until you've seen the flat and met the owner. FindMeFlatMate never asks for money on WhatsApp.</span></div>`;
 function trustLine(l){
   const flatmate = l.kind !== "flat" && Number((l.household || {}).residents) > 0;
-  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b>${isSample(l) ? "" : ` · <span class="verified">phone verified</span>`} · your number is shared only if you both say yes`;
+  return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b>${l.owner_verified && !isSample(l) ? ` · <span class="verified">phone verified</span>` : ""} · your number is shared only if you both say yes`;
 }
 // Only what helps a tap: "New this week" for a fresh listing, and the reply speed only when it is fast.
 function cardFresh(l){

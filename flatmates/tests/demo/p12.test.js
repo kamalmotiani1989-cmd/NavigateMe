@@ -1,5 +1,6 @@
 // Ideas from other rental apps (demo mode, port 8765), at 390 wide: one prompt at most on Discover, one-tap
-// dealbreaker filters with counts, "Active N days ago" and the 30-day rule, a phone-verified tick (not on samples),
+// dealbreaker filters with counts, "Active N days ago" and the 30-day rule, a phone-verified tick (only when the
+// server says the number was confirmed by a delivered code; never a sample),
 // and the never-pay-before-you-visit warning on a home's page.
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [];
@@ -39,8 +40,11 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
   ok(!away.listed && !away.near && away.opens, 'an owner away 40 days: the home leaves Discover, a link still opens it: ' + JSON.stringify(away));
   // 1. verified tick
   const ver = await p.evaluate(() => ({ cards: [...document.querySelectorAll('#cards .card')].filter(c => c.querySelector('.trust .verified')).length, all: document.querySelectorAll('#cards .card').length,
-    sample: isSample({ household: { sample: true } }) && !trustLine({ household: { sample: true, residents: 1 }, kind: 'room' }).includes('verified') }));
-  ok(ver.cards === ver.all && ver.all > 0 && ver.sample, 'phone verified on every real home card, never on a sample: ' + JSON.stringify(ver));
+    sample: !trustLine({ household: { sample: true, residents: 1 }, kind: 'room', owner_verified: true }).includes('verified'),
+    testCode: !trustLine({ household: { residents: 1 }, kind: 'room', owner_verified: false }).includes('verified') && verTag({ occupation: {}, verified: false }) === '',
+    real: trustLine({ household: { residents: 1 }, kind: 'room', owner_verified: true }).includes('verified') && /Phone verified/.test(verTag({ occupation: {}, verified: true })) }));
+  ok(ver.cards === ver.all && ver.all > 0, 'demo homes (owners signed in with a delivered demo code) show phone verified: ' + JSON.stringify(ver));
+  ok(ver.sample && ver.testCode && ver.real, 'the tick follows the server flag: none for a test-code sign-in or a sample, shown for a delivered code: ' + JSON.stringify(ver));
   // 4. never pay before you visit, before a request
   await p.evaluate(() => openListing('demo-1')); await p.waitForTimeout(1500);
   const safe = await p.evaluate(() => { const n = document.querySelector('#dlgListing .safe-pay'); const req = document.querySelector('#dlgListing .lock [data-action="request"]');

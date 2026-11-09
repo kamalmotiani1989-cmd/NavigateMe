@@ -57,6 +57,10 @@ alter table public.fm_profiles add column if not exists search_at timestamptz;
 alter table public.fm_profiles add column if not exists active_at timestamptz;
 update public.fm_profiles set active_at = now() where active_at is null;
 alter table public.fm_profiles alter column active_at set default now();
+-- When the phone was confirmed by a code actually delivered to it: copied (fm_me) from Supabase's own
+-- auth.users.phone_confirmed_at, which only the real WhatsApp / SMS sign-in sets. The test sign-in (fm-login, a
+-- shared code) makes an email account and never sets it. The app shows "Phone verified" only when this is set.
+alter table public.fm_profiles add column if not exists phone_verified_at timestamptz;
 -- Seekers can hide from owners' searches; invites need it on.
 alter table public.fm_profiles add column if not exists discoverable boolean not null default true;
 -- Seekers can also hide from other seekers' tribe matches (Build your tribe).
@@ -447,6 +451,8 @@ begin
   update fm_profiles f set ref_code = upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8))
    where f.id = auth.uid() and f.ref_code is null;
   update fm_profiles f set active_at = now() where f.id = auth.uid() and (f.active_at is null or f.active_at < now() - interval '1 hour');
+  update fm_profiles f set phone_verified_at = u.phone_confirmed_at
+    from auth.users u where f.id = auth.uid() and u.id = f.id and u.phone_confirmed_at is not null and f.phone_verified_at is null;
   return query
   select p.credits, p.full_name, p.phone, p.role, p.vibe, p.occupation, p.gift_given,
          (select count(*) from fm_orders o where o.user_id = p.id and o.status = 'paid'),
@@ -607,7 +613,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, reply_hours numeric, owner_active_at timestamptz)
+  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
@@ -618,7 +624,7 @@ language sql security definer set search_path = public as $$
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id),
-         o.active_at
+         o.active_at, o.phone_verified_at is not null
   from fm_listings l
   join fm_profiles o on o.id = l.owner_id
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
@@ -643,7 +649,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, reply_hours numeric, owner_active_at timestamptz)
+  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   with p as (select least(25, greatest(1, coalesce(p_km, 5)))::double precision as km, nullif(trim(coalesce(p_area, '')), '') as area),
@@ -667,7 +673,7 @@ language sql security definer set search_path = public as $$
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id),
-         o.active_at
+         o.active_at, o.phone_verified_at is not null
   from l cross join p
   join fm_profiles o on o.id = l.owner_id
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
@@ -1151,7 +1157,7 @@ create or replace function public.fm_inbox()
 returns table (id uuid, listing_id uuid, listing_title text, direction text, status text,
                match_pct int, message text, created_at timestamptz, decided_at timestamptz,
                name text, occupation jsonb, vibe jsonb, phone text, unseen boolean, interests jsonb,
-               by text, compromise jsonb, orig_match_pct int, on_time boolean, expires_at timestamptz)
+               by text, compromise jsonb, orig_match_pct int, on_time boolean, expires_at timestamptz, verified boolean)
 language sql security definer set search_path = public stable as $$
   select r.id, r.listing_id, l.title,
          case when l.owner_id = auth.uid() then 'incoming' else 'outgoing' end,
@@ -1167,7 +1173,8 @@ language sql security definer set search_path = public stable as $$
          case when l.owner_id = auth.uid() then sp.interests end,
          r.initiated_by, r.compromise, r.orig_match_pct,
          case when l.owner_id = auth.uid() then sp.show_on_time and sp.on_time_months >= 3 and sp.on_time_at > now() - interval '40 days' end,
-         case when r.initiated_by = 'owner' and r.status = 'pending' then r.created_at + interval '3 days' end
+         case when r.initiated_by = 'owner' and r.status = 'pending' then r.created_at + interval '3 days' end,
+         case when l.owner_id = auth.uid() then sp.phone_verified_at is not null end
   from fm_requests r
   join fm_listings l on l.id = r.listing_id
   join fm_profiles sp on sp.id = r.seeker_id
@@ -3498,7 +3505,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, reply_hours numeric, owner_active_at timestamptz)
+  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean)
 language sql security definer set search_path = public as $$
   select fm_throttle('listing', 300, 2000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
@@ -3509,7 +3516,8 @@ language sql security definer set search_path = public as $$
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id),
-         (select o.active_at from fm_profiles o where o.id = l.owner_id)
+         (select o.active_at from fm_profiles o where o.id = l.owner_id),
+         (select o.phone_verified_at is not null from fm_profiles o where o.id = l.owner_id)
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid());
