@@ -1076,6 +1076,23 @@ language sql security definer set search_path = public stable as $$
   limit 100;
 $$;
 
+-- Take back a yes the other person hasn't answered (Kamal, 9 Nov). The link goes back to unanswered, not to a no:
+-- they stop seeing a request from you, and you can still say yes again later. No notification is sent (fm-notify
+-- only sends when exactly one side has said yes). Counted (fm_throttle) so yes / take back can't be used to spam.
+create or replace function public.fm_tribe_withdraw(p_link uuid) returns text
+language plpgsql security definer set search_path = public as $$
+declare t fm_tribe_links%rowtype;
+begin
+  perform fm_throttle('tribe-undo', 10, 30);
+  select * into t from fm_tribe_links where fm_tribe_links.id = p_link and (a = auth.uid() or b = auth.uid()) for update;
+  if t.id is null then return 'not-found'; end if;
+  if t.status <> 'open' then return t.status; end if;
+  if not coalesce(case when t.a = auth.uid() then t.a_yes else t.b_yes end, false) then return 'not-asked'; end if;
+  if t.a = auth.uid() then update fm_tribe_links set a_yes = null, seen_b = true where id = p_link;
+  else update fm_tribe_links set b_yes = null, seen_a = true where id = p_link; end if;
+  return 'withdrawn';
+end $$;
+
 -- Say yes or no to a tribe match. Both yes = bonded (numbers shared). Any no closes it quietly.
 create or replace function public.fm_tribe_answer(p_link uuid, p_yes boolean) returns text
 language plpgsql security definer set search_path = public as $$
