@@ -943,6 +943,9 @@ div.cx-area{cursor:default}
 .d-search:focus-within{box-shadow:0 0 0 2px var(--brand), 0 6px 20px rgba(16,20,24,.08)}
 .ds-city{display:flex; align-items:center; gap:4px; flex:none; padding-left:10px; color:var(--brand); position:relative}
 .ds-city select{border:0; background:transparent; box-shadow:none!important; font-weight:800; padding:10px 22px 10px 2px; max-width:140px; color:var(--text); cursor:pointer}
+/* The phone's own dropdown arrow sat on top of the city name ("Bengalurı"): draw our own, inside the padding. */
+.ds-city select{-webkit-appearance:none; appearance:none; text-overflow:ellipsis;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318213A' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 2px center/14px}
 .ds-city::after{content:""; width:1.5px; height:26px; background:var(--line-2); margin-left:4px}
 .ds-q{flex:1; min-width:0; display:flex; align-items:center; gap:8px; padding:0 4px 0 12px; color:var(--text-3)}
 .ds-q input{flex:1; min-width:0; width:0; border:0; background:transparent; box-shadow:none!important; padding:12px 0; font-weight:600; color:var(--text)}
