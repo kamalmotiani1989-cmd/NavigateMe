@@ -1774,6 +1774,8 @@ html.on-hold, html.on-hold body{overflow:hidden}
 .ps-steps li.now{background:var(--brand-soft); color:var(--brand-2)} .ps-steps li.now i{background:var(--brand); color:#fff}
 .ps-steps li.done{cursor:pointer; color:var(--text)} .ps-steps li.done i{background:var(--ok); color:#fff}
 @media (max-width:480px){ .ps-steps li{padding:8px; gap:6px; font-size:var(--fs-s)} .ps-steps li em{display:none} .ps-steps li b{display:inline} }
+/* 360-wide phones: "3 Private" was cut to "Priva…". Smaller number circles and padding give the word room. */
+@media (max-width:380px){ .ps-steps{gap:4px} .ps-steps li{padding:7px 6px; gap:5px} .ps-steps li i{width:20px; height:20px; font-size:11px} }
 fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{display:none}
 .ps-lead{margin:-6px 0 16px; color:var(--text-2); font-size:var(--fs-s)}
 .ps-more-body .grid3{grid-template-columns:repeat(auto-fit, minmax(150px, 1fr))} .ps-more-body .grid3 > .field{min-width:0} .ps-more-body .grid3 input, .ps-more-body .grid3 select{min-width:0; width:100%}
