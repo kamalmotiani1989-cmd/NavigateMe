@@ -19,6 +19,9 @@ _Last update: 8 Nov 2026._
 **Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything for him is ready before 10 pm that day.
 
 ## Teche (tech)
+0000. **Push access to the findmeflatmate repo: Kamal, 9 Nov, in King's session: "Approved".** For running its publish
+   job after each merge that changes flatmates/, and fixing why its 30-minute schedule stalls (fix as a PR there,
+   Kamal merges). No secrets in that repo.
 000. **Ship PR #69 (Flatsplits & FlatMart sign-up): Kamal, 9 Nov, in King's session: "Ship PR 69".** Order: database
    first (the live database refuses the new role today), verify read-only, then merge, then the Android build and the
    website publish. This sign-up postpones the 12 vibe questions until the person wants rooms or parties; Kamal accepts
