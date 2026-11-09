@@ -1,5 +1,11 @@
 # Teche · reports
 
+## 2026-11-09, new look and less on screen are live: #77 and #78
+
+Kamal said "merge both". I merged #77 (the pastel look and frameless home photos), pointed #78 (less on screen)
+at main and merged it, then published the website after the Android build. findmeflatmate.com runs NavigateMe
+c4f104c; Android users get it by reinstalling.
+
 ## 2026-11-09, less on screen: PR #78 (on top of #77, not merged)
 
 Kamal: "reduce information everywhere, keep the important things, pack the rest, without missing anything."
