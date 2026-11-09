@@ -396,6 +396,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .bill{display:grid; grid-template-columns:1fr auto; gap:6px 12px; font-size:var(--fs-m); font-variant-numeric:tabular-nums}
 .bill .tot{font-weight:800; box-shadow:0 -1px 0 var(--line); padding-top:8px; margin-top:2px}
 .bill .muted{color:var(--text-2)}
+.safe-pay{display:flex; gap:10px; align-items:flex-start; margin-top:12px; padding:10px 12px; border-radius:12px; background:var(--amber-96); color:var(--text); font-size:var(--fs-s); line-height:1.45; text-align:left}
+.safe-pay > b{font-size:18px; line-height:1.2; flex:none} .safe-pay span b{font-weight:800}
 .verified{display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-xs); font-weight:700; color:var(--ok)}
 .lock{padding:24px 0 4px; margin-top:22px; box-shadow:0 -1px 0 var(--line); color:var(--text)}
 .lock h3{font-size:var(--fs-l)}
@@ -6613,6 +6615,8 @@ function cardHtml(l, i){
 }
 // Who listed it, and the promise every listing carries. Someone already living in the flat listing a room is a
 // flatmate; a whole flat, or a room in a flat nobody lives in yet, is listed by the owner.
+// Shown before a request and again once the number is shared: the scam people actually hit is a "token" over UPI.
+const SAFE_PAY = `<div class="safe-pay" role="note"><b aria-hidden="true">${"\u{1F6E1}\uFE0F"}</b><span><b>Never pay before you visit.</b> No token, deposit or "booking amount" until you've seen the flat and met the owner. FindMeFlatMate never asks for money on WhatsApp.</span></div>`;
 function trustLine(l){
   const flatmate = l.kind !== "flat" && Number((l.household || {}).residents) > 0;
   return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b> · your number is shared only if you both say yes`;
@@ -6959,7 +6963,7 @@ async function openListing(id){
       <div><span class="hint">Exact address</span><div><b>${esc(contact.address)}</b></div></div>
       <div class="map-box" style="margin-top:10px">${(cp => cp.lat ? mapHtml(cp.lat + "," + cp.lng, 17, "📍 The owner's exact pin", !l.is_owner)
         : mapHtml(cp.building ? mapsQuery(cp, l.locality, l.city) : contact.address, 16, "", !l.is_owner))(contact.address_parts || {})}</div>
-      ${l.is_owner ? "" : `<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      ${l.is_owner ? "" : `${SAFE_PAY}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <a class="btn btn-accent btn-sm" href="tel:+91${esc(contact.contact_phone)}" data-called="${esc(l.id)}">Call ${esc((contact.contact_name || "").split(" ")[0])}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(l.id)}" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from FindMeFlatMate. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>
@@ -7019,6 +7023,7 @@ async function openListing(id){
           : `<div class="promise-line"><b>${GIFT_SVG.replace("<svg", '<svg width="16" height="16"')}</b><span>${left
           ? `You have ${contactsLabel(left)}. One is used only if the owner accepts.`
           : "You've used your free contacts. Requests that aren't accepted never cost anything."}</span></div>`}
+        ${SAFE_PAY}
         ${isSaved(l.id) ? "" : `<button class="btn btn-ghost btn-block" style="margin-top:12px" data-action="save">♥ Not sure yet? Save it</button>`}
       </div>`;
     }
