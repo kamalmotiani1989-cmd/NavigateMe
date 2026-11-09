@@ -10,7 +10,7 @@ access.
 **Why it stalled:** the `*/30` schedule fired only every 4 to 8 hours. GitHub runs scheduled jobs on a best-effort
 basis and drops many at :00 and :30.
 
-**Fix: findmeflatmate PR #1** (for Kamal to merge).
+**Fix: findmeflatmate PR #1.** Merged on Kamal's word (74fb174); a test run on it succeeded.
 - NavigateMe can trigger a publish directly. This needs Kamal to make one token and save it as a NavigateMe secret;
   the README in that repo has the steps.
 - The fallback schedule moves to :17 and :47.
