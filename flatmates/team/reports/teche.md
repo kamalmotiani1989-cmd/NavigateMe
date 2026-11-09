@@ -1,5 +1,24 @@
 # Teche · reports
 
+## 2026-11-09, top bar and sign-in page in the pastel style: PR #79 (not merged)
+
+**Top bar:**
+- It sits on the page with no line under it, with round white buttons and a black avatar.
+- A soft shade appears only once you scroll.
+- The page under it is now beige; it was still the old grey-green.
+
+**Sign-in:**
+- A big light-and-bold headline.
+- The three choices are pastel tiles, with a check when picked.
+- A +91 pill for the number.
+- The highlights are pastel chips, after the card on phones.
+
+Same steps and fields. All 13 suites pass. Each picture is before (left) and after (right).
+
+![](shots/topbar-signin/signin.png)
+
+![](shots/topbar-signin/topbar.png)
+
 ## 2026-11-09, new look and less on screen are live: #77 and #78
 
 Kamal said "merge both". I merged #77 (the pastel look and frameless home photos), pointed #78 (less on screen)
