@@ -1,5 +1,16 @@
 # Teche · reports
 
+## 2026-11-09, less on screen: PR #78 (on top of #77, not merged)
+
+Kamal: "reduce information everywhere, keep the important things, pack the rest, without missing anything."
+- **Folded:** long explanations (panel paragraphs, page intros, tips, notices, settings notes) now show 1–2 lines
+  and a "More" link that opens the rest in place. Nothing is deleted, and screen readers still read all of it.
+- **Kept whole:** headlines, prices, buttons, warnings and sentences under 100 characters.
+- **Tribe:** its rules start folded.
+- **Home cards:** they drop the repeated both-say-yes line, which is on the welcome page and each home's page.
+
+New test p13; all 13 suites pass. Merge #77 first.
+
 ## 2026-11-09, new pastel look and frameless home photos: PR #77 (not merged)
 
 Kamal sent a reference design and asked for the app to look and feel like it, colours included, with a home's
