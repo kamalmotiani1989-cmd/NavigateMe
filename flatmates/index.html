@@ -505,6 +505,8 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .area-chips button{flex:none; border:0; background:var(--surface-2); color:var(--text); border-radius:999px; padding:8px 15px;
   font:600 var(--fs-s) var(--body); cursor:pointer; white-space:nowrap}
 .area-chips button[aria-pressed="true"]{background:var(--text); color:#fff}
+.quick-f{margin-top:-2px} .quick-f:empty{display:none} .quick-f button{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.quick-f button small{margin-left:5px; font-weight:600; opacity:.7}
 .active-f{display:flex; flex-wrap:wrap; gap:6px}
 .active-f:empty{display:none}
 .active-f button{border:0; border-radius:999px; padding:5px 6px 5px 12px; background:var(--accent-soft); color:var(--text); font:600 var(--fs-s) var(--body); cursor:pointer}
@@ -2234,6 +2236,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
         <div class="ds-view" id="dView" role="group" aria-label="Show as"><button type="button" data-dview="list" aria-pressed="true">List</button><button type="button" data-dview="map" aria-pressed="false">Map</button></div>
       </div>
       <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
+      <div class="area-chips quick-f" id="quickF" role="group" aria-label="Quick filters"></div>
       <div class="active-f" id="activeF"></div>
     </div>
     <div id="urgent"></div>
@@ -6538,6 +6541,12 @@ function activeFilters(f){
   if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
+const QUICK = [["gender", "female", "For women"], ["gender", "male", "For men"], ["rules", "veg", "Veg kitchen"], ["rules", "noSmoke", "No smoking"], ["max", 15000, "Under ₹15k"]];
+const quickOn = (f, [k, v]) => k === "rules" ? f.rules.includes(v) : k === "max" ? f.max === v && !f.min : f[k] === v;
+function quickToggle(f, q){
+  const [k, v] = q, on = quickOn(f, q);
+  return k === "rules" ? { rules: on ? f.rules.filter(x => x !== v) : f.rules.concat(v) } : k === "max" ? { min: 0, max: on ? 0 : v } : { [k]: on ? "" : v };
+}
 function removeFilter(key){
   const [k, v] = key.split(":"), f = prefs();
   if(k === "budget") setPrefs({ min:0, max:0 });
@@ -6680,6 +6689,11 @@ async function renderDiscover(){
   const act = activeFilters(f);
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
+  // One tap each for the usual dealbreakers, with how many homes you'd see. The ones already on are in the row above.
+  const qBase = near ? Object.assign({}, f, { areas: [] }) : f, qLook = f.look || "";
+  $("quickF").innerHTML = mapView ? "" : QUICK.filter(q => !quickOn(f, q)).map(q => {
+    const n = applyFilters(rows, Object.assign({}, qBase, quickToggle(f, q))).filter(l => lookRank(qLook, l.kind) >= 0).length;
+    return `<button type="button" data-quick="${QUICK.indexOf(q)}">${esc(q[2])}<small>${n}</small></button>`; }).join("");
 
   const look = f.look || "";
   $("dsLook").innerHTML = LOOKS.map(([k, t]) => `<button type="button" data-look="${k}" aria-pressed="${look === k}">${t}</button>`).join("");
@@ -6805,6 +6819,8 @@ $("areaChips").addEventListener("click", e => {
   setPrefs({ areas: !a ? [] : cur.includes(a) ? cur.filter(x => x !== a) : cur.concat(a) });
   renderDiscover();
 });
+$("quickF").addEventListener("click", e => { const b = e.target.closest("[data-quick]"); if(!b) return;
+  setPrefs(quickToggle(prefs(), QUICK[+b.dataset.quick])); renderDiscover(); });
 $("activeF").addEventListener("click", e => { const b = e.target.closest("[data-unfilter]"); if(b){ removeFilter(b.dataset.unfilter); renderDiscover(); } });
 // ---- Discover's place search: like the search on property sites. Pick a city, type a locality,
 // landmark, society or metro station, and see homes within a few km, nearest first, as a list or on a map.
