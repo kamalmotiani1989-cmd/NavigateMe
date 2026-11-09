@@ -1832,6 +1832,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .lcard .count-ph{top:auto; left:auto; bottom:18px; right:56px}
 .lcard .people .gen{margin-left:2px}
 .lcard .fresh .new{font-size:var(--fs-xs); font-weight:700; color:var(--brand-2)}
+.lcard .fresh .act{font-size:var(--fs-xs); font-weight:600; color:var(--text-2)}
 .lcard .trust{margin-top:8px; padding-top:8px; border-top:1px solid var(--hair); font-size:var(--fs-xs); line-height:1.45; color:var(--text-2)}
 .lcard .trust b{color:var(--brand-2)}
 .wait-nudge{display:flex; gap:12px; align-items:flex-start; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:var(--accent-soft); color:var(--text)}
@@ -3465,11 +3466,14 @@ const demoApi = {
     const m = hrs.length % 2 ? hrs[(hrs.length - 1) / 2] : (hrs[hrs.length / 2 - 1] + hrs[hrs.length / 2]) / 2;
     return Math.round(m * 10) / 10;
   },
+  // Same rule as fm_listing_fresh: an owner away 30 days drops out of Discover, unless it's yours, you asked, or a sample.
+  fresh_(v){ return v.is_owner || v.request_status || isSample(v) || Date.now() - new Date(v.owner_active_at) < 30 * 864e5; },
   view(l){
     const mine = Boolean(state.user && l.owner_phone === state.user.phone);
     const { private: _p, ...pub } = l;
     const r = this.reqFor(l.id);
     return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null, reply_hours: this.replyHours_(l),
+             owner_active_at: mine ? new Date().toISOString() : l.owner_active_at || new Date(Date.now() - (hue(l.id) % 6) * 864e5 - (hue(l.id) % 20) * 36e5).toISOString(),
              unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length,
              views: (state.views || {})[l.id] || 0, saves: (state.saved.includes(l.id) ? 1 : 0) + (state.demoTribeSaves || []).filter(x => x.listing_id === l.id).length };
   },
@@ -3479,13 +3483,13 @@ const demoApi = {
       (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
       (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
       (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
-    ).map(l => this.view(l));
+    ).map(l => this.view(l)).filter(v => this.fresh_(v));
   },
   // Same rule as fm_search_near: pinned homes within km of the spot, and unpinned ones in that area.
   async searchNear(n){
     this.tick();
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
-      (l.geo ? kmBetween(n, l.geo) <= n.km : n.area && l.locality.toLowerCase() === n.area.toLowerCase())).map(l => this.view(l));
+      (l.geo ? kmBetween(n, l.geo) <= n.km : n.area && l.locality.toLowerCase() === n.area.toLowerCase())).map(l => this.view(l)).filter(v => this.fresh_(v));
   },
   async get(id){
     const l = this.all().find(x => x.id === id);
@@ -6636,7 +6640,13 @@ function trustLine(l){
 function cardFresh(l){
   const fast = Number(l.reply_hours) <= 6 ? replyBadge(l) : "";
   const isNew = Date.now() - new Date(l.created_at) < 7 * 864e5;
-  return (isNew ? `<span class="new">New this week</span>` : "") + fast;
+  return (isNew ? `<span class="new">New this week</span>` : "") + fast + activeLine(l);
+}
+// When whoever listed it last opened the app; homes whose owner has been away 30 days aren't shown at all.
+function activeLine(l){
+  if(!l.owner_active_at || l.is_owner || isSample(l)) return "";
+  const days = Math.floor((Date.now() - new Date(l.owner_active_at)) / 864e5);
+  return `<span class="act">● Active ${days < 1 ? "today" : days === 1 ? "yesterday" : days + " days ago"}</span>`;
 }
 function giftPillHtml(){
   if(roomPass() && isSeeker()) return `<button class="gift-pill" type="button" data-gift>🏠 Room Pass till ${untilLabel(passUntil("room"))}</button>`;
@@ -6965,7 +6975,8 @@ async function openListing(id){
   if(!l){ toast("This listing is no longer available."); return; }
   currentListing = l;
   $("lTitle").textContent = l.title;
-  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · " + replyLabel(l.reply_hours) : "");
+  const act = activeLine(l).replace(/<[^>]+>|● /g, "");
+  $("lLoc").textContent = l.locality + ", " + l.city + (replyLabel(l.reply_hours) ? " · " + replyLabel(l.reply_hours) : "") + (act ? " · " + act : "");
   const contact = l.unlocked ? await api.contact(id) : null;
   const ph = photosOf(l), hh = l.household || {}, m = vibeMatch(state.vibe, hh);
   let lock = "", bar = "";
