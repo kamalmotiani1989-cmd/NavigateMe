@@ -1,5 +1,19 @@
 # Teche · reports
 
+## 2026-11-10, women-only homes: #85 live; privacy and security pages in #86
+
+- **Women only (#85, live):** Kamal's wife searched "Women only" and kept getting homes open to anyone. Now it shows
+  only homes listed Women only that are a whole flat, or where everyone living there is a woman. The lister counts by
+  their profile gender, and each flatmate by a new required Woman / Man in the posting form. Older listings that
+  don't say who lives there sit in their own block under the results. Mixed and "Anyone" homes never show. A
+  "Women-only home" badge appears only when the data supports it. Same for men.
+- **Live:** the database went first (md5-checked; a rolled-back check found 104 homes, 14 for women only: 6 confirmed,
+  8 not confirmed yet, none open to anyone), then the merge. The site and app are published: findmeflatmate main says
+  "Publish the app from NavigateMe fc6c8cf".
+- **Privacy (#86, not merged):** the policy is rewritten to the DPDP structure, with every claim checked against the
+  code. There's a new security.html, and the gap list is in design/dpdp-gaps.md. Kamal fills the [TO FILL]s
+  (entity, grievance officer, address, times, backups, access, city) before merging. Draft for a lawyer's review.
+
 ## 2026-11-10, AI go-between: build paused, plan in #84
 
 - **Build paused:** Kamal said "Don't build now, let's discuss". King's STOP reached me after the build was done. Branch
