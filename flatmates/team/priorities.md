@@ -19,7 +19,7 @@ _Last update: 8 Nov 2026._
 **Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything for him is ready before 10 pm that day.
 
 ## Teche (tech)
-00000. **AI go-between before contacts are shared: Kamal, 10 Nov, in King's session: "Want to build something like this".**
+00000. **ON HOLD (Kamal, 10 Nov: "Don't build now, let's discuss").** Do not build until Kamal says so. Was: **AI go-between before contacts are shared.**
    Six parts: Privacy Shield, Conflict Detector, Smart Questions, Truth Check, Compatibility Report, Mutual Consent.
    The AI relays and translates; it never answers for a person. Behind a feature switch, off until Kamal turns it on.
    Needs Kamal's Anthropic API key as an edge-function secret before it can run live. Full brief in King's message of 10 Nov.
