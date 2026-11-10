@@ -481,14 +481,17 @@ everything. With a choice, results come in groups with headings, and inside each
 comes first, then the nearest** (to the searched place, else the nearest chosen area, else the city centre).
 
 A **place search** (locality, landmark, society, metro station) with a distance (1 to 20 km), or the city
-and **any number of areas** as chips (set during onboarding, changeable any time), plus a
-**Filters** panel: budget band or exact min/max (all-in), room type, who it's open to,
+and **any number of areas** (set during onboarding, changeable any time in Filters, with "+ Add area"; none
+picked means the whole city), plus a **Filters** panel: budget band or exact min/max (all-in), room type, who it's open to,
 furnishing, move-in date, must-have amenities, house rules (veg-only kitchen, no smoking, no
 alcohol, pet-friendly) and minimum match. It shows a live count ("Show 7 homes"), active
 filters appear as removable chips, and everything is remembered. When nothing matches, the app
 suggests the single change that brings most homes back ("Remove “No smoking” (6)").
+Discover keeps no area or quick-filter chips above the results (Kamal, 10 Nov: the map already shows where homes
+are, and it opens the space): areas, Women only, Veg kitchen and the rest live in Filters, and only the ones you
+chose show, as removable chips.
 
-**Women only / Men only** (Filters, and the quick chip on Discover; Kamal, 10 Nov) means homes where only women
+**Women only / Men only** (in Filters; Kamal, 10 Nov) means homes where only women
 (men) live and only women (men) are welcome, not just "open to women". A home counts when the listing says
 "Women only" and it's a whole flat (or nobody lives there yet), or everyone living there is a woman: the lister
 by their own profile gender, and each other person by the **Woman / Man** the posting form asks for them

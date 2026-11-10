@@ -2532,8 +2532,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <select id="fSort" aria-label="Sort"><option value="match">Best match</option><option value="near">Nearest</option><option value="new">Newest</option><option value="cost">Lowest rent</option></select>
         <div class="ds-view" id="dView" role="group" aria-label="Show as"><button type="button" data-dview="list" aria-pressed="true">List</button><button type="button" data-dview="map" aria-pressed="false">Map</button></div>
       </div>
-      <div class="area-chips" id="areaChips" role="group" aria-label="Areas"></div>
-      <div class="area-chips quick-f" id="quickF" role="group" aria-label="Quick filters"></div>
+      <div class="area-chips" id="areaChips" role="group" aria-label="Areas" hidden></div>
+      <div class="area-chips quick-f" id="quickF" role="group" aria-label="Quick filters" hidden></div>
       <div class="active-f" id="activeF"></div>
     </div>
     <div id="urgent"></div>
@@ -2885,7 +2885,10 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 <dialog id="dlgFilters"><div class="mhead"><div><h2>Filters</h2><div class="loc">Saved for next time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
     <form id="filterForm" novalidate>
-      <h3 class="section-h" style="margin-top:4px">Rent per month</h3>
+      <div id="fAreaBox"><h3 class="section-h" style="margin-top:4px">Areas in <span id="fAreaCity"></span></h3>
+        <p class="hint" style="margin:-4px 0 8px">None picked means all of the city.</p>
+        <div class="chips" id="fAreas"></div></div>
+      <h3 class="section-h">Rent per month</h3>
       <div class="chips" id="bandChips"></div>
       <div class="grid2" style="margin-top:10px">
         <div class="field"><label for="fMin">Min (₹)</label><input type="number" id="fMin" min="0" step="1" inputmode="numeric" placeholder="No minimum"></div>
@@ -6931,6 +6934,7 @@ const BANDS = [[0,10000,"Under ₹10k"],[10000,15000,"₹10k–15k"],[15000,2000
 const kfmt = n => "₹" + (n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + "k" : n);
 function activeFilters(f){
   const out = [];
+  if(!(f.near && f.near.lat)) (f.areas || []).forEach(a => out.push(["areas:" + a, a]));
   if(f.min || f.max) out.push(["budget", f.min && f.max ? `${kfmt(f.min)}–${kfmt(f.max)}` : f.max ? `Up to ${kfmt(f.max)}` : `From ${kfmt(f.min)}`]);
   if(f.gender) out.push(["gender", f.gender === "female" ? "Women only" : "Men only"]);
   f.furn.forEach(k => out.push(["furn:" + k, FURN_LABEL[k]]));
@@ -7087,20 +7091,11 @@ async function renderDiscover(){
   $("dsX").hidden = !near;
   $("dsRadius").hidden = !near; if(near) $("dsRadius").innerHTML = `<span class="ds-rl">Within</span>` + radiusHtml(near);
   $("dView").querySelectorAll("[data-dview]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.dview === "map") === mapView)));
-  // Area chips for the chosen city (a place search replaces them).
-  const areas = f.city ? [...new Set(areasFor(f.city, rows).concat(f.areas))] : [];
-  $("areaChips").hidden = !f.city || Boolean(near);
-  $("areaChips").innerHTML = `<button type="button" data-area="" aria-pressed="${!f.areas.length}">All areas</button>` +
-    areas.map(a => `<button type="button" data-area="${esc(a)}" aria-pressed="${f.areas.includes(a)}">${esc(a)}</button>`).join("") +
-    `<button type="button" data-area-add>+ Add area</button>`;
+  // Areas, Women only, Veg kitchen and the rest live in Filters (Kamal, 10 Nov: the map shows where homes are, and
+  // Discover gets more room). What's switched on shows in the row of removable chips below.
   const act = activeFilters(f);
   $("activeF").innerHTML = act.map(([k, label]) => `<button type="button" data-unfilter="${esc(k)}">${esc(label)}<span aria-label="Remove">${CLOSE_SVG}</span></button>`).join("");
   $("fCount").hidden = !act.length; $("fCount").textContent = act.length;
-  // One tap each for the usual dealbreakers, with how many homes you'd see. The ones already on are in the row above.
-  const qBase = near ? Object.assign({}, f, { areas: [] }) : f, qLook = f.look || "";
-  $("quickF").innerHTML = mapView ? "" : QUICK.filter(q => !quickOn(f, q)).map(q => {
-    const n = applyFilters(rows, Object.assign({}, qBase, quickToggle(f, q))).filter(l => lookRank(qLook, l.kind) >= 0).length;
-    return `<button type="button" data-quick="${QUICK.indexOf(q)}">${esc(q[2])}<small>${n}</small></button>`; }).join("");
 
   const look = f.look || "";
   $("dsLook").innerHTML = LOOKS.map(([k, t]) => `<button type="button" data-look="${k}" aria-pressed="${look === k}">${t}</button>`).join("");
@@ -7316,8 +7311,16 @@ $("cards").addEventListener("click", e => {
 });
 
 /* ------------------------------------------------------------ filters panel */
+// Areas in Filters: the city's known areas, any with homes, and the ones you added; "+ Add area" searches more.
+function fAreasHtml(f, picked){
+  const all = f.city ? [...new Set(areasFor(f.city, cityRows).concat(picked))] : [];
+  return all.map(a => `<label class="chip"><input type="checkbox" name="fArea" value="${esc(a)}"${picked.includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("")
+    + `<button type="button" class="chip" data-farea-add>+ Add area</button>`;
+}
 function openFilters(){
   const f = prefs(), form = $("filterForm");
+  $("fAreaBox").hidden = !f.city || Boolean(f.near && f.near.lat);
+  $("fAreaCity").textContent = f.city || ""; $("fAreas").innerHTML = fAreasHtml(f, f.areas);
   $("bandChips").innerHTML = BANDS.map(([lo, hi, label], i) => `<label class="chip"><input type="radio" name="fBand" value="${i}"${f.min === lo && f.max === hi && (lo || hi) ? " checked" : ""}>${label}</label>`).join("");
   $("fMust").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" name="fMust" value="${esc(a)}"${f.must.includes(a) ? " checked" : ""}>${esc(a)}</label>`).join("");
   $("fMin").value = f.min || ""; $("fMax").value = f.max || ""; $("fMove").value = f.moveBy || ""; $("fMoveIn").value = f.moveIn || "";
@@ -7332,7 +7335,7 @@ function openFilters(){
 }
 function readFilterForm(){
   const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
-  return { min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
+  return { ...($("fAreaBox").hidden ? {} : { areas: vals("fArea") }), min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
     gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), room: vals("fRoom"), minMatch: Number(vals("fMatch")[0]) || 0 };
 }
 function updateFilterCount(){
@@ -7347,6 +7350,11 @@ $("filterForm").addEventListener("change", e => {
 });
 $("filterForm").addEventListener("input", updateFilterCount);
 $("fReset").addEventListener("click", () => { const { city, areas } = prefs(); setPrefs(Object.assign({}, DEFAULT_PREFS, { city, areas })); openFilters(); });
+$("fAreas").addEventListener("click", e => {
+  if(!e.target.closest("[data-farea-add]")) return;
+  const f = prefs(), picked = [...document.querySelectorAll("[name=fArea]:checked")].map(x => x.value);
+  openAreaPicker(f.city, a => { $("fAreas").innerHTML = fAreasHtml(f, [...new Set(picked.concat(a))]); updateFilterCount(); });
+});
 $("filterForm").addEventListener("submit", e => { e.preventDefault(); setPrefs(readFilterForm()); $("dlgFilters").close(); renderDiscover(); });
 $("giftPill").addEventListener("click", e => { if(e.target.closest("[data-gift]")) { if(roomPass()) openPay(null); else if(contactsLeft()) toast("Ask to meet an owner from any flat. A contact is only used if they accept."); else openPay(); } });
 function onCardClick(e){
