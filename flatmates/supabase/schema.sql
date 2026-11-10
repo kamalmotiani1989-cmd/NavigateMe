@@ -604,6 +604,31 @@ begin
   return p_owner = auth.uid() or p_my_request is not null or coalesce(p_active, now()) > now() - interval '30 days' or fm_is_sample(p_owner);
 end $$;
 
+-- Women-only and men-only homes (Kamal, 10 Nov). "Women only" means only women live there and only women are
+-- welcome, not just "open to women". A home qualifies when its listing says so (gender) and:
+--   * it's a whole flat, or nobody lives there yet; or
+--   * everyone living there is that gender: the lister (who lives there, by the form's "including you") by their
+--     own profile gender, and each other person by the Woman / Man the lister gave for them
+--     (household.flatmate_genders, one per person after the lister).
+-- Returns the gender ('female' / 'male') when it qualifies; 'female?' / 'male?' when nothing contradicts it but who
+-- lives there isn't confirmed (older listings, or the lister's gender not set); null for 'any' or a mixed home.
+-- An older listing whose lister lives there alone counts, from the lister's own gender.
+create or replace function public.fm_home_gender(p_kind text, p_gender text, p_hh jsonb, p_owner_gender text) returns text
+language plpgsql immutable set search_path = public as $$
+declare n int; g jsonb; k int; missing boolean := false;
+begin
+  if p_gender is null or p_gender not in ('female','male') then return null; end if;
+  n := case when coalesce(p_hh->>'residents', '') ~ '^\d{1,2}$' then (p_hh->>'residents')::int else 0 end;
+  if p_kind = 'flat' or n = 0 then return p_gender; end if;
+  if p_owner_gender is null then missing := true; elsif p_owner_gender <> p_gender then return null; end if;
+  g := case when jsonb_typeof(p_hh->'flatmate_genders') = 'array' then p_hh->'flatmate_genders' else '[]'::jsonb end;
+  for k in 0 .. n - 2 loop
+    if g->>k is null then missing := true;
+    elsif g->>k <> p_gender then return null; end if;
+  end loop;
+  return case when missing then p_gender || '?' else p_gender end;
+end $$;
+
 drop function if exists public.fm_search(text, text, int, text, text);
 create or replace function public.fm_search(
   p_city text default null, p_kind text default null,
@@ -613,7 +638,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean)
+  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean, home_gender text)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
@@ -624,7 +649,7 @@ language sql security definer set search_path = public as $$
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id),
-         o.active_at, o.phone_verified_at is not null
+         o.active_at, o.phone_verified_at is not null, fm_home_gender(l.kind, l.gender, l.household, o.gender)
   from fm_listings l
   join fm_profiles o on o.id = l.owner_id
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
@@ -633,7 +658,8 @@ language sql security definer set search_path = public as $$
     and (p_city is null or l.city = p_city)
     and (p_kind is null or l.kind = p_kind)
     and (p_max_rent is null or l.rent <= p_max_rent)
-    and (p_gender is null or p_gender = 'any' or l.gender in ('any', p_gender))
+    -- Women only / Men only: homes that qualify, then the ones not confirmed yet (the app shows those apart).
+    and (p_gender is null or p_gender = 'any' or fm_home_gender(l.kind, l.gender, l.household, o.gender) in (p_gender, p_gender || '?'))
     and (p_q is null or l.locality ilike '%' || p_q || '%' or l.title ilike '%' || p_q || '%')
   order by l.created_at desc
   limit 200;
@@ -649,7 +675,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean)
+  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean, home_gender text)
 language sql security definer set search_path = public as $$
   select fm_throttle('search', 200, 1000);
   with p as (select least(25, greatest(1, coalesce(p_km, 5)))::double precision as km, nullif(trim(coalesce(p_area, '')), '') as area),
@@ -673,7 +699,7 @@ language sql security definer set search_path = public as $$
            select 1 from fm_unlocks u where u.listing_id = l.id and u.user_id = auth.uid()),
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id),
-         o.active_at, o.phone_verified_at is not null
+         o.active_at, o.phone_verified_at is not null, fm_home_gender(l.kind, l.gender, l.household, o.gender)
   from l cross join p
   join fm_profiles o on o.id = l.owner_id
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
@@ -3522,7 +3548,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean)
+  featured boolean, reply_hours numeric, owner_active_at timestamptz, owner_verified boolean, home_gender text)
 language sql security definer set search_path = public as $$
   select fm_throttle('listing', 300, 2000);
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
@@ -3534,7 +3560,8 @@ language sql security definer set search_path = public as $$
          (select count(*) from fm_requests r where r.listing_id = l.id),
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false), fm_reply_hours(l.owner_id),
          (select o.active_at from fm_profiles o where o.id = l.owner_id),
-         (select o.phone_verified_at is not null from fm_profiles o where o.id = l.owner_id)
+         (select o.phone_verified_at is not null from fm_profiles o where o.id = l.owner_id),
+         fm_home_gender(l.kind, l.gender, l.household, (select o.gender from fm_profiles o where o.id = l.owner_id))
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid());
@@ -3559,7 +3586,7 @@ returns table (
   deposit int, available_from date, gender text, furnishing text,
   amenities text[], description text, photos text[], room jsonb, household jsonb, costs jsonb, created_at timestamptz,
   is_owner boolean, unlocked boolean, unlock_count bigint, request_status text, bachelors boolean, status text, geo jsonb,
-  featured boolean, views int, saves bigint, reply_hours numeric)
+  featured boolean, views int, saves bigint, reply_hours numeric, home_gender text)
 language sql stable security definer set search_path = public as $$
   select l.id, l.kind, l.title, l.city, l.locality, l.bhk, l.rent, l.deposit,
          l.available_from, l.gender, l.furnishing, l.amenities, l.description,
@@ -3571,7 +3598,8 @@ language sql stable security definer set search_path = public as $$
          mine.status, l.bachelors, l.status, l.geo, coalesce(l.featured_until > now(), false),
          case when l.owner_id = auth.uid() then l.views end,
          case when l.owner_id = auth.uid() then (select count(*) from fm_saves s where s.listing_id = l.id) end,
-         fm_reply_hours(l.owner_id)
+         fm_reply_hours(l.owner_id),
+         fm_home_gender(l.kind, l.gender, l.household, (select o.gender from fm_profiles o where o.id = l.owner_id))
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where l.owner_id = auth.uid()
@@ -3785,7 +3813,7 @@ begin
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
-                     'fm_party_request_notify', 'fm_listing_fresh') then
+                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);

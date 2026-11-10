@@ -431,6 +431,19 @@ alcohol, pet-friendly) and minimum match. It shows a live count ("Show 7 homes")
 filters appear as removable chips, and everything is remembered. When nothing matches, the app
 suggests the single change that brings most homes back ("Remove “No smoking” (6)").
 
+**Women only / Men only** (Filters, and the quick chip on Discover; Kamal, 10 Nov) means homes where only women
+(men) live and only women (men) are welcome, not just "open to women". A home counts when the listing says
+"Women only" and it's a whole flat (or nobody lives there yet), or everyone living there is a woman: the lister
+by their own profile gender, and each other person by the **Woman / Man** the posting form asks for them
+(required; saved with the household as `flatmate_genders`). Rule: `fm_home_gender` in schema.sql (used by
+`fm_search`, `fm_search_near`, `fm_listing_get` and `fm_my_listings`, which return it as `home_gender`) and
+`homeGender` in the app (demo mode). "Open to anyone" homes and mixed homes never show. Older listings that
+haven't said who lives there (or whose lister hasn't set their own gender) come in a separate block under the
+results, "Open to women; who lives there isn't confirmed"; a lister who lives there alone counts from their
+own gender. Once the owner adds who lives there, the home moves up. Qualifying homes say **Women-only home**
+(or Men-only home) on the card and the home's page; the chip counts are the homes you then see above the block.
+The posting form says, under "Preferred", to pick "Women only" only if everyone living there is a woman.
+
 ## What makes it different
 
 - **Vibe match.** Seekers answer 12 living-style questions. Owners describe their household with the same questions,
