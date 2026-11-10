@@ -2181,6 +2181,24 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
 .fm-row .fm-g{margin:6px 0 4px}
+/* messages */
+.msgs-list{display:grid; gap:10px; margin-top:8px}
+.msg-row{display:grid; grid-template-columns:1fr auto; gap:2px 10px; text-align:left; width:100%; border:0; padding:14px 16px; border-radius:20px; background:var(--card); box-shadow:var(--card-shadow); color:var(--text); font:inherit; cursor:pointer}
+.msg-row b{grid-column:1; font-size:var(--fs-m); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.msg-kind{grid-column:1; font-size:var(--fs-xs); font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em}
+.msg-last{grid-column:1; font-size:var(--fs-s); color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.msg-when{grid-column:2; grid-row:1 / span 3; align-self:center; font-size:var(--fs-xs); color:var(--text-3); white-space:nowrap}
+.msg-row.new b{font-weight:800} .msg-when .badge{position:static; display:inline-grid; margin-left:4px}
+.msg-dlg .mbody{display:flex; flex-direction:column; gap:10px; padding-bottom:16px}
+.msg-list{display:flex; flex-direction:column; gap:6px; min-height:200px; max-height:58dvh; overflow:auto; padding:4px 2px}
+.msg{max-width:80%; padding:8px 12px 6px; border-radius:16px; background:var(--surface-2)}
+.msg p{margin:0; white-space:pre-wrap; overflow-wrap:anywhere} .msg b{display:block; font-size:var(--fs-xs)}
+.msg time{display:block; text-align:right; font-size:11px; color:var(--text-3)}
+.msg.mine{align-self:flex-end; background:var(--brand-soft); border-bottom-right-radius:6px} .msg.theirs{align-self:flex-start; border-bottom-left-radius:6px}
+.msg-day{align-self:center; font-size:var(--fs-xs); color:var(--text-3); margin:6px 0 2px}
+.msg-empty{text-align:center; margin:auto 0}
+.msg-form{display:flex; gap:8px; align-items:flex-end}
+.msg-form textarea{flex:1; resize:none; height:46px; min-height:46px; max-height:120px; border:1px solid var(--line-2); border-radius:18px; padding:10px 14px; background:var(--card)}
 </style>
 </head>
 <body>
@@ -2699,6 +2717,11 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- both: account -->
   <!-- both: Passes (a tab until a pass is bought) -->
+  <section id="view-messages" hidden>
+    <div class="greet"><p class="eyebrow">Messages</p><h1>Your chats</h1><p>With people you've both said yes to: rooms, your tribe, FlatMart deals and Flatsplits groups.</p></div>
+    <div id="msgsList" class="msgs-list"></div>
+  </section>
+
   <section id="view-plans" hidden>
     <div class="plans-hero">
       <p class="eyebrow">Passes</p>
@@ -2816,6 +2839,10 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 <dialog id="dlgShare" aria-labelledby="shTitle"><div class="mhead"><div><h2 id="shTitle">Share this home</h2><div class="loc" id="shSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="shBody" style="text-align:center"></div></dialog>
 
+<dialog id="dlgMsg" class="msg-dlg" aria-labelledby="msgTitle"><div class="mhead"><div><h2 id="msgTitle">Messages</h2><div class="loc" id="msgSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody"><div class="msg-list" id="msgList" aria-live="polite"></div>
+    <form id="msgForm" class="msg-form" novalidate><textarea id="msgText" rows="1" maxlength="1000" placeholder="Write a message" aria-label="Your message"></textarea>
+      <button class="btn btn-primary btn-sm" type="submit">Send</button></form></div></dialog>
 <dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="cBody"></div></dialog>
 
@@ -4280,6 +4307,11 @@ function makeLiveApi(sb){
     async sendRequest(id, message){ const r = one(await rpc("fm_request", { p_listing:id, p_message:message })); await this.me(); return r; },
     async withdraw(rid){ await rpc("fm_withdraw", { p_request: rid }); await this.me(); },
     async decide(rid, approve){ return one(await rpc("fm_decide", { p_request: rid, p_approve: approve })); },
+    // Messages after a yes (fm_thread_*).
+    async msgOpen(kind, ref){ return rpc("fm_thread_open", { p_kind: kind, p_ref: ref }); },
+    async msgGet(id){ return rpc("fm_thread_get", { p_thread: id }); },
+    async msgSend(id, body){ return rpc("fm_thread_send", { p_thread: id, p_body: body }); },
+    async msgList(){ return (await rpc("fm_thread_list")) || []; },
     // Supabase stores phone numbers without the "+" (919876543210); Call/WhatsApp need +91...
     async inbox(){ return (await rpc("fm_inbox")).map(r => Object.assign(r, { phone: plusPhone(r.phone) })); },
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
@@ -5435,8 +5467,8 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","plans","account"], owner:["mine","escape","requests","post","splits","market","plans","account"],
-  splits:["splits","market","discover","account"] };   // Discover shows the lock until the vibe questions are answered
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","plans","account","messages"], owner:["mine","escape","requests","post","splits","market","plans","account","messages"],
+  splits:["splits","market","discover","account","messages"] };   // Discover shows the lock until the vibe questions are answered
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
@@ -5448,9 +5480,10 @@ const TAB = {
   splits:["Splits",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'],
   market:["Market",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v10h16V10"/><path d="M2.5 10L5 4h14l2.5 6z"/><path d="M2.5 10a3.2 3.2 0 0 0 6.3 0 3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.3 0"/><path d="M10 20v-5h4v5"/></svg>'],
   plans:["Passes",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.2"/></svg>'],
+  messages:["Messages",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","plans","account"];
+const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","plans","account","messages"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-host").hidden = name !== "host";
@@ -5493,7 +5526,8 @@ function route(){
   $("meBtn").textContent = (firstName()[0] || "?").toUpperCase();
   setTimeout(maybeAskGender, 600);
   if(editing && v !== "post") endEdit();
-  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount })[v]();
+  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount, messages:renderMessages })[v]();
+  if(v !== "messages") refreshMsgUnseen();
   window.scrollTo(0, 0);
   // A home someone shared (?l=...): open it once the app is up.
   const shared = readLS(OPEN_KEY);
@@ -5539,7 +5573,7 @@ function renderNav(){
   // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
   const allowed = ROLE_VIEWS[roleKey()].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
   // Requests and Tribe live in the top bar, next to the avatar, so the bottom bar has room for the rest.
-  const TOP = ["requests"], count = n => n === "requests" ? unseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
+  const TOP = ["messages", "requests"], count = n => n === "requests" ? unseen : n === "messages" ? msgUnseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
   // Tribe sits next to Discover on the website, and as a named button in the phone's top bar (the bottom bar keeps the rest).
   const order = allowed.filter(n => !TOP.includes(n) && n !== "tribe"), at = order.indexOf("discover");
   if(allowed.includes("tribe")) order.splice(at + 1, 0, "tribe");
@@ -5895,7 +5929,7 @@ async function renderTribe(){
       <h2>You${bonded.map(t => " + " + esc(t.name)).join("")}</h2>
       <p>${budget ? `Together you can spend up to <b>${inr(budget)}</b> a month. ` : ""}Hunt for a whole flat and split it ${size} ways.</p>
       ${bonded.map(t => `<div class="bond-row"><span><b>${esc(t.name)}</b> · ${esc(occLine(t.occupation))}<small>Bonded ${timeAgo(t.bonded_at)} · ${t.match_pct}% vibe</small></span>
-        <span class="acts">${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
+        <span class="acts">${msgBtn("tribe", t.id, "Message")}${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMeFlatMate. Let's find our flat!`)}">WhatsApp</a>`}</span></div>`).join("")}
       <button class="tribe-leave-btn" type="button" data-tleave>Leave tribe</button>
     </div>` : "";
@@ -7333,6 +7367,7 @@ async function openListing(id){
       <div class="map-box" style="margin-top:10px">${(cp => cp.lat ? mapHtml(cp.lat + "," + cp.lng, 17, "📍 The owner's exact pin", !l.is_owner)
         : mapHtml(cp.building ? mapsQuery(cp, l.locality, l.city) : contact.address, 16, "", !l.is_owner))(contact.address_parts || {})}</div>
       ${l.is_owner ? "" : `${SAFE_PAY}<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        ${msgBtn("room", ((await api.inbox()).find(r => r.listing_id === id && r.direction === "outgoing" && r.status === "approved") || {}).id, "Message " + (contact.contact_name || "the owner").split(" ")[0])}
         <a class="btn btn-accent btn-sm" href="tel:+91${esc(contact.contact_phone)}" data-called="${esc(l.id)}">Call ${esc((contact.contact_name || "").split(" ")[0])}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" data-called="${esc(l.id)}" href="https://wa.me/91${esc(contact.contact_phone)}?text=${encodeURIComponent("Hi, I'm " + (state.user.name || "") + " from FindMeFlatMate. Thanks for accepting! When could I come and see “" + l.title + "”?")}">WhatsApp</a>
         <button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div>
@@ -7347,7 +7382,7 @@ async function openListing(id){
     lock = `<div class="lock open"><p style="margin:0 0 4px;font-weight:800;color:var(--ok)">✓ The owner accepted</p>
       <p class="hint" style="margin:0">With a real home you'd now see the owner's number, the exact address and their map pin, and could call or
         WhatsApp them. This is a sample, so there's nobody to call, but you can try booking a visit.</p>
-      <div style="margin-top:12px"><button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div></div>`;
+      <div class="acts" style="margin-top:12px">${msgBtn("room", ((await api.inbox()).find(r => r.listing_id === id && r.direction === "outgoing" && r.status === "approved") || {}).id, "Message the owner")}<button class="btn btn-primary btn-sm" data-action="visit">Book a visit</button></div></div>`;
   }else if(!l.is_owner && isSeeker()){
     const inv = (await api.inbox()).find(r => r.listing_id === id && r.by === "owner" && r.status === "pending");
     if(inv){
@@ -7652,7 +7687,7 @@ function incomingHtml(r, l){
       <div class="acts">${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
         ${r.status === "pending" && r.by !== "owner" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
-        : r.status === "approved" && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
+        : r.status === "approved" && r.phone ? `${msgBtn("room", r.id, "Message")}<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
           <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc(r.phone.replace(/^\+/, ""))}">WhatsApp</a>` : ""}</div>
     </div></article>`;
 }
@@ -7681,7 +7716,8 @@ function outgoingHtml(r){
         : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined" && !r.compromise && cmHomes[r.listing_id]
         ? `Declined.${CHARGES_ON ? " No contact used." : ""} <button class="btn btn-accent btn-sm" style="margin-top:8px" data-cm="${esc(r.id)}" data-cml="${esc(r.listing_id)}">🤝 Compromise and ask again</button>`
         : r.status === "declined"
-        ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div></div></article>`;
+        ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div>
+      ${r.status === "approved" ? `<div class="acts">${msgBtn("room", r.id, "Message " + (r.name || "the owner"))}</div>` : ""}</div></article>`;
 }
 $("reqList").addEventListener("click", async e => {
   const cmb = e.target.closest("[data-cm]");
@@ -7703,6 +7739,119 @@ $("reqList").addEventListener("click", async e => {
   if(cb){ const ctx = reqCompat.get(cb.dataset.compat); if(ctx) openCompat(ctx); return; }
   const o = e.target.closest("[data-open]"); if(o) openListing(o.dataset.open);
 });
+
+/* ============================================================= messages */
+// Chat in the app once people are connected (Kamal, 10 Nov): an accepted room request or invite, a tribe, an
+// accepted FlatMart offer, a Flatsplits group. Never before the yes (fm_thread_open). Messages are under the chat
+// icon in the top bar; a push goes to the others when the app is closed (fm-notify).
+const MSG_KIND_LABEL = { room:"Room", tribe:"Tribe", market:"FlatMart", split:"Flatsplits" };
+const msgBtn = (kind, ref, label) => ref ? `<button class="btn btn-ghost btn-sm" type="button" data-msg="${kind}:${esc(ref)}">💬 ${esc(label || "Message")}</button>` : "";
+let msgUnseen = 0, msgThread = null, msgData = null, msgPoll = null, msgBusy = false;
+async function refreshMsgUnseen(){
+  try{ const n = (await api.msgList()).reduce((t, x) => t + (Number(x.unread) || 0), 0); if(n !== msgUnseen){ msgUnseen = n; renderNav(); } }catch(e){}
+}
+// The demo: sample people answer once, a moment later; your own messages stay on this device.
+const DEMO_REPLIES = { room:"Hi! Thanks for writing. Saturday morning works for a visit. Does 11 suit you?", tribe:"Hey! Yes, let's shortlist a few flats this week.",
+  market:"Hi! Sunday afternoon works for pick-up.", split:"Thanks! I'll pay my share tonight." };
+Object.assign(demoApi, {
+  msgOk_(kind, ref){
+    const me = this.me_();
+    if(kind === "room"){ const r = state.requests.find(x => x.id === ref); if(!r || r.status !== "approved") return null;
+      const l = this.all().find(x => x.id === r.listing_id); if(!l || (r.seeker_phone !== me && l.owner_phone !== me)) return null;
+      return { title:l.title, other: r.seeker_phone === me ? ((l.private && l.private.contact_name) || "The owner").split(" ")[0] : (r.seeker.name || "They").split(" ")[0] }; }
+    if(kind === "tribe"){ const t = (state.tribe || []).find(x => x.id === ref && x.status === "bonded"); if(!t) return null;
+      const x = demoSeekerPool().find(p => p.id === t.sid); return { title:"Your tribe", other: x ? x.name : "Your tribemate" }; }
+    if(kind === "market"){ const o = this.mk().offers.find(x => x.id === ref && x.status === "accepted"); if(!o) return null;
+      const i = this.mkAll().find(x => x.id === o.item_id) || {}; return { title:i.title || "FlatMart", other: o.buyer_phone === me ? (i.seller_name || "The seller") : (o.buyer_name || "The buyer") }; }
+    if(kind === "split"){ const g = this.splitMine().find(x => x.id === ref); if(!g) return null;
+      const m = (g.members || []).find(x => x.phone !== me); return { title:(g.emoji || "🏠") + " " + g.name, other: m ? m.name : null }; }
+    return null;
+  },
+  async msgOpen(kind, ref){
+    const ok = this.msgOk_(kind, ref); if(!ok) return { error:"not-yet" };
+    state.threads = state.threads || {};
+    let t = Object.values(state.threads).find(x => x.kind === kind && x.ref === ref);
+    if(!t){ t = { id:"t" + Date.now() + Math.random().toString(36).slice(2, 6), kind, ref, messages:[], read_at:new Date().toISOString(), last_at:new Date().toISOString(), replied:false };
+      state.threads[t.id] = t; save(); }
+    return { thread:t.id };
+  },
+  async msgGet(id){
+    const t = (state.threads || {})[id], ok = t && this.msgOk_(t.kind, t.ref);
+    if(!ok) return { error:"not-found" };
+    t.read_at = new Date().toISOString(); save();
+    return { thread:t.id, kind:t.kind, ref:t.ref, title:ok.title, people: ok.other ? [ok.other] : [], messages:t.messages.slice(-200) };
+  },
+  async msgSend(id, body){
+    const t = (state.threads || {})[id], ok = t && this.msgOk_(t.kind, t.ref), text = String(body || "").trim().slice(0, 1000);
+    if(!ok) return { error:"not-found" }; if(!text) return { error:"empty" };
+    const at = new Date().toISOString();
+    t.messages.push({ id:"m" + Date.now(), mine:true, name:firstName(), body:text.replace(/</g, "‹").replace(/>/g, "›"), at }); t.last_at = at; t.read_at = at; save();
+    if(!t.replied && ok.other){ t.replied = true; save();
+      setTimeout(() => { const x = (state.threads || {})[id]; if(!x) return; const now = new Date().toISOString();
+        x.messages.push({ id:"m" + Date.now(), mine:false, name:ok.other, body:DEMO_REPLIES[t.kind], at:now }); x.last_at = now; save();
+        if($("dlgMsg").open && msgThread === id) msgRefresh(true); else refreshMsgUnseen(); if(currentView === "messages") renderMessages(); }, 1500); }
+    return { message:"m" };
+  },
+  async msgList(){
+    return Object.values(state.threads || {}).filter(t => t.messages.length && this.msgOk_(t.kind, t.ref)).map(t => { const ok = this.msgOk_(t.kind, t.ref), last = t.messages[t.messages.length - 1];
+      return { thread:t.id, kind:t.kind, ref:t.ref, title:ok.title, last_at:t.last_at, last:{ body:last.body.slice(0, 120), mine:last.mine },
+        unread: t.messages.filter(m => !m.mine && m.at > (t.read_at || "")).length }; }).sort((a, b) => b.last_at.localeCompare(a.last_at));
+  },
+});
+async function openMsg(kind, ref){
+  try{
+    const o = await api.msgOpen(kind, ref);
+    if(o.error){ toast(o.error === "not-yet" ? "You can message each other once you've both said yes." : "Couldn't open the chat. Please try again."); return; }
+    msgThread = o.thread; await msgRefresh(true);
+    if(!$("dlgMsg").open) $("dlgMsg").showModal();
+    setTimeout(() => $("msgText") && $("msgText").focus(), 50);
+    clearInterval(msgPoll);
+    if(api.live) msgPoll = setInterval(() => { if(!$("dlgMsg").open){ clearInterval(msgPoll); return; } if(!msgBusy) msgRefresh(); }, 5000);
+  }catch(err){ console.error(err); toast("Couldn't open the chat. Please try again."); }
+}
+async function msgRefresh(scroll){
+  const before = msgData && msgData.messages ? msgData.messages.length : -1;
+  msgData = await api.msgGet(msgThread);
+  if(msgData.error){ $("msgTitle").textContent = "Messages"; $("msgSub").textContent = "";
+    $("msgList").innerHTML = `<p class="hint msg-empty">This conversation isn't available any more.</p>`; $("msgForm").hidden = true; return; }
+  $("msgForm").hidden = false;
+  $("msgTitle").textContent = msgData.people.length ? msgData.people.join(", ") : msgData.title;
+  $("msgSub").textContent = MSG_KIND_LABEL[msgData.kind] + " · " + msgData.title;
+  let day = "";
+  $("msgList").innerHTML = msgData.messages.length ? msgData.messages.map(m => { const d = fmtDate(m.at), head = d !== day ? `<p class="msg-day">${esc(d)}</p>` : ""; day = d;
+    return head + `<div class="msg ${m.mine ? "mine" : "theirs"}">${!m.mine && msgData.kind === "split" ? `<b>${esc(m.name)}</b>` : ""}<p>${esc(m.body)}</p>
+      <time datetime="${esc(m.at)}">${new Date(m.at).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" })}</time></div>`; }).join("")
+    : `<p class="hint msg-empty">Say hello. ${SAFE_PAY_LINE}</p>`;
+  if(scroll || msgData.messages.length !== before){ const l = $("msgList"); l.scrollTop = l.scrollHeight; }
+  if(currentView === "messages") renderMessages(); else refreshMsgUnseen();
+}
+const SAFE_PAY_LINE = "Never pay a token or deposit before you've seen the place and met the person.";
+$("msgForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const text = $("msgText").value.trim(); if(!text || msgBusy) return;
+  msgBusy = true; const b = e.target.querySelector("button"); b.disabled = true;
+  try{ const r = await api.msgSend(msgThread, text); if(r.error) throw new Error(r.error); $("msgText").value = ""; await msgRefresh(true); }
+  catch(err){ console.error(err); toast(/rate-limited/.test(err.message || "") ? "That's a lot of messages. Please wait a few minutes." : "Couldn't send. Please try again."); }
+  msgBusy = false; b.disabled = false; $("msgText").focus();
+});
+$("msgText").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("msgForm").requestSubmit(); } });
+$("dlgMsg").addEventListener("close", () => { clearInterval(msgPoll); refreshMsgUnseen(); });
+document.addEventListener("click", e => { const b = e.target.closest("[data-msg]"); if(!b) return; e.preventDefault(); e.stopPropagation();
+  const [kind, ref] = b.dataset.msg.split(":"); openMsg(kind, ref); }, true);
+async function renderMessages(){
+  const rows = await api.msgList().catch(() => []);
+  msgUnseen = rows.reduce((t, x) => t + (Number(x.unread) || 0), 0); renderNav();
+  $("msgsList").innerHTML = rows.length ? rows.map(t => `<button type="button" class="msg-row${t.unread ? " new" : ""}" data-thread="${esc(t.thread)}">
+      <span class="msg-kind">${esc(MSG_KIND_LABEL[t.kind])}</span><b>${esc(t.title || "")}</b>
+      <span class="msg-last">${t.last ? (t.last.mine ? "You: " : "") + esc(t.last.body) : ""}</span>
+      <span class="msg-when">${timeAgo(t.last_at)}${t.unread ? ` <i class="badge" aria-label="${t.unread} new">${t.unread}</i>` : ""}</span></button>`).join("")
+    : `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("chat", 30, 1.8)}</div><h3>No messages yet</h3>
+        <p>Once you and someone have both said yes (a room, your tribe, a FlatMart deal) or you're in a Flatsplits group together, tap <b>Message</b> there to chat here.</p></div>`;
+}
+$("msgsList").addEventListener("click", async e => { const b = e.target.closest("[data-thread]"); if(!b) return;
+  msgThread = b.dataset.thread; await msgRefresh(true); if(!$("dlgMsg").open) $("dlgMsg").showModal();
+  clearInterval(msgPoll); if(api.live) msgPoll = setInterval(() => { if(!$("dlgMsg").open){ clearInterval(msgPoll); return; } if(!msgBusy) msgRefresh(); }, 5000); });
+setInterval(() => { if(state.user && !document.hidden && !$("dlgMsg").open) refreshMsgUnseen(); }, 60000);
 
 /* ========================================================= welcome gift */
 let afterGift = null;
@@ -8369,7 +8518,7 @@ function drawSplitGroup(){
     ${d.group.kind === "party" ? fsPartyHtml() : ""}
     <div class="fs-bal ${mine > 0 ? "pos" : mine < 0 ? "neg" : ""}"><small>${mine > 0 ? "Overall, you get back" : mine < 0 ? "Overall, you owe" : "Your balance"}</small>
       <b>${mine ? rupees(mine) : "All settled up"}</b>${lines.length ? `<ul>${lines.map(x => `<li>${x}</li>`).join("")}</ul>` : ""}</div>
-    <div class="fs-acts"><button class="btn btn-primary" type="button" data-fs="add">+ Add expense</button>
+    <div class="fs-acts"><button class="btn btn-primary" type="button" data-fs="add">+ Add expense</button>${others.length ? msgBtn("split", d.group.id, "Group chat") : ""}
       ${pays.length ? `<button class="btn btn-ghost" type="button" data-fs="settle">Settle up</button>` : ""}</div>
     <div class="area-chips fs-tabs" role="tablist">${tabs.map(([k, t]) => `<button type="button" role="tab" data-fs-tab="${k}" aria-pressed="${fsTab === k}">${t}${
       k === "bills" && d.bills.length ? ` · ${d.bills.length}` : ""}</button>`).join("")}</div>
@@ -9006,7 +9155,7 @@ async function renderMkMine(){
       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`);
 }
 function mkContactActs(r, text){
-  return `<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
+  return `${msgBtn("market", r.id, "Message")}<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
     <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${esc(waLink(r.phone, text))}">WhatsApp</a>`;
 }
 // The other side's record, under an offer: deals done and since when.
