@@ -96,6 +96,17 @@ set role authenticated;
 select pg_temp.ok((select count(*) from fm_chat_messages where chat_id = :'chat2') = 0, 'chat: tables: a closed chat''s messages can''t be read');
 reset role;
 
+-- withdrawing the request from the home's page closes its chat too
+reset role;
+insert into fm_listings (id, owner_id, kind, title, city, locality, bhk, rent, status) values
+  ('5e000000-0000-4000-8000-00000000005e', '50000000-0000-4000-8000-000000000052', 'room', 'Chat test room 3', 'Pune', 'Wakad', 2, 9000, 'active') on conflict (id) do nothing;
+insert into fm_requests (id, listing_id, seeker_id, status) values ('5f000000-0000-4000-8000-00000000005f', '5e000000-0000-4000-8000-00000000005e', '50000000-0000-4000-8000-000000000051', 'pending') on conflict do nothing;
+select pg_temp.as_user('50000000-0000-4000-8000-000000000051');
+select fm_chat_open('5f000000-0000-4000-8000-00000000005f')->>'chat' as chat3 \gset
+select fm_withdraw('5f000000-0000-4000-8000-00000000005f');
+select pg_temp.ok(fm_chat_get(:'chat3')->>'status' = 'closed' and fm_chat_get(:'chat3')->'messages' is null, 'chat: withdrawing the request elsewhere closes the chat');
+reset role;
+
 -- 18+ only, and the 30-day clean-up
 update fm_profiles set adult_at = null where id = '50000000-0000-4000-8000-000000000053';
 insert into fm_listings (id, owner_id, kind, title, city, locality, bhk, rent, status) values

@@ -4072,6 +4072,21 @@ begin
   return 'closed';
 end $$;
 
+-- Withdrawing a request (or declining it) from anywhere else in the app closes its chat the same way.
+create or replace function public.fm_request_chat_close() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if old.status = 'pending' and new.status in ('withdrawn','declined') then
+    update fm_chats set status = 'closed', closed_at = now(),
+           closed_by = case when new.status = 'withdrawn' then seeker_id else owner_id end
+     where request_id = new.id and status = 'open';
+  end if;
+  return new;
+end $$;
+drop trigger if exists fm_request_chat_close on public.fm_requests;
+create trigger fm_request_chat_close after update of status on public.fm_requests
+  for each row execute function public.fm_request_chat_close();
+
 -- ------------------------------------------------------- Mutual Consent --
 -- Numbers and the address are shared only when both have said yes: the seeker's request is their first yes,
 -- the lister accepts (fm_decide), and then the seeker confirms "Share my number" here. Until then nothing unlocks.
@@ -4157,7 +4172,7 @@ begin
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
                      'fm_party_request_notify', 'fm_listing_fresh',
-                     'fm_request_approve', 'fm_chat_purge', 'fm_chat_clashes') then
+                     'fm_request_approve', 'fm_chat_purge', 'fm_chat_clashes', 'fm_request_chat_close') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
