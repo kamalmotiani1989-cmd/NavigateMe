@@ -1,5 +1,21 @@
 # Teche · reports
 
+## 2026-11-10, in-app messages after a yes: #87 live
+
+- **What:** chat inside the app once people are connected, never before. It works for:
+  - an accepted room request or invite (Discover/Escape);
+  - a bonded tribe;
+  - an accepted FlatMart offer;
+  - a Flatsplits group.
+
+  Messages sits under a chat icon in the top bar with an unread count, and a push goes to the others when the app
+  is closed.
+- **Live:** the database went first (md5-checked). A rolled-back check: a chat opens after a yes, the other side
+  sees it unread, a stranger gets nothing, and a waiting request can't open one. Then fm-notify was redeployed
+  (version 7), then the merge. Published: findmeflatmate main says "Publish the app from NavigateMe 1ddaedf".
+- **Next:** block/report inside a chat before a public launch. #86 (privacy) has the matching lines and waits for
+  Kamal's [TO FILL]s.
+
 ## 2026-11-10, women-only homes: #85 live; privacy and security pages in #86
 
 - **Women only (#85, live):** Kamal's wife searched "Women only" and kept getting homes open to anyone. Now it shows
