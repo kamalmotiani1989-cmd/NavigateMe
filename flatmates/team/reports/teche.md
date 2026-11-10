@@ -1,5 +1,14 @@
 # Teche · reports
 
+## 2026-11-10, AI go-between: build paused, plan in #84
+
+- **Build paused:** Kamal said "Don't build now, let's discuss". King's STOP reached me after the build was done. Branch
+  `claude/ai-go-between` was pushed before I saw it. It has no PR and isn't merged; nothing is live, nothing was spent,
+  and no AI was called (tests ran offline: database 154 checks, app 14 suites). The branch is kept for reuse.
+- **Plan:** `design/ai-go-between-plan.md`, PR #84, not merged. Rules handle most of it; AI is needed only for
+  translation, reading questions and summaries. I recommend claude-haiku-5-5 at about ₹0.38 per enquiry (estimate).
+  Eight decisions are waiting for Kamal.
+
 ## 2026-11-09, text in the logo's colours: #83 live
 
 Kamal asked for the text colours to follow the logo, black and orange, and said merge once done.
