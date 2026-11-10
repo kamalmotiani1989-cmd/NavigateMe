@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
+<title>Security · FindMeFlatMate</title>
+<meta name="description" content="How FindMeFlatMate protects your data, what isn't done yet, and how to report a security problem.">
+<meta name="theme-color" content="#EFE4DC">
+<link rel="canonical" href="https://findmeflatmate.com/security.html">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#EFE4DC; --surface:#FBF8F6; --surface-2:#F1EAE5; --text:#1C1917; --text-2:#57534E; --link:#B23A0A }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--text); font:16.5px/1.65 "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif}
+a{color:var(--link); font-weight:700}
+.wrap{max-width:800px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-block:16px}
+.logo{display:flex; align-items:center; gap:10px; text-decoration:none}
+.back{color:var(--text); font-size:15px; font-weight:700; text-decoration:none; padding:8px 14px; border-radius:999px; background:var(--surface); white-space:nowrap}
+h1{font-size:clamp(34px,7vw,48px); font-weight:700; line-height:1.05; letter-spacing:-.03em; margin:18px 0 6px}
+.lead{color:var(--text-2); margin:0 0 22px}
+.card{background:var(--surface); border-radius:28px; padding:22px 22px 10px; margin:0 0 16px; box-shadow:0 10px 30px rgba(60,40,30,.07)}
+h2{font-size:23px; letter-spacing:-.02em; line-height:1.25; margin:6px 0 10px}
+p, li{color:var(--text-2)} p{margin:0 0 12px}
+ul{padding-left:20px; margin:0 0 14px} li{margin:7px 0}
+b{color:var(--text)}
+.fill{background:#FFE9A8; color:var(--text); font-weight:700; padding:0 4px; border-radius:4px}
+footer{margin-top:40px; background:var(--text); color:rgba(255,255,255,.75); font-size:14px; padding:22px 0 calc(22px + env(safe-area-inset-bottom,0px))}
+footer a{color:#fff}
+@media (max-width:560px){ .card{padding:18px 16px 6px; border-radius:22px} }
+</style>
+</head>
+<body>
+<div class="wrap top">
+  <a class="logo" href="index.html"><img src="icons/icon-192.png" alt="" width="38" height="38" style="border-radius:22%"><img src="icons/wordmark.svg" alt="findmeflatmate.com" height="16" style="height:16px;width:auto"></a>
+  <a class="back" href="index.html">← Back to the app</a>
+</div>
+<main class="wrap">
+  <h1>Security</h1>
+  <p class="lead">How we protect your data, plainly, including what isn't done yet. We hold no security certification. Last updated <span class="fill">[TO FILL: date published]</span>.
+    What we collect and why is in our <a href="privacy.html">privacy policy</a>.</p>
+
+  <section class="card">
+  <h2>What we do</h2>
+  <ul>
+    <li><b>Private until both say yes.</b> A flat's address, exact pin and contact number are stored apart from the public listing, and the database hands them out only once
+      owner and seeker have both said yes.</li>
+    <li><b>No direct access to the database.</b> Every table has row-level security switched on, and nobody using the app can read or change a table directly. Everything
+      goes through checked functions that look at who's asking and give back only what that person may see. Listings need you to be signed in.</li>
+    <li><b>Secret keys stay on the server.</b> Payment, WhatsApp, SMS and notification keys are kept as server secrets, never in the app or the website. The only keys in the app
+      are the ones meant to be public (the database's public key and a Google Maps key limited to our sites).</li>
+    <li><b>Encrypted connections.</b> The website, the app and our services talk over HTTPS.</li>
+    <li><b>Limits against abuse.</b> Sign-in codes: one a minute and five an hour per number, and a limit per network. Searches, opening listings, requests and posts are counted
+      per account (or per network when signed out) and slowed down past a limit, so the listings can't be copied by a script. These counts are kept for two days.</li>
+    <li><b>18 and over.</b> No sign-in code is sent until you confirm you're 18 or older; the server checks it, not just the app. It is your own confirmation; we don't check ID.</li>
+    <li><b>Safe text and pages.</b> Text people type can't carry code into someone else's screen, our pages can't be shown inside other sites, and the database's list of
+      functions isn't published.</li>
+    <li><b>Payments.</b> Razorpay handles card, UPI and bank details. We never see or store them.</li>
+    <li><b>Who can get in.</b> Only <span class="fill">[TO FILL: who has access to the database dashboard and the servers, e.g. "the founder's account, and tools he authorises"]</span>.</li>
+    <li><b>Backups.</b> <span class="fill">[TO FILL: Supabase plan and backup schedule, or "none beyond Supabase's own"]</span>.</li>
+  </ul>
+  </section>
+
+  <section class="card">
+  <h2>Not done yet</h2>
+  <ul>
+    <li><b>Test sign-in.</b> While we test, a shared test sign-in code can be used in place of a code on WhatsApp or SMS. It's stored only as a scrambled (hashed) value,
+      and wrong tries are limited, but it is switched off before we open to everyone.</li>
+    <li><b>No record of who looked at what.</b> We don't yet keep a log of the team's access to the database.</li>
+  </ul>
+  </section>
+
+  <section class="card">
+  <h2>Report a security problem</h2>
+  <p>If you find a weakness, or think your data has been misused, write to <a href="mailto:privacy@findmeflatmate.com">privacy@findmeflatmate.com</a>
+    <span class="fill">[TO FILL: or a separate security address]</span> with what you found and how to see it. Please don't access other people's data or harm the service while
+    checking. We'll reply within <span class="fill">[TO FILL: e.g. 3 days]</span>. If a breach affects your data, we'll tell you and the Data Protection Board of India,
+    as our <a href="privacy.html#breach">privacy policy</a> says.</p>
+  </section>
+</main>
+<footer>
+  <div class="wrap">© 2026 FindMeFlatMate · <a href="privacy.html">Privacy policy</a> · <a href="index.html">Back to the app</a></div>
+</footer>
+</body>
+</html>

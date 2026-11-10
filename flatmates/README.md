@@ -673,7 +673,10 @@ wherever Meta or Google ask for a privacy policy URL.
 
 ## Privacy policy
 
-`privacy.html` is the privacy policy, written to match what the app actually does. It covers what's
+`privacy.html` is the privacy policy, written to match what the app actually does, in the structure of the
+DPDP Act 2023 and Rules 2025 (Nov 2026 rewrite; it lists the processors actually used: Supabase, Meta WhatsApp,
+MSG91, Razorpay, Google Maps/Places, Firebase, Google Fonts, GitHub Pages). Lines marked `[TO FILL]` are Kamal's
+(legal entity, grievance officer, postal address, response times, backups, jurisdiction). It covers what's
 collected, who sees what, the services used, cookies and ads measurement, how long data is kept, the
 user's rights under the Digital Personal Data Protection Act, 2023, and the grievance officer
 (Richa Wadhwani, privacy@findmeflatmate.com). It's linked from the sign-in card, both footers and
@@ -728,6 +731,11 @@ To put it on hold again: add `flatmates/ON_HOLD` back, publish, and run
 `update fm_settings set on_hold = true, test_login = false;`.
 
 ## Security
+
+`security.html` (linked from both footers and the privacy policy) says the same to users, in plain words,
+including what isn't done yet (test sign-in, no access log) and how to report a problem. It claims no
+certification; keep it in step with this section. The `[TO FILL]` parts (who has access, backups, a security
+contact and reply time) are Kamal's to fill before it's published.
 
 How the app keeps accounts safe and stops people copying the inventory with a script:
 
