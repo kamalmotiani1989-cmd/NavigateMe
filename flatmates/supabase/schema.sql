@@ -2160,19 +2160,20 @@ $$;
 
 -- Open a party to people nearby, change it, or close it again (p.open = false). The host only; adults only.
 -- Party rules (Kamal, 10 Nov): FindMeFlatMate's own rules for parties with people nearby (the text is PARTY_RULES in
--- index.html). Everyone agrees once, before asking to join a party or opening one to people nearby; the server
--- checks it. PARTY_RULES_VERSION goes up when the rules change in a way people should agree to again.
+-- index.html), 21 and over only. Everyone confirms once that they're 21 or older and agree, before asking to join a
+-- party or opening one to people nearby; the server checks it. The version goes up when the rules change in a way
+-- people should agree to again (2: 21+, Kamal, 10 Nov).
 alter table public.fm_profiles add column if not exists party_rules_at timestamptz;
 alter table public.fm_profiles add column if not exists party_rules_v int;
 create or replace function public.fm_party_rules_ok(p_user uuid) returns boolean
 language sql stable security definer set search_path = public as $$
-  select coalesce((select party_rules_v from fm_profiles where id = p_user), 0) >= 1;   -- PARTY_RULES_VERSION
+  select coalesce((select party_rules_v from fm_profiles where id = p_user), 0) >= 2;   -- PARTY_RULES_VERSION
 $$;
 create or replace function public.fm_party_rules_accept() returns jsonb
 language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is null then raise exception 'not-signed-in'; end if;
-  update fm_profiles set party_rules_at = now(), party_rules_v = 1 where id = auth.uid();
+  update fm_profiles set party_rules_at = now(), party_rules_v = 2 where id = auth.uid();   -- 21+ and the rules
   return jsonb_build_object('rules_ok', true, 'rules_at', now());
 end $$;
 

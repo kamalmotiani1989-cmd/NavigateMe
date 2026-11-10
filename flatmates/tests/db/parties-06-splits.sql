@@ -7,7 +7,7 @@ select pg_temp.err($$select fm_set_profile('Ira Sen', 'splits')$$) as setrole \g
 select pg_temp.ok(:'setrole' = '' and (select role from fm_profiles where id = '30000000-0000-4000-8000-000000000030') = 'splits', 'splits: an account can sign up for Flatsplits and FlatMart only');
 select pg_temp.ok(pg_temp.err($$select fm_set_profile(null, 'admin')$$) like '%bad-role%', 'splits: any other role is refused');
 select pg_temp.ok(pg_temp.err($$select fm_party_nearby_set(true, '{"lat":18.568,"lng":73.77}', 'Baner')$$) like '%need-vibe%', 'splits: cannot switch parties nearby on before the vibe questions');
-update fm_profiles set parties_nearby = true, party_pin = '{"lat":18.565,"lng":73.775}', party_rules_v = 1 where id = '30000000-0000-4000-8000-000000000030';   -- even having agreed to the party rules
+update fm_profiles set parties_nearby = true, party_pin = '{"lat":18.565,"lng":73.775}', party_rules_v = 2 where id = '30000000-0000-4000-8000-000000000030';   -- even having agreed to the party rules
 select pg_temp.ok(fm_party_cant_see((select id from fm_parties where code = :'code2'), '30000000-0000-4000-8000-000000000030') = 'need-vibe' and (select count(*) from fm_party_nearby()) = 0,
   'splits: sees no parties nearby, even if switched on by other means (need-vibe)');
 select pg_temp.ok(pg_temp.err(format('select fm_party_request(%L)', :'code2')) like '%need-vibe%', 'splits: cannot ask to join a party nearby');

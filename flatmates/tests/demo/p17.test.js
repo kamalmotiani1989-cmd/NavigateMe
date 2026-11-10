@@ -14,16 +14,18 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
   await ctx.addInitScript(s => { try{ if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }catch(e){} }, st);
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept().catch(() => {}));
   await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1500); await closeDlgs(p);
-  ok(await p.evaluate(() => PARTY_RULES.length === 10 && PARTY_RULES.every(([h, t]) => h && t.length > 30)), 'ten rules, each with a short explanation');
+  ok(await p.evaluate(() => PARTY_RULES.length === 10 && PARTY_RULES.every(([h, t]) => h && t.length > 30) && /^21 and over only$/.test(PARTY_RULES[0][0]) && /21 or older/.test(PARTY_RULES[0][1])),
+    'ten rules, each with a short explanation; the first is 21 and over only');
   const code = await p.evaluate(() => demoNearParties().find(x => x.city === 'Pune' && x.who !== 'male').code);
   await p.evaluate(c => openNear(c), code); await p.waitForTimeout(800);
   const pg = await p.evaluate(() => ({ rules: !!document.querySelector('#nearBody .party-rules'), items: document.querySelectorAll('#nearBody .party-rules li').length,
     tick: !!$('nearRulesOk'), req: $('nearRulesOk') && $('nearRulesOk').required }));
+  ok(await p.evaluate(() => /I'm 21 or older, I've read the party rules/.test($('nearAsk').textContent) && /21\+ only/.test($('nearBody').textContent)), 'guest: the tick says "I\'m 21 or older", and the party says 21+ only');
   ok(pg.rules && pg.items === 10 && pg.tick && pg.req, 'guest: the party page shows the rules, and Request to join has "I\'ve read the party rules": ' + JSON.stringify(pg));
   // not ticked: nothing goes
   await p.click('#nearAsk [type=submit]'); await p.waitForTimeout(500);
   const no = await p.evaluate(() => ({ err: (document.querySelector('#nearAsk .form-err') || {}).textContent || '', asked: !!(state.partyReqs || []).length, at: state.partyRulesAt }));
-  ok(/agree to the party rules/.test(no.err) && !no.asked && !no.at, 'guest: without the tick, no request is sent: ' + no.err);
+  ok(/21\+/.test(no.err) && /agree to the party rules/.test(no.err) && !no.asked && !no.at, 'guest: without the tick, no request is sent: ' + no.err);
   ok(await p.evaluate(() => api.partyRequest(demoNearParties()[0].code).then(() => 'sent', e => e.message)) === 'rules-required', 'guest: the request itself is refused without agreeing (as on the server)');
   // the link opens the rules
   await p.click('#nearAsk [data-rules-open]'); await p.waitForTimeout(400);
@@ -38,7 +40,8 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
     ok(await p.evaluate(() => !$('nearRulesOk') && !!document.querySelector('#nearBody .party-rules')), 'guest: asked once; the next party has no tick, the rules are still there to read'); }
   await closeDlgs(p);
   // host: opening a party to people nearby
-  await p.evaluate(() => { state.partyRulesAt = null; save(); partyRulesOk = null; });
+  ok(await p.evaluate(async () => { state.partyRulesV = 1; save(); return !(await api.partyNearbyMe()).rules_ok; }), 'agreeing to the old 18+ version isn\'t enough');
+  await p.evaluate(() => { state.partyRulesAt = null; state.partyRulesV = 0; save(); partyRulesOk = null; });
   const gid = await p.evaluate(() => api.splitCreate('Game night', '🎲', [], 'party'));
   await p.goto('http://localhost:8765/#splits/' + gid); await p.waitForTimeout(1500); await closeDlgs(p);
   await p.click('[data-pt="edit"]'); await p.waitForTimeout(800);

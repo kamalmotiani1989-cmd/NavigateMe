@@ -25,7 +25,7 @@ on conflict (id) do update set full_name = excluded.full_name, gender = excluded
 -- everyone here has answered the vibe questions as a seeker (parties nearby need them)
 update fm_profiles set role = 'seeker' where phone like '9198000000%';
 -- and everyone here has agreed to the party rules (parties-12 checks what happens without)
-update fm_profiles set party_rules_v = 1, party_rules_at = now() where phone like '9198000000%';
+update fm_profiles set party_rules_v = 2, party_rules_at = now() where phone like '9198000000%';
 insert into fm_split_groups (id, name, kind, created_by) values ('99999999-0000-4000-8000-000000000001', 'Diwali night', 'party', 'f0000000-0000-4000-8000-00000000000f');
 insert into fm_split_members (group_id, name, phone) values ('99999999-0000-4000-8000-000000000001', 'Hema', '9800000006');
 select pg_temp.as_user('f0000000-0000-4000-8000-00000000000f');

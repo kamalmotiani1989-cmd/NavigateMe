@@ -4846,8 +4846,9 @@ Object.assign(demoApi, {
     save(); return this.partyView(p, token);
   },
   // Nearby parties, guests: same rules as fm_party_nearby_set / fm_party_cant_see / fm_party_nearby.
-  async partyNearbyMe(){ return Object.assign({ on:false, pin:null, label:null }, state.partyNear, { rules_ok: !!state.partyRulesAt, rules_at: state.partyRulesAt || null }); },
-  async partyRulesAccept(){ state.partyRulesAt = new Date().toISOString(); save(); return { rules_ok:true, rules_at:state.partyRulesAt }; },
+  async partyNearbyMe(){ return Object.assign({ on:false, pin:null, label:null }, state.partyNear, { rules_ok: this.partyRulesOk_(), rules_at: state.partyRulesAt || null }); },
+  partyRulesOk_(){ return !!state.partyRulesAt && (state.partyRulesV || 0) >= 2; },   // as fm_party_rules_ok: version 2, 21+
+  async partyRulesAccept(){ state.partyRulesAt = new Date().toISOString(); state.partyRulesV = 2; save(); return { rules_ok:true, rules_at:state.partyRulesAt }; },
   // As fm_party_vibe_ok: an owner, or a seeker who has answered the vibe questions.
   partyVibeOk(){ return isOwner() || (isSeeker() && answered(state.vibe) >= MIN_VIBE); },
   async partyNearbySet(on, pin, label){
@@ -4898,7 +4899,7 @@ Object.assign(demoApi, {
   },
   async partyRequest(code, note, plus){
     const p = this.nearFind(code); if(!p) throw new Error("no-party");
-    if(!state.partyRulesAt) throw new Error("rules-required");
+    if(!this.partyRulesOk_()) throw new Error("rules-required");
     const why = this.partyCantSee(p); if(why) throw new Error(why);
     let r = this.partyReqs().find(x => x.party_id === p.id && x.user_phone === this.me_());
     if(r && ["pending", "accepted"].includes(r.status)) throw new Error("already-asked");
@@ -4990,7 +4991,7 @@ Object.assign(demoApi, {
     if(!x.open){ p.open = false; save(); return this.partyOpenView(p); }
     if(state.partyBlocked) throw new Error("blocked");
     if(!this.partyVibeOk()) throw new Error("need-vibe");
-    if(!state.partyRulesAt) throw new Error("rules-required");
+    if(!this.partyRulesOk_()) throw new Error("rules-required");
     if(p.cancelled) throw new Error("party-cancelled");
     if(new Date(p.starts_at) < new Date()) throw new Error("party-over");
     const limit = Math.round(Number(x.guest_limit)); if(!(limit >= 2 && limit <= 50)) throw new Error("bad-limit");
@@ -9863,10 +9864,11 @@ const PT_COVERS = { food:"Food", soft_drinks:"Soft drinks", snacks:"Snacks", mus
 const PT_ALCOHOL = /(alcohol|beer|wine|whisk(e)?y|vodka|\brum\b|\bgin\b|tequila|liquor|booze|daaru|daru|sharab|cocktail|\bpints?\b|\bbottles?\b|brew)/i;
 const PT_WHO = { all:"Everyone", female:"Women only", male:"Men only" };
 // FindMeFlatMate's party rules (Kamal, 10 Nov), for parties with people nearby. Guests agree before asking to join,
-// hosts before opening a party to people nearby; the server checks it (fm_party_rules_ok). If they change in a way
+// hosts before opening a party to people nearby, confirming they're 21 or older; the server checks it (fm_party_rules_ok,
+// version 2). If they change in a way
 // people should agree to again, raise the version in fm_party_rules_ok and fm_party_rules_accept.
 const PARTY_RULES = [
-  ["18 and over only", "Everyone at a party nearby is 18 or older, hosts included. Nobody under the legal drinking age in your state is given alcohol, and a host may ask to see ID at the door."],
+  ["21 and over only", "Everyone at a party nearby is 21 or older, hosts included. Nobody under the legal drinking age in your state is given alcohol, and a host may ask to see ID at the door."],
   ["No drugs", "No illegal drugs of any kind: not bringing, using, selling, offering or asking about them."],
   ["Bring your own, drink responsibly", "Alcohol is never part of the chip-in and is never sold at the door. Don't push drinks on anyone. Getting too drunk, being disruptive or a nuisance isn't OK."],
   ["Respect everyone", "No harassment, unwanted touching or advances, threats, or rude, discriminatory or abusive words. No means no. Don't photograph or film people who haven't said yes."],
@@ -9880,8 +9882,8 @@ const PARTY_RULES = [
 let partyRulesOk = null;   // has this account agreed (fm_party_nearby_me().rules_ok)
 const partyRulesHtml = open => `<details class="pt-card party-rules" id="partyRules"${open ? " open" : ""}><summary>${ic("flag", 16)} FindMeFlatMate party rules</summary>
   <ol>${PARTY_RULES.map(([h, t]) => `<li><b>${esc(h)}</b><span>${esc(t)}</span></li>`).join("")}</ol></details>`;
-const partyRulesTick = id => partyRulesOk ? "" : `<label class="chk rules-ok"><input type="checkbox" id="${id}" required aria-label="I agree to the party rules">
-  <span>I've read the <button type="button" class="linkbtn" data-rules-open>party rules</button> and I'll follow them</span></label>`;
+const partyRulesTick = id => partyRulesOk ? "" : `<label class="chk rules-ok"><input type="checkbox" id="${id}" required aria-label="I'm 21 or older and I agree to the party rules">
+  <span>I'm 21 or older, I've read the <button type="button" class="linkbtn" data-rules-open>party rules</button> and I'll follow them</span></label>`;
 async function loadPartyRulesOk(){ try{ partyRulesOk = !!(await api.partyNearbyMe()).rules_ok; }catch(e){ partyRulesOk = false; } return partyRulesOk; }
 document.addEventListener("click", e => { const b = e.target.closest("[data-rules-open]"); if(!b) return; e.preventDefault();
   const d = b.closest("dialog") && b.closest("dialog").querySelector(".party-rules"); if(d){ d.open = true; d.scrollIntoView({ behavior:"smooth", block:"start" }); } });
@@ -10076,7 +10078,7 @@ function ptNearHtml(o){
   const on = !!o.open, chip = o.entry === "chip", r = o.radius_km || 3;
   return `<details class="pt-extra pt-near" id="ptNear"${on ? " open" : ""}><summary>Open to people nearby <span class="opt-l">${on ? "on" : "off"}</span></summary>
     <label class="switch" style="margin:4px 0 6px"><input type="checkbox" id="ptOpen"${on ? " checked" : ""}><span>Let people nearby ask to join</span></label>
-    <p class="hint" style="margin:0 0 12px">Only signed-in adults who've switched on “Show me parties nearby” see it. They see the area and the distance, never your address or number, until you accept them.</p>
+    <p class="hint" style="margin:0 0 12px">Only signed-in people 21 or older who've switched on “Show me parties nearby” see it. They see the area and the distance, never your address or number, until you accept them.</p>
     <div id="ptOpenBox"${on ? "" : " hidden"}>
       <div class="field"><label for="ptLimit">How many guests from nearby</label><input type="text" id="ptLimit" inputmode="numeric" maxlength="2" value="${o.guest_limit || ""}" placeholder="e.g. 6"></div>
       <div class="field"><span class="lbl">Entry</span><div class="seg" role="radiogroup" aria-label="Entry">
@@ -10115,12 +10117,12 @@ function ptNearRead(){
   if(v.entry === "chip" && PT_ALCOHOL.test(v.covers_other)) return { error: "Alcohol can't be part of the chip-in. Guests bring their own." };
   if(v.near_address.length < 5 || !v.near_geo) return { error: "Search your address and pick it from the list, so the map pin is set." };
   if(v.area.length < 2) return { error: "Add the area people nearby will see." };
-  if($("ptRulesOk") && !$("ptRulesOk").checked) return { error: "Tick that you agree to the party rules, for you and your guests." };
+  if($("ptRulesOk") && !$("ptRulesOk").checked) return { error: "Parties nearby are 21+. Tick that you're 21 or older and agree to the party rules, for you and your guests." };
   return v;
 }
 const ptNearError = m => m.includes("no-alcohol") ? "Alcohol can't be part of the chip-in. Guests bring their own." : m.includes("need-pin") ? "Pick your address from the list, so the map pin is set."
   : m.includes("bad-limit") ? "Say how many guests from nearby can come (2 to 50)." : m.includes("blocked") ? "Hosting for people nearby is paused on your account while we review a report."
-  : m.includes("rules-required") ? "Tick that you agree to the party rules, for you and your guests."
+  : m.includes("rules-required") ? "Parties nearby are 21+. Tick that you're 21 or older and agree to the party rules, for you and your guests."
   : m.includes("age-required") ? "Only adults can open a party to people nearby." : m.includes("need-vibe") ? "Answer the 12 questions about how you live (Discover) to open a party to people nearby."
   : "Couldn't open it to people nearby. Please try again.";
 let ptx = null;
@@ -10453,7 +10455,7 @@ function nearDetailHtml(p){
     [ic("bell", 18), ptDay(p.starts_at), ptTimes(p)],
     [ic("pin", 18), nearPlace(p), "The address is shared when the host accepts you."],
     [ic("gift", 18), ptEntryText(p), (covers ? "Covers " + covers + ". " : "") + (p.entry === "chip" ? PT_MONEY_LINE : "Alcohol: bring your own.")],
-    [ic("users", 18), nearSpots(p) + ` of ${p.guest_limit}`, PT_WHO[p.who] + (p.plus_ones ? " · plus-ones count towards the spots" : "")],
+    [ic("users", 18), nearSpots(p) + ` of ${p.guest_limit}`, PT_WHO[p.who] + " · 21+ only" + (p.plus_ones ? " · plus-ones count towards the spots" : "")],
   ];
   if(p.house_rules) rows.push([ic("chat", 18), "House rules", p.house_rules]);
   return `<div class="near-host"><span class="nh-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span><div><b>Hosted by ${esc(p.host || "someone nearby")}</b>
@@ -10526,7 +10528,7 @@ $("dlgPReport").addEventListener("submit", async e => {
 const NEAR_ERR = { "party-full":"This party is full now.", "not-enough-spots":"Not enough spots left for you and your plus-ones.", "already-asked":"You've already asked.",
   "declined-before":"The host has already answered your request.", "no-contacts-in-note":"Leave numbers and links out of the note. They're shared when the host accepts.",
   "wrong-gender":"This party is for someone else.", "out-of-radius":"This party is too far from your place.", "opted-out":"Switch on “Show me parties nearby” first.",
-  "rate-limited":"That's a lot of requests. Try again in a while.", "blocked":"Party requests are paused on your account while we review a report.", "age-required":"Parties nearby are for adults only.", "rules-required":"Tick that you agree to the party rules first." };
+  "rate-limited":"That's a lot of requests. Try again in a while.", "blocked":"Party requests are paused on your account while we review a report.", "age-required":"Parties nearby are for adults only.", "rules-required":"Parties nearby are 21+. Tick that you're 21 or older and agree to the party rules first." };
 const nearErr = m => (Object.entries(NEAR_ERR).find(([k]) => m.includes(k)) || [0, "Couldn't do that. Please try again."])[1];
 $("dlgNear").addEventListener("click", async e => {
   if(e.target.closest("[data-report-party]")) return openPartyReport(nearParty.code);
@@ -10544,7 +10546,7 @@ $("dlgNear").addEventListener("submit", async e => {
   if(e.target.id !== "nearAsk") return;
   e.preventDefault();
   const f = e.target, btn = f.querySelector("[type=submit]");
-  if($("nearRulesOk") && !$("nearRulesOk").checked){ showFormError(f, "Tick that you agree to the party rules first."); $("nearRulesOk").closest("label").classList.add("bad"); return; }
+  if($("nearRulesOk") && !$("nearRulesOk").checked){ showFormError(f, "Parties nearby are 21+. Tick that you're 21 or older and agree to the party rules first."); $("nearRulesOk").closest("label").classList.add("bad"); return; }
   btn.disabled = true;
   try{
     if($("nearRulesOk")){ await api.partyRulesAccept(); partyRulesOk = true; }
