@@ -1,5 +1,17 @@
 # Teche · reports
 
+## 2026-11-10, Discover declutter (#90) live
+
+- **What:** Discover no longer has the area chips or the quick-filter chips (Women only, Veg kitchen and the
+  others), as Kamal asked: the map already shows where homes are, and this frees up the page.
+  - Areas are now the first section of Filters ("Areas in <city>", with + Add area; none picked means the whole
+    city).
+  - The areas and filters you chose show as removable chips under the Filters button.
+- **Database:** no change.
+- **Tests:** demo suite, 16 suites, 0 failed. p12 and p15 now go through Filters.
+- **Open:** Kamal's screenshot showed a listing's tags drawn over the "Which city are you moving to?" card. Not
+  looked into yet; offered as the next fix.
+
 ## 2026-11-10, party rules (#88) and block and report (#89) live
 
 - **Party rules, 21+ (#88):** ten rules of our own for parties nearby, with 21 and over only. A guest ticks "I'm 21
