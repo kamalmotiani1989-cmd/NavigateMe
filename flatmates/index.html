@@ -2177,6 +2177,40 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 :is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app,
     .role, .w-points li, .notice, .pp-card, .vibe-promo, .pass-nudge, .near-promo, .cm-banner, .safe-pay)
   :is(.eyebrow, a:not([class]), .linkbtn, .pk-more, h1 em, h1 b, h1 strong){color:var(--text)}
+/* the AI go-between chat */
+#dlgChat .mbody{display:grid; gap:12px}
+.ch-top{display:grid; gap:2px} .ch-top .hint{margin:0}
+.ch-lang{display:flex; align-items:center; gap:8px; white-space:nowrap; font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
+.ch-lang select{padding:6px 10px; border-radius:10px; border:1px solid var(--line-2); background:var(--card)}
+.ch-clash{background:var(--surface-2); border-radius:14px; padding:10px 14px}
+.ch-clash summary{cursor:pointer; font-weight:700; font-size:var(--fs-s)}
+.ch-clash ul{margin:8px 0 0; padding-left:18px; font-size:var(--fs-s); color:var(--text-2)}
+.ch-more{margin-top:6px} .ch-more summary{font-weight:600; font-size:var(--fs-s); color:var(--text-2)}
+.ch-msgs{display:flex; flex-direction:column; gap:8px; max-height:44dvh; overflow:auto; padding:2px}
+.ch-msg{max-width:82%; padding:9px 13px; border-radius:16px; background:var(--surface-2)}
+.ch-msg p{margin:0; white-space:pre-wrap; overflow-wrap:anywhere}
+.ch-msg.mine{align-self:flex-end; background:var(--brand-soft); border-bottom-right-radius:6px}
+.ch-msg.theirs{align-self:flex-start; border-bottom-left-radius:6px}
+.ch-msg .linkbtn{font-size:var(--fs-xs); margin-top:4px; padding:0}
+.ch-orig{font-size:var(--fs-s); color:var(--text-2); border-top:1px solid var(--line); margin-top:6px!important; padding-top:6px}
+.ch-note{align-self:flex-end; max-width:90%; display:grid; gap:2px; font-size:var(--fs-s); padding:8px 12px; border-radius:12px; background:var(--amber-94); color:var(--text-2)}
+.ch-note b{color:var(--text)} .ch-note .linkbtn{justify-self:start; padding:0; font-size:var(--fs-s)}
+.ch-preview .ch-note{align-self:auto; max-width:none; margin-top:8px}
+.ch-preview{border-radius:16px; padding:12px 14px; background:var(--card); box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.ch-preview textarea,.ch-form textarea{width:100%; border:1px solid var(--line-2); border-radius:12px; padding:9px 12px; resize:vertical; background:var(--card)}
+.ch-preview .acts,.ch-foot{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.ch-form{display:grid; gap:8px}
+.ch-qs{display:flex; flex-wrap:wrap; gap:6px} .ch-qs .chip{white-space:normal; text-align:left; line-height:1.35}
+.ch-yes{display:grid; gap:4px; padding:12px 14px; border-radius:14px; background:var(--ok-soft); font-size:var(--fs-s)}
+.ch-yes.wait{background:var(--surface-2)} .ch-yes .btn{justify-self:start; margin-top:4px}
+.ch-report{border-radius:16px; padding:14px; background:var(--surface-2)}
+.ch-report h4{margin:12px 0 4px; font-size:var(--fs-s)} .ch-report ul{list-style:none; margin:0; padding:0; display:grid; gap:6px; font-size:var(--fs-s)}
+.ch-report li{display:flex; gap:8px; align-items:baseline}
+.ch-tag{flex:none; font-size:var(--fs-xs); font-weight:700; padding:1px 8px; border-radius:999px}
+.ch-tag.v{background:var(--ok-soft); color:var(--ok)} .ch-tag.s{background:var(--card); color:var(--text-2); box-shadow:inset 0 0 0 1px var(--line-2)}
+.ch-leave{color:var(--danger)}
+.ch-closed{text-align:center; padding:24px 8px} .ch-closed h3{margin:8px 0 4px}
+.ch-empty{text-align:center}
 </style>
 </head>
 <body>
@@ -2811,6 +2845,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
 <dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="cBody"></div></dialog>
+<dialog id="dlgChat" aria-labelledby="chTitle"><div class="mhead"><div><h2 id="chTitle">Chat</h2><div class="loc" id="chSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="chBody"></div></dialog>
 
 <dialog id="dlgCompromise" aria-labelledby="cmTitle"><div class="mhead"><div><h2 id="cmTitle">Meet them halfway</h2>
     <div class="loc" id="cmSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
@@ -3695,7 +3731,7 @@ const demoApi = {
   },
   async signOut(){ state.lastName = state.user && state.user.name; state.user = null; save(); },
   async me(){
-    this.tick();
+    this.tick(); if(this.chatOn) this.chatOn();
     state.pending = state.requests.filter(r => r.seeker_phone === this.me_() && r.status === "pending" && r.by !== "owner").length;
     return state;
   },
@@ -3947,6 +3983,8 @@ const demoApi = {
         }
         continue;
       }
+      // A sample owner in an open chat answers there instead (they say yes in the chat; you then share your number).
+      if(r.status === "pending" && chatIsOn() && ((state.chats && demoChatFind(r.id)) || {}).status === "open") continue;
       if(r.status === "pending" && String(r.listing_id).startsWith("demo-") && now - new Date(r.created_at) > DEMO_REPLY_MS){
         const owner = state.user && r.seeker_phone === state.user.phone;
         if(owner || !state.user) this.decideRaw(r, (r.match_pct || 0) >= 60);
@@ -4203,6 +4241,7 @@ function makeLiveApi(sb){
       if((state.account || (state.user && state.user.phone)) !== phone) switchAccount(phone);
       state.user = { phone, name: r.full_name || "", role: r.role || null, occupation: r.occupation || {} };
       CHARGES_ON = r.charges_on !== false;
+      await this.chatOn();
       Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given,
         passes: { room: r.room_until, tribe: r.tribe_until, escape: r.escape_until },
         refCode: r.ref_code, refJoined: r.ref_joined || 0, refBonus: r.ref_bonus || 0 });
@@ -4249,6 +4288,24 @@ function makeLiveApi(sb){
     async sendRequest(id, message){ const r = one(await rpc("fm_request", { p_listing:id, p_message:message })); await this.me(); return r; },
     async withdraw(rid){ await rpc("fm_withdraw", { p_request: rid }); await this.me(); },
     async decide(rid, approve){ return one(await rpc("fm_decide", { p_request: rid, p_approve: approve })); },
+    // The AI go-between: database calls here, anything that needs the AI through functions/fm-chat (which holds the key).
+    async chatOn(){ try{ CHAT_ON = (await rpc("fm_chat_on")) === true; }catch(e){ CHAT_ON = false; } return CHAT_ON; },
+    async chatOpen(rid, lang){ return rpc("fm_chat_open", { p_request: rid, p_lang: lang || null }); },
+    async chatGet(cid){ return rpc("fm_chat_get", { p_chat: cid }); },
+    async chatAi(route, body){
+      const { data } = await sb.auth.getSession();
+      const r = await fetch(FM_CONFIG.supabaseUrl + "/functions/v1/fm-chat/" + route, { method:"POST",
+        headers:{ "Content-Type":"application/json", apikey: FM_CONFIG.supabaseAnonKey, Authorization: "Bearer " + (data.session?.access_token || "") },
+        body: JSON.stringify(body) });
+      return r.json().catch(() => ({ error:"failed" }));
+    },
+    async chatPreview(cid, text){ return this.chatAi("preview", { chat: cid, text }); },
+    async chatSend(cid, m){ return this.chatAi("send", { chat: cid, body: m.body, shown: m.shown, held: m.held }); },
+    async chatQuestions(cid){ return this.chatAi("questions", { chat: cid }); },
+    async chatReport(cid){ return this.chatAi("report", { chat: cid }); },
+    async chatClose(cid){ return rpc("fm_chat_close", { p_chat: cid }); },
+    async chatShare(cid){ return rpc("fm_chat_share", { p_chat: cid }); },
+    async chatAccept(chat){ return one(await rpc("fm_decide", { p_request: chat.request, p_approve: true })); },
     // Supabase stores phone numbers without the "+" (919876543210); Call/WhatsApp need +91...
     async inbox(){ return (await rpc("fm_inbox")).map(r => Object.assign(r, { phone: plusPhone(r.phone) })); },
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
@@ -7308,7 +7365,8 @@ async function openListing(id){
       lock = `<div class="lock wait"><h3>Request sent</h3>
         <p>The owner has your profile and your ${m ? m.pct + "% " : ""}match. You'll get a notification as soon as they reply.${CHARGES_ON ? " No contact is used unless they accept." : ""}</p>
         ${notifyCard("Turn on notifications so you can call the moment they accept.")}
-        <button class="btn btn-ghost btn-sm" data-action="withdraw">Withdraw request</button></div>`;
+        <div class="acts">${chatIsOn() ? chatBtn(((await api.inbox()).find(r => r.listing_id === id && r.direction === "outgoing" && r.by !== "owner" && r.status === "pending") || {}).id || "", "Chat with the owner") : ""}
+        <button class="btn btn-ghost btn-sm" data-action="withdraw">Withdraw request</button></div></div>`;
     }else if(l.request_status === "declined"){
       const mine = (await api.inbox()).find(r => r.listing_id === id && r.direction === "outgoing" && r.by !== "owner");
       const can = mine && !mine.compromise && compromiseOptions(hh).length;
@@ -7595,7 +7653,7 @@ function incomingHtml(r, l){
       ${allInterests(r.interests).length ? `<p class="occ" style="margin:8px 0 0">Into (♥ = same as your home):</p>${interestsHtml(r.interests, hh.interests)}` : ""}
       <div class="acts">${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
         ${r.status === "pending" && r.by !== "owner" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
-          <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
+          <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>${chatBtn(r.id, "Chat first")}`
         : r.status === "approved" && r.phone ? `<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
           <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc(r.phone.replace(/^\+/, ""))}">WhatsApp</a>` : ""}</div>
     </div></article>`;
@@ -7625,7 +7683,8 @@ function outgoingHtml(r){
         : r.status === "approved" ? "Accepted. Tap to see the owner's number and address." : r.status === "declined" && !r.compromise && cmHomes[r.listing_id]
         ? `Declined.${CHARGES_ON ? " No contact used." : ""} <button class="btn btn-accent btn-sm" style="margin-top:8px" data-cm="${esc(r.id)}" data-cml="${esc(r.listing_id)}">🤝 Compromise and ask again</button>`
         : r.status === "declined"
-        ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div></div></article>`;
+        ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div>
+      ${r.status === "pending" && r.by !== "owner" && chatIsOn() ? `<div class="acts">${chatBtn(r.id, "Chat with the owner")}</div>` : ""}</div></article>`;
 }
 $("reqList").addEventListener("click", async e => {
   const cmb = e.target.closest("[data-cm]");
@@ -7639,6 +7698,7 @@ $("reqList").addEventListener("click", async e => {
     try{
       const r = await api.decide(b.dataset.accept || b.dataset.decline, approve);
       toast(r.error === "seeker-out-of-contacts" ? "They've run out of contacts. They'll get a nudge to top up, and the request stays here."
+        : r.error === "waiting-for-seeker" ? "You said yes. They just have to confirm sharing their number in your chat."
         : approve ? "Accepted. You can call each other now." : "Declined. They won't be charged.");
     }catch(err){ console.error(err); toast("Couldn't do that right now. Please try again."); }
     return renderRequests();
@@ -7647,6 +7707,369 @@ $("reqList").addEventListener("click", async e => {
   if(cb){ const ctx = reqCompat.get(cb.dataset.compat); if(ctx) openCompat(ctx); return; }
   const o = e.target.closest("[data-open]"); if(o) openListing(o.dataset.open);
 });
+
+/* ===================================================== the AI go-between chat */
+// A chat between a seeker and a home's lister, from the request until both say yes (Kamal, 10 Nov; priorities 00000).
+// Each writes in their own language; the AI (functions/fm-chat, never this page) translates for the other, and the
+// sender sees exactly what the other person will read before it goes. Numbers, emails, links, handles, addresses and
+// payment requests are held back (shieldText here, fm_chat_shield on the server), so nothing can be shared until both
+// accept. Off until fm_settings.ai_chat_enabled is turned on; the demo uses canned replies and makes no AI calls.
+let CHAT_ON = false;
+function chatIsOn(){ return api.live ? CHAT_ON : state.chatOff !== true; }   // the demo reads its switch each time
+const CHAT_LANGS = [["en","English"],["hi","हिन्दी"],["mr","मराठी"],["ta","தமிழ்"],["te","తెలుగు"],["kn","ಕನ್ನಡ"],["bn","বাংলা"],["gu","ગુજરાતી"],["ml","മലയാളം"],["pa","ਪੰਜਾਬੀ"],["ur","اردو"]];
+const CHAT_LANG_NAME = { en:"English", hi:"Hindi", mr:"Marathi", ta:"Tamil", te:"Telugu", kn:"Kannada", bn:"Bengali", gu:"Gujarati", ml:"Malayalam", pa:"Punjabi", ur:"Urdu" };
+const HELD_TXT = { phone:"a phone number", email:"an email address", upi:"a UPI ID", link:"a link", social:"a social media handle",
+  address:"an address or flat number", payment:"a payment request or payment details" };
+const chatLang = () => state.chatLang || (CHAT_LANG_NAME[(navigator.language || "en").slice(0, 2)] ? (navigator.language || "en").slice(0, 2) : "en");
+const listWords = a => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+
+// Privacy Shield, same rules and order as fm_chat_shield in schema.sql (tests/shield/cases.json checks both).
+function shieldText(src){
+  let t = String(src || ""); const held = new Set();
+  const pass = (kind, list) => { const before = t; for(const [re, to] of list) t = t.replace(re, to); if(t !== before) held.add(kind); };
+  pass("email", [[/[A-Za-z0-9._%+-]+(\s+dot\s+[A-Za-z0-9_-]+)*\s*(@|\(at\)|\[at\]|\s+at\s+)\s*[A-Za-z0-9-]+(\s*(\.|\(dot\)|\[dot\]|\s+dot\s+)\s*[A-Za-z]{2,})+/gi, "[email hidden]"]]);
+  pass("upi", [[/[A-Za-z0-9._-]{2,}@[A-Za-z]{2,}\b/g, "[UPI ID hidden]"]]);
+  pass("link", [[/(https?:\/\/|www\.)\S+|\b[A-Za-z0-9-]+\.(com|in|co|net|org|io|me|app|link|ly|gg|xyz|page)(\/\S*)?\b/gi, "[link hidden]"]]);
+  pass("social", [[/(^|\s)@[A-Za-z0-9_.]{2,}/g, "$1[handle hidden]"],
+    [/\b(insta(gram)?|ig|snap(chat)?|telegram|tg|facebook|fb|twitter|x\.com|linkedin|discord)\b(\s*(id|handle|is|me|on|:|-|@))*\s*[A-Za-z0-9_.]{3,}/gi, "$1 [handle hidden]"]]);
+  pass("payment", [[/\b(gpay|google\s*pay|phonepe|phone\s*pe|paytm|bhim|ifsc|neft|imps|rtgs|account\s*(no|number)|a\/c)\b[^.!?\n]*/gi, "[payment details held back]"],
+    [/\b(pay|send|transfer|deposit|give)\b(\s+me|\s+us)?[^.!?\n]{0,25}(₹|\brs\.?|\binr\b|rupees|\d{3,})[^.!?\n]*/gi, "[payment request held back]"],
+    [/\b(pay|send|transfer|give)\b[^.!?\n]{0,30}\b(token|advance|booking|deposit)\b[^.!?\n]*/gi, "[payment request held back]"]]);
+  pass("address", [[/\b(flat|house|h\.?\s*no|door|apt|apartment|room\s*no|plot|block|tower|wing|villa|unit)\b\.?\s*(no\.?|number|num|#)?\s*[:\-]?\s*#?[A-Za-z]?\s*-?\s*\d{1,5}\s*[A-Za-z]?\b/gi, "[address hidden]"],
+    [/#\s*\d{1,5}[A-Za-z]?/g, "[address hidden]"],
+    [/\b\d{1,5}[A-Za-z]?\s*,?\s*(\w+\s+){0,3}(road|rd|street|st|lane|ln|cross|main|marg|avenue)\b/gi, "[address hidden]"],
+    [/\b[1-9]\d{2}\s?\d{3}\b/g, "[address hidden]"]]);
+  // phone numbers: a run of digit-like words (digits with separators, number words, "double"/"triple") with 7+ digits
+  const WORDS = new Set("zero oh one two three four five six seven eight nine shunya ek do teen char chaar paanch panch chhe cheh saat aath nau".split(" "));
+  const toks = t.split(/\s+/), out = []; let i = 0;
+  while(i < toks.length){
+    let digits = 0, mult = 1, j = i;
+    for(; j < toks.length; j++){
+      const raw = toks[j], w = raw.replace(/[^A-Za-z0-9+]/g, "").toLowerCase(); let d;
+      if(/^[\d+()\-./,]+$/.test(raw) && /\d/.test(raw)){ d = raw.replace(/\D/g, "").length * mult; mult = 1; }
+      else if(WORDS.has(w)){ d = mult; mult = 1; }
+      else if(w === "double" || w === "triple"){ mult = w === "double" ? 2 : 3; d = 0; }
+      else if(["plus", "dash", "hyphen", "and"].includes(w) && digits > 0) d = 0;
+      else break;
+      digits += d;
+    }
+    if(digits >= 7){ out.push("[number hidden]"); i = j; }
+    else { out.push(toks[i].replace(/\D/g, "").length >= 7 ? "[number hidden]" : toks[i]); i++; }
+  }
+  const before = t.replace(/\s+/g, " "); t = out.join(" ");
+  if(t !== before) held.add("phone");
+  return { text: t.trim(), held: [...held].sort() };
+}
+
+// Truth Check, same rules as fm_chat_truth: a message that contradicts the sender's own profile answer. Only the
+// sender is told, quietly; the other person never sees it.
+function truthCheck(p, src){
+  const t = String(src || "").toLowerCase(), out = [], a = k => Number.isInteger(p && p[k]) ? p[k] : null;
+  if(a("smoke") === 0 && /\b(i|we)\s+(smoke|vape)/.test(t) && !/\b(i|we)\s+(don'?t|do not|never|no longer|stopped|quit)\s+(smoke|vape|smoking)/.test(t)) out.push({ key:"smoke", answer:0 });
+  if(a("drinks") === 0 && /\b(i|we)\s+(drink|like\s+(a\s+)?(beer|wine|whisky|drinks?)|have\s+(a\s+)?(beer|drink|peg))/.test(t) && !/\b(i|we)\s+(don'?t|do not|never|no longer)\s+drink/.test(t)) out.push({ key:"drinks", answer:0 });
+  if(a("pets") != null && a("pets") < 2 && /\b(my|our)\s+(dog|cat|puppy|kitten|pet)\b|\b(i|we)\s+(have|own)\s+(a\s+)?(dog|cat|puppy|kitten|pet)/.test(t)) out.push({ key:"pets", answer:a("pets") });
+  if(a("food") != null && a("food") < 2 && /\b(i|we)\s+(eat|cook|love|order)\s+(chicken|mutton|fish|meat|non-?veg|prawns|beef|pork)/.test(t)) out.push({ key:"food", answer:a("food") });
+  else if(a("food") === 0 && /\b(i|we)\s+(eat|cook|love)\s+eggs?\b/.test(t)) out.push({ key:"food", answer:0 });
+  if(a("guests") === 0 && /(friends|guests|people)\s+(stay|come|sleep)\s+(over\s+)?(often|every\s+weekend|all\s+the\s+time|most\s+weekends)/.test(t)) out.push({ key:"guests", answer:0 });
+  return out;
+}
+// Where the two differ, biggest first (same as fm_chat_clashes): the 12 answers, and rent over the budget.
+function chatClashes(vibe, hh, budget, rent){
+  const order = ["smoke","food","pets","drinks","guests","clean","sleep","noise","work","cook","sharing","social"], out = [];
+  if(budget > 0 && rent > budget) out.push({ key:"rent", seeker:budget, home:rent, level:2 });
+  order.forEach(k => { const a = vibe && vibe[k], b = hh && hh[k];
+    if(Number.isInteger(a) && Number.isInteger(b) && a !== b) out.push({ key:k, seeker:a, home:b, level:Math.abs(a - b) }); });
+  return out.sort((x, y) => y.level - x.level);
+}
+
+// ---- demo: the other person is a sample who writes in Hindi; no AI, so your own words go across unchanged.
+const CHAT_CANNED = {
+  seeker: [   // you're the seeker: the owner answers
+    ["नमस्ते! कमरा अभी खाली है। आप कब से शिफ्ट होना चाहेंगे?", "Hi! The room is free right now. When would you like to move in?"],
+    ["डिपॉज़िट दो महीने का है, और बिजली का बिल हम बराबर बाँटते हैं।", "The deposit is two months' rent, and we split the electricity bill equally."],
+    ["आपसे बात करके अच्छा लगा। मैंने हाँ कर दी है।", "It was nice talking to you. I've said yes."]],
+  owner: [    // you're the lister: the seeker answers
+    ["नमस्ते! मैं अगले महीने से शिफ्ट होना चाहती हूँ। क्या कमरे में अलमारी है?", "Hi! I'd like to move in from next month. Does the room have a wardrobe?"],
+    ["मैं रात ग्यारह बजे तक सो जाती हूँ और ज़्यादातर घर पर खाना बनाती हूँ।", "I'm usually asleep by eleven and I mostly cook at home."],
+    ["शुक्रिया! अगर आप हाँ कहें, तो मैं अपना नंबर शेयर करने को तैयार हूँ।", "Thank you! If you say yes, I'm happy to share my number."]] };
+const CHAT_TOPICS = [
+  [/deposit|advance/i, "How much is the deposit, and when do I get it back when I move out?"],
+  [/notice/i, "How much notice do we give each other before moving out?"],
+  [/bill|electric|wi-?fi|internet|maintenance/i, "How are electricity, Wi-Fi and maintenance split?"],
+  [/night|overnight|visitor|stay over/i, "Are friends or family okay to stay overnight sometimes?"],
+  [/cook|kitchen/i, "What are the kitchen rules: who cooks, and is non-veg okay?"]];
+function demoChatFind(rid){ return Object.values(state.chats || {}).find(c => c.request === rid); }
+Object.assign(demoApi, {
+  async chatOn(){ return CHAT_ON = state.chatOff !== true; },
+  demoChatProfile(c){ const r = state.requests.find(x => x.id === c.request), l = this.all().find(x => x.id === c.listing);
+    return c.role === "seeker" ? state.vibe : (l && l.household) || {}; },
+  async chatOpen(rid, lang){
+    if(!chatIsOn()) return { error:"off" };
+    const r = state.requests.find(x => x.id === rid), l = r && this.all().find(x => x.id === r.listing_id), me = this.me_();
+    const role = r && r.seeker_phone === me ? "seeker" : r && l && l.owner_phone === me ? "owner" : null;
+    if(!role) return { error:"not-found" };
+    if(!state.user.adultAt) return { error:"adults-only" };
+    state.chats = state.chats || {};
+    let c = demoChatFind(rid);
+    if(!c){
+      if(r.status !== "pending") return { error:"not-waiting" };
+      const vibe = role === "seeker" ? state.vibe : r.seeker.vibe;
+      c = { id:"ch" + Date.now(), request:rid, listing:r.listing_id, role, status:"open", my_lang:lang || "en", their_lang:"hi", step:0,
+        their_name: role === "seeker" ? ((l.private && l.private.contact_name) || "The owner").split(" ")[0] : (r.seeker.name || "They").split(" ")[0],
+        clashes: chatClashes(vibe, l.household, role === "seeker" ? prefs().max : r.seeker.budget, l.rent),
+        owner_yes:false, seeker_share:false, messages:[], notes:[], created_at:new Date().toISOString() };
+      state.chats[c.id] = c;
+    }else if(lang) c.my_lang = lang;
+    save(); return { chat:c.id, status:c.status };
+  },
+  async chatGet(cid){
+    const day = 30 * 864e5;
+    for(const [k, x] of Object.entries(state.chats || {})) if(x.status !== "open" && Date.now() - new Date(x.closed_at || x.created_at) > day) delete state.chats[k];
+    const c = (state.chats || {})[cid]; if(!c) return { error:"not-found" };
+    if(c.status === "closed") return { chat:c.id, status:"closed", closed_by_me:!!c.closed_by_me };
+    return Object.assign(JSON.parse(JSON.stringify(c)), { chat:c.id });
+  },
+  async chatPreview(cid, text){
+    const c = state.chats[cid], s = shieldText(text);
+    return { body:s.text, shown:s.text, held:s.held, truth:truthCheck(this.demoChatProfile(c), text), lang_from:c.my_lang, lang_to:c.their_lang, ai:false };
+  },
+  async chatSend(cid, m){
+    const c = state.chats[cid]; if(!c || c.status !== "open") return { error: c ? c.status : "not-found" };
+    const today = new Date().toDateString();
+    if(Object.values(state.chats).flatMap(x => x.messages).filter(x => x.mine && new Date(x.at).toDateString() === today).length >= 60) return { error:"rate-limited" };
+    const sb = shieldText(m.body), ss = shieldText(m.shown || m.body), id = "m" + Date.now();
+    const held = [...new Set(sb.held.concat(ss.held, m.held || []))].sort(), truth = truthCheck(this.demoChatProfile(c), m.body);
+    c.messages.push({ id, mine:true, body:sb.text, shown:ss.text, at:new Date().toISOString() });
+    if(held.length) c.notes.push({ kind:"held", data:{ message:id, held } });
+    if(truth.length) c.notes.push({ kind:"truth", data:{ message:id, items:truth } });
+    save();
+    const line = CHAT_CANNED[c.role][c.step];
+    if(line) setTimeout(() => { const x = (state.chats || {})[cid]; if(!x || x.status !== "open") return;
+      x.messages.push({ id:"m" + Date.now(), mine:false, body:line[0], shown:line[1], at:new Date().toISOString() });
+      x.step++; if(x.role === "seeker" && x.step >= CHAT_CANNED.seeker.length) x.owner_yes = true;
+      save(); chatRefresh(); }, 1600);
+    return { message:id, shown:ss.text, held, truth };
+  },
+  async chatQuestions(cid){
+    const c = state.chats[cid], said = c.messages.map(m => m.body + " " + m.shown).join(" "), out = [];
+    const k = (c.clashes.find(x => x.key !== "rent" && VIBE_BY_KEY[x.key]) || {}).key;
+    if(k && !new RegExp(VIBE_BY_KEY[k].q.split(/[ ,]/)[0], "i").test(said)) out.push(`How do you feel about ${VIBE_BY_KEY[k].q.toLowerCase()}? I'd like us to agree on it before I decide.`);
+    for(const [re, q] of CHAT_TOPICS) if(out.length < 2 && !re.test(said)) out.push(q);
+    return { questions:out.slice(0, 2), ai:false };
+  },
+  async chatReport(cid){
+    const c = state.chats[cid], r = state.requests.find(x => x.id === c.request), l = this.all().find(x => x.id === c.listing) || {};
+    const lines = [], v = t => lines.push({ section:"verified", text:t, label:"verified" }), s = (sec, t) => lines.push({ section:sec, text:t, label:"self_reported" });
+    const seekerName = c.role === "seeker" ? firstName() || "You" : c.their_name, ownerName = c.role === "owner" ? firstName() || "You" : c.their_name;
+    v(`${seekerName}: phone verified`); v(`${seekerName}: confirmed 18 or older`); v(`${ownerName}: phone verified`); v(`${ownerName}: confirmed 18 or older`);
+    if(r && r.seeker && r.seeker.on_time) v(`${seekerName}: pays on time (Flatsplits)`);
+    const ph = photosOf(l).length; if(ph) v(`The home has ${ph} photo${ph === 1 ? "" : "s"}`);
+    const vibe = c.role === "seeker" ? state.vibe : (r && r.seeker.vibe) || {}, hh = l.household || {};
+    VIBE_QS.forEach(x => { if(Number.isInteger(vibe[x.k]) && vibe[x.k] === hh[x.k]) s("agreements", `${x.q}: both say “${x.o[hh[x.k]]}”`); });
+    c.clashes.forEach(x => s("differences", x.key === "rent" ? `Rent ${inr(x.home)} is above the budget of ${inr(x.seeker)}`
+      : `${VIBE_BY_KEY[x.key].q}: ${seekerName} says “${VIBE_BY_KEY[x.key].o[x.seeker]}”, the home says “${VIBE_BY_KEY[x.key].o[x.home]}”`));
+    const said = c.messages.map(m => m.body + " " + m.shown).join(" ");
+    for(const [re, q] of CHAT_TOPICS) if(!re.test(said)) s("open_questions", q);
+    return { lines, ai:false };
+  },
+  async chatClose(cid){
+    const c = state.chats[cid]; if(!c) return "not-found"; if(c.status === "closed") return "closed";
+    Object.assign(c, { status:"closed", closed_by_me:true, closed_at:new Date().toISOString(), messages:[], notes:[] });
+    const r = state.requests.find(x => x.id === c.request);
+    if(r && r.status === "pending"){ r.status = c.role === "seeker" ? "withdrawn" : "declined"; r.decided_at = new Date().toISOString(); }
+    save(); return "closed";
+  },
+  async chatShare(cid){
+    const c = state.chats[cid]; if(!c || c.status !== "open") return { error: c ? c.status : "not-found" };
+    if(!c.owner_yes) return { error:"owner-not-yet" };
+    const r = state.requests.find(x => x.id === c.request), res = this.decideRaw(r, true);
+    if(!res.error){ Object.assign(c, { seeker_share:true, status:"accepted", closed_at:new Date().toISOString() }); save(); }
+    return res;
+  },
+  // The lister says yes inside the chat. Nothing is shared until the seeker confirms "Share my number" (here the
+  // sample seeker does that a moment later).
+  async chatAccept(chat){
+    const c = state.chats[chat.chat]; if(!c || c.status !== "open") return { error:"not-found" };
+    c.owner_yes = true; save();
+    setTimeout(() => { const x = state.chats[c.id], r = state.requests.find(y => y.id === c.request);
+      if(!x || x.status !== "open" || !r) return; const res = this.decideRaw(r, true);
+      if(!res.error) Object.assign(x, { seeker_share:true, status:"accepted", closed_at:new Date().toISOString() });
+      save(); chatRefresh(); if(currentView === "requests") renderRequests(); }, 2500);
+    return { status:"pending", error:"waiting-for-seeker" };
+  },
+});
+// Close the chat when the request is withdrawn or declined anywhere else (like the fm_request_chat_close trigger).
+{ const wd = demoApi.withdraw, dr = demoApi.decideRaw, dec = demoApi.decide;
+  const shut = rid => { const c = demoChatFind(rid); if(c && c.status === "open") Object.assign(c, { status:"closed", closed_at:new Date().toISOString(), messages:[], notes:[] }); };
+  demoApi.withdraw = async function(rid){ await wd.call(this, rid); const r = state.requests.find(x => x.id === rid); if(r && r.status === "withdrawn"){ shut(rid); save(); } };
+  demoApi.decide = async function(rid, approve){
+    const c = chatIsOn() && demoChatFind(rid), r = state.requests.find(x => x.id === rid);
+    if(approve && c && c.status === "open" && c.role === "owner" && !c.seeker_share && r && (r.by || "seeker") === "seeker") return this.chatAccept({ chat:c.id });
+    const res = await dec.call(this, rid, approve);
+    if(!approve && !res.error){ shut(rid); save(); }
+    if(approve && !res.error && c && c.status === "open"){ Object.assign(c, { status:"accepted", closed_at:new Date().toISOString() }); save(); }
+    return res;
+  };
+}
+
+// ---- the dialog
+let chatCur = null, chatData = null, chatDraft = null, chatQs = null, chatReportOn = null, chatPoll = null, chatBusy = false, chatCloseArm = false;
+async function openChat(rid){
+  try{
+    const o = await api.chatOpen(rid, chatLang());
+    if(o.error){ toast(o.error === "adults-only" ? "Chat is only for people who've confirmed they're 18 or older."
+      : o.error === "not-waiting" ? "This request has already been answered." : o.error === "off" ? "Chat isn't switched on yet." : "Couldn't open the chat. Please try again."); return; }
+    chatCur = o.chat; chatDraft = null; chatQs = null; chatReportOn = null; chatCloseArm = false;
+    await chatRefresh(true);
+    if(!$("dlgChat").open) $("dlgChat").showModal();
+    clearInterval(chatPoll);
+    if(api.live) chatPoll = setInterval(() => { if(!$("dlgChat").open){ clearInterval(chatPoll); return; } if(!chatBusy && !chatDraft) chatRefresh(); }, 6000);
+  }catch(err){ console.error(err); toast("Couldn't open the chat. Please try again."); }
+}
+async function chatRefresh(scroll){
+  if(!chatCur || !$("dlgChat").open && !scroll) return;
+  const before = chatData && chatData.messages ? chatData.messages.length : -1;
+  chatData = await api.chatGet(chatCur);
+  const typed = $("chText") ? $("chText").value : "";
+  renderChat();
+  if($("chText") && typed) $("chText").value = typed;
+  const n = chatData.messages ? chatData.messages.length : 0;
+  if(scroll || n !== before){ const l = $("chMsgs"); if(l) l.scrollTop = l.scrollHeight; }
+}
+function chatClashLine(x, c){
+  const them = esc(c.their_name || "They");
+  if(x.key === "rent") return c.role === "seeker" ? `Rent ${inr(x.home)} is above your budget of ${inr(x.seeker)}` : `Rent ${inr(x.home)} is above ${them}'s budget of ${inr(x.seeker)}`;
+  const q = VIBE_BY_KEY[x.key]; if(!q) return "";
+  const mine = c.role === "seeker" ? x.seeker : x.home, theirs = c.role === "seeker" ? x.home : x.seeker;
+  return `<b>${esc(q.q)}</b>: you “${esc(q.o[mine])}”, ${them} “${esc(q.o[theirs])}”`;
+}
+function chatTruthHtml(items){
+  if(!items || !items.length) return "";
+  const seen = new Set(), rows = items.filter(x => VIBE_BY_KEY[x.key] && !seen.has(x.key) && seen.add(x.key));
+  if(!rows.length) return "";
+  return `<div class="ch-note truth"><b>Only you can see this</b>${rows.map(x => `<span>Your ${chatData.role === "seeker" ? "profile" : "home's"} answer for ${esc(VIBE_BY_KEY[x.key].q.toLowerCase())}
+    ${Number.isInteger(x.answer) ? `is “${esc(VIBE_BY_KEY[x.key].o[x.answer])}”` : "says something different"}. If that's changed, update it, or add a word to make it clear.</span>`).join("")}
+    ${chatData.role === "seeker" ? `<button type="button" class="linkbtn" data-vibe-open>Update my answers</button>` : ""}</div>`;
+}
+const chatHeldHtml = held => held && held.length ? `<div class="ch-note held"><b>🔒 Held back: ${esc(listWords(held.map(h => HELD_TXT[h] || h)))}</b>
+  <span>Numbers, addresses and payments can only be shared once you both say yes. It keeps you both safe from scams.</span></div>` : "";
+function renderChat(){
+  const c = chatData || {}, them = esc(c.their_name || "They");
+  $("chTitle").textContent = c.status === "closed" ? "Chat" : "Chat with " + (c.their_name || "them");
+  $("chSub").textContent = c.status === "closed" ? "" : "Translated both ways · numbers stay private until you both say yes";
+  if(c.status === "closed"){ clearInterval(chatPoll);
+    $("chBody").innerHTML = `<div class="ch-closed"><div class="empty-ic" aria-hidden="true">${ic("lock", 28, 1.8)}</div><h3>This conversation was closed</h3>
+      <p class="hint">${c.closed_by_me ? "You closed it. " : ""}What was said can't be read any more, by either of you.</p></div>`; return; }
+  if(c.error){ $("chBody").innerHTML = `<p class="hint">Couldn't load the chat.</p>`; return; }
+  const notes = c.notes || [], noteFor = (id, k) => notes.filter(n => n.kind === k && n.data && n.data.message === id);
+  const msgs = (c.messages || []).map((m, i) => {
+    const held = noteFor(m.id, "held").flatMap(n => n.data.held || []), truth = noteFor(m.id, "truth").flatMap(n => n.data.items || []);
+    const other = m.mine ? m.shown : m.body;
+    return `<div class="ch-msg ${m.mine ? "mine" : "theirs"}"><p>${esc(m.mine ? m.body : m.shown)}</p>
+      ${!m.mine || other !== m.body ? `<button type="button" class="linkbtn" data-chat="orig" data-i="${i}" aria-expanded="false">${m.mine ? `What ${them} read` : "Show original"}</button><p class="ch-orig" id="chOrig${i}" hidden>${esc(other)}</p>` : ""}
+      </div>${m.mine ? chatHeldHtml([...new Set(held)]) + chatTruthHtml(truth) : ""}`;
+  }).join("");
+  const consent = c.status === "accepted" ? `<div class="ch-yes"><b>✓ You both said yes</b><span>Numbers and the address are shared now.</span>
+      <button class="btn btn-primary btn-sm" data-chat="done">${c.role === "seeker" ? "See their number" : "Go to Requests"}</button></div>`
+    : c.role === "seeker" && c.owner_yes ? `<div class="ch-yes"><b>🎉 ${them} said yes</b><span>Share your number to see each other's numbers and the address. Nothing is shared until you do.</span>
+      <button class="btn btn-accent btn-sm" data-chat="share">Share my number</button></div>`
+    : c.role === "owner" && c.owner_yes ? `<div class="ch-yes wait"><b>You said yes</b><span>Waiting for ${them} to confirm sharing their number. Then you both get each other's numbers.</span></div>` : "";
+  const clashes = (c.clashes || []).map(x => chatClashLine(x, c)).filter(Boolean);
+  const preview = chatDraft ? `<div class="ch-preview" role="region" aria-label="Before you send"><p class="eyebrow">This is what ${them} will see</p>
+      <textarea id="chShown" rows="3" maxlength="2000" aria-label="What ${them} will see">${esc(chatDraft.shown)}</textarea>
+      ${chatDraft.lang_to && chatDraft.lang_to !== chatDraft.lang_from ? `<p class="hint">${chatDraft.ai ? `Translated to ${esc(CHAT_LANG_NAME[chatDraft.lang_to] || chatDraft.lang_to)}. You can edit it.`
+        : `Demo: there's no AI here, so it goes in your own words. In the app ${them} reads it in ${esc(CHAT_LANG_NAME[chatDraft.lang_to] || chatDraft.lang_to)}.`}</p>` : ""}
+      ${chatHeldHtml(chatDraft.held)}${chatTruthHtml(chatDraft.truth)}
+      <div class="acts"><button class="btn btn-primary btn-sm" data-chat="send">Send</button>
+        ${chatDraft.shown !== chatDraft.body ? `<button class="btn btn-ghost btn-sm" data-chat="own">Send my own words instead</button>` : ""}
+        <button class="btn btn-ghost btn-sm" data-chat="back">Edit</button></div></div>` : "";
+  const report = chatReportOn ? `<section class="ch-report" aria-label="Compatibility report"><h3>Compatibility report</h3>
+      <p class="hint"><span class="ch-tag v">Verified</span> the app checked it. <span class="ch-tag s">Self-reported</span> from their answers and this chat.</p>
+      ${[["verified", "Checked by FindMeFlatMate"], ["agreements", "You agree on"], ["differences", "Where you differ"], ["open_questions", "Still to ask"]].map(([k, h]) => {
+        const ls = chatReportOn.filter(l => l.section === k); return ls.length ? `<h4>${h}</h4><ul>${ls.map(l => `<li><span class="ch-tag ${l.label === "verified" ? "v" : "s"}">${l.label === "verified" ? "Verified" : "Self-reported"}</span>${esc(l.text)}</li>`).join("")}</ul>` : ""; }).join("")}
+      <button class="linkbtn" data-chat="report-x">Hide the report</button></section>` : "";
+  $("chBody").innerHTML = `
+    <div class="ch-top"><label class="ch-lang">You write in <select id="chLang">${CHAT_LANGS.map(([k, n]) => `<option value="${k}"${k === c.my_lang ? " selected" : ""}>${esc(n)}</option>`).join("")}</select></label>
+      <span class="hint">AI translates for ${them}. It never answers for either of you.</span></div>
+    ${clashes.length ? `<details class="ch-clash"${(c.messages || []).length ? "" : " open"}><summary>Talk about these first · ${clashes.length} difference${clashes.length === 1 ? "" : "s"}</summary>
+      <ul>${clashes.slice(0, 4).map(x => `<li>${x}</li>`).join("")}</ul>${clashes.length > 4 ? `<details class="ch-more"><summary>${clashes.length - 4} smaller one${clashes.length === 5 ? "" : "s"}</summary>
+        <ul>${clashes.slice(4).map(x => `<li>${x}</li>`).join("")}</ul></details>` : ""}</details>` : ""}
+    ${consent}
+    <div class="ch-msgs" id="chMsgs" aria-live="polite">${msgs || `<p class="hint ch-empty">Say hello. Ask about the room, the rules, the people. ${them} reads it in their language.</p>`}</div>
+    ${report}
+    ${c.status === "open" ? preview || `
+      <div class="ch-qs">${chatQs ? chatQs.map((q, i) => `<button type="button" class="chip" data-chat="useq" data-i="${i}">💡 ${esc(q)}</button>`).join("")
+        : `<button type="button" class="linkbtn" data-chat="qs">💡 Suggest a question</button>`}</div>
+      <form class="ch-form" id="chForm" novalidate><textarea id="chText" rows="2" maxlength="1000" placeholder="Write in your own language" aria-label="Your message"></textarea>
+        <button class="btn btn-primary btn-sm" type="submit">Check and send</button></form>` : ""}
+    <div class="ch-foot">${!chatReportOn ? `<button class="btn btn-ghost btn-sm" data-chat="report">Compatibility report</button>` : ""}
+      ${c.status === "open" && c.role === "owner" && !c.owner_yes ? `<button class="btn btn-primary btn-sm" data-chat="accept">Accept</button>` : ""}
+      ${c.status === "open" ? `<button class="btn btn-ghost btn-sm ch-leave" data-chat="close">${chatCloseArm ? "Tap again to close it for both of you" : c.role === "seeker" ? "Withdraw and close chat" : "Not this time, close chat"}</button>` : ""}</div>`;
+}
+$("chBody").addEventListener("change", async e => {
+  if(e.target.id !== "chLang") return;
+  state.chatLang = e.target.value; save();
+  try{ await api.chatOpen(chatData.request, e.target.value); await chatRefresh(); }catch(err){ console.error(err); }
+});
+$("chBody").addEventListener("submit", async e => {
+  if(e.target.id !== "chForm") return;
+  e.preventDefault();
+  const text = $("chText").value.trim(); if(!text || chatBusy) return;
+  chatBusy = true; const btn = e.target.querySelector("button"); btn.disabled = true; btn.textContent = "Checking…";
+  try{
+    const p = await api.chatPreview(chatCur, text);
+    if(p.error) throw new Error(p.error);
+    chatDraft = Object.assign({ typed:text }, p); renderChat();
+  }catch(err){ console.error(err); toast(err.message === "busy" ? "The translator is busy. Try again in a minute." : "Couldn't check that message. Please try again."); btn.disabled = false; btn.textContent = "Check and send"; }
+  chatBusy = false;
+});
+$("chBody").addEventListener("click", async e => {
+  const b = e.target.closest("[data-chat]"); if(!b) return;
+  const act = b.dataset.chat, c = chatData || {};
+  if(act !== "close") chatCloseArm = false;
+  if(act === "orig"){ const o = $("chOrig" + b.dataset.i), open = o.hidden; o.hidden = !open; b.setAttribute("aria-expanded", open); return; }
+  if(act === "back"){ const t = chatDraft.typed; chatDraft = null; renderChat(); $("chText").value = t; $("chText").focus(); return; }
+  if(act === "send" || act === "own"){
+    if(chatBusy) return; chatBusy = true; b.disabled = true;
+    const shown = act === "own" ? chatDraft.body : ($("chShown").value.trim() || chatDraft.body);
+    try{
+      const r = await api.chatSend(chatCur, { body:chatDraft.typed, shown, held:chatDraft.held });
+      if(r.error) throw new Error(r.error);
+      chatDraft = null; chatQs = null; await chatRefresh(true);
+    }catch(err){ console.error(err); toast(err.message === "rate-limited" ? "That's a lot of messages for one day. Try again tomorrow." : "Couldn't send. Please try again."); b.disabled = false; }
+    chatBusy = false; return;
+  }
+  if(act === "qs"){ b.disabled = true; b.textContent = "Thinking…";
+    try{ const r = await api.chatQuestions(chatCur); chatQs = (r.questions || []).length ? r.questions : null;
+      if(!chatQs) toast("No new questions to suggest right now."); }catch(err){ console.error(err); toast("Couldn't suggest a question right now."); }
+    return renderChat(); }
+  if(act === "useq"){ const q = chatQs[+b.dataset.i]; chatQs = null; renderChat(); $("chText").value = q; $("chText").focus(); return; }
+  if(act === "report"){ b.disabled = true;
+    try{ const r = await api.chatReport(chatCur); if(r.error) throw new Error(r.error); chatReportOn = r.lines || []; renderChat();
+      const s = $("chBody").querySelector(".ch-report"); if(s) s.scrollIntoView({ block:"start", behavior:"smooth" }); }
+    catch(err){ console.error(err); toast("Couldn't make the report right now."); b.disabled = false; } return; }
+  if(act === "report-x"){ chatReportOn = null; return renderChat(); }
+  if(act === "close"){
+    if(!chatCloseArm){ chatCloseArm = true; return renderChat(); }
+    chatCloseArm = false;
+    try{ await api.chatClose(chatCur); toast(c.role === "seeker" ? "Chat closed and request withdrawn." : "Chat closed. They won't be charged."); }
+    catch(err){ console.error(err); toast("Couldn't close the chat. Please try again."); }
+    await chatRefresh(); if(currentView === "requests") renderRequests(); if($("dlgListing").open && currentId) openListing(currentId); return;
+  }
+  if(act === "accept"){ b.disabled = true;
+    try{ const r = await api.chatAccept(c); if(r.error && r.error !== "waiting-for-seeker") throw new Error(r.error);
+      toast(r.status === "approved" ? "Accepted. You can call each other now." : `You said yes. ${c.their_name || "They"} just has to confirm sharing their number.`); }
+    catch(err){ console.error(err); toast(err.message === "seeker-out-of-contacts" ? "They've run out of contacts. They'll get a nudge to top up." : "Couldn't do that right now. Please try again."); }
+    await chatRefresh(); if(currentView === "requests") renderRequests(); return; }
+  if(act === "share"){ b.disabled = true;
+    try{ const r = await api.chatShare(chatCur); if(r.error) throw new Error(r.error); toast("Done. You both have each other's numbers now."); }
+    catch(err){ console.error(err); toast(err.message === "seeker-out-of-contacts" ? "You're out of contacts. Top up to share numbers." : "Couldn't share right now. Please try again."); b.disabled = false; }
+    await chatRefresh(); if(currentView === "requests") renderRequests(); return; }
+  if(act === "done"){ $("dlgChat").close(); if(c.role === "seeker") openListing(c.listing); else location.hash = "#requests"; }
+});
+$("dlgChat").addEventListener("close", () => { clearInterval(chatPoll); chatDraft = null; chatReportOn = null; });
+const chatBtn = (rid, label) => chatIsOn() ? `<button class="btn btn-ghost btn-sm" data-chatreq="${esc(rid)}">💬 ${label}</button>` : "";
+document.addEventListener("click", e => { const b = e.target.closest("[data-chatreq]"); if(!b) return; e.stopPropagation(); e.preventDefault(); openChat(b.dataset.chatreq); }, true);
 
 /* ========================================================= welcome gift */
 let afterGift = null;
