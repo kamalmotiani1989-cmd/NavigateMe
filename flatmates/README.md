@@ -367,6 +367,39 @@ the room comes second.
 26. **Invite friends after the first yes.** When an owner first accepts a seeker's request, Discover and
     Requests show a one-time card ("Your first yes. Know someone else hunting for a room?") with **Share my
     link** (the referral link, every 2 friends who join = 1 free contact) and **Not now**.
+27. **Chat before you decide (the AI go-between; Kamal, 10 Nov).** Off until `update fm_settings set
+    ai_chat_enabled = true;`. From the moment a seeker sends a request until both accept, either side can
+    open a chat (**Chat with the owner** / **Chat first** on Requests and the home's page; 18+ only).
+    Each writes in their own language (picker at the top, 11 Indian languages) and the other reads it in
+    theirs, with **Show original** under every message. Before anything goes, the sender sees **This is
+    what <name> will see** and can edit it or send their own words instead. The AI only relays and
+    translates; it never answers for anyone and never invents facts.
+    - *Privacy Shield:* phone numbers in any form (spaced, dashed, +91, in words, "double five", Hindi
+      numbers), emails (also "at … dot com"), links, UPI IDs, social handles, flat and house numbers,
+      addresses, PIN codes and payment requests are replaced with "[… hidden]", and the sender is told what
+      was held back and why. A fixed filter runs first (`fm_chat_shield`, the same rules as `shieldText`
+      in the app), then the AI, then the filter again on what's stored, so no prompt can talk a number through.
+    - *Conflict Detector:* the differences between the seeker's answers and the home's (and rent over
+      budget), biggest first, at the top of the chat.
+    - *Smart Questions:* **Suggest a question** offers one or two things neither has asked yet (deposit,
+      notice period, bills, overnight guests, kitchen rules, their biggest difference). Tapping one puts it
+      in the box to edit; nothing is sent until they send it.
+    - *Truth Check:* when a message contradicts the sender's own answer ("Never" for smoking, then "I smoke
+      on the balcony"), only the sender gets a quiet note to clarify or update their answers. The other
+      side never sees it.
+    - *Compatibility report:* agreements, differences and open questions, every line labelled **Verified**
+      (only a phone confirmed by a delivered code, 18+, Pays on time, the home's photos) or **Self-reported**
+      (everything else, including all the AI writes).
+    - *Both say yes:* the seeker's request is their first yes. When the lister accepts while a chat is open,
+      nothing is shared yet (`fm_decide` returns `waiting-for-seeker`); the seeker then taps **Share my
+      number** (`fm_chat_share`) and only then do numbers and the address unlock. Either side can close the
+      chat (the seeker's request is withdrawn, or the lister's answer is no); the other then only sees "This
+      conversation was closed". Withdrawing or declining anywhere else closes it too.
+    - Messages are readable only by the two people (row-level security), only while the chat is open, and
+      are deleted 30 days after it closes or both accept. 60 messages a day each (`fm_throttle`). The AI is
+      called only from `supabase/functions/fm-chat`, which holds the key; the model is `fm_settings.ai_chat_model`
+      (`claude-opus-5-5`; `update fm_settings set ai_chat_model = 'claude-haiku-5-5';` to switch). Demo mode
+      has the chat on, with a sample who writes in Hindi and canned replies, and makes no AI calls.
 
 Demo mode has **100 sample homes**: 12–13 in each of the 8 cities, one per neighbourhood, with
 realistic rents, flatmates, interests and per-room expenses (addresses are made up). The other side is simulated: sample owners reply about 6 seconds after a request
@@ -551,6 +584,8 @@ the logo and share images keep their own colours.
 - `supabase/schema.sql`: tables, row-level security and RPCs (including `fm_split_*` for Flatsplits and `fm_market_*` for FlatMart). Requests, approvals, contacts and
   the match score are enforced here, so a number or address never reaches someone who wasn't accepted.
 - `supabase/functions/fm-pay/index.ts`: Razorpay order creation, payment verification and webhook.
+- `supabase/functions/fm-chat/index.ts`: the AI go-between (translation, privacy filter, suggested questions, the
+  compatibility report). Needs the `ANTHROPIC_API_KEY` secret; does nothing while `fm_settings.ai_chat_enabled` is off.
 - `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
   is made, accepted or declined (called by a database trigger).
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
@@ -902,6 +937,13 @@ Keep a budget alert on the billing account.
    supabase secrets set RAZORPAY_KEY_ID=... RAZORPAY_KEY_SECRET=... RAZORPAY_WEBHOOK_SECRET=...
    supabase functions deploy fm-pay --no-verify-jwt
    ```
+   For the chat (optional, off until you turn it on): create an API key in the Claude Console
+   (platform.claude.com → API keys), then
+   ```
+   supabase secrets set ANTHROPIC_API_KEY=...
+   supabase functions deploy fm-chat
+   ```
+   and `update fm_settings set ai_chat_enabled = true;`.
 4. In the Razorpay dashboard add a webhook to
    `https://<project>.supabase.co/functions/v1/fm-pay/webhook` for `payment.captured`.
 5. Paste the project URL and **anon** key into `FM_CONFIG` at the top of the script in `index.html`.
