@@ -1,5 +1,27 @@
 # Teche · reports
 
+## 2026-11-10, party rules (#88) and block and report (#89) live
+
+- **Party rules, 21+ (#88):** ten rules of our own for parties nearby, with 21 and over only. A guest ticks "I'm 21
+  or older, I've read the party rules and I'll follow them" before the first request to join; a host does the same
+  before opening a party to people nearby. The server enforces it. The rest of the app stays 18+.
+  - Live check (rolled back): a request without the tick gets rules-required; after ticking, it goes on to the
+    normal checks.
+- **Block and report (#89):**
+  - Where: on chats and messages, people's cards, home pages and FlatMart items.
+  - Blocking is silent and both ways, enforced on the server: chats close ("You can't message this person"), and
+    requests, invites, offers and tribe yeses are refused. Listings, items and parties disappear for each other,
+    and they drop out of each other's lists. Account → Blocked people unblocks.
+  - Reports keep a copy of what was reported, for two years. Reports from two different people pause messages,
+    requests and invites until Kamal reviews (fm_safety_review_list / fm_safety_clear).
+  - Message limits: 60 a day, and 10 a day to new people.
+  - Live check (rolled back): after a block the listing went, the chat closed for both, the other side saw no
+    sign, and the report reached the review list.
+- **Merging:** #89 was brought up to date with main by a normal merge commit. The force-push of the rebase was
+  refused, and the merged files are identical to the tested ones.
+- **Published:** findmeflatmate main says "Publish the app from NavigateMe daa95d8".
+- **Waiting on Kamal:** #86 (privacy and security) has lines for chat, block and report, and needs his [TO FILL]s.
+
 ## 2026-11-10, in-app messages after a yes: #87 live
 
 - **What:** chat inside the app once people are connected, never before. It works for:
