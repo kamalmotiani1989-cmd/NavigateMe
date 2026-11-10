@@ -229,6 +229,17 @@ the room comes second.
     `fm_party_nearby_me`, `fm_party_nearby`, `fm_party_nearby_get`, `fm_party_request`, `fm_party_withdraw`,
     `fm_party_host_requests`, `fm_party_decide`, `fm_party_checkin`, `fm_party_report`, `fm_party_rate`; triggers
     `fm_party_requests_notify` and `fm_parties_notify`. Demo mode has six sample parties in Pune and Bengaluru.
+    **Party rules (Kamal, 10 Nov).** FindMeFlatMate's own ten rules (`PARTY_RULES` in index.html): 18 and over, no
+    drugs, bring your own and drink responsibly (no alcohol for anyone under the state's drinking age; hosts may ask
+    for ID), respect everyone, respect the home, stay on the app until accepted (check-in code at the door), money
+    only to the host after acceptance, what hosts promise, leave and report if unsafe (112 in an emergency), and what
+    happens when they're broken (asked to leave; two reports or three thumbs down pause someone; serious breaks can
+    mean no parties nearby for good). Shown on every nearby party's page and in the host's "Open to people nearby"
+    form. A guest ticks "I've read the party rules and I'll follow them" before the first request to join; a host
+    before opening a party to people nearby; once per account (`fm_profiles.party_rules_at`, `party_rules_v`). The
+    server refuses without it (`fm_party_rules_ok` in `fm_party_request` and `fm_party_open_save`: `rules-required`).
+    To make everyone agree again after a real change, raise the version in `fm_party_rules_ok` and
+    `fm_party_rules_accept`. The app is 18+; parties are not 21+, because the app doesn't know anyone's exact age.
     **For Kamal, who is blocked and why** (Supabase → SQL editor):
     `select * from fm_party_review_list();` lists everyone with reports or thumbs down (reasons, counts, blocked or
     not). To lift a block after looking: `select fm_party_clear('<user_id>', 'what you decided');` (reports and thumbs

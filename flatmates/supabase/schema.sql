@@ -2159,6 +2159,23 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- Open a party to people nearby, change it, or close it again (p.open = false). The host only; adults only.
+-- Party rules (Kamal, 10 Nov): FindMeFlatMate's own rules for parties with people nearby (the text is PARTY_RULES in
+-- index.html). Everyone agrees once, before asking to join a party or opening one to people nearby; the server
+-- checks it. PARTY_RULES_VERSION goes up when the rules change in a way people should agree to again.
+alter table public.fm_profiles add column if not exists party_rules_at timestamptz;
+alter table public.fm_profiles add column if not exists party_rules_v int;
+create or replace function public.fm_party_rules_ok(p_user uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select party_rules_v from fm_profiles where id = p_user), 0) >= 1;   -- PARTY_RULES_VERSION
+$$;
+create or replace function public.fm_party_rules_accept() returns jsonb
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  update fm_profiles set party_rules_at = now(), party_rules_v = 1 where id = auth.uid();
+  return jsonb_build_object('rules_ok', true, 'rules_at', now());
+end $$;
+
 create or replace function public.fm_party_open_save(p_group uuid, p jsonb) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare v fm_parties%rowtype; v_limit int; v_chip int; v_covers text[]; v_geo jsonb; v_entry text;
@@ -2175,6 +2192,7 @@ begin
   if (select adult_at from fm_profiles where id = auth.uid()) is null then raise exception 'age-required'; end if;
   if fm_party_blocked(auth.uid()) then raise exception 'blocked'; end if;
   if not fm_party_vibe_ok(auth.uid()) then raise exception 'need-vibe'; end if;
+  if not fm_party_rules_ok(auth.uid()) then raise exception 'rules-required'; end if;
   if v.cancelled then raise exception 'party-cancelled'; end if;
   if v.starts_at < now() then raise exception 'party-over'; end if;
   begin v_limit := (p->>'guest_limit')::int; exception when others then v_limit := null; end;
@@ -2346,7 +2364,8 @@ begin
 end $$;
 create or replace function public.fm_party_nearby_me() returns jsonb
 language sql stable security definer set search_path = public as $$
-  select jsonb_build_object('on', parties_nearby, 'pin', party_pin, 'label', party_pin_label) from fm_profiles where id = auth.uid();
+  select jsonb_build_object('on', parties_nearby, 'pin', party_pin, 'label', party_pin_label,
+                            'rules_ok', fm_party_rules_ok(id), 'rules_at', party_rules_at) from fm_profiles where id = auth.uid();
 $$;
 
 -- Parties near me, soonest first; also the ones I've asked to join (whatever their state), so I can follow them.
@@ -2392,6 +2411,7 @@ begin
   perform fm_throttle('party-req', 10, 30);
   select * into v from fm_parties where code = upper(trim(p_code)) for update;
   if v.id is null then raise exception 'no-party'; end if;
+  if not fm_party_rules_ok(auth.uid()) then raise exception 'rules-required'; end if;
   v_why := fm_party_cant_see(v.id, auth.uid());
   if v_why is not null then raise exception '%', v_why; end if;
   select * into r from fm_party_requests where party_id = v.id and user_id = auth.uid();
@@ -3979,7 +3999,7 @@ begin
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
-                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify') then
+                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
