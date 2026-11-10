@@ -1,0 +1,22 @@
+[
+  {"in": "Call me on 9876543210", "held": ["phone"], "gone": ["9876543210"]},
+  {"in": "my no. is +91 98765 43210 ok", "held": ["phone"], "gone": ["98765", "43210"]},
+  {"in": "98-76-54-32-10 anytime", "held": ["phone"], "gone": ["98-76"]},
+  {"in": "nine eight seven six five four three two one zero", "held": ["phone"], "gone": ["nine eight seven"]},
+  {"in": "it's nine eight double seven six five four three two one", "held": ["phone"], "gone": ["double seven"]},
+  {"in": "ek do teen chaar paanch chhe saat aath nau", "held": ["phone"], "gone": ["chaar paanch"]},
+  {"in": "(987) 654-3210", "held": ["phone"], "gone": ["654-3210"]},
+  {"in": "mail me at riya.k@gmail.com", "held": ["email"], "gone": ["gmail"]},
+  {"in": "riya dot k at gmail dot com", "held": ["email"], "gone": ["gmail dot com"]},
+  {"in": "pay the token to riya@okhdfc", "held": ["payment", "upi"], "gone": ["okhdfc"]},
+  {"in": "my insta is riya_k99", "held": ["social"], "gone": ["riya_k99"]},
+  {"in": "find me @riya.k on there", "held": ["social"], "gone": ["@riya.k"]},
+  {"in": "see www.findhouses.in/x or bit.ly/abc", "held": ["link"], "gone": ["findhouses", "bit.ly"]},
+  {"in": "Flat no. 402, Tower B", "held": ["address"], "gone": ["402"]},
+  {"in": "I'm at 12 MG Road near the metro", "held": ["address"], "gone": ["12 MG Road"]},
+  {"in": "PIN 560034", "held": ["address"], "gone": ["560034"]},
+  {"in": "Please send 5000 advance on GPay", "held": ["payment"], "gone": ["5000", "GPay"]},
+  {"in": "Rent is 15000 and deposit two months", "held": [], "keep": ["15000", "deposit two months"]},
+  {"in": "I sleep by 11 and have one or two guests a month", "held": [], "keep": ["11", "one or two guests"]},
+  {"in": "Do you cook non-veg? I work 9 to 6", "held": [], "keep": ["Do you cook", "9 to 6"]}
+]

@@ -823,7 +823,7 @@ $$;
 create or replace function public.fm_decide(p_request uuid, p_approve boolean)
 returns table (status text, error text)
 language plpgsql security definer set search_path = public as $$
-declare v_req fm_requests%rowtype; v_credits int; v_charges boolean;
+declare v_req fm_requests%rowtype;
 begin
   select r.* into v_req from fm_requests r join fm_listings l on l.id = r.listing_id
    where r.id = p_request
@@ -840,19 +840,15 @@ begin
     return query select 'declined'::text, null::text; return;
   end if;
 
-  v_charges := (select charges_enabled from fm_settings) and v_req.initiated_by = 'seeker'
-               and fm_pass_until(v_req.seeker_id, 'room') is null;
-  if v_charges then
-    select credits into v_credits from fm_profiles where id = v_req.seeker_id for update;
-    if v_credits < 1 then return query select 'pending'::text, 'seeker-out-of-contacts'; return; end if;
-    update fm_profiles set credits = credits - 1 where id = v_req.seeker_id;
+  -- With the AI go-between on and a chat running, the lister's yes waits for the seeker's "Share my number"
+  -- (fm_chat_share) before anything is shared.
+  if v_req.initiated_by = 'seeker' and fm_chat_on()
+     and exists (select 1 from fm_chats c where c.request_id = p_request and c.status = 'open' and not c.seeker_share) then
+    update fm_chats set owner_yes = true where request_id = p_request;
+    update fm_requests set seen_by_seeker = false where id = p_request;
+    return query select 'pending'::text, 'waiting-for-seeker'; return;
   end if;
-  insert into fm_unlocks (user_id, listing_id, charged) values (v_req.seeker_id, v_req.listing_id, v_charges)
-  on conflict (user_id, listing_id) do nothing;
-  update fm_requests set status = 'approved', decided_at = now(),
-         seen_by_seeker = (v_req.initiated_by = 'owner'), seen_by_owner = (v_req.initiated_by = 'seeker')
-   where id = p_request;
-  return query select 'approved'::text, null::text;
+  return query select * from fm_request_approve(p_request);
 end $$;
 
 -- The Empty Room Escape: seekers looking in this listing's city (and area, if they picked
@@ -3764,6 +3760,381 @@ do $$ begin
 exception when others then raise notice 'Hold check not switched on: %', sqlerrm;
 end $$;
 
+-- ================================================================== AI go-between --
+-- A chat between a seeker and a home's lister, from the moment a request is sent until both sides accept
+-- (Kamal, 10 Nov; priorities 00000). Each person writes in their own language and the other reads it in theirs;
+-- the AI (functions/fm-chat, the only place that holds the API key) relays and translates. It never answers for
+-- anyone. Off until Kamal turns it on:  update fm_settings set ai_chat_enabled = true;
+-- The model is set here, in one place:   update fm_settings set ai_chat_model = 'claude-haiku-5-5';
+alter table public.fm_settings add column if not exists ai_chat_enabled boolean not null default false;
+alter table public.fm_settings add column if not exists ai_chat_model text not null default 'claude-opus-5-5';
+
+create or replace function public.fm_chat_on() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select ai_chat_enabled from fm_settings), false);
+$$;
+
+-- One chat per request. owner_yes: the lister accepted inside the chat; seeker_share: the seeker then confirmed
+-- "Share my number". Numbers are shared only when both are true (fm_chat_share / fm_decide).
+create table if not exists public.fm_chats (
+  id           uuid primary key default gen_random_uuid(),
+  request_id   uuid not null unique references public.fm_requests(id) on delete cascade,
+  listing_id   uuid not null references public.fm_listings(id) on delete cascade,
+  seeker_id    uuid not null references auth.users(id) on delete cascade,
+  owner_id     uuid not null references auth.users(id) on delete cascade,
+  status       text not null default 'open' check (status in ('open','accepted','closed')),
+  seeker_lang  text not null default 'en',
+  owner_lang   text not null default 'en',
+  clashes      jsonb not null default '[]'::jsonb,
+  owner_yes    boolean not null default false,
+  seeker_share boolean not null default false,
+  closed_by    uuid,
+  closed_at    timestamptz,
+  created_at   timestamptz not null default now()
+);
+create index if not exists fm_chats_seeker on public.fm_chats (seeker_id);
+create index if not exists fm_chats_owner on public.fm_chats (owner_id);
+
+-- body: the sender's own words (after the privacy filter); shown: what the other person reads, in their language
+-- (after the filter again). Both people may see both ("Show original").
+create table if not exists public.fm_chat_messages (
+  id         uuid primary key default gen_random_uuid(),
+  chat_id    uuid not null references public.fm_chats(id) on delete cascade,
+  sender_id  uuid not null references auth.users(id) on delete cascade,
+  body       text not null,
+  shown      text not null,
+  lang_from  text,
+  lang_to    text,
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_chat_messages_chat on public.fm_chat_messages (chat_id, created_at);
+
+-- Notes only the sender sees: what the privacy filter held back, and the private profile check (Truth Check).
+create table if not exists public.fm_chat_notes (
+  id         uuid primary key default gen_random_uuid(),
+  chat_id    uuid not null references public.fm_chats(id) on delete cascade,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  kind       text not null check (kind in ('held','truth')),
+  data       jsonb not null,
+  created_at timestamptz not null default now()
+);
+
+-- Row-level security: only the two people in a chat can read it, and only while it's open (a closed chat shows
+-- "This conversation was closed", never the content). Notes: only their owner. Nobody writes directly; every
+-- write goes through the functions below.
+alter table public.fm_chats enable row level security;
+alter table public.fm_chat_messages enable row level security;
+alter table public.fm_chat_notes enable row level security;
+drop policy if exists fm_chats_parties on public.fm_chats;
+create policy fm_chats_parties on public.fm_chats for select to authenticated
+  using (auth.uid() in (seeker_id, owner_id));
+drop policy if exists fm_chat_messages_parties on public.fm_chat_messages;
+create policy fm_chat_messages_parties on public.fm_chat_messages for select to authenticated
+  using (exists (select 1 from fm_chats c where c.id = chat_id and auth.uid() in (c.seeker_id, c.owner_id) and c.status <> 'closed'));
+drop policy if exists fm_chat_notes_own on public.fm_chat_notes;
+create policy fm_chat_notes_own on public.fm_chat_notes for select to authenticated
+  using (user_id = auth.uid() and exists (select 1 from fm_chats c where c.id = chat_id and c.status <> 'closed'));
+revoke all on public.fm_chats, public.fm_chat_messages, public.fm_chat_notes from anon;
+revoke insert, update, delete on public.fm_chats, public.fm_chat_messages, public.fm_chat_notes from authenticated;
+grant select on public.fm_chats, public.fm_chat_messages, public.fm_chat_notes to authenticated;
+
+-- 30 days after a chat closes (or is accepted), it and everything in it is deleted. Runs on every chat call, so
+-- nothing older survives the next time anyone uses a chat.
+create or replace function public.fm_chat_purge() returns void
+language sql security definer set search_path = public as $$
+  delete from fm_chats where status in ('closed','accepted') and coalesce(closed_at, created_at) < now() - interval '30 days';
+$$;
+
+-- ---------------------------------------------------------------- Privacy Shield --
+-- Before both people accept, nothing that would let them reach each other off the app gets through: phone
+-- numbers in any format (spaced, dashed, +91, written as words: "nine eight seven...", "double five", Hindi
+-- "ek do teen"), emails (also "name at gmail dot com"), links, UPI IDs, social handles, flat and house numbers,
+-- street addresses and PIN codes, and payment requests. Deterministic, and run on everything stored, whatever
+-- the AI did, so no prompt can talk a number through. Returns the filtered text and the kinds held back.
+-- The app has the same rules (shieldText in index.html) for demo mode; both are tested on the same examples.
+create or replace function public.fm_chat_shield(p_text text) returns jsonb
+language plpgsql immutable set search_path = public as $$
+declare
+  t text := coalesce(p_text, '');
+  held text[] := '{}';
+  toks text[]; out text[] := '{}'; i int; j int; n int; d int; w text; mult int; run_start int; run_digits int;
+  words jsonb := '{"zero":1,"oh":1,"one":1,"two":1,"three":1,"four":1,"five":1,"six":1,"seven":1,"eight":1,"nine":1,
+                   "shunya":1,"ek":1,"do":1,"teen":1,"char":1,"chaar":1,"paanch":1,"panch":1,"chhe":1,"cheh":1,"saat":1,"aath":1,"nau":1}';
+  before text;
+begin
+  -- emails, including "at" / "dot" spelled out
+  before := t;
+  t := regexp_replace(t, '[A-Za-z0-9._%+-]+(\s+dot\s+[A-Za-z0-9_-]+)*\s*(@|\(at\)|\[at\]|\s+at\s+)\s*[A-Za-z0-9-]+(\s*(\.|\(dot\)|\[dot\]|\s+dot\s+)\s*[A-Za-z]{2,})+', '[email hidden]', 'gi');
+  if t <> before then held := held || 'email'::text; end if;
+  -- UPI IDs (name@bank)
+  before := t;
+  t := regexp_replace(t, '[A-Za-z0-9._-]{2,}@[A-Za-z]{2,}\M', '[UPI ID hidden]', 'g');
+  if t <> before then held := held || 'upi'::text; end if;
+  -- links
+  before := t;
+  t := regexp_replace(t, '(https?://|www\.)\S+|\m[A-Za-z0-9-]+\.(com|in|co|net|org|io|me|app|link|ly|gg|xyz|page)(/\S*)?\M', '[link hidden]', 'gi');
+  if t <> before then held := held || 'link'::text; end if;
+  -- social handles: @name, or "insta / ig / snap / telegram ... name"
+  before := t;
+  t := regexp_replace(t, '(^|\s)@[A-Za-z0-9_.]{2,}', '\1[handle hidden]', 'g');
+  t := regexp_replace(t, '\m(insta(gram)?|ig|snap(chat)?|telegram|tg|facebook|fb|twitter|x\.com|linkedin|discord)\M(\s*(id|handle|is|me|on|:|-|@))*\s*[A-Za-z0-9_.]{3,}', '\1 [handle hidden]', 'gi');
+  if t <> before then held := held || 'social'::text; end if;
+  -- payment requests and payment details
+  before := t;
+  t := regexp_replace(t, '\m(gpay|google\s*pay|phonepe|phone\s*pe|paytm|bhim|ifsc|neft|imps|rtgs|account\s*(no|number)|a/c)\M[^.!?\n]*', '[payment details held back]', 'gi');
+  t := regexp_replace(t, '\m(pay|send|transfer|deposit|give)\M(\s+me|\s+us)?[^.!?\n]{0,25}(₹|\mrs\.?|\minr\M|rupees|\d{3,})[^.!?\n]*', '[payment request held back]', 'gi');
+  t := regexp_replace(t, '\m(pay|send|transfer|give)\M[^.!?\n]{0,30}\m(token|advance|booking|deposit)\M[^.!?\n]*', '[payment request held back]', 'gi');
+  if t <> before then held := held || 'payment'::text; end if;
+  -- flat / house numbers and street addresses, PIN codes
+  before := t;
+  t := regexp_replace(t, '\m(flat|house|h\.?\s*no|door|apt|apartment|room\s*no|plot|block|tower|wing|villa|unit)\M\.?\s*(no\.?|number|num|#)?\s*[:\-]?\s*#?[A-Za-z]?\s*-?\s*\d{1,5}\s*[A-Za-z]?\M', '[address hidden]', 'gi');
+  t := regexp_replace(t, '#\s*\d{1,5}[A-Za-z]?', '[address hidden]', 'g');
+  t := regexp_replace(t, '\m\d{1,5}[A-Za-z]?\s*,?\s*(\w+\s+){0,3}(road|rd|street|st|lane|ln|cross|main|marg|avenue)\M', '[address hidden]', 'gi');
+  t := regexp_replace(t, '\m[1-9]\d{2}\s?\d{3}\M', '[address hidden]', 'g');
+  if t <> before then held := held || 'address'::text; end if;
+  -- phone numbers: any run of digit-like words (digits with separators, number words, "double"/"triple")
+  -- carrying 7 or more digits
+  toks := regexp_split_to_array(t, '\s+');
+  n := coalesce(array_length(toks, 1), 0); i := 1; before := t;
+  while i <= n loop
+    run_start := i; run_digits := 0; mult := 1; j := i;
+    while j <= n loop
+      w := lower(regexp_replace(toks[j], '[^A-Za-z0-9+]', '', 'g'));
+      if toks[j] ~ '^[\d+()\-./,]+$' and toks[j] ~ '\d' then d := length(regexp_replace(toks[j], '\D', '', 'g')) * mult; mult := 1;
+      elsif words ? w then d := mult; mult := 1;
+      elsif w in ('double','triple') then mult := case w when 'double' then 2 else 3 end; d := 0;
+      elsif w in ('plus','dash','hyphen','and') and run_digits > 0 then d := 0;
+      else exit; end if;
+      run_digits := run_digits + d; j := j + 1;
+    end loop;
+    if run_digits >= 7 then out := out || '[number hidden]'::text; i := j;
+    else
+      if toks[i] ~ '\d{7,}' or length(regexp_replace(toks[i], '\D', '', 'g')) >= 7 then out := out || '[number hidden]'::text;
+      else out := out || toks[i]::text; end if;
+      i := i + 1;
+    end if;
+  end loop;
+  t := array_to_string(out, ' ');
+  if t <> regexp_replace(before, '\s+', ' ', 'g') then held := held || 'phone'::text; end if;
+  return jsonb_build_object('text', trim(t), 'held', to_jsonb(array(select distinct x from unnest(held) x order by 1)));
+end $$;
+
+-- ------------------------------------------------------------- Conflict Detector --
+-- Where the seeker's answers and the home's household differ (the same twelve questions as the match), plus
+-- budget against rent, shown to both people when the chat starts. Each item: key, the seeker's answer, the home's
+-- answer (option numbers, as in VIBE_QS), and level 2 (opposite ends) or 1 (one step apart).
+create or replace function public.fm_chat_clashes(p_seeker uuid, p_listing uuid) returns jsonb
+language sql stable security definer set search_path = public as $$
+  with p as (select vibe, search from fm_profiles where id = p_seeker),
+       l as (select household, rent from fm_listings where id = p_listing),
+       k(key, ord) as (values ('smoke',1),('food',2),('pets',3),('drinks',4),('guests',5),('clean',6),('sleep',7),('noise',8),('work',9),('cook',10),('sharing',11),('social',12)),
+       v as (
+         select k.key, k.ord, (p.vibe->>k.key)::int as a, (l.household->>k.key)::int as b
+         from k, p, l
+         where jsonb_typeof(p.vibe->k.key) = 'number' and jsonb_typeof(l.household->k.key) = 'number')
+  select coalesce(jsonb_agg(x order by (x->>'level')::int desc, (x->>'ord')::int), '[]'::jsonb) from (
+    select jsonb_build_object('key', key, 'seeker', a, 'home', b, 'level', abs(a - b), 'ord', ord) x from v where a <> b
+    union all
+    select jsonb_build_object('key', 'rent', 'seeker', (p.search->>'budget')::int, 'home', l.rent, 'level', 2, 'ord', 0)
+    from p, l where (p.search->>'budget') ~ '^\d+$' and (p.search->>'budget')::int > 0 and (p.search->>'budget')::int < l.rent
+  ) s;
+$$;
+
+-- ------------------------------------------------------------------ Truth Check --
+-- When someone writes something that contradicts their own profile answer ("non-smoker", then "I smoke on the
+-- balcony"), only they get a quiet prompt to clarify or update their profile. Never shown to the other person.
+-- p_profile: the sender's answers (a seeker's vibe, or the home's household for the lister).
+create or replace function public.fm_chat_truth(p_profile jsonb, p_text text) returns jsonb
+language plpgsql immutable set search_path = public as $$
+declare t text := lower(coalesce(p_text, '')); out jsonb := '[]'::jsonb; a int;
+begin
+  a := (p_profile->>'smoke')::int;
+  if a = 0 and t ~ '\m(i|we)\s+(smoke|vape)' and t !~ '\m(i|we)\s+(don''?t|do not|never|no longer|stopped|quit)\s+(smoke|vape|smoking)' then
+    out := out || jsonb_build_object('key', 'smoke', 'answer', a); end if;
+  a := (p_profile->>'drinks')::int;
+  if a = 0 and t ~ '\m(i|we)\s+(drink|like\s+(a\s+)?(beer|wine|whisky|drinks?)|have\s+(a\s+)?(beer|drink|peg))' and t !~ '\m(i|we)\s+(don''?t|do not|never|no longer)\s+drink' then
+    out := out || jsonb_build_object('key', 'drinks', 'answer', a); end if;
+  a := (p_profile->>'pets')::int;
+  if a is not null and a < 2 and t ~ '\m(my|our)\s+(dog|cat|puppy|kitten|pet)\M|\m(i|we)\s+(have|own)\s+(a\s+)?(dog|cat|puppy|kitten|pet)' then
+    out := out || jsonb_build_object('key', 'pets', 'answer', a); end if;
+  a := (p_profile->>'food')::int;
+  if a is not null and a < 2 and t ~ '\m(i|we)\s+(eat|cook|love|order)\s+(chicken|mutton|fish|meat|non-?veg|prawns|beef|pork)' then
+    out := out || jsonb_build_object('key', 'food', 'answer', a); end if;
+  if a = 0 and t ~ '\m(i|we)\s+(eat|cook|love)\s+eggs?\M' then
+    out := out || jsonb_build_object('key', 'food', 'answer', a); end if;
+  a := (p_profile->>'guests')::int;
+  if a = 0 and t ~ '(friends|guests|people)\s+(stay|come|sleep)\s+(over\s+)?(often|every\s+weekend|all\s+the\s+time|most\s+weekends)' then
+    out := out || jsonb_build_object('key', 'guests', 'answer', a); end if;
+  return out;
+end $$;
+
+-- ---------------------------------------------------------------- the chat itself --
+-- Open (or find) the chat for a request. Either person can; only while the request is waiting, the switch is on,
+-- and both are 18+. Returns the chat id or an error word.
+create or replace function public.fm_chat_open(p_request uuid, p_lang text default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare r fm_requests%rowtype; v_owner uuid; c fm_chats%rowtype; v_lang text := lower(left(coalesce(nullif(trim(p_lang), ''), 'en'), 8));
+begin
+  perform fm_chat_purge();
+  if not fm_chat_on() then return jsonb_build_object('error', 'off'); end if;
+  select * into r from fm_requests where id = p_request;
+  select owner_id into v_owner from fm_listings where id = r.listing_id;
+  if r.id is null or auth.uid() is null or auth.uid() not in (r.seeker_id, v_owner) then return jsonb_build_object('error', 'not-found'); end if;
+  if exists (select 1 from fm_profiles where id in (r.seeker_id, v_owner) and adult_at is null) then return jsonb_build_object('error', 'adults-only'); end if;
+  select * into c from fm_chats where request_id = p_request;
+  if c.id is null then
+    if r.status <> 'pending' then return jsonb_build_object('error', 'not-waiting'); end if;
+    insert into fm_chats (request_id, listing_id, seeker_id, owner_id, clashes, seeker_lang, owner_lang)
+    values (p_request, r.listing_id, r.seeker_id, v_owner, fm_chat_clashes(r.seeker_id, r.listing_id),
+            case when auth.uid() = r.seeker_id then v_lang else 'en' end, case when auth.uid() = v_owner then v_lang else 'en' end)
+    on conflict (request_id) do nothing returning * into c;
+    if c.id is null then select * into c from fm_chats where request_id = p_request; end if;
+  elsif p_lang is not null then
+    update fm_chats set seeker_lang = case when auth.uid() = seeker_id then v_lang else seeker_lang end,
+                        owner_lang = case when auth.uid() = owner_id then v_lang else owner_lang end where id = c.id;
+  end if;
+  return jsonb_build_object('chat', c.id, 'status', c.status);
+end $$;
+
+-- The chat as one person sees it. Closed: just that, no content (for either person). Messages carry both the
+-- other person's own words (body) and what you read (shown); "held" and "truth" notes are yours only.
+create or replace function public.fm_chat_get(p_chat uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare c fm_chats%rowtype; me uuid := auth.uid(); other uuid;
+begin
+  perform fm_chat_purge();
+  select * into c from fm_chats where id = p_chat and me in (seeker_id, owner_id);
+  if c.id is null then return jsonb_build_object('error', 'not-found'); end if;
+  other := case when me = c.seeker_id then c.owner_id else c.seeker_id end;
+  if c.status = 'closed' then
+    return jsonb_build_object('chat', c.id, 'status', 'closed', 'closed_by_me', c.closed_by = me);
+  end if;
+  return jsonb_build_object(
+    'chat', c.id, 'status', c.status, 'role', case when me = c.seeker_id then 'seeker' else 'owner' end,
+    'request', c.request_id, 'listing', c.listing_id,
+    'my_lang', case when me = c.seeker_id then c.seeker_lang else c.owner_lang end,
+    'their_lang', case when me = c.seeker_id then c.owner_lang else c.seeker_lang end,
+    'their_name', (select split_part(coalesce(full_name, ''), ' ', 1) from fm_profiles where id = other),
+    'clashes', c.clashes, 'owner_yes', c.owner_yes, 'seeker_share', c.seeker_share,
+    'messages', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'mine', m.sender_id = me, 'body', m.body, 'shown', m.shown,
+                  'lang_from', m.lang_from, 'lang_to', m.lang_to, 'at', m.created_at) order by m.created_at)
+               from fm_chat_messages m where m.chat_id = c.id), '[]'::jsonb),
+    'notes', coalesce((select jsonb_agg(jsonb_build_object('kind', n.kind, 'data', n.data, 'at', n.created_at) order by n.created_at)
+               from fm_chat_notes n where n.chat_id = c.id and n.user_id = me), '[]'::jsonb));
+end $$;
+
+-- Send a message. p_body: the sender's own words; p_shown: what the other person will read (the translation the
+-- sender saw and approved, or their own words). Both go through the privacy filter again here, whatever came
+-- in, and the profile check runs on the sender's words. 60 messages a day per person. Called by functions/fm-chat
+-- with the sender's own sign-in, or by the app directly when nothing needs translating.
+create or replace function public.fm_chat_post(p_chat uuid, p_body text, p_shown text default null, p_lang_from text default null,
+                                               p_lang_to text default null, p_ai_held jsonb default null) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare c fm_chats%rowtype; me uuid := auth.uid(); sb jsonb; ss jsonb; held jsonb; truth jsonb; prof jsonb; mid uuid;
+begin
+  if not fm_chat_on() then return jsonb_build_object('error', 'off'); end if;
+  select * into c from fm_chats where id = p_chat and me in (seeker_id, owner_id) for update;
+  if c.id is null then return jsonb_build_object('error', 'not-found'); end if;
+  if c.status <> 'open' then return jsonb_build_object('error', c.status); end if;
+  if length(trim(coalesce(p_body, ''))) = 0 then return jsonb_build_object('error', 'empty'); end if;
+  if length(p_body) > 1000 or length(coalesce(p_shown, '')) > 2000 then return jsonb_build_object('error', 'too-long'); end if;
+  perform fm_throttle('chat', 30, 60);
+  sb := fm_chat_shield(p_body);
+  ss := fm_chat_shield(coalesce(nullif(trim(p_shown), ''), p_body));
+  select coalesce(jsonb_agg(distinct x), '[]'::jsonb) into held
+    from jsonb_array_elements_text((sb->'held') || (ss->'held') || coalesce(p_ai_held, '[]'::jsonb)) x;
+  insert into fm_chat_messages (chat_id, sender_id, body, shown, lang_from, lang_to)
+  values (c.id, me, sb->>'text', ss->>'text', left(p_lang_from, 8), left(p_lang_to, 8)) returning id into mid;
+  if jsonb_array_length(held) > 0 then
+    insert into fm_chat_notes (chat_id, user_id, kind, data) values (c.id, me, 'held', jsonb_build_object('message', mid, 'held', held));
+  end if;
+  prof := case when me = c.seeker_id then (select vibe from fm_profiles where id = me) else (select household from fm_listings where id = c.listing_id) end;
+  truth := fm_chat_truth(prof, p_body);
+  if jsonb_array_length(truth) > 0 then
+    insert into fm_chat_notes (chat_id, user_id, kind, data) values (c.id, me, 'truth', jsonb_build_object('message', mid, 'items', truth));
+  end if;
+  return jsonb_build_object('message', mid, 'shown', ss->>'text', 'held', held, 'truth', truth);
+end $$;
+
+-- Either person can leave at any time: the chat closes for both, and its content can't be read any more. The
+-- seeker leaving also withdraws a waiting request; the lister leaving declines it.
+create or replace function public.fm_chat_close(p_chat uuid) returns text
+language plpgsql security definer set search_path = public as $$
+declare c fm_chats%rowtype; me uuid := auth.uid();
+begin
+  select * into c from fm_chats where id = p_chat and me in (seeker_id, owner_id) for update;
+  if c.id is null then return 'not-found'; end if;
+  if c.status = 'closed' then return 'closed'; end if;
+  update fm_chats set status = 'closed', closed_by = me, closed_at = now() where id = c.id;
+  update fm_requests set status = case when me = c.seeker_id then 'withdrawn' else 'declined' end, decided_at = now(),
+         seen_by_seeker = me = c.owner_id, seen_by_owner = me = c.seeker_id
+   where id = c.request_id and status = 'pending';
+  return 'closed';
+end $$;
+
+-- ------------------------------------------------------- Mutual Consent --
+-- Numbers and the address are shared only when both have said yes: the seeker's request is their first yes,
+-- the lister accepts (fm_decide), and then the seeker confirms "Share my number" here. Until then nothing unlocks.
+-- fm_request_approve is the approval itself (contacts used, the unlock, the request marked approved), shared by
+-- fm_decide and fm_chat_share; it can't be called from the app.
+create or replace function public.fm_request_approve(p_request uuid) returns table (status text, error text)
+language plpgsql security definer set search_path = public as $$
+declare v_req fm_requests%rowtype; v_credits int; v_charges boolean;
+begin
+  select * into v_req from fm_requests where id = p_request for update;
+  v_charges := (select charges_enabled from fm_settings) and v_req.initiated_by = 'seeker'
+               and fm_pass_until(v_req.seeker_id, 'room') is null;
+  if v_charges then
+    select credits into v_credits from fm_profiles where id = v_req.seeker_id for update;
+    if v_credits < 1 then return query select 'pending'::text, 'seeker-out-of-contacts'; return; end if;
+    update fm_profiles set credits = credits - 1 where id = v_req.seeker_id;
+  end if;
+  insert into fm_unlocks (user_id, listing_id, charged) values (v_req.seeker_id, v_req.listing_id, v_charges)
+  on conflict (user_id, listing_id) do nothing;
+  update fm_requests set status = 'approved', decided_at = now(),
+         seen_by_seeker = (v_req.initiated_by = 'owner'), seen_by_owner = (v_req.initiated_by = 'seeker')
+   where id = p_request;
+  update fm_chats c set status = 'accepted', closed_at = now() where c.request_id = p_request and c.status = 'open';
+  return query select 'approved'::text, null::text;
+end $$;
+
+create or replace function public.fm_chat_share(p_chat uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare c fm_chats%rowtype; r record;
+begin
+  select * into c from fm_chats where id = p_chat and seeker_id = auth.uid() for update;
+  if c.id is null then return jsonb_build_object('error', 'not-found'); end if;
+  if c.status <> 'open' then return jsonb_build_object('error', c.status); end if;
+  if not c.owner_yes then return jsonb_build_object('error', 'owner-not-yet'); end if;
+  update fm_chats set seeker_share = true where id = c.id;
+  select * into r from fm_request_approve(c.request_id);
+  if r.error is not null then update fm_chats set seeker_share = false where id = c.id; end if;
+  return jsonb_build_object('status', r.status, 'error', r.error);
+end $$;
+
+-- ------------------------------------------------------- Compatibility Report --
+-- The facts the app has actually checked, for the "Verified" lines of the report: the phone confirmed by a
+-- delivered code, the Pays on time badge from Flatsplits, the home's photos, and the 18+ confirmation. Everything
+-- else in the report (the answers, anything said in the chat) is labelled Self-reported.
+create or replace function public.fm_chat_facts(p_chat uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare c fm_chats%rowtype; me uuid := auth.uid(); s fm_profiles%rowtype; o fm_profiles%rowtype; l fm_listings%rowtype;
+begin
+  select * into c from fm_chats where id = p_chat and me in (seeker_id, owner_id) and status <> 'closed';
+  if c.id is null then return jsonb_build_object('error', 'not-found'); end if;
+  select * into s from fm_profiles where id = c.seeker_id;
+  select * into o from fm_profiles where id = c.owner_id;
+  select * into l from fm_listings where id = c.listing_id;
+  return jsonb_build_object(
+    'seeker', jsonb_build_object('name', split_part(coalesce(s.full_name, ''), ' ', 1), 'phone_verified', s.phone_verified_at is not null,
+              'adult', s.adult_at is not null, 'on_time', coalesce(s.show_on_time and s.on_time_months >= 3, false), 'vibe', s.vibe),
+    'owner', jsonb_build_object('name', split_part(coalesce(o.full_name, ''), ' ', 1), 'phone_verified', o.phone_verified_at is not null,
+              'adult', o.adult_at is not null),
+    'home', jsonb_build_object('title', l.title, 'photos', coalesce(array_length(l.photos, 1), 0), 'rent', l.rent, 'deposit', l.deposit,
+              'household', l.household, 'costs', l.costs),
+    'clashes', c.clashes);
+end $$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me, fm_area_demand, fm_otp_request and the party and sale pages also answer signed-out callers,
@@ -3785,7 +4156,8 @@ begin
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
-                     'fm_party_request_notify', 'fm_listing_fresh') then
+                     'fm_party_request_notify', 'fm_listing_fresh',
+                     'fm_request_approve', 'fm_chat_purge', 'fm_chat_clashes') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
