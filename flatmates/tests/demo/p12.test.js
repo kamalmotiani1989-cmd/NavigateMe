@@ -21,7 +21,7 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
   ok(nud.shown.length <= 1 && !nud.extras, 'Discover: at most one prompt, and no Flatsplits/FlatMart shortcuts: ' + JSON.stringify(nud));
   // 2. quick filters with counts
   const q0 = await p.evaluate(() => ({ chips: [...document.querySelectorAll('#quickF [data-quick]')].map(b => b.textContent), total: document.querySelectorAll('#cards .card').length }));
-  ok(q0.chips.length === 5 && q0.chips.every(t => /\d+$/.test(t)) && /^For women\d+/.test(q0.chips[0]), 'quick filters: five dealbreakers, each with a count: ' + q0.chips.join(' / '));
+  ok(q0.chips.length === 5 && q0.chips.every(t => /\d+$/.test(t)) && /^Women only\d+/.test(q0.chips[0]), 'quick filters: five dealbreakers, each with a count: ' + q0.chips.join(' / '));
   const veg = q0.chips.find(t => /^Veg kitchen/.test(t)), want = +veg.replace(/\D/g, '');
   await p.click('#quickF [data-quick="2"]'); await p.waitForTimeout(1500);
   const q1 = await p.evaluate(() => ({ rules: prefs().rules, active: [...document.querySelectorAll('#activeF button')].map(b => b.textContent.trim()), chips: document.querySelectorAll('#quickF [data-quick]').length,

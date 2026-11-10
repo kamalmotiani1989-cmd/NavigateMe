@@ -2177,6 +2177,10 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 :is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app,
     .role, .w-points li, .notice, .pp-card, .vibe-promo, .pass-nudge, .near-promo, .cm-banner, .safe-pay)
   :is(.eyebrow, a:not([class]), .linkbtn, .pk-more, h1 em, h1 b, h1 strong){color:var(--text)}
+.ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
+.ghome::before{content:"✓"; color:var(--ok)}
+.unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
+.fm-row .fm-g{margin:6px 0 4px}
 </style>
 </head>
 <body>
@@ -2513,6 +2517,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     <div id="extrasD"></div>
     <p class="count" id="count"></p>
     <div class="cards" id="cards"></div>
+    <section class="unconf" id="cardsUnc" hidden aria-labelledby="uncH"><h2 class="section-h" id="uncH"></h2>
+      <p class="hint" id="uncSub"></p><div class="cards" id="uncCards"></div></section>
   </section>
 
   <!-- both: requests -->
@@ -2628,7 +2634,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <div class="ps-more-body">
         <div class="grid3">
           <div class="field"><label for="pFrom">Available from</label><input type="date" id="pFrom" required></div>
-          <div class="field"><label for="pGender">Preferred</label><select id="pGender"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select></div>
+          <div class="field"><label for="pGender">Preferred</label><select id="pGender" aria-describedby="pGenderHint"><option value="any">Anyone</option><option value="female">Women only</option><option value="male">Men only</option></select>
+            <p class="hint" id="pGenderHint" style="margin:6px 0 0">Pick “Women only” only if everyone living here is a woman and you'll only take women (the same for men).</p></div>
           <div class="field"><label for="pFurn">Furnishing</label><select id="pFurn"><option value="full">Fully furnished</option><option value="semi" selected>Semi furnished</option><option value="none">Unfurnished</option></select></div>
         </div>
         <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="pBach" checked><span>Bachelors welcome
@@ -2839,8 +2846,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
       <h3 class="section-h">Homes open to</h3>
       <div class="chips">
         <label class="chip"><input type="radio" name="fGender" value="" checked>Anyone</label>
-        <label class="chip"><input type="radio" name="fGender" value="female">Women</label>
-        <label class="chip"><input type="radio" name="fGender" value="male">Men</label></div>
+        <label class="chip"><input type="radio" name="fGender" value="female">Women only</label>
+        <label class="chip"><input type="radio" name="fGender" value="male">Men only</label></div>
       <h3 class="section-h">Furnishing</h3>
       <div class="chips">
         <label class="chip"><input type="checkbox" name="fFurn" value="full">Fully furnished</label>
@@ -3045,6 +3052,21 @@ const AMENITIES = ["Wi-Fi","AC","Washing machine","Fridge","Cook/maid","Parking"
 const KIND_LABEL = {room:"Private room", shared:"Shared room", flatmate:"Flatmate wanted", flat:"Whole flat"};
 const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurnished"};
 const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
+// Women-only / men-only homes, the same rule as fm_home_gender in schema.sql: the listing says so, and it's a whole
+// flat (or nobody lives there yet), or everyone living there is that gender (the lister by their own profile, the
+// others by the Woman / Man given for them). "female?" / "male?": nothing says otherwise, but it isn't confirmed.
+function homeGender(kind, gender, hh, ownerGender){
+  if(gender !== "female" && gender !== "male") return null;
+  const n = /^\d{1,2}$/.test(String((hh || {}).residents ?? "")) ? Number(hh.residents) : 0;
+  if(kind === "flat" || n === 0) return gender;
+  let missing = false;
+  if(!ownerGender) missing = true; else if(ownerGender !== gender) return null;
+  const g = Array.isArray(hh.flatmate_genders) ? hh.flatmate_genders : [];
+  for(let k = 0; k < n - 1; k++){ if(g[k] == null) missing = true; else if(g[k] !== gender) return null; }
+  return missing ? gender + "?" : gender;
+}
+const HOME_GENDER_LABEL = { female:"Women-only home", male:"Men-only home" };
+const homeBadge = l => HOME_GENDER_LABEL[l.home_gender] ? `<div class="ghome">${HOME_GENDER_LABEL[l.home_gender]}</div>` : "";
 // Sample homes and people (supabase/samples.sql) for testing: they answer straight away and have no real number.
 const isSample = x => Boolean(x && ((x.household && x.household.sample) || (x.occupation && x.occupation.sample)));
 // "Phone verified" only when the server says the number was confirmed by a code actually delivered to it
@@ -3606,6 +3628,14 @@ function demoListings(){
       });
     }
   }
+  // Who lives there, for women-only / men-only homes (from a hash, so the rest of the demo stays as it was): the
+  // lister's gender, and one Woman / Man per other person. A few homes leave it unsaid (they show as not
+  // confirmed: no Woman / Man given, or the lister's own gender not set), and a few that say "Women only" have a man
+  // living there (they never count as women-only).
+  out.forEach(l => { const h = hue("who" + l.id), n = l.household.residents, other = l.gender === "female" ? "male" : "female";
+    l.owner_gender = l.gender === "any" ? (h % 2 ? "female" : "male") : n === 1 && h % 3 === 0 ? null : l.gender;
+    if(n > 1 && h % 3 !== 0) l.household.flatmate_genders = Array.from({ length: n - 1 }, (_, k) =>
+      l.gender === "any" ? (hue("g" + l.id + k) % 2 ? "female" : "male") : h % 7 === 1 && k === 0 ? other : l.gender); });
   return demoCache = out;
 }
 // ---------------------------------------------------------------- sample seekers
@@ -3733,6 +3763,7 @@ const demoApi = {
     const { private: _p, ...pub } = l;
     const r = this.reqFor(l.id);
     return { ...pub, is_owner: mine, unlocked: mine || state.unlocked.includes(l.id), request_status: r ? r.status : null, reply_hours: this.replyHours_(l),
+             home_gender: homeGender(l.kind, l.gender, l.household, mine ? state.user.gender : l.owner_gender),
              owner_verified: l.owner_verified ?? true,
              owner_active_at: mine ? new Date().toISOString() : l.owner_active_at || new Date(Date.now() - (hue(l.id) % 6) * 864e5 - (hue(l.id) % 20) * 36e5).toISOString(),
              unlock_count: (l.unlock_count || 0) + state.requests.filter(x => x.listing_id === l.id).length,
@@ -3742,7 +3773,7 @@ const demoApi = {
     this.tick();
     return this.all().filter(l => (l.status !== "closed" || this.view(l).is_owner) &&
       (!f.city || l.city === f.city) && (!f.kind || l.kind === f.kind) &&
-      (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || l.gender === "any" || l.gender === f.gender) &&
+      (!f.maxRent || l.rent <= f.maxRent) && (!f.gender || f.gender === "any" || String(this.view(l).home_gender || "").replace("?", "") === f.gender) &&
       (!f.q || (l.locality + " " + l.title).toLowerCase().includes(f.q.toLowerCase()))
     ).map(l => this.view(l)).filter(v => this.fresh_(v));
   },
@@ -6532,10 +6563,24 @@ function obTextStep(){
     <form class="ob-text" id="obTextForm" novalidate><input type="text" id="obWhat" required minlength="2" maxlength="80" placeholder="${esc(ph)}" value="${esc(ob.a.occWhat || "")}">
     <button class="btn btn-primary" type="submit">Continue</button></form>`;
 }
-function fmRowsHtml(list, n, prefix){
+// The posting form (prefix "p") also asks Woman / Man for each person, for women-only and men-only homes. For you it
+// uses your profile, and asks only if that isn't set. The owner onboarding (prefix "o") is unchanged.
+function fmGenderHtml(i, prefix, genders){
+  if(prefix !== "p") return "";
+  const mine = i === 0 && state.user && state.user.gender;
+  if(mine) return `<p class="hint fm-g">${mine === "female" ? "Woman" : "Man"}, from your profile</p>`;
+  const cur = i === 0 ? null : (genders || [])[i - 1];
+  return `<div class="chips fm-g">${[["female", "Woman"], ["male", "Man"]].map(([v, t]) => `<label class="chip"><input type="radio" name="pg${i}" value="${v}" required
+    aria-label="${i === 0 ? "You: woman or man" : `Flatmate ${i + 1}: woman or man`}"${cur === v ? " checked" : ""}>${t}</label>`).join("")}</div>`;
+}
+function readFmGenders(root, n){
+  const v = i => (root.querySelector(`[name=pg${i}]:checked`) || {}).value || null;
+  return { me: v(0), others: Array.from({ length: Math.max(0, n - 1) }, (_, k) => v(k + 1)) };
+}
+function fmRowsHtml(list, n, prefix, genders){
   return Array.from({ length: n }, (_, i) => {
     const m = list[i] || {};
-    return `<div class="fm-row" data-i="${i}"><b>${i === 0 ? "You" : "Flatmate " + (i + 1)}</b>
+    return `<div class="fm-row" data-i="${i}"><b>${i === 0 ? "You" : "Flatmate " + (i + 1)}</b>${fmGenderHtml(i, prefix, genders)}
       <div class="chips">${["working","student","self"].map(t => `<label class="chip"><input type="radio" name="${prefix}type${i}" value="${t}"${m.type === t ? " checked" : ""}>${OCC_SHORT[t]}</label>`).join("")}</div>
       <div class="grid2"><input type="text" name="${prefix}what${i}" maxlength="80" value="${esc(m.what || "")}" placeholder="${i === 0 ? "e.g. Designer at an agency" : "e.g. Final-year law student"}" aria-label="What they do">
         <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option value="${a}"${m.age === a ? " selected" : ""}>${a} · ${GEN_BADGE[AGE_GEN[a]][1]}</option>`).join("")}</select></div></div>`;
@@ -6801,7 +6846,9 @@ function applyFilters(rows, f){
     if(f.areas.length && !f.areas.includes(l.locality)) return false;
     if(f.min && cost < f.min) return false;
     if(f.max && cost > f.max) return false;
-    if(f.gender && l.gender !== "any" && l.gender !== f.gender) return false;
+    // Women only / Men only: homes where only women (men) live and only women (men) are welcome. Listings that say so
+    // but haven't said who lives there are shown apart, under the results (renderDiscover).
+    if(f.gender && l.home_gender !== f.gender) return false;
     if(f.furn.length && !f.furn.includes(l.furnishing)) return false;
     if(f.moveBy && l.available_from > f.moveBy) return false;
     if(f.must.length && !f.must.every(a => (l.amenities || []).includes(a))) return false;
@@ -6819,7 +6866,7 @@ const kfmt = n => "₹" + (n >= 1000 ? (n / 1000).toFixed(n % 1000 ? 1 : 0) + "k
 function activeFilters(f){
   const out = [];
   if(f.min || f.max) out.push(["budget", f.min && f.max ? `${kfmt(f.min)}–${kfmt(f.max)}` : f.max ? `Up to ${kfmt(f.max)}` : `From ${kfmt(f.min)}`]);
-  if(f.gender) out.push(["gender", f.gender === "female" ? "Open to women" : "Open to men"]);
+  if(f.gender) out.push(["gender", f.gender === "female" ? "Women only" : "Men only"]);
   f.furn.forEach(k => out.push(["furn:" + k, FURN_LABEL[k]]));
   if(f.moveBy) out.push(["moveBy", "Move in by " + fmtDate(f.moveBy)]);
   f.must.forEach(a => out.push(["must:" + a, a]));
@@ -6828,7 +6875,7 @@ function activeFilters(f){
   if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
-const QUICK = [["gender", "female", "For women"], ["gender", "male", "For men"], ["rules", "veg", "Veg kitchen"], ["rules", "noSmoke", "No smoking"], ["max", 15000, "Under ₹15k"]];
+const QUICK = [["gender", "female", "Women only"], ["gender", "male", "Men only"], ["rules", "veg", "Veg kitchen"], ["rules", "noSmoke", "No smoking"], ["max", 15000, "Under ₹15k"]];
 const quickOn = (f, [k, v]) => k === "rules" ? f.rules.includes(v) : k === "max" ? f.max === v && !f.min : f[k] === v;
 function quickToggle(f, q){
   const [k, v] = q, on = quickOn(f, q);
@@ -6903,6 +6950,7 @@ function cardHtml(l, i){
     <div class="body">
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${esc(expensesLine(l))}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
+      ${homeBadge(l)}
       ${nearNow && l._km != null ? `<div class="dist">${kmLabel(l._km)} from ${esc(nearNow.label)}</div>` : ""}
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span>${householdGen(hh) ? genBadge(householdGen(hh), "") : ""}</div>` : ""}
       ${both.length ? `<div class="both">♥ You both like ${esc(both.slice(0, 3).join(", "))}</div>` : l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome</div>` : ""}
@@ -7005,13 +7053,21 @@ async function renderDiscover(){
   $("giftPill").innerHTML = giftPillHtml();
   renderUrgent();
   // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
-  const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80 && lookRank(look, l.kind) >= 0)
+  // (Women only / Men only is a dealbreaker, so it applies here too.)
+  const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80 && lookRank(look, l.kind) >= 0 && (!f.gender || l.home_gender === f.gender))
     .sort((a, b) => lookRank(look, a.kind) - lookRank(look, b.kind) || score(b) - score(a) || d(a) - d(b)).slice(0, 12);
   $("vibeRow").hidden = !vibes.length;
   $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
   $("dMap").hidden = !mapView;
   // Nothing to show: the "no homes match" help goes straight under the controls, ahead of the nudges.
-  if(list.length) $("extrasD").after($("count"), $("cards")); else $("profilePromo").before($("count"), $("cards"));
+  if(list.length) $("extrasD").after($("count"), $("cards"), $("cardsUnc")); else $("profilePromo").before($("count"), $("cards"), $("cardsUnc"));
+  // Women only / Men only: homes that say so but haven't said who lives there come in their own block, under the rest.
+  const unc = f.gender && !mapView ? applyFilters(rows.map(l => l.home_gender === f.gender + "?" ? Object.assign({}, l, { home_gender: f.gender }) : null).filter(Boolean),
+    near ? Object.assign({}, f, { areas: [] }) : f).filter(l => lookRank(look, l.kind) >= 0).map(l => rows.find(x => x.id === l.id)) : [];
+  $("cardsUnc").hidden = !unc.length;
+  if(unc.length){ $("uncH").textContent = `Open to ${f.gender === "female" ? "women" : "men"}; who lives there isn't confirmed`;
+    $("uncSub").textContent = `The owner hasn't said who lives there yet, so we can't call ${unc.length === 1 ? "it" : "them"} ${f.gender === "female" ? "women" : "men"}-only. Once they do, ${unc.length === 1 ? "it moves" : "they move"} up.`;
+    $("uncCards").innerHTML = unc.sort(within).map(cardHtml).join(""); }
   if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
   $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
   const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
@@ -7243,7 +7299,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","savedCards","vibeCards","tribeHunt","tribeShort","dMapCard"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","uncCards","savedCards","vibeCards","tribeHunt","tribeShort","dMapCard"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null, currentListing = null;
@@ -7401,7 +7457,7 @@ async function openListing(id){
       <div><span>Type</span><b>${esc(KIND_LABEL[l.kind])} · ${l.bhk} BHK</b>${ROOM_LABELS(l).length ? `<div class="room-tags">${ROOM_LABELS(l).map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}</div>
       <div><span>Available</span><b>${fmtDate(l.available_from)}</b></div>
       <div><span>Furnishing</span><b>${esc(FURN_LABEL[l.furnishing])}</b></div>
-      <div><span>Preferred</span><b>${esc(GENDER_LABEL[l.gender])}</b></div>
+      <div><span>Preferred</span><b>${HOME_GENDER_LABEL[l.home_gender] ? `<span class="ghome">${HOME_GENDER_LABEL[l.home_gender]}</span>` : esc(GENDER_LABEL[l.gender])}</b></div>
       <div><span>Bachelors</span><b>${l.bachelors === false ? "Not allowed" : "Welcome"}</b></div>
       <div><span>Brokerage</span><b>None, ever</b></div>
     </div>
@@ -7982,7 +8038,7 @@ async function fillPostForm(l){
   $("pDesc").value = l.description || "";
   $("hCount").value = String(Math.min(4, Math.max(0, Number(hh.residents) || 0)));
   $("hFree").value = String(Math.min(4, Math.max(1, Number(hh.rooms_free) || 1))); $("hFree").dataset.touched = "1";
-  $("fmRows").innerHTML = fmRowsHtml(hh.flatmates || [], Number($("hCount").value), "p");
+  $("fmRows").innerHTML = fmRowsHtml(hh.flatmates || [], Number($("hCount").value), "p", hh.flatmate_genders);
   $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
   $("hInt").innerHTML = interestChips("hi", hh.interests);
   syncRoomsFree();
@@ -8054,8 +8110,9 @@ $("mapCheck").addEventListener("click", openPinPicker);
 
 function renderFmRows(){
   const n = Number($("hCount").value);
-  const keep = $("fmRows").children.length ? readFmRows($("fmRows"), $("fmRows").children.length, "p") : (state.homeDraft.flatmates || []);
-  $("fmRows").innerHTML = fmRowsHtml(keep, n, "p");
+  const had = $("fmRows").children.length, keep = had ? readFmRows($("fmRows"), had, "p") : (state.homeDraft.flatmates || []);
+  const genders = had ? readFmGenders($("fmRows"), had).others : (state.homeDraft.flatmate_genders || []);
+  $("fmRows").innerHTML = fmRowsHtml(keep, n, "p", genders);
 }
 $("hCount").addEventListener("change", renderFmRows);
 // Rooms free: shown for private rooms, guessed as bedrooms minus people living there until the owner picks.
@@ -8171,6 +8228,7 @@ $("postForm").addEventListener("submit", async e => {
       room: roomFromForm(),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
+        residents > 1 ? { flatmate_genders: readFmGenders($("fmRows"), residents).others } : {},
         PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {}, readQuiz($("hQuiz"), "h")),
       costs: expensesFromForm(),
       // Public: rounded to about a kilometre. The exact pin stays in the private part below.
@@ -8180,6 +8238,9 @@ $("postForm").addEventListener("submit", async e => {
                address: addressLine(addressFromForm(), $("pLocality").value, $("pCity").value), address_parts: Object.assign(addressFromForm(), pinGeo || {}) }
   };
   btn.disabled = true;
+  // You live there, and your profile doesn't say woman or man yet: the form asked, so it's saved to your profile.
+  const meG = residents > 0 ? readFmGenders($("fmRows"), residents).me : null;
+  if(meG && !state.user.gender) await api.setGender(meG).catch(err => console.error(err));
   try{
     let skipped = 0;
     if(photoFiles.length){
