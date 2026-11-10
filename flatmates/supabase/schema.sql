@@ -3792,6 +3792,172 @@ do $$ begin
 exception when others then raise notice 'Hold check not switched on: %', sqlerrm;
 end $$;
 
+-- ============================================================ messages after a yes --
+-- Chat in the app once people are connected (Kamal, 10 Nov), never before: a room request or owner invite that
+-- was accepted (the seeker and the lister), a tribe (both said yes), a FlatMart offer the seller accepted (buyer
+-- and seller), and a Flatsplits group (everyone in it who has an account). One conversation per connection.
+-- Who can read and write is worked out from that connection every time, so if it ends (a tribe member leaves,
+-- someone leaves a group) they can't read it any more. Messages go when the account or the connection is deleted.
+create table if not exists public.fm_threads (
+  id         uuid primary key default gen_random_uuid(),
+  kind       text not null check (kind in ('room','tribe','market','split')),
+  request_id uuid unique references public.fm_requests(id) on delete cascade,
+  tribe_id   uuid unique references public.fm_tribe_links(id) on delete cascade,
+  offer_id   uuid unique references public.fm_market_offers(id) on delete cascade,
+  group_id   uuid unique references public.fm_split_groups(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  last_at    timestamptz not null default now(),
+  check (num_nonnulls(request_id, tribe_id, offer_id, group_id) = 1)
+);
+create table if not exists public.fm_thread_messages (
+  id         uuid primary key default gen_random_uuid(),
+  thread_id  uuid not null references public.fm_threads(id) on delete cascade,
+  sender_id  uuid not null references auth.users(id) on delete cascade,
+  body       text not null check (char_length(body) between 1 and 1000),
+  created_at timestamptz not null default now()
+);
+create index if not exists fm_thread_messages_thread on public.fm_thread_messages (thread_id, created_at);
+create table if not exists public.fm_thread_reads (
+  thread_id uuid not null references public.fm_threads(id) on delete cascade,
+  user_id   uuid not null references auth.users(id) on delete cascade,
+  read_at   timestamptz not null default now(),
+  primary key (thread_id, user_id)
+);
+alter table public.fm_threads enable row level security;
+alter table public.fm_thread_messages enable row level security;
+alter table public.fm_thread_reads enable row level security;
+drop trigger if exists fm_thread_messages_clean on public.fm_thread_messages;
+create trigger fm_thread_messages_clean before insert or update on public.fm_thread_messages
+  for each row execute function public.fm_clean_row();
+
+-- The people in a conversation, from its connection; nobody until the yes.
+create or replace function public.fm_thread_people(p_thread uuid) returns uuid[]
+language sql stable security definer set search_path = public as $$
+  select coalesce(array_agg(distinct u), '{}') from (
+    select unnest(array[r.seeker_id, l.owner_id]) u from fm_threads t join fm_requests r on r.id = t.request_id join fm_listings l on l.id = r.listing_id
+     where t.id = p_thread and r.status = 'approved'
+    union all
+    select unnest(array[k.a, k.b]) from fm_threads t join fm_tribe_links k on k.id = t.tribe_id where t.id = p_thread and k.status = 'bonded'
+    union all
+    select unnest(array[o.buyer_id, i.seller_id]) from fm_threads t join fm_market_offers o on o.id = t.offer_id join fm_market_items i on i.id = o.item_id
+     where t.id = p_thread and o.status = 'accepted'
+    union all
+    select p.id from fm_threads t join fm_split_members m on m.group_id = t.group_id
+      join fm_profiles p on right(regexp_replace(coalesce(p.phone, ''), '\D', '', 'g'), 10) = m.phone where t.id = p_thread
+  ) x where u is not null;
+$$;
+
+-- Open (or find) the conversation for a connection: p_kind 'room' (a request id), 'tribe' (a tribe link id),
+-- 'market' (an offer id) or 'split' (a group id). Only for someone in it, and only after the yes.
+create or replace function public.fm_thread_open(p_kind text, p_ref uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  if auth.uid() is null then return jsonb_build_object('error', 'not-signed-in'); end if;
+  if p_kind not in ('room','tribe','market','split') or p_ref is null then return jsonb_build_object('error', 'not-found'); end if;
+  select id into v_id from fm_threads where case p_kind when 'room' then request_id when 'tribe' then tribe_id when 'market' then offer_id else group_id end = p_ref;
+  if v_id is null then
+    if not (case p_kind
+      when 'room' then exists (select 1 from fm_requests r join fm_listings l on l.id = r.listing_id where r.id = p_ref and r.status = 'approved' and auth.uid() in (r.seeker_id, l.owner_id))
+      when 'tribe' then exists (select 1 from fm_tribe_links k where k.id = p_ref and k.status = 'bonded' and auth.uid() in (k.a, k.b))
+      when 'market' then exists (select 1 from fm_market_offers o join fm_market_items i on i.id = o.item_id where o.id = p_ref and o.status = 'accepted' and auth.uid() in (o.buyer_id, i.seller_id))
+      else fm_split_me(p_ref) is not null end) then
+      return jsonb_build_object('error', 'not-yet');
+    end if;
+    insert into fm_threads (kind, request_id, tribe_id, offer_id, group_id)
+    values (p_kind, case when p_kind = 'room' then p_ref end, case when p_kind = 'tribe' then p_ref end,
+            case when p_kind = 'market' then p_ref end, case when p_kind = 'split' then p_ref end)
+    on conflict do nothing returning id into v_id;
+    if v_id is null then
+      select id into v_id from fm_threads where case p_kind when 'room' then request_id when 'tribe' then tribe_id when 'market' then offer_id else group_id end = p_ref;
+    end if;
+  end if;
+  if not auth.uid() = any(fm_thread_people(v_id)) then return jsonb_build_object('error', 'not-yet'); end if;
+  return jsonb_build_object('thread', v_id);
+end $$;
+
+-- A conversation's name as its people see it.
+create or replace function public.fm_thread_title(p_thread uuid) returns text
+language sql stable security definer set search_path = public as $$
+  select case t.kind
+    when 'room' then (select l.title from fm_requests r join fm_listings l on l.id = r.listing_id where r.id = t.request_id)
+    when 'tribe' then 'Your tribe'
+    when 'market' then (select i.title from fm_market_offers o join fm_market_items i on i.id = o.item_id where o.id = t.offer_id)
+    else (select g.emoji || ' ' || g.name from fm_split_groups g where g.id = t.group_id) end
+  from fm_threads t where t.id = p_thread;
+$$;
+
+-- The conversation: who's in it (first names) and the last 200 messages. Opening it marks it read.
+create or replace function public.fm_thread_get(p_thread uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_people uuid[] := fm_thread_people(p_thread); t fm_threads%rowtype;
+begin
+  select * into t from fm_threads where id = p_thread;
+  if t.id is null or auth.uid() is null or not auth.uid() = any(v_people) then return jsonb_build_object('error', 'not-found'); end if;
+  insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
+  on conflict (thread_id, user_id) do update set read_at = now();
+  return jsonb_build_object('thread', t.id, 'kind', t.kind, 'title', fm_thread_title(t.id),
+    'ref', coalesce(t.request_id, t.tribe_id, t.offer_id, t.group_id),
+    'people', coalesce((select jsonb_agg(split_part(coalesce(p.full_name, ''), ' ', 1) order by p.full_name) from fm_profiles p
+                         where p.id = any(v_people) and p.id <> auth.uid()), '[]'::jsonb),
+    'messages', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'mine', m.sender_id = auth.uid(),
+                   'name', split_part(coalesce(p.full_name, ''), ' ', 1), 'body', m.body, 'at', m.created_at) order by m.created_at)
+                 from (select * from fm_thread_messages where thread_id = p_thread order by created_at desc limit 200) m
+                 left join fm_profiles p on p.id = m.sender_id), '[]'::jsonb));
+end $$;
+
+create or replace function public.fm_thread_send(p_thread uuid, p_body text) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v_id uuid; v_body text := left(trim(coalesce(p_body, '')), 1000);
+begin
+  if auth.uid() is null or not auth.uid() = any(fm_thread_people(p_thread)) then return jsonb_build_object('error', 'not-found'); end if;
+  if v_body = '' then return jsonb_build_object('error', 'empty'); end if;
+  perform fm_throttle('message', 120, 600);
+  insert into fm_thread_messages (thread_id, sender_id, body) values (p_thread, auth.uid(), v_body) returning id into v_id;
+  update fm_threads set last_at = now() where id = p_thread;
+  insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
+  on conflict (thread_id, user_id) do update set read_at = now();
+  return jsonb_build_object('message', v_id);
+end $$;
+
+-- My conversations with a message in them, newest first, with the last message and how many I haven't read.
+create or replace function public.fm_thread_list() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(x order by x->>'last_at' desc), '[]'::jsonb) from (
+    select jsonb_build_object('thread', t.id, 'kind', t.kind, 'title', fm_thread_title(t.id), 'last_at', t.last_at,
+      'ref', coalesce(t.request_id, t.tribe_id, t.offer_id, t.group_id),
+      'last', (select jsonb_build_object('body', left(m.body, 120), 'mine', m.sender_id = auth.uid()) from fm_thread_messages m
+                where m.thread_id = t.id order by m.created_at desc limit 1),
+      'unread', (select count(*) from fm_thread_messages m where m.thread_id = t.id and m.sender_id <> auth.uid()
+                  and m.created_at > coalesce((select read_at from fm_thread_reads rd where rd.thread_id = t.id and rd.user_id = auth.uid()), '-infinity'))) x
+    from fm_threads t
+    where auth.uid() = any(fm_thread_people(t.id)) and exists (select 1 from fm_thread_messages m where m.thread_id = t.id)
+    limit 100) s;
+$$;
+
+-- A push to the others in the conversation (fm-notify; service role only): who to tell, and the sender's name.
+create or replace function public.fm_thread_audience(p_message uuid) returns table (user_id uuid, sender text, title text, body text)
+language sql stable security definer set search_path = public as $$
+  select u, split_part(coalesce(p.full_name, ''), ' ', 1), fm_thread_title(m.thread_id), left(m.body, 160)
+  from fm_thread_messages m left join fm_profiles p on p.id = m.sender_id, unnest(fm_thread_people(m.thread_id)) u
+  where m.id = p_message and u <> m.sender_id;
+$$;
+create or replace function public.fm_thread_notify() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare v_url text; v_secret text;
+begin
+  select notify_url, notify_secret into v_url, v_secret from fm_settings;
+  if v_url is null or v_secret is null then return new; end if;
+  perform net.http_post(url := v_url, body := jsonb_build_object('thread_message_id', new.id),
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-notify-secret', v_secret));
+  return new;
+exception when others then
+  return new;
+end $$;
+drop trigger if exists fm_thread_messages_notify on public.fm_thread_messages;
+create trigger fm_thread_messages_notify after insert on public.fm_thread_messages
+  for each row execute function public.fm_thread_notify();
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me, fm_area_demand, fm_otp_request and the party and sale pages also answer signed-out callers,
@@ -3813,7 +3979,7 @@ begin
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
-                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender') then
+                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -3827,6 +3993,7 @@ grant execute on function public.fm_test_code_ok(text) to service_role;
 grant execute on function public.fm_listing_audience(uuid) to service_role;
 grant execute on function public.fm_seeker_audience(uuid) to service_role;
 grant execute on function public.fm_market_want_audience(uuid) to service_role;
+grant execute on function public.fm_thread_audience(uuid) to service_role;
 grant execute on function public.fm_party_review_list() to service_role;
 grant execute on function public.fm_party_clear(uuid, text) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;

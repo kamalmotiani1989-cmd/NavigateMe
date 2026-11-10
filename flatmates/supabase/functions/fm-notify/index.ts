@@ -11,6 +11,7 @@
 // New listings ({listing_id}) go to seekers they fit (fm_listing_audience); ticket updates ({ticket_id}) to their owner.
 // A seeker who starts looking somewhere ({seeker_id}) goes to owners with a fitting listing there (fm_seeker_audience).
 // A new FlatMart item ({item_id}) goes to people whose "wanted" post it fits (fm_market_want_audience).
+// A message in the app ({thread_message_id}) goes to the others in that conversation (fm_thread_audience).
 // Owner invites (The Empty Room Escape) go the other way:
 //   pending  -> the seeker: "Ananya invited you to see their flat · 88% match"
 //   approved / declined -> the owner
@@ -232,6 +233,16 @@ async function itemEvent(id: string) {
   }
   return { sent };
 }
+// A message in the app (after a yes): to everyone else in the conversation (fm_thread_audience), opening Messages.
+async function messageEvent(id: string) {
+  const { data: rows, error } = await admin.rpc("fm_thread_audience", { p_message: id });
+  if (error) throw error;
+  let sent = 0;
+  for (const r of (rows || []) as { user_id: string; sender: string; title: string; body: string }[]) {
+    sent += await pushTo(r.user_id, `${r.sender || "New message"} · ${r.title || "FindMeFlatMate"}`, r.body, "messages");
+  }
+  return { sent };
+}
 // The team changed a ticket's status or replied.
 const TICKET_STATUS: Record<string, string> = { open: "Received", in_review: "Being looked at", resolved: "Resolved", closed: "Closed" };
 async function ticketEvent(id: string) {
@@ -252,6 +263,7 @@ Deno.serve(async (req) => {
     if (payload.ticket_id) return json(await ticketEvent(payload.ticket_id));
     if (payload.seeker_id) return json(await seekerEvent(payload.seeker_id));
     if (payload.item_id) return json(await itemEvent(payload.item_id));
+    if (payload.thread_message_id) return json(await messageEvent(payload.thread_message_id));
     const { request_id } = payload;
     const { data: r } = await admin.from("fm_requests")
       .select("id, status, match_pct, seeker_id, listing_id, initiated_by, fm_listings(title, owner_id)").eq("id", request_id).single();

@@ -379,6 +379,22 @@ flat" button (two flatmates and a month of expenses; one of them adds another ex
 80 sample things for sale across the cities. Sample sellers accept an offer of 80% of the price or more after about
 6 seconds, and a sample buyer makes an offer about 8 seconds after you post something.
 
+## Messages (after a yes)
+
+Kamal, 10 Nov: people chat inside the app once they're connected, never before. A conversation opens from
+**Message** on an accepted room request or invite (Requests, and the home's page), the tribe card once bonded,
+an accepted FlatMart offer (Offers), and a Flatsplits group (**Group chat**, everyone in it with an account).
+All chats are under the chat icon in the top bar (Messages), with the unread count; a push goes to the others
+when the app is closed (`fm-notify`, `thread_message_id`; open = `messages`).
+
+Database: `fm_threads` (one per connection: `request_id`, `tribe_id`, `offer_id` or `group_id`, each deleted with
+it), `fm_thread_messages` (1 to 1,000 characters, HTML stripped), `fm_thread_reads`. Who's in a conversation is
+worked out from the connection each time (`fm_thread_people`): an approved request (seeker and lister), a bonded
+tribe link, an accepted offer (buyer and seller), the group's members by phone. So someone who leaves a tribe or a
+group can't read it any more, and nobody can before the yes (`fm_thread_open` says `not-yet`). Functions:
+`fm_thread_open`, `fm_thread_get` (last 200, marks read), `fm_thread_send` (120 an hour, 600 a day),
+`fm_thread_list`. Messages go when the account goes. Demo mode: the other person answers once, a moment later.
+
 ## Notifications and urgency
 
 - **Owner:** a notification the moment someone asks to meet ("Riya wants to meet you · 92% match"), and
