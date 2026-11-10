@@ -407,6 +407,35 @@ group can't read it any more, and nobody can before the yes (`fm_thread_open` sa
 `fm_thread_open`, `fm_thread_get` (last 200, marks read), `fm_thread_send` (120 an hour, 600 a day),
 `fm_thread_list`. Messages go when the account goes. Demo mode: the other person answers once, a moment later.
 
+## Report and block
+
+Kamal, 10 Nov. **Report or block** is on a chat (and **Report** on each of the other person's messages), people's
+cards (Requests, Escape, Tribe, FlatMart offers), a home's page and a FlatMart item. One step: pick a reason
+(harassment or threats, scam or asking for money, fake listing or profile, inappropriate content, I feel unsafe,
+something else), an optional note, and "Also block" (on by default); or **Block** on its own. The app sends what
+was tapped and its id (`fm_report(p_kind, p_ref, …)`, `fm_block(p_kind, p_ref)`); the server works out who that is
+(`fm_block_target`), so no account ids reach the page.
+
+**Blocking** (`fm_blocks`, checked by `fm_blocked` both ways, silently): no messages (a one-to-one chat closes for
+both; the other side reads "You can't message this person", never "blocked"; in a Flatsplits group their messages
+are hidden from each other), no requests (`fm_request` says `listing-not-found`), invites (`fm_invite`:
+`seeker-not-found`), FlatMart offers or tribe yeses; their listings, items and nearby parties disappear for each
+other (`fm_search`, `fm_search_near`, `fm_listing_get`, `fm_market_search`, `fm_party_cant_see`), and they leave each
+other's Escape, seeker alerts and Tribe lists. A tribe already bonded stays until someone leaves it. No message
+pushes between them. **Account → Blocked people** lists them, with Unblock (`fm_my_blocks`, `fm_unblock`).
+
+**Reports** (`fm_user_reports`) keep the reason, the note, and a copy of what was reported (a message's text, a
+listing's or item's title, a request's or offer's note), so they survive it being deleted; kept two years, and
+kept (without the link) if either account is deleted. **Reports from two different people pause someone's
+messages, requests and invites** (`fm_user_restricted`; the app says "paused while we look at a report") until
+Kamal has looked, the same as for parties nearby.
+
+**For Kamal** (Supabase → SQL editor): `select * from fm_safety_review_list();` lists everyone with reports from
+chats, profiles, listings, FlatMart and parties, with the reasons, the latest copy and whether they're paused.
+`select fm_safety_clear('<user_id>', 'what you decided');` lifts the pause (and the parties block). Signed-in
+people can't call either. **Messages** are limited to 30 an hour and 60 a day, and first messages to someone new to
+5 an hour and 10 a day.
+
 ## Notifications and urgency
 
 - **Owner:** a notification the moment someone asks to meet ("Riya wants to meet you · 92% match"), and

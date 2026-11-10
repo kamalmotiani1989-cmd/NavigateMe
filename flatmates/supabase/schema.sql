@@ -73,6 +73,23 @@ alter table public.fm_profiles add column if not exists escape_show_to text not 
 create or replace function public.fm_shows_to(p_pref text, p_gender text) returns boolean
 language sql immutable as $$ select coalesce(p_pref, 'all') = 'all' or p_pref = p_gender $$;
 
+-- Block (Kamal, 10 Nov): someone I block can't message me, send me requests or invites, team up with me in Tribe, or
+-- find my listing, FlatMart items or nearby party, and we don't show in each other's lists. It works both ways and is
+-- silent. fm_blocked is used by every function that connects two people; the rest is in "block and report" below.
+create table if not exists public.fm_blocks (
+  blocker    uuid not null references auth.users(id) on delete cascade,
+  blocked    uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (blocker, blocked),
+  check (blocker <> blocked)
+);
+alter table public.fm_blocks enable row level security;
+create index if not exists fm_blocks_blocked on public.fm_blocks (blocked);
+create or replace function public.fm_blocked(p_a uuid, p_b uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select p_a is not null and p_b is not null and exists (select 1 from fm_blocks where (blocker = p_a and blocked = p_b) or (blocker = p_b and blocked = p_a));
+$$;
+
 create or replace function public.fm_handle_new_user() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
@@ -655,6 +672,7 @@ language sql security definer set search_path = public as $$
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
   where auth.uid() is not null and (l.status = 'active' or l.owner_id = auth.uid())
     and fm_listing_fresh(l.owner_id, o.active_at, mine.id)
+    and not fm_blocked(auth.uid(), l.owner_id)
     and (p_city is null or l.city = p_city)
     and (p_kind is null or l.kind = p_kind)
     and (p_max_rent is null or l.rent <= p_max_rent)
@@ -703,7 +721,7 @@ language sql security definer set search_path = public as $$
   from l cross join p
   join fm_profiles o on o.id = l.owner_id
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
-  where (l.dist is null or l.dist <= p.km) and fm_listing_fresh(l.owner_id, o.active_at, mine.id)
+  where (l.dist is null or l.dist <= p.km) and fm_listing_fresh(l.owner_id, o.active_at, mine.id) and not fm_blocked(auth.uid(), l.owner_id)
   order by l.dist nulls last, l.created_at desc
   limit 200;
 $$;
@@ -819,6 +837,8 @@ begin
   select * into v_l from fm_listings where id = p_listing and fm_listings.status = 'active';
   if v_l.id is null then return query select null::text, 'listing-not-found'; return; end if;
   if v_l.owner_id = auth.uid() then return query select null::text, 'own-listing'; return; end if;
+  if fm_blocked(auth.uid(), v_l.owner_id) then return query select null::text, 'listing-not-found'; return; end if;
+  if fm_user_restricted(auth.uid()) then return query select null::text, 'paused'; return; end if;
 
   select * into v_req from fm_requests where listing_id = p_listing and seeker_id = auth.uid();
   if v_req.status in ('pending','approved') then return query select v_req.status, null::text; return; end if;
@@ -903,7 +923,7 @@ language sql security definer set search_path = public as $$
            and (x.status in ('approved', 'declined') or (x.status = 'pending' and x.created_at < now() - interval '3 days'))),
          (select count(*)::int from fm_requests x where x.seeker_id = p.id and x.initiated_by = 'owner' and x.status in ('approved', 'declined'))
   from fm_listings l
-  join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
+  join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id and not fm_blocked(l.owner_id, p.id)
    and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()))
    and lower(p.search->>'city') = lower(l.city)
    and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
@@ -925,7 +945,8 @@ begin
   if v_l.id is null then return query select null::text, 'listing-not-found'; return; end if;
   select * into v_s from fm_profiles where id = p_seeker and role = 'seeker' and discoverable
     and fm_shows_to(escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()));
-  if v_s.id is null then return query select null::text, 'seeker-not-found'; return; end if;
+  if v_s.id is null or fm_blocked(auth.uid(), p_seeker) then return query select null::text, 'seeker-not-found'; return; end if;
+  if fm_user_restricted(auth.uid()) then return query select null::text, 'paused'; return; end if;
   select * into v_req from fm_requests where listing_id = p_listing and seeker_id = p_seeker;
   if v_req.status in ('approved','declined')
      or (v_req.status = 'pending' and not (v_req.initiated_by = 'owner' and v_req.created_at < now() - interval '3 days')) then
@@ -1058,7 +1079,7 @@ begin
   insert into fm_tribe_links (a, b, match_pct)
   select least(v_me.id, p.id), greatest(v_me.id, p.id), fm_match(v_me.vibe, p.vibe)
   from fm_profiles p
-  where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open
+  where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open and not fm_blocked(v_me.id, p.id)
     and fm_shows_to(p.tribe_show_to, v_me.gender) and fm_shows_to(v_me.tribe_show_to, p.gender)
     and lower(p.search->>'city') = lower(v_me.search->>'city')
     and fm_vibe_count(p.vibe) >= 6
@@ -1094,6 +1115,7 @@ language sql security definer set search_path = public stable as $$
   join fm_profiles o on o.id = case when t.a = auth.uid() then t.b else t.a end
   join fm_profiles me on me.id = auth.uid()
   where (t.a = auth.uid() or t.b = auth.uid()) and t.status <> 'closed'
+    and (t.status = 'bonded' or not fm_blocked(t.a, t.b))   -- a bonded tribe stays (leave it to go); its chat closes
     and (t.status <> 'open' or t.kind = 'complete'
          or (fm_shows_to(o.tribe_show_to, me.gender) and fm_shows_to(me.tribe_show_to, o.gender)))
     and (t.status <> 'left' or (t.left_by <> auth.uid() and case when t.a = auth.uid() then not t.seen_a else not t.seen_b end))
@@ -1125,7 +1147,7 @@ language plpgsql security definer set search_path = public as $$
 declare t fm_tribe_links%rowtype; v_all uuid[]; x uuid; y uuid;
 begin
   select * into t from fm_tribe_links where fm_tribe_links.id = p_link and (a = auth.uid() or b = auth.uid()) for update;
-  if t.id is null then return 'not-found'; end if;
+  if t.id is null or (t.status = 'open' and fm_blocked(t.a, t.b)) then return 'not-found'; end if;
   if t.status <> 'open' then return t.status; end if;
   if not p_yes then
     update fm_tribe_links set status = 'closed',
@@ -2316,7 +2338,7 @@ begin
   if fm_party_blocked(p_user) then return 'blocked'; end if;
   if fm_india_pin(me.party_pin) is null then return 'need-pin'; end if;
   select * into v from fm_parties where id = p_party;
-  if v.id is null or not v.open or v.near_geo is null then return 'not-open'; end if;
+  if v.id is null or not v.open or v.near_geo is null or fm_blocked(p_user, v.host_id) then return 'not-open'; end if;
   if v.cancelled then return 'party-cancelled'; end if;
   if v.starts_at < now() then return 'party-over'; end if;
   if v.host_id = p_user then return 'own-party'; end if;
@@ -2624,7 +2646,7 @@ returns table (seeker_id uuid, name text, listing_id uuid, listing_title text, l
 language sql stable security definer set search_path = public as $$
   select p.id, split_part(coalesce(p.full_name, ''), ' ', 1), l.id, l.title, l.locality, fm_match(p.vibe, l.household), (p.search->>'budget')::int, p.search_at
   from fm_listings l
-  join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id
+  join fm_profiles p on p.role = 'seeker' and p.discoverable and p.id <> l.owner_id and not fm_blocked(l.owner_id, p.id)
    and fm_shows_to(p.escape_show_to, (select o.gender from fm_profiles o where o.id = auth.uid()))
    and lower(p.search->>'city') = lower(l.city)
    and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0 or p.search->'areas' ? l.locality)
@@ -2868,6 +2890,7 @@ language sql security definer set search_path = public as $$
   left join fm_market_sales sl on sl.seller_id = i.seller_id and sl.ends_at > now()
   left join fm_market_offers o on o.item_id = i.id and o.buyer_id = auth.uid()
   where (i.status in ('active','reserved') or (i.seller_id = auth.uid() and i.status <> 'removed'))
+    and not fm_blocked(auth.uid(), i.seller_id)
     and (not coalesce(p_mine, false) or i.seller_id = auth.uid())
     and (p_city is null or i.city = p_city)
     and (p_category is null or i.category = p_category or (p_category = 'free' and i.price = 0))
@@ -3006,6 +3029,7 @@ begin
   select * into v_i from fm_market_items where id = p_item and fm_market_items.status = 'active';
   if v_i.id is null then return query select null::text, 'item-not-available'; return; end if;
   if v_i.seller_id = auth.uid() then return query select null::text, 'own-item'; return; end if;
+  if fm_blocked(auth.uid(), v_i.seller_id) then return query select null::text, 'item-not-available'; return; end if;
   if p_offer is null or p_offer < 0 or p_offer > 10000000 then return query select null::text, 'bad-offer'; return; end if;
   if coalesce(p_bundle, false) and (p_offer < 1 or not exists (select 1 from fm_market_sales s where s.seller_id = v_i.seller_id and s.ends_at > now() and s.bundle_price is not null)) then
     return query select null::text, 'no-bundle'; return;
@@ -3585,7 +3609,7 @@ language sql security definer set search_path = public as $$
          fm_home_gender(l.kind, l.gender, l.household, (select o.gender from fm_profiles o where o.id = l.owner_id))
   from fm_listings l
   left join fm_requests mine on mine.listing_id = l.id and mine.seeker_id = auth.uid()
-  where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid());
+  where auth.uid() is not null and l.id = p_id and (l.status = 'active' or l.owner_id = auth.uid()) and not fm_blocked(auth.uid(), l.owner_id);
 $$;
 
 -- How many times a listing was opened by someone other than its owner (the app counts each opening
@@ -3852,7 +3876,7 @@ create trigger fm_thread_messages_clean before insert or update on public.fm_thr
   for each row execute function public.fm_clean_row();
 
 -- The people in a conversation, from its connection; nobody until the yes.
-create or replace function public.fm_thread_people(p_thread uuid) returns uuid[]
+create or replace function public.fm_thread_people_all(p_thread uuid) returns uuid[]
 language sql stable security definer set search_path = public as $$
   select coalesce(array_agg(distinct u), '{}') from (
     select unnest(array[r.seeker_id, l.owner_id]) u from fm_threads t join fm_requests r on r.id = t.request_id join fm_listings l on l.id = r.listing_id
@@ -3866,6 +3890,20 @@ language sql stable security definer set search_path = public as $$
     select p.id from fm_threads t join fm_split_members m on m.group_id = t.group_id
       join fm_profiles p on right(regexp_replace(coalesce(p.phone, ''), '\D', '', 'g'), 10) = m.phone where t.id = p_thread
   ) x where u is not null;
+$$;
+
+-- Who can use it now: a one-to-one chat closes for both once either has blocked the other; in a Flatsplits group
+-- the chat stays, and messages between two people who blocked each other are hidden from them (fm_thread_get).
+create or replace function public.fm_thread_people(p_thread uuid) returns uuid[]
+language sql stable security definer set search_path = public as $$
+  select case when t.kind <> 'split' and cardinality(a) = 2 and fm_blocked(a[1], a[2]) then '{}'::uuid[] else a end
+  from fm_threads t, fm_thread_people_all(p_thread) a where t.id = p_thread;
+$$;
+-- Why I can't use a conversation I'm in: 'unavailable' (blocked: the other person sees "You can't message this
+-- person", never "blocked"), or 'not-found'.
+create or replace function public.fm_thread_why_not(p_thread uuid) returns text
+language sql stable security definer set search_path = public as $$
+  select case when auth.uid() = any(fm_thread_people_all(p_thread)) then 'unavailable' else 'not-found' end;
 $$;
 
 -- Open (or find) the conversation for a connection: p_kind 'room' (a request id), 'tribe' (a tribe link id),
@@ -3893,7 +3931,9 @@ begin
       select id into v_id from fm_threads where case p_kind when 'room' then request_id when 'tribe' then tribe_id when 'market' then offer_id else group_id end = p_ref;
     end if;
   end if;
-  if not auth.uid() = any(fm_thread_people(v_id)) then return jsonb_build_object('error', 'not-yet'); end if;
+  if not auth.uid() = any(fm_thread_people(v_id)) then
+    return jsonb_build_object('error', case when fm_thread_why_not(v_id) = 'unavailable' then 'unavailable' else 'not-yet' end);
+  end if;
   return jsonb_build_object('thread', v_id);
 end $$;
 
@@ -3914,16 +3954,16 @@ language plpgsql security definer set search_path = public as $$
 declare v_people uuid[] := fm_thread_people(p_thread); t fm_threads%rowtype;
 begin
   select * into t from fm_threads where id = p_thread;
-  if t.id is null or auth.uid() is null or not auth.uid() = any(v_people) then return jsonb_build_object('error', 'not-found'); end if;
+  if t.id is null or auth.uid() is null or not auth.uid() = any(v_people) then return jsonb_build_object('error', fm_thread_why_not(p_thread)); end if;
   insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
   on conflict (thread_id, user_id) do update set read_at = now();
   return jsonb_build_object('thread', t.id, 'kind', t.kind, 'title', fm_thread_title(t.id),
     'ref', coalesce(t.request_id, t.tribe_id, t.offer_id, t.group_id),
     'people', coalesce((select jsonb_agg(split_part(coalesce(p.full_name, ''), ' ', 1) order by p.full_name) from fm_profiles p
-                         where p.id = any(v_people) and p.id <> auth.uid()), '[]'::jsonb),
+                         where p.id = any(v_people) and p.id <> auth.uid() and not fm_blocked(auth.uid(), p.id)), '[]'::jsonb),
     'messages', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'mine', m.sender_id = auth.uid(),
                    'name', split_part(coalesce(p.full_name, ''), ' ', 1), 'body', m.body, 'at', m.created_at) order by m.created_at)
-                 from (select * from fm_thread_messages where thread_id = p_thread order by created_at desc limit 200) m
+                 from (select * from fm_thread_messages where thread_id = p_thread and not fm_blocked(auth.uid(), sender_id) order by created_at desc limit 200) m
                  left join fm_profiles p on p.id = m.sender_id), '[]'::jsonb));
 end $$;
 
@@ -3931,9 +3971,14 @@ create or replace function public.fm_thread_send(p_thread uuid, p_body text) ret
 language plpgsql security definer set search_path = public as $$
 declare v_id uuid; v_body text := left(trim(coalesce(p_body, '')), 1000);
 begin
-  if auth.uid() is null or not auth.uid() = any(fm_thread_people(p_thread)) then return jsonb_build_object('error', 'not-found'); end if;
+  if auth.uid() is null or not auth.uid() = any(fm_thread_people(p_thread)) then return jsonb_build_object('error', fm_thread_why_not(p_thread)); end if;
   if v_body = '' then return jsonb_build_object('error', 'empty'); end if;
-  perform fm_throttle('message', 120, 600);
+  if fm_user_restricted(auth.uid()) then return jsonb_build_object('error', 'paused'); end if;
+  -- Against spam: 30 an hour, 60 a day; and the first message to someone new, 5 an hour, 10 a day.
+  perform fm_throttle('message', 30, 60);
+  if not exists (select 1 from fm_thread_messages where thread_id = p_thread and sender_id = auth.uid()) then
+    perform fm_throttle('message-new', 5, 10);
+  end if;
   insert into fm_thread_messages (thread_id, sender_id, body) values (p_thread, auth.uid(), v_body) returning id into v_id;
   update fm_threads set last_at = now() where id = p_thread;
   insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
@@ -3948,8 +3993,8 @@ language sql stable security definer set search_path = public as $$
     select jsonb_build_object('thread', t.id, 'kind', t.kind, 'title', fm_thread_title(t.id), 'last_at', t.last_at,
       'ref', coalesce(t.request_id, t.tribe_id, t.offer_id, t.group_id),
       'last', (select jsonb_build_object('body', left(m.body, 120), 'mine', m.sender_id = auth.uid()) from fm_thread_messages m
-                where m.thread_id = t.id order by m.created_at desc limit 1),
-      'unread', (select count(*) from fm_thread_messages m where m.thread_id = t.id and m.sender_id <> auth.uid()
+                where m.thread_id = t.id and not fm_blocked(auth.uid(), m.sender_id) order by m.created_at desc limit 1),
+      'unread', (select count(*) from fm_thread_messages m where m.thread_id = t.id and m.sender_id <> auth.uid() and not fm_blocked(auth.uid(), m.sender_id)
                   and m.created_at > coalesce((select read_at from fm_thread_reads rd where rd.thread_id = t.id and rd.user_id = auth.uid()), '-infinity'))) x
     from fm_threads t
     where auth.uid() = any(fm_thread_people(t.id)) and exists (select 1 from fm_thread_messages m where m.thread_id = t.id)
@@ -3961,7 +4006,7 @@ create or replace function public.fm_thread_audience(p_message uuid) returns tab
 language sql stable security definer set search_path = public as $$
   select u, split_part(coalesce(p.full_name, ''), ' ', 1), fm_thread_title(m.thread_id), left(m.body, 160)
   from fm_thread_messages m left join fm_profiles p on p.id = m.sender_id, unnest(fm_thread_people(m.thread_id)) u
-  where m.id = p_message and u <> m.sender_id;
+  where m.id = p_message and u <> m.sender_id and not fm_blocked(u, m.sender_id);
 $$;
 create or replace function public.fm_thread_notify() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -3978,6 +4023,130 @@ end $$;
 drop trigger if exists fm_thread_messages_notify on public.fm_thread_messages;
 create trigger fm_thread_messages_notify after insert on public.fm_thread_messages
   for each row execute function public.fm_thread_notify();
+
+-- ============================================================ block and report --
+-- (Kamal, 10 Nov.) Block someone, or report them, from a chat or a message, their card or profile, a listing or a
+-- FlatMart item. The app never sees anyone's account id: it says what was tapped (p_kind) and its id (p_ref), and
+-- the server works out who that is. Blocking is silent; see fm_blocks and fm_blocked near the top.
+create or replace function public.fm_block_target(p_kind text, p_ref uuid) returns uuid
+language plpgsql stable security definer set search_path = public as $$
+declare me uuid := auth.uid(); v uuid;
+begin
+  if me is null or p_ref is null then return null; end if;
+  case p_kind
+    when 'message' then select m.sender_id into v from fm_thread_messages m where m.id = p_ref and me = any(fm_thread_people_all(m.thread_id));
+    when 'thread' then select u into v from unnest(fm_thread_people_all(p_ref)) u
+                        where u <> me and me = any(fm_thread_people_all(p_ref)) and cardinality(fm_thread_people_all(p_ref)) = 2;
+    when 'request' then select case when r.seeker_id = me then l.owner_id else r.seeker_id end into v
+                         from fm_requests r join fm_listings l on l.id = r.listing_id where r.id = p_ref and me in (r.seeker_id, l.owner_id);
+    when 'tribe' then select case when k.a = me then k.b else k.a end into v from fm_tribe_links k where k.id = p_ref and me in (k.a, k.b);
+    when 'offer' then select case when o.buyer_id = me then i.seller_id else o.buyer_id end into v
+                       from fm_market_offers o join fm_market_items i on i.id = o.item_id where o.id = p_ref and me in (o.buyer_id, i.seller_id);
+    when 'listing' then select owner_id into v from fm_listings where id = p_ref;
+    when 'item' then select seller_id into v from fm_market_items where id = p_ref;
+    when 'party' then select host_id into v from fm_parties where id = p_ref;
+    when 'party_request' then select r.user_id into v from fm_party_requests r join fm_parties p on p.id = r.party_id where r.id = p_ref and p.host_id = me;
+    when 'user' then select id into v from fm_profiles where id = p_ref;   -- someone in my Escape or Tribe list
+    else v := null;
+  end case;
+  return case when v = me then null else v end;
+end $$;
+
+create or replace function public.fm_block(p_kind text, p_ref uuid) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v uuid := fm_block_target(p_kind, p_ref);
+begin
+  if auth.uid() is null then return jsonb_build_object('error', 'not-signed-in'); end if;
+  if v is null then return jsonb_build_object('error', 'not-found'); end if;
+  perform fm_throttle('block', 20, 60);
+  insert into fm_blocks (blocker, blocked) values (auth.uid(), v) on conflict do nothing;
+  return jsonb_build_object('blocked', true, 'name', (select split_part(coalesce(full_name, ''), ' ', 1) from fm_profiles where id = v));
+end $$;
+
+-- Account -> Blocked people. The id here is only of someone I blocked, to unblock them.
+create or replace function public.fm_my_blocks() returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('user', b.blocked, 'name', split_part(coalesce(p.full_name, ''), ' ', 1), 'at', b.created_at)
+                  order by b.created_at desc), '[]'::jsonb)
+  from fm_blocks b left join fm_profiles p on p.id = b.blocked where b.blocker = auth.uid();
+$$;
+create or replace function public.fm_unblock(p_user uuid) returns jsonb
+language sql security definer set search_path = public as $$
+  delete from fm_blocks where blocker = auth.uid() and blocked = p_user;
+  select jsonb_build_object('unblocked', true);
+$$;
+
+-- Reports: what, why, an optional note, and a copy of what was reported (a message's text, a listing's or item's
+-- title) so it survives the original being deleted. Kept two years, then removed (the clean-up runs with each new
+-- report); kept even if either account is deleted, without the link to it.
+create table if not exists public.fm_user_reports (
+  id          uuid primary key default gen_random_uuid(),
+  reporter    uuid references auth.users(id) on delete set null,
+  reported    uuid references auth.users(id) on delete set null,
+  reported_phone text,
+  kind        text not null check (kind in ('message','thread','request','tribe','offer','listing','item','party','party_request','user')),
+  ref         uuid,
+  reason      text not null check (reason in ('harassment','scam','fake','inappropriate','safety','other')),
+  note        text check (char_length(note) <= 500),
+  copy        text,
+  created_at  timestamptz not null default now(),
+  unique (reporter, kind, ref)
+);
+alter table public.fm_user_reports enable row level security;
+create index if not exists fm_user_reports_reported on public.fm_user_reports (reported, created_at);
+
+create or replace function public.fm_report(p_kind text, p_ref uuid, p_reason text, p_note text default null, p_block boolean default false) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare v uuid := fm_block_target(p_kind, p_ref); v_copy text;
+begin
+  if auth.uid() is null then return jsonb_build_object('error', 'not-signed-in'); end if;
+  if v is null then return jsonb_build_object('error', 'not-found'); end if;
+  if p_reason is null or p_reason not in ('harassment','scam','fake','inappropriate','safety','other') then return jsonb_build_object('error', 'bad-reason'); end if;
+  perform fm_throttle('report', 10, 30);
+  delete from fm_user_reports where created_at < now() - interval '2 years';
+  v_copy := case p_kind
+    when 'message' then (select body from fm_thread_messages where id = p_ref)
+    when 'listing' then (select title from fm_listings where id = p_ref)
+    when 'item' then (select title from fm_market_items where id = p_ref)
+    when 'party' then (select title from fm_parties where id = p_ref)
+    when 'request' then (select message from fm_requests where id = p_ref)
+    when 'offer' then (select message from fm_market_offers where id = p_ref) end;
+  insert into fm_user_reports (reporter, reported, reported_phone, kind, ref, reason, note, copy)
+  values (auth.uid(), v, (select phone from fm_profiles where id = v), p_kind, p_ref, p_reason, nullif(left(trim(coalesce(p_note, '')), 500), ''), left(v_copy, 1000))
+  on conflict (reporter, kind, ref) do update set reason = excluded.reason, note = excluded.note, copy = coalesce(excluded.copy, fm_user_reports.copy), created_at = now();
+  if coalesce(p_block, false) then insert into fm_blocks (blocker, blocked) values (auth.uid(), v) on conflict do nothing; end if;
+  return jsonb_build_object('reported', true, 'blocked', coalesce(p_block, false));
+end $$;
+
+-- Reports from two different people pause someone's messages, requests and invites until Kamal has looked (the same
+-- approach, and the same review, as for parties nearby: fm_party_reviews).
+create or replace function public.fm_user_restricted(p_user uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select (select count(distinct reporter) from fm_user_reports
+           where reported = p_user and created_at > coalesce((select cleared_at from fm_party_reviews where user_id = p_user), '-infinity'::timestamptz)) >= 2;
+$$;
+
+-- For Kamal (SQL editor or the service key; signed-in users can't call these): everyone with reports, from chats,
+-- profiles, listings and FlatMart and from parties, and whether they're paused. fm_safety_clear lifts both.
+create or replace function public.fm_safety_review_list()
+returns table (user_id uuid, name text, phone text, reports bigint, party_reports bigint, thumbs_down bigint, reasons text, last_copy text,
+               last_at timestamptz, paused boolean, parties_blocked boolean)
+language sql stable security definer set search_path = public as $$
+  with since as (select u.id, coalesce(rv.cleared_at, '-infinity'::timestamptz) t from fm_profiles u left join fm_party_reviews rv on rv.user_id = u.id),
+  ur as (select r.reported u, count(distinct r.reporter) n, string_agg(r.kind || ': ' || r.reason || coalesce(' (' || r.note || ')', ''), ' | ' order by r.created_at) why,
+                (array_agg(r.copy order by r.created_at desc) filter (where r.copy is not null))[1] copy, max(r.created_at) last_at
+         from fm_user_reports r join since s on s.id = r.reported and r.created_at > s.t group by r.reported),
+  pl as (select pr.user_id u, pr.reports n, pr.thumbs_down td, pr.reasons why, pr.last_at from fm_party_review_list() pr)
+  select p.id, p.full_name, p.phone, coalesce(ur.n, 0), coalesce(pl.n, 0), coalesce(pl.td, 0), concat_ws(' | ', ur.why, pl.why), ur.copy,
+         greatest(ur.last_at, pl.last_at), fm_user_restricted(p.id), fm_party_blocked(p.id)
+  from fm_profiles p left join ur on ur.u = p.id left join pl on pl.u = p.id
+  where ur.u is not null or pl.u is not null
+  order by fm_user_restricted(p.id) or fm_party_blocked(p.id) desc, greatest(ur.last_at, pl.last_at) desc;
+$$;
+create or replace function public.fm_safety_clear(p_user uuid, p_note text default null) returns void
+language sql security definer set search_path = public as $$
+  select fm_party_clear(p_user, p_note);
+$$;
 
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
@@ -4000,7 +4169,8 @@ begin
                      'fm_seeker_notify', 'fm_seeker_audience', 'fm_market_item_notify', 'fm_market_want_audience',
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
-                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok') then
+                     'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok',
+                     'fm_blocked', 'fm_block_target', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
@@ -4017,6 +4187,8 @@ grant execute on function public.fm_market_want_audience(uuid) to service_role;
 grant execute on function public.fm_thread_audience(uuid) to service_role;
 grant execute on function public.fm_party_review_list() to service_role;
 grant execute on function public.fm_party_clear(uuid, text) to service_role;
+grant execute on function public.fm_safety_review_list() to service_role;
+grant execute on function public.fm_safety_clear(uuid, text) to service_role;
 grant execute on function public.fm_market_sale(text) to anon;
 grant execute on function public.fm_party_get(text, text) to anon;
 grant execute on function public.fm_split_invite(text) to anon;

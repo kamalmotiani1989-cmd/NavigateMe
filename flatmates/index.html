@@ -2204,6 +2204,16 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .party-rules li b{display:block} .party-rules li span{color:var(--text-2); font-size:var(--fs-s)}
 .rules-ok{display:flex; gap:10px; align-items:flex-start; margin:12px 0; font-size:var(--fs-s)} .rules-ok .linkbtn{padding:0; font-size:inherit; vertical-align:baseline}
 .rules-ok.bad{outline:2px solid var(--danger); outline-offset:4px; border-radius:8px}
+/* report and block */
+.safe-link{color:var(--text-3); font-size:var(--fs-s); padding:6px 4px}
+.msg time .safe-link{font-size:11px; padding:0; color:var(--text-3)}
+.safe-line{margin:14px 0 0; text-align:center}
+.msg-tools{display:flex; justify-content:flex-end; margin:-6px 0 -4px} .msg-tools:empty{display:none}
+.sf-block{display:grid; gap:6px; margin-top:18px; padding:14px; border-radius:16px; background:var(--surface-2); font-size:var(--fs-s)}
+.sf-block span{color:var(--text-2)} .sf-block .btn{justify-self:start}
+.bl-list{list-style:none; margin:0 0 12px; padding:0; display:grid; gap:8px}
+.bl-list li{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px 14px; border-radius:16px; background:var(--surface-2)}
+.bl-list small{display:block; color:var(--text-3); font-size:var(--fs-xs)}
 </style>
 </head>
 <body>
@@ -2779,6 +2789,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <span><b>Invite friends, earn contacts</b><small id="accInviteSub">Every 2 friends who join with your link = 1 free contact</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
       <a class="acc-row web-only" data-apk><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></i>
         <span><b>Get the Android app</b><small>Know the moment an owner says yes</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
+      <button class="acc-row" id="accBlocked" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></i>
+        <span><b>Blocked people</b><small>See and unblock them</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <a class="acc-row" href="privacy.html"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></i>
         <span><b>Privacy policy</b><small>What we keep, who sees it, and how to delete it</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a>
     </div>
@@ -2845,9 +2857,13 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   <div class="mbody" id="shBody" style="text-align:center"></div></dialog>
 
 <dialog id="dlgMsg" class="msg-dlg" aria-labelledby="msgTitle"><div class="mhead"><div><h2 id="msgTitle">Messages</h2><div class="loc" id="msgSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
-  <div class="mbody"><div class="msg-list" id="msgList" aria-live="polite"></div>
+  <div class="mbody"><div class="msg-tools" id="msgTools"></div><div class="msg-list" id="msgList" aria-live="polite"></div>
     <form id="msgForm" class="msg-form" novalidate><textarea id="msgText" rows="1" maxlength="1000" placeholder="Write a message" aria-label="Your message"></textarea>
       <button class="btn btn-primary btn-sm" type="submit">Send</button></form></div></dialog>
+<dialog id="dlgSafe" aria-labelledby="sfTitle"><div class="mhead"><div><h2 id="sfTitle">Report or block</h2></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="sfBody"></div></dialog>
+<dialog id="dlgBlocked" aria-labelledby="blTitle"><div class="mhead"><div><h2 id="blTitle">Blocked people</h2></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="blBody"></div></dialog>
 <dialog id="dlgCompat" aria-labelledby="cTitle"><div class="mhead"><div><h2 id="cTitle">Compatibility analysis</h2><div class="loc" id="cSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="cBody"></div></dialog>
 
@@ -4317,6 +4333,11 @@ function makeLiveApi(sb){
     async msgGet(id){ return rpc("fm_thread_get", { p_thread: id }); },
     async msgSend(id, body){ return rpc("fm_thread_send", { p_thread: id, p_body: body }); },
     async msgList(){ return (await rpc("fm_thread_list")) || []; },
+    // Report and block (fm_report, fm_block): by what was tapped, never an account id.
+    async block(kind, ref){ return rpc("fm_block", { p_kind: kind, p_ref: ref }); },
+    async report(kind, ref, reason, note, block){ return rpc("fm_report", { p_kind: kind, p_ref: ref, p_reason: reason, p_note: note || null, p_block: !!block }); },
+    async myBlocks(){ return (await rpc("fm_my_blocks")) || []; },
+    async unblock(user){ return rpc("fm_unblock", { p_user: user }); },
     // Supabase stores phone numbers without the "+" (919876543210); Call/WhatsApp need +91...
     async inbox(){ return (await rpc("fm_inbox")).map(r => Object.assign(r, { phone: plusPhone(r.phone) })); },
     async findSeekers(lid){ return rpc("fm_find_seekers", { p_listing: lid }); },
@@ -5730,7 +5751,7 @@ function seekerHtml(x, l, i){
     ${facts.length ? `<div class="meta2">${facts.map(f => `<span>${f}</span>`).join("")}</div>` : ""}
     ${whyLine(x, l)}
     ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
-    <div class="acts">${action}${x.match_pct != null ? `<button class="btn btn-ghost btn-sm" data-scompat="${esc(x.seeker_id)}">Compatibility</button>` : ""}</div>
+    <div class="acts">${action}${x.match_pct != null ? `<button class="btn btn-ghost btn-sm" data-scompat="${esc(x.seeker_id)}">Compatibility</button>` : ""}${safeBtn("user", x.seeker_id, (x.name || "").split(" ")[0])}</div>
   </article>`;
 }
 $("escSelect").addEventListener("click", () => { escSelecting = !escSelecting; if(!escSelecting) escSel = new Set(); drawSeekers(); });
@@ -5788,6 +5809,7 @@ $("inviteForm").addEventListener("submit", async e => {
   btn.disabled = false; $("dlgInvite").close();
   const first = (people[0].name || "They").split(" ")[0];
   toast(fail === "daily-limit" ? `${sent ? sent + " sent. " : ""}That's 30 invites today. You can send more tomorrow.`
+    : fail === "paused" ? "Your invites are paused while we look at a report. You can write to us from Help."
     : !sent ? "Couldn't send that invite. Please try again."
     : sent === 1 ? `Invite sent. ${first} sees your photos and can say yes in one tap. Numbers are shared only if they accept.`
     : `${sent} invites sent. Each of them sees your photos and can say yes in one tap.`);
@@ -5911,7 +5933,7 @@ function tribeCardHtml(t){
     ${t.looking ? `<p class="look-tag${t.looking === prefs().look ? " same" : ""}">Looking for ${esc(lookLabel(t.looking).toLowerCase())}${t.looking === prefs().look ? " · same as you" : ""}</p>` : ""}
     ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
     ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
-    <div class="acts">${acts}<button class="btn btn-ghost btn-sm" data-tcompat="${esc(t.id)}">Compatibility</button></div></article>`;
+    <div class="acts">${acts}<button class="btn btn-ghost btn-sm" data-tcompat="${esc(t.id)}">Compatibility</button>${safeBtn("tribe", t.id, t.name)}</div></article>`;
 }
 async function renderTribe(){
   showSkeleton("tribeMatches", 3, true);
@@ -5939,7 +5961,7 @@ async function renderTribe(){
       <h2>You${bonded.map(t => " + " + esc(t.name)).join("")}</h2>
       <p>${budget ? `Together you can spend up to <b>${inr(budget)}</b> a month. ` : ""}Hunt for a whole flat and split it ${size} ways.</p>
       ${bonded.map(t => `<div class="bond-row"><span><b>${esc(t.name)}</b> · ${esc(occLine(t.occupation))}<small>Bonded ${timeAgo(t.bonded_at)} · ${t.match_pct}% vibe</small></span>
-        <span class="acts">${msgBtn("tribe", t.id, "Message")}${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
+        <span class="acts">${msgBtn("tribe", t.id, "Message")}${safeBtn("tribe", t.id, t.name)}${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMeFlatMate. Let's find our flat!`)}">WhatsApp</a>`}</span></div>`).join("")}
       <button class="tribe-leave-btn" type="button" data-tleave>Leave tribe</button>
     </div>` : "";
@@ -7349,7 +7371,8 @@ function onCardKey(e){
 let currentId = null, currentListing = null;
 const REQ_ERR = { "vibe-required":"Answer the living-style questions first, from your account.",
   "profile-required":"Add what you do first, from your account.", "no-credits":"You're out of contacts.",
-  "declined":"The owner already said no to this one.", "listing-not-found":"This listing is no longer available." };
+  "declined":"The owner already said no to this one.", "listing-not-found":"This listing is no longer available.",
+  "paused":"Your requests are paused while we look at a report. You can write to us from Help." };
 let listingShownId = null;
 async function openListing(id){
   const seen = (state.recentListings || []).filter(x => x.id !== id), lr = (cityRows || []).find(x => x.id === id);
@@ -7513,7 +7536,7 @@ async function openListing(id){
          <div class="map-q">It's within this circle in ${esc(l.locality)}. The exact address and pin are shared once the owner accepts.</div>`
       : mapHtml(l.locality + ", " + l.city, 14, "Approximate area. The exact address is shared once the owner accepts.", false)}</div>`}
     <p class="hint">Posted ${timeAgo(l.created_at)}${l.unlock_count ? ` · ${l.unlock_count} ${l.unlock_count === 1 ? "person has" : "people have"} asked to meet` : ""}</p>
-    ${lock}${bar}`;
+    ${lock}${l.is_owner || isSample(l) ? "" : `<p class="safe-line">${safeBtn("listing", l.id, contact ? (contact.contact_name || "").split(" ")[0] : "", "Report or block this lister")}</p>`}${bar}`;
   // A different home (or the page opened afresh) starts at the top, at its photos; the same home redrawn after an
   // action (a request, a compromise) keeps its place.
   const fresh = !$("dlgListing").open || listingShownId !== id;
@@ -7694,7 +7717,7 @@ function incomingHtml(r, l){
         : r.message ? `<p class="msg">“${esc(r.message)}”</p>` : ""}
       <div class="traits">${traits}</div>
       ${allInterests(r.interests).length ? `<p class="occ" style="margin:8px 0 0">Into (♥ = same as your home):</p>${interestsHtml(r.interests, hh.interests)}` : ""}
-      <div class="acts">${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
+      <div class="acts">${safeBtn("request", r.id, first)}${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
         ${r.status === "pending" && r.by !== "owner" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
         : r.status === "approved" && r.phone ? `${msgBtn("room", r.id, "Message")}<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
@@ -7811,7 +7834,7 @@ Object.assign(demoApi, {
 async function openMsg(kind, ref){
   try{
     const o = await api.msgOpen(kind, ref);
-    if(o.error){ toast(o.error === "not-yet" ? "You can message each other once you've both said yes." : "Couldn't open the chat. Please try again."); return; }
+    if(o.error){ toast(o.error === "not-yet" ? "You can message each other once you've both said yes." : o.error === "unavailable" ? "You can't message this person." : "Couldn't open the chat. Please try again."); return; }
     msgThread = o.thread; await msgRefresh(true);
     if(!$("dlgMsg").open) $("dlgMsg").showModal();
     setTimeout(() => $("msgText") && $("msgText").focus(), 50);
@@ -7822,15 +7845,16 @@ async function openMsg(kind, ref){
 async function msgRefresh(scroll){
   const before = msgData && msgData.messages ? msgData.messages.length : -1;
   msgData = await api.msgGet(msgThread);
-  if(msgData.error){ $("msgTitle").textContent = "Messages"; $("msgSub").textContent = "";
-    $("msgList").innerHTML = `<p class="hint msg-empty">This conversation isn't available any more.</p>`; $("msgForm").hidden = true; return; }
+  if(msgData.error){ $("msgTitle").textContent = "Messages"; $("msgSub").textContent = ""; $("msgTools").innerHTML = "";
+    $("msgList").innerHTML = `<p class="hint msg-empty">${msgData.error === "unavailable" ? "You can't message this person." : "This conversation isn't available any more."}</p>`; $("msgForm").hidden = true; return; }
+  $("msgTools").innerHTML = msgData.kind === "split" ? "" : safeBtn("thread", msgThread, msgData.people[0] || "");
   $("msgForm").hidden = false;
   $("msgTitle").textContent = msgData.people.length ? msgData.people.join(", ") : msgData.title;
   $("msgSub").textContent = MSG_KIND_LABEL[msgData.kind] + " · " + msgData.title;
   let day = "";
   $("msgList").innerHTML = msgData.messages.length ? msgData.messages.map(m => { const d = fmtDate(m.at), head = d !== day ? `<p class="msg-day">${esc(d)}</p>` : ""; day = d;
     return head + `<div class="msg ${m.mine ? "mine" : "theirs"}">${!m.mine && msgData.kind === "split" ? `<b>${esc(m.name)}</b>` : ""}<p>${esc(m.body)}</p>
-      <time datetime="${esc(m.at)}">${new Date(m.at).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" })}</time></div>`; }).join("")
+      <time datetime="${esc(m.at)}">${new Date(m.at).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" })}${m.mine ? "" : ` · ${safeBtn("message", m.id, m.name, "Report")}`}</time></div>`; }).join("")
     : `<p class="hint msg-empty">Say hello. ${SAFE_PAY_LINE}</p>`;
   if(scroll || msgData.messages.length !== before){ const l = $("msgList"); l.scrollTop = l.scrollHeight; }
   if(currentView === "messages") renderMessages(); else refreshMsgUnseen();
@@ -7841,7 +7865,10 @@ $("msgForm").addEventListener("submit", async e => {
   const text = $("msgText").value.trim(); if(!text || msgBusy) return;
   msgBusy = true; const b = e.target.querySelector("button"); b.disabled = true;
   try{ const r = await api.msgSend(msgThread, text); if(r.error) throw new Error(r.error); $("msgText").value = ""; await msgRefresh(true); }
-  catch(err){ console.error(err); toast(/rate-limited/.test(err.message || "") ? "That's a lot of messages. Please wait a few minutes." : "Couldn't send. Please try again."); }
+  catch(err){ console.error(err); const m = err.message || "";
+    toast(/rate-limited/.test(m) ? "That's a lot of messages. Please wait a while." : m === "unavailable" ? "You can't message this person."
+      : m === "paused" ? "Your messages are paused while we look at a report. You can write to us from Help." : "Couldn't send. Please try again.");
+    if(m === "unavailable") await msgRefresh(); }
   msgBusy = false; b.disabled = false; $("msgText").focus();
 });
 $("msgText").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("msgForm").requestSubmit(); } });
@@ -7862,6 +7889,113 @@ $("msgsList").addEventListener("click", async e => { const b = e.target.closest(
   msgThread = b.dataset.thread; await msgRefresh(true); if(!$("dlgMsg").open) $("dlgMsg").showModal();
   clearInterval(msgPoll); if(api.live) msgPoll = setInterval(() => { if(!$("dlgMsg").open){ clearInterval(msgPoll); return; } if(!msgBusy) msgRefresh(); }, 5000); });
 setInterval(() => { if(state.user && !document.hidden && !$("dlgMsg").open) refreshMsgUnseen(); }, 60000);
+
+/* ===================================================== report and block */
+// (Kamal, 10 Nov.) From a chat or a message, a person's card, a listing or a FlatMart item: report (a reason, a note,
+// and block in the same step if you like) or just block. The server works out who it is from what was tapped
+// (fm_block / fm_report); blocking is silent, and works both ways (fm_blocked). Unblock in Account → Blocked people.
+const SAFE_REASONS = [["harassment", "Harassment or threats"], ["scam", "Scam, or asking for money"], ["fake", "Fake listing or profile"],
+  ["inappropriate", "Inappropriate content"], ["safety", "I feel unsafe"], ["other", "Something else"]];
+const safeBtn = (kind, ref, name, label) => ref ? `<button type="button" class="linkbtn safe-link" data-safe="${kind}:${esc(ref)}" data-name="${esc(name || "")}">${esc(label || "Report or block")}</button>` : "";
+let safeCtx = null;
+// Demo: who is behind what was tapped, as a key on this device (the server does this with account ids).
+Object.assign(demoApi, {
+  safeWho_(kind, ref){
+    const me = this.me_(), pool = () => new Map(demoSeekerPool().map(x => [x.id, x]));
+    const lister = l => l ? { key: "p:" + (l.owner_phone || "o-" + l.id), name: ((l.private && l.private.contact_name) || "the lister").split(" ")[0] } : null;
+    if(kind === "listing") return lister(this.all().find(x => x.id === ref));
+    if(kind === "request"){ const r = state.requests.find(x => x.id === ref); if(!r) return null;
+      return r.seeker_phone === me ? lister(this.all().find(x => x.id === r.listing_id)) : { key: "p:" + r.seeker_phone, name: ((r.seeker || {}).name || "They").split(" ")[0] }; }
+    if(kind === "tribe"){ const t = (state.tribe || []).find(x => x.id === ref), x = t && pool().get(t.sid); return t ? { key: "s:" + t.sid, name: x ? x.name : "They" } : null; }
+    if(kind === "user"){ const x = pool().get(ref); return { key: "s:" + ref, name: x ? x.name : "They" }; }
+    if(kind === "item"){ const i = this.mkAll().find(x => x.id === ref); return i && i.seller_phone !== me ? { key: "p:" + (i.seller_phone || "s-" + i.id), name: i.seller_name || "the seller" } : null; }
+    if(kind === "offer"){ const o = this.mk().offers.find(x => x.id === ref), i = o && this.mkAll().find(x => x.id === o.item_id); if(!o || !i) return null;
+      return o.buyer_phone === me ? { key: "p:" + (i.seller_phone || "s-" + i.id), name: i.seller_name || "the seller" } : { key: "p:" + o.buyer_phone, name: o.buyer_name || "the buyer" }; }
+    if(kind === "thread"){ const t = (state.threads || {})[ref]; if(!t || t.kind === "split") return null;
+      return this.safeWho_({ room: "request", tribe: "tribe", market: "offer" }[t.kind], t.ref); }
+    if(kind === "message"){ const t = Object.values(state.threads || {}).find(x => x.messages.some(m => m.id === ref)); if(!t) return null;
+      const m = t.messages.find(x => x.id === ref); if(m.mine) return null;
+      return t.kind === "split" ? { key: "n:" + m.name, name: m.name } : this.safeWho_("thread", t.id); }
+    return null;
+  },
+  blockedKey_(key){ return !!key && (state.blocks || []).some(b => b.user === key); },
+  async block(kind, ref){ const w = this.safeWho_(kind, ref); if(!w) return { error:"not-found" };
+    state.blocks = (state.blocks || []).filter(b => b.user !== w.key).concat({ user: w.key, name: w.name, at: new Date().toISOString() }); save();
+    return { blocked:true, name: w.name }; },
+  async report(kind, ref, reason, note, block){ const w = this.safeWho_(kind, ref); if(!w) return { error:"not-found" };
+    if(!SAFE_REASONS.some(([k]) => k === reason)) return { error:"bad-reason" };
+    const t = kind === "message" && Object.values(state.threads || {}).find(x => x.messages.some(m => m.id === ref));
+    state.userReports = (state.userReports || []).concat({ kind, ref, reason, note: (note || "").slice(0, 500), copy: t ? t.messages.find(m => m.id === ref).body : null, at: new Date().toISOString() });
+    save(); if(block) await this.block(kind, ref); return { reported:true, blocked: !!block }; },
+  async myBlocks(){ return (state.blocks || []).slice().reverse(); },
+  async unblock(key){ state.blocks = (state.blocks || []).filter(b => b.user !== key); save(); return { unblocked:true }; },
+});
+// Demo: what a block hides (the server does all of this, and more, in fm_blocked).
+{ const d = demoApi, sr = d.search, sn = d.searchNear, gt = d.get, tl = d.tribeList, fs = d.findSeekers, ok = d.msgOk_, mg = d.msgGet, ms = d.msgSend;
+  const hidden = l => d.blockedKey_((d.safeWho_("listing", l.id) || {}).key);
+  d.search = async function(f){ return (await sr.call(this, f)).filter(l => !hidden(l)); };
+  d.searchNear = async function(n){ return (await sn.call(this, n)).filter(l => !hidden(l)); };
+  d.get = async function(id){ const l = await gt.call(this, id); return l && !hidden(l) ? l : null; };
+  d.tribeList = async function(){ return (await tl.call(this)).filter(t => t.status === "bonded" || !this.blockedKey_((this.safeWho_("tribe", t.id) || {}).key)); };
+  d.findSeekers = async function(lid){ return (await fs.call(this, lid)).filter(x => !this.blockedKey_("s:" + x.seeker_id)); };
+  const closed = (kind, ref) => kind !== "split" && d.blockedKey_((d.safeWho_({ room: "request", tribe: "tribe", market: "offer" }[kind], ref) || {}).key);
+  d.msgOk_ = function(kind, ref){ return closed(kind, ref) ? null : ok.call(this, kind, ref); };
+  d.msgOpen = (o => async function(kind, ref){ if(closed(kind, ref)) return { error:"unavailable" }; return o.call(this, kind, ref); })(d.msgOpen);
+  d.msgGet = async function(id){ const t = (state.threads || {})[id]; if(t && closed(t.kind, t.ref)) return { error:"unavailable" };
+    const g = await mg.call(this, id); if(g.messages) g.messages = g.messages.filter(m => m.mine || !this.blockedKey_("n:" + m.name)); return g; };
+  d.msgSend = async function(id, body){ const t = (state.threads || {})[id]; if(t && closed(t.kind, t.ref)) return { error:"unavailable" }; return ms.call(this, id, body); };
+}
+function openSafety(kind, ref, name){
+  safeCtx = { kind, ref, name: name || "" };
+  const who = esc(name || "them");
+  $("sfTitle").textContent = name ? `Report or block ${name}` : "Report or block";
+  $("sfBody").innerHTML = `<form id="sfForm" novalidate>
+      <p class="hint" style="margin:0 0 10px">What's wrong? We look at every report. ${who === "them" ? "They" : who} won't be told who reported.</p>
+      <div class="report-why">${SAFE_REASONS.map(([k, t]) => `<label class="pt-wopt"><input type="radio" name="sfWhy" value="${k}"><span>${esc(t)}</span></label>`).join("")}</div>
+      <div class="field" style="margin-top:12px"><label for="sfNote">Tell us more <span class="opt-l">(optional)</span></label><textarea id="sfNote" rows="3" maxlength="500"></textarea></div>
+      <label class="chk" style="margin:4px 0 12px"><input type="checkbox" id="sfAlso" checked><span>Also block ${who}</span></label>
+      <button class="btn btn-accent btn-block" type="submit">Send the report</button>
+      <div class="sf-block"><b>Just don't want to hear from ${who}?</b>
+        <span>Blocking means you can't message each other or send requests or invites, and you won't see each other's listings, items, parties or cards. They aren't told. You can unblock in Account.</span>
+        <button class="btn btn-ghost btn-sm" type="button" data-sf-block>Block ${who}</button></div>
+      <p class="hint" style="margin:10px 0 0">If you're in danger, call 112.</p></form>`;
+  if(!$("dlgSafe").open) $("dlgSafe").showModal();
+}
+async function safeDone(r, what){
+  if(r.error){ toast("Couldn't do that. Please try again."); return; }
+  $("dlgSafe").close();
+  toast(what === "block" || r.blocked ? `Blocked. You won't hear from ${safeCtx.name || "them"} again.` : "Thanks. We'll look into it.");
+  if(r.blocked || what === "block"){
+    if($("dlgMsg").open) $("dlgMsg").close();
+    if($("dlgListing").open && ["listing", "request"].includes(safeCtx.kind)) $("dlgListing").close();
+    if($("dlgMk").open && ["item", "offer"].includes(safeCtx.kind)) $("dlgMk").close();
+    route();
+  }
+}
+$("sfBody").addEventListener("submit", async e => {
+  if(e.target.id !== "sfForm") return; e.preventDefault();
+  const why = (document.querySelector("[name=sfWhy]:checked") || {}).value;
+  if(!why) return showFormError(e.target, "Pick what's wrong, or just block below.");
+  try{ safeDone(await api.report(safeCtx.kind, safeCtx.ref, why, $("sfNote").value.trim(), $("sfAlso").checked)); }
+  catch(err){ console.error(err); showFormError(e.target, String(err.message || "").includes("rate-limited") ? "That's a lot of reports. Try again later." : "Couldn't send that. Please try again."); }
+});
+$("sfBody").addEventListener("click", async e => {
+  if(!e.target.closest("[data-sf-block]")) return;
+  try{ safeDone(await api.block(safeCtx.kind, safeCtx.ref), "block"); }catch(err){ console.error(err); toast("Couldn't block right now. Please try again."); }
+});
+document.addEventListener("click", e => { const b = e.target.closest("[data-safe]"); if(!b) return; e.preventDefault(); e.stopPropagation();
+  const [kind, ref] = b.dataset.safe.split(":"); openSafety(kind, ref, b.dataset.name); }, true);
+async function openBlocked(){
+  const rows = await api.myBlocks().catch(() => []);
+  $("blBody").innerHTML = rows.length ? `<ul class="bl-list">${rows.map(b => `<li><span><b>${esc(b.name || "Someone")}</b><small>Blocked ${timeAgo(b.at)}</small></span>
+      <button class="btn btn-ghost btn-sm" type="button" data-unblock="${esc(b.user)}">Unblock</button></li>`).join("")}</ul>
+      <p class="hint">Unblocking lets you see each other again. They aren't told either way.</p>`
+    : `<p class="hint" style="margin:0">You haven't blocked anyone. You can block someone from a chat, their card, a listing or a FlatMart item.</p>`;
+  if(!$("dlgBlocked").open) $("dlgBlocked").showModal();
+}
+$("blBody").addEventListener("click", async e => { const b = e.target.closest("[data-unblock]"); if(!b) return; b.disabled = true;
+  try{ await api.unblock(b.dataset.unblock); toast("Unblocked."); openBlocked(); }catch(err){ console.error(err); toast("Couldn't unblock right now."); b.disabled = false; } });
+$("accBlocked").addEventListener("click", openBlocked);
 
 /* ========================================================= welcome gift */
 let afterGift = null;
@@ -9165,7 +9299,7 @@ async function renderMkMine(){
       <button class="btn btn-primary" type="button" data-mk="sell">Sell something</button></div>`);
 }
 function mkContactActs(r, text){
-  return `${msgBtn("market", r.id, "Message")}<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
+  return `${msgBtn("market", r.id, "Message")}${safeBtn("offer", r.id, r.name)}<a class="btn btn-accent btn-sm" href="tel:+91${esc(r.phone)}">Call ${esc(r.name || "")} · +91 ${esc(r.phone)}</a>
     <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="${esc(waLink(r.phone, text))}">WhatsApp</a>`;
 }
 // The other side's record, under an offer: deals done and since when.
@@ -9312,7 +9446,7 @@ async function openItem(id){
       <div class="hint" style="margin:0">${esc(i.locality)} · posted ${timeAgo(i.created_at)} · pick up in person</div>
       <div class="mk-trust">${i.seller_since ? `<span>on FindMeFlatMate since ${new Date(i.seller_since).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}</span>` : ""}
         ${i.seller_sold ? `<span><b>${i.seller_sold}</b> ${i.seller_sold === 1 ? "thing" : "things"} sold here</span>` : `<span>first sale here</span>`}${i.seller_on_time ? `<span class="ontime" style="margin:0">✓ Pays on time</span>` : ""}</div></div></div>
-    ${act}`;
+    ${act}${i.is_mine ? "" : `<p class="safe-line">${safeBtn("item", i.id, i.seller_name || "", "Report or block this seller")}</p>`}`;
   $("mkShare").hidden = false;
   wireGallery($("mkdBody").querySelector(".hero-pic"));
   if(!$("dlgMk").open) $("dlgMk").showModal();
