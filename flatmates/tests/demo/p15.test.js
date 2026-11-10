@@ -27,18 +27,21 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
     homeGender('room', 'female', { residents:2, flatmate_genders:['female'] }, null)].map(x => x ?? '-').join(' '));
   ok(rule === 'female - - female female female? male - female?', 'the rule matches the database: ' + rule);
 
-  // the chip, its count, and what you then see
-  const chip = await p.evaluate(() => [...document.querySelectorAll('#quickF [data-quick]')].map(b => b.textContent));
-  const wc = chip.find(t => /^Women only\d+$/.test(t)), want = wc ? +wc.replace(/\D/g, '') : -1;
-  ok(wc && chip.some(t => /^Men only\d+$/.test(t)), 'quick filters say "Women only" and "Men only", with counts: ' + chip.slice(0, 2).join(' / '));
-  await p.click('#quickF [data-quick="0"]'); await p.waitForTimeout(1500);
+  // Women only, in Filters (the quick chips left Discover on 10 Nov): its live count, and what you then see
+  ok(await p.evaluate(() => $('quickF').hidden && $('areaChips').hidden), 'Discover has no quick filter or area chips any more');
+  await p.evaluate(() => openFilters()); await p.waitForTimeout(300);
+  await p.click('#filterForm label:has([name=fGender][value=female])'); await p.waitForTimeout(300);
+  const fl = await p.evaluate(() => ({ btn: $('fApply').textContent, labels: [...document.querySelectorAll('[name=fGender]')].map(x => x.parentNode.textContent.trim()) }));
+  const want = +(fl.btn.match(/\d+/) || [-1])[0];
+  ok(fl.labels.join() === 'Anyone,Women only,Men only' && want >= 0, 'Filters has "Women only" and "Men only", with a live count: ' + fl.btn);
+  await p.click('#fApply'); await p.waitForTimeout(1500);
   const r = await p.evaluate(() => { const ids = sel => [...document.querySelectorAll(sel + ' [data-id]')].map(c => c.dataset.id), byId = id => api.all().find(l => l.id === id), hg = id => api.view(byId(id)).home_gender;
     const main = ids('#cards'), vib = ids('#vibeCards'), unc = ids('#uncCards');
     return { main, vib, unc, mainG: main.concat(vib).map(hg), uncG: unc.map(hg), any: main.concat(vib, unc).filter(id => byId(id).gender !== 'female').length,
       head: $('uncH').textContent, hidden: $('cardsUnc').hidden, badges: [...document.querySelectorAll('#cards .card')].filter(c => /Women-only home/.test(c.textContent)).length,
       flats: main.filter(id => byId(id).kind === 'flat').length, act: [...document.querySelectorAll('#activeF button')].map(x => x.textContent.trim()) }; });
   ok(r.main.length > 0 && r.mainG.every(g => g === 'female') && r.any === 0, `Women only: ${r.main.length} homes, every one women-only, none open to anyone: ` + JSON.stringify(r.mainG.slice(0, 5)));
-  ok(new Set(r.main).size === r.main.length && r.main.length === want, `the chip's count matches what you see (${want} vs ${r.main.length})`);
+  ok(new Set(r.main).size === r.main.length && r.main.length + r.vib.length === want, `the count in Filters matches what you see (${want} vs ${r.main.length + r.vib.length})`);
   ok(r.flats > 0, 'whole flats for women are included: ' + r.flats);
   ok(r.badges === r.main.length, 'every card in the results says "Women-only home": ' + r.badges);
   ok(!r.hidden && r.unc.length > 0 && r.uncG.every(g => g === 'female?') && /^Open to women; who lives there isn.t confirmed$/.test(r.head), `not-confirmed homes come apart under the results (${r.unc.length}): ` + r.head);

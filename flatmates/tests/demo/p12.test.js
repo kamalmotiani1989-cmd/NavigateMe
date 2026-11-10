@@ -19,17 +19,30 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
   // 6. one prompt at most, no Flatsplits / FlatMart shortcuts
   const nud = await p.evaluate(() => ({ shown: ['profilePromo', 'passNudgeD', 'vibePromo'].filter(id => $(id).innerHTML.trim()), extras: $('extrasD').innerHTML.trim() }));
   ok(nud.shown.length <= 1 && !nud.extras, 'Discover: at most one prompt, and no Flatsplits/FlatMart shortcuts: ' + JSON.stringify(nud));
-  // 2. quick filters with counts
-  const q0 = await p.evaluate(() => ({ chips: [...document.querySelectorAll('#quickF [data-quick]')].map(b => b.textContent), total: document.querySelectorAll('#cards .card').length }));
-  ok(q0.chips.length === 5 && q0.chips.every(t => /\d+$/.test(t)) && /^Women only\d+/.test(q0.chips[0]), 'quick filters: five dealbreakers, each with a count: ' + q0.chips.join(' / '));
-  const veg = q0.chips.find(t => /^Veg kitchen/.test(t)), want = +veg.replace(/\D/g, '');
-  await p.click('#quickF [data-quick="2"]'); await p.waitForTimeout(1500);
-  const q1 = await p.evaluate(() => ({ rules: prefs().rules, active: [...document.querySelectorAll('#activeF button')].map(b => b.textContent.trim()), chips: document.querySelectorAll('#quickF [data-quick]').length,
-    cards: document.querySelectorAll('#cards .card').length, vrow: document.querySelectorAll('#vibeCards .card, #vibeCards article').length }));
-  ok(q1.rules.includes('veg') && q1.active.some(t => /Veg-only kitchen/.test(t)) && q1.chips === 4, 'quick filters: one tap turns it on; it moves to the active row: ' + JSON.stringify(q1));
-  ok(q1.cards === want || q1.cards + q1.vrow >= want, `quick filters: the count matched what you then see (${want} vs ${q1.cards})`);
+  // 2. dealbreakers and areas live in Filters (10 Nov: the quick chips and area chips left Discover for more room)
+  ok(await p.evaluate(() => $('quickF').hidden && $('areaChips').hidden && !document.querySelector('#quickF [data-quick], #areaChips [data-area]')),
+    'Discover: no quick filter chips and no area chips');
+  await p.evaluate(() => openFilters()); await p.waitForTimeout(300);
+  const fd = await p.evaluate(() => ({ areas: [...document.querySelectorAll('[name=fArea]')].map(x => x.value), add: !!document.querySelector('[data-farea-add]'),
+    city: $('fAreaCity').textContent, veg: !!document.querySelector('[name=fRule][value=veg]'), women: !!document.querySelector('[name=fGender][value=female]') }));
+  ok(fd.areas.length > 3 && fd.add && fd.city === 'Bengaluru' && fd.veg && fd.women, 'Filters: areas of the city (with + Add area), Women only and Veg kitchen are there: ' + fd.areas.slice(0, 4).join(', '));
+  await p.click('#filterForm label:has([name=fRule][value=veg])'); await p.waitForTimeout(300);
+  const want = +(((await p.evaluate(() => $('fApply').textContent)).match(/\d+/)) || [-1])[0];
+  await p.click('#fApply'); await p.waitForTimeout(1500);
+  const q1 = await p.evaluate(() => ({ rules: prefs().rules, active: [...document.querySelectorAll('#activeF button')].map(b => b.textContent.trim()),
+    cards: document.querySelectorAll('#cards .card').length, vrow: document.querySelectorAll('#vibeCards .card').length }));
+  ok(q1.rules.includes('veg') && q1.active.some(t => /Veg-only kitchen/.test(t)), 'Filters: Veg kitchen on, shown as a removable chip: ' + JSON.stringify(q1.active));
+  ok(q1.cards === want || q1.cards + q1.vrow >= want, `Filters: the count matched what you then see (${want} vs ${q1.cards})`);
   await p.click('#activeF button'); await p.waitForTimeout(1200);
-  ok(await p.evaluate(() => !prefs().rules.includes('veg') && document.querySelectorAll('#quickF [data-quick]').length === 5), 'quick filters: removing it brings the chip back');
+  ok(await p.evaluate(() => !prefs().rules.includes('veg')), 'removing the chip turns it off');
+  // an area picked in Filters shows as a chip too, and comes off the same way
+  await p.evaluate(() => openFilters()); await p.waitForTimeout(300);
+  const area = await p.evaluate(() => document.querySelector('[name=fArea]').value);
+  await p.click('#filterForm label:has([name=fArea])'); await p.click('#fApply'); await p.waitForTimeout(1500);
+  const ar = await p.evaluate(a => ({ prefs: prefs().areas, chip: [...document.querySelectorAll('#activeF button')].some(b => b.textContent.trim() === a),
+    cards: [...document.querySelectorAll('#cards .card .loc')].every(x => x.textContent.startsWith(a)) }), area);
+  ok(ar.prefs.join() === area && ar.chip && ar.cards, 'Filters: picking an area shows only that area, with a removable chip: ' + area);
+  await p.evaluate(() => { setPrefs({ areas: [] }); renderDiscover(); }); await p.waitForTimeout(1200);
   await p.screenshot({ path: O + '/p12-discover.png' });
   // 3. active line and the 30-day rule
   const act = await p.evaluate(() => [...document.querySelectorAll('#cards .card .act')].map(x => x.textContent));
