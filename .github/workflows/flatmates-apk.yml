@@ -57,7 +57,7 @@ jobs:
       - name: Compact the pages
         working-directory: flatmates
         run: |
-          for f in index.html privacy.html; do
+          for f in index.html privacy.html security.html; do
             if npx -y html-minifier-terser@7.2.0 --remove-comments --minify-css true \
                  --minify-js '{"compress":false,"mangle":true,"format":{"comments":false}}' -o "$RUNNER_TEMP/$f" "$f" \
                && grep -q "<title>" "$RUNNER_TEMP/$f"; then
