@@ -1,6 +1,17 @@
 # Teche · reports
 
-## 2026-11-13, owner home colours and audit (#91, open)
+## 2026-11-13, app update card (#92) live
+
+- **What (Kamal):** the Android app now says "A new version of the app is ready", with an Update button, when a
+  newer build is out.
+  - How: it compares its own build number (sent from MainActivity) with the "build N" in the public flatmates-apk
+    release notes, at most every 6 hours.
+  - The × hides it for a day, per version. The website never shows it.
+- **Published:** 663d7aa; the release notes say build 197. The APK build passed, so the Java change compiles.
+- **Note:** only phones on build 197 or later can check, so everyone needs one manual download first.
+- **Tests:** new suite p20; 18 suites, 0 failed. No database change.
+
+## 2026-11-13, owner home colours and audit (#91, live)
 
 - **What (King, from Kamal's 13 Nov screenshot):**
   - The Empty Room Escape card on My flat and the Account "Your passes" panel still had navy-era white and mint text,
@@ -14,7 +25,7 @@
   - The live fm_find_seekers already leaves out the owner.
   - The demo now does the same.
 - **Tests:** 17 suites, 0 failed. No database change.
-- **Status:** waiting for Kamal's word to merge.
+- **Status:** merged and published (0ddb42f).
 - **Screenshots:** [before](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4ec0b2b9b73565cb9afc352db06b671a9638fde8/owner-before.png), [after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4ec0b2b9b73565cb9afc352db06b671a9638fde8/owner-after.png).
 - **Earlier:** the 10 Nov "city card overlap" was the first photo on Kamal's Pune listing, which looks like a
   screenshot of the app. It isn't a code bug.
@@ -104,21 +115,3 @@ Kamal asked for the text colours to follow the logo, black and orange, and said 
 
 The contrast check passes on every screen, and README Look and feel is updated. Merged and published:
 findmeflatmate.com runs NavigateMe 82ac857.
-
-## 2026-11-09, Tribe take back and the new logo are live: #81 and #82
-
-Kamal said "merge both".
-
-**Database:** fm_tribe_withdraw went live first, from schema.sql at 9930c50 (md5 a3fd0eb1…). A rolled-back live
-check passed: a real waiting yes was taken back and went to unanswered, and the other side got "not-asked".
-
-**Merges:** #81 (take back) and #82 (Kamal's logo everywhere, from his PDFs).
-
-**Android:** built straight away, and I sent Kamal the APK.
-
-**Website:** the publish failed to start three times (18:12, 18:16, 18:27 UTC). Each run failed with no job created,
-during GitHub's Actions incident of 9 Nov. The fourth run at 18:32 worked:
-- findmeflatmate.com runs NavigateMe d13a5cf, with the new icons and wordmarks;
-- the download link has build 179.
-
-**Also:** Kamal asked for a JPG of the logo with the name; I sent one at 2867×832 on white.
