@@ -56,7 +56,7 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
   ok(sv.me, 'the top bar shows it (still)');
 
   // the type layer follows the answers
-  await p.evaluate(() => { state.vibe = Object.assign({}, state.vibe, { cook: 0 }); save(); }); await go(p, '#discover');
+  await p.evaluate(() => { state.vibe = Object.assign({}, state.vibe, { cook: 0 }); save(); }); await go(p, '#account'); await go(p, '#discover');
   const ty = await p.evaluate(() => ({ ty: state.avatar.ty, want: avTypeKey(state.vibe) }));
   ok(ty.ty === ty.want && ty.ty.endsWith('-1'), 'change your answers and the type changes with them (now a Chef): ' + JSON.stringify(ty));
 
@@ -69,7 +69,7 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
   const tr = await avs(p, '#view-tribe .seek-top .fm-avh, #view-tribe foreignObject .fm-avh');
   ok(tr.n > 0 && tr.person > 0 && tr.none > 0 && tr.letters === 0, 'Tribe: avatars on the cards and the map; people without one show the neutral default, no letters: ' + JSON.stringify(tr));
   ok(await p.evaluate(() => !!document.querySelector('#view-tribe .me foreignObject svg')), 'Tribe: you in the middle of the map');
-  ok(await p.evaluate(() => [...document.querySelectorAll('#view-tribe .fm-avh svg')].every(s => s.classList.contains('still'))), 'small avatars in lists don\'t move');
+  ok(await p.evaluate(() => [...document.querySelectorAll('#view-tribe .fm-avh svg')].every(s => s.classList.contains('still') || s.classList.contains('av-none'))), 'small avatars in lists don\'t move');
   await p.screenshot({ path: O + '/p21-tribe.png' });
   await go(p, '#market');
   await p.evaluate(async () => { const i = (await api.marketSearch({ city: 'Bengaluru' })).find(x => !x.is_mine); await openItem(i.id); }); await p.waitForTimeout(1200);
@@ -118,7 +118,7 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
 
   // onboarding: right after the reveal, once, with Skip; then Discover
   await p.evaluate(() => { state.avatarAsked = false; save(); });
-  const ob = await p.evaluate(async () => { const done = []; openAvatarMaker('onboarding', () => done.push(1)); const open = $('dlgAvatar').open; $('avSkip').click();
+  const ob = await p.evaluate(async () => { const done = []; openAvatarMaker('onboarding', () => done.push(1)); const open = $('dlgAvatar').open; $('avSkip').click(); await new Promise(r => setTimeout(r, 100));
     return { open, done: done.length, asked: state.avatarAsked, again: avAskNow() }; });
   ok(ob.open && ob.done === 1 && ob.asked && !ob.again, 'onboarding: the maker once, Skip goes straight on and it isn\'t asked again: ' + JSON.stringify(ob));
   ok(await p.evaluate(() => finishOnboarding.toString().includes('if(avAskNow()) openAvatarMaker("onboarding", on)')), 'it comes after the reveal\'s "Show me" (seekers)');

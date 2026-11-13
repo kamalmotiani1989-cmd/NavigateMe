@@ -7159,6 +7159,7 @@ function distFrom(f){
 }
 let browseSeq = 0, cityRows = [];
 async function renderDiscover(){
+  avSync();
   const seq = ++browseSeq, f = prefs(), near = f.near && f.near.lat ? f.near : null;
   nearNow = near;
   showSkeleton("cards", 4);
@@ -11810,6 +11811,7 @@ document.addEventListener("click", e => { if(e.target.closest("[data-together]")
 
 /* ============================================================= account */
 async function renderAccount(){
+  avSync();
   await api.me();
   const owned = Object.keys(PASS_NAMES).filter(k => passUntil(k));
   $("accPasses").innerHTML = owned.length ? `<div class="my-passes"><p class="mp-h">🎟️ Your passes</p>${owned.map(k => {
