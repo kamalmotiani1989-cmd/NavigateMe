@@ -2177,6 +2177,19 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 :is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app,
     .role, .w-points li, .notice, .pp-card, .vibe-promo, .pass-nudge, .near-promo, .cm-banner, .safe-pay)
   :is(.eyebrow, a:not([class]), .linkbtn, .pk-more, h1 em, h1 b, h1 strong){color:var(--text)}
+/* Owner's My flat (Empty Room Escape card) and Account's passes panel: still had the navy-era white and mint text
+   on what is now a lavender tile (King, 13 Nov, from Kamal's screenshot). Dark text, grey for the secondary lines,
+   nothing orange inside the panel. */
+.mine-esc, .my-passes{color:var(--text)}
+.mine-esc small, .mp-h{color:var(--text-2)}
+.mine-esc .row{border-top-color:rgba(28,25,23,.12)} .mine-esc .row span{color:var(--text-2)}
+.mine-esc .row .av{box-shadow:0 0 0 2px var(--surface)}
+.mine-esc .row .btn{background:#fff; color:var(--text)}
+.mine-esc .row .req-pill{background:rgba(255,255,255,.6); color:var(--text)}
+.mine-esc > a, .mine-esc > a:not([class]){color:var(--text)}
+.mp-row{box-shadow:0 -1px 0 rgba(28,25,23,.12)} .mp-ic{background:rgba(255,255,255,.5)}
+.my-passes :is(b, em, small){color:inherit} .my-passes small{color:var(--text-2)}
+.mp-more{background:#fff; color:var(--text)}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -3896,7 +3909,8 @@ const demoApi = {
     const l = this.all().find(x => x.id === lid); if(!l) return [];
     const reqs = new Map(state.requests.filter(r => r.listing_id === lid && r.status !== "withdrawn").map(r => [r.seeker_phone, r]));
     const bumped = state.demoBumped || {};
-    return demoSeekerPool().filter(x => x.city === l.city && (!x.areas.length || x.areas.includes(l.locality))).map(x => {
+    // never the owner themselves (fm_find_seekers: p.id <> l.owner_id)
+    return demoSeekerPool().filter(x => x.phone !== l.owner_phone && x.city === l.city && (!x.areas.length || x.areas.includes(l.locality))).map(x => {
       const m = vibeMatch(x.vibe, l.household), r = reqs.get(x.phone);
       // How they treat owners' invites, across every home on this device (like fm_find_seekers).
       const got = state.requests.filter(y => y.seeker_phone === x.phone && y.by === "owner" && (y.status === "approved" || y.status === "declined" || inviteLapsed(y)));
