@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartoon Avatars Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EFE4DC; --card:#FBF8F6; --ink:#1C1917; --text-2:#57534E; --orange:#C2410C; --orange-text:#B23A0A}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:Urbanist, system-ui, sans-serif}
+main{max-width:1080px; margin:0 auto; padding:28px 16px 40px; box-sizing:border-box}
+h1{font-weight:400; font-size:clamp(26px,4vw,36px); letter-spacing:-.02em; margin:0 0 6px} h1 b{color:var(--orange); font-weight:800}
+.sub{color:var(--text-2); margin:0 0 8px; font-size:16px; line-height:1.45}
+h2{font-size:13px; letter-spacing:.09em; text-transform:uppercase; color:var(--orange-text); margin:26px 0 12px; font-weight:700}
+.row{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px}
+.card{background:var(--card); border-radius:24px; box-shadow:0 10px 26px rgba(60,40,30,.10); padding:14px}
+.pic{height:110px; border-radius:16px; background:#d6c6b9; position:relative}
+.pic span{position:absolute; left:10px; top:10px; background:#fff; border-radius:999px; padding:4px 10px; font-size:12px; font-weight:700}
+.card h3{margin:12px 0 2px; font-size:17px} .card .meta{color:var(--text-2); font-size:13px; margin:0 0 10px}
+.who-row{display:flex; align-items:center; gap:10px; border-top:1px solid #EDE3DC; padding-top:10px}
+.av40{width:40px; height:40px; border-radius:50%; overflow:hidden; flex:none} .av40 svg{width:40px; height:40px; display:block}
+.who-row b{display:block; font-size:14px} .who-row small{color:var(--text-2); font-size:12.5px}
+.vc{border-radius:28px; padding:24px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; min-height:500px; box-sizing:border-box}
+.vc small{font-size:12px; letter-spacing:.12em; text-transform:uppercase; font-weight:800; color:var(--text-2)}
+.vc .big{width:min(250px, 70vw); aspect-ratio:1; margin:18px 0 16px; border-radius:50%; overflow:hidden; box-shadow:0 16px 40px rgba(60,40,30,.16)}
+.vc .big svg{width:100%; height:100%; display:block}
+.vc h4{font-size:28px; font-weight:400; line-height:1.1; margin:0 0 8px; letter-spacing:-.02em} .vc h4 b{font-weight:800}
+.vc p{color:#3f3a36; font-size:15px; margin:0 0 auto; line-height:1.4} .vc .foot{font-weight:800; font-size:14px; margin-top:16px}
+.trio{display:flex; flex-wrap:wrap; gap:22px; align-items:flex-end}
+.trio figure{margin:0; text-align:center} .trio figcaption{font-size:13px; font-weight:700; margin-top:6px}
+.trio .r{border-radius:50%; overflow:hidden} .trio .r svg{display:block; width:100%; height:100%}
+.sizes{display:flex; gap:10px; align-items:center}
+.concept{white-space:pre-line; background:var(--card); border-radius:20px; padding:16px 18px; line-height:1.5; font-size:15px; color:#3f3a36}
+button.replay{font:700 14px Urbanist, sans-serif; border:0; border-radius:999px; background:var(--ink); color:#fff; padding:10px 18px; cursor:pointer; margin-top:10px}
+.video main{max-width:800px; padding:40px 24px; zoom:1.35} .video .sub, .video .concept, .video button.replay, .video .noshow{display:none}
+.video .row{grid-template-columns:repeat(3, 1fr); gap:12px} .video .vc{min-height:520px; padding:22px 12px} .video .vc .big{width:100%} .video .vc h4{font-size:24px}
+</style></head>
+<body>
+<main>
+  <h1>Your flatmate type, <b>as you</b></h1>
+  <p class="sub">A preview (13 Nov). A cartoon of yourself that you build, never guessed. Your type sets the scene and the thing you hold: sunrise for Early Birds, the moon for Midnight, a starry sky for Night Owls. Gentle movement: blinking, breathing, a wave when your Vibe Card opens. With reduced motion turned on, it stays still.</p>
+
+  <h2>(b) Large and animated on a Vibe Card</h2>
+  <div class="row play" id="vcs"></div>
+  <button class="replay" type="button" id="replay">Open the cards again (wave)</button>
+
+  <h2>(a) As a 40 px picture on a home card</h2>
+  <div class="row" id="homes"></div>
+
+  <h2>(c) Side by side</h2>
+  <div class="trio" id="trio"></div>
+
+  <h2 class="noshow">The builder</h2>
+  <div class="concept noshow" id="concept"></div>
+</main>
+<script src="avatar.js"></script>
+<script>
+const { avatar, CSS, SAMPLES } = FMAvatar;
+document.head.insertAdjacentHTML("beforeend", `<style>${CSS}</style>`);
+if(/video/.test(location.search)) document.body.classList.add("video");
+const LINES = ["Up with the sun, and the kitchen is spotless before chai.", "Does the best cooking after 11, and always makes extra.", "Up late with a good book, quiet as a library."];
+const BG = { "early-bird":"#EBD981", "midnight":"#C3C9F6", "night-owl":"#C3E0D6" };
+const HOMES = [["Sunny room near the metro","₹15,000 a month · HSR Layout","Ayesha"], ["Quiet room in Koramangala","₹18,000 a month · Koramangala","Tunde"], ["2BHK room, BTM Layout","₹14,000 a month · BTM Layout","Meera"]];
+let n = 0; const av = (s, extra) => avatar(Object.assign({}, s, extra, { key: s.key + "-" + (n++) }));
+document.getElementById("vcs").innerHTML = SAMPLES.map((s, i) => `<div class="vc" style="background:${BG[s.rhythm]}"><small>My flatmate type</small>
+  <div class="big">${av(s)}</div><h4>The <b>${s.label.replace(/^The /, "")}</b></h4><p>${LINES[i]}</p><span class="foot">findmeflatmate</span></div>`).join("");
+document.getElementById("homes").innerHTML = SAMPLES.map((s, i) => `<div class="card"><div class="pic"><span>Private room</span></div><h3>${HOMES[i][0]}</h3><p class="meta">${HOMES[i][1]}</p>
+  <div class="who-row"><div class="av40">${av(s)}</div><div><b>${HOMES[i][2]} lives here</b><small>${s.label}</small></div></div></div>`).join("");
+document.getElementById("trio").innerHTML = SAMPLES.map(s => `<figure><div class="r" style="width:140px;height:140px">${av(s)}</div><figcaption>${s.label}</figcaption></figure>`).join("")
+  + `<figure><div class="sizes">${SAMPLES.map(s => `<div class="r" style="width:48px;height:48px">${av(s)}</div>`).join("")}</div><figcaption>48 px</figcaption></figure>`
+  + `<figure><div class="sizes">${SAMPLES.map(s => `<div class="r" style="width:40px;height:40px">${av(s)}</div>`).join("")}</div><figcaption>40 px</figcaption></figure>`;
+document.getElementById("replay").onclick = () => { const r = document.getElementById("vcs"); r.classList.remove("play"); void r.offsetWidth; r.classList.add("play"); };
+fetch("builder.md").then(r => r.ok ? r.text() : "").then(t => { document.getElementById("concept").textContent = t.replace(/^#.*\n+/, ""); }).catch(() => {});
+</script>
+</body></html>

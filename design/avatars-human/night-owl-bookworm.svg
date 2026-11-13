@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" class="fm-av" role="img" aria-label="The Night Owl Bookworm"><style> .fm-av .who, .fm-av .prop, .fm-av .hand, .fm-av .eyes, .fm-av .wave, .fm-av .sun, .fm-av .moon, .fm-av .tw, .fm-av .tw2, .fm-av .steam, .fm-av .spark{transform-box:fill-box} .fm-av .who{animation:fmBreathe 4.2s ease-in-out infinite; transform-origin:50% 100%} .fm-av .eyes{animation:fmBlink 4.6s infinite; transform-origin:50% 50%} .fm-av .prop, .fm-av .hand{animation:fmBob 3.4s ease-in-out infinite; transform-origin:50% 100%} .fm-av .sun{animation:fmRise 7s ease-in-out infinite} .fm-av .moon{animation:fmSway 6s ease-in-out infinite; transform-origin:50% 50%} .fm-av .tw{animation:fmTwinkle 3s ease-in-out infinite} .fm-av .tw2{animation:fmTwinkle 2.4s ease-in-out .8s infinite} .fm-av .steam{animation:fmSteam 2.6s ease-in-out infinite} .fm-av .spark{animation:fmTwinkle 1.6s ease-in-out infinite; transform-origin:50% 50%} .fm-av .wave{opacity:0; transform-origin:50% 100%} .play .fm-av .wave{animation:fmWave 2.4s ease-in-out .3s 1 both} @keyframes fmBreathe{50%{transform:translateY(-1.6px) scale(1.006)}} @keyframes fmBlink{0%, 93%, 100%{transform:scaleY(1)} 96%{transform:scaleY(.1)}} @keyframes fmBob{50%{transform:translateY(-3px) rotate(-2deg)}} @keyframes fmRise{50%{transform:translateY(-5px)}} @keyframes fmSway{50%{transform:rotate(-6deg) translateY(-2px)}} @keyframes fmTwinkle{50%{opacity:.35; transform:scale(.8)}} @keyframes fmSteam{0%{opacity:0; transform:translateY(6px)} 40%{opacity:1} 100%{opacity:0; transform:translateY(-8px)}} @keyframes fmWave{0%{opacity:0; transform:rotate(0)} 10%{opacity:1} 25%{transform:rotate(-14deg)} 45%{transform:rotate(10deg)} 65%{transform:rotate(-14deg)} 85%{opacity:1; transform:rotate(6deg)} 100%{opacity:0; transform:rotate(0)}} .fm-av.still *, .fm-av.still{animation:none !important} @media (prefers-reduced-motion:reduce){ .fm-av *, .fm-av{animation:none !important} } .fm-av .wave{animation:fmWave 2.4s ease-in-out .3s 1 both}</style>
+<defs><clipPath id="clip-night-owl-bookworm"><circle cx="120" cy="120" r="120"/></clipPath></defs>
+<g clip-path="url(#clip-night-owl-bookworm)">
+  <g class="scene"><rect class="sky" width="240" height="240" fill="#C3E0D6"/>
+      <g class="tw"><path d="M190 46 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 Z" fill="#FBF8F6"/>
+        <path class="tw2" d="M212 82 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#FBF8F6"/>
+        <path d="M44 44 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#FBF8F6"/>
+        <path class="tw2" d="M160 24 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2 Z" fill="#FBF8F6"/></g></g>
+  <g class="who">
+    <path d="M76 104 C70 58 112 46 130 50 C164 56 172 92 164 140 L150 142 L150 96 L90 96 L90 142 L76 140 Z" fill="#5B3A29"/>
+    <path class="body" d="M52 240 C52 196 80 178 120 178 C160 178 188 196 188 240 Z" fill="#86A6E0"/>
+    <path d="M104 178 Q120 196 136 178" stroke="#6e88b8" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="108" y="146" width="24" height="36" rx="10" fill="#caa588"/>
+    <ellipse cx="82" cy="118" rx="8" ry="11" fill="#caa588"/><ellipse cx="158" cy="118" rx="8" ry="11" fill="#caa588"/>
+    <ellipse cx="120" cy="112" rx="38" ry="44" fill="#EBC09E"/>
+    <g class="face">
+      <path d="M96 100 q9 -6 17 -1 M127 99 q8 -5 17 1" stroke="#5B3A29" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <g class="eyes"><ellipse cx="105" cy="116" rx="4.5" ry="5.5" fill="#1C1917"/><ellipse cx="135" cy="116" rx="4.5" ry="5.5" fill="#1C1917"/></g>
+      <path d="M120 120 q-4 8 1 10" stroke="#caa588" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="96" cy="132" r="7" fill="#E0623E" opacity=".22"/><circle cx="144" cy="132" r="7" fill="#E0623E" opacity=".22"/>
+      <path d="M111 138 Q120 142 129 138" stroke="#1C1917" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    </g>
+    
+    <path d="M82 100 C80 64 108 54 126 56 C152 58 162 78 158 100 C140 92 132 76 126 72 C114 86 98 92 82 100 Z" fill="#5B3A29"/>
+    <g fill="none" stroke="#1C1917" stroke-width="3.5"><circle cx="105" cy="116" r="12"/><circle cx="135" cy="116" r="12"/><path d="M117 116 h6 M93 114 l-8 -3 M147 114 l8 -3"/></g>
+    <g class="wave"><path d="M64 224 C58 204 56 184 60 168" stroke="#86A6E0" stroke-width="18" fill="none" stroke-linecap="round"/><circle cx="60" cy="160" r="11" fill="#EBC09E"/></g>
+    <path d="M160 222 C168 214 146 208 150 200" stroke="#86A6E0" stroke-width="18" fill="none" stroke-linecap="round"/>
+  </g>
+  <g class="prop"><path d="M142 176 Q160 166 178 176 Q196 166 214 176 L210 210 Q194 202 178 212 Q162 202 146 210 Z" fill="#C2410C"/>
+      <path d="M148 174 Q162 164 178 174 L178 206 Q162 198 150 204 Z" fill="#FBF8F6"/><path d="M208 174 Q194 164 178 174 L178 206 Q194 198 206 204 Z" fill="#FFFFFF"/>
+      <path d="M155 180 q10 -5 19 0 M156 188 q9 -5 18 0 M201 180 q-10 -5 -19 0 M200 188 q-9 -5 -18 0" stroke="#D6CBC3" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M196 166 v16 l4 -3 4 3 v-16" fill="#86A6E0"/></g>
+  <circle class="hand" cx="150" cy="200" r="10" fill="#EBC09E"/>
+</g></svg>

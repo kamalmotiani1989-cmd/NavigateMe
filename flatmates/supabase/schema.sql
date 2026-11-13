@@ -2471,7 +2471,7 @@ begin
   if v.id is null or v.host_id is distinct from auth.uid() then raise exception 'not-the-host'; end if;
   return query
     select jsonb_build_object('id', r.id, 'status', r.status, 'note', r.note, 'plus', r.plus, 'created_at', r.created_at,
-      'name', split_part(coalesce(g.full_name, ''), ' ', 1), 'gen', g.vibe->>'gen', 'gender', g.gender, 'vibe', g.vibe,
+      'name', split_part(coalesce(g.full_name, ''), ' ', 1), 'gen', g.vibe->>'gen', 'gender', g.gender, 'vibe', g.vibe, 'avatar', g.avatar,
       'match', fm_match(h.vibe, g.vibe),
       'parties', (select count(*) from fm_party_requests x join fm_parties y on y.id = x.party_id
                   where x.user_id = r.user_id and x.status = 'accepted' and not y.cancelled and coalesce(y.ends_at, y.starts_at + interval '12 hours') < now()),
@@ -4148,6 +4148,67 @@ language sql security definer set search_path = public as $$
   select fm_party_clear(p_user, p_note);
 $$;
 
+-- ------------------------------------------------------------------ avatars --
+-- Cartoon avatars people build themselves (Kamal, 13 Nov): a few small choices, never a photo and never guessed.
+-- s skin tone s1–s6 · f face · h hair style · hc hair colour · c head covering · cc its colour · g glasses ·
+-- b beard · t top colour · ty the flatmate type ("rhythm-habit", e.g. "2-4"), kept in step by the app from the
+-- person's answers · v version. Only these keys and values are accepted. No avatar = the neutral default.
+alter table public.fm_profiles add column if not exists avatar jsonb;
+create or replace function public.fm_avatar_valid(p jsonb) returns boolean
+language sql immutable set search_path = public as $$
+  select p is null or (jsonb_typeof(p) = 'object' and length(p::text) <= 400
+    and not exists (select 1 from jsonb_object_keys(p) k where k not in ('v','s','f','h','hc','c','cc','g','b','t','ty'))
+    and coalesce(p->>'s', '') ~ '^s[1-6]$'
+    and coalesce(p->>'f', 'smile') in ('smile','grin','calm')
+    and coalesce(p->>'h', 'short') in ('none','short','bob','long','curly','bun','bald')
+    and coalesce(p->>'hc', '#1C1917') in ('#1C1917','#3A2A20','#5B3A29','#8A5A3B','#C9A35F','#9C9590')
+    and coalesce(p->>'c', 'none') in ('none','hijab','turban','cap')
+    and coalesce(p->>'cc', '#C3C9F6') in ('#C3C9F6','#C3E0D6','#EBD981','#E79078','#86A6E0','#8D9B62','#1C1917','#FBF8F6')
+    and coalesce(jsonb_typeof(p->'g'), 'boolean') = 'boolean'
+    and coalesce(p->>'b', 'none') in ('none','full','moustache')
+    and coalesce(p->>'t', '#86A6E0') in ('#C3C9F6','#C3E0D6','#EBD981','#E79078','#86A6E0','#8D9B62','#1C1917','#FBF8F6')
+    and coalesce(p->>'ty', '0-0') ~ '^[0-2]-([0-9]|1[01])$'
+    and coalesce(jsonb_typeof(p->'v'), 'number') = 'number');
+$$;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'fm_profiles_avatar_ok') then
+    alter table public.fm_profiles add constraint fm_profiles_avatar_ok check (fm_avatar_valid(avatar));
+  end if;
+end $$;
+-- Save (or, with null, remove) your own avatar.
+create or replace function public.fm_set_avatar(p jsonb) returns jsonb
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not-signed-in'; end if;
+  if not fm_avatar_valid(p) then raise exception 'avatar-invalid'; end if;
+  perform fm_throttle('avatar', 30, 60);
+  update fm_profiles set avatar = p where id = auth.uid();
+  return p;
+end $$;
+-- The avatars behind what a list already shows, by the ids the list has: 'profile' (a person), 'listing' (its
+-- lister), 'item' (its seller), 'request' and 'offer' (the other side, for the two people in it only) and
+-- 'thread' (the other person in a conversation you're in). People without one, or blocked either way, are left
+-- out; the app then shows the neutral default. At most 200 ids a call.
+create or replace function public.fm_avatars(p_kind text, p_ids uuid[])
+returns table (ref uuid, avatar jsonb)
+language sql stable security definer set search_path = public as $$
+  with ids as (select distinct x as id from unnest((coalesce(p_ids, '{}'::uuid[]))[1:200]) x),
+  pairs as (
+    select i.id as ref, case p_kind
+      when 'profile' then i.id
+      when 'listing' then (select l.owner_id from fm_listings l where l.id = i.id)
+      when 'item' then (select m.seller_id from fm_market_items m where m.id = i.id)
+      when 'request' then (select case when r.seeker_id = auth.uid() then l.owner_id when l.owner_id = auth.uid() then r.seeker_id end
+                             from fm_requests r join fm_listings l on l.id = r.listing_id where r.id = i.id)
+      when 'offer' then (select case when o.buyer_id = auth.uid() then m.seller_id when m.seller_id = auth.uid() then o.buyer_id end
+                           from fm_market_offers o join fm_market_items m on m.id = o.item_id where o.id = i.id)
+      when 'thread' then (select x from unnest(fm_thread_people(i.id)) x where x <> auth.uid() and auth.uid() = any(fm_thread_people(i.id)) limit 1)
+    end as uid
+    from ids i)
+  select pr.ref, p.avatar from pairs pr join fm_profiles p on p.id = pr.uid
+  where auth.uid() is not null and p.avatar is not null and (p.id = auth.uid() or not fm_blocked(auth.uid(), p.id));
+$$;
+
 -- ------------------------------------------------------- function access --
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me, fm_area_demand, fm_otp_request and the party and sale pages also answer signed-out callers,
@@ -4170,7 +4231,7 @@ begin
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
                      'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok',
-                     'fm_blocked', 'fm_block_target', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear') then
+                     'fm_blocked', 'fm_block_target', 'fm_avatar_valid', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
