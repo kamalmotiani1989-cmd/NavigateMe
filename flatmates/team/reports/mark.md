@@ -1,5 +1,13 @@
 # Mark · reports
 
+## 13 November 2026 · 30 English-rhyme feature creatives (Kamal, directly)
+
+**Done:** **PR #94**, not merged. Two rhyming creatives for each of 15 app features, as feed and story PNGs in
+`design/feature-rhymes/`, with a contact sheet. The copy is in `flatmates/marketing/feature-rhymes-creatives.md`. Same brand and
+build as PR #93; demo count lines were cropped out of FlatMart and Tribe.
+
+**Open:** Kamal picks the stronger rhyme per feature for ads. Next: paused.
+
 ## 13 November 2026 · ten Pune Instagram creatives (Kamal via King, one task)
 
 **Done**
