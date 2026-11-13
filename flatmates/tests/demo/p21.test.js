@@ -61,8 +61,9 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
   ok(ty.ty === ty.want && ty.ty.endsWith('-1'), 'change your answers and the type changes with them (now a Chef): ' + JSON.stringify(ty));
 
   // lists: home cards, Tribe (cards and map), FlatMart seller, messages list and header, requests
-  const home = await avs(p, '#cards .trust .fm-avh');
-  ok(home.n > 0 && home.person > 0 && home.letters === 0, 'home cards: the lister\'s avatar by "Listed by…": ' + JSON.stringify(home));
+  // home cards: no avatar squeezed into the trust line (King, 13 Nov); it stays on one line at 390 (and 360, below)
+  const home = await p.evaluate(() => [...document.querySelectorAll('#cards .trust')].map(t => ({ av: !!t.querySelector('.fm-avh'), fits: t.scrollWidth <= t.clientWidth + 1 })));
+  ok(home.length > 0 && home.every(x => !x.av && x.fits), 'home cards: the trust line ("… · phone verified") stays on one line at 390');
   await p.evaluate(() => document.querySelector('#cards .card').scrollIntoView({ block:'start' })); await p.waitForTimeout(300);
   await p.screenshot({ path: O + '/p21-home.png' });
   await go(p, '#tribe');
@@ -91,15 +92,18 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
   const rq = await p.evaluate(() => document.querySelectorAll('#reqList .fm-avh, #reqList svg').length);
   ok(rq > 0, 'Requests: an avatar (or the match ring) where the letter was: ' + rq);
 
+  await p.setViewportSize({ width:360, height:780 }); await p.waitForTimeout(400);
+  ok(await p.evaluate(() => [...document.querySelectorAll('#cards .trust')].every(t => t.scrollWidth <= t.clientWidth + 1)), 'and at 360');
+  await p.setViewportSize({ width:390, height:844 });
   // the Vibe Card: live on screen, a still in the shared image
   await p.evaluate(() => openVibeCard(state.vibe)); await p.waitForTimeout(2500);
   const vc = await p.evaluate(async () => { const live = document.querySelector('.vc-wrap .vc-live svg'), img = document.querySelector('.vc-img');
     const c = vibeCtx.canvas, x = c.getContext('2d'), px = x.getImageData(540, VC_AV.cy + 60, 1, 1).data;   // inside the avatar: not the card's navy
-    return { live: !!live && !live.classList.contains('still'), play: !!document.querySelector('.vc-wrap.play'), w: c.width, h: c.height, px: [...px].slice(0, 3),
+    return { cy: VC_AV.cy, live: !!live && !live.classList.contains('still'), play: !!document.querySelector('.vc-wrap.play'), w: c.width, h: c.height, px: [...px].slice(0, 3),
       box: live && (() => { const a = live.getBoundingClientRect(), b = img.getBoundingClientRect(); return [(a.left + a.width / 2 - b.left) / b.width, (a.top + a.height / 2 - b.top) / b.height].map(v => +v.toFixed(3)); })() }; });
   ok(vc.live && vc.play, 'Vibe Card: your avatar, animated, waving as it opens');
-  ok(vc.w === 1080 && vc.h === 1920 && !(vc.px[0] < 60 && vc.px[2] > 50 && vc.px[2] < 110), 'the shared 1080 × 1920 image has it as a still: ' + JSON.stringify(vc.px));
-  ok(vc.box && Math.abs(vc.box[0] - .5) < .01 && Math.abs(vc.box[1] - 505 / 1920) < .01, 'the live one sits exactly over the still one: ' + JSON.stringify(vc.box));
+  ok(vc.w === 1080 && vc.h === 1920 && vc.px.join() !== '195,224,214', 'the shared 1080 × 1920 image has it as a still (not just the mint panel): ' + JSON.stringify(vc.px));
+  ok(vc.box && Math.abs(vc.box[0] - .5) < .01 && Math.abs(vc.box[1] - vc.cy / 1920) < .01, 'the live one sits exactly over the still one: ' + JSON.stringify(vc.box));
   await p.screenshot({ path: O + '/p21-vibecard.png' });
   await closeDlgs(p);
 

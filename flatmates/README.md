@@ -604,7 +604,6 @@ The cartoon updates as you tap. It starts neutral: no skin tone is picked for yo
 
 **Where it shows:**
 - the top bar;
-- home cards (the lister's, by "Listed by…");
 - Tribe (the cards, the map with you in the middle, and a bonded tribe);
 - the Escape list and My flat's Escape card;
 - requests;
@@ -614,6 +613,14 @@ The cartoon updates as you tap. It starts neutral: no skin tone is picked for yo
 - Account;
 - large on the Vibe Card. There it's live on screen, laid exactly over a still copy in the shared 1080 × 1920
   image. Without an avatar the card keeps the type's emoji.
+
+Home cards don't carry an avatar: their trust line ("✓ Listed by a flatmate who lives here · phone verified") has
+to stay on one line at 360 and 390 wide.
+
+**The Vibe Card in the pastel look** (King, 13 Nov): the whole card is the rhythm's panel colour (butter for Early
+Bird, lavender for Midnight, mint for Night Owl), with dark ink text, the logo and wordmark, and the avatar large. The
+words are the same as before. Its colours are in `VC_PALETTE`, and p13 checks every text colour on every background
+in it.
 
 People without an avatar show a **neutral default**: a plain silhouette in beige.
 
