@@ -1,5 +1,32 @@
 # Teche · reports
 
+## 2026-11-13, avatars (#96) live
+
+- **What (Kamal, through King):** people build a cartoon of themselves, and it shows where their initial used to.
+  - The maker is one screen with six rows: skin tone (6), face, hair and colour, head covering (hijab, turban or
+    cap) and colour, glasses and beard, top colour. It updates live as you tap.
+  - Skip is always there, and nothing is picked for you.
+  - Seekers see it once after onboarding's reveal. Everyone can open it from Account or the Vibe Card; owners also
+    from their own row in "who lives there".
+  - The flatmate type sits on top: the scene comes from the rhythm, the held prop from the habit (12 props, 9 new),
+    and it follows the answers.
+- **Shows in:** the top bar, home cards, Tribe (cards, map, bonded), Escape and My flat, requests, messages and the
+  chat header, FlatMart sellers, party guest requests, Account, and the Vibe Card. On the Vibe Card it moves on
+  screen and is a still in the shared image.
+  - No avatar shows a neutral default.
+  - Only the Vibe Card, Account and the maker move. Reduced motion means nothing moves.
+- **Database (live first):** fm_profiles.avatar, plus fm_avatar_valid (palette-only values, also a check on the
+  table), fm_set_avatar and fm_avatars(kind, ids).
+  - The schema was checked by md5 (0dcc3b9c…) and applied live.
+  - The rolled-back live check passed: save and read OK, bad values refused, signed-in only.
+- **Privacy:** a line about avatars added to the #86 draft.
+- **Tests:** DB 187 checks, 0 failed. Demo 19 suites, 0 failed (new p21: 30 checks). The p13 and p19 contrast
+  audits pass.
+- **Published:** ebe68c4. Before and after screenshots at 390 wide: [before/after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-before-after.png),
+  [maker](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-maker.png), [chat](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-chat.png).
+- **Note:** I couldn't confirm the Open Peeps licence (the site doesn't resolve from here), so all the parts are our
+  own drawings.
+
 ## 2026-11-13, app update card (#92) live
 
 - **What (Kamal):** the Android app now says "A new version of the app is ready", with an Update button, when a
@@ -102,16 +129,3 @@
 - **Plan:** `design/ai-go-between-plan.md`, PR #84, not merged. Rules handle most of it; AI is needed only for
   translation, reading questions and summaries. I recommend claude-haiku-5-5 at about ₹0.38 per enquiry (estimate).
   Eight decisions are waiting for Kamal.
-
-## 2026-11-09, text in the logo's colours: #83 live
-
-Kamal asked for the text colours to follow the logo, black and orange, and said merge once done.
-
-- **Black and grey:** text and black buttons use the logo's near-black #1C1917; secondary text uses its warm grey.
-- **Orange in headlines:** the bold words use the logo's exact orange #C2410C.
-- **Orange in small text:** links, the greeting and section labels use #B23A0A, a hair deeper so small text reads
-  at 4.5:1.
-- **Pastel panels:** no orange there; text stays near-black.
-
-The contrast check passes on every screen, and README Look and feel is updated. Merged and published:
-findmeflatmate.com runs NavigateMe 82ac857.
