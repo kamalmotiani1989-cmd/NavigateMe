@@ -878,6 +878,14 @@ changes, so the link keeps working when this repo is private. The pages inside t
 Open the downloaded file and allow "Install unknown apps" for your browser when Android asks.
 New versions install over the old one and keep your data.
 
+**New version available** (Kamal, 13 Nov): the app keeps its own copy of the pages, so a change reaches phones only
+through a new download. Each time the app opens it tells the page its build number (the CI run number); the page
+reads the latest build from the website repo's `flatmates-apk` release notes ("… build 196 …", through GitHub's
+public API, at most every 6 hours) and, when there is a newer one, shows a card "A new version of the app is ready"
+with **Update** (the download link above; Android asks the person to confirm the install). The × hides it for a day,
+for that version only. Offline or a failed read shows nothing. The website never shows it: it always loads the latest
+pages. Only apps from this build on can check, so phones on an older build need one manual download first.
+
 How it's built: `android/` is a small native app that shows the web app full-screen. The build
 copies `index.html` and `icons/` into the APK, so you only ever edit the web app. Every push that
 changes `flatmates/` runs `.github/workflows/flatmates-apk.yml`, which builds the APK and replaces

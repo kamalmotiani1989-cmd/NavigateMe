@@ -2190,6 +2190,12 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .mp-row{box-shadow:0 -1px 0 rgba(28,25,23,.12)} .mp-ic{background:rgba(255,255,255,.5)}
 .my-passes :is(b, em, small){color:inherit} .my-passes small{color:var(--text-2)}
 .mp-more{background:#fff; color:var(--text)}
+.upd-bar{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(96px + env(safe-area-inset-bottom,0px)); z-index:60; width:min(92vw,460px);
+  display:flex; align-items:center; gap:12px; padding:12px 12px 12px 16px; border-radius:18px; background:var(--ink); color:#fff; box-shadow:0 12px 32px rgba(16,20,24,.28)}
+.upd-bar > span{flex:1; min-width:0} .upd-bar b{display:block; font-size:var(--fs-m)} .upd-bar small{display:block; font-size:var(--fs-xs); color:rgba(255,255,255,.85)}
+.upd-bar .upd-go{background:#fff; color:var(--text); flex:none}
+.upd-bar .upd-x{flex:none; width:32px; height:32px; display:grid; place-items:center; border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; cursor:pointer}
+.upd-bar .upd-x svg{width:16px; height:16px}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -4470,6 +4476,34 @@ const ten = p => String(p || "").replace(/\D/g, "").slice(-10);
 const validPhone = p => /^[6-9][0-9]{9}$/.test(p);
 // The website repo's copy of the newest build (it stays downloadable when the source repo is private).
 const APK_LINK = "https://github.com/kamalmotiani1989-cmd/findmeflatmate/releases/download/flatmates-apk/flatmates.apk";
+// "New version available" in the Android app (Kamal, 13 Nov). The app has its own copy of the pages, so a change we
+// publish reaches it only through a new download. On each open the app tells the page its build number; the page
+// reads the latest build from the public release notes ("… build 196 …"), at most every 6 hours, and when there is a
+// newer one shows a card with Update (the download link, which Android opens outside the app). "Later" hides it for a
+// day. The website needs none of this: it always loads the latest pages.
+const APK_RELEASE_API = "https://api.github.com/repos/kamalmotiani1989-cmd/findmeflatmate/releases/tags/flatmates-apk";
+const UPD_KEY = "fm_app_update";
+async function checkAppUpdate(build){
+  build = Number(build); if(!(build > 0)) return;
+  const u = readLS(UPD_KEY) || {};
+  let latest = u.latest || 0;
+  if(!u.at || Date.now() - u.at > 6 * 36e5){
+    try{ const r = await fetch(APK_RELEASE_API, { headers:{ Accept:"application/vnd.github+json" } });
+      if(r.ok){ const m = String((await r.json()).body || "").match(/build (\d+)/); if(m) latest = +m[1]; }
+      Object.assign(u, { at: Date.now(), latest }); writeLS(UPD_KEY, u);
+    }catch(err){ return; }   // offline or rate-limited: try again next open
+  }
+  if(latest > build && !(u.later && u.later.build === latest && Date.now() - u.later.at < 864e5)) showAppUpdate(latest);
+}
+function showAppUpdate(latest){
+  let bar = $("updBar");
+  if(!bar){ bar = document.createElement("div"); bar.id = "updBar"; bar.className = "upd-bar"; bar.setAttribute("role", "status"); document.body.appendChild(bar); }
+  bar.innerHTML = `<span><b>A new version of the app is ready</b><small>Update to get the latest changes. It takes a minute.</small></span>
+    <a class="btn btn-sm upd-go" href="${APK_LINK}" rel="noopener">Update</a>
+    <button class="upd-x" type="button" aria-label="Later">${CLOSE_SVG}</button>`;
+  bar.querySelector(".upd-x").onclick = () => { const u = readLS(UPD_KEY) || {}; u.later = { build: latest, at: Date.now() }; writeLS(UPD_KEY, u); bar.remove(); };
+  bar.querySelector(".upd-go").onclick = () => setTimeout(() => toast("Open the downloaded file to install the update."), 600);
+}
 const appLink = () => /^https:/.test(location.href) && location.hostname !== "appassets.androidplatform.net" ? location.origin + location.pathname : APK_LINK;
 const waLink = (phone, text) => `https://wa.me/91${ten(phone)}?text=${encodeURIComponent(text)}`;
 const upiLink = (upi, name, paise, note) =>
@@ -6128,7 +6162,7 @@ async function savePushToken(){
 if(Notify.native()){
   FlatmatesNative.onmessage = e => {
     let m; try{ m = JSON.parse(e.data); }catch(err){ return; }
-    if(m.type === "status") Notify.nativeOn = Boolean(m.granted);
+    if(m.type === "status"){ Notify.nativeOn = Boolean(m.granted); if(m.build) checkAppUpdate(m.build); }
     if(m.type === "token"){ pushToken = m.token; savePushToken(); }
     if(m.type === "open" && state.user) go(m.view || "requests");
   };
