@@ -62,7 +62,7 @@ const audit = () => {
   for(const h of ['#discover', '#tribe', '#splits', '#market', '#account', '#plans', '#requests']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1400);
     await p.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d => d.close()); document.querySelectorAll('.pk-more').forEach(b => b.click()); });
     low.push(...(await p.evaluate(audit)).map(x => h + ' ' + x)); }
-  ok(!low.length && await p.evaluate(() => getComputedStyle(document.querySelector('.bond-avs .av')).color === 'rgb(255, 255, 255)'),
+  ok(!low.length && await p.evaluate(() => [...document.querySelectorAll('.bond-avs .av:not(.fm-avh)')].every(e => getComputedStyle(e).color === 'rgb(255, 255, 255)') && !!document.querySelector('.bond-avs .av')),
     'contrast: all text reads at 4.5:1 (3:1 for big text), including a tribe card\'s WhatsApp and Leave tribe: ' + low.slice(0, 5).join(' | '));
   // sign-up: tiles show titles; the picked one's explanation shows under them; screen readers still get all three
   const v = await b.newPage({ viewport:{ width:390, height:844 } }); await v.goto('http://localhost:8765/'); await v.waitForTimeout(1200);

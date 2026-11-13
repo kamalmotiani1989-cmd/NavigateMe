@@ -570,6 +570,71 @@ Account & Settings → API Keys) and its test cards or UPI `success@razorpay`; n
 the keys are set, buying shows "Payments aren't switched on yet". GST can only be charged once the
 business is GST-registered; invoices need the GSTIN.
 
+## Avatars (Kamal, 13 Nov)
+
+**A cartoon of yourself that you build**, shown where your initial used to be. It is never a photo and never guessed
+from your name or anything else.
+
+**The maker:** one screen, `dlgAvatar`, with six rows of round tiles:
+1. skin tone (six);
+2. face (smile, big smile or calm);
+3. hair (short, bob, long, curly, bun or bald) plus a hair colour;
+4. head covering (none, hijab, turban or cap) plus its colour;
+5. glasses, and beard or moustache;
+6. top colour, from the pastels.
+
+The cartoon updates as you tap. It starts neutral: no skin tone is picked for you, and Save waits until you pick one.
+**Skip** (or **Cancel**) is always at the top.
+
+**Where you make it:**
+- Seekers see it once, right after the reveal at the end of onboarding ("Show me"), and then go on to Discover. It
+  adds no question to onboarding and never holds up sign-up.
+- Anyone can make or edit it from Account ("Make your avatar" / "Edit avatar", with "Remove my avatar").
+- On the Vibe Card, "Put your avatar on your card".
+- Owners can also reach it from their own row in the posting form's "who lives there" step. It's never offered for
+  their flatmates.
+
+**Your flatmate type on top:** the rhythm sets the scene, and the habit is what you hold.
+- Rhythms: Early Bird is a sunrise on butter, Midnight a moon on lavender, Night Owl stars on mint.
+- Habits: a dog (Pet Parent), a kadhai (Chef), a tray of chai glasses (Host), a spray bottle (Neat Freak), a book
+  (Bookworm), a phone with hearts (Social Butterfly), a cushion and blanket (Homebody), samosas (Foodie), headphones
+  (Introvert), a guitar (Free Spirit), a laptop bag (Go-Getter) and a star badge (All-Rounder).
+- It follows your 12 answers. Change them and the type on your avatar changes too (`ty`, kept in step by the app).
+- Before the quiz is done, it shows a plain background with nothing in hand.
+
+**Where it shows:**
+- the top bar;
+- home cards (the lister's, by "Listed by…");
+- Tribe (the cards, the map with you in the middle, and a bonded tribe);
+- the Escape list and My flat's Escape card;
+- requests;
+- the messages list and the chat header;
+- a FlatMart seller;
+- a nearby party's guest requests;
+- Account;
+- large on the Vibe Card. There it's live on screen, laid exactly over a still copy in the shared 1080 × 1920
+  image. Without an avatar the card keeps the type's emoji.
+
+People without an avatar show a **neutral default**: a plain silhouette in beige.
+
+**Movement:** a blink every few seconds, slight breathing, a wave when the Vibe Card or the maker opens, and the prop
+and the sun, moon or stars moving a little.
+- It uses transform and opacity only.
+- Only the Vibe Card, Account and the maker move. Small avatars in lists stay still.
+- With reduced motion turned on, nothing moves.
+
+**How it's built:**
+- The parts are our own SVG, bundled in the app with no outside service. The library (`FMAvatar` in `index.html`) is
+  the same code as `design/avatars-human/avatar.js`.
+- The choices are saved as a small JSON on the profile, `fm_profiles.avatar`. Keys: `s` skin, `f` face, `h` hair,
+  `hc` hair colour, `c` covering, `cc` covering colour, `g` glasses, `b` beard, `t` top, `ty` type, `v` version.
+- They're saved with `fm_set_avatar`. The server accepts only these keys and values (`fm_avatar_valid`, also a check
+  on the table).
+- Others' avatars come from `fm_avatars(kind, ids)`, using the ids a list already has: profile, listing, item,
+  request, offer or thread. For a request or an offer, only the two people in it can see each other's.
+- Blocked people's avatars are never returned, and someone with no avatar gets no row.
+- A nearby party's guest requests include each guest's `avatar`.
+
 ## Look and feel
 Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it replaces the navy-and-green look of
 8 Nov. Every screen keeps its layout and words; the look lives in one style layer at the end of the stylesheet.
