@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="The Early Bird Neat Freak">
+  <!-- Layers: #bg (rhythm colour), #animal (rhythm), #prop (habit). Props sit in the same slot, lower right. -->
+  <g id="bg"><circle cx="120" cy="120" r="120" fill="#EBD981"/><circle cx="196" cy="58" r="22" fill="#F6EBB4"/></g>
+  <g id="animal" data-rhythm="early-bird">
+    <path d="M52 146 L20 126 L28 170 Z" fill="#C9705A"/>
+    <ellipse cx="102" cy="142" rx="62" ry="60" fill="#E79078"/>
+    <ellipse cx="112" cy="160" rx="38" ry="34" fill="#F7DCCF"/>
+    <ellipse cx="74" cy="150" rx="22" ry="32" transform="rotate(-18 74 150)" fill="#C9705A"/>
+    <path d="M98 84 C92 66 104 60 110 74 C114 62 128 66 118 86 Z" fill="#C9705A"/>
+    <circle cx="122" cy="118" r="9" fill="#1C1917"/><circle cx="125" cy="115" r="3" fill="#FFFFFF"/>
+    <circle cx="132" cy="138" r="7" fill="#E0623E" opacity=".35"/>
+    <path d="M140 123 L158 130 L140 138 Z" fill="#C2410C"/>
+    <path d="M92 200 v12 M114 200 v12 M84 212 h16 M106 212 h16" stroke="#1C1917" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g id="prop" data-habit="neat-freak" transform="translate(188 158) scale(.9) translate(-178 -150)">
+    <rect x="156" y="142" width="40" height="58" rx="13" fill="#86A6E0"/>
+    <rect x="163" y="160" width="26" height="22" rx="6" fill="#FBF8F6"/>
+    <path d="M170 168 h12 M170 174 h8" stroke="#86A6E0" stroke-width="3" stroke-linecap="round"/>
+    <rect x="166" y="126" width="20" height="18" rx="4" fill="#1C1917"/>
+    <path d="M160 112 h30 a6 6 0 0 1 6 6 v6 a6 6 0 0 1 -6 6 h-30 a6 6 0 0 1 -6 -6 v-6 a6 6 0 0 1 6 -6 Z" fill="#1C1917"/>
+    <rect x="192" y="114" width="12" height="8" rx="3" fill="#1C1917"/>
+    <path d="M168 130 q-10 8 -6 20" stroke="#1C1917" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M216 104 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 Z M210 84 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

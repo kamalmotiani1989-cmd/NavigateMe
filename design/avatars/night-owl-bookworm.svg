@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="The Night Owl Bookworm">
+  <!-- Layers: #bg (rhythm colour), #animal (rhythm), #prop (habit). Props sit in the same slot, lower right. -->
+  <g id="bg"><circle cx="120" cy="120" r="120" fill="#C3E0D6"/>
+    <path d="M190 46 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 Z M212 76 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 Z M168 30 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2 Z" fill="#FBF8F6"/></g>
+  <g id="animal" data-rhythm="night-owl">
+    <path d="M56 96 L52 56 L86 80 Z M152 96 L156 56 L122 80 Z" fill="#8D9B62"/>
+    <ellipse cx="104" cy="140" rx="60" ry="70" fill="#8D9B62"/>
+    <ellipse cx="48" cy="152" rx="15" ry="36" fill="#6F7C4A"/>
+    <ellipse cx="104" cy="168" rx="38" ry="38" fill="#EBD981"/>
+    <path d="M90 158 l6 6 6 -6 M106 158 l6 6 6 -6 M98 174 l6 6 6 -6 M84 174 l6 6 6 -6 M112 174 l6 6 6 -6" stroke="#B8A85A" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="80" cy="116" r="23" fill="#FBF8F6"/><circle cx="128" cy="116" r="23" fill="#FBF8F6"/>
+    <circle cx="82" cy="118" r="11" fill="#1C1917"/><circle cx="126" cy="118" r="11" fill="#1C1917"/>
+    <circle cx="86" cy="114" r="3.5" fill="#FFFFFF"/><circle cx="130" cy="114" r="3.5" fill="#FFFFFF"/>
+    <path d="M96 134 L112 134 L104 150 Z" fill="#C2410C"/>
+    <path d="M86 206 l-4 8 M94 207 v8 M114 207 v8 M122 206 l4 8" stroke="#C2410C" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g id="prop" data-habit="bookworm">
+    <path d="M136 168 Q158 158 176 168 Q194 158 216 168 L210 204 Q192 196 176 206 Q160 196 142 204 Z" fill="#C2410C"/>
+    <path d="M142 166 Q160 156 176 166 L176 200 Q160 192 146 198 Z" fill="#FBF8F6"/>
+    <path d="M210 166 Q192 156 176 166 L176 200 Q192 192 206 198 Z" fill="#FFFFFF"/>
+    <path d="M150 172 q12 -6 22 0 M151 181 q11 -6 21 0 M152 190 q10 -5 20 0 M202 172 q-12 -6 -22 0 M201 181 q-11 -6 -21 0" stroke="#D6CBC3" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M176 166 v34" stroke="#D6CBC3" stroke-width="2"/>
+    <path d="M196 158 v18 l5 -4 5 4 v-18" fill="#86A6E0"/>
+  </g>
+</svg>
