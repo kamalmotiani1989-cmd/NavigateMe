@@ -10,6 +10,7 @@
 
   // ---- the rhythm: the background scene ----
   const SCENES = {
+    "neutral": c => `<rect class="sky" width="240" height="240" fill="#EEDDD3"/>`,
     "early-bird": c => `<rect class="sky" width="240" height="240" fill="#EBD981"/>
       <g class="sun"><circle cx="186" cy="74" r="30" fill="#F6EBB4"/><circle cx="186" cy="74" r="20" fill="#E79078"/></g>
       <path d="M0 196 Q60 176 120 190 T240 186 V240 H0 Z" fill="#F2E3A6"/>`,
@@ -49,6 +50,13 @@
     cap:   { back: c => "", front: c => `<path d="M80 92 C80 62 100 52 120 52 C140 52 160 62 160 92 Z" fill="${c}"/><path d="M118 88 h56 a6 6 0 0 1 0 10 h-56 Z" fill="${shade(c, .8)}"/>` }
   };
 
+  // small shape helpers for the props
+  const heart = (x, y, s, f) => `<path d="M${x} ${y + s * .9} C${x - s * 1.5} ${y} ${x - s * .8} ${y - s * 1.1} ${x} ${y - s * .3} C${x + s * .8} ${y - s * 1.1} ${x + s * 1.5} ${y} ${x} ${y + s * .9} Z" fill="${f}"/>`;
+  const star = (x, y, R, r, f) => `<path d="M${Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, d = i % 2 ? r : R;
+    return `${(x + d * Math.cos(a)).toFixed(1)} ${(y + d * Math.sin(a)).toFixed(1)}`; }).join(" L")} Z" fill="${f}" stroke="${f}" stroke-width="1.5" stroke-linejoin="round"/>`;
+  const note = (x, y, f, k = 1) => `<g transform="translate(${x} ${y}) scale(${k})"><ellipse cx="0" cy="0" rx="5" ry="4" transform="rotate(-20)" fill="${f}"/>
+    <path d="M4 -1 V-17 q5 2 7 7" stroke="${f}" stroke-width="2.6" fill="none" stroke-linecap="round"/></g>`;
+
   // ---- the habit: a held prop (same props as the animal samples) ----
   const PROPS = {
     "neat-freak": `<g class="prop"><rect x="168" y="168" width="36" height="52" rx="12" fill="#86A6E0"/><rect x="174" y="184" width="24" height="18" rx="5" fill="#FBF8F6"/>
@@ -61,10 +69,63 @@
     "bookworm": `<g class="prop"><path d="M142 176 Q160 166 178 176 Q196 166 214 176 L210 210 Q194 202 178 212 Q162 202 146 210 Z" fill="#C2410C"/>
       <path d="M148 174 Q162 164 178 174 L178 206 Q162 198 150 204 Z" fill="#FBF8F6"/><path d="M208 174 Q194 164 178 174 L178 206 Q194 198 206 204 Z" fill="#FFFFFF"/>
       <path d="M155 180 q10 -5 19 0 M156 188 q9 -5 18 0 M201 180 q-10 -5 -19 0 M200 188 q-9 -5 -18 0" stroke="#D6CBC3" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M196 166 v16 l4 -3 4 3 v-16" fill="#86A6E0"/></g>`
+      <path d="M196 166 v16 l4 -3 4 3 v-16" fill="#86A6E0"/></g>`,
+    "pet-parent": `<g class="prop"><g transform="translate(-8 -4) translate(196 206) scale(.88) translate(-196 -206)"><path d="M206 184 C218 178 220 166 214 160" stroke="#FBF8F6" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <ellipse cx="194" cy="186" rx="19" ry="21" fill="#FBF8F6"/><ellipse cx="200" cy="190" rx="8" ry="9" fill="#E79078"/>
+      <rect x="170" y="170" width="13" height="38" rx="6.5" fill="#FBF8F6"/><ellipse cx="174" cy="206" rx="9" ry="5" fill="#FBF8F6"/><ellipse cx="200" cy="206" rx="10" ry="5" fill="#FFFFFF"/>
+      <path d="M176 190 v14" stroke="#D6CBC3" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="178" cy="152" r="17" fill="#FBF8F6"/><ellipse cx="162" cy="159" rx="11" ry="8" fill="#FFFFFF"/>
+      <path d="M170 170 Q180 175 192 168" stroke="#C2410C" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="180" cy="177" r="3.5" fill="#EBD981"/>
+      <ellipse cx="190" cy="154" rx="7" ry="13" transform="rotate(-18 190 154)" fill="#C2410C"/>
+      <circle cx="172" cy="149" r="3" fill="${INK}"/><ellipse cx="152" cy="156" rx="4.5" ry="3.8" fill="${INK}"/>
+      <path d="M154 163 q5 3 9 -1" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/></g></g>`,
+    "host": `<g class="prop"><g class="steam"><path d="M170 144 c-6 -8 6 -12 0 -20 M192 144 c-6 -8 6 -12 0 -20" stroke="#FBF8F6" stroke-width="4.5" fill="none" stroke-linecap="round"/></g>
+      ${[[156,152],[177,156],[198,152]].map(([x, y]) => `<path d="M${x - 10} ${y} h20 l-3 ${182 - y} h-14 Z" fill="#FFFFFF"/>
+      <path d="M${x - 9} ${y + 7} h18 l-2.3 ${175 - y} h-13.4 Z" fill="#C2410C"/><rect x="${x - 9}" y="${y + 6}" width="18" height="5" rx="2.5" fill="#E79078"/>
+      <path d="M${x - 3.5} ${y + 13} v${166 - y} M${x + 3.5} ${y + 13} v${166 - y}" stroke="#E79078" stroke-width="1.8" stroke-linecap="round"/>`).join("")}
+      <rect x="138" y="180" width="76" height="11" rx="5.5" fill="#D6CBC3"/><path d="M144 191 h64" stroke="#A89C93" stroke-width="3.5" stroke-linecap="round"/></g>`,
+    "social-butterfly": `<g class="prop"><rect x="164" y="148" width="34" height="58" rx="8" fill="${INK}"/><rect x="168" y="155" width="26" height="42" rx="4" fill="#C3C9F6"/>
+      ${heart(181, 175, 7, "#C2410C")}<rect x="176" y="150" width="10" height="2.5" rx="1.25" fill="#3A3431"/>
+      <g class="spark">${heart(208, 138, 8, "#E79078")}</g><g class="spark" style="animation-delay:.5s">${heart(188, 122, 6, "#C2410C")}</g>
+      <g class="spark" style="animation-delay:1s">${heart(216, 110, 5.5, "#FFFFFF")}</g></g>`,
+    "homebody": `<g class="prop"><g transform="translate(-3 -1)"><rect x="144" y="178" width="60" height="26" rx="9" fill="#8D9B62"/><path d="M144 191 h60" stroke="#6F7C4A" stroke-width="3"/>
+      <path d="M156 180 v22 M190 180 v22" stroke="#EBD981" stroke-width="4"/><path d="M200 180 c6 2 6 22 0 24" stroke="#6F7C4A" stroke-width="3" fill="none"/>
+      <path d="M152 148 Q179 138 206 146 Q216 166 208 184 Q178 194 148 186 Q140 167 152 148 Z" fill="#E79078"/>
+      <path d="M156 154 Q179 147 202 152 M154 180 Q178 187 203 179" stroke="#C9705A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="178" cy="167" r="4.5" fill="#C9705A"/><path d="M168 160 l10 7 10 -7 M168 174 l10 -7 10 7" stroke="#C9705A" stroke-width="2" fill="none" stroke-linecap="round"/></g></g>`,
+    "foodie": `<g class="prop"><ellipse cx="176" cy="188" rx="35" ry="12" fill="#FFFFFF"/><ellipse cx="176" cy="187" rx="26" ry="7.5" fill="#FBF8F6" stroke="#D6CBC3" stroke-width="2"/>
+      <path d="M160 184 L177 146 L194 184 Z" fill="#E2BE5E" stroke="#C9973A" stroke-width="8" stroke-linejoin="round"/>
+      ${[[160, 156], [192, 158]].map(([x, y]) => `<path d="M${x - 14} 187 L${x} ${y} L${x + 14} 187 Z" fill="#D9A441" stroke="#D9A441" stroke-width="9" stroke-linejoin="round"/>
+      <path d="M${x - 14} 187 L${x} ${y} L${x + 14} 187 Z" fill="#EBD981" stroke="#EBD981" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M${x} ${y + 4} L${x + 4} 188" stroke="#D9A441" stroke-width="2.5" stroke-linecap="round"/><circle cx="${x - 5}" cy="180" r="1.6" fill="#C9705A"/><circle cx="${x - 2}" cy="172" r="1.4" fill="#C9705A"/><circle cx="${x + 8}" cy="181" r="1.4" fill="#C9705A"/>`).join("")}
+      <circle cx="203" cy="194" r="5.5" fill="#8D9B62"/><circle cx="201.5" cy="192.5" r="1.8" fill="#C3E0D6"/></g>`,
+    "introvert": `<g class="prop"><path d="M159 170 C154 124 206 124 201 170" stroke="${INK}" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M163 160 C161 134 199 134 197 160" stroke="#C3C9F6" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <rect x="148" y="160" width="21" height="32" rx="9" fill="#C2410C"/><rect x="191" y="160" width="21" height="32" rx="9" fill="#C2410C"/>
+      <rect x="164" y="164" width="7" height="24" rx="3.5" fill="${INK}"/><rect x="189" y="164" width="7" height="24" rx="3.5" fill="${INK}"/>
+      <circle cx="201" cy="176" r="5" fill="#E79078"/>
+      <g class="spark">${note(214, 132, INK)}</g><g class="spark" style="animation-delay:.8s">${note(198, 110, INK, .8)}</g></g>`,
+    "free-spirit": `<g class="prop"><g transform="translate(178 192) rotate(27)">
+      <rect x="-4" y="-80" width="8" height="46" rx="3" fill="#3A3431"/><rect x="-6.5" y="-95" width="13" height="18" rx="4" fill="${INK}"/>
+      <circle cx="-8" cy="-90" r="2.4" fill="#D6CBC3"/><circle cx="8" cy="-90" r="2.4" fill="#D6CBC3"/><circle cx="-8" cy="-82" r="2.4" fill="#D6CBC3"/><circle cx="8" cy="-82" r="2.4" fill="#D6CBC3"/>
+      <circle cx="0" cy="-26" r="17" fill="#C2410C"/><circle cx="0" cy="0" r="23" fill="#C2410C"/><rect x="-13" y="-24" width="26" height="18" fill="#C2410C"/>
+      <circle cx="0" cy="-15" r="7" fill="${INK}"/><rect x="-9" y="7" width="18" height="5" rx="2.5" fill="${INK}"/>
+      <path d="M-2 9 V-86 M2 9 V-86" stroke="#FBF8F6" stroke-width="1.2"/></g></g>`,
+    "go-getter": `<g class="prop"><path d="M152 168 C148 124 204 124 198 168" stroke="#3A3431" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <rect x="190" y="138" width="12" height="8" rx="2.5" fill="none" stroke="#EBD981" stroke-width="3" transform="rotate(62 196 142)"/>
+      <rect x="142" y="160" width="64" height="38" rx="9" fill="#9E3409"/><path d="M146 166 v26 M202 166 v26" stroke="#7E2A07" stroke-width="3" stroke-linecap="round"/>
+      <path d="M142 168 a8 8 0 0 1 8 -8 h48 a8 8 0 0 1 8 8 v10 q-32 12 -64 0 Z" fill="#C2410C"/>
+      <path d="M148 177 q26 9 52 0" stroke="#E79078" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M174 178 v14" stroke="#3A3431" stroke-width="4" stroke-linecap="round"/><rect x="167" y="180" width="14" height="10" rx="2.5" fill="none" stroke="#EBD981" stroke-width="3"/></g>`,
+    "all-rounder": `<g class="prop"><path d="M174 176 L166 200 L173 197 L177 204 L186 180 Z" fill="#C9705A"/><path d="M194 176 L202 200 L195 197 L191 204 L182 180 Z" fill="#E79078"/>
+      <g fill="#C2410C">${Array.from({ length: 14 }, (_, i) => `<circle cx="${(184 + 22 * Math.cos(i * Math.PI / 7)).toFixed(1)}" cy="${(164 + 22 * Math.sin(i * Math.PI / 7)).toFixed(1)}" r="6"/>`).join("")}</g>
+      <circle cx="184" cy="164" r="22" fill="#C2410C"/><circle cx="184" cy="164" r="17" fill="#EBD981"/>${star(184, 164.5, 11, 4.6, "#FFFFFF")}
+      <g class="spark"><path d="M212 130 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 Z" fill="#FFFFFF"/></g></g>`
   };
   // where the holding hand sits on each prop
-  const GRIP = { "neat-freak":[178, 196], "chef":[150, 178], "bookworm":[150, 200] };
+  const GRIP = { "neat-freak":[178, 196], "chef":[150, 178], "bookworm":[150, 200],
+    "pet-parent":[198, 170], "host":[148, 192], "social-butterfly":[168, 198], "homebody":[201, 167], "foodie":[144, 192],
+    "introvert":[158, 186], "free-spirit":[202, 146], "go-getter":[150, 174], "all-rounder":[162, 170] };
 
   const MOUTH = {
     smile: `<path d="M108 136 Q120 146 132 136" stroke="${INK}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`,
@@ -83,7 +144,7 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" class="fm-av${c.still ? " still" : ""}" role="img" aria-label="${c.label || "Avatar"}">
 <defs><clipPath id="clip-${c.key}"><circle cx="120" cy="120" r="120"/></clipPath></defs>
 <g clip-path="url(#clip-${c.key})">
-  <g class="scene">${SCENES[c.rhythm]()}</g>
+  <g class="scene">${SCENES[c.bare || !SCENES[c.rhythm] ? "neutral" : c.rhythm]()}</g>
   <g class="who">
     ${cov ? cov.back(cc) : h.back(hair)}
     <path class="body" d="M52 240 C52 196 80 178 120 178 C160 178 188 196 188 240 Z" fill="${top}"/>
@@ -102,10 +163,9 @@
     ${cov ? cov.front(cc) : h.front(hair)}
     ${glasses}
     <g class="wave"><path d="M64 224 C58 204 56 184 60 168" stroke="${top}" stroke-width="18" fill="none" stroke-linecap="round"/><circle cx="60" cy="160" r="11" fill="${skin}"/></g>
-    <path d="M160 222 C168 214 ${gx - 4} ${gy + 8} ${gx} ${gy}" stroke="${top}" stroke-width="18" fill="none" stroke-linecap="round"/>
+    ${c.bare || !PROPS[c.prop] ? "" : `<path d="M160 222 C168 214 ${gx - 4} ${gy + 8} ${gx} ${gy}" stroke="${top}" stroke-width="18" fill="none" stroke-linecap="round"/>`}
   </g>
-  ${PROPS[c.prop] || ""}
-  <circle class="hand" cx="${gx}" cy="${gy}" r="10" fill="${skin}"/>
+  ${c.bare || !PROPS[c.prop] ? "" : PROPS[c.prop] + `<circle class="hand" cx="${gx}" cy="${gy}" r="10" fill="${skin}"/>`}
 </g></svg>`;
   }
 
