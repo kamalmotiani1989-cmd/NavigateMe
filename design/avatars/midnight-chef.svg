@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="The Midnight Chef">
+  <!-- Layers: #bg (rhythm colour), #animal (rhythm), #prop (habit). Props sit in the same slot, lower right. -->
+  <g id="bg"><circle cx="120" cy="120" r="120" fill="#C3C9F6"/><path d="M186 40 a20 20 0 1 0 22 26 a16 16 0 1 1 -22 -26 Z" fill="#FBF8F6"/></g>
+  <g id="animal" data-rhythm="midnight">
+    <path d="M56 196 C24 196 22 160 40 150" stroke="#1C1917" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="170" rx="50" ry="44" fill="#1C1917"/>
+    <path d="M62 96 L64 52 L96 76 Z M138 96 L136 52 L104 76 Z" fill="#1C1917"/>
+    <path d="M70 84 L71 64 L86 76 Z M130 84 L129 64 L114 76 Z" fill="#E79078"/>
+    <circle cx="100" cy="112" r="44" fill="#1C1917"/>
+    <ellipse cx="84" cy="108" rx="10" ry="11" fill="#EBD981"/><ellipse cx="116" cy="108" rx="10" ry="11" fill="#EBD981"/>
+    <ellipse cx="85" cy="109" rx="3.5" ry="8" fill="#1C1917"/><ellipse cx="117" cy="109" rx="3.5" ry="8" fill="#1C1917"/>
+    <ellipse cx="100" cy="130" rx="17" ry="11" fill="#3A3431"/>
+    <path d="M95 125 h10 l-5 6 Z" fill="#E79078"/>
+    <path d="M78 128 l-22 -4 M78 134 l-22 4 M122 128 l22 -4 M122 134 l22 4" stroke="#8C8580" stroke-width="2.5" stroke-linecap="round"/>
+    <ellipse cx="84" cy="210" rx="14" ry="8" fill="#3A3431"/><ellipse cx="114" cy="210" rx="14" ry="8" fill="#3A3431"/>
+  </g>
+  <g id="prop" data-habit="chef">
+    <path d="M162 108 c-8 -10 8 -16 0 -26 M182 104 c-8 -10 8 -16 0 -26" stroke="#FBF8F6" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <circle cx="164" cy="150" r="8" fill="#EBD981"/><circle cx="180" cy="146" r="9" fill="#8D9B62"/><circle cx="196" cy="151" r="7" fill="#EBD981"/><circle cx="172" cy="142" r="5" fill="#E79078"/>
+    <path d="M144 154 h72 c-2 26 -16 40 -36 40 c-20 0 -34 -14 -36 -40 Z" fill="#C2410C"/>
+    <path d="M144 154 h72" stroke="#1C1917" stroke-width="6" stroke-linecap="round"/>
+    <path d="M144 158 c-12 0 -12 14 0 14 M216 158 c12 0 12 14 0 14" stroke="#1C1917" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M158 166 c4 10 10 16 18 18" stroke="#E0623E" stroke-width="4" fill="none" stroke-linecap="round" opacity=".6"/>
+  </g>
+</svg>
