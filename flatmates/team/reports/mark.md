@@ -1,5 +1,13 @@
 # Mark · reports
 
+## 13 November 2026 · Pune creatives redone in English (Kamal via King)
+
+**Done:** PR #93 updated on the same branch: all ten in plain English (headlines, lines, captions, hashtags), feed,
+story, photo guides and contact sheet re-rendered. Fixes: the c03 badge now reads clearly; no card shows "No photos yet"
+(cards cropped to their details); the c09 party card is cropped above the demo tag. Title and description updated.
+
+**Next:** paused.
+
 ## 13 November 2026 · 30 English-rhyme feature creatives (Kamal, directly)
 
 **Done:** **PR #94**, not merged. Two rhyming creatives for each of 15 app features, as feed and story PNGs in
