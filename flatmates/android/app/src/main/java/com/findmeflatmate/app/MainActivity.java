@@ -242,7 +242,17 @@ public class MainActivity extends Activity {
     }
 
     private void sendStatus() {
-        post("{\"type\":\"status\",\"granted\":" + Notifications.allowed(this) + "}");
+        post("{\"type\":\"status\",\"granted\":" + Notifications.allowed(this) + ",\"build\":" + buildNumber() + "}");
+    }
+
+    /** This app's build number (the CI run number), so the page can tell when a newer app is out. */
+    private long buildNumber() {
+        try {
+            android.content.pm.PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     private void sendToken(String token) {
