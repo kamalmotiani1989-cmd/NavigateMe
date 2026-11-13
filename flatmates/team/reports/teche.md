@@ -1,5 +1,15 @@
 # Teche · reports
 
+## 2026-11-13, Vibe Card pastel and trust line (#97) live
+
+- **Vibe Card (King's follow-up):** on screen and in the 1080×1920 share image it's now the rhythm's pastel panel,
+  with ink text, the logo and wordmark, and the avatar large. Same words as before. VC_PALETTE is in the p13
+  contrast audit, and everything passes at 4.5:1.
+- **Home card trust line:** it fits on one line at 360 and 390 again. There's no avatar there (no room, and no name
+  is shown), and the spacing is a little tighter at the scale's 12.5 px.
+- **Tests:** 19 demo suites pass. No database change. Published 5725b62.
+- **Screenshots:** [before/after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/f5d61e960c787b5c68bff62668b42a5fc8a43488/vibecard-before-after.png).
+
 ## 2026-11-13, avatars (#96) live
 
 - **What (Kamal, through King):** people build a cartoon of themselves, and it shows where their initial used to.
@@ -120,12 +130,3 @@
 - **Privacy (#86, not merged):** the policy is rewritten to the DPDP structure, with every claim checked against the
   code. There's a new security.html, and the gap list is in design/dpdp-gaps.md. Kamal fills the [TO FILL]s
   (entity, grievance officer, address, times, backups, access, city) before merging. Draft for a lawyer's review.
-
-## 2026-11-10, AI go-between: build paused, plan in #84
-
-- **Build paused:** Kamal said "Don't build now, let's discuss". King's STOP reached me after the build was done. Branch
-  `claude/ai-go-between` was pushed before I saw it. It has no PR and isn't merged; nothing is live, nothing was spent,
-  and no AI was called (tests ran offline: database 154 checks, app 14 suites). The branch is kept for reuse.
-- **Plan:** `design/ai-go-between-plan.md`, PR #84, not merged. Rules handle most of it; AI is needed only for
-  translation, reading questions and summaries. I recommend claude-haiku-5-5 at about ₹0.38 per enquiry (estimate).
-  Eight decisions are waiting for Kamal.
