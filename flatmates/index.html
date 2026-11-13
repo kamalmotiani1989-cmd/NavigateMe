@@ -1835,6 +1835,8 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .lcard .fresh .act{font-size:var(--fs-xs); font-weight:600; color:var(--text-2)}
 .lcard .trust{margin-top:8px; padding-top:8px; border-top:1px solid var(--hair); font-size:var(--fs-xs); line-height:1.45; color:var(--text-2)}
 .lcard .trust b{color:var(--brand-2)}
+/* one line at 360 and 390 wide (King, 13 Nov): "phone verified" was wrapping onto a line of its own */
+.lcard .trust{letter-spacing:-.1px; word-spacing:-1px; white-space:nowrap}
 .wait-nudge{display:flex; gap:12px; align-items:flex-start; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:var(--accent-soft); color:var(--text)}
 .wait-nudge .ic{font-size:22px; line-height:1} .wait-nudge b{display:block} .wait-nudge small{color:var(--text-2); font-size:var(--fs-s)}
 .wait-nudge a{color:var(--accent); font-weight:800; text-decoration:none}
@@ -7110,7 +7112,7 @@ function cardHtml(l, i){
       ${both.length ? `<div class="both">♥ You both like ${esc(both.slice(0, 3).join(", "))}</div>` : l.bachelors !== false ? `<div class="bach">✓ Bachelors welcome</div>` : ""}
       ${tribeSavedLine(l)}
       ${fresh ? `<div class="fresh">${fresh}</div>` : ""}
-      <div class="trust">${isSample(l) ? "" : l.is_owner ? avMine("av-sm") : avSpan("listing", l.id, "av-sm")}${trustLine(l)}</div>
+      <div class="trust">${trustLine(l)}</div>
     </div></article>`;
 }
 // Who listed it, and the promise every listing carries. Someone already living in the flat listing a room is a
@@ -12187,65 +12189,70 @@ function wrapLines(x, text, max){
   return line ? out.concat(line) : out;
 }
 function roundRect(x, l, t, w, h, r, fill){ x.beginPath(); x.roundRect(l, t, w, h, r); x.fillStyle = fill; x.fill(); }
+// The card's colours (the contrast audit in p13 checks every text colour on every background here).
+const VC_PALETTE = { bg: { "Early Bird": "#EBD981", "Midnight": "#C3C9F6", "Night Owl": "#C3E0D6", "": "#EEDDD3" }, ink: "#1C1917", ink2: "#57534E", panel: "#FBF8F6",
+  tints: ["#C3E0D6", "#EBD981", "#C3C9F6", "#EEDDD3", "#E9EDDC", "#F3D8CE"] };
 async function drawVibeCard(t, name, stat, av){
-  const W = 1080, H = 1920, c = document.createElement("canvas"), F = '"Plus Jakarta Sans", system-ui, sans-serif',
+  // The pastel look (King, 13 Nov, after Kamal's 9 Nov look): the rhythm's panel (butter, lavender or mint), dark ink
+  // text, the logo and wordmark, and your avatar large where the type's emoji was. Same words as before.
+  const W = 1080, H = 1920, c = document.createElement("canvas"), F = '"Urbanist", "Plus Jakarta Sans", system-ui, sans-serif',
     E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
   c.width = W; c.height = H;
-  const x = c.getContext("2d");
-  await Promise.race([Promise.all(["800 96px", "500 40px", "700 34px"].map(f => document.fonts.load(`${f} "Plus Jakarta Sans"`))).catch(() => {}),
+  const x = c.getContext("2d"), { ink: INK, ink2: INK2, panel: PANEL, tints } = VC_PALETTE, BG = VC_PALETTE.bg[t.rhythm] || VC_PALETTE.bg[""];
+  await Promise.race([Promise.all(["800 96px", "400 96px", "500 40px", "700 34px"].map(f => document.fonts.load(`${f} "Urbanist"`))).catch(() => {}),
     new Promise(r => setTimeout(r, 2500))]);
-  const logo = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = "icons/icon-192.png"; });
-  const g = x.createLinearGradient(0, 0, W * .45, H);
-  g.addColorStop(0, "#1B2440"); g.addColorStop(1, "#253360");
-  x.fillStyle = g; x.fillRect(0, 0, W, H);
-  x.fillStyle = "rgba(255,255,255,.07)";
-  for(const [cx, cy, rr] of [[980, 120, 330], [60, 1560, 280], [1040, 1180, 150]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  const [logo, mark] = await Promise.all(["icons/logo-icon.svg", "icons/wordmark.svg"].map(src => new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; })));
+  x.fillStyle = BG; x.fillRect(0, 0, W, H);
+  x.fillStyle = "rgba(255,255,255,.28)";
+  for(const [cx, cy, rr] of [[960, 170, 260], [120, 1560, 220]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
   x.textBaseline = "middle";
-  if(logo){ roundRect(x, 80, 86, 104, 104, 28, "#fff"); x.drawImage(logo, 88, 94, 88, 88); }
-  x.fillStyle = "#fff"; x.font = `800 46px ${F}`; x.fillText("FindMeFlatMate", 212, 140);
+  if(logo) x.drawImage(logo, 100, 96, 96, 96);
+  if(mark){ const h = 46; x.drawImage(mark, 220, 144 - h / 2, h * 1898 / 163, h); }   // the wordmark's viewBox is 1898 × 163
+  else { x.fillStyle = INK; x.font = `800 46px ${F}`; x.fillText("findmeflatmate", 220, 144); }
   x.textAlign = "center";
-  x.font = `800 32px ${F}`; x.fillStyle = "var(--hi)"; x.letterSpacing = "6px";
-  x.fillText((name ? name.toUpperCase() + "'S" : "MY") + " FLATMATE VIBE", W / 2, 330); x.letterSpacing = "0px";
-  // Your avatar (a still) where the type's emoji goes, when you've made one.
-  const avi = av ? await avImage(av, 600) : null;
-  if(avi){ x.save(); x.beginPath(); x.arc(W / 2, VC_AV.cy, VC_AV.r, 0, Math.PI * 2); x.closePath(); x.clip(); x.drawImage(avi, W / 2 - VC_AV.r, VC_AV.cy - VC_AV.r, VC_AV.r * 2, VC_AV.r * 2); x.restore();
-    x.lineWidth = 8; x.strokeStyle = "#fff"; x.beginPath(); x.arc(W / 2, VC_AV.cy, VC_AV.r, 0, Math.PI * 2); x.stroke(); }
-  else { x.font = `180px ${E}`; x.fillText(t.emoji, W / 2, 500); }
-  let y = 690;
-  x.font = `800 96px ${F}`; x.fillStyle = "#fff";
-  for(const l of wrapLines(x, "The " + t.rhythm, 940)){ x.fillText(l, W / 2, y); y += 104; }
-  x.fillStyle = "var(--hi)";
-  for(const l of wrapLines(x, t.persona + ".", 940)){ x.fillText(l, W / 2, y); y += 104; }
-  x.font = `500 40px ${F}`; x.fillStyle = "rgba(255,255,255,.92)"; y += 6;
-  for(const l of wrapLines(x, t.desc, 860)){ x.fillText(l, W / 2, y); y += 56; }
+  x.font = `800 30px ${F}`; x.fillStyle = INK2; x.letterSpacing = "6px";
+  x.fillText((name ? name.toUpperCase() + "'S" : "MY") + " FLATMATE VIBE", W / 2, 286); x.letterSpacing = "0px";
+  // Your avatar (a still) large, or the type's emoji when you haven't made one.
+  const avi = av ? await avImage(av, 640) : null;
+  if(avi){ x.save(); x.shadowColor = "rgba(60,40,30,.18)"; x.shadowBlur = 40; x.shadowOffsetY = 16; x.fillStyle = "#FBF8F6";
+    x.beginPath(); x.arc(W / 2, VC_AV.cy, VC_AV.r, 0, Math.PI * 2); x.fill(); x.restore();
+    x.save(); x.beginPath(); x.arc(W / 2, VC_AV.cy, VC_AV.r, 0, Math.PI * 2); x.closePath(); x.clip();
+    x.drawImage(avi, W / 2 - VC_AV.r, VC_AV.cy - VC_AV.r, VC_AV.r * 2, VC_AV.r * 2); x.restore(); }
+  else { x.font = `200px ${E}`; x.fillStyle = INK; x.fillText(t.emoji, W / 2, VC_AV.cy); }
+  let y = VC_AV.cy + VC_AV.r + 92;
+  x.fillStyle = INK; x.font = `400 92px ${F}`;
+  for(const l of wrapLines(x, "The " + t.rhythm, 920)){ x.fillText(l, W / 2, y); y += 98; }
+  x.font = `800 92px ${F}`;
+  for(const l of wrapLines(x, t.persona + ".", 920)){ x.fillText(l, W / 2, y); y += 98; }
+  x.font = `500 38px ${F}`; x.fillStyle = INK2; y += 4;
+  for(const l of wrapLines(x, t.desc, 860)){ x.fillText(l, W / 2, y); y += 52; }
   // White panel: how I live, as chips, and how many homes match.
-  x.font = `700 34px ${F}`;
-  const rows = [[]], maxRow = 860; let rowW = 0;
+  x.font = `700 32px ${F}`;
+  const rows = [[]], maxRow = 840; let rowW = 0;
   for(const chip of t.chips){
-    const w = x.measureText(chip).width + 52;
-    if(rowW && rowW + 16 + w > maxRow){ rows.push([]); rowW = 0; }
-    rows[rows.length - 1].push([chip, w]); rowW += (rowW ? 16 : 0) + w;
+    const w = x.measureText(chip).width + 50;
+    if(rowW && rowW + 14 + w > maxRow){ rows.push([]); rowW = 0; }
+    rows[rows.length - 1].push([chip, w]); rowW += (rowW ? 14 : 0) + w;
   }
-  const top = y + 30, panelH = 110 + rows.length * 88 + (stat ? 86 : 10) + 30;
-  roundRect(x, 70, top, W - 140, panelH, 48, "#fff");
-  x.font = `800 28px ${F}`; x.fillStyle = "#8A919C"; x.letterSpacing = "4px"; x.fillText("HOW I LIVE", W / 2, top + 66); x.letterSpacing = "0px";
-  const tints = ["#E2F5F5", "#FFF2E8", "#EEF3FD", "#E3F6F0", "#FDECEA", "#F3EEFD"];
-  let cy = top + 130, n = 0;
+  const top = y + 24, panelH = 100 + rows.length * 80 + (stat ? 76 : 6) + 26;
+  roundRect(x, 90, top, W - 180, panelH, 44, PANEL);
+  x.font = `800 26px ${F}`; x.fillStyle = INK2; x.letterSpacing = "4px"; x.fillText("HOW I LIVE", W / 2, top + 58); x.letterSpacing = "0px";
+  let cy = top + 116, n = 0;
   for(const row of rows){
-    const total = row.reduce((a, [, w]) => a + w, 0) + 16 * (row.length - 1);
+    const total = row.reduce((a, [, w]) => a + w, 0) + 14 * (row.length - 1);
     let cx = (W - total) / 2;
     for(const [chip, w] of row){
-      roundRect(x, cx, cy - 34, w, 68, 34, tints[n++ % tints.length]);
-      x.fillStyle = "#10264F"; x.font = `700 34px ${F}`; x.fillText(chip, cx + w / 2, cy + 1);
-      cx += w + 16;
+      roundRect(x, cx, cy - 31, w, 62, 31, tints[n++ % tints.length]);
+      x.fillStyle = INK; x.font = `700 32px ${F}`; x.fillText(chip, cx + w / 2, cy + 1);
+      cx += w + 14;
     }
-    cy += 88;
+    cy += 80;
   }
-  if(stat){ x.fillStyle = "#0B7C82"; x.font = `800 34px ${F}`; x.fillText(stat, W / 2, cy + 20); }
-  x.fillStyle = "#fff"; x.font = `800 54px ${F}`; x.fillText("What's your flatmate type?", W / 2, H - 260);
-  x.fillStyle = "rgba(255,255,255,.88)"; x.font = `500 36px ${F}`; x.fillText("Take the 1-minute quiz on FindMeFlatMate", W / 2, H - 192);
-  x.fillStyle = "rgba(255,255,255,.7)"; x.font = `600 28px ${F}`;
-  x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, ""), W / 2, H - 130);
+  if(stat){ x.fillStyle = INK; x.font = `800 32px ${F}`; x.fillText(stat, W / 2, cy + 14); }
+  x.fillStyle = INK; x.font = `800 52px ${F}`; x.fillText("What's your flatmate type?", W / 2, H - 236);
+  x.fillStyle = INK2; x.font = `500 34px ${F}`; x.fillText("Take the 1-minute quiz on FindMeFlatMate", W / 2, H - 176);
+  x.fillStyle = INK2; x.font = `700 28px ${F}`;
+  x.fillText(SITE_LINK.replace(/^https:\/\//, "").replace(/\/$/, ""), W / 2, H - 124);
   return c;
 }
 /* ================================================= share a home */
@@ -12447,7 +12454,7 @@ async function vibeStat(v){
 // ---- the card dialog: preview, the match with whoever shared theirs, and sharing
 let vibeCtx = null;
 // Where the avatar sits on the 1080 × 1920 card (the live one on screen goes exactly over it).
-const VC_AV = { cy: 505, r: 148 };
+const VC_AV = { cy: 520, r: 180 };
 async function openVibeCard(vibe){
   const t = vibeType(vibe);
   if(!t){ openQuiz(); return; }

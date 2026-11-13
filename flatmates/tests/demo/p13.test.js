@@ -64,6 +64,15 @@ const audit = () => {
     low.push(...(await p.evaluate(audit)).map(x => h + ' ' + x)); }
   ok(!low.length && await p.evaluate(() => [...document.querySelectorAll('.bond-avs .av:not(.fm-avh)')].every(e => getComputedStyle(e).color === 'rgb(255, 255, 255)') && !!document.querySelector('.bond-avs .av')),
     'contrast: all text reads at 4.5:1 (3:1 for big text), including a tribe card\'s WhatsApp and Leave tribe: ' + low.slice(0, 5).join(' | '));
+  // the Vibe Card (a picture, drawn on a canvas): every text colour on every background it sits on
+  const vc = await p.evaluate(() => { const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const lum = c => { const a = c.map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
+    const ratio = (f, b) => { const L1 = lum(hex(f)), L2 = lum(hex(b)); return (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05); };
+    const P = VC_PALETTE, low = [];
+    for(const bg of Object.values(P.bg).concat(P.panel)) for(const fg of [P.ink, P.ink2]){ const r = ratio(fg, bg); if(r < 4.5) low.push(`${fg} on ${bg}: ${r.toFixed(2)}`); }
+    for(const bg of P.tints){ const r = ratio(P.ink, bg); if(r < 4.5) low.push(`${P.ink} on ${bg}: ${r.toFixed(2)}`); }
+    return low; });
+  ok(!vc.length, 'contrast: the Vibe Card\'s text reads at 4.5:1 on its pastel panel, the white panel and every chip: ' + vc.join(' | '));
   // sign-up: tiles show titles; the picked one's explanation shows under them; screen readers still get all three
   const v = await b.newPage({ viewport:{ width:390, height:844 } }); await v.goto('http://localhost:8765/'); await v.waitForTimeout(1200);
   const s0 = await v.evaluate(() => ({ hint: getComputedStyle($('roleHint'), '::before').content, descs: [...document.querySelectorAll('#loginForm .role > span:last-of-type > span')].map(d => d.getBoundingClientRect().width <= 1 && d.textContent.length > 20) }));
