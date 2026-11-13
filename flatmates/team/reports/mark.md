@@ -1,5 +1,22 @@
 # Mark · reports
 
+## 13 November 2026 · ten Pune Instagram creatives (Kamal via King, one task)
+
+**Done**
+- **PR #93**, not merged: ten Hinglish creatives in the reference style, as 1080×1350 feed and 1080×1920 story PNGs in
+  `design/pune-creatives/`, plus photo-area guides and a contact sheet. The copy is in `flatmates/marketing/pune-creatives.md`:
+  captions, 10 hashtags each, UTM links (pune_creatives), AI photo prompts and the posting order.
+- Rendered from HTML with Playwright in the current brand (Urbanist, #1C1917 / #C2410C / #57534E, logo files). Every
+  phone screen is a real demo-mode screen at 390 wide.
+- Facts checked on main first: women-only homes and the badge, parties 21+, posting needs only area and rent.
+
+**Notes for Kamal**
+- The app's own posting form says "About two minutes". The creatives don't repeat it; if it isn't a fact, Teche should
+  change that line.
+- The demo party card shows a "SAMPLE" tag (c09). Re-shoot from the live app before paid use.
+
+**Next:** paused.
+
 ## 9 November 2026 · Google Ads keyword plan (Kamal, directly)
 
 **Done**
