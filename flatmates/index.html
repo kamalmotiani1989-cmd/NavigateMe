@@ -8,18 +8,26 @@
 <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
-<title>FindMeFlatMate</title>
-<meta name="description" content="Find a room and the people worth sharing it with. Owners post their spare room free; seekers see who lives there, how they live and what it really costs.">
+<title>FindMeFlatMate: find flatmates who match your vibe</title>
+<meta name="description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
 <meta name="theme-color" content="#EFE4DC">
-<meta property="og:title" content="FindMeFlatMate">
-<meta property="og:description" content="Find a room, and the people worth sharing it with.">
+<meta property="og:title" content="FindMeFlatMate: find flatmates who match your vibe">
+<meta property="og:description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
 <meta property="og:locale" content="en_IN">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FindMeFlatMate">
 <meta property="og:url" content="https://findmeflatmate.com/">
-<meta property="og:image" content="https://findmeflatmate.com/icons/icon-512.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://findmeflatmate.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FindMeFlatMate: find flatmates who match your vibe. Four cartoon flatmates around a 92% match ring.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FindMeFlatMate: find flatmates who match your vibe">
+<meta name="twitter:description" content="Find a room, and flatmates who live like you. No brokers, and your number stays private until you both say yes.">
+<meta name="twitter:image" content="https://findmeflatmate.com/og-image.png">
 <link rel="canonical" href="https://findmeflatmate.com/">
+<!-- For search engines: who we are, and the questions and answers shown in the page's FAQ (same words; a test keeps them in step). -->
+<script type="application/ld+json" id="ldSite">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://findmeflatmate.com/#org","name":"FindMeFlatMate","url":"https://findmeflatmate.com/","logo":"https://findmeflatmate.com/icons/icon-512.png"},{"@type":"WebSite","@id":"https://findmeflatmate.com/#site","url":"https://findmeflatmate.com/","name":"FindMeFlatMate","inLanguage":"en-IN","description":"Find a room, and flatmates who live like you. No brokers, and your number stays private until you both say yes.","publisher":{"@id":"https://findmeflatmate.com/#org"}},{"@type":"FAQPage","@id":"https://findmeflatmate.com/#faq","mainEntity":[{"@type":"Question","name":"Is FindMeFlatMate free?","acceptedAnswer":{"@type":"Answer","text":"Listing a room is free, always. Looking is free too: browse homes, see how well you match and ask to meet, with free contacts to start. If you ever need more, there are one-time passes. Nothing renews on its own."}},{"@type":"Question","name":"When does the other person get my number?","acceptedAnswer":{"@type":"Answer","text":"Only when you both say yes. Until then they see your first name, how you live and how well you match. No calls or messages from strangers."}},{"@type":"Question","name":"How does the matching work?","acceptedAnswer":{"@type":"Answer","text":"You answer 12 quick questions about how you live: sleep, food, cleaning, guests, smoking, pets. Every home and every person then shows a match percentage and the things you have in common, so you know why."}},{"@type":"Question","name":"Are there brokers?","acceptedAnswer":{"@type":"Answer","text":"No. Rooms are listed by owners and by the flatmates who live there. One person can list at most two addresses, and you can report a listing that looks like a broker's."}},{"@type":"Question","name":"What does women-only mean here?","acceptedAnswer":{"@type":"Answer","text":"A home is shown as women-only when everyone living there is a woman and it is open only to women. Homes that haven't said who lives there are shown separately, so you can tell the difference."}},{"@type":"Question","name":"What if someone asks me for money before I visit?","acceptedAnswer":{"@type":"Answer","text":"Don't pay. Never pay a token, an advance or a deposit before you've seen the place and met the person. The app warns you when a message asks for money up front, and you can block or report them in two taps. FindMeFlatMate never asks you to pay anyone."}},{"@type":"Question","name":"What happens after we both say yes?","acceptedAnswer":{"@type":"Answer","text":"You get each other's numbers and a chat inside the app. You also get a Move-in kit: a simple flatmate agreement, a move-in checklist and Flatsplits to share the rent and bills."}},{"@type":"Question","name":"Which cities does it cover?","acceptedAnswer":{"@type":"Answer","text":"Any city in India. Pick one of the big cities or type your own, then search by area, landmark, society or metro station."}},{"@type":"Question","name":"I rent my flat. Can I list the spare room?","acceptedAnswer":{"@type":"Answer","text":"Yes. Tenants can list a spare room, not only owners. Just check that your rental agreement allows a new flatmate."}},{"@type":"Question","name":"Is there an iPhone app?","acceptedAnswer":{"@type":"Answer","text":"Not yet. On an iPhone, open findmeflatmate.com in Safari, tap Share, then Add to Home Screen, and it works like an app. On Android, you can download the app from this page."}}]}]}</script>
 <!-- The website moved to findmeflatmate.com: the old GitHub Pages address forwards there, keeping invite and Vibe links. -->
 <script>if(location.hostname === "kamalmotiani1989-cmd.github.io") location.replace("https://findmeflatmate.com/" + location.search + location.hash);</script>
 <!-- Inside the Android app the page is served from appassets; web-only bits (download the app) hide there. -->
@@ -150,16 +158,7 @@ textarea{min-height:96px; resize:vertical}
 /* The promise every listing carries, said where people decide (the same line ends every listing card). */
 .w-trust{margin:14px 0 0; font-size:var(--fs-s); line-height:1.5; color:var(--text-2); max-width:52ch}
 .w-trust b{color:var(--brand-2)}
-.city{position:relative; height:280px; margin-top:32px}
-.city > svg{position:absolute; inset:auto 0 0 0; width:100%; height:100%}
-.city .win{fill:var(--unlit); transition:fill .9s}
-.city .win.on{fill:var(--lit)}
-.tower{fill:var(--band-2)}
-.float{position:absolute; display:flex; align-items:center; gap:8px; background:var(--surface); color:var(--text); border-radius:999px;
-  padding:6px 14px 6px 6px; font-size:var(--fs-s); font-weight:700; box-shadow:var(--shadow); animation:bob 6s ease-in-out infinite}
-.float .ring-sm{width:30px; height:30px}
-.float .ring > circle:first-child{fill:var(--ink)} .float .ring .val{stroke:var(--hi)}
-.float:nth-of-type(2){animation-delay:-2s} .float:nth-of-type(3){animation-delay:-4s}
+.city{position:relative; margin-top:32px}
 @keyframes bob{50%{transform:translateY(-8px)}}
 .w-card{color:var(--text); padding:4px 0 0; margin-bottom:32px}
 .w-card h2{font-size:26px}
@@ -186,12 +185,7 @@ textarea{min-height:96px; resize:vertical}
 .demo{background:var(--brand-soft); color:var(--brand-2); padding:10px 14px; border-radius:10px; font-size:var(--fs-s); font-weight:600; margin-bottom:14px}
 @media (max-width:900px){
   .w-grid{grid-template-columns:1fr; grid-template-areas:"copy" "card" "city"; padding-block:12px 0}
-  .city{height:190px; margin-top:0}
-  /* The three pills ran into each other on phones: one line each, stepped down the skyline. */
-  .city .float{white-space:nowrap; padding-right:12px}
-  .city .float:nth-of-type(1){left:3%!important; top:2%!important}
-  .city .float:nth-of-type(2){left:auto!important; right:3%!important; top:25%!important}
-  .city .float:nth-of-type(3){right:auto!important; left:8%!important; top:48%!important}
+  .city{margin-top:0}
   .w-card{margin:28px 0 8px}
   /* Phones: the sign-in card comes straight after the quiz, the points and the trust line, so its choices are on
      the first screen; the paragraph follows the card. The card itself is unchanged. */
@@ -2014,7 +2008,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 .w-band, .ob{background:var(--bg)}
 .w-get{background:#fff; color:var(--text)}
 .w-points li::before{background:var(--olive)}
-.city .float{background:#fff; border-radius:999px}
 
 /* A home's page on phones (Kamal, 9 Nov): the photos run edge to edge from the top of the screen, frameless;
    back and share float over them, the title sits on the photo, and the details start on a rounded sheet. */
@@ -2280,6 +2273,130 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .kit-acts{display:flex; gap:10px; margin-top:12px} .kit-note{margin-top:8px}
 .kit-check{display:grid; gap:2px} .kit-item{display:flex; gap:10px; align-items:flex-start; padding:8px 0; box-shadow:0 1px 0 var(--hair)} .kit-item:last-child{box-shadow:none}
 .kit-item input{width:20px; height:20px; flex:none; margin-top:1px; accent-color:var(--ink)} .kit-item:has(input:checked) span{text-decoration:line-through; color:var(--text-2)}
+/* =====================================================================================================
+   The website, refreshed (Kamal, 15 Nov: "make the website also better"). Our colours and type, nothing new in
+   the palette. The hero shows a home the way the app shows it (our cartoon people, the match and its reasons)
+   where the grey skyline was; "how it works" is two cards with a button each; new sections: search like you'd
+   talk (a live demo), Safety, the Move-in kit and your flatmate type in "More than a room", an FAQ and a closing
+   call. Inside the pastel panels the words stay near-black.
+   ===================================================================================================== */
+.city{margin-top:30px}
+.ha-panel{position:relative; overflow:hidden; border-radius:32px; background:var(--lav); padding:64px 22px 68px}
+.ha-panel::before{content:""; position:absolute; right:-60px; top:-70px; width:210px; height:210px; border-radius:50%; background:rgba(255,255,255,.3)}
+.ha-panel::after{content:""; position:absolute; left:-50px; bottom:-84px; width:190px; height:190px; border-radius:50%; background:rgba(255,255,255,.22)}
+.ha-card{position:relative; z-index:1; max-width:430px; margin:0 auto; background:var(--surface); border-radius:24px; padding:16px 18px 18px; box-shadow:0 18px 40px rgba(60,40,30,.14)}
+.ha-top{display:flex; align-items:center; gap:12px}
+.ha-avs{display:flex; flex:none} .ha-avs i{display:block; width:54px; height:54px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 3px var(--surface)} .ha-avs i + i{margin-left:-14px}
+.ha-panel i svg{display:block; width:100%; height:100%}
+.ha-who{flex:1; min-width:0} .ha-who b{display:block; font-size:var(--fs-m); line-height:1.25; padding-right:38px} .ha-who span{display:block; font-size:var(--fs-s); color:var(--text-2); margin-top:2px}
+.ha-ring{position:absolute; right:-12px; top:-20px; line-height:0; border-radius:50%; box-shadow:0 0 0 5px var(--surface), 0 10px 22px rgba(60,40,30,.16)}
+/* the match ring was made to sit on a photo (see-through centre); on a plain card it gets a solid one */
+#view-welcome .ring circle:first-child, .story-dlg .ring circle:first-child{fill:var(--ink)}
+.ha-why{margin:14px 0 8px; font-size:var(--fs-s); font-weight:700; color:var(--text)}
+.ha-chips{display:flex; flex-wrap:wrap; gap:6px} .ha-chips span{font-size:var(--fs-xs); font-weight:700; padding:5px 11px; border-radius:999px; background:var(--surface-2); color:var(--text)}
+.ha-float{position:absolute; z-index:2; display:flex; align-items:center; gap:8px; padding:5px 14px 5px 5px; border-radius:999px; background:#fff; color:var(--text);
+  font-size:var(--fs-s); font-weight:700; white-space:nowrap; box-shadow:var(--shadow); animation:bob 6s ease-in-out infinite}
+.ha-float i{display:block; width:34px; height:34px; border-radius:50%; overflow:hidden; flex:none}
+.ha-f1{left:16px; top:14px} .ha-f2{right:16px; bottom:16px; animation-delay:-3s}
+
+/* how it works: one card for each side, a button each */
+.steps{gap:22px; margin-top:56px}
+.how-card{display:flex; flex-direction:column; border-radius:28px; padding:26px 26px 24px; color:var(--text)}
+.how-seek{background:var(--lav)} .how-own{background:var(--butter)}
+.how-card .eyebrow{color:var(--text)}
+.how-card h3{font-size:clamp(21px, 2.4vw, 26px); letter-spacing:-.02em}
+.how-card ol{list-style:none; counter-reset:how; padding:0; margin:16px 0 0; display:grid; gap:12px; color:var(--text-2)}
+.how-card li{counter-increment:how; position:relative; margin:0; padding-left:38px}
+.how-card li::before{content:counter(how); position:absolute; left:0; top:0; width:26px; height:26px; border-radius:50%; background:var(--ink); color:#fff; font-weight:800; font-size:var(--fs-s); display:grid; place-items:center}
+.how-card li b{color:var(--text)}
+.how-acts{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin-top:auto; padding-top:22px}
+.how-acts .linkbtn{color:var(--text); font-weight:700}
+
+/* search like you'd talk: the words on the left, a box to try it on the right */
+.w-talk{padding-block:72px 8px}
+.talk-panel{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:40px; align-items:center; background:var(--mint); border-radius:32px; padding:44px; color:var(--text)}
+.talk-copy .eyebrow{color:var(--text)}
+.talk-copy > p:not(.eyebrow){color:var(--text-2); margin:12px 0 0; max-width:44ch}
+.talk-eg{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px}
+.talk-eg button{border:0; cursor:pointer; font:inherit; font-size:var(--fs-s); font-weight:600; color:var(--text); background:rgba(255,255,255,.62); padding:8px 14px; border-radius:999px; text-align:left}
+.talk-eg button:hover, .talk-eg button[aria-pressed="true"]{background:#fff}
+.talk-demo{background:var(--surface); border-radius:28px; padding:22px; box-shadow:0 18px 44px rgba(60,40,30,.10)}
+.talk-box{display:flex; align-items:center; gap:10px; background:#fff; border-radius:999px; padding:4px 18px; box-shadow:inset 0 0 0 1.5px var(--line-2); cursor:text}
+.talk-box:focus-within{box-shadow:inset 0 0 0 2px var(--ink)}
+.talk-box svg{flex:none; color:var(--text-2)}
+.talk-box input[type=search]{flex:1; min-width:0; width:auto; border:0; border-radius:0; background:none; box-shadow:none; outline:0; font:inherit; font-size:var(--fs-m); padding:11px 0; color:var(--text)}
+.talk-box input[type=search]:focus{background:none; box-shadow:none}
+.talk-got-h{margin:18px 0 8px; font-size:var(--fs-xs); font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2)}
+.talk-got{display:flex; flex-wrap:wrap; gap:8px; align-content:flex-start; min-height:78px}
+.talk-got span{font-weight:700; font-size:var(--fs-s); padding:7px 13px; border-radius:999px; background:var(--lav); color:var(--text); animation:rise .25s ease both}
+.talk-got span:nth-child(4n+2){background:var(--butter)} .talk-got span:nth-child(4n+3){background:var(--mint)} .talk-got span:nth-child(4n){background:var(--blush)}
+.talk-got em{font-style:normal; color:var(--text-2); font-size:var(--fs-s)}
+.talk-demo .btn{margin-top:14px; width:100%}
+
+/* safety */
+.w-safe{padding-block:72px 8px}
+.ws-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin-top:32px}
+.ws-card{background:var(--surface); border-radius:24px; padding:22px 22px 24px; box-shadow:var(--card-shadow)}
+.ws-ic{display:grid; place-items:center; width:46px; height:46px; border-radius:50%; background:var(--lav); color:var(--text); font-weight:800; font-size:var(--fs-s)}
+.ws-card:nth-child(3n+2) .ws-ic{background:var(--butter)} .ws-card:nth-child(3n) .ws-ic{background:var(--mint)}
+.ws-card h3{font-size:var(--fs-l); line-height:1.2; margin:14px 0 6px}
+.ws-card p{margin:0; color:var(--text-2)}
+.ws-note{margin:18px 0 0; padding:16px 20px; border-radius:20px; background:var(--amber-92); color:var(--text-2)} .ws-note b{color:var(--text)}
+
+/* more than a room: six cards, three across on a wide screen */
+@media (min-width:1000px){ .more-grid{grid-template-columns:repeat(3, 1fr); gap:20px} }
+.wm-kit{display:flex; flex-direction:column; justify-content:center; gap:12px; padding:16px; background:var(--butter)}
+.wm-paper{display:flex; align-items:center; justify-content:space-between; gap:10px; background:#fff; border-radius:14px; padding:11px 14px; box-shadow:0 8px 22px rgba(60,40,30,.10)}
+.wm-paper b{display:block; font-size:var(--fs-s); color:var(--text)} .wm-paper small{display:block; font-size:var(--fs-xs); color:var(--text-2)}
+.wm-paper i{flex:none; font-style:normal; font-size:var(--fs-xs); font-weight:700; color:var(--ok); background:var(--ok-soft); padding:4px 10px; border-radius:999px}
+.wm-ticks{list-style:none; margin:0; padding:10px 14px; display:grid; gap:9px; background:#fff; border-radius:14px; font-size:var(--fs-s); font-weight:600; color:var(--text)}
+.wm-ticks li{display:flex; align-items:center; gap:9px}
+.wm-ticks li::before{content:""; flex:none; width:18px; height:18px; border-radius:6px; background:#fff; box-shadow:inset 0 0 0 1.5px var(--line-2)}
+.wm-ticks li.on::before{content:"✓"; display:grid; place-items:center; background:var(--ink); color:#fff; font-size:12px; font-weight:800; box-shadow:none}
+.wm-type{display:flex; align-items:center; gap:14px; padding:16px; background:var(--lav)}
+.wt-av{flex:none; width:108px; height:108px; border-radius:50%; overflow:hidden; box-shadow:0 10px 24px rgba(60,40,30,.14)} .wt-av svg{display:block; width:100%; height:100%}
+.wt-txt{min-width:0} .wt-txt small{display:block; font-size:var(--fs-xs); font-weight:700; color:var(--text-2)} .wt-txt b{display:block; font-size:var(--fs-l); line-height:1.15; margin:2px 0 8px; color:var(--text)}
+.wt-chips{display:flex; flex-wrap:wrap; gap:5px} .wt-chips i{font-style:normal; font-size:var(--fs-xs); font-weight:700; color:var(--text); background:rgba(255,255,255,.7); padding:3px 9px; border-radius:999px}
+
+/* questions, and the closing call */
+.w-faq{padding-block:72px 8px}
+.wf-list{max-width:820px; margin-top:20px}
+.wf-list details{background:var(--surface); border-radius:18px; padding:16px 20px; margin:0 0 10px; box-shadow:none}
+.wf-list summary{list-style:none; display:flex; align-items:center; justify-content:space-between; gap:16px}
+.wf-list summary::-webkit-details-marker{display:none}
+.wf-list summary::after{content:"+"; flex:none; display:grid; place-items:center; width:28px; height:28px; border-radius:50%; background:var(--surface-2); font-weight:700; font-size:18px; line-height:1}
+.wf-list details[open] summary::after{content:"–"}
+.wf-list p{margin:10px 0 2px; max-width:68ch}
+@media (min-width:900px){
+  .w-faq{display:grid; grid-template-columns:.75fr 1.25fr; gap:0 56px; align-items:start}
+  .w-faq > .eyebrow, .w-faq > .story-h, .w-faq > .wf-more{grid-column:1} .w-faq > .wf-list{grid-column:2; grid-row:1 / span 6; margin-top:0}
+}
+.wf-more{color:var(--text-2); margin:12px 0 0; max-width:34ch}
+.w-end{margin:72px 0 0; padding:52px 28px; border-radius:32px; background:var(--butter); color:var(--text); text-align:center}
+.w-end h2{font-size:clamp(26px, 3.6vw, 40px); font-weight:400; letter-spacing:-.03em}
+.w-end p{color:var(--text-2); margin:10px 0 22px}
+.w-end-acts{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+.w-end-ghost{background:#fff; color:var(--text)}
+@media (min-width:761px){ .w-foot-grid{grid-template-columns:1.5fr repeat(4, 1fr)} }
+/* the top links thin out as the screen narrows (all of them go at 720, as before) */
+@media (max-width:1020px){ .w-nav .w-link:nth-of-type(n+3){display:none} }
+@media (max-width:860px){ .ws-grid{grid-template-columns:1fr 1fr} .talk-panel{grid-template-columns:minmax(0,1fr); gap:26px; padding:30px 22px} }
+@media (max-width:760px){
+  /* six cards in a column made a very long page: a row to swipe, with the next card peeking in */
+  .more-grid{display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; margin-inline:-20px; padding:4px 20px 16px; -webkit-overflow-scrolling:touch}
+  .more-grid::-webkit-scrollbar{display:none}
+  .more-card{flex:0 0 84%; scroll-snap-align:center}
+}
+@media (max-width:560px){ .w-talk, .w-safe, .w-faq{padding-top:56px} .w-end{margin-top:56px; padding:40px 22px}
+  .ws-grid{grid-template-columns:1fr; gap:10px; margin-top:24px}
+  .ws-card{display:grid; grid-template-columns:auto 1fr; gap:2px 14px; padding:16px 18px 18px} .ws-ic{grid-row:1 / span 2; width:42px; height:42px} .ws-card h3{margin:2px 0 4px; font-size:var(--fs-m)} .ws-card p{font-size:var(--fs-s)}
+  .talk-eg button:nth-child(n+4){display:none}
+  .ha-panel{padding:58px 14px 62px} .ha-avs i{width:42px; height:42px} .ha-avs i + i{margin-left:-16px} .ha-top{gap:10px} .ha-who span{font-size:var(--fs-xs)} .ha-ring{right:-8px} .how-card{padding:22px 20px} }
+/* on a computer the opening story and the welcome are a card in the middle of the page, not a tall strip */
+@media (min-width:700px) and (min-height:640px){
+  .story-dlg, .hello-dlg{height:auto; min-height:620px; max-height:min(760px, 92dvh); border-radius:32px; background:var(--surface); box-shadow:0 30px 80px rgba(60,40,30,.18); padding:26px 28px 28px}
+  .hello-dlg .hl-art span{box-shadow:0 0 0 5px var(--surface), 0 14px 30px rgba(60,40,30,.14)}
+}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -2360,7 +2477,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
       <span class="logo"><i><img class="fm-mark" src="icons/logo-icon.svg" alt="" width="42" height="42"></i><span class="wordmark"><img class="wmk wmk-com" src="icons/wordmark.svg" alt="findmeflatmate.com" width="180" height="15"><img class="wmk" src="icons/wordmark-app.svg" alt="findmeflatmate" width="140" height="15"></span></span>
       <nav class="w-nav" aria-label="On this page">
         <button class="w-link" type="button" data-scroll="w-how">How it works</button>
+        <button class="w-link" type="button" data-scroll="w-safe">Safety</button>
         <button class="w-link" type="button" data-scroll="w-more">Flatsplits &amp; FlatMart</button>
+        <button class="w-link" type="button" data-scroll="w-faq">FAQ</button>
         <a class="btn btn-sm w-get web-only" data-apk><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Get the app</a>
       </nav>
     </div>
@@ -2462,14 +2581,53 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <p>A private room, a shared room or a whole flat. Rent is shown on its own, and every extra like maintenance or electricity is listed for the room. No surprises.</p></div></article>
     </div>
     <div class="steps" id="w-how">
-      <div><p class="eyebrow">If you have a flat</p><h3>Find a flatmate who fits in</h3>
+      <div class="how-card how-seek"><p class="eyebrow">If you need a room</p><h3>Find people who live like you</h3>
+        <ol><li><b>Tell us how you live</b>, what you're into, which areas you like and your budget.</li><li><b>See your vibe matches first</b>, then every other home ranked by fit.</li>
+          <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol>
+        <div class="how-acts"><button class="btn btn-primary btn-sm" type="button" data-role-pick="seeker">Find my flatmates</button></div></div>
+      <div class="how-card how-own"><p class="eyebrow">If you have a flat</p><h3>Find a flatmate who fits in</h3>
         <ol><li><b>Describe your home</b> and the people in it. It takes about two minutes.</li><li><b>Add photos</b> of the room, kitchen and building.</li>
           <li><b>Get a notification when someone with your vibe asks to meet you.</b> You decide. Your number and address stay private until you accept.</li></ol>
-        <button class="linkbtn" type="button" data-host-open style="margin-top:6px">See who's looking for a room near you&nbsp;→</button></div>
-      <div><p class="eyebrow">If you need a room</p><h3>Find people who live like you</h3>
-        <ol><li><b>Tell us how you live</b>, what you're into, which areas you like and your budget.</li><li><b>See your vibe matches first</b>, then every other home ranked by fit.</li>
-          <li><b>Ask to meet.</b> When the owner says yes, you'll get a notification with their number. Call quickly, good rooms go fast.</li></ol></div>
+        <div class="how-acts"><button class="btn btn-primary btn-sm" type="button" data-role-pick="owner">Post my room free</button>
+          <button class="linkbtn" type="button" data-host-open>See who's looking for a room near you&nbsp;→</button></div></div>
     </div>
+  </div>
+
+  <div class="wrap w-talk" id="w-talk">
+    <div class="talk-panel">
+      <div class="talk-copy">
+        <p class="eyebrow">Search like you'd talk</p>
+        <h2 class="story-h">Just say what you're looking for.</h2>
+        <p>No dropdowns, no forms. Type it the way you'd text a friend, and we set the right filters for you.</p>
+        <div class="talk-eg" id="talkEg" role="group" aria-label="Examples to try"><button type="button">room near Koramangala under 15k, veg</button><button type="button">women only flat in Pune</button><button type="button">shared room in Andheri West below 10k, no smoking</button><button type="button">pet friendly room in Bangalore</button></div>
+      </div>
+      <div class="talk-demo">
+        <label class="talk-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="talkQ" aria-label="Try a search" placeholder="Try: room near Koramangala under 15k, veg" autocomplete="off" enterkeyhint="search"></label>
+        <p class="talk-got-h">We understood</p>
+        <div class="talk-got" id="talkGot" aria-live="polite"></div>
+        <button class="btn btn-primary" type="button" data-role-pick="seeker">Find my flatmates</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap w-safe" id="w-safe">
+    <p class="eyebrow">Safety, built in</p>
+    <h2 class="story-h">You decide who gets your number. Always.</h2>
+    <div class="ws-grid">
+      <article class="ws-card"><span class="ws-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><h3>Private until you both say yes</h3>
+        <p>Nobody can call or message you uninvited. Numbers and the address are shared only when both sides accept.</p></article>
+      <article class="ws-card"><span class="ws-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.8-3.3 8.2-8 9.5-4.7-1.3-8-4.7-8-9.5V6l8-3z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></span><h3>Women-only means women-only</h3>
+        <p>A home shows as women-only when everyone living there is a woman, not just because the ad says so.</p></article>
+      <article class="ws-card"><span class="ws-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 4.2L2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4M12 17h.01"/></svg></span><h3>Scam warnings, right in the chat</h3>
+        <p>If someone asks for a token, an advance or an OTP before you've visited, the app warns you on the spot.</p></article>
+      <article class="ws-card"><span class="ws-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></svg></span><h3>Block or report in two taps</h3>
+        <p>Blocking is silent and works both ways. Reports from two different people pause that person's messages and requests until we've looked.</p></article>
+      <article class="ws-card"><span class="ws-ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg></span><h3>No brokers</h3>
+        <p>Rooms are listed by owners and the flatmates who live there. One person can list at most two addresses.</p></article>
+      <article class="ws-card"><span class="ws-ic ws-18" aria-hidden="true">18+</span><h3>Adults only</h3>
+        <p>Everyone confirms they're 18 or older before they can join, and you'll never be asked for a photo of yourself.</p></article>
+    </div>
+    <p class="ws-note"><b>Never pay before you visit.</b> No token, deposit or "booking amount" until you've seen the flat and met the people. FindMeFlatMate never asks you to pay anyone.</p>
   </div>
 
   <div class="wrap w-more" id="w-more">
@@ -2510,6 +2668,19 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <p>Team up with up to two people who match your vibe. Every flat one of you shortlists shows up for the others, so you can decide together.</p>
       </article>
       <article class="more-card">
+        <div class="wm wm-kit" aria-hidden="true">
+          <div class="wm-paper"><span><b>Flatmate agreement</b><small>Rent ₹12,500 each · 1 month's notice</small></span><i>Filled in ✓</i></div>
+          <ul class="wm-ticks"><li class="on">Visit the flat together</li><li class="on">Get a receipt for the deposit</li><li>Note the meter readings</li></ul>
+        </div>
+        <h3>Move-in kit</h3>
+        <p>Once you both say yes: a simple flatmate agreement filled in from your answers, a move-in checklist, and Flatsplits for the rent. Day one starts without the awkward talk.</p>
+      </article>
+      <article class="more-card">
+        <div class="wm wm-type" id="wmType" aria-hidden="true"></div>
+        <h3>Your flatmate type</h3>
+        <p>Night Owl Chef? Early Bird Neat Freak? Your answers give you a type and a cartoon of you to go with it. Share your Vibe Card and see which friends you'd live well with.</p>
+      </article>
+      <article class="more-card">
         <div class="wm wm-map" aria-hidden="true">
           <span class="wm-area"></span>
           <svg class="wm-pin" width="34" height="44" viewBox="0 0 24 32"><path d="M12 31s10-11.2 10-19A10 10 0 0 0 2 12c0 7.8 10 19 10 19z" fill="#1C7F72"/><circle cx="12" cy="12" r="4" fill="#fff"/></svg>
@@ -2540,6 +2711,43 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     </div>
   </div>
 
+  <div class="wrap w-faq" id="w-faq">
+    <p class="eyebrow">Good questions</p>
+    <h2 class="story-h">Before you ask.</h2>
+    <p class="wf-more">Something else on your mind? <button class="linkbtn" type="button" data-help-open>Ask in Help</button></p>
+    <div class="h-faq wf-list">
+      <details><summary>Is FindMeFlatMate free?</summary>
+        <p>Listing a room is free, always. Looking is free too: browse homes, see how well you match and ask to meet, with free contacts to start. If you ever need more, there are one-time passes. Nothing renews on its own.</p></details>
+      <details><summary>When does the other person get my number?</summary>
+        <p>Only when you both say yes. Until then they see your first name, how you live and how well you match. No calls or messages from strangers.</p></details>
+      <details><summary>How does the matching work?</summary>
+        <p>You answer 12 quick questions about how you live: sleep, food, cleaning, guests, smoking, pets. Every home and every person then shows a match percentage and the things you have in common, so you know why.</p></details>
+      <details><summary>Are there brokers?</summary>
+        <p>No. Rooms are listed by owners and by the flatmates who live there. One person can list at most two addresses, and you can report a listing that looks like a broker's.</p></details>
+      <details><summary>What does women-only mean here?</summary>
+        <p>A home is shown as women-only when everyone living there is a woman and it is open only to women. Homes that haven't said who lives there are shown separately, so you can tell the difference.</p></details>
+      <details><summary>What if someone asks me for money before I visit?</summary>
+        <p>Don't pay. Never pay a token, an advance or a deposit before you've seen the place and met the person. The app warns you when a message asks for money up front, and you can block or report them in two taps. FindMeFlatMate never asks you to pay anyone.</p></details>
+      <details><summary>What happens after we both say yes?</summary>
+        <p>You get each other's numbers and a chat inside the app. You also get a Move-in kit: a simple flatmate agreement, a move-in checklist and Flatsplits to share the rent and bills.</p></details>
+      <details><summary>Which cities does it cover?</summary>
+        <p>Any city in India. Pick one of the big cities or type your own, then search by area, landmark, society or metro station.</p></details>
+      <details><summary>I rent my flat. Can I list the spare room?</summary>
+        <p>Yes. Tenants can list a spare room, not only owners. Just check that your rental agreement allows a new flatmate.</p></details>
+      <details class="web-only"><summary>Is there an iPhone app?</summary>
+        <p>Not yet. On an iPhone, open findmeflatmate.com in Safari, tap Share, then Add to Home Screen, and it works like an app. On Android, you can download the app from this page.</p></details>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="w-end">
+      <h2>Your next flatmate might already be looking.</h2>
+      <p>It takes about two minutes to start, and it's free.</p>
+      <div class="w-end-acts"><button class="btn btn-primary" type="button" data-role-pick="seeker">Find a room</button>
+        <button class="btn w-end-ghost" type="button" data-role-pick="owner">Post my room free</button></div>
+    </div>
+  </div>
+
   <footer class="w-footer">
     <div class="wrap w-foot-grid">
       <div class="w-foot-brand">
@@ -2553,7 +2761,13 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
       <div><h4>Flat life</h4>
         <button type="button" data-scroll="w-more">Flatsplits</button>
         <button type="button" data-scroll="w-more">FlatMart</button>
-        <button type="button" data-scroll="w-more">Search together</button></div>
+        <button type="button" data-scroll="w-more">Search together</button>
+        <button type="button" data-scroll="w-more">Move-in kit</button></div>
+      <div><h4>Good to know</h4>
+        <button type="button" data-scroll="w-how">How it works</button>
+        <button type="button" data-scroll="w-safe">Safety</button>
+        <button type="button" data-scroll="w-faq">FAQ</button>
+        <a href="privacy.html">Privacy policy</a></div>
       <div class="web-only"><h4>Get the app</h4>
         <a data-apk>Android app</a>
         <span>iPhone: Add to Home Screen</span></div>
@@ -5736,7 +5950,7 @@ function showScreen(name){
   $("appHead").hidden = $("appMain").hidden = name !== "app";
   $("helpFab").hidden = name !== "app" && name !== "welcome";
   document.body.classList.toggle("app", name === "app");
-  if(name === "welcome"){ startCity(); loadCaptcha(); } else stopCity();
+  if(name === "welcome"){ startCity(); loadCaptcha(); }
 }
 function go(v){ if(location.hash === "#" + v) route(); else location.hash = v; }
 // "#splits/<group id>": the part after the slash is routeArg.
@@ -6534,36 +6748,47 @@ document.addEventListener("click", e => {
 });
 
 /* ============================================================== welcome */
-let cityTimer = null;
+// The hero picture (Kamal, 15 Nov, "make the website also better"): a home the way the app shows it, with our own
+// cartoon people, the match and its reasons, on a pastel panel. It replaced the grey skyline. (The element keeps
+// its old id, "city".) The story cards and the flatmate-type card in "More than a room" are drawn here too.
 function buildCity(){
-  const towers = [[10,70,170],[88,92,240],[188,64,150],[260,110,270],[378,74,190],[460,96,230],[564,60,140]];
-  let wins = "", body = "";
-  towers.forEach(([x, w, h]) => {
-    const top = 300 - h;
-    body += `<rect class="tower" x="${x}" y="${top}" width="${w}" height="${h}" rx="3"/>`;
-    for(let y = top + 14; y < 290; y += 22) for(let wx = x + 10; wx < x + w - 14; wx += 18)
-      wins += `<rect class="win${Math.random() < .38 ? " on" : ""}" x="${wx}" y="${y}" width="9" height="12" rx="1.5"/>`;
-  });
-  $("city").innerHTML = `<svg viewBox="0 0 640 300" preserveAspectRatio="xMidYMax slice">${body}${wins}</svg>
-    <div class="float" style="left:4%;top:8%">${ringSvg(94, 30, "ring-sm")}Night owls, like you</div>
-    <div class="float" style="left:40%;top:-2%">${ringSvg(88, 30, "ring-sm")}Veg kitchen, tidy home</div>
-    <div class="float" style="right:3%;top:22%">${ringSvg(91, 30, "ring-sm")}Two students, pet-friendly</div>`;
+  $("city").innerHTML = `<div class="ha-panel">
+      <div class="ha-float ha-f1"><i>${avCast(1)}</i><span>Night owls, like you · 88%</span></div>
+      <div class="ha-card">
+        <div class="ha-top"><span class="ha-avs"><i>${avCast(0, true)}</i><i>${avCast(2, true)}</i></span>
+          <div class="ha-who"><b>Ayesha and Meera live here</b><span>Private room in Koramangala</span><span>₹14,000 a month</span></div></div>
+        <span class="ha-ring">${ringSvg(92, 62)}</span>
+        <div class="ha-why">3 things in common</div>
+        <div class="ha-chips"><span>No smoking</span><span>Veg kitchen</span><span>Quiet home</span></div>
+      </div>
+      <div class="ha-float ha-f2"><i>${avCast(3)}</i><span>You both said yes. Say hello!</span></div>
+    </div>`;
   $("storyArt1").innerHTML = roomArt("story-home", "room");
   $("storyArt2").innerHTML = `<div style="position:absolute;inset:0;display:flex;align-items:center;gap:16px;padding:0 20px;background:var(--band);color:var(--on-band)">
       ${ringSvg(86, 96)}<ul class="reasons" style="margin:0"><li><span class="g">✓</span>Both night owls</li><li><span class="g">✓</span>Same food habits</li><li><span class="c">!</span>They have guests often</li></ul></div>`;
   $("storyArt3").innerHTML = `<div style="position:absolute;inset:0;padding:18px 22px;display:flex;flex-direction:column;justify-content:center">
       <div class="bill"><span class="muted">Rent</span><span>₹14,000</span><span class="muted">Maintenance</span><span>₹850</span>
       <span class="muted">Electricity</span><span>As per use</span><span class="muted">Wi-Fi</span><span>₹350</span></div></div>`;
+  $("wmType").innerHTML = `<span class="wt-av">${avCast(2, true)}</span>
+    <div class="wt-txt"><small>Your flatmate type</small><b>The Night Owl Bookworm</b><span class="wt-chips"><i>Quiet home</i><i>Veg and eggs</i><i>Pet-friendly</i></span></div>`;
+  $("talkQ").value = TALK_FIRST; talkDemo(TALK_FIRST);
 }
-function startCity(){
-  if(!$("city").firstChild) buildCity();
-  if(cityTimer || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  cityTimer = setInterval(() => {
-    const w = document.querySelectorAll("#city .win");
-    if(w.length) w[Math.floor(Math.random() * w.length)].classList.toggle("on");
-  }, 260);
+function startCity(){ if(!$("city").firstChild) buildCity(); }
+// Search like you'd talk, on the welcome page: type a sentence (or tap an example) and see what the app understands.
+// The same reader as the Discover search box (parseTalk); nothing is searched until you've signed up.
+const TALK_FIRST = "room near Koramangala under 15k, veg";
+function talkDemo(q){
+  const t = parseTalk(q), cap = x => x.replace(/\b[a-z]/g, c => c.toUpperCase());
+  // a place we don't know is shown the way it was typed ("HR College", not "Hr College")
+  const at = t.place ? String(q).toLowerCase().indexOf(t.place) : -1, place = at < 0 ? t.place : String(q).slice(at, at + t.place.length);
+  const got = t.said.concat(t.place ? ["Near " + cap(place)] : []);
+  $("talkGot").innerHTML = got.length ? got.map(x => `<span>${esc(x)}</span>`).join("")
+    : `<em>${String(q || "").trim() ? "Add a budget, an area, or words like veg, women only, shared room." : "Type what you're looking for, or tap an example."}</em>`;
+  document.querySelectorAll("#talkEg button").forEach(b => b.setAttribute("aria-pressed", b.textContent === q));
 }
-function stopCity(){ clearInterval(cityTimer); cityTimer = null; }
+$("talkQ").addEventListener("input", e => talkDemo(e.target.value));
+$("talkQ").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); e.target.blur(); } });
+$("talkEg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; $("talkQ").value = b.textContent; talkDemo(b.textContent); });
 
 // ---- sign-in: the code on WhatsApp, or by SMS when they pick it. One code a minute (fm_otp_request
 // keeps the limits on the server too), a hidden field and a minimum time against bots, and Cloudflare
@@ -11801,6 +12026,7 @@ const typingIn = el => el && el.matches && el.matches("input:not([type=radio]):n
 document.addEventListener("focusin", e => { if(typingIn(e.target)) document.body.classList.add("typing"); });
 document.addEventListener("focusout", e => { if(typingIn(e.target)) document.body.classList.remove("typing"); });
 $("helpFab").addEventListener("click", () => openHelp());
+document.addEventListener("click", e => { if(e.target.closest("[data-help-open]")) openHelp(); });
 // The private-preview door: 7 quick taps on the logo of the Coming soon screen (see showHold).
 (() => { let taps = 0, last = 0;
   $("holdScreen").addEventListener("click", e => {
