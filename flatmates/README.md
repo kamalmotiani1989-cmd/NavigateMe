@@ -605,8 +605,9 @@ The posting form says, under "Preferred", to pick "Women only" only if everyone 
 Kamal, 15 Nov: "the app is slow". Measured on a phone-sized browser slowed down four times, against a stand-in
 server that takes 250 ms per call (a normal mobile connection): nothing showed for 1.1 seconds and the first homes
 came at 1.4 seconds; every tab change asked the server 4 to 8 things, some of them twice, in up to three rounds.
-After the changes below: the app's frame shows at about 0.4 seconds and the homes at under 1 second, and going
-back to a tab asks the server nothing. What was changed, and what to keep in mind:
+After the changes below: the app's frame shows at about 0.4 seconds and the homes at about 1 second (on a slow
+connection, 600 ms per call: 0.4 and 1.75 seconds, where it was 2.2 and 3.4), and going back to a tab asks the
+server nothing. What was changed, and what to keep in mind:
 
 - **The first screen doesn't wait for the server.** At start-up the page used to stay blank until the server
   client had loaded and "who am I" (`fm_me`) had been answered, twice in a row. Now `boot` draws the first screen
@@ -637,8 +638,8 @@ back to a tab asks the server nothing. What was changed, and what to keep in min
   the measuring happens when a screen shows or the phone turns (`bandSync`). `packText` (the "More" links) reads
   the page, then writes, then measures once, instead of once per paragraph, and ignores changes inside the bars.
 - Screens fade in over 0.16 s (it was 0.28 s, which read as a wait).
-- Tried and left out because they measured no gain: compacting the page inside the Android app (the website
-  already is), and `content-visibility` on the cards.
+- Tried and left out because it measured no gain: `content-visibility` on the cards. (Compacting the page, which
+  the website and the Android build both already do, makes it smaller but starts no faster.)
 
 The checks are in `tests/demo/p28.test.js`, which runs the real page with the live backend on against the stand-in
 (`tests/demo/stub/supabase-stub.js`), so the order and number of calls are checked, not just the look.
