@@ -17,7 +17,7 @@
   that ask for money up front; a Move-in kit after a yes (an editable flatmate agreement, a 10-item checklist,
   Flatsplits).
 - **Tests:** all 24 demo suites pass. No database change in any of these.
-- **Published:** 6cca460 (#99, which included #98); #100 publishing now.
+- **Published:** 6cca460 (#99, which included #98); #100 published (2dc96be).
 - **Screenshots:** [sign-up](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/42be35711526470cb4da890a9e99da56d22ec160/signup-before-after.png),
   [clean UI](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c655911da69c29ec39ed28441790e36f42fedbaa/clean-ui.png),
   [reasons/scam/kit](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4bd89ee19de7ae720c6786f136a122e2b329c49c/reasons-scam-kit.png).
