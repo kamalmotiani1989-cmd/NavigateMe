@@ -220,9 +220,9 @@ the room comes second.
     and house rules. Next to the chip-in: "Paid to the host at the door or by UPI. FindMeFlatMate does not collect
     money. Alcohol: bring your own; it can't be part of the chip-in." Alcohol is refused in the chip-in. No money
     goes through the app.
-    Guests switch on **"Show me parties nearby"** in Account (off by default) and pick a place once (not live
-    location). Splits then lists **Parties near you**: open, coming up, not full, not their own, matching who can
-    come, within the host's radius of their place. Before acceptance: what, when, the area and distance ("Baner,
+    Guests switch on **"Show me parties nearby"** (off by default) and pick a place once (not live location), on
+    the **Parties** screen or in Account. Parties then lists what's **near you**: open, coming up, not full, not
+    their own, matching who can come, within the host's radius of their place. Before acceptance: what, when, the area and distance ("Baner,
     2.3 km"), the chip-in and what it covers, spots left, the host's first name and vibe type, the house rules;
     never the address, the pin or a number. **Request to join** takes a one-line note (no numbers or links) and
     plus-ones, who count towards the limit. The host sees first name, age group, gender, vibe match, parties
@@ -256,6 +256,22 @@ the room comes second.
     not). To lift a block after looking: `select fm_party_clear('<user_id>', 'what you decided');` (reports and thumbs
     from before then stop counting). Signed-in users can't call either.
     Tests: `flatmates/tests/db/run.sh` (schema applied twice, then every function and refusal) and demo suite p9.
+
+    **Parties is a section of its own** (Kamal, 15 Nov: "Make parties near by a seperate section all together and
+    an amazing one"): a **Parties** tab in the bottom bar (top bar on a computer) for everyone, butter like its
+    panels. Nearby parties no longer show inside Splits; Account keeps the switch as a setting.
+    - **Before it's switched on:** what it is in three lines (what, when and how far, never the address; ask to
+      join and the host decides; once in, the address, the host's number and a check-in code), the switch, and
+      "Off until you switch it on. 21 and over. You pick a place once; we don't follow your location."
+    - **Once on:** "Near Baner · Change" on the band. **Your parties** first (asked to join, or in). Then **Near
+      you** as cards: the day on a white tile, what it is, when and how far, the entry, who it's for, the spots
+      left, the host's first name and type. Filters: All, Today, This weekend, Free entry. A card opens the same
+      party page as before (`dlgNear`).
+    - **You're hosting:** your own coming parties, with how many asked to join; each opens its group in Splits,
+      where the invite card, the requests and the door list are. **Host a party** starts a new house party.
+    - The party rules, and "Stop showing me parties".
+    - A Flatsplits-only account sees it locked until the 12 questions, like Discover.
+    Nothing in the database changed. Demo suite `p27`.
 16. **FlatMart (everyone).** An OLX for flatmates: buy and sell furniture, beds, appliances, kitchen
     things, electronics, bikes and books with people nearby, so nobody pays full price to furnish a room
     and nobody dumps a fridge when they move out. Post in a minute: up to 4 photos, category, condition,
@@ -292,8 +308,8 @@ the room comes second.
     (`fm_profiles.boost_credits` / `sale_credits`, added by `fm_credit_order`) used by `fm_market_boost` and
     `fm_market_sale_start`; while charges are off (`fm_settings.charges_enabled`), both are free.
     **Requests** and **Tribe** sit as icons in the top bar (with their badges), next to notifications and the
-    avatar for Account, so the bottom bar keeps the main places: Discover, Saved, Splits, Market and Passes
-    for seekers; My flat, Escape, Post, Splits, Market and Passes for owners.
+    avatar for Account, so the bottom bar keeps the main places: Discover, Saved, Parties, Splits, Market and
+    Passes for seekers; My flat, Escape, Post, Parties, Splits, Market and Passes for owners.
 
 17. **Search together as a tribe.** The ♥ shortlist is saved to the server and shared inside a tribe (up to 3
     people). When anyone in the tribe taps ♥, the others see it in Saved under "Shortlisted by Riya", on the
@@ -602,7 +618,8 @@ The rules live in the database (`fm_request`, `fm_decide`, `fm_tribe_answer`, `f
 Room Pass extension are `fm_settings.free_invites` and `fm_settings.guarantee_days`.
 
 **Where people see passes:** a **Passes** tab in the bottom bar (top bar on a computer) until any pass
-is bought; after that the tab goes and the passes, with days left, sit at the top of Account. Until
+is bought; after that the tab goes and the passes, with days left, sit at the top of Account, right under your
+name. Until
 then, now and then (at most once a day; every minute in demo mode) a gentle nudge arrives as a
 notification and a card on Discover / My flat, benefit-first ("7 homes in Pune match your vibe",
 "An empty room costs rent every day") and opening Passes. Nudges stop for good once a pass is on.
@@ -741,17 +758,23 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   each with an ↗ corner that turns into a black check when picked. On phones the tiles show their titles and the
   picked one's explanation shows under them; the number is a pill with +91 in front; the highlights are pastel chips
   after the card, and the trust line stays above it.
-- **Home screens (phones)** (15 Nov, Kamal, from another app's home screen: "the double shade looks super
-  amazing"): two layers. The greeting sits on a pastel band that fills the top of the screen, top bar included:
-  lavender on Discover, butter on My flat (`.home-band`). The rest of the page is a sheet with 30px round corners
-  that comes up over the band. Words on the band are near-black, like every pastel panel. While you scroll, the top
-  bar keeps the band's colour until the sheet reaches it, then goes back to the page's beige (`bandSync`). Computers
-  keep the plain greeting.
+- **Two layers on every main screen (phones)** (15 Nov, Kamal, from another app's home screen: "The double color
+  shade looks super amazing"). The top of each screen is a pastel band that fills the screen from its top edge,
+  top bar included; the rest of the page is a sheet with 30px round corners that comes up over the band
+  (`.home-band`, `bandSync`). Words on a band are near-black, like every pastel panel.
+  - Colours: Discover, Splits, Account and a seeker's Requests lavender; My flat, Post, Market, Parties and an
+    owner's Requests butter; Tribe, Escape and Messages mint; Saved and Passes blush (a quiet band: blush is close
+    to the page's beige).
+  - On the two home screens the band holds the greeting. On Splits, Market, Passes, Tribe, Escape and Account it
+    is the panel that was already there, now edge to edge. On Saved, Requests, Post and Messages it holds the title.
+  - While you scroll, the top bar keeps the band's colour until the sheet reaches it, then goes back to the
+    page's beige. Inside a Splits group and on a home's page there is no band.
+  - Computers keep the plain greeting and the rounded panels inside the page.
 - **Bottom bar (phones)** (15 Nov, Kamal: "the bottom bar looks cool"): a floating frosted pill above the bottom
   edge; what's behind it shows through softly. Every place keeps its icon and its name. The screen you're on is a
-  soft pill in that screen's own pastel, with dark icon and words: Discover and Splits lavender; My flat, Post and
-  Market butter; Escape mint; Saved and Passes blush. (It was a black button until 15 Nov.) The help button sits
-  just above the bar.
+  soft pill in that screen's own pastel (the band's colour), with dark icon and words. (It was a black button until
+  15 Nov.) With seven places (an owner without a pass) the names are a size smaller on small phones. The help
+  button sits just above the bar.
 - **A home's page (phones):** the photos run frameless, edge to edge from the top of the screen. Back and share float
   over them as round white buttons, the title and area sit on the photo over a soft shade, and the details start on a
   rounded sheet. Larger screens keep the framed photo.
@@ -800,28 +823,19 @@ The same `index.html` is the website: **https://findmeflatmate.com**. Anything m
 links, the iPhone question) is hidden inside the Android app, which loads the page from
 `appassets.androidplatform.net`.
 
-**What a visitor sees, top to bottom (refreshed 15 Nov, Kamal: "make the website also better"):**
-1. **The top:** the headline, the sign-up card, and a picture: a match card drawn from our own cartoon people
-   ("Ayesha and Meera live here", a 92 match, three things in common). No photos, and no city skyline any more.
-   Top links: How it works, Safety, Flatsplits & FlatMart, FAQ, Get the app.
-2. **Why people choose us:** meet your flatmates first, your vibe matched, your room your way.
-3. **How it works** (`#w-how`), one card for each side: "If you need a room" (Find my flatmates) and "If you have a
-   flat" (Post my room free, and "See who's looking for a room near you").
-4. **Search like you'd talk** (`#w-talk`): a box a visitor can type in. It shows what we understood ("under ₹15,000 ·
-   Veg kitchen · Private room · Koramangala") using the app's own search (`parseTalk`), so it can't promise more than
-   the app does.
-5. **Safety, built in** (`#w-safe`), six plain promises, each one something the app already does: private until you
-   both say yes, women-only means women-only, scam warnings in the chat, block or report in two taps, no brokers,
-   adults only. Under them: "Never pay before you visit."
-6. **More than a room** (`#w-more`): Flatsplits, FlatMart, Search together, the Move-in kit, your flatmate type, and
-   all of India on the map. On a phone these are a row you swipe.
-7. **Get the app** (web only).
-8. **Questions** (`#w-faq`): ten short answers (free? when is my number shared? brokers? women-only? money before a
-   visit? cities? tenants? iPhone?), with "Ask in Help".
-9. **The closing band** (Find a room / Post my room free) and the footer.
+**What a visitor sees is kept short on purpose** (Kamal, 15 Nov: "Reduce the information on the login page of
+website and app as people might copy the same. Make it more clean"). It is the same page in the app before sign-in:
+1. the headline and one line under it, on a lavender band (near-black words; nothing orange on the pastel);
+2. the sign-up card (see "How it flows"), on the sheet below. On a computer the card stands across the sheet's edge;
+3. a row of our cartoon people around a match ring. No photos, no pictures of the app's screens;
+4. one line of small print: the privacy policy, "Have a room? See who's looking near you" (the host page), and, on
+   the web only, the Android download and the iPhone hint.
 
-Every button that says "Find…" or "Post…" picks that role and goes to the sign-up card; the login process itself is
-unchanged. On a computer the opening story is a card in the middle of the screen, not the full screen.
+What the app does (Flatsplits, FlatMart, the Move-in kit, how the matching works, safety) is **not** described on
+this page: people see it after they sign in. The sections added on the morning of 15 Nov (how it works, try a
+search, safety, more than a room, the questions, the closing band) came off the same day for this reason. Don't
+put feature descriptions back on this page without Kamal saying so; `p25` fails if a feature is named on it.
+The login process itself is unchanged. On a computer the opening story is a card in the middle of the screen.
 
 **For search engines and shared links:**
 - The page title is "FindMeFlatMate: find flatmates who match your vibe", with a description of 160 characters.
@@ -829,8 +843,8 @@ unchanged. On a computer the opening story is a card in the middle of the screen
   from the page's own logo, colours and cartoon people by `tests/demo/og-image.js`; run that again if the look
   changes.
 - `robots.txt` lets search engines in and names `sitemap.xml` (the home page and the privacy policy).
-- The FAQ is also in the page as data search engines read (`#ldSite`, schema.org). It must say exactly what the
-  visible FAQ says; `p25` checks that, so change both together.
+- The data search engines read (`#ldSite`, schema.org) says who we are (the organisation and the website) and
+  nothing about how the app works.
 - These three files go to the website only. The Android app doesn't carry them.
 
 findmeflatmate.com is served by GitHub Pages from its own repo,

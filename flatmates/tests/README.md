@@ -2,7 +2,7 @@
 
 `demo/` holds the browser suites that run against the app in demo mode (no backend: the demo data in `index.html`).
 They cover the welcome page and sign-in card (`welcome`), onboarding (`ob`), the post form and the photo gallery (`pass3`), listing strength, reply speed, compare and
-share (`p5`), Escape and FlatMart (`p6`), Flatsplits (`p7`), the website a visitor sees (`p25`) and the phone's two-layer home and bottom bar (`p26`). Run them all with `tests/demo/run.sh`, or one with
+share (`p5`), Escape and FlatMart (`p6`), Flatsplits (`p7`), the short login page (`p25`), the phone's two-layer home and bottom bar (`p26`) and the Parties section and the bands on every screen (`p27`). Run them all with `tests/demo/run.sh`, or one with
 `tests/demo/run.sh p7`; screenshots land in `/tmp/fm-demo-tests/shots`. Every check should pass; a `FAIL` line names
 the check. The suites need Node with Playwright's Chromium installed (`npx playwright install chromium` once) and
 python3 for the static server on port 8765.
