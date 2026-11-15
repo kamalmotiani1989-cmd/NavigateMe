@@ -1017,15 +1017,14 @@ div.cx-area{cursor:default}
 .d-group span{font-size:var(--fs-s); font-weight:800; color:var(--brand-2); background:var(--brand-soft); padding:1px 9px; border-radius:999px}
 .d-group small{flex-basis:100%; font:500 var(--fs-s) var(--body); color:var(--text-3)}
 /* ---------- Tribe: named button, rules, what people look for */
-.hd-tribe{display:none; position:relative; align-items:center; gap:6px; height:40px; padding:0 14px 0 11px; border:0; border-radius:999px; cursor:pointer;
-  background:var(--surface-2); color:var(--ink); font:700 var(--fs-s) var(--body)}
-.hd-tribe svg{width:20px; height:20px} .hd-tribe[aria-current="true"]{background:var(--ink); color:#fff}
-.hd-tribe .badge{position:absolute; top:-3px; right:-3px; box-shadow:0 0 0 2px #fff}
-@media (max-width:720px){ .hd-tribe{display:inline-flex} .nav .tab-tribe{display:none} }
-/* Phones: logo, Requests, the named Tribe button and the avatar all fit on one line. */
+/* Phones: Saved (the shortlist, a heart) is a round button in the top bar and Tribe has its place in the bottom bar
+   (Kamal, 15 Nov: "Interchange the position of tribe and saved"). On a computer both are tabs in the top row. */
+.hd-saved{display:none}
+@media (max-width:720px){ .hd-saved{display:grid} .nav .tab-saved{display:none} }
+/* Phones: logo, Requests, Messages, Saved and the avatar all fit on one line. */
 @media (max-width:480px){
   .bar{gap:8px} .bar .logo{gap:7px} .bar .logo i{width:36px; height:36px} .bar .logo i svg{width:36px; height:36px}
-  .bar .wordmark{font-size:var(--fs-m)} .top-acts{gap:6px; margin-right:4px} .hd-ic{width:38px; height:38px} .hd-tribe{height:38px; padding:0 11px 0 9px; font-size:var(--fs-s)}
+  .bar .wordmark{font-size:var(--fs-m)} .top-acts{gap:6px; margin-right:4px} .hd-ic{width:38px; height:38px}
 }
 @media (max-width:370px){ .bar .wordmark{display:none} }
 .look-tag{display:inline-block; margin:8px 0 0; font-size:var(--fs-xs); font-weight:700; padding:3px 10px; border-radius:999px; background:var(--surface-2); color:var(--text-2)}
@@ -1973,8 +1972,8 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 
 /* header and the floating bottom bar */
 .app-head{background:rgba(239,228,220,.92); box-shadow:none}
-.me, .hd-ic[aria-current="true"], .hd-tribe[aria-current="true"]{background:var(--ink); color:#fff}
-.hd-ic, .hd-tribe{background:#fff}
+.me, .hd-ic[aria-current="true"]{background:var(--ink); color:#fff}
+.hd-ic{background:#fff}
 @media (max-width:720px){
   .app-head{background:var(--bg)}
   .nav{left:14px; right:14px; bottom:calc(10px + env(safe-area-inset-bottom,0px)); padding:8px; border-radius:30px; background:#fff;
@@ -2053,11 +2052,10 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 .app-head .logo i svg{width:32px; height:32px}
 .app-head .wordmark{font-size:19px; font-weight:800; letter-spacing:-.03em}
 .top-acts{display:flex; align-items:center; gap:8px}
-.hd-ic, .hd-tribe{height:44px; border:0; background:#fff; color:var(--text); box-shadow:0 6px 16px rgba(60,40,30,.10)}
+.hd-ic{height:44px; border:0; background:#fff; color:var(--text); box-shadow:0 6px 16px rgba(60,40,30,.10)}
 .hd-ic{width:44px; border-radius:50%}
-.hd-tribe{border-radius:999px; padding:0 14px; font-weight:700}
-.hd-ic[aria-current="true"], .hd-tribe[aria-current="true"]{background:var(--ink); color:#fff}
-.hd-ic .badge, .hd-tribe .badge{background:var(--coral); color:var(--text); box-shadow:0 0 0 2px var(--bg)}
+.hd-ic[aria-current="true"]{background:var(--ink); color:#fff}
+.hd-ic .badge{background:var(--coral); color:var(--text); box-shadow:0 0 0 2px var(--bg)}
 .app-head .me{width:44px; height:44px; background:var(--ink); color:#fff; font-size:var(--fs-m); box-shadow:0 6px 16px rgba(20,20,20,.18)}
 @media (max-width:420px){ .app-head .wordmark{display:none} }
 @media (max-width:720px){ .app-head{background:var(--bg)} .app-head.scrolled{background:rgba(239,228,220,.96)} }
@@ -2365,9 +2363,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 /* small things put right on the way (15 Nov) */
 .empty .pk-more{display:block; margin:2px auto 10px}                      /* "More" sat on the same line as the button below it */
 .esc-bar{background:var(--ink); color:#fff} .esc-bar .btn-accent{background:#fff; color:var(--ink)}   /* the "N selected" bar was the old teal */
-/* the smallest phones (320 wide): the round buttons in the top bar keep their shape, and Tribe is its icon alone */
+/* the smallest phones (320 wide): the round buttons in the top bar keep their shape */
 .app-head .me, .hd-ic{flex:none}
-@media (max-width:350px){ .hd-tribe{width:44px; padding:0; justify-content:center} .hd-tribe span{display:none} }
 /* =====================================================================================================
    Parties: its own place (Kamal, 15 Nov: "Make parties near by a seperate section all together and an amazing
    one"). Butter, the colour parties already had. Each party is a card: the day on a white tile, what it is,
@@ -5859,17 +5856,18 @@ $("dlgGender").addEventListener("click", async e => {
 function renderNav(){
   // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
   const allowed = ROLE_VIEWS[roleKey()].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
-  // Requests and Tribe live in the top bar, next to the avatar, so the bottom bar has room for the rest.
+  // Requests and Messages live in the top bar, next to the avatar, so the bottom bar has room for the rest.
   const TOP = ["messages", "requests"], count = n => n === "requests" ? unseen : n === "messages" ? msgUnseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
-  // Tribe sits next to Discover on the website, and as a named button in the phone's top bar (the bottom bar keeps the rest).
+  // Tribe sits next to Discover. On a phone that puts it in the bottom bar where Saved used to be, and Saved (the
+  // shortlist, a heart) is a round button in the top bar (Kamal, 15 Nov: "Interchange the position of tribe and saved
+  // or shortlisted buttons"). On a computer both are tabs in the top row, as before.
   const order = allowed.filter(n => !TOP.includes(n) && n !== "tribe"), at = order.indexOf("discover");
   if(allowed.includes("tribe")) order.splice(at + 1, 0, "tribe");
-  $("nav").innerHTML = order.map(n => `<button class="tab${n === "tribe" ? " tab-tribe" : ""}" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
+  $("nav").innerHTML = order.map(n => `<button class="tab${n === "saved" ? " tab-saved" : ""}" data-view="${n}" aria-current="${n === currentView}">${TAB[n][1]}<span>${TAB[n][0]}</span>${
     count(n) ? `<i class="badge" aria-label="${count(n)} new">${count(n)}</i>` : ""}</button>`).join("");
   $("topActs").innerHTML = allowed.filter(n => TOP.includes(n)).map(n => `<button class="hd-ic" type="button" data-view="${n}" aria-current="${n === currentView}"
     aria-label="${TAB[n][0]}${count(n) ? ` (${count(n)} new)` : ""}" title="${TAB[n][0]}">${TAB[n][1]}${count(n) ? `<i class="badge" aria-hidden="true">${count(n)}</i>` : ""}</button>`).join("")
-    + (allowed.includes("tribe") ? `<button class="hd-tribe" type="button" data-view="tribe" aria-label="Tribe${tribeUnseen ? ` (${tribeUnseen} new)` : ""}" aria-current="${currentView === "tribe"}">${TAB.tribe[1]}<span>Tribe</span>${
-      tribeUnseen ? `<i class="badge" aria-hidden="true">${tribeUnseen}</i>` : ""}</button>` : "");
+    + (allowed.includes("saved") ? `<button class="hd-ic hd-saved" type="button" data-view="saved" aria-current="${currentView === "saved"}" aria-label="Saved" title="Saved">${TAB.saved[1]}</button>` : "");
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
 $("topActs").addEventListener("click", e => { const t = e.target.closest("[data-view]"); if(t) go(t.dataset.view); });

@@ -40,7 +40,7 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   let { ctx, p } = await open(b, person('9822200011', 'Asha', 'female'), 390, 844, 'parties');
   let B = await band(p), t = await tab(p);
   const tabs = await p.evaluate(() => [...document.querySelectorAll('#nav .tab')].filter(x => x.offsetParent).map(x => x.textContent.trim()));
-  ok(tabs.join() === 'Discover,Saved,Parties,Splits,Market,Passes' && t.view === 'parties' && t.bg === B.T.butter, 'Parties has its own place in the bottom bar, butter when you\'re on it: ' + tabs.join(' · '));
+  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market,Passes' && t.view === 'parties' && t.bg === B.T.butter, 'Parties has its own place in the bottom bar, butter when you\'re on it: ' + tabs.join(' · '));
   ok(B.band && B.colour === 'butter' && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, 'the Parties screen opens on a butter band with the sheet over it, words dark: ' + JSON.stringify({ colour: B.colour, gap: B.gap }));
   // off until you switch it on: what it is, in three lines, and the switch; nothing listed
   const off = await p.evaluate(() => ({ intro: !!document.querySelector('#pnBody .pn-intro'), points: document.querySelectorAll('#pnBody .pn-points li').length, btn: (document.querySelector('#pnBody [data-near-on]') || {}).textContent,
