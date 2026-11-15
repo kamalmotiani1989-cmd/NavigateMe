@@ -417,6 +417,18 @@ group can't read it any more, and nobody can before the yes (`fm_thread_open` sa
 `fm_thread_open`, `fm_thread_get` (last 200, marks read), `fm_thread_send` (120 an hour, 600 a day),
 `fm_thread_list`. Messages go when the account goes. Demo mode: the other person answers once, a moment later.
 
+## Match reasons and scam flags (Kamal, 15 Nov)
+
+- **Match reasons:** next to the match %, home cards and tribe cards say "N things in common · No smoking · Tidy most
+  days · Quiet home" (`matchReasons`). The most important answers come first: food, smoking, sleep, cleanliness,
+  pets, then guests.
+- **Scam flags** (`scamFlag`, rules that run on the phone): a message from the other person, or a listing's
+  description, that asks for money up front gets a calm warning. Examples are a "token", an "advance", a "booking
+  amount", paying by UPI, GPay or Paytm, a QR code, or sharing an OTP.
+  - The warning: never pay before you've visited and met them, and FindMeFlatMate never asks you to pay anyone.
+  - Your own messages are never flagged, and ordinary chat ("transferred to Pune", "deposit at move-in") isn't
+    either.
+
 ## Report and block
 
 Kamal, 10 Nov. **Report or block** is on a chat (and **Report** on each of the other person's messages), people's

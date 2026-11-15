@@ -2266,6 +2266,11 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .f-range-in input::-webkit-slider-runnable-track{background:none} .f-range-in input::-moz-range-track{background:none}
 .f-range-ends{display:flex; justify-content:space-between; font-size:var(--fs-xs); color:var(--text-2)}
 #dlgFilters .f-actions{background:var(--bg); box-shadow:none; bottom:-28px} #dlgFilters .f-actions #fApply{flex:1}
+.lc-why{font-size:var(--fs-xs); color:var(--text-2); margin:6px 0 0} .lc-why b{color:var(--text)}
+.tb-why{margin:8px 0 0; font-size:var(--fs-s)}
+.msg-warn b{display:inline; font-size:inherit}
+.msg-warn{margin:6px 0 2px; padding:8px 10px; border-radius:12px; background:var(--amber-92); color:var(--text); font-size:var(--fs-xs); line-height:1.4}
+.scam-flag{margin:10px 0; padding:12px 14px; border-radius:14px; background:var(--amber-92); color:var(--text); font-size:var(--fs-s); line-height:1.45}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -6076,6 +6081,14 @@ let tribeRows = [];
 const TRIBE_STEPS = [["Match", "70%+ vibe, same areas"], ["Team up", "You both say yes"], ["Bond", "Numbers shared"], ["Hunt", "A whole flat, split"]];
 const median = a => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : 0; };
 const sameAnswers = (a, b) => VIBE_QS.filter(x => Number.isInteger(a && a[x.k]) && a[x.k] === (b && b[x.k])).map(x => x.t[a[x.k]]);
+// "N things in common" (Kamal, 15 Nov, after the competitive teardown): the match % with its reasons, the ones that
+// matter most first (food, smoking, sleep, cleanliness, pets, guests…).
+const REASON_KEYS = ["food", "smoke", "sleep", "clean", "pets", "guests", "noise", "drinks", "social", "cook", "work", "sharing"];
+function matchReasons(a, b){
+  return REASON_KEYS.filter(k => Number.isInteger(a && a[k]) && a[k] === (b && b[k])).map(k => VIBE_QS.find(x => x.k === k).t[a[k]]);
+}
+const reasonsLine = (a, b, cls = "lc-why") => { const r = matchReasons(a, b);
+  return r.length ? `<div class="${cls}"><b>${r.length} ${r.length === 1 ? "thing" : "things"} in common</b> · ${esc(r.slice(0, 3).join(" · "))}</div>` : ""; };
 // You in the middle, matches around you; lines show where each one stands.
 function orbitSvg(rows){
   const W = 340, H = 220, cx = W / 2, cy = H / 2 + 4, people = rows.slice(0, 6), n = people.length;
@@ -6127,7 +6140,7 @@ function tribeCardHtml(t){
       <button class="seek-ring" data-tcompat="${esc(t.id)}" aria-label="Compatibility with ${first}">${ringSvg(t.match_pct, 58)}</button></div>
     <div class="seek-facts"><div><span>Budget</span><b>${t.budget ? "Up to " + inr(t.budget) : "Not set"}</b></div><div><span>Looking in</span><b style="font-weight:600">${areas}</b></div></div>
     ${t.looking ? `<p class="look-tag${t.looking === prefs().look ? " same" : ""}">Looking for ${esc(lookLabel(t.looking).toLowerCase())}${t.looking === prefs().look ? " · same as you" : ""}</p>` : ""}
-    ${same.length ? `<p class="both" style="color:var(--brand)">✓ You're both: ${esc(same.join(" · "))}</p>` : ""}
+    ${reasonsLine(state.vibe, t.vibe, "lc-why tb-why")}
     ${shared.length ? `<p class="both">♥ You both like ${esc(shared.join(", "))}</p>` : ""}
     <div class="acts">${acts}<button class="btn btn-ghost btn-sm" data-tcompat="${esc(t.id)}">Compatibility</button>${safeBtn("tribe", t.id, t.name)}</div></article>`;
 }
@@ -7251,6 +7264,7 @@ function cardHtml(l, i){
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
       <div class="lc-chips">${[l.bhk ? `${l.bhk} BHK` : "", FURN_LABEL[l.furnishing] || ""].filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("")}</div>
+      ${m ? reasonsLine(state.vibe, hh) : ""}
       ${homeBadge(l)}
       ${nearNow && l._km != null ? `<div class="dist">${kmLabel(l._km)} from ${esc(nearNow.label)}</div>` : ""}
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span>${householdGen(hh) ? genBadge(householdGen(hh), "") : ""}</div>` : ""}
@@ -7857,6 +7871,7 @@ async function openListing(id){
     </div>
     ${(l.amenities || []).length ? `<div class="meta">${l.amenities.map(a => `<span>${esc(a)}</span>`).join("")}</div>` : ""}
     <p style="white-space:pre-line">${esc(l.description)}</p>
+    ${!l.is_owner && scamFlag(l.description) ? `<div class="scam-flag" role="note">⚠️ <b>This listing mentions paying up front.</b> Never pay a token or advance before you've seen the place and met the person. Report it if they insist.</div>` : ""}
     ${contact ? "" : `<h3 class="section-h">Where it is</h3><div class="map-box">${l.geo
       ? `<div class="pin-map sm" id="approxMap" role="img" aria-label="Map of the area around this home"></div>
          <div class="map-q">It's within this circle in ${esc(l.locality)}. The exact address and pin are shared once the owner accepts.</div>`
@@ -8179,13 +8194,18 @@ async function msgRefresh(scroll){
   $("msgSub").textContent = MSG_KIND_LABEL[msgData.kind] + " · " + msgData.title;
   let day = "";
   $("msgList").innerHTML = msgData.messages.length ? msgData.messages.map(m => { const d = fmtDate(m.at), head = d !== day ? `<p class="msg-day">${esc(d)}</p>` : ""; day = d;
-    return head + `<div class="msg ${m.mine ? "mine" : "theirs"}">${!m.mine && msgData.kind === "split" ? `<b>${esc(m.name)}</b>` : ""}<p>${esc(m.body)}</p>
+    return head + `<div class="msg ${m.mine ? "mine" : "theirs"}">${!m.mine && msgData.kind === "split" ? `<b>${esc(m.name)}</b>` : ""}<p>${esc(m.body)}</p>${!m.mine && scamFlag(m.body) ? SCAM_WARN : ""}
       <time datetime="${esc(m.at)}">${new Date(m.at).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" })}${m.mine ? "" : ` · ${safeBtn("message", m.id, m.name, "Report")}`}</time></div>`; }).join("")
     : `<p class="hint msg-empty">Say hello. ${SAFE_PAY_LINE}</p>`;
   if(scroll || msgData.messages.length !== before){ const l = $("msgList"); l.scrollTop = l.scrollHeight; }
   if(currentView === "messages") renderMessages(); else refreshMsgUnseen();
 }
 const SAFE_PAY_LINE = "Never pay a token or deposit before you've seen the place and met the person.";
+// Scam flags (Kamal, 15 Nov): rules, on the phone, no outside service. A message or a listing that asks for money up
+// front ("token", "advance", "booking amount", pay by UPI before a visit, a QR code, an OTP) gets a calm warning.
+const SCAM_RE = /\b(token|advance|booking (?:amount|money|fee)|registration fee|pay (?:first|now|before|in advance)|send (?:the )?(?:money|amount|payment)|transfer (?:the |me )?(?:money|amount|deposit)|upi|gpay|google ?pay|phone ?pe|paytm|qr ?code|scan (?:the|this) ?qr|otp|bank details|refundable deposit (?:now|today|first))\b/i;
+const scamFlag = text => SCAM_RE.test(String(text || ""));
+const SCAM_WARN = `<p class="msg-warn" role="note">⚠️ <b>Careful:</b> never pay a token, advance or "booking amount" before you've visited and met them. FindMeFlatMate never asks you to pay anyone.</p>`;
 $("msgForm").addEventListener("submit", async e => {
   e.preventDefault();
   const text = $("msgText").value.trim(); if(!text || msgBusy) return;
