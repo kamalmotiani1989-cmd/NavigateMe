@@ -1,5 +1,36 @@
 # Teche · reports
 
+## 2026-11-15, website refresh (#101) live; Android builds only for app changes (#102)
+
+- **What (Kamal: "make the website also better"):** the page a visitor sees before signing in.
+  - The picture at the top is a match card drawn from our cartoon people, where the grey skyline was.
+  - "How it works" is a card for each side, each with its own button.
+  - New parts: try a search (the app's own search reader, live), Safety (six things the app already does), the
+    Move-in kit and flatmate-type cards, ten questions and answers, a closing band.
+  - On a phone the "More than a room" cards are a row to swipe; nothing scrolls sideways from 320 wide.
+  - On a computer the opening story and the welcome are a card in the middle of the screen.
+- **For search engines and shared links:** the title is now "FindMeFlatMate: find flatmates who match your vibe"; a
+  1200 x 630 share picture (`og-image.png`); `robots.txt`, `sitemap.xml`; the FAQ as schema.org data. No ads, no
+  "download now" wording added; sign-up is as before.
+- **Not changed:** login, colours, onboarding questions. No database change.
+- **Checked against the README:** every claim on the page (pricing, two addresses, what a report pauses, the kit).
+- **Tests:** all 23 demo suites pass; new suite `p25` (32 checks), also run on the compacted page.
+- **Published:** c3c590d; Android build 209. I can't open findmeflatmate.com from my machine (its network blocks
+  it), so I checked the website repo: `gh-pages` holds the new page and the three new files.
+- **Also fixed (#102):** every push under `flatmates/` (reports, marketing files, tests, the README) started an
+  Android build with a new number, and since #92 the app shows "a new version is ready" for any higher number. So
+  people with the app were being told to update when nothing had changed. The build now starts only when the app's
+  own files change (`index.html`, `privacy.html`, the manifest, `icons/`, `vendor/`, `android/`). Reports no longer
+  start one. Newest build is still 209.
+- **Waiting on Kamal:** findmeflatmate PR #2, one line. The publish job's status line looks for the exact old title
+  and now prints "not this site yet" for a site that is fine. It only reports; publishing works as before.
+- **Screenshots:** [computer](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-computer.png),
+  [phone](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-phone-before-after.png),
+  [new parts](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-phone-new.png),
+  [share picture](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-share-picture.png).
+- **Next (Kamal, 15 Nov, from a Dwelo screenshot):** a two-layer home (colour on top, a rounded sheet over it) and a
+  lighter floating bottom bar, in our colours.
+
 ## 2026-11-15, number-last sign-up, clean UI, match reasons, scam warnings, Move-in kit (#98, #99, #100) live
 
 - **Sign-up, number last (#98; Kamal approved):** what brings you, then name, then Woman/Man, then the number and
@@ -124,19 +155,3 @@
   refused, and the merged files are identical to the tested ones.
 - **Published:** findmeflatmate main says "Publish the app from NavigateMe daa95d8".
 - **Waiting on Kamal:** #86 (privacy and security) has lines for chat, block and report, and needs his [TO FILL]s.
-
-## 2026-11-10, in-app messages after a yes: #87 live
-
-- **What:** chat inside the app once people are connected, never before. It works for:
-  - an accepted room request or invite (Discover/Escape);
-  - a bonded tribe;
-  - an accepted FlatMart offer;
-  - a Flatsplits group.
-
-  Messages sits under a chat icon in the top bar with an unread count, and a push goes to the others when the app
-  is closed.
-- **Live:** the database went first (md5-checked). A rolled-back check: a chat opens after a yes, the other side
-  sees it unread, a stranger gets nothing, and a waiting request can't open one. Then fm-notify was redeployed
-  (version 7), then the merge. Published: findmeflatmate main says "Publish the app from NavigateMe 1ddaedf".
-- **Next:** block/report inside a chat before a public launch. #86 (privacy) has the matching lines and waits for
-  Kamal's [TO FILL]s.
