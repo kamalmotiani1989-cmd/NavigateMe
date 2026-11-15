@@ -1,7 +1,8 @@
 // Offline support for the installed app. Network first, so every change we
 // deploy shows up on the next open; the cache is only a fallback offline.
-const CACHE = "fm-v3";
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./vendor/supabase-2.45.4.js"];
+const CACHE = "fm-v4";
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./vendor/supabase-2.45.4.js",
+  "./vendor/fonts/urbanist-latin-wght-normal.woff2", "./vendor/fonts/urbanist-latin-ext-wght-normal.woff2"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
