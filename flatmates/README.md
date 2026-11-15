@@ -49,8 +49,19 @@ the room comes second.
      choices count, so a match only appears if each shows themselves to the other (`fm_tribe_refresh`,
      `fm_tribe_list`); in Escape an owner only finds and invites seekers who show themselves to the owner's
      gender (`fm_find_seekers`, `fm_invite`). Someone with no gender set only sees people set to Everyone.
-3. **Vibe matches.** Discover opens with a "Your vibe matches" row: every home in the city with an
-   80%+ match, whatever the area or budget filters say, so a great fit is never missed.
+3. **Every home, best vibe match first** (Kamal, 15 Nov: "whether the vibe matches or not all properties should be
+   shown. Starting with highest vibescore to lowest"). Discover is one list of every home in the city, from the
+   highest vibe score to the lowest; the line above it says so ("Highest vibe score first"). The score orders the
+   homes and never hides one:
+   - there is no separate "Your vibe matches" row any more (it showed only homes at 80%+), and Filters has no
+     "Minimum match" (one saved by an older version is ignored);
+   - a home whose household hasn't answered the living-style questions has no score and comes after the ones that have;
+   - homes that your filters, or the kind of home you picked, leave out are still on the page, in a second block
+     under the list ("More homes in Pune", highest score first, with a line saying why they're there). Only Women
+     only / Men only takes a home off the page;
+   - the first row of homes comes first (one home on a phone), then the reminder cards (finish your profile, your
+     type, a pass, Flatsplits and FlatMart), then the rest, so homes start on the first screen;
+   - the Sort menu still offers nearest, lowest rent and newest.
    **Compatibility analysis:** tap the score (or "See the full compatibility analysis") on any home: the
    score with a plain verdict ("A strong fit", "Could work, with a chat"), the four areas of life (daily
    rhythm, home and chores, lifestyle choices, social life) as bars, **Where you click** (answers that are
@@ -85,6 +96,21 @@ the room comes second.
      bedtime, same tidiness, budget fits"), plus **Moving in within 2 weeks** (the seeker's move-in answer,
      asked at sign-up and in Discover's filters) and **Replied to 3 of 4 invites** (how they treat invites).
    - **Your invites:** sent, said yes, passed, lapsed and waiting, at the top of the Escape.
+   - **The vibe score is on every person** (Kamal, 15 Nov: "in escape the room vibe score should be visible"): the
+     ring, with "vibe match" under it, best match first whatever the filter; tapping it opens the compatibility
+     analysis.
+   - **A room nobody could be scored against.** The score compares a person's answers with the home's, so a
+     listing without the home's living-style answers showed no score for anyone. That happened to rooms posted
+     from another phone or after a reinstall: the household answers given at sign-up are kept on the phone
+     (`state.homeDraft`), and the posting form filled them in from there. Now:
+     - the server puts them on the listing itself: `fm_listing_vibe` (the listing's own answers when it has at
+       least 4, else the lister's own from their profile, with whatever the listing does say on top) runs on every
+       post and edit (trigger `fm_listings_vibe_fill`), and once over the rooms posted before; demo mode does the
+       same (`listingVibe`). A listing that has its own answers is never touched;
+     - the posting form fills the questions from this phone's copy, else from your own answers, else from your
+       newest listing;
+     - when nobody can be scored (the listing has no answers and neither has the lister), the Escape says so
+       ("No vibe scores for this room yet") with **Add them now**, which opens the listing on those questions.
    - **My flat** shows the top 3 people looking in the listing's area with an Invite button each.
    - **New seekers in your area:** a seeker who sets or changes their city or areas (or whose answers become
      enough to match) brings owners with a fitting listing there (70%+ vibe, not yet in touch) a notification
@@ -542,17 +568,19 @@ Koramangala under 15k, veg", "women only flat in Pune" or "shared room in HSR La
 - A short message says what was understood.
 - It all runs on the phone, with no outside service.
 
-**Looking for** (asked at sign-up, changeable on Discover): it decides which homes show and in what order.
-**Private room:** private rooms (and "flatmate wanted"), then whole flats, no shared rooms. **Shared room:**
-shared rooms, then private rooms, then whole flats. **Whole flat:** whole flats, then private rooms. **Any:**
-everything. With a choice, results come in groups with headings, and inside each group the **best vibe match
-comes first, then the nearest** (to the searched place, else the nearest chosen area, else the city centre).
+**Looking for** (asked at sign-up, changeable on Discover): it decides which homes come first.
+**Private room:** private rooms (and "flatmate wanted"), then whole flats. **Shared room:** shared rooms, then
+private rooms, then whole flats. **Whole flat:** whole flats, then private rooms. **Any:** everything, as one
+list. With a choice, results come in groups with headings, and inside each group the **best vibe match comes
+first, then the nearest** (to the searched place, else the nearest chosen area, else the city centre). The kinds a
+choice leaves out (shared rooms, for someone after a private room) aren't hidden: they come in the "More homes"
+block under the list, like the homes outside your filters (see "Every home, best vibe match first").
 
 A **place search** (locality, landmark, society, metro station) with a distance (1 to 20 km), or the city
 and **any number of areas** (set during onboarding, changeable any time in Filters, with "+ Add area"; none
 picked means the whole city), plus a **Filters** panel: budget band or exact min/max (all-in), room type, who it's open to,
-furnishing, move-in date, must-have amenities, house rules (veg-only kitchen, no smoking, no
-alcohol, pet-friendly) and minimum match. It shows a live count ("Show 7 homes"), active
+furnishing, move-in date, must-have amenities and house rules (veg-only kitchen, no smoking, no
+alcohol, pet-friendly). There is no filter on the vibe score. It shows a live count ("Show 7 homes"), active
 filters appear as removable chips, and everything is remembered. When nothing matches, the app
 suggests the single change that brings most homes back ("Remove “No smoking” (6)").
 Discover keeps no area or quick-filter chips above the results (Kamal, 10 Nov: the map already shows where homes
@@ -571,6 +599,49 @@ results, "Open to women; who lives there isn't confirmed"; a lister who lives th
 own gender. Once the owner adds who lives there, the home moves up. Qualifying homes say **Women-only home**
 (or Men-only home) on the card and the home's page; the chip counts are the homes you then see above the block.
 The posting form says, under "Preferred", to pick "Women only" only if everyone living there is a woman.
+
+## Speed
+
+Kamal, 15 Nov: "the app is slow". Measured on a phone-sized browser slowed down four times, against a stand-in
+server that takes 250 ms per call (a normal mobile connection): nothing showed for 1.1 seconds and the first homes
+came at 1.4 seconds; every tab change asked the server 4 to 8 things, some of them twice, in up to three rounds.
+After the changes below: the app's frame shows at about 0.4 seconds and the homes at under 1 second, and going
+back to a tab asks the server nothing. What was changed, and what to keep in mind:
+
+- **The first screen doesn't wait for the server.** At start-up the page used to stay blank until the server
+  client had loaded and "who am I" (`fm_me`) had been answered, twice in a row. Now `boot` draws the first screen
+  straight away from what the phone remembers (the welcome page for a new visitor, the app's own frame with grey
+  placeholders for someone signed in), and the screen's own calls go out at the same moment as `fm_me`, which is
+  asked once. If the server's answer changes anything the screen was drawn from (`bootSig`: signed out, another
+  role, new answers, contacts), the screen is drawn again; otherwise it stays.
+  - Until the client is ready, `api` is `waitingApi`: every call simply waits for it. Nothing can reach the demo
+    data by being early (live mode never shows demo data).
+  - The one-time questions (18 or older, gender) wait until the server has answered (`serverSaid`), because the
+    phone's copy may be older than the server's.
+  - Whether charges are on is remembered between starts (`state.chargesOn`), so the first screen is right at once.
+- **Answers are kept for 20 seconds** (`readKeep` in `makeLiveApi`). The lists the screens read again and again
+  (`KEPT_READS`: homes, requests, tribe, messages list, your listings, people looking...) are kept that long, so
+  going back to a tab asks nothing, and two screens asking the same thing at the same moment share one call.
+  - Any call that changes something empties the lot, so a list read after a change is always new. A call counts
+    as a change unless it is named in `KEPT_READS`, `QUIET_READS` (reads that aren't kept) or `NARROW_WRITES`
+    (small notes that touch one list). **When you add a server function, add it to the right list**; left out, it
+    is treated as a change, which is safe but makes the next screen ask again.
+  - The 30-second check for news always asks the server, and so does coming back to the app or tapping a
+    notification (`api.fresh()`).
+  - Each caller gets its own copy of a kept answer.
+- **Lists aren't redrawn when nothing changed** (`setHtml`): no flicker, and the cards don't slide in again.
+- **The typeface is in the app** (`vendor/fonts`: Urbanist, and Plus Jakarta Sans for the privacy page and three
+  share pictures; SIL Open Font License, texts alongside). It used to be a stylesheet from Google Fonts in the page's
+  head, and nothing could show until that had answered.
+- **Scrolling does no work unless something changes.** The scroll handler only compares numbers (`bandApply`);
+  the measuring happens when a screen shows or the phone turns (`bandSync`). `packText` (the "More" links) reads
+  the page, then writes, then measures once, instead of once per paragraph, and ignores changes inside the bars.
+- Screens fade in over 0.16 s (it was 0.28 s, which read as a wait).
+- Tried and left out because they measured no gain: compacting the page inside the Android app (the website
+  already is), and `content-visibility` on the cards.
+
+The checks are in `tests/demo/p28.test.js`, which runs the real page with the live backend on against the stand-in
+(`tests/demo/stub/supabase-stub.js`), so the order and number of calls are checked, not just the look.
 
 ## What makes it different
 
@@ -741,7 +812,8 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   (`--mint`), Passes blush (`--blush`). Olive, coral and periwinkle (`--olive`, `--coral`, `--peri`) are for small
   accents. **Coral** (`--coral` #E79078, dark text on it) is the colour of the count badges on the bell and Tribe
   and of the small "new" dots (`--dot` #E48C74); **red** is kept for errors.
-- **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700.
+- **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700. The
+  typeface is part of the app (`vendor/fonts`, see "Speed"), not fetched from Google Fonts.
 - **Shapes:** cards and panels have 28px corners (`--r-card`), inputs 18px, buttons and chips are pills.
 - **Logo** (9 Nov, Kamal's own files, kept in `marketing/`): an orange tile (#C2410C) with a white roof over "fm"
   (`icons/logo-icon.svg`), and the wordmark findme (#1C1917) + flatmate (#C2410C) + .com (#57534E)
@@ -803,6 +875,8 @@ the logo and share images keep their own colours.
 - `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
   is made, accepted or declined (called by a database trigger).
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
+- `vendor/`: what the app would otherwise fetch from other sites: supabase-js, the map (Leaflet) and the typefaces
+  (`vendor/fonts`). The Android app and the website both carry it.
 - `og-image.png`, `robots.txt`, `sitemap.xml`: for shared links and search engines (see "Website").
 - `tests/demo/`: the browser suites that run against the app in demo mode (`tests/demo/run.sh`, see `tests/README.md`).
 - `marketing/`: the brand voice, audiences and the campaign packs; `team/`: the standing briefs for the AI employees
@@ -951,7 +1025,8 @@ collected, who sees what, the services used, cookies and ads measurement, how lo
 user's rights under the Digital Personal Data Protection Act, 2023, and the grievance officer
 (Richa Wadhwani, privacy@findmeflatmate.com). It's linked from the sign-in card, both footers and
 Account, and the Android app bundles it (`android/app/build.gradle`). Update it, and its date, when
-the app starts collecting something new or uses a new service.
+the app starts collecting something new or uses a new service. (15 Nov: Google Fonts came off the list of
+services, because the typeface now ships with the app.)
 
 **Deleting an account.** Account → **Delete my account** (type DELETE to confirm) removes the account's
 photos from storage (its own folder; `fm_photos_select_own` lets it list them), then calls

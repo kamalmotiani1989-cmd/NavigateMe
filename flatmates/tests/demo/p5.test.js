@@ -96,9 +96,9 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   await seed(ctx, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message));
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(2000); await closeDialogs(p);
-  // homes before nudges: the vibe-match row starts on the first screen, the profile and type cards come after it
-  const order = await p.evaluate(() => { const top = id => Math.round($(id).getBoundingClientRect().top); return { row: top('vibeRow'), rowShown: !$('vibeRow').hidden, promo: top('profilePromo'), extras: top('extrasD') }; });
-  ok(order.rowShown && order.row < 844 && order.promo > order.row && order.extras > order.row, 'seeker: vibe matches on the first screen, nudges after them: ' + JSON.stringify(order));
+  // homes before nudges: the first home starts on the first screen, the profile and type cards come after the first row of homes
+  const order = await p.evaluate(() => { const top = e => Math.round(e.getBoundingClientRect().top), c = document.querySelector('#cards .card'); return { row: top(c), promo: top($('profilePromo')), extras: top($('extrasD')) }; });
+  ok(order.row < 844 && order.promo > order.row && order.extras > order.row, 'seeker: homes start on the first screen, nudges after the first of them: ' + JSON.stringify(order));
   // with filters that leave no homes, the "no homes match" help comes before the nudges
   const empty = await p.evaluate(async () => { const keep = Object.assign({}, state.prefs); Object.assign(state.prefs, { max: 1000, look: 'room' }); save(); await renderDiscover();
     const top = el => Math.round(el.getBoundingClientRect().top); const r = { help: top(document.querySelector('#cards .empty') || $('cards')), text: ($('cards').querySelector('.empty h3') || {}).textContent, promo: top($('profilePromo')), cards: document.querySelectorAll('#cards .card').length };
