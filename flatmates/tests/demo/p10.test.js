@@ -20,6 +20,8 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, key: ob &
   await p.click('#loginForm [data-channel="whatsapp"]'); await p.waitForTimeout(900);
   const code = await p.evaluate(() => pendingOtp && pendingOtp.code);
   await p.fill('#lgOtp', code); await p.click('#otpForm [type=submit]'); await p.waitForTimeout(1500);
+  ok(await p.evaluate(() => $('dlgHello').open && /Welcome, Kavya/.test($('hlHi').textContent)), 'a new account gets the welcome screen with their name');
+  await p.click('#hlGo'); await p.waitForTimeout(300);
   let h = await head(p);
   // name and gender were asked before the number (Kamal, 15 Nov), so only the generation is left
   ok(h.intro && /1 quick question/.test(h.q), 'set-up: one quick question (name and gender came before the number): ' + h.q);

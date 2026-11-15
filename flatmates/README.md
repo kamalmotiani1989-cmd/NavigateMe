@@ -484,6 +484,15 @@ How they're delivered:
 
 ## Search and filters
 
+**Search like you'd talk** (Kamal, 15 Nov): the Discover search box also reads plain sentences, such as "room near
+Koramangala under 15k, veg", "women only flat in Pune" or "shared room in HSR Layout below 10000, no smoking".
+- `parseTalk` turns the words it knows into the usual filters: budget (under, below, between, 15k), what kind of home,
+  women or men only, veg kitchen, no smoking, no alcohol, pets, furnishing, city (including other names such as
+  Bangalore and Gurgaon) and area.
+- Whatever place is left over goes to the place search ("near HR College").
+- A short message says what was understood.
+- It all runs on the phone, with no outside service.
+
 **Looking for** (asked at sign-up, changeable on Discover): it decides which homes show and in what order.
 **Private room:** private rooms (and "flatmate wanted"), then whole flats, no shared rooms. **Shared room:**
 shared rooms, then private rooms, then whole flats. **Whole flat:** whole flats, then private rooms. **Any:**
@@ -653,6 +662,21 @@ and the sun, moon or stars moving a little.
 - A nearby party's guest requests include each guest's `avatar`.
 
 ## Look and feel
+**The clean pack (Kamal, 15 Nov, after looking at another app; our colours and words):**
+- **Opening story:** a first visit to the welcome page shows four short screens (`dlgStory`), drawn with our avatars:
+  1. "A spare room is easy."
+  2. "Tell us how you live."
+  3. "Meet people who live like you."
+  4. "Both say yes. Then talk."
+  They move on by themselves, with Next and Skip, then lead to sign-up. They're shown once per phone. Automated
+  browsers skip them unless the address has `?story`.
+- **Welcome:** a new account gets "Welcome, <name> · Your home, your people." (`dlgHello`) before the questions.
+- **Home cards:** the rent comes first and large, with the expenses beside it. Then the title, the area, small chips
+  (BHK, furnishing), the people, and the trust line under a thin rule.
+- **Notifications:** the ask says what you'll get (new matches and invites, messages, safety and account updates),
+  with "Not now", which hides it for a week.
+- **Not doing:** no photo is required anywhere, and no question about religion.
+
 Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it replaces the navy-and-green look of
 8 Nov. Every screen keeps its layout and words; the look lives in one style layer at the end of the stylesheet.
 - **Page and cards:** a warm blush-beige page (`--bg` #EFE4DC) with off-white cards (`--surface` #FBF8F6) and soft
