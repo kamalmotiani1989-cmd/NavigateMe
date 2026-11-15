@@ -5,8 +5,8 @@ the room comes second.
 
 ## How it flows
 
-1. **Welcome page = sign-in.** A short write-up, the **flatmate-type quiz** (the bright card under
-   the headline) and the sign-in card.
+1. **Welcome page = sign-in.** A short write-up and the sign-in card, which comes up first (the rest of the page is
+   described under "Website").
    - **The number comes last** (Kamal, 15 Nov). The card asks one thing at a time, with "x of 4", a bar and a back
      arrow:
      1. what you came for: *looking for a room*, *posting a flat or a room* or *just Flatsplits & FlatMart*;
@@ -766,6 +766,7 @@ the logo and share images keep their own colours.
 - `supabase/functions/fm-notify/index.ts`: sends push notifications through Firebase when a request
   is made, accepted or declined (called by a database trigger).
 - `manifest.webmanifest`, `sw.js`, `icons/`: make it installable as a phone app (PWA) that also opens offline.
+- `og-image.png`, `robots.txt`, `sitemap.xml`: for shared links and search engines (see "Website").
 - `tests/demo/`: the browser suites that run against the app in demo mode (`tests/demo/run.sh`, see `tests/README.md`).
 - `marketing/`: the brand voice, audiences and the campaign packs; `team/`: the standing briefs for the AI employees
   (Teche `tech.md`, Mark `marketing.md`, Salu `community.md`, and their manager King `king.md`, who sets
@@ -785,10 +786,42 @@ data (including photos) stored in that browser.
 
 ## Website
 
-The same `index.html` is the website: **https://findmeflatmate.com**. In a browser the welcome page also shows
-"How it works", the Flatsplits / FlatMart / search-together / map features, a **Get the Android
-app** band and a footer. Anything marked `web-only` (the download links) is hidden inside the
-Android app, which loads the page from `appassets.androidplatform.net`.
+The same `index.html` is the website: **https://findmeflatmate.com**. Anything marked `web-only` (the download
+links, the iPhone question) is hidden inside the Android app, which loads the page from
+`appassets.androidplatform.net`.
+
+**What a visitor sees, top to bottom (refreshed 15 Nov, Kamal: "make the website also better"):**
+1. **The top:** the headline, the sign-up card, and a picture: a match card drawn from our own cartoon people
+   ("Ayesha and Meera live here", a 92 match, three things in common). No photos, and no city skyline any more.
+   Top links: How it works, Safety, Flatsplits & FlatMart, FAQ, Get the app.
+2. **Why people choose us:** meet your flatmates first, your vibe matched, your room your way.
+3. **How it works** (`#w-how`), one card for each side: "If you need a room" (Find my flatmates) and "If you have a
+   flat" (Post my room free, and "See who's looking for a room near you").
+4. **Search like you'd talk** (`#w-talk`): a box a visitor can type in. It shows what we understood ("under ₹15,000 ·
+   Veg kitchen · Private room · Koramangala") using the app's own search (`parseTalk`), so it can't promise more than
+   the app does.
+5. **Safety, built in** (`#w-safe`), six plain promises, each one something the app already does: private until you
+   both say yes, women-only means women-only, scam warnings in the chat, block or report in two taps, no brokers,
+   adults only. Under them: "Never pay before you visit."
+6. **More than a room** (`#w-more`): Flatsplits, FlatMart, Search together, the Move-in kit, your flatmate type, and
+   all of India on the map. On a phone these are a row you swipe.
+7. **Get the app** (web only).
+8. **Questions** (`#w-faq`): ten short answers (free? when is my number shared? brokers? women-only? money before a
+   visit? cities? tenants? iPhone?), with "Ask in Help".
+9. **The closing band** (Find a room / Post my room free) and the footer.
+
+Every button that says "Find…" or "Post…" picks that role and goes to the sign-up card; the login process itself is
+unchanged. On a computer the opening story is a card in the middle of the screen, not the full screen.
+
+**For search engines and shared links:**
+- The page title is "FindMeFlatMate: find flatmates who match your vibe", with a description of 160 characters.
+- `og-image.png` (1200 x 630) is the picture WhatsApp, Instagram, LinkedIn and X show with a shared link. It's drawn
+  from the page's own logo, colours and cartoon people by `tests/demo/og-image.js`; run that again if the look
+  changes.
+- `robots.txt` lets search engines in and names `sitemap.xml` (the home page and the privacy policy).
+- The FAQ is also in the page as data search engines read (`#ldSite`, schema.org). It must say exactly what the
+  visible FAQ says; `p25` checks that, so change both together.
+- These three files go to the website only. The Android app doesn't carry them.
 
 findmeflatmate.com is served by GitHub Pages from its own repo,
 [kamalmotiani1989-cmd/findmeflatmate](https://github.com/kamalmotiani1989-cmd/findmeflatmate). Its

@@ -46,7 +46,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   await p.setViewportSize({ width: 1280, height: 900 }); await p.waitForTimeout(500);
   const wide = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect();
     return { ledeRight: Math.round(r('.w-copy .lede').right), cardLeft: Math.round(r('.w-card').left), ledeTop: Math.round(r('.w-copy .lede').top), cityTop: Math.round(r('#city').top) }; });
-  ok(wide.ledeRight <= wide.cardLeft && wide.ledeTop < wide.cityTop, 'visitor: on a wide screen the paragraph stays in the left column above the city: ' + JSON.stringify(wide));
+  ok(wide.ledeRight <= wide.cardLeft && wide.ledeTop < wide.cityTop, 'visitor: on a wide screen the paragraph stays in the left column above the picture: ' + JSON.stringify(wide));
   await ctx.close();
   // ------------------------------------------------------------ green text on pale green: none left at --brand
   const vibe = { sleep:1, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:1, noise:1, social:1, sharing:1, work:0, pets:1, gen:'z' };
