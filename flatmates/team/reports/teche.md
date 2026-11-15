@@ -1,5 +1,44 @@
 # Teche · reports
 
+## 2026-11-15, help bot rebuilt, quicker messaging, the chat fills the screen, Passes by the name (#108) live
+
+- **What Kamal asked (15 Nov):** "Fix the chat bot.. make me more better and make the messaging quicker. Also remove
+  the passes from bottom bar and pop up whever the same is required. It should be in profile near the accout name".
+  And, on seeing the chat screen: "Why is it showing so much of clank space down".
+- **Help bot.** It counted any keyword it saw: "how do I message the owner" got the answer about listing a room,
+  and of 30 everyday questions about 5 got a real answer.
+  - Now about 60 topics written from the app as it is, with the app's own button names; words have weights (a
+    phrase 3, a word 2, a word half the app shares 1); answers are personal (your contacts, your pass, your role).
+  - Never a dead end: a close second is offered as "Or: …"; unsure, it gives its best guesses and a person.
+  - "room in Pune under 15k" is offered as a search. "It's not working" offers a ticket with the kind filled in.
+  - Tried on 265 questions written three ways (plain, messy, short with typos and Hinglish): all land right.
+  - Still no AI service (the AI go-between is on hold). It says nothing about how sign-in codes are made; while
+    sign-up is open to a few people at a time it says a code may not reach you yet.
+- **Messaging.** Measured against the stand-in server at 300 ms a call:
+  - opening a chat: blank for two answers (about 0.6 s), now on screen at once and filled after one;
+  - sending: the box was locked for two round trips, now the bubble shows at once and the box is free;
+  - the other person's message: up to 5 s, now about 2 s; the unread count: every 60 s, now every 20 s.
+  - A message that can't go is tried again by itself (1.5 s, then 4 s), then says "Not sent" with Try again and
+    Remove. Each message has its own id, so a retry can't send it twice.
+  - Database: `fm_thread_get(p_thread, p_after)` gives only what's new and writes the "read" mark only when there
+    is something new; `fm_thread_send(p_thread, p_body, p_id)` saves a message once per id and answers with its
+    time. Both new arguments have defaults, so the app from before keeps working.
+- **The chat screen** fills the screen: messages scroll, newest at the bottom, the box stays at the bottom above
+  the keyboard. A short chat sits at the bottom next to the box.
+- **Passes:** no tab and no screen. A Passes button by the name in Account (with a pass on: "Room Pass · 13 days
+  left"); a pop-up wherever a pass is needed; an old `#plans` link opens the pop-up over the home screen.
+- **Not changed:** the login process, onboarding questions, colours. The message limit (30 an hour, 60 a day).
+- **Tests:** 27 demo suites, 649 checks; new `p29` (66) for all three, the chat part against the
+  stand-in server. Database: 222 checks, 17 new (`parties-16-quick-messages.sql`).
+- **Published:** b6a6558; Android build 214 (file checked, checksum matches); website repo `main` and
+  `gh-pages` say "Publish the app from NavigateMe b6a6558". Live database: the merged `schema.sql` applied
+  (checksum checked first) and verified read-only.
+- **For Kamal to decide:** the message limit of 30 an hour and 60 a day may be low for people who chat a lot; say
+  the word and I'll raise it.
+- **For later, not urgent:** the list of chats (`fm_thread_list`) looks at every conversation to find yours. Live
+  has 6 conversations, so it is instant; it needs rewriting before there are thousands. The README's messages
+  section said 120 an hour, 600 a day; the code has always been 30 and 60, and the README now says so.
+
 ## 2026-11-15, faster app, every home in one list, the Escape's vibe score (#106, #107) live
 
 - **What Kamal asked (15 Nov):** "Can u check the app is slow.. use ur skills and make it better. Also whther the
@@ -193,13 +232,3 @@
   [reasons/scam/kit](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4bd89ee19de7ae720c6786f136a122e2b329c49c/reasons-scam-kit.png).
 - **Open for Kamal (from the teardown):** the name risk (findmyflatmate.in is a live Bangalore site), city focus,
   and the #86 privacy blanks (including a named grievance officer).
-
-## 2026-11-13, Vibe Card pastel and trust line (#97) live
-
-- **Vibe Card (King's follow-up):** on screen and in the 1080×1920 share image it's now the rhythm's pastel panel,
-  with ink text, the logo and wordmark, and the avatar large. Same words as before. VC_PALETTE is in the p13
-  contrast audit, and everything passes at 4.5:1.
-- **Home card trust line:** it fits on one line at 360 and 390 again. There's no avatar there (no room, and no name
-  is shown), and the spacing is a little tighter at the scale's 12.5 px.
-- **Tests:** 19 demo suites pass. No database change. Published 5725b62.
-- **Screenshots:** [before/after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/f5d61e960c787b5c68bff62668b42a5fc8a43488/vibecard-before-after.png).
