@@ -1,5 +1,21 @@
 # Teche · reports
 
+## 2026-11-15, Tribe and Saved change places on phones (#105) live
+
+- **What (Kamal: "Interchange the position of tribe and saved or shortlisted buttons on the app"):** on phones Tribe
+  is a tab in the bottom bar where Saved was (mint when you're on it, with its count), and Saved is a round heart
+  button in the top bar where the Tribe button was (black when you're on it). The bottom bar for someone looking is
+  Discover, Tribe, Parties, Splits, Market, Passes. On a computer both stay tabs in the top row.
+- **Not changed:** what the two screens do; owners and Flatsplits-only accounts (they have neither). No database
+  change.
+- **Tests:** all 25 demo suites pass; `p26` (31 checks) covers the swap.
+- **Published:** 6dbe1a7; Android build 212 (file checked: checksum matches). The website repo's `main` and
+  `gh-pages` say "Publish the app from NavigateMe 6dbe1a7".
+- **Screenshot:** [before and after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/d107412349b44e8234239f1517ede1b9694b7746/tribe-saved.png).
+- **For Kamal:** he asked for the steps to merge findmeflatmate PR #2; I gave them (open the PR, Merge pull request,
+  Confirm merge). Still open: #86 privacy blanks, #95 merge or close, the host page and the strip behind the clock
+  (both raised with #104).
+
 ## 2026-11-15, clean login page, Parties as its own section, two layers on every screen (#104) live
 
 - **What Kamal asked (15 Nov):** "Make parties near by a seperate section all together and an amazing one. Also work
@@ -165,22 +181,3 @@
 - **Published:** 663d7aa; the release notes say build 197. The APK build passed, so the Java change compiles.
 - **Note:** only phones on build 197 or later can check, so everyone needs one manual download first.
 - **Tests:** new suite p20; 18 suites, 0 failed. No database change.
-
-## 2026-11-13, owner home colours and audit (#91, live)
-
-- **What (King, from Kamal's 13 Nov screenshot):**
-  - The Empty Room Escape card on My flat and the Account "Your passes" panel still had navy-era white and mint text,
-    and an orange link, on the lavender tile.
-  - They now have dark text, grey for the secondary lines, and nothing orange inside.
-  - The "Replies within hours" line and the listing card already passed the contrast check.
-- **Audit:** new suite p19 checks contrast on My flat (with people looking), requests, the Escape list, the posting
-  form and Account, so this can't come back.
-- **"Kamal · Xyz":** not a bug.
-  - It's a separate seeker account (26 Oct, a different number, probably a test account).
-  - The live fm_find_seekers already leaves out the owner.
-  - The demo now does the same.
-- **Tests:** 17 suites, 0 failed. No database change.
-- **Status:** merged and published (0ddb42f).
-- **Screenshots:** [before](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4ec0b2b9b73565cb9afc352db06b671a9638fde8/owner-before.png), [after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4ec0b2b9b73565cb9afc352db06b671a9638fde8/owner-after.png).
-- **Earlier:** the 10 Nov "city card overlap" was the first photo on Kamal's Pune listing, which looks like a
-  screenshot of the app. It isn't a code bug.
