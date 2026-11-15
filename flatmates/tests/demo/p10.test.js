@@ -36,7 +36,7 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, key: ob &
   await p.screenshot({ path: O + '/p10-done.png' });
   await p.click('#obDone'); await p.waitForTimeout(1500);
   await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
-  const nav = await p.evaluate(() => ({ hash: location.hash, tabs: [...document.querySelectorAll('#nav .tab span')].map(x => x.textContent), tribe: !!document.querySelector('.hd-tribe'), req: !!document.querySelector('#topActs [data-view=requests]') }));
+  const nav = await p.evaluate(() => ({ hash: location.hash, tabs: [...document.querySelectorAll('#nav .tab span')].map(x => x.textContent), tribe: !!document.querySelector('#nav .tab[data-view=tribe], .hd-saved'), req: !!document.querySelector('#topActs [data-view=requests]') }));
   ok(nav.hash === '#splits' && nav.tabs.join() === 'Splits,Market,Parties,Discover,Account' && !nav.tribe && !nav.req, 'lands on Flatsplits; tabs are Splits, Market, Parties, Discover, Account (no Tribe, no Requests): ' + JSON.stringify(nav));
   // Flatsplits and FlatMart work
   const gid = await p.evaluate(() => api.splitCreate('Flat 2B', '🏠', [{ name: 'Mira', phone: '9811100009' }], 'flat'));

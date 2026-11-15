@@ -307,9 +307,12 @@ the room comes second.
       `?i=<id>` opens an item), through the share sheet or download + WhatsApp + copy link. Bought boosts and sales are credits
     (`fm_profiles.boost_credits` / `sale_credits`, added by `fm_credit_order`) used by `fm_market_boost` and
     `fm_market_sale_start`; while charges are off (`fm_settings.charges_enabled`), both are free.
-    **Requests** and **Tribe** sit as icons in the top bar (with their badges), next to notifications and the
-    avatar for Account, so the bottom bar keeps the main places: Discover, Saved, Parties, Splits, Market and
-    Passes for seekers; My flat, Escape, Post, Parties, Splits, Market and Passes for owners.
+    **Requests**, **Messages** and **Saved** (the shortlist, a heart) sit as round buttons in the phone's top bar
+    (Requests and Messages with their badges), next to the avatar for Account, so the bottom bar keeps the main
+    places: Discover, Tribe, Parties, Splits, Market and Passes for seekers; My flat, Escape, Post, Parties,
+    Splits, Market and Passes for owners. Tribe and Saved changed places on 15 Nov (Kamal: "Interchange the
+    position of tribe and saved or shortlisted buttons on the app"): until then Tribe was a named button in the
+    top bar and Saved a tab in the bottom bar. On a computer both are tabs in the top row, as before.
 
 17. **Search together as a tribe.** The ♥ shortlist is saved to the server and shared inside a tribe (up to 3
     people). When anyone in the tribe taps ♥, the others see it in Saved under "Shortlisted by Riya", on the
@@ -751,8 +754,9 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   Orange text sits only on beige, white and off-white; inside pastel panels and tiles text stays near-black.
 - **Top bar** (9 Nov, Kamal): no background or line of its own; it sits on the beige page and gets a soft shade only
   once you scroll (on a phone's home screen it sits on the band, see "Home screens"). The logo sits in a white
-  rounded tile (the mark alone on phones under 420px); the bell and Tribe are round white buttons with soft shadows
-  (Tribe is its icon alone on phones under 350px); your initial is a black circle; badges are coral.
+  rounded tile (the mark alone on phones under 420px); Requests (a bell), Messages and, on phones, Saved (a heart)
+  are round white buttons with soft shadows, black while you're on that screen; your initial is a black circle;
+  badges are coral.
 - **Sign-up** (9 Nov, Kamal): a large light headline with the key words in bold; the three choices are pastel tiles
   (I need a room lavender, Posting a flat or a room butter, side by side; Just Flatsplits & FlatMart mint across),
   each with an ↗ corner that turns into a black check when picked. On phones the tiles show their titles and the

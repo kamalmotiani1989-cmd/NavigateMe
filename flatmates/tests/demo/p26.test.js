@@ -64,14 +64,24 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   // the bottom bar
   let B = await bar(p);
   ok(B.radius >= 30 && B.alpha >= .7 && B.alpha < 1 && B.blur && B.left >= 12 && B.right >= 12 && B.bottom >= 10, 'bottom bar: a frosted pill floating above the edge: ' + JSON.stringify({ radius: B.radius, alpha: B.alpha, blur: B.blur, left: B.left, right: B.right, bottom: B.bottom }));
-  ok(B.names.join() === 'Discover,Saved,Parties,Splits,Market,Passes' && B.icons && !B.cut.length, 'every place keeps its icon and its name: ' + B.names.join(' · '));
+  ok(B.names.join() === 'Discover,Tribe,Parties,Splits,Market,Passes' && B.icons && !B.cut.length, 'every place keeps its icon and its name: ' + B.names.join(' · '));
   ok(B.cur.view === 'discover' && B.cur.bg === B.tok.lav && B.cur.color === B.tok.text && B.cur.radius >= 24 && B.idle === B.tok.text2, 'the screen you\'re on is a soft lavender pill with dark words (not a black button): ' + JSON.stringify(B.cur));
   // other screens: their own pastel on the tab, the same as the band at the top of the screen (p27 walks every band)
-  for(const [view, name, col] of [['saved', 'Saved', 'blush'], ['parties', 'Parties', 'butter'], ['splits', 'Splits', 'lav'], ['market', 'Market', 'butter'], ['plans', 'Passes', 'blush']]){
+  for(const [view, name, col] of [['tribe', 'Tribe', 'mint'], ['parties', 'Parties', 'butter'], ['splits', 'Splits', 'lav'], ['market', 'Market', 'butter'], ['plans', 'Passes', 'blush']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250);
     B = await bar(p); L = await look(p);
     ok(B.cur && B.cur.view === view && B.cur.bg === B.tok[col] && B.cur.color === B.tok.text && L.band && L.bandBg === B.tok[col] && L.onBand && L.headBg === B.tok[col], name + ': the tab is a ' + col + ' pill, the colour of the screen\'s own band');
     if(view === 'market') await p.screenshot({ path: O + '/p26-bar-market.png' }); }
+  // Saved and Tribe changed places (Kamal, 15 Nov): Saved is the heart in the top bar, Tribe is in the bottom bar
+  await p.goto(U + '#saved'); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); L = await look(p);
+  const sv = await p.evaluate(() => { const h = document.querySelector('#topActs .hd-saved'), ink = (() => { const d = document.createElement('i'); d.style.color = 'var(--ink)'; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; })();
+    return { heart: !!h && !!h.offsetParent && !!h.querySelector('svg'), name: h && h.getAttribute('aria-label'), on: h && h.getAttribute('aria-current') === 'true' && getComputedStyle(h).backgroundColor === ink,
+      tabShown: !!(document.querySelector('#nav .tab[data-view=saved]') || {}).offsetParent, tribeTab: !!(document.querySelector('#nav .tab[data-view=tribe]') || {}).offsetParent, tribeTop: !!document.querySelector('#topActs [data-view=tribe]'),
+      lit: [...document.querySelectorAll('#nav .tab[aria-current=true]')].filter(x => x.offsetParent).length }; });
+  ok(sv.heart && sv.name === 'Saved' && sv.on && !sv.tabShown && sv.tribeTab && !sv.tribeTop && !sv.lit && L.band && L.bandBg === B.tok.blush, 'Saved is the heart in the top bar (black while you\'re on it), Tribe is in the bottom bar: ' + JSON.stringify(sv));
+  await p.click('#topActs .hd-saved'); await p.goto(U + '#discover'); await p.waitForTimeout(900); await closeDlgs(p);
+  await p.click('#topActs .hd-saved'); await p.waitForTimeout(900);
+  ok(await p.evaluate(() => location.hash === '#saved' && !$('view-saved').hidden), 'tapping the heart opens Saved');
   await p.goto(U + '#discover'); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); L = await look(p);
   ok(L.onBand && L.headBg === L.lav, 'back on Discover: the band and the bar\'s colour return');
   await ctx.close();
@@ -103,11 +113,13 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   ok(eb.shown && /^2 selected/.test(eb.text) && eb.clearOfNav >= 2 && !eb.helpOnBar && eb.goInView, 'short phone, inviting several on Escape: the bar sits above the bottom bar and Help steps out of its way: ' + JSON.stringify(eb));
   await p.screenshot({ path: O + '/p26-escape-bar.png' });
   await ctx.close();
-  // the smallest phones: Tribe is its icon alone, still named for screen readers
+  // the smallest phones: the top bar's buttons (requests, messages, Saved, account) all fit and stay round
   ({ ctx, p } = await open(b, seeker, 320, 640, 'discover'));
-  const tr = await p.evaluate(() => { const t = document.querySelector('.hd-tribe'), r = t.getBoundingClientRect(); return { label: t.getAttribute('aria-label'), word: !!t.querySelector('span').offsetParent, w: Math.round(r.width), h: Math.round(r.height), me: Math.round($('meBtn').getBoundingClientRect().width) }; });
+  const tr = await p.evaluate(() => { const bs = [...document.querySelectorAll('#topActs .hd-ic')].filter(x => x.offsetParent).map(x => { const r = x.getBoundingClientRect(); return { name: x.getAttribute('aria-label'), w: Math.round(r.width), h: Math.round(r.height), right: Math.round(r.right) }; });
+    return { bs, me: Math.round($('meBtn').getBoundingClientRect().width), meRight: Math.round($('meBtn').getBoundingClientRect().right) }; });
   L = await look(p);
-  ok(/^Tribe/.test(tr.label) && !tr.word && tr.w === tr.h && tr.me === 44 && L.band && L.left === 0 && L.right === 320, '320 wide: Tribe is a round icon (named "' + tr.label + '"), the account button is round, the band still runs edge to edge');
+  ok(tr.bs.map(x => x.name.replace(/ \(.*/, '')).join() === 'Requests,Messages,Saved' && tr.bs.every(x => x.w === x.h) && tr.me === 44 && tr.meRight <= 320 && L.band && L.left === 0 && L.right === 320,
+    '320 wide: Requests, Messages and Saved are round buttons in the top bar, the account button is round, the band still runs edge to edge');
   await p.screenshot({ path: O + '/p26-home-320.png' });
   await ctx.close();
 
@@ -122,8 +134,10 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   ({ ctx, p } = await open(b, seeker, 1280, 800, 'discover'));
   const wide = await p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
     const band = document.querySelector('#view-discover .home-band'), cs = getComputedStyle(band); return { bg: cs.backgroundColor, img: cs.backgroundImage, after: getComputedStyle(band, '::after').content, onBand: $('appHead').classList.contains('on-band'),
-      eyebrow: getComputedStyle(band.querySelector('.eyebrow')).color, orange: tok('--orange-text'), navFixed: getComputedStyle($('nav')).position }; });
+      eyebrow: getComputedStyle(band.querySelector('.eyebrow')).color, orange: tok('--orange-text'), navFixed: getComputedStyle($('nav')).position,
+      tabs: [...document.querySelectorAll('#nav .tab')].filter(x => x.offsetParent).map(x => x.textContent.trim()).join(), heart: !!(document.querySelector('.hd-saved') || {}).offsetParent }; });
   ok(wide.bg === 'rgba(0, 0, 0, 0)' && wide.img === 'none' && wide.after === 'none' && !wide.onBand && wide.eyebrow === wide.orange && wide.navFixed !== 'fixed', 'on a computer the greeting is as before (no band, orange greeting line, tabs in the top bar): ' + JSON.stringify(wide));
+  ok(wide.tabs === 'Discover,Tribe,Saved,Parties,Splits,Market,Passes' && !wide.heart, 'on a computer Tribe and Saved are both tabs in the top row, as before: ' + wide.tabs);
   await ctx.close();
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));
