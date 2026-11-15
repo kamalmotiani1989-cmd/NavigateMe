@@ -2351,7 +2351,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   .tab{padding:8px 2px 7px; border-radius:999px; color:var(--text-2); transition:background .2s, color .2s}
   .tab svg{width:22px; height:22px}
   .tab[aria-current="true"]{background:var(--lav); color:var(--text)}
-  .tab[aria-current="true"]:is([data-view="mine"], [data-view="post"], [data-view="market"]){background:var(--butter)}
+  .tab[aria-current="true"]:is([data-view="mine"], [data-view="post"], [data-view="market"], [data-view="parties"]){background:var(--butter)}
   .tab[aria-current="true"]:is([data-view="escape"], [data-view="tribe"]){background:var(--mint)}
   .tab[aria-current="true"]:is([data-view="saved"], [data-view="plans"]){background:var(--blush)}
   /* the "Invite several" bar on Escape rests just above the bottom bar (on short phones it sat a little under it),
@@ -2362,6 +2362,55 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 /* the smallest phones (320 wide): the round buttons in the top bar keep their shape, and Tribe is its icon alone */
 .app-head .me, .hd-ic{flex:none}
 @media (max-width:350px){ .hd-tribe{width:44px; padding:0; justify-content:center} .hd-tribe span{display:none} }
+/* =====================================================================================================
+   Parties: its own place (Kamal, 15 Nov: "Make parties near by a seperate section all together and an amazing
+   one"). Butter, the colour parties already had. Each party is a card: the day on a white tile, what it is,
+   when and how far, what it costs, who's hosting. Never an address before the host says yes.
+   ===================================================================================================== */
+.pn-where{margin-top:12px}
+.pn-h{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:26px 0 12px}
+.pn-h h2{font-size:var(--fs-l); letter-spacing:-.01em} .pn-h span{font-size:var(--fs-s); color:var(--text-2)}
+.pn-h:first-child{margin-top:8px}
+.pn-filters{margin:0 0 14px}
+.pn-list{display:grid; gap:14px}
+@media (min-width:721px){ .pn-list{grid-template-columns:1fr 1fr; gap:18px} }
+.pn-card{display:flex; flex-direction:column; width:100%; padding:0; border:0; border-radius:var(--r-card); overflow:hidden; background:var(--surface); box-shadow:var(--card-shadow);
+  text-align:left; font:inherit; color:var(--text); cursor:pointer; transition:transform .15s, box-shadow .15s}
+.pn-card:hover{transform:translateY(-2px); box-shadow:0 18px 40px rgba(60,40,30,.14)} .pn-card:active{transform:scale(.99)}
+.pn-card:focus-visible{outline:3px solid var(--ink); outline-offset:3px}
+.pn-art{position:relative; display:flex; align-items:center; gap:14px; padding:16px 18px; overflow:hidden; background:var(--lav)}
+.pn-list .pn-card:nth-child(3n+2) .pn-art{background:var(--butter)} .pn-list .pn-card:nth-child(3n) .pn-art{background:var(--mint)}
+.pn-art::before{content:""; position:absolute; right:-34px; top:-54px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.34)}
+.pn-art > *{position:relative}
+.pn-date{flex:none; display:grid; justify-items:center; min-width:60px; padding:9px 10px 8px; border-radius:18px; background:#fff; line-height:1.1; box-shadow:0 8px 18px rgba(60,40,30,.10)}
+.pn-date b{font-size:var(--fs-l); font-weight:800; letter-spacing:-.02em} .pn-date small{font-size:var(--fs-xs); font-weight:700; color:var(--text-2); white-space:nowrap}
+.pn-kind{flex:1; min-width:0} .pn-kind b{display:block; font-size:var(--fs-l); line-height:1.15; letter-spacing:-.01em} .pn-kind small{display:block; margin-top:3px; font-size:var(--fs-xs); font-weight:700; color:var(--text)}
+.pn-emoji{flex:none; font-style:normal; font-size:40px; line-height:1}
+.pn-body{display:grid; gap:11px; padding:14px 18px 16px}
+.pn-meta{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:var(--fs-s); color:var(--text-2)} .pn-meta span{display:inline-flex; align-items:center; gap:6px}
+.pn-chips{display:flex; flex-wrap:wrap; gap:6px} .pn-chips i{font-style:normal; font-size:var(--fs-xs); font-weight:700; padding:5px 11px; border-radius:999px; background:var(--surface-2); color:var(--text)}
+.pn-chips i.few{background:var(--coral)}
+.pn-foot{display:flex; align-items:center; gap:10px; padding-top:12px; box-shadow:inset 0 1px 0 var(--hair)}
+.pn-av{flex:none; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:var(--ink); color:#fff; font-weight:800; font-size:var(--fs-s)}
+.pn-host{flex:1; min-width:0} .pn-host b{display:block; font-size:var(--fs-s)} .pn-host small{display:block; font-size:var(--fs-xs); color:var(--text-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pn-go{flex:none; padding:7px 16px; border-radius:999px; background:var(--ink); color:#fff; font-weight:700; font-size:var(--fs-s)}
+/* before it's switched on: what it is, in three lines, and the switch */
+.pn-intro{margin:8px 0 0; padding:24px 22px 22px; border-radius:var(--r-card); background:var(--surface); box-shadow:var(--card-shadow)}
+.pn-intro h2{font-size:clamp(21px, 3.4vw, 26px); font-weight:400; letter-spacing:-.03em} .pn-intro > p{color:var(--text-2); margin:8px 0 16px}
+.pn-intro-art{display:flex; align-items:center; justify-content:center; margin:2px 0 18px}
+.pn-intro-art span{display:block; width:74px; height:74px; border-radius:50%; overflow:hidden; box-shadow:0 0 0 4px var(--surface), 0 10px 22px rgba(60,40,30,.14)}
+.pn-intro-art span + span{margin-left:-14px} .pn-intro-art span svg{display:block; width:100%; height:100%}
+.pn-intro-art i{font-style:normal; font-size:30px; line-height:1; margin:0 10px; animation:bob 6s ease-in-out infinite} .pn-intro-art i:last-child{animation-delay:-3s}
+.pn-points{list-style:none; padding:0; margin:16px 0 20px; display:grid; gap:12px}
+.pn-points li{display:flex; gap:12px; align-items:flex-start; color:var(--text-2)} .pn-points li b{color:var(--text)}
+.pn-points li svg{flex:none; box-sizing:content-box; padding:8px; border-radius:50%; background:var(--butter); color:var(--text)}
+.pn-intro .hint{margin:12px 0 0; text-align:center}
+/* host your own */
+.pn-hostcta{display:flex; flex-wrap:wrap; align-items:center; gap:14px 16px; margin:26px 0 0; padding:20px 22px; border-radius:var(--r-card); background:var(--lav); color:var(--text)}
+.pn-hostcta > div{flex:1 1 220px; min-width:0} .pn-hostcta h2{font-size:var(--fs-l)} .pn-hostcta p{margin:4px 0 0; color:var(--text)}
+.pn-cta-ic{flex:none; display:grid; place-items:center; width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,.6)}
+.pn-empty{margin-top:4px} .pn-off{margin:18px 0 0; text-align:center}
+#view-parties .party-rules{margin-top:18px}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -2723,6 +2772,16 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   <section id="view-saved" hidden>
     <div class="page-h"><h1>Saved flats</h1><p id="savedSub">Your shortlist. Compare them here before you decide which ones to contact.</p></div>
     <div class="cards" id="savedCards" style="margin-top:18px"></div>
+  </section>
+
+  <!-- Parties nearby: its own place (Kamal, 15 Nov: "Make parties near by a seperate section all together and an
+       amazing one"). Hosts open a house party to people nearby; here you switch it on, see them, ask to join and
+       start your own. The rules are the ones it had inside Splits and Account: off until you switch it on, 21 and
+       over, and the address only after the host says yes. -->
+  <section id="view-parties" hidden>
+    <div class="greet home-band" data-band="butter"><p class="eyebrow">Parties nearby</p><h1>House parties, round the corner.</h1>
+      <p id="pnSub">Game nights, potlucks and match screenings in flats near you.</p><div id="pnWhere"></div></div>
+    <div id="pnBody"></div>
   </section>
 
   <!-- owner: my listings -->
@@ -5688,8 +5747,8 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","splits","market","plans","account","messages"], owner:["mine","escape","requests","post","splits","market","plans","account","messages"],
-  splits:["splits","market","discover","account","messages"] };   // Discover shows the lock until the vibe questions are answered
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","parties","splits","market","plans","account","messages"], owner:["mine","escape","requests","post","parties","splits","market","plans","account","messages"],
+  splits:["splits","market","parties","discover","account","messages"] };   // Discover and Parties show a lock until the vibe questions are answered
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
   requests:["Requests",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>'],
@@ -5701,10 +5760,11 @@ const TAB = {
   splits:["Splits",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'],
   market:["Market",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v10h16V10"/><path d="M2.5 10L5 4h14l2.5 6z"/><path d="M2.5 10a3.2 3.2 0 0 0 6.3 0 3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.3 0"/><path d="M10 20v-5h4v5"/></svg>'],
   plans:["Passes",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.2"/></svg>'],
+  parties:["Parties",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l5-14 9 9-14 5z"/><path d="M14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0"/></svg>'],
   messages:["Messages",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","tribe","requests","saved","mine","escape","post","splits","market","plans","account","messages"];
+const VIEWS = ["discover","tribe","requests","saved","parties","mine","escape","post","splits","market","plans","account","messages"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-host").hidden = name !== "host";
@@ -5747,7 +5807,7 @@ function route(){
   setMeBtn(); avSync();
   setTimeout(maybeAskGender, 600);
   if(editing && v !== "post") endEdit();
-  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount, messages:renderMessages })[v]();
+  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, parties:renderParties, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount, messages:renderMessages })[v]();
   if(v !== "messages") refreshMsgUnseen();
   window.scrollTo(0, 0);
   // A home someone shared (?l=...): open it once the app is up.
@@ -9408,8 +9468,7 @@ async function renderSplits(){
   if(routeArg) return renderSplitGroup(routeArg);
   $("fsHome").hidden = false; $("fsGroup").hidden = true;
   let groups = [], feed = [];
-  let near = { me: null, list: [] };
-  try{ [groups, feed, near] = await Promise.all([api.splitGroups(), api.partyFeed().catch(() => []), loadNear()]); }catch(err){ console.error(err); }
+  try{ [groups, feed] = await Promise.all([api.splitGroups(), api.partyFeed().catch(() => [])]); }catch(err){ console.error(err); }
   if(currentView !== "splits" || routeArg) return;
   const owed = groups.reduce((t, g) => t + Math.max(0, g.my_net), 0), owe = groups.reduce((t, g) => t + Math.max(0, -g.my_net), 0);
   $("fsTot").innerHTML = groups.length ? `<div><b>${rupees(owed)}</b><span>you get back in all</span></div><div><b>${rupees(owe)}</b><span>you owe in all</span></div>` : "";
@@ -9422,7 +9481,7 @@ async function renderSplits(){
       ${fsNetHtml(g.my_net)}</button>`;
   // This month, your share: the flat's household spending, kept apart from trips and parties.
   const month = new Date().toLocaleDateString("en-IN", { month:"long" });
-  $("fsGroups").innerHTML = nearSectionHtml(near) + ptFeedHtml(feed) + (groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
+  $("fsGroups").innerHTML = ptFeedHtml(feed) + (groups.length ? `<div class="fs-split-sum"><p>Your share in ${esc(month)}</p>
         <div><span>${ic("home", 14)} Household</span><b>${rupees(share(flats))}</b></div><div><span>${ic("plane", 14)} Trips & parties</span><b>${rupees(share(events))}</b></div></div>
       <h3 class="section-h">Your flat</h3>${flats.length ? flats.map(groupBtn).join("") : `<p class="hint" style="margin:0 0 6px">No flat group yet.</p>`}
       <button class="btn btn-ghost" type="button" data-fs="new" style="margin-top:10px">+ New flat group</button>
@@ -11305,29 +11364,103 @@ const nearWhen = p => new Date(p.starts_at).toLocaleDateString("en-IN", { weekda
 const nearPlace = p => `${p.area}${p.km != null ? ", " + p.km.toFixed(1) + " km" : ""}`;
 const nearSpots = p => p.spots_left > 0 ? `${p.spots_left} ${p.spots_left === 1 ? "spot" : "spots"} left` : "Full";
 const NEAR_STATUS = { pending:"Asked to join", accepted:"You're in", declined:"Not this time", withdrawn:"", cancelled:"Called off" };
+// ---- Parties: its own place (Kamal, 15 Nov). The same nearby parties, requests and rules as before; they used to
+// sit inside Splits (the list) and Account (the switch). Account keeps the switch as a setting.
+let pnFilter = "all";
+const PN_FILTERS = [["all", "All"], ["today", "Today"], ["weekend", "This weekend"], ["free", "Free entry"]];
+function pnMatch(p, f){
+  const d = new Date(p.starts_at), now = new Date();
+  if(f === "today") return d.toDateString() === now.toDateString();
+  if(f === "weekend") return (d - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5 < 7 && (d.getDay() === 6 || d.getDay() === 0 || (d.getDay() === 5 && d.getHours() >= 17));
+  if(f === "free") return p.entry !== "chip";
+  return true;
+}
+// One party as a card: the day, what it is, when and how far, what it costs, who's hosting. Never an address.
 function nearCardHtml(p){
-  const st = p.my_request && NEAR_STATUS[p.my_request.status];
-  return `<button class="near-card" type="button" data-near="${esc(p.code)}"><span class="pt-mini-ic" aria-hidden="true">${ptKind(p.occasion)[0]}</span>
-    <span class="nc-main"><b>${esc(p.title)}</b><small>${esc(nearWhen(p))} · ${esc(nearPlace(p))}</small>
-      <small>${esc(ptEntryText(p))} · ${esc(nearSpots(p))}${p.who !== "all" ? " · " + esc(PT_WHO[p.who]) : ""}${p.sample ? " " + SAMPLE_TAG : ""}</small></span>
-    ${st ? `<span class="nc-st ${esc(p.my_request.status)}">${esc(st)}</span>` : `<span class="pt-go">See</span>`}</button>`;
+  const st = p.my_request && NEAR_STATUS[p.my_request.status], d = new Date(p.starts_at), vt = vibeType(p.host_vibe), few = p.spots_left > 0 && p.spots_left <= 3;
+  return `<button class="pn-card" type="button" data-near="${esc(p.code)}">
+    <span class="pn-art"><span class="pn-date"><b>${d.getDate()}</b><small>${esc(d.toLocaleDateString("en-IN", { weekday:"short" }))} · ${esc(d.toLocaleDateString("en-IN", { month:"short" }))}</small></span>
+      <span class="pn-kind"><b>${esc(p.title)}</b><small>${String(p.title).trim().toLowerCase() === ptKind(p.occasion)[1].toLowerCase() ? "" : esc(ptKind(p.occasion)[1])}${p.sample ? " " + SAMPLE_TAG : ""}</small></span>
+      <i class="pn-emoji" aria-hidden="true">${ptKind(p.occasion)[0]}</i></span>
+    <span class="pn-body">
+      <span class="pn-meta"><span>${ic("pin", 16)}${esc(nearPlace(p))}</span><span>${ic("bell", 16)}${esc(ptTimes(p))}</span></span>
+      <span class="pn-chips"><i>${esc(ptEntryText(p))}</i>${p.who !== "all" ? `<i>${esc(PT_WHO[p.who])}</i>` : ""}<i${few ? ' class="few"' : ""}>${esc(nearSpots(p))}</i></span>
+      <span class="pn-foot"><span class="pn-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span>
+        <span class="pn-host"><b>Hosted by ${esc(p.host || "someone nearby")}</b><small>${vt ? esc(vt.emoji + " " + vt.title) : "Living style not shared yet"}</small></span>
+        ${st ? `<span class="nc-st ${esc(p.my_request.status)}">${esc(st)}</span>` : `<span class="pn-go">See</span>`}</span>
+    </span></button>`;
 }
-function nearSectionHtml(n){
-  if(isSplits()) return `<div class="near-promo"><span class="pt-mini-ic" aria-hidden="true">${ic("party", 20)}</span><div><b>House parties near you</b>
-      <small>Answer 12 quick questions about how you live to see parties hosts open to people nearby.</small></div>
-      <button class="btn btn-ghost btn-sm" type="button" data-go-rooms>Answer</button></div>`;
-  if(!n || !n.me) return "";
-  if(!n.me.on) return `<div class="near-promo"><span class="pt-mini-ic" aria-hidden="true">${ic("party", 20)}</span><div><b>House parties near you</b>
-      <small>See parties hosts have opened to people nearby. Off until you switch it on.</small></div>
-      <button class="btn btn-ghost btn-sm" type="button" data-near-on>Show me</button></div>`;
-  return `<h3 class="section-h near-h">Parties near you <span>${n.me.label ? "near " + esc(n.me.label) : ""} · <button class="linkbtn" type="button" data-near-pin>Change</button></span></h3>
-    ${n.list.length ? `<div class="near-list">${n.list.map(nearCardHtml).join("")}</div>` : `<p class="hint near-empty">No parties near you right now. Hosts open them a few days ahead, so check back.</p>`}`;
+const pnHostCta = () => `<div class="pn-hostcta"><span class="pn-cta-ic" aria-hidden="true">${ic("party", 26, 1.8)}</span>
+    <div><h2>Having people over?</h2><p>Open your game night or potluck to people nearby. You set how many can come, who it's for and who gets in.</p></div>
+    <button class="btn btn-primary" type="button" data-fs-event="party">Host a party</button></div>`;
+// The parties I'm hosting that haven't ended: each opens its group, where the invite card, the requests and the door list are.
+async function pnHosting(groups){
+  const out = [];
+  for(const g of groups.filter(g => g.kind === "party").slice(0, 6)){
+    try{
+      const p = await api.partyForGroup(g.id); if(!p || !p.is_host || p.cancelled) continue;
+      if(new Date(p.ends_at || new Date(p.starts_at).getTime() + 12 * 36e5) < new Date()) continue;
+      const o = await api.partyOpenFor(g.id).catch(() => null), open = !!(o && o.open);
+      const asked = open ? ((await api.partyHostRequests(g.id).catch(() => [])) || []).filter(r => r.status === "pending").length : 0;
+      out.push({ g, p, open, asked });
+    }catch(err){ console.error(err); }
+  }
+  return out;
 }
+const pnHostingHtml = list => list.length ? `<div class="pn-h"><h2>You're hosting</h2></div><div class="near-list">${list.map(({ g, p, open, asked }) =>
+    `<a class="near-card" href="#splits/${esc(g.id)}"><span class="pt-mini-ic" aria-hidden="true">${ptKind(p.occasion)[0]}</span>
+      <span class="nc-main"><b>${esc(p.title)}</b><small>${esc(nearWhen(p))}</small>
+        <small>${open ? "Open to people nearby" : "Friends and flatmates only"}${asked ? ` · ${asked} asked to join` : ""}</small></span>
+      ${asked ? `<span class="nc-st pending">${asked} to answer</span>` : `<span class="pt-go">Open</span>`}</a>`).join("")}</div>` : "";
+async function renderParties(){
+  const body = $("pnBody");
+  if(isSplits()){
+    $("pnWhere").innerHTML = "";
+    body.innerHTML = `<div class="pn-intro"><h2>Answer 12 quick questions first.</h2>
+      <p>Parties nearby are for people who've told us how they live, so hosts know who's asking. It takes about two minutes.</p>
+      <button class="btn btn-primary" type="button" data-go-rooms>Answer them</button></div>`;
+    return;
+  }
+  let near = { me: null, list: [] }, feed = [], groups = [];
+  try{ [near, feed, groups] = await Promise.all([loadNear(), api.partyFeed().catch(() => []), api.splitGroups().catch(() => [])]); }catch(err){ console.error(err); }
+  const hosting = await pnHosting(groups || []);
+  if(currentView !== "parties") return;
+  const me = near.me || {}, on = !!me.on, list = near.list || [];
+  $("pnWhere").innerHTML = on ? `<button class="gift-pill pn-where" type="button" data-near-pin>${ic("pin", 16)}Near ${esc(me.label || "your place")} · Change</button>` : "";
+  const rules = partyRulesHtml(false);
+  if(!on){
+    body.innerHTML = `<div class="pn-intro"><div class="pn-intro-art" aria-hidden="true"><i>🎲</i><span>${avCast(1)}</span><span>${avCast(0)}</span><span>${avCast(2)}</span><i>🍲</i></div>
+        <h2>See who's having people over near you.</h2>
+        <ul class="pn-points"><li>${ic("pin", 18)}<span><b>What, when and how far.</b> You see the area, never the address.</span></li>
+          <li>${ic("users", 18)}<span><b>Ask to join.</b> The host sees your first name and how you live, and decides.</span></li>
+          <li>${ic("door", 18)}<span><b>Once you're in,</b> you get the address, the host's number and a check-in code for the door.</span></li></ul>
+        <button class="btn btn-primary btn-block" type="button" data-near-on>Show me parties near me</button>
+        <p class="hint">Off until you switch it on. 21 and over. You pick a place once; we don't follow your location.</p></div>
+      ${ptFeedHtml(feed)}${pnHostingHtml(hosting)}${pnHostCta()}${rules}`;
+    return;
+  }
+  const mine = list.filter(p => p.my_request && ["pending", "accepted"].includes(p.my_request.status)), rest = list.filter(p => !mine.includes(p));
+  if(!PN_FILTERS.some(([k]) => k === pnFilter)) pnFilter = "all";
+  const shown = rest.filter(p => pnMatch(p, pnFilter));
+  body.innerHTML = `${mine.length ? `<div class="pn-h"><h2>Your parties</h2></div><div class="pn-list">${mine.map(nearCardHtml).join("")}</div>` : ""}
+    <div class="pn-h"><h2>Near you</h2><span>${rest.length} ${rest.length === 1 ? "party" : "parties"}</span></div>
+    ${rest.length ? `<div class="area-chips pn-filters" role="group" aria-label="Which parties">${PN_FILTERS.map(([k, t]) => `<button type="button" data-pn-filter="${k}" aria-pressed="${pnFilter === k}">${t}</button>`).join("")}</div>` : ""}
+    ${shown.length ? `<div class="pn-list">${shown.map(nearCardHtml).join("")}</div>`
+      : `<div class="empty pn-empty"><div class="empty-ic" aria-hidden="true">${ic("party", 30, 1.8)}</div><h3>${rest.length ? "Nothing for that" : "No parties near you right now"}</h3>
+          <p>${rest.length ? "Try another day, or see them all." : "Hosts open them a few days ahead, so check back. Or start one."}</p>
+          ${rest.length ? `<button class="btn btn-ghost" type="button" data-pn-filter="all">See all</button>` : ""}</div>`}
+    ${ptFeedHtml(feed)}${pnHostingHtml(hosting)}${pnHostCta()}${rules}
+    <p class="hint pn-off">Showing parties near ${esc(me.label || "your place")}. <button class="linkbtn" type="button" data-near-off>Stop showing me parties</button></p>`;
+}
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-pn-filter]"); if(f){ pnFilter = f.dataset.pnFilter; renderParties(); return; }
+  if(e.target.closest("[data-near-off]")) nearSwitch(false);
+});
 function renderNearPanel(){
   $("nearToggle").disabled = isSplits();
   if(isSplits()){ $("nearToggle").checked = false; $("nearWhere").innerHTML = `Answer the vibe questions first. <button class="linkbtn" type="button" data-go-rooms>Answer them</button>`; return; }
   api.partyNearbyMe().then(m => { nearMe = m; $("nearToggle").checked = !!(m && m.on);
-    $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#splits" style="white-space:nowrap">See parties</a>` : ""; })
+    $("nearWhere").innerHTML = m && m.on ? `Looking near <b>${esc(m.label || "your place")}</b> · <button class="linkbtn" type="button" data-near-pin>Change</button> · <a href="#parties" style="white-space:nowrap">See parties</a>` : ""; })
     .catch(err => console.error(err));
 }
 document.addEventListener("submit", async e => {
@@ -11346,10 +11479,10 @@ document.addEventListener("click", async e => {
   catch(err){ console.error(err); const m = String(err.message || ""); toast(m.includes("party-full") ? "No spots left for them and their plus-ones." : "Couldn't do that. Please try again."); }
   await loadFsParty(); drawSplitGroup();
 });
-// A notification opens #near/<code>: Splits with that party on top.
+// A notification opens #near/<code>: Parties with that party on top.
 function nearRoute(){
   const m = /^#near\/([A-Za-z0-9]+)/.exec(location.hash); if(!m || !state.user) return;
-  history.replaceState(null, "", "#splits"); window.dispatchEvent(new HashChangeEvent("hashchange"));
+  history.replaceState(null, "", "#parties"); window.dispatchEvent(new HashChangeEvent("hashchange"));
   setTimeout(() => openNear(m[1].toUpperCase()), 600);
 }
 window.addEventListener("hashchange", nearRoute); setTimeout(nearRoute, 1200);
@@ -11361,13 +11494,13 @@ function askNearPin(then){
 async function nearSwitch(on, pin, label){
   try{
     nearMe = await api.partyNearbySet(on, pin || null, label || null);
-    toast(on ? "Parties near you are on. See them in Splits." : "Parties nearby switched off.");
+    toast(on ? "Parties near you are on." : "Parties nearby switched off.");
   }catch(err){
     console.error(err); const m = String(err.message || "");
     if(m.includes("need-pin")) return askNearPin(pl => nearSwitch(true, pl, pl.label));
     toast(m.includes("age-required") ? "Parties nearby are for adults only." : m.includes("need-vibe") ? "Answer the 12 questions about how you live first." : "Couldn't change that. Please try again.");
   }
-  if(currentView === "account") renderNearPanel(); if(currentView === "splits") renderSplits();
+  if(currentView === "account") renderNearPanel(); if(currentView === "parties") renderParties();
 }
 if(window.attachPlaceSearch || typeof attachPlaceSearch === "function") setTimeout(() => attachPlaceSearch($("npinPlace"), pl => {
   $("dlgNearPin").close(); const f = nearPinThen; nearPinThen = null; if(f) f({ lat: pl.lat, lng: pl.lng, label: pl.area || String(pl.label || "").split(",")[0] });
@@ -11477,6 +11610,8 @@ $("dlgNear").addEventListener("click", async e => {
     catch(err){ console.error(err); toast(nearErr(String(err.message || ""))); }
   }
 });
+// Back from a party's page: the list behind it shows what changed (asked, in, withdrawn).
+$("dlgNear").addEventListener("close", () => { if(currentView === "parties") renderParties(); });
 $("dlgNear").addEventListener("submit", async e => {
   if(e.target.id !== "nearAsk") return;
   e.preventDefault();

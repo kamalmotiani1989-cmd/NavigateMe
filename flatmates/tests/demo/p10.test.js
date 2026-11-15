@@ -37,7 +37,7 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, key: ob &
   await p.click('#obDone'); await p.waitForTimeout(1500);
   await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   const nav = await p.evaluate(() => ({ hash: location.hash, tabs: [...document.querySelectorAll('#nav .tab span')].map(x => x.textContent), tribe: !!document.querySelector('.hd-tribe'), req: !!document.querySelector('#topActs [data-view=requests]') }));
-  ok(nav.hash === '#splits' && nav.tabs.join() === 'Splits,Market,Discover,Account' && !nav.tribe && !nav.req, 'lands on Flatsplits; tabs are Splits, Market, Discover, Account (no Tribe, no Requests): ' + JSON.stringify(nav));
+  ok(nav.hash === '#splits' && nav.tabs.join() === 'Splits,Market,Parties,Discover,Account' && !nav.tribe && !nav.req, 'lands on Flatsplits; tabs are Splits, Market, Parties, Discover, Account (no Tribe, no Requests): ' + JSON.stringify(nav));
   // Flatsplits and FlatMart work
   const gid = await p.evaluate(() => api.splitCreate('Flat 2B', '🏠', [{ name: 'Mira', phone: '9811100009' }], 'flat'));
   await p.goto('http://localhost:8765/#splits/' + gid); await p.waitForTimeout(1200);
@@ -52,8 +52,8 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, key: ob &
   for(const h2 of ['#tribe', '#requests', '#saved', '#post', '#escape']){ await p.goto('http://localhost:8765/' + h2); await p.waitForTimeout(500); }
   ok(await p.evaluate(() => location.hash !== '#tribe' && location.hash !== '#post' && !$('roomLock').hidden || ['#splits', ''].includes(location.hash)), 'Tribe, Requests, Saved, Post and Escape aren\'t reachable');
   // parties nearby are locked too
-  await p.goto('http://localhost:8765/#splits'); await p.waitForTimeout(1300);
-  const np = await p.evaluate(async () => ({ promo: (document.querySelector('.near-promo') || {}).textContent || '', set: await api.partyNearbySet(true, { lat: 18.559, lng: 73.7868 }, 'Baner').then(() => 'on', e => e.message),
+  await p.goto('http://localhost:8765/#parties'); await p.waitForTimeout(1300);
+  const np = await p.evaluate(async () => ({ promo: (document.querySelector('#pnBody .pn-intro') || {}).textContent || '', set: await api.partyNearbySet(true, { lat: 18.559, lng: 73.7868 }, 'Baner').then(() => 'on', e => e.message),
     why: api.partyCantSee(demoNearParties()[0]) }));
   ok(/Answer 12 quick questions/.test(np.promo) && np.set === 'need-vibe' && np.why === 'need-vibe', 'parties nearby are locked until the vibe questions: ' + JSON.stringify(np).slice(0, 160));
   await p.goto('http://localhost:8765/#account'); await p.waitForTimeout(1200);
