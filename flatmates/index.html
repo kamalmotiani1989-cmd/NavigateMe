@@ -2198,6 +2198,24 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .upd-bar .upd-go{background:#fff; color:var(--text); flex:none}
 .upd-bar .upd-x{flex:none; width:32px; height:32px; display:grid; place-items:center; border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; cursor:pointer}
 .upd-bar .upd-x svg{width:16px; height:16px}
+/* Sign-up, number last (Kamal, 15 Nov): one step at a time, "x of 4" with a bar, a back arrow, a warm line with
+   the name. Our colours and type; the steps' own fields keep their existing look. */
+#loginForm .lg-step{border:0; margin:0; padding:0; min-width:0}
+#loginForm .lg-step[hidden]{display:none}
+.lg-top{display:flex; align-items:center; gap:12px; margin:0 0 14px}
+.lg-back{flex:none; width:38px; height:38px; border-radius:50%; border:0; background:var(--surface-2); color:var(--text); display:grid; place-items:center; cursor:pointer}
+.lg-prog{flex:1; height:6px; border-radius:999px; background:rgba(28,25,23,.10); overflow:hidden} .lg-prog i{display:block; height:100%; width:25%; border-radius:999px; background:var(--ink); transition:width .3s ease}
+.lg-count{flex:none; font-size:var(--fs-xs); font-weight:700; color:var(--text-2)}
+.lg-eb{margin:0 0 4px}
+#loginForm .lg-step h2{margin-top:0; margin-bottom:12px}
+#loginForm .lg-next{margin-top:14px}
+.lg-sex{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 8px}
+.lg-sx{position:relative; display:grid; place-items:center; min-height:84px; border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1px var(--line); cursor:pointer; font-weight:700; font-size:var(--fs-l)}
+.lg-sx input{position:absolute; opacity:0; pointer-events:none}
+.lg-sx:has(input:checked){background:var(--ink); color:#fff; box-shadow:none}
+.lg-sx:has(input:focus-visible){outline:3px solid var(--brand); outline-offset:2px}
+.lg-have{display:block; margin:12px auto 0; font-weight:700; color:var(--text)}
+.lg-live{margin-top:8px}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -2296,8 +2314,13 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <form id="loginForm" novalidate>
           <div class="w-ready" id="wCardReady" hidden><span class="w-ready-ic" aria-hidden="true">✨</span>
             <span><b>Your Vibe Card is ready</b>Verify your number to see it. Your answers are saved to your profile, so you won't answer them again.</span></div>
-          <h2>Welcome! What brings you here?</h2>
-          <p class="sub">Pick one. You can switch any time from your account.</p>
+          <!-- Sign-up asks for the number last (Kamal, 15 Nov): what brings you, your name, a little about you, then the
+               number. The same questions as before, in a different order; "I already have an account" goes straight to it. -->
+          <div class="lg-top" id="lgTop"><button class="lg-back" type="button" id="lgBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <div class="lg-prog" aria-hidden="true"><i id="lgBar"></i></div><span class="lg-count" id="lgCount"></span></div>
+          <fieldset class="lg-step" data-step="role">
+            <h2>Welcome! What brings you here?</h2>
+            <p class="sub">Pick one. You can switch any time from your account.</p>
           <div class="roles">
             <label class="role"><input type="radio" name="role" value="seeker" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/><path d="M8.5 12.5V10l2.5-2 2.5 2v2.5"/></svg></span>
@@ -2309,7 +2332,28 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5"/></svg></span>
               <span><b>Just Flatsplits &amp; FlatMart</b><span>Split bills with flatmates, buy and sell with people nearby</span></span></label>
           </div>
-          <p class="role-hint" id="roleHint" aria-hidden="true"></p>
+            <p class="role-hint" id="roleHint" aria-hidden="true"></p>
+            <button class="btn btn-primary btn-block lg-next" type="submit">Continue</button>
+          </fieldset>
+          <fieldset class="lg-step" data-step="name" disabled hidden>
+            <p class="eyebrow lg-eb">Let's get you in</p>
+            <h2>What should we call you?</h2>
+            <div class="field"><label for="lgName">Your first name</label><input type="text" id="lgName" required minlength="2" maxlength="40" autocomplete="given-name" placeholder="Your first name"></div>
+            <p class="hint">Flatmates and owners see your first name, never your number, until you both say yes.</p>
+            <button class="btn btn-primary btn-block lg-next" type="submit">Continue</button>
+          </fieldset>
+          <fieldset class="lg-step" data-step="sex" disabled hidden>
+            <p class="eyebrow lg-eb" id="lgHi"></p>
+            <h2>A little about you</h2>
+            <div class="lg-sex" role="radiogroup" aria-label="You are">
+              <label class="lg-sx"><input type="radio" name="lgSex" value="female" required><span>Woman</span></label>
+              <label class="lg-sx"><input type="radio" name="lgSex" value="male" required><span>Man</span></label></div>
+            <p class="hint">Many people look for flatmates of the same gender. In Account you choose who can see you.</p>
+            <button class="btn btn-primary btn-block lg-next" type="submit">Continue</button>
+          </fieldset>
+          <fieldset class="lg-step" data-step="phone" disabled hidden>
+            <p class="eyebrow lg-eb" id="lgAlmost"></p>
+            <h2>Verify your number</h2>
           <div class="field"><label for="lgPhone">Mobile number</label><div class="ph-in"><span aria-hidden="true">+91</span><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
@@ -2319,6 +2363,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
           <button class="linkbtn lg-sms" type="submit" data-channel="sms">Send it by SMS instead</button>
           <p class="hint">A 6-digit code signs you in. No password to remember.
             Signing in means you agree to our <a href="privacy.html">privacy policy</a>.</p>
+            <p class="hint lg-live" id="lgLive">Your profile is saved the moment your number is verified.</p>
+          </fieldset>
+          <button class="linkbtn lg-have" type="button" id="lgHave">I already have an account</button>
         </form>
         <form id="otpForm" novalidate hidden>
           <h2 id="otpTitle">Check your WhatsApp</h2>
@@ -3825,7 +3872,7 @@ const demoApi = {
     state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: known || pendingOtp.name || (state.user && state.user.name) || state.lastName || "" });
     const role = pendingOtp.role;
     pendingOtp = null;
-    await this.setRole(role);
+    if(role) await this.setRole(role);   // "I already have an account" keeps the role (fm_set_profile with no role)
   },
   async signOut(){ state.lastName = state.user && state.user.name; state.user = null; save(); },
   async me(){
@@ -5556,7 +5603,7 @@ function matesHtml(hh, seed){
 
 // Forms use novalidate: the browser's own validation bubbles often don't show inside
 // the Android app, which made forms look like they did nothing. Show it on the page instead.
-const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocality:"Area / locality", pRent:"Rent (at least ₹500)",
+const FIELD_LABEL = { lgName:"Your first name", lgPhone:"Mobile number", lgAge:"I am 18 or older", pTitle:"Title (at least 5 letters)", pCity:"City", pLocality:"Area / locality", pRent:"Rent (at least ₹500)",
   pDeposit:"Deposit", cMaint:"Maintenance", cElec:"Electricity", cWifi:"Wi-Fi", cHelp:"Cook / maid", pFrom:"Available from",
   pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)",
   aFlat:"Flat / house no.", aBuilding:"Building or society", aPin:"PIN code (6 digits)",
@@ -6492,12 +6539,39 @@ document.addEventListener("input", e => {
   const el = e.target;
   if(el.type === "tel" && el.inputMode === "numeric"){ const t = tidyPhone(el.value); if(t !== el.value) el.value = t; }
 });
+// Sign-up asks for the number last (Kamal, 15 Nov): what brings you → your name → a little about you → your number,
+// with "x of 4" and a back arrow. Only the step on screen is enabled, so only it is checked. "I already have an
+// account" goes straight to the number (role and name stay as they are on the account).
+const LG_STEPS = ["role", "name", "sex", "phone"];
+let lgStep = "role", lgReturning = false;
+function lgShow(step){
+  lgStep = step;
+  document.querySelectorAll("#loginForm .lg-step").forEach(f => { const on = f.dataset.step === step; f.hidden = !on; f.disabled = !on; });
+  const n = LG_STEPS.indexOf(step) + 1, first = $("lgName").value.trim().split(" ")[0];
+  $("lgTop").hidden = lgReturning && step === "role"; $("lgBack").style.visibility = step === "role" ? "hidden" : "";
+  $("lgCount").textContent = lgReturning ? "" : `${n} of ${LG_STEPS.length}`;
+  $("lgBar").style.width = (lgReturning ? 100 : n / LG_STEPS.length * 100) + "%";
+  $("lgHi").textContent = first ? `Nice to meet you, ${first}` : "Nice to meet you";
+  $("lgAlmost").textContent = lgReturning ? "Welcome back" : first ? `Almost in, ${first}` : "Almost in";
+  $("lgLive").hidden = lgReturning;
+  $("lgHave").hidden = lgReturning || step === "phone";
+  showFormError($("loginForm"), "");
+  if(step === "name" && !$("lgName").value) $("lgName").value = quizName();
+  const f = document.querySelector(`#loginForm .lg-step[data-step="${step}"] input:not([type=radio]):not([type=checkbox]):not(#lgHp)`);
+  if(f && step !== "role") setTimeout(() => f.focus({ preventScroll:true }), 30);
+}
+lgShow("role");
+$("lgBack").onclick = () => { if(lgReturning){ lgReturning = false; lgShow("role"); } else lgShow(LG_STEPS[Math.max(0, LG_STEPS.indexOf(lgStep) - 1)]); };
+$("lgHave").onclick = () => { lgReturning = true; lgShow("phone"); };
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
+  if(lgStep !== "phone"){ lgShow(LG_STEPS[LG_STEPS.indexOf(lgStep) + 1]); return; }
   signin.phone = $("lgPhone").value.trim();
-  signin.role = e.target.querySelector("[name=role]:checked").value;
-  signin.name = quizName();   // otherwise the name is asked right after sign-in
+  const role = e.target.querySelector("[name=role]:checked"), sex = e.target.querySelector("[name=lgSex]:checked");
+  signin.role = lgReturning || !role ? null : role.value;
+  signin.name = (!lgReturning && $("lgName").value.trim()) || quizName();
+  signin.gender = lgReturning || !sex ? null : sex.value;
   signin.adult = $("lgAge").checked;   // formOk has made sure it is ticked
   const channel = e.submitter && e.submitter.dataset.channel === "sms" ? "sms" : "whatsapp";
   if(await sendCode(channel)){ $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus(); }
@@ -6533,9 +6607,8 @@ $("view-welcome").addEventListener("click", e => {
 function pickRole(role){
   const radio = role && document.querySelector(`#loginForm input[name=role][value="${role}"]`);
   if(radio){ radio.checked = true; radio.dispatchEvent(new Event("change", { bubbles: true })); }
-  $("loginForm").hidden = false; $("otpForm").hidden = true;
+  $("loginForm").hidden = false; $("otpForm").hidden = true; lgReturning = false; lgShow(radio ? "name" : "role");
   document.querySelector(".w-card").scrollIntoView({ behavior:"smooth", block:"center" });
-  $("lgPhone").focus({ preventScroll:true });
 }
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -6549,12 +6622,16 @@ $("otpForm").addEventListener("submit", async e => {
   }
   clearInterval(signin.timer);
   if(signin.adult && state.user && !state.user.adultAt) await api.confirmAdult().catch(err => console.error(err));
+  // A new number that came in through "I already have an account" has no role yet: start them as looking for a room.
+  if(state.user && !state.user.role) await api.setRole("seeker").catch(err => console.error(err));
+  // Asked before the number (sign-up), so onboarding doesn't ask again.
+  if(signin.gender && state.user && !state.user.gender) await api.setGender(signin.gender).catch(err => console.error(err));
   // Answered on another device already: no need to ask again. (Live: these come from the server.)
   if(isSeeker() && answered(state.vibe) >= MIN_VIBE && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
   if(api.live && isOwner() && (await api.myListings()).length) state.onboarded.owner = true;
   if(isSplits() && state.user.name && state.user.gender && state.vibe && state.vibe.gen) state.onboarded.splits = true;
   save();
-  $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
+  $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset(); lgReturning = false; lgShow("role");
   location.hash = ""; route();
   claimReferral();
   claimAttribution();

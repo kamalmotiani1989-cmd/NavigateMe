@@ -6,10 +6,20 @@ the room comes second.
 ## How it flows
 
 1. **Welcome page = sign-in.** A short write-up, the **flatmate-type quiz** (the bright card under
-   the headline) and the sign-in card, which asks what you came for: *post my flat* or *looking for a
-   room*, then their mobile number, then a required **"I am 18 or older"** tick (Kamal, 8 Nov). The one-time code comes **on WhatsApp**, or by SMS when they tap
-   "Send it by SMS instead"; the code screen can send it again, or by SMS, after a minute. Their first
-   name is the first question after sign-in, then **male or female** (each asked only once per number).
+   the headline) and the sign-in card.
+   - **The number comes last** (Kamal, 15 Nov). The card asks one thing at a time, with "x of 4", a bar and a back
+     arrow:
+     1. what you came for: *looking for a room*, *posting a flat or a room* or *just Flatsplits & FlatMart*;
+     2. "What should we call you?" (first name);
+     3. "A little about you" (Woman or Man);
+     4. "Verify your number": the mobile number plus the required **"I am 18 or older"** tick (Kamal, 8 Nov).
+   - The small line above each heading uses the name: "Nice to meet you, Kamal", then "Almost in, Kamal".
+   - The name and gender are saved when the code is verified, so onboarding doesn't ask them again. They're still
+     asked only once per number, because the server keeps an existing name.
+   - **"I already have an account"** goes straight to the number with "Welcome back". The account keeps its role and
+     name. A new number that comes that way starts as looking for a room.
+   - The one-time code comes **on WhatsApp**, or by SMS when they tap "Send it by SMS instead". After a minute, the
+     code screen can send it again, or by SMS.
    See "Sign-in codes" below.
    **Just Flatsplits & FlatMart** (third choice, Kamal, 8 Nov 2026): for people who only want to split bills and
    buy or sell. The code steps are the same; set-up asks only name, gender and generation (Gen Z, Millennial,

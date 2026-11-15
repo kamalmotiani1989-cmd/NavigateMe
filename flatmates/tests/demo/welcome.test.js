@@ -11,15 +11,32 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   await p.goto('http://localhost:8765/'); await p.waitForTimeout(1500);
   const err = () => p.evaluate(() => ({ box: (document.querySelector('#loginForm .form-err') || {}).textContent || '', toast: (document.querySelector('.toast') || {}).textContent || '' }));
   const phone = () => p.$eval('#lgPhone', el => el.value);
-  // nothing filled in: both the choice and the number are named
-  await p.click('#loginForm [data-channel=whatsapp]'); await p.waitForTimeout(500);
+  // the number comes last (Kamal, 15 Nov): what brings you → your name → a little about you → your number
+  const step = () => p.evaluate(() => ({ step: lgStep, count: $('lgCount').textContent, eb: (document.querySelector('#loginForm .lg-step:not([hidden]) .lg-eb') || {}).textContent || '',
+    phoneShown: !!$('lgPhone').offsetParent }));
+  let st = await step();
+  ok(st.step === 'role' && st.count === '1 of 4' && !st.phoneShown, 'sign-up starts with what brings you (1 of 4), no number box yet: ' + JSON.stringify(st));
+  await p.click('#loginForm .lg-step[data-step=role] .lg-next'); await p.waitForTimeout(400);
   let e = await err();
-  ok(/What brings you here/.test(e.box) && /Mobile number/.test(e.box) && /18 or older/.test(e.box) && e.box === e.toast, 'empty form names what is missing, the 18+ tick too: ' + e.box);
+  ok(/What brings you here/.test(e.box) && e.box === e.toast && (await step()).step === 'role', 'no choice: it says what is missing and stays: ' + e.box);
+  await p.click('.role:nth-child(1)'); await p.click('#loginForm .lg-step[data-step=role] .lg-next'); await p.waitForTimeout(300);
+  st = await step(); ok(st.step === 'name' && st.count === '2 of 4' && /Let's get you in/.test(st.eb), 'then your name (2 of 4): ' + JSON.stringify(st));
+  await p.fill('#lgName', 'Kamal Motiani'); await p.click('#loginForm .lg-step[data-step=name] .lg-next'); await p.waitForTimeout(300);
+  st = await step(); ok(st.step === 'sex' && st.count === '3 of 4' && st.eb === 'Nice to meet you, Kamal', 'then a little about you, by name (3 of 4): ' + JSON.stringify(st));
+  await p.click('#lgBack'); await p.waitForTimeout(200);
+  ok((await step()).step === 'name' && await p.$eval('#lgName', el => el.value) === 'Kamal Motiani', 'back keeps what was typed');
+  await p.click('#loginForm .lg-step[data-step=name] .lg-next'); await p.waitForTimeout(200);
+  await p.click('.lg-sx:has([value=male])'); await p.click('#loginForm .lg-step[data-step=sex] .lg-next'); await p.waitForTimeout(300);
+  st = await step(); ok(st.step === 'phone' && st.count === '4 of 4' && st.eb === 'Almost in, Kamal' && st.phoneShown, 'the number last (4 of 4): ' + JSON.stringify(st));
+  await p.screenshot({ path: `${O}/welcome-0-steps.png` });
+  // nothing filled in on the last step: the number and the 18+ tick are named
+  await p.click('#loginForm [data-channel=whatsapp]'); await p.waitForTimeout(500);
+  e = await err();
+  ok(/Mobile number/.test(e.box) && /18 or older/.test(e.box) && !/What brings/.test(e.box) && e.box === e.toast, 'empty number step names what is missing, the 18+ tick too: ' + e.box);
   const tick = await p.evaluate(() => { const t = $('lgAge'), b = document.querySelector('#loginForm [data-channel=whatsapp]'); return { text: t.parentElement.textContent.trim(), required: t.required, above: !!(t.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING), checked: t.checked }; });
   ok(tick.text === 'I am 18 or older' && tick.required && tick.above && !tick.checked, 'the tick sits above the code button, unticked: ' + JSON.stringify(tick));
   await p.screenshot({ path: `${O}/welcome-1-errors.png` });
   // a pasted number with +91 and spaces, one with a leading 0, one with dashes
-  await p.click('.role:nth-child(1)');
   for (const [raw, want] of [['+91 98765 43210', '9876543210'], ['098765 43210', '9876543210'], ['98765-43210', '9876543210'], ['9123456789', '9123456789']]) {
     await p.fill('#lgPhone', ''); await p.evaluate(v => { const el = $('lgPhone'); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); }, raw);
     ok(await phone() === want, `"${raw}" becomes ${await phone()}`);
@@ -51,6 +68,19 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   await p.fill('#lgOtp', code); await p.click('#otpForm [type=submit]'); await p.waitForTimeout(2000);
   const kept = await p.evaluate(() => ({ adultAt: state.user && state.user.adultAt, box: $('dlgAge').open }));
   ok(kept.adultAt && Math.abs(Date.now() - Date.parse(kept.adultAt)) < 120e3 && !kept.box, 'signed in with the tick: confirmation kept with the time, no box: ' + JSON.stringify(kept));
+  const who = await p.evaluate(() => ({ name: state.user.name, gender: state.user.gender, role: state.user.role, steps: ob && ob.steps ? ob.steps.map(x => x.k) : [] }));
+  ok(who.name === 'Kamal Motiani' && who.gender === 'male' && who.role === 'seeker' && !who.steps.includes('name') && !who.steps.includes('sex'),
+    'the name and gender from before the number are saved, and onboarding doesn\'t ask them again: ' + JSON.stringify(who));
+  // "I already have an account": straight to the number, no steps; the role on the account stays
+  const c3 = await b.newContext({ viewport: { width: 390, height: 844 } }); const r3 = await c3.newPage(); r3.on('pageerror', e => errs.push(e.message));
+  await r3.goto('http://localhost:8765/'); await r3.waitForTimeout(1200);
+  await r3.click('#lgHave'); await r3.waitForTimeout(300);
+  const back = await r3.evaluate(() => ({ step: lgStep, count: $('lgCount').textContent, eb: $('lgAlmost').textContent, phone: !!$('lgPhone').offsetParent, have: $('lgHave').hidden }));
+  ok(back.step === 'phone' && back.count === '' && back.eb === 'Welcome back' && back.phone && back.have, '"I already have an account" goes straight to the number: ' + JSON.stringify(back));
+  await r3.fill('#lgPhone', '9811000099'); await r3.check('#lgAge', { force: true }); await r3.click('#loginForm [data-channel=whatsapp]'); await r3.waitForTimeout(800);
+  const c = await r3.evaluate(() => pendingOtp && pendingOtp.code); await r3.fill('#lgOtp', c); await r3.click('#otpForm [type=submit]'); await r3.waitForTimeout(1500);
+  ok(await r3.evaluate(() => state.user && state.user.role === 'seeker'), 'a new number that came that way starts as looking for a room');
+  await c3.close();
   await ctx.close();
   // an account from before the tick: asked once, can't close the box without ticking, then never again
   const old = { user:{ phone:'9877777777', name:'Ravi', role:'seeker', gender:'male', occupation:{ type:'working', what:'x' } }, account:'9877777777', onboarded:{ seeker:true }, attrClaimed:true, giftSeen:true,
