@@ -22,7 +22,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   ok(lay.roles.length === 3 && lay.roles.every(y => y < 844) && lay.phone < 844 + 120, 'visitor: the sign-in card\'s heading and all three choices are on the first phone screen, the number box just below: ' + JSON.stringify(lay));
   ok(lay.lede > lay.cardEnd, 'visitor: the paragraph comes after the sign-in card on a phone');
   const city = await p.evaluate(() => { const c = $('city').getBoundingClientRect(), q = document.querySelector('.w-card').getBoundingClientRect(); return { w: Math.round(c.width), quiz: Math.round(q.width) }; });
-  ok(city.w > 300 && city.w >= city.quiz, 'visitor: the city picture with its match bubbles is full width on a phone, not squashed: ' + JSON.stringify(city));
+  ok(city.w > 300 && city.w >= city.quiz, 'visitor: the picture is full width on a phone, not squashed: ' + JSON.stringify(city));
   await p.screenshot({ path: O + '/p8-welcome.png' });
   // hints and small print: the darker grey, 4.5:1 or better on white and on the mint wash
   const grey = await p.evaluate(() => { const v = getComputedStyle(document.documentElement).getPropertyValue('--text-3').trim();
