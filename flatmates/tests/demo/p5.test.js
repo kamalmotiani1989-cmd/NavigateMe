@@ -126,9 +126,9 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   ok(disc.cards > 3 && disc.fast > 0 && disc.badges.length === disc.fast && disc.badges.length < disc.cards, `seeker: only fast reply speeds show on cards, never slow ones (${disc.fast} of ${disc.cards}): ` + [...new Set(disc.badges)].join(' / '));
   // the card: rent on the photo, who listed it and the number promise, no "Posted N days ago", no deposit or furnishing line
   const cardChk = await p.evaluate(() => [...document.querySelectorAll('#cards .card.lcard')].map(c => { const l = api.all().find(x => x.id === c.dataset.id);
-    return { kind: l.kind, res: Number((l.household || {}).residents) || 0, pill: (c.querySelector('.thumb .price-pill') || {}).textContent || '', rent: l.rent,
+    return { kind: l.kind, res: Number((l.household || {}).residents) || 0, pill: (c.querySelector('.price-pill') || {}).textContent || '', rent: l.rent,
       trust: (c.querySelector('.trust') || {}).textContent || '', text: c.textContent, newOk: !!c.querySelector('.fresh .new') === (Date.now() - new Date(l.created_at) < 7 * 864e5) }; }));
-  ok(cardChk.length > 3 && cardChk.every(c => c.pill.replace(/\D/g, '').startsWith(String(c.rent))), 'seeker: every card shows the rent on the photo: ' + cardChk.slice(0, 3).map(c => c.pill).join(' / '));
+  ok(cardChk.length > 3 && cardChk.every(c => c.pill.replace(/\D/g, '').startsWith(String(c.rent))), 'seeker: every card shows the rent first, large: ' + cardChk.slice(0, 3).map(c => c.pill).join(' / '));
   // (the both-say-yes promise moved off the cards on 9 Nov, to cut clutter; it's on the welcome page and on each home's page)
   ok(cardChk.every(c => !/your number is shared only/.test(c.trust) && (c.kind !== 'flat' && c.res > 0 ? /Listed by a flatmate who lives here/ : /Owner-listed/).test(c.trust)),
     'seeker: trust line on every card, flatmate-listed for rooms with people living there, owner-listed for whole flats: ' + [...new Set(cardChk.map(c => c.kind + ': ' + c.trust.split(' · ')[0]))].join(' / '));

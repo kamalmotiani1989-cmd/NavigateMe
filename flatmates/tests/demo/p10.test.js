@@ -13,18 +13,21 @@ const head = p => p.evaluate(() => ({ count: $('obCount').textContent, key: ob &
   ok(roles.join() === 'seeker:I need a room,owner:Posting a flat or a room,splits:Just Flatsplits & FlatMart', 'sign-in: a third choice, Just Flatsplits & FlatMart: ' + roles.join(' / '));
   await p.screenshot({ path: O + '/p10-signin.png' });
   // sign in exactly as before: number, 18+ tick, the code
-  await p.click('#loginForm input[name=role][value=splits]', { force: true });
+  await p.click('#loginForm input[name=role][value=splits]', { force: true }); await p.click('#loginForm .lg-step[data-step=role] .lg-next');
+  await p.fill('#lgName', 'Kavya'); await p.click('#loginForm .lg-step[data-step=name] .lg-next');
+  await p.click('.lg-sx:has([value=female])'); await p.click('#loginForm .lg-step[data-step=sex] .lg-next');
   await p.fill('#lgPhone', '9876501234'); await p.check('#lgAge', { force: true });
   await p.click('#loginForm [data-channel="whatsapp"]'); await p.waitForTimeout(900);
   const code = await p.evaluate(() => pendingOtp && pendingOtp.code);
   await p.fill('#lgOtp', code); await p.click('#otpForm [type=submit]'); await p.waitForTimeout(1500);
+  ok(await p.evaluate(() => $('dlgHello').open && /Welcome, Kavya/.test($('hlHi').textContent)), 'a new account gets the welcome screen with their name');
+  await p.click('#hlGo'); await p.waitForTimeout(300);
   let h = await head(p);
-  ok(h.intro && /3 quick questions/.test(h.q), 'set-up: three quick questions: ' + h.q);
+  // name and gender were asked before the number (Kamal, 15 Nov), so only the generation is left
+  ok(h.intro && /1 quick question/.test(h.q), 'set-up: one quick question (name and gender came before the number): ' + h.q);
   await p.click('#obGo'); await p.waitForTimeout(500); h = await head(p);
   const keys = await p.evaluate(() => ob.steps.map(s => s.k).join());
-  ok(keys === 'name,sex,gen' && h.count === 'About you · 1 of 3', 'set-up: name, gender and generation only, no vibe questions: ' + keys + ' | ' + h.count);
-  await p.fill('#obStage input[type=text]', 'Kavya'); await p.press('#obStage input[type=text]', 'Enter'); await p.waitForTimeout(600);
-  await p.click('.opt[data-i="0"]'); await p.waitForTimeout(600);   // Female
+  ok(keys === 'gen' && h.count === 'About you · 1 of 1', 'set-up: generation only, no vibe questions: ' + keys + ' | ' + h.count);
   const gens = await p.evaluate(() => [...document.querySelectorAll('#obStage .opt b, #obStage .opt .t')].map(x => x.textContent).join());
   await p.click('.opt[data-i="1"]'); await p.waitForTimeout(900);   // Millennial
   ok(/Gen Z/.test(gens) && /Millennial/.test(gens) && /Gen X/.test(gens), 'set-up: the generation choices are Gen Z, Millennial and Gen X: ' + gens);

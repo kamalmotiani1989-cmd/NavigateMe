@@ -527,8 +527,13 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .urgent .btn-ghost{background:#fff}
 .urgent-dot{width:12px; height:12px; margin-top:6px; border-radius:50%; background:var(--dot); box-shadow:0 0 0 0 var(--dot); animation:ping 1.6s infinite}
 @keyframes ping{70%{box-shadow:0 0 0 12px transparent} 100%{box-shadow:0 0 0 0 transparent}}
-.notif-ask{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-.notif-ask p{margin:0}
+.notif-ask{display:grid; grid-template-columns:auto 1fr; gap:4px 12px; align-items:start}
+.notif-ask p{margin:2px 0 6px}
+.notif-ask .na-ic{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:rgba(255,255,255,.7)}
+.notif-ask .na-txt b{font-size:var(--fs-m)} .notif-ask ul{margin:0 0 4px; padding:0; list-style:none; display:grid; gap:3px; font-size:var(--fs-s)}
+.notif-ask li::before{content:"✓"; margin-right:6px; font-weight:800}
+.notif-ask .na-small{font-size:var(--fs-xs); color:var(--text-2)}
+.notif-ask .na-acts{grid-column:1 / -1; display:flex; align-items:center; gap:14px; margin-top:8px}
 
 /* ---------- vibe matches + interests */
 #vibeRow{margin:14px 0 22px}
@@ -1823,10 +1828,14 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .reply{display:inline-flex; align-items:center; gap:4px; font-size:var(--fs-xs); font-weight:700; color:var(--text-2); white-space:nowrap}
 .reply.fast{color:var(--teal-29)}
 .card .fresh{display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center}
-/* Listing cards: rent on the photo (a white pill, never white text on a dark overlay), the trust line last. */
-.lcard .price-pill{position:absolute; left:12px; bottom:12px; z-index:2; background:#fff; color:var(--text); border-radius:12px; padding:5px 11px;
-  font-weight:800; font-size:var(--fs-l); letter-spacing:-.02em; box-shadow:0 2px 8px rgba(27,36,64,.14)}
+/* Listing cards, the clean order (Kamal, 15 Nov): the photo, then the rent large with the expenses beside it, the title,
+   the area, a row of small chips (BHK, furnishing), the people, and the trust line under a thin rule. */
+.lcard .lc-price{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 10px; margin:0 0 2px}
+.lcard .price-pill{font-weight:800; font-size:var(--fs-l); letter-spacing:-.02em; color:var(--text)}
 .lcard .price-pill small{font-size:var(--fs-xs); font-weight:600; color:var(--text-2); letter-spacing:0}
+.lcard .lc-exp{font-size:var(--fs-xs); color:var(--text-2)}
+.lcard .lc-chips{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 2px} .lcard .lc-chips:empty{display:none}
+.lcard .lc-chips span{font-size:var(--fs-xs); font-weight:700; padding:3px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .lcard .thumb .tag.feat, .lcard .thumb .tag.r{top:44px; bottom:auto; left:12px}
 .lcard .thumb .tag.feat ~ .tag.r{top:76px}
 .lcard .count-ph{top:auto; left:auto; bottom:18px; right:56px}
@@ -2198,6 +2207,65 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .upd-bar .upd-go{background:#fff; color:var(--text); flex:none}
 .upd-bar .upd-x{flex:none; width:32px; height:32px; display:grid; place-items:center; border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; cursor:pointer}
 .upd-bar .upd-x svg{width:16px; height:16px}
+/* Sign-up, number last (Kamal, 15 Nov): one step at a time, "x of 4" with a bar, a back arrow, a warm line with
+   the name. Our colours and type; the steps' own fields keep their existing look. */
+#loginForm .lg-step{border:0; margin:0; padding:0; min-width:0}
+#loginForm .lg-step[hidden]{display:none}
+.lg-top{display:flex; align-items:center; gap:12px; margin:0 0 14px}
+.lg-back{flex:none; width:38px; height:38px; border-radius:50%; border:0; background:var(--surface-2); color:var(--text); display:grid; place-items:center; cursor:pointer}
+.lg-prog{flex:1; height:6px; border-radius:999px; background:rgba(28,25,23,.10); overflow:hidden} .lg-prog i{display:block; height:100%; width:25%; border-radius:999px; background:var(--ink); transition:width .3s ease}
+.lg-count{flex:none; font-size:var(--fs-xs); font-weight:700; color:var(--text-2)}
+.lg-eb{margin:0 0 4px}
+#loginForm .lg-step h2{margin-top:0; margin-bottom:12px}
+#loginForm .lg-next{margin-top:14px}
+.lg-sex{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0 8px}
+.lg-sx{position:relative; display:grid; place-items:center; min-height:84px; border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1px var(--line); cursor:pointer; font-weight:700; font-size:var(--fs-l)}
+.lg-sx input{position:absolute; opacity:0; pointer-events:none}
+.lg-sx:has(input:checked){background:var(--ink); color:#fff; box-shadow:none}
+.lg-sx:has(input:focus-visible){outline:3px solid var(--brand); outline-offset:2px}
+.lg-have{display:block; margin:12px auto 0; font-weight:700; color:var(--text)}
+.lg-live{margin-top:8px}
+/* The opening story and the welcome (Kamal, 15 Nov): full screen, the page beige, our type and colours, our avatars. */
+.story-dlg, .hello-dlg{width:100%; max-width:480px; height:100%; max-height:100dvh; margin:auto; padding:calc(18px + env(safe-area-inset-top,0px)) 22px calc(22px + env(safe-area-inset-bottom,0px));
+  border:0; background:var(--bg); color:var(--text); display:none; flex-direction:column}
+.story-dlg[open], .hello-dlg[open]{display:flex}
+.story-dlg::backdrop, .hello-dlg::backdrop{background:var(--bg)}
+.st-top{display:flex; align-items:center; gap:14px}
+.st-dots{flex:1; display:flex; gap:6px} .st-dots i{flex:1; height:4px; border-radius:999px; background:rgba(28,25,23,.12)} .st-dots i.on, .st-dots i.done{background:var(--ink)}
+.st-skip{font-weight:700; color:var(--text)}
+.st-stage{flex:1; display:flex; align-items:center}
+.st-slide{width:100%; animation:screenIn .35s ease both}
+.st-slide h2{font-size:clamp(30px, 8vw, 40px); font-weight:400; letter-spacing:-.03em; line-height:1.08; margin:22px 0 10px}
+.st-slide p{color:var(--text-2); font-size:var(--fs-m); line-height:1.5; margin:0}
+.st-art{min-height:230px; display:grid; place-items:center; border-radius:28px; background:var(--lav); padding:22px}
+.st-slide:nth-child(1) .st-art{background:var(--lav)}
+.st-trio{display:flex} .st-trio svg{width:92px; height:92px; margin-left:-16px; border-radius:50%; box-shadow:0 0 0 4px var(--lav)} .st-trio svg:first-child{margin-left:0}
+.st-chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center} .st-chips span{background:#fff; border-radius:999px; padding:8px 14px; font-weight:700; font-size:var(--fs-s); box-shadow:0 4px 12px rgba(60,40,30,.08)}
+.st-pair{display:flex; align-items:center; gap:10px} .st-av{width:104px; height:104px; border-radius:50%; overflow:hidden; display:block; box-shadow:0 10px 24px rgba(60,40,30,.14)} .st-av svg{width:100%; height:100%; display:block}
+.st-av.sm{width:52px; height:52px}
+.st-chat{display:grid; gap:8px; justify-items:start; width:100%; max-width:300px} .st-chat p{margin:0; background:#fff; padding:10px 14px; border-radius:18px 18px 18px 6px; font-weight:600}
+.st-chat p.me{justify-self:end; background:var(--ink); color:#fff; border-radius:18px 18px 6px 18px}
+.st-acts{padding-top:16px}
+.hello-dlg{justify-content:flex-end}
+.hl-art{flex:1; display:flex; align-items:center; justify-content:center}
+.hl-art span{flex:none; width:92px; height:92px; border-radius:50%; overflow:hidden; margin:0 -12px; box-shadow:0 0 0 5px var(--bg), 0 14px 30px rgba(60,40,30,.14)} .hl-art svg{width:100%; height:100%; display:block}
+.hl-art span:nth-child(2){width:128px; height:128px; z-index:1}
+.hello-dlg h2{font-size:clamp(34px, 9vw, 44px); font-weight:400; letter-spacing:-.03em; line-height:1.05; margin:4px 0 10px} .hello-dlg h2 b{font-weight:800; color:var(--orange)}
+.hl-sub{color:var(--text-2); margin:0 0 22px; font-size:var(--fs-m)}
+/* The filters as clean cards (Kamal, 15 Nov). */
+#dlgFilters .mbody{background:var(--bg)}
+#filterForm .f-card{background:var(--surface); border-radius:20px; padding:14px 16px 16px; margin:0 0 12px; box-shadow:0 2px 10px rgba(60,40,30,.05)}
+#filterForm .f-card > .section-h:first-child, #filterForm .f-card > h3:first-child{margin-top:0}
+#filterForm .f-card .section-h{font-size:var(--fs-xs); letter-spacing:.1em}
+.f-range{margin:2px 0 12px} .f-range-val{font-weight:800; font-size:var(--fs-l); margin:0 0 10px}
+.f-range-in{position:relative; height:28px} .f-range-in::before{content:""; position:absolute; left:0; right:0; top:12px; height:4px; border-radius:999px; background:rgba(28,25,23,.12)}
+.f-range-fill{position:absolute; top:12px; height:4px; border-radius:999px; background:var(--ink)}
+.f-range-in input{position:absolute; inset:0; width:100%; margin:0; background:none; pointer-events:none; -webkit-appearance:none; appearance:none; height:28px}
+.f-range-in input::-webkit-slider-thumb{-webkit-appearance:none; pointer-events:auto; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid var(--ink); box-shadow:0 2px 6px rgba(0,0,0,.18); cursor:pointer}
+.f-range-in input::-moz-range-thumb{pointer-events:auto; width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--ink); cursor:pointer}
+.f-range-in input::-webkit-slider-runnable-track{background:none} .f-range-in input::-moz-range-track{background:none}
+.f-range-ends{display:flex; justify-content:space-between; font-size:var(--fs-xs); color:var(--text-2)}
+#dlgFilters .f-actions{background:var(--bg); box-shadow:none; bottom:-28px} #dlgFilters .f-actions #fApply{flex:1}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -2296,8 +2364,13 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <form id="loginForm" novalidate>
           <div class="w-ready" id="wCardReady" hidden><span class="w-ready-ic" aria-hidden="true">✨</span>
             <span><b>Your Vibe Card is ready</b>Verify your number to see it. Your answers are saved to your profile, so you won't answer them again.</span></div>
-          <h2>Welcome! What brings you here?</h2>
-          <p class="sub">Pick one. You can switch any time from your account.</p>
+          <!-- Sign-up asks for the number last (Kamal, 15 Nov): what brings you, your name, a little about you, then the
+               number. The same questions as before, in a different order; "I already have an account" goes straight to it. -->
+          <div class="lg-top" id="lgTop"><button class="lg-back" type="button" id="lgBack" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+            <div class="lg-prog" aria-hidden="true"><i id="lgBar"></i></div><span class="lg-count" id="lgCount"></span></div>
+          <fieldset class="lg-step" data-step="role">
+            <h2>Welcome! What brings you here?</h2>
+            <p class="sub">Pick one. You can switch any time from your account.</p>
           <div class="roles">
             <label class="role"><input type="radio" name="role" value="seeker" required>
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/><path d="M8.5 12.5V10l2.5-2 2.5 2v2.5"/></svg></span>
@@ -2309,7 +2382,28 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
               <span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5"/></svg></span>
               <span><b>Just Flatsplits &amp; FlatMart</b><span>Split bills with flatmates, buy and sell with people nearby</span></span></label>
           </div>
-          <p class="role-hint" id="roleHint" aria-hidden="true"></p>
+            <p class="role-hint" id="roleHint" aria-hidden="true"></p>
+            <button class="btn btn-primary btn-block lg-next" type="submit">Continue</button>
+          </fieldset>
+          <fieldset class="lg-step" data-step="name" disabled hidden>
+            <p class="eyebrow lg-eb">Let's get you in</p>
+            <h2>What should we call you?</h2>
+            <div class="field"><label for="lgName">Your first name</label><input type="text" id="lgName" required minlength="2" maxlength="40" autocomplete="given-name" placeholder="Your first name"></div>
+            <p class="hint">Flatmates and owners see your first name, never your number, until you both say yes.</p>
+            <button class="btn btn-primary btn-block lg-next" type="submit">Continue</button>
+          </fieldset>
+          <fieldset class="lg-step" data-step="sex" disabled hidden>
+            <p class="eyebrow lg-eb" id="lgHi"></p>
+            <h2>A little about you</h2>
+            <div class="lg-sex" role="radiogroup" aria-label="You are">
+              <label class="lg-sx"><input type="radio" name="lgSex" value="female" required><span>Woman</span></label>
+              <label class="lg-sx"><input type="radio" name="lgSex" value="male" required><span>Man</span></label></div>
+            <p class="hint">Many people look for flatmates of the same gender. In Account you choose who can see you.</p>
+            <button class="btn btn-primary btn-block lg-next" type="submit">Continue</button>
+          </fieldset>
+          <fieldset class="lg-step" data-step="phone" disabled hidden>
+            <p class="eyebrow lg-eb" id="lgAlmost"></p>
+            <h2>Verify your number</h2>
           <div class="field"><label for="lgPhone">Mobile number</label><div class="ph-in"><span aria-hidden="true">+91</span><input type="tel" id="lgPhone" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile" autocomplete="tel-national"></div></div>
           <!-- Bot checks: a field people never see (bots fill it in), and Cloudflare Turnstile once FM_CONFIG.turnstileSiteKey is set. -->
           <label class="hp" aria-hidden="true">Leave this empty<input type="text" id="lgHp" tabindex="-1" autocomplete="off"></label>
@@ -2319,6 +2413,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
           <button class="linkbtn lg-sms" type="submit" data-channel="sms">Send it by SMS instead</button>
           <p class="hint">A 6-digit code signs you in. No password to remember.
             Signing in means you agree to our <a href="privacy.html">privacy policy</a>.</p>
+            <p class="hint lg-live" id="lgLive">Your profile is saved the moment your number is verified.</p>
+          </fieldset>
+          <button class="linkbtn lg-have" type="button" id="lgHave">I already have an account</button>
         </form>
         <form id="otpForm" novalidate hidden>
           <h2 id="otpTitle">Check your WhatsApp</h2>
@@ -2565,7 +2662,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     <div class="d-controls">
       <div class="d-search ps-anchor" role="search">
         <label class="ds-city"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><select id="fCity" aria-label="City"></select></label>
-        <div class="ds-q"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="dsQ" placeholder="Search locality, landmark, society or metro" aria-label="Search a place" enterkeyhint="search">
+        <div class="ds-q"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="dsQ" placeholder="Try: room near Koramangala under 15k, veg" aria-label="Search a place" enterkeyhint="search">
           <button type="button" class="ds-x" id="dsX" aria-label="Clear the place" hidden>×</button></div>
         <button class="btn btn-accent ds-go" type="button" id="dsGo"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search</span></button>
       </div>
@@ -2903,6 +3000,13 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 <dialog id="dlgShare" aria-labelledby="shTitle"><div class="mhead"><div><h2 id="shTitle">Share this home</h2><div class="loc" id="shSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="shBody" style="text-align:center"></div></dialog>
 
+<dialog id="dlgStory" class="story-dlg" aria-label="How FindMeFlatMate works"><div class="st-top"><div class="st-dots" id="stDots"></div><button class="linkbtn st-skip" type="button" id="stSkip">Skip</button></div>
+  <div class="st-stage" id="stStage"></div>
+  <div class="st-acts"><button class="btn btn-primary btn-block" type="button" id="stNext" autofocus>Next</button></div></dialog>
+<dialog id="dlgHello" class="hello-dlg" aria-labelledby="hlTitle"><div class="hl-art" id="hlArt" aria-hidden="true"></div>
+  <p class="eyebrow" id="hlHi">Welcome</p><h2 id="hlTitle">Your home, <b>your people.</b></h2>
+  <p class="hl-sub">The warmest way to find a flat, and the flatmates who make it feel like one.</p>
+  <button class="btn btn-primary btn-block" type="button" id="hlGo">Let's go</button></dialog>
 <dialog id="dlgAvatar" class="av-dlg" aria-labelledby="avTitle"><div class="mhead"><div><h2 id="avTitle">Make your avatar</h2><div class="loc">A cartoon of you, on your cards instead of a letter. You choose everything.</div></div>
   <button class="linkbtn av-skip" type="button" id="avSkip">Skip</button></div>
   <div class="mbody"><div class="av-stage play" id="avStage"></div><div id="avRows"></div>
@@ -2942,6 +3046,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <p class="hint" style="margin:-4px 0 8px">None picked means all of the city.</p>
         <div class="chips" id="fAreas"></div></div>
       <h3 class="section-h">Rent per month</h3>
+      <div class="f-range" aria-hidden="true"><div class="f-range-val" id="fRVal">Any rent</div>
+        <div class="f-range-in"><i class="f-range-fill" id="fRFill"></i><input type="range" id="fRMin" min="0" max="100000" step="500" tabindex="-1"><input type="range" id="fRMax" min="0" max="100000" step="500" tabindex="-1"></div>
+        <div class="f-range-ends"><span>₹0</span><span>₹1L+</span></div></div>
       <div class="chips" id="bandChips"></div>
       <div class="grid2" style="margin-top:10px">
         <div class="field"><label for="fMin">Min (₹)</label><input type="number" id="fMin" min="0" step="1" inputmode="numeric" placeholder="No minimum"></div>
@@ -3825,7 +3932,7 @@ const demoApi = {
     state.user = Object.assign({}, state.user, { phone: pendingOtp.phone, name: known || pendingOtp.name || (state.user && state.user.name) || state.lastName || "" });
     const role = pendingOtp.role;
     pendingOtp = null;
-    await this.setRole(role);
+    if(role) await this.setRole(role);   // "I already have an account" keeps the role (fm_set_profile with no role)
   },
   async signOut(){ state.lastName = state.user && state.user.name; state.user = null; save(); },
   async me(){
@@ -5556,7 +5663,7 @@ function matesHtml(hh, seed){
 
 // Forms use novalidate: the browser's own validation bubbles often don't show inside
 // the Android app, which made forms look like they did nothing. Show it on the page instead.
-const FIELD_LABEL = { pTitle:"Title (at least 5 letters)", pCity:"City", pLocality:"Area / locality", pRent:"Rent (at least ₹500)",
+const FIELD_LABEL = { lgName:"Your first name", lgPhone:"Mobile number", lgAge:"I am 18 or older", pTitle:"Title (at least 5 letters)", pCity:"City", pLocality:"Area / locality", pRent:"Rent (at least ₹500)",
   pDeposit:"Deposit", cMaint:"Maintenance", cElec:"Electricity", cWifi:"Wi-Fi", cHelp:"Cook / maid", pFrom:"Available from",
   pName:"Your name", pPhone:"Phone for visits (10 digits, starting with 6–9)",
   aFlat:"Flat / house no.", aBuilding:"Building or society", aPin:"PIN code (6 digits)",
@@ -5629,7 +5736,7 @@ function route(){
     const back = readLS(AFTER_SIGNIN_KEY);
     if(back){ writeLS(AFTER_SIGNIN_KEY, null); if(location.hash !== back){ location.hash = back; return; } }
   }
-  if(!state.user){ currentView = null; showScreen("welcome"); return; }
+  if(!state.user){ currentView = null; showScreen("welcome"); setTimeout(maybeStory, 300); return; }
   const role = roleKey();
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
   const [h, arg] = location.hash.slice(1).split("/"), allowed = ROLE_VIEWS[role];
@@ -6205,8 +6312,13 @@ if(Notify.native()){
   };
   FlatmatesNative.postMessage(JSON.stringify({ type:"hello" }));
 }
-const notifyCard = text => Notify.supported() && !Notify.on()
-  ? `<div class="notice notif-ask"><p>${esc(text)}</p><button class="btn btn-primary btn-sm" type="button" data-notify-on>Turn on notifications</button></div>` : "";
+// A friendly ask (Kamal, 15 Nov): what you'll get, in three lines, with "Not now" (hidden for a week).
+const notifyCard = text => Notify.supported() && !Notify.on() && !(state.notifLater && Date.now() - state.notifLater < 7 * 864e5)
+  ? `<div class="notice notif-ask"><span class="na-ic" aria-hidden="true">${ic("bell", 20)}</span><div class="na-txt"><b>Stay in the loop</b><p>${esc(text)}</p>
+      <ul><li>New matches and invites</li><li>Messages you shouldn't miss</li><li>Safety and account updates</li></ul><span class="na-small">Only things that matter. No spam.</span></div>
+      <div class="na-acts"><button class="btn btn-primary btn-sm" type="button" data-notify-on>Turn on notifications</button>
+      <button class="linkbtn" type="button" data-notify-later>Not now</button></div></div>` : "";
+document.addEventListener("click", e => { const b = e.target.closest("[data-notify-later]"); if(!b) return; state.notifLater = Date.now(); save(); b.closest(".notif-ask")?.remove(); });
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-notify-on]"); if(!b) return;
   const ok = await Notify.ask();
@@ -6492,12 +6604,39 @@ document.addEventListener("input", e => {
   const el = e.target;
   if(el.type === "tel" && el.inputMode === "numeric"){ const t = tidyPhone(el.value); if(t !== el.value) el.value = t; }
 });
+// Sign-up asks for the number last (Kamal, 15 Nov): what brings you → your name → a little about you → your number,
+// with "x of 4" and a back arrow. Only the step on screen is enabled, so only it is checked. "I already have an
+// account" goes straight to the number (role and name stay as they are on the account).
+const LG_STEPS = ["role", "name", "sex", "phone"];
+let lgStep = "role", lgReturning = false;
+function lgShow(step){
+  lgStep = step;
+  document.querySelectorAll("#loginForm .lg-step").forEach(f => { const on = f.dataset.step === step; f.hidden = !on; f.disabled = !on; });
+  const n = LG_STEPS.indexOf(step) + 1, first = $("lgName").value.trim().split(" ")[0];
+  $("lgTop").hidden = lgReturning && step === "role"; $("lgBack").style.visibility = step === "role" ? "hidden" : "";
+  $("lgCount").textContent = lgReturning ? "" : `${n} of ${LG_STEPS.length}`;
+  $("lgBar").style.width = (lgReturning ? 100 : n / LG_STEPS.length * 100) + "%";
+  $("lgHi").textContent = first ? `Nice to meet you, ${first}` : "Nice to meet you";
+  $("lgAlmost").textContent = lgReturning ? "Welcome back" : first ? `Almost in, ${first}` : "Almost in";
+  $("lgLive").hidden = lgReturning;
+  $("lgHave").hidden = lgReturning || step === "phone";
+  showFormError($("loginForm"), "");
+  if(step === "name" && !$("lgName").value) $("lgName").value = quizName();
+  const f = document.querySelector(`#loginForm .lg-step[data-step="${step}"] input:not([type=radio]):not([type=checkbox]):not(#lgHp)`);
+  if(f && step !== "role") setTimeout(() => f.focus({ preventScroll:true }), 30);
+}
+lgShow("role");
+$("lgBack").onclick = () => { if(lgReturning){ lgReturning = false; lgShow("role"); } else lgShow(LG_STEPS[Math.max(0, LG_STEPS.indexOf(lgStep) - 1)]); };
+$("lgHave").onclick = () => { lgReturning = true; lgShow("phone"); };
 $("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
   if(!formOk(e.target)) return;
+  if(lgStep !== "phone"){ lgShow(LG_STEPS[LG_STEPS.indexOf(lgStep) + 1]); return; }
   signin.phone = $("lgPhone").value.trim();
-  signin.role = e.target.querySelector("[name=role]:checked").value;
-  signin.name = quizName();   // otherwise the name is asked right after sign-in
+  const role = e.target.querySelector("[name=role]:checked"), sex = e.target.querySelector("[name=lgSex]:checked");
+  signin.role = lgReturning || !role ? null : role.value;
+  signin.name = (!lgReturning && $("lgName").value.trim()) || quizName();
+  signin.gender = lgReturning || !sex ? null : sex.value;
   signin.adult = $("lgAge").checked;   // formOk has made sure it is ticked
   const channel = e.submitter && e.submitter.dataset.channel === "sms" ? "sms" : "whatsapp";
   if(await sendCode(channel)){ $("loginForm").hidden = true; $("otpForm").hidden = false; $("lgOtp").value = ""; $("lgOtp").focus(); }
@@ -6533,9 +6672,8 @@ $("view-welcome").addEventListener("click", e => {
 function pickRole(role){
   const radio = role && document.querySelector(`#loginForm input[name=role][value="${role}"]`);
   if(radio){ radio.checked = true; radio.dispatchEvent(new Event("change", { bubbles: true })); }
-  $("loginForm").hidden = false; $("otpForm").hidden = true;
+  $("loginForm").hidden = false; $("otpForm").hidden = true; lgReturning = false; lgShow(radio ? "name" : "role");
   document.querySelector(".w-card").scrollIntoView({ behavior:"smooth", block:"center" });
-  $("lgPhone").focus({ preventScroll:true });
 }
 $("otpForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -6549,13 +6687,19 @@ $("otpForm").addEventListener("submit", async e => {
   }
   clearInterval(signin.timer);
   if(signin.adult && state.user && !state.user.adultAt) await api.confirmAdult().catch(err => console.error(err));
+  // A new number that came in through "I already have an account" has no role yet: start them as looking for a room.
+  if(state.user && !state.user.role) await api.setRole("seeker").catch(err => console.error(err));
+  // Asked before the number (sign-up), so onboarding doesn't ask again.
+  if(signin.gender && state.user && !state.user.gender) await api.setGender(signin.gender).catch(err => console.error(err));
   // Answered on another device already: no need to ask again. (Live: these come from the server.)
   if(isSeeker() && answered(state.vibe) >= MIN_VIBE && state.user.occupation && state.user.occupation.type) state.onboarded.seeker = true;
   if(api.live && isOwner() && (await api.myListings()).length) state.onboarded.owner = true;
   if(isSplits() && state.user.name && state.user.gender && state.vibe && state.vibe.gen) state.onboarded.splits = true;
   save();
-  $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset();
+  const fresh = !state.onboarded[roleKey()];
+  $("otpForm").hidden = true; $("loginForm").hidden = false; $("loginForm").reset(); lgReturning = false; lgShow("role");
   location.hash = ""; route();
+  if(fresh) showHello();
   claimReferral();
   claimAttribution();
   revealPendingCard();
@@ -7100,12 +7244,13 @@ function cardHtml(l, i){
       ${ph.length > 1 ? `<span class="count-ph">${ph.length} photos</span>` : ""}
       ${m ? `<span class="ring-wrap" title="How well your living style fits this household">${ringSvg(m.pct, 46)}</span>` : ""}
       ${tag ? `<span class="tag r${l.request_status === "approved" ? " ok" : ""}">${esc(tag)}</span>` : ""}
-      <span class="price-pill">${inr(l.rent)}<small> /month</small></span>
       <button class="heart" type="button" data-save="${esc(l.id)}" aria-pressed="${isSaved(l.id)}" aria-label="Save this flat">♥</button>
     </div>
     <div class="body">
+      <div class="lc-price"><span class="price-pill">${inr(l.rent)}<small> /month</small></span><span class="lc-exp">${esc(expensesLine(l))}</span></div>
       <h3>${esc(l.title)}</h3>
-      <div class="loc">${esc(l.locality)}, ${esc(l.city)} · ${esc(expensesLine(l))}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
+      <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
+      <div class="lc-chips">${[l.bhk ? `${l.bhk} BHK` : "", FURN_LABEL[l.furnishing] || ""].filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("")}</div>
       ${homeBadge(l)}
       ${nearNow && l._km != null ? `<div class="dist">${kmLabel(l._km)} from ${esc(nearNow.label)}</div>` : ""}
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span>${householdGen(hh) ? genBadge(householdGen(hh), "") : ""}</div>` : ""}
@@ -7378,18 +7523,77 @@ $("dsRadius").addEventListener("click", e => {
   setPrefs({ near: Object.assign({}, f.near, { km: Number(b.dataset.km) }) }); renderDiscover();
 });
 // Phones: a placeholder that fits the search field.
-if(matchMedia("(max-width:560px)").matches) $("dsQ").placeholder = "Area, landmark or metro";
+if(matchMedia("(max-width:560px)").matches) $("dsQ").placeholder = "Room near Koramangala under 15k";
 $("dsX").addEventListener("click", () => { $("dsQ").value = ""; setPrefs({ near: null }); if($("fSort").value === "near") $("fSort").value = "match"; renderDiscover(); $("dsQ").focus(); });
 $("dsGo").addEventListener("click", () => {
   const q = $("dsQ").value.trim();
   if(!q){ $("dsQ").focus(); toast("Type a locality, landmark, society or metro station."); return; }
   if(nearNow && q === nearNow.label){ renderDiscover(); return; }
+  if(talkSearch(q)) return;
   $("dsQ")._psGo();
 });
 $("dView").addEventListener("click", e => {
   const b = e.target.closest("[data-dview]"); if(!b) return;
   state.dView = b.dataset.dview; save(); renderDiscover();
 });
+// Search like you'd talk (Kamal, 15 Nov): "room near Koramangala under 15k, veg", "women only flat in Pune",
+// "shared room in Andheri below 10000, no smoking". The words we know become the usual filters (budget, what kind
+// of home, women or men only, veg kitchen, no smoking, no alcohol, pets, furnishing, city, area); whatever place is
+// left goes to the place search as before. Nothing leaves the phone and no outside service reads it.
+const TALK_CITY = { bangalore:"Bengaluru", bengaluru:"Bengaluru", blr:"Bengaluru", mumbai:"Mumbai", bombay:"Mumbai", pune:"Pune", delhi:"Delhi NCR", "new delhi":"Delhi NCR",
+  gurgaon:"Delhi NCR", gurugram:"Delhi NCR", noida:"Delhi NCR", ncr:"Delhi NCR", hyderabad:"Hyderabad", chennai:"Chennai", kolkata:"Kolkata", ahmedabad:"Ahmedabad", jaipur:"Jaipur", chandigarh:"Chandigarh" };
+function parseTalk(raw){
+  let q = " " + String(raw || "").toLowerCase().replace(/[₹,]/g, " ").replace(/\s+/g, " ").trim() + " ";
+  const patch = {}, said = [], rules = [];
+  const take = re => { const m = q.match(re); if(m) q = q.replace(re, " "); return m; };
+  const money = (n, k) => Math.round(Number(n) * (k ? 1000 : 1));
+  let m;
+  if((m = take(/\b(?:between|from)\s*(\d+(?:\.\d+)?)\s*(k)?\s*(?:and|to|-)\s*(\d+(?:\.\d+)?)\s*(k)?\b/))){ patch.min = money(m[1], m[2] || m[4]); patch.max = money(m[3], m[4]); }
+  else if((m = take(/\b(?:under|below|upto|up to|max|within|less than|<)\s*(\d+(?:\.\d+)?)\s*(k)?\b/))) patch.max = money(m[1], m[2]);
+  else if((m = take(/\b(?:above|over|min|more than|>)\s*(\d+(?:\.\d+)?)\s*(k)?\b/))) patch.min = money(m[1], m[2]);
+  else if((m = take(/\b(\d+(?:\.\d+)?)\s*k\b/))) patch.max = money(m[1], true);
+  if(patch.max && patch.max < 1000) patch.max *= 1000; if(patch.min && patch.min < 1000) patch.min *= 1000;
+  if(patch.min || patch.max){ patch.min = patch.min || 0; patch.max = patch.max || 0;
+    said.push(patch.min && patch.max ? `${inr(patch.min)}–${inr(patch.max)}` : patch.max ? "under " + inr(patch.max) : "over " + inr(patch.min)); }
+  if(take(/\b(?:women|woman|girls?|ladies|female)(?:\s+only)?\b/)){ patch.gender = "female"; said.push("Women only"); }
+  else if(take(/\b(?:men|man|boys?|gents|male)(?:\s+only)?\b/)){ patch.gender = "male"; said.push("Men only"); }
+  if(take(/\bnon[\s-]?veg(?:etarian)?\b/)){} else if(take(/\b(?:pure\s+)?veg(?:etarian)?\b/)){ rules.push("veg"); said.push("Veg kitchen"); }
+  if(take(/\b(?:no[\s-]smok(?:ing|ers?)|non[\s-]smok(?:ing|ers?)|smoke[\s-]free)\b/)){ rules.push("noSmoke"); said.push("No smoking"); }
+  if(take(/\b(?:no[\s-](?:alcohol|drinks?|drinking)|teetotal(?:ler)?)\b/)){ rules.push("noDrinks"); said.push("No alcohol"); }
+  if(take(/\b(?:pets?[\s-]friendly|with (?:a |my )?(?:pet|dog|cat)s?|pets? allowed)\b/)){ rules.push("pets"); said.push("Pet-friendly"); }
+  if(take(/\bbachelors?(?:\s+(?:ok|allowed|welcome))?\b/)){ rules.push("bach"); said.push("Bachelors welcome"); }
+  if(take(/\bsemi[\s-]?furnished\b/)){ patch.furn = ["semi"]; said.push("Semi furnished"); }
+  else if(take(/\bun[\s-]?furnished\b/)){ patch.furn = ["none"]; said.push("Unfurnished"); }
+  else if(take(/\b(?:fully\s+)?furnished\b/)){ patch.furn = ["full"]; said.push("Furnished"); }
+  if(take(/\b(?:shared|sharing|twin[\s-]sharing|triple[\s-]sharing)(?:\s+rooms?)?\b/)){ patch.look = "shared"; said.push("Shared room"); }
+  else if(take(/\b(?:whole|entire|full)\s+(?:flat|apartment|house|home)s?\b|\b\d\s*bhk\s+(?:flat|apartment)s?\b|\bflats?\s+for\s+(?:us|friends|two|three)\b/)){ patch.look = "flat"; said.push("Whole flat"); }
+  else if(take(/\b(?:private\s+)?rooms?\b|\bpgs?\b|\bflatmates?\b|\broommates?\b/)){ patch.look = "room"; said.push("Private room"); }
+  else if(take(/\b(?:flats?|apartments?)\b/)){ patch.look = "flat"; said.push("Whole flat"); }
+  take(/\b\d\s*bhk\b/);
+  if(rules.length) patch.rules = [...new Set((prefs().rules || []).concat(rules))];
+  // the city, then an area we know in it (or in any city)
+  for(const [k, c] of Object.entries(TALK_CITY)) if(new RegExp(`\\b${k}\\b`).test(q)){ q = q.replace(new RegExp(`\\b${k}\\b`), " "); patch.city = c; break; }
+  const cities = patch.city ? [patch.city] : [prefs().city].concat(Object.keys(CITY_AREAS)).filter(Boolean);
+  outer: for(const c of cities) for(const a of (CITY_AREAS[c] || []).slice().sort((x, y) => y.length - x.length)){
+    const re = new RegExp(`\\b${a.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+    if(re.test(q)){ q = q.replace(re, " "); patch.city = c; patch.areas = [a]; patch.near = null; said.push(a); break outer; } }
+  if(patch.city && !said.includes(patch.city) && !patch.areas){ patch.areas = []; patch.near = null; said.push(patch.city); }
+  // what's left, minus the little words, is a place for the place search ("near HR College")
+  const place = q.replace(/\b(?:near|nearby|close to|around|in|at|for|a|an|the|me|my|i|need|want|looking|find|show|with|and|please|to|of|by|on)\b/g, " ").replace(/[^a-z0-9\s'-]/g, " ").replace(/\s+/g, " ").trim();
+  return { found: said.length > 0, patch, said, place: place.length >= 3 ? place : "" };
+}
+function talkSearch(q){
+  const t = parseTalk(q);
+  if(!t.found) return false;
+  setPrefs(t.patch);
+  if(t.patch.city && ![...$("fCity").options].some(o => o.value === t.patch.city)) setCitySelect($("fCity"), t.patch.city, "All cities");
+  if(t.patch.city) $("fCity").value = t.patch.city;
+  toast("Searching: " + t.said.join(" · ") + (t.place ? " · near " + t.place : ""));
+  if(t.place){ $("dsQ").value = t.place; $("dsQ")._psGo(); } else { $("dsQ").value = ""; $("dsQ").blur(); renderDiscover();
+    [0, 450].forEach(ms => setTimeout(() => { if(document.activeElement !== $("dsQ")) document.querySelectorAll(".ps-list").forEach(x => x.hidden = true); }, ms)); }
+  return true;
+}
+$("dsQ").addEventListener("keydown", e => { if(e.key === "Enter" && talkSearch($("dsQ").value)){ e.preventDefault(); e.stopImmediatePropagation(); } }, true);
 attachPlaceSearch($("dsQ"), setNear, { here: true, near: () => { const f = prefs(), g = f.near || knownPlace(f.city); return g ? Object.assign({ city: f.city }, g) : null; } });
 
 $("cards").addEventListener("click", e => {
@@ -7417,7 +7621,7 @@ function openFilters(){
   form.querySelectorAll("[name=fRoom]").forEach(x => x.checked = (f.room || []).includes(x.value));
   form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
   form.querySelectorAll("[name=fMatch]").forEach(x => x.checked = Number(x.value) === f.minMatch);
-  updateFilterCount();
+  rentSlider(); updateFilterCount();
   $("dlgFilters").showModal();
 }
 function readFilterForm(){
@@ -7429,13 +7633,40 @@ function updateFilterCount(){
   const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
   $("fApply").textContent = n ? `Show ${n} ${n === 1 ? "home" : "homes"}` : "No homes match yet";
 }
+// The cleaner filters (Kamal, 15 Nov): each section on its own card with a small label, a two-thumb rent slider kept in
+// step with the min and max boxes (and the price bands), and the button pinned at the bottom. The same filters as before.
+(function cardsForFilters(){
+  const form = $("filterForm"); let card = null;
+  for(const el of [...form.children]){
+    if(el.id === "fAreaBox"){ el.classList.add("f-card"); card = null; continue; }
+    if(el.classList.contains("f-actions")) break;
+    if(el.matches("h3.section-h")){ card = document.createElement("section"); card.className = "f-card"; el.before(card); }
+    if(card) card.appendChild(el);
+  }
+})();
+const R_TOP = 100000;
+function rentSlider(){
+  const lo = Number($("fMin").value) || 0, hi = Number($("fMax").value) || 0;
+  $("fRMin").value = Math.min(lo, R_TOP); $("fRMax").value = hi ? Math.min(hi, R_TOP) : R_TOP;
+  const a = $("fRMin").value / R_TOP * 100, b = $("fRMax").value / R_TOP * 100;
+  $("fRFill").style.left = a + "%"; $("fRFill").style.right = (100 - b) + "%";
+  $("fRVal").textContent = !lo && !hi ? "Any rent" : `${lo ? inr(lo) : "₹0"} – ${hi ? inr(hi) : "₹1L+"}`;
+}
+["fRMin", "fRMax"].forEach(id => $(id).addEventListener("input", () => {
+  let lo = Number($("fRMin").value), hi = Number($("fRMax").value);
+  if(lo > hi - 1000){ if(id === "fRMin") lo = Math.max(0, hi - 1000); else hi = Math.min(R_TOP, lo + 1000); }
+  $("fMin").value = lo || ""; $("fMax").value = hi >= R_TOP ? "" : hi;
+  $("filterForm").querySelectorAll("[name=fBand]").forEach(x => x.checked = false);
+  rentSlider(); updateFilterCount();
+}));
 $("filtersBtn").addEventListener("click", openFilters);
 $("filterForm").addEventListener("change", e => {
   if(e.target.name === "fBand"){ const [lo, hi] = BANDS[Number(e.target.value)]; $("fMin").value = lo || ""; $("fMax").value = hi || ""; }
   if(e.target.id === "fMin" || e.target.id === "fMax") $("filterForm").querySelectorAll("[name=fBand]").forEach(x => x.checked = false);
+  if(e.target.id !== "fRMin" && e.target.id !== "fRMax") rentSlider();
   updateFilterCount();
 });
-$("filterForm").addEventListener("input", updateFilterCount);
+$("filterForm").addEventListener("input", e => { if(e.target.id === "fMin" || e.target.id === "fMax") rentSlider(); updateFilterCount(); });
 $("fReset").addEventListener("click", () => { const { city, areas } = prefs(); setPrefs(Object.assign({}, DEFAULT_PREFS, { city, areas })); openFilters(); });
 $("fAreas").addEventListener("click", e => {
   if(!e.target.closest("[data-farea-add]")) return;
@@ -8318,6 +8549,43 @@ document.addEventListener("click", e => { if(e.target.closest("[data-av-edit]"))
 const avPostLink = () => `<p class="hint fm-av-l">${state.avatar && state.avatar.s ? avMine("av-sm") : ""}<button class="linkbtn" type="button" data-av-edit="post">${state.avatar && state.avatar.s ? "Edit your avatar" : "Add your avatar (optional)"}</button></p>`;
 // Right after the Vibe Card reveal in onboarding (seekers), once: the maker, with Skip; then on to Discover.
 const avAskNow = () => state.user && !(state.avatar && state.avatar.s) && !state.avatarAsked;
+// A few made-up people for the story and the welcome (our own drawings).
+const AV_CAST = [{ s:"s4", f:"grin", h:"none", c:"hijab", cc:"#C3C9F6", t:"#C3E0D6", ty:"0-3" }, { s:"s5", f:"smile", h:"curly", hc:"#1C1917", b:"full", t:"#EBD981", ty:"1-1" },
+  { s:"s2", f:"calm", h:"bob", hc:"#5B3A29", g:true, t:"#86A6E0", ty:"2-4" }, { s:"s3", f:"smile", h:"short", hc:"#3A2A20", t:"#E79078", ty:"0-11" }];
+const avCast = (i, live) => avSvg(Object.assign({ v:1 }, AV_CAST[i % AV_CAST.length]), { live, label: "" });
+// The opening story (Kamal, 15 Nov): for a first visit to the welcome page, four short screens that tell the idea,
+// moving on by themselves (or with Next), Skip always there, then straight to sign-up. Shown once per phone.
+// (Automated browsers skip it unless the address has ?story, so the tests can still reach the sign-in card.)
+const STORY = [
+  { h: "A spare room is easy.", b: "Finding people you'd actually like living with is the hard part.", art: () => `<div class="st-trio">${[0, 1, 2].map(() => AV_DEFAULT_SVG).join("")}</div>` },
+  { h: "Tell us how you live.", b: "Twelve quick questions: sleep, food, guests, noise, pets.", art: () => `<div class="st-chips">${["🌙 Night owl", "🥗 Veg kitchen", "🎧 Quiet home", "🐾 Pet-friendly", "🧹 Tidy most days"].map(t => `<span>${t}</span>`).join("")}</div>` },
+  { h: "Meet people who live like you.", b: "Every home and every person shows how well you'd fit.", art: () => `<div class="st-pair"><span class="st-av">${avCast(0, true)}</span>${ringSvg(92, 76)}<span class="st-av">${avCast(2, true)}</span></div>` },
+  { h: "Both say yes. Then talk.", b: "Your number stays private until you both say yes. Then chat, visit, move in.", art: () => `<div class="st-chat"><span class="st-av sm">${avCast(1)}</span><p>Saturday at 11 for a visit?</p><p class="me">Perfect, see you then!</p></div>` }
+];
+let stI = 0, stTimer = null;
+function storyShow(i){
+  stI = i; const x = STORY[i];
+  $("stStage").innerHTML = `<div class="st-slide"><div class="st-art">${x.art()}</div><h2>${esc(x.h)}</h2><p>${esc(x.b)}</p></div>`;
+  $("stDots").innerHTML = STORY.map((_, k) => `<i class="${k === i ? "on" : k < i ? "done" : ""}"></i>`).join("");
+  $("stNext").textContent = i === STORY.length - 1 ? "Find my flatmates" : "Next";
+  clearTimeout(stTimer);
+  if(i < STORY.length - 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) stTimer = setTimeout(() => $("dlgStory").open && storyShow(i + 1), 3600);
+}
+function maybeStory(){
+  const force = /[?&]story\b/.test(location.search);
+  if(state.user || $("dlgStory").open || (!force && (readLS("fm_story_seen") || navigator.webdriver))) return;
+  writeLS("fm_story_seen", Date.now()); storyShow(0); $("dlgStory").showModal();
+}
+$("stNext").onclick = () => { if(stI < STORY.length - 1) storyShow(stI + 1); else $("dlgStory").close(); };
+$("stSkip").onclick = () => $("dlgStory").close();
+$("dlgStory").addEventListener("close", () => { clearTimeout(stTimer); const c = document.querySelector(".w-card"); if(c) c.scrollIntoView({ block: "center" }); });
+// The welcome after a new sign-up (Kamal, 15 Nov): one warm screen with your name, then on to the questions.
+function showHello(){
+  $("hlHi").textContent = firstName() ? `Welcome, ${firstName()}` : "Welcome";
+  $("hlArt").innerHTML = [3, 0, 1, 2].map(i => `<span>${avCast(i, i === 0)}</span>`).join("");
+  $("dlgHello").showModal();
+}
+$("hlGo").onclick = () => $("dlgHello").close();
 // The Vibe Card's avatar as a still, for the shared image.
 function avImage(a, px){
   const svg = avSvg(a).replace("<svg ", `<svg width="${px}" height="${px}" `);

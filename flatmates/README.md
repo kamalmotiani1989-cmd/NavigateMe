@@ -6,10 +6,20 @@ the room comes second.
 ## How it flows
 
 1. **Welcome page = sign-in.** A short write-up, the **flatmate-type quiz** (the bright card under
-   the headline) and the sign-in card, which asks what you came for: *post my flat* or *looking for a
-   room*, then their mobile number, then a required **"I am 18 or older"** tick (Kamal, 8 Nov). The one-time code comes **on WhatsApp**, or by SMS when they tap
-   "Send it by SMS instead"; the code screen can send it again, or by SMS, after a minute. Their first
-   name is the first question after sign-in, then **male or female** (each asked only once per number).
+   the headline) and the sign-in card.
+   - **The number comes last** (Kamal, 15 Nov). The card asks one thing at a time, with "x of 4", a bar and a back
+     arrow:
+     1. what you came for: *looking for a room*, *posting a flat or a room* or *just Flatsplits & FlatMart*;
+     2. "What should we call you?" (first name);
+     3. "A little about you" (Woman or Man);
+     4. "Verify your number": the mobile number plus the required **"I am 18 or older"** tick (Kamal, 8 Nov).
+   - The small line above each heading uses the name: "Nice to meet you, Kamal", then "Almost in, Kamal".
+   - The name and gender are saved when the code is verified, so onboarding doesn't ask them again. They're still
+     asked only once per number, because the server keeps an existing name.
+   - **"I already have an account"** goes straight to the number with "Welcome back". The account keeps its role and
+     name. A new number that comes that way starts as looking for a room.
+   - The one-time code comes **on WhatsApp**, or by SMS when they tap "Send it by SMS instead". After a minute, the
+     code screen can send it again, or by SMS.
    See "Sign-in codes" below.
    **Just Flatsplits & FlatMart** (third choice, Kamal, 8 Nov 2026): for people who only want to split bills and
    buy or sell. The code steps are the same; set-up asks only name, gender and generation (Gen Z, Millennial,
@@ -474,6 +484,15 @@ How they're delivered:
 
 ## Search and filters
 
+**Search like you'd talk** (Kamal, 15 Nov): the Discover search box also reads plain sentences, such as "room near
+Koramangala under 15k, veg", "women only flat in Pune" or "shared room in HSR Layout below 10000, no smoking".
+- `parseTalk` turns the words it knows into the usual filters: budget (under, below, between, 15k), what kind of home,
+  women or men only, veg kitchen, no smoking, no alcohol, pets, furnishing, city (including other names such as
+  Bangalore and Gurgaon) and area.
+- Whatever place is left over goes to the place search ("near HR College").
+- A short message says what was understood.
+- It all runs on the phone, with no outside service.
+
 **Looking for** (asked at sign-up, changeable on Discover): it decides which homes show and in what order.
 **Private room:** private rooms (and "flatmate wanted"), then whole flats, no shared rooms. **Shared room:**
 shared rooms, then private rooms, then whole flats. **Whole flat:** whole flats, then private rooms. **Any:**
@@ -643,6 +662,24 @@ and the sun, moon or stars moving a little.
 - A nearby party's guest requests include each guest's `avatar`.
 
 ## Look and feel
+**The clean pack (Kamal, 15 Nov, after looking at another app; our colours and words):**
+- **Opening story:** a first visit to the welcome page shows four short screens (`dlgStory`), drawn with our avatars:
+  1. "A spare room is easy."
+  2. "Tell us how you live."
+  3. "Meet people who live like you."
+  4. "Both say yes. Then talk."
+  They move on by themselves, with Next and Skip, then lead to sign-up. They're shown once per phone. Automated
+  browsers skip them unless the address has `?story`.
+- **Welcome:** a new account gets "Welcome, <name> · Your home, your people." (`dlgHello`) before the questions.
+- **Home cards:** the rent comes first and large, with the expenses beside it. Then the title, the area, small chips
+  (BHK, furnishing), the people, and the trust line under a thin rule.
+- **Notifications:** the ask says what you'll get (new matches and invites, messages, safety and account updates),
+  with "Not now", which hides it for a week.
+- **Filters:** each section sits on its own card with a small label. The rent has a two-thumb slider (₹0 to ₹1L+)
+  that stays in step with the Min and Max boxes and the price bands, and the "Show N homes" button is pinned at the
+  bottom. The filters themselves are the same as before.
+- **Not doing:** no photo is required anywhere, and no question about religion.
+
 Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it replaces the navy-and-green look of
 8 Nov. Every screen keeps its layout and words; the look lives in one style layer at the end of the stylesheet.
 - **Page and cards:** a warm blush-beige page (`--bg` #EFE4DC) with off-white cards (`--surface` #FBF8F6) and soft
