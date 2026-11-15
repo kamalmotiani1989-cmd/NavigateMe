@@ -1,5 +1,30 @@
 # Teche · reports
 
+## 2026-11-15, two-layer home and frosted bottom bar on phones (#103) live
+
+- **What (Kamal, from a screenshot of Dwelo's home: "the double shade looks super amazing and the bottom bar looks
+  cool… do the same"):** phones only, in our colours.
+  - **Home screens:** the greeting sits on a pastel band that fills the top of the screen, top bar included
+    (lavender on Discover, butter on My flat). The page below is a sheet with round corners that comes up over it.
+    Words on the band are near-black. While scrolling, the top bar keeps the band's colour until the sheet reaches
+    it.
+  - **Bottom bar:** a frosted pill. The screen you're on is a soft pill in that screen's own pastel with dark words,
+    where it was a black button. Every place keeps its name under its icon.
+- **Two small fixes found on the way:** at 320 wide the account button was squeezed (round again; Tribe is its icon
+  alone under 350 px). On short phones the "N selected" bar on Escape sat partly under the bottom bar (it now rests
+  above it, and Help steps out of its way).
+- **Not changed:** colours (only our pastels), login, onboarding questions, computers, the Android shell. No
+  database change.
+- **Tests:** all 24 demo suites pass; new suite `p26` (27 checks), also run on the compacted page.
+- **Published:** 27fd447; Android build 210 (the app file was checked: it carries the new home, and its
+  checksum matches the release). The website repo's `main` and `gh-pages` say "Publish the app from NavigateMe 27fd447".
+- **Screenshots:** [before and after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/04eec74cf3f57b303fdc08972045c132831ae057/home-before-after.png),
+  [scrolling and the bar](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/04eec74cf3f57b303fdc08972045c132831ae057/home-scroll-bar.png).
+- **Offered to Kamal, not built:** the same two-layer top on Splits, Market, Passes and Escape; the band's colour
+  behind the clock and battery (needs a change in the Android shell, which I can't try on a phone from here);
+  icons only in the bottom bar.
+- **Still waiting on Kamal:** findmeflatmate PR #2 (one line), #86 privacy blanks, #95 merge or close.
+
 ## 2026-11-15, website refresh (#101) live; Android builds only for app changes (#102)
 
 - **What (Kamal: "make the website also better"):** the page a visitor sees before signing in.
@@ -133,25 +158,3 @@
 - **Tests:** demo suite, 16 suites, 0 failed. p12 and p15 now go through Filters.
 - **Open:** Kamal's screenshot showed a listing's tags drawn over the "Which city are you moving to?" card. Not
   looked into yet; offered as the next fix.
-
-## 2026-11-10, party rules (#88) and block and report (#89) live
-
-- **Party rules, 21+ (#88):** ten rules of our own for parties nearby, with 21 and over only. A guest ticks "I'm 21
-  or older, I've read the party rules and I'll follow them" before the first request to join; a host does the same
-  before opening a party to people nearby. The server enforces it. The rest of the app stays 18+.
-  - Live check (rolled back): a request without the tick gets rules-required; after ticking, it goes on to the
-    normal checks.
-- **Block and report (#89):**
-  - Where: on chats and messages, people's cards, home pages and FlatMart items.
-  - Blocking is silent and both ways, enforced on the server: chats close ("You can't message this person"), and
-    requests, invites, offers and tribe yeses are refused. Listings, items and parties disappear for each other,
-    and they drop out of each other's lists. Account → Blocked people unblocks.
-  - Reports keep a copy of what was reported, for two years. Reports from two different people pause messages,
-    requests and invites until Kamal reviews (fm_safety_review_list / fm_safety_clear).
-  - Message limits: 60 a day, and 10 a day to new people.
-  - Live check (rolled back): after a block the listing went, the chat closed for both, the other side saw no
-    sign, and the report reached the review list.
-- **Merging:** #89 was brought up to date with main by a normal merge commit. The force-push of the rebase was
-  refused, and the merged files are identical to the tested ones.
-- **Published:** findmeflatmate main says "Publish the app from NavigateMe daa95d8".
-- **Waiting on Kamal:** #86 (privacy and security) has lines for chat, block and report, and needs his [TO FILL]s.
