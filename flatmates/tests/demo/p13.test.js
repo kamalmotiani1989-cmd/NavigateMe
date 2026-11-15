@@ -22,7 +22,7 @@ const audit = () => {
   const b = await chromium.launch(); const ctx = await b.newContext({ viewport:{ width:390, height:844 } });
   await ctx.addInitScript(s => { try{ if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }catch(e){} }, st);
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
-  for(const [h, sel] of [['#splits', '.fs-hero p:not(.eyebrow)'], ['#market', '.mk-hero p:not(.eyebrow)'], ['#plans', '.plans-hero > p:not(.eyebrow)'], ['#tribe', '.tribe-hero .lede']]){
+  for(const [h, sel] of [['#splits', '.fs-hero p:not(.eyebrow)'], ['#market', '.mk-hero p:not(.eyebrow)'], ['#tribe', '.tribe-hero .lede']]){
     await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
     const r = await p.evaluate(sel => { const el = document.querySelector(sel); const more = el && el.nextElementSibling;
       return { packed: el && el.classList.contains('pk'), lines: el && Math.round(el.clientHeight / parseFloat(getComputedStyle(el).lineHeight)), more: more && more.classList.contains('pk-more') && more.textContent,
@@ -59,9 +59,14 @@ const audit = () => {
   await p.goto('http://localhost:8765/#discover'); await p.waitForTimeout(1200);
   await p.evaluate(async () => { await api.tribeRefresh(); const t = (state.tribe || [])[0]; if(t){ Object.assign(t, { my_yes: true, their_yes: true, status: 'bonded', bonded_at: new Date().toISOString(), phone: '9800000001' }); save(); } });
   const low = [];
-  for(const h of ['#discover', '#tribe', '#splits', '#market', '#account', '#plans', '#requests']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1400);
+  for(const h of ['#discover', '#tribe', '#splits', '#market', '#account', '#requests']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1400);
     await p.evaluate(() => { document.querySelectorAll('dialog[open]').forEach(d => d.close()); document.querySelectorAll('.pk-more').forEach(b => b.click()); });
     low.push(...(await p.evaluate(audit)).map(x => h + ' ' + x)); }
+  // Passes is a pop-up now (15 Nov; it was a screen of its own)
+  await p.evaluate(() => openPay(null)); await p.waitForTimeout(600);
+  const pay = await p.evaluate(() => $('dlgPay').open && $('payPlans').textContent.length > 40);
+  low.push(...(await p.evaluate(audit)).map(x => 'the Passes pop-up ' + x)); if(!pay) low.push('the Passes pop-up did not open');
+  await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   ok(!low.length && await p.evaluate(() => [...document.querySelectorAll('.bond-avs .av:not(.fm-avh)')].every(e => getComputedStyle(e).color === 'rgb(255, 255, 255)') && !!document.querySelector('.bond-avs .av')),
     'contrast: all text reads at 4.5:1 (3:1 for big text), including a tribe card\'s WhatsApp and Leave tribe: ' + low.slice(0, 5).join(' | '));
   // the Vibe Card (a picture, drawn on a canvas): every text colour on every background it sits on

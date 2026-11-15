@@ -3982,41 +3982,70 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- The conversation: who's in it (first names) and the last 200 messages. Opening it marks it read.
-create or replace function public.fm_thread_get(p_thread uuid) returns jsonb
+-- Quicker messaging (Kamal, 15 Nov): while a chat is open the app asks every 2 seconds, so it can ask for only
+-- what's new. With p_after, only the messages from that moment on come back (the newest 200 of them) and the app
+-- adds them to what it has; without it, the last 200 as before. The "read" mark is written only when there is
+-- something new to mark, so asking every 2 seconds doesn't write every 2 seconds.
+-- (The one-argument fm_thread_get goes first: with a default on the new argument the two would be told apart by
+-- nothing. An app from before this still calls it with p_thread alone and gets what it always got.)
+drop function if exists public.fm_thread_get(uuid);
+create or replace function public.fm_thread_get(p_thread uuid, p_after timestamptz default null) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare v_people uuid[] := fm_thread_people(p_thread); t fm_threads%rowtype;
 begin
   select * into t from fm_threads where id = p_thread;
   if t.id is null or auth.uid() is null or not auth.uid() = any(v_people) then return jsonb_build_object('error', fm_thread_why_not(p_thread)); end if;
-  insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
-  on conflict (thread_id, user_id) do update set read_at = now();
+  if not exists (select 1 from fm_thread_reads where thread_id = p_thread and user_id = auth.uid() and read_at >= t.last_at) then
+    insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
+    on conflict (thread_id, user_id) do update set read_at = now();
+  end if;
   return jsonb_build_object('thread', t.id, 'kind', t.kind, 'title', fm_thread_title(t.id),
     'ref', coalesce(t.request_id, t.tribe_id, t.offer_id, t.group_id),
     'people', coalesce((select jsonb_agg(split_part(coalesce(p.full_name, ''), ' ', 1) order by p.full_name) from fm_profiles p
                          where p.id = any(v_people) and p.id <> auth.uid() and not fm_blocked(auth.uid(), p.id)), '[]'::jsonb),
     'messages', coalesce((select jsonb_agg(jsonb_build_object('id', m.id, 'mine', m.sender_id = auth.uid(),
                    'name', split_part(coalesce(p.full_name, ''), ' ', 1), 'body', m.body, 'at', m.created_at) order by m.created_at)
-                 from (select * from fm_thread_messages where thread_id = p_thread and not fm_blocked(auth.uid(), sender_id) order by created_at desc limit 200) m
+                 from (select * from fm_thread_messages where thread_id = p_thread and (p_after is null or created_at >= p_after)
+                         and not fm_blocked(auth.uid(), sender_id) order by created_at desc limit 200) m
                  left join fm_profiles p on p.id = m.sender_id), '[]'::jsonb));
 end $$;
 
-create or replace function public.fm_thread_send(p_thread uuid, p_body text) returns jsonb
+-- Send a message. It answers with the message's id and its time, so the app can show it as sent without reading
+-- the chat again.
+-- p_id (Kamal, 15 Nov, quicker messaging): the app shows a message the moment it's sent and tries again by itself
+-- when it never heard back (a lift, the metro). It gives each message its own id, so a message that did arrive
+-- the first time isn't saved, counted or notified twice: the second try is told "already here". An id that
+-- belongs to anything else is refused. Without p_id (an app from before this) the server makes the id, as before.
+drop function if exists public.fm_thread_send(uuid, text);
+create or replace function public.fm_thread_send(p_thread uuid, p_body text, p_id uuid default null) returns jsonb
 language plpgsql security definer set search_path = public as $$
-declare v_id uuid; v_body text := left(trim(coalesce(p_body, '')), 1000);
+declare v_id uuid; v_at timestamptz; v_body text := left(trim(coalesce(p_body, '')), 1000);
 begin
   if auth.uid() is null or not auth.uid() = any(fm_thread_people(p_thread)) then return jsonb_build_object('error', fm_thread_why_not(p_thread)); end if;
   if v_body = '' then return jsonb_build_object('error', 'empty'); end if;
   if fm_user_restricted(auth.uid()) then return jsonb_build_object('error', 'paused'); end if;
+  if p_id is not null then
+    select id, created_at into v_id, v_at from fm_thread_messages where id = p_id and thread_id = p_thread and sender_id = auth.uid();
+    if v_id is not null then return jsonb_build_object('message', v_id, 'at', v_at, 'again', true); end if;
+  end if;
   -- Against spam: 30 an hour, 60 a day; and the first message to someone new, 5 an hour, 10 a day.
   perform fm_throttle('message', 30, 60);
   if not exists (select 1 from fm_thread_messages where thread_id = p_thread and sender_id = auth.uid()) then
     perform fm_throttle('message-new', 5, 10);
   end if;
-  insert into fm_thread_messages (thread_id, sender_id, body) values (p_thread, auth.uid(), v_body) returning id into v_id;
+  insert into fm_thread_messages (id, thread_id, sender_id, body) values (coalesce(p_id, gen_random_uuid()), p_thread, auth.uid(), v_body)
+  on conflict (id) do nothing returning id, created_at into v_id, v_at;
+  if v_id is null then
+    -- That id is taken. By this very message, saved a moment ago by a try that is still on its way: fine.
+    -- By anything else (another chat, another person): no.
+    select id, created_at into v_id, v_at from fm_thread_messages where id = p_id and thread_id = p_thread and sender_id = auth.uid();
+    if v_id is null then return jsonb_build_object('error', 'not-sent'); end if;
+    return jsonb_build_object('message', v_id, 'at', v_at, 'again', true);
+  end if;
   update fm_threads set last_at = now() where id = p_thread;
   insert into fm_thread_reads (thread_id, user_id) values (p_thread, auth.uid())
   on conflict (thread_id, user_id) do update set read_at = now();
-  return jsonb_build_object('message', v_id);
+  return jsonb_build_object('message', v_id, 'at', v_at);
 end $$;
 
 -- My conversations with a message in them, newest first, with the last message and how many I haven't read.
