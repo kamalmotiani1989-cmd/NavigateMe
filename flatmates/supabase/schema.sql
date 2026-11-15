@@ -599,6 +599,39 @@ language sql immutable set search_path = public as $$
   from base;
 $$;
 
+-- A home's living-style answers must be on the listing, or nothing can be scored against it: Discover shows
+-- no match on it and The Empty Room Escape shows no vibe score for anyone (Kamal, 15 Nov: "in escape the room vibe
+-- score should be visible"). The posting form fills them in from the household answers given at sign-up, but that
+-- copy lives on the phone the account was set up on, so a room posted from another phone, or after a reinstall,
+-- came without them. fm_listing_vibe: the listing's own answers when it has at least 4, else the lister's own
+-- answers (the 12 questions and the generation, from their profile) with whatever the listing does say on top.
+create or replace function public.fm_listing_vibe(p_hh jsonb, p_owner_vibe jsonb) returns jsonb
+language sql immutable set search_path = public as $$
+  select case
+    when fm_vibe_count(p_hh) >= 4 or fm_vibe_count(p_owner_vibe) < 4 then p_hh
+    else (select coalesce(jsonb_object_agg(k, p_owner_vibe->k), '{}'::jsonb)
+            from unnest(array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen']) k
+           where (k = 'gen' and p_owner_vibe->>k in ('z','m','g','x')) or (k <> 'gen' and jsonb_typeof(p_owner_vibe->k) = 'number'))
+         || case when jsonb_typeof(p_hh) = 'object' then p_hh else '{}'::jsonb end
+  end;
+$$;
+-- Kept true on every post and edit, whichever version of the app sends it.
+create or replace function public.fm_listing_vibe_fill() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if fm_vibe_count(new.household) < 4 then
+    new.household := fm_listing_vibe(new.household, (select o.vibe from fm_profiles o where o.id = new.owner_id));
+  end if;
+  return new;
+end $$;
+drop trigger if exists fm_listings_vibe_fill on public.fm_listings;
+create trigger fm_listings_vibe_fill before insert or update of household on public.fm_listings
+  for each row execute function public.fm_listing_vibe_fill();
+-- Once, for the rooms posted without answers before this (no-op afterwards: they then have them).
+update public.fm_listings l set household = fm_listing_vibe(l.household, o.vibe)
+  from public.fm_profiles o
+ where o.id = l.owner_id and fm_vibe_count(l.household) < 4 and fm_vibe_count(o.vibe) >= 4;
+
 -- Listings, with whether the caller can see the contact and where their request stands.
 -- Signed-in only, and counted (fm_throttle): Discover calls it once per search.
 -- How quickly an owner answers requests: the median hours from a seeker's request to the owner's yes or
@@ -4231,7 +4264,8 @@ begin
                      'fm_party_alcohol', 'fm_km', 'fm_india_pin', 'fm_party_taken', 'fm_party_cant_see', 'fm_party_near_json',
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
                      'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok',
-                     'fm_blocked', 'fm_block_target', 'fm_avatar_valid', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear') then
+                     'fm_blocked', 'fm_block_target', 'fm_avatar_valid', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear',
+                     'fm_listing_vibe', 'fm_listing_vibe_fill') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
