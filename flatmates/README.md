@@ -1059,9 +1059,12 @@ for that version only. Offline or a failed read shows nothing. The website never
 pages. Only apps from this build on can check, so phones on an older build need one manual download first.
 
 How it's built: `android/` is a small native app that shows the web app full-screen. The build
-copies `index.html` and `icons/` into the APK, so you only ever edit the web app. Every push that
-changes `flatmates/` runs `.github/workflows/flatmates-apk.yml`, which builds the APK and replaces
-the file at the link above (about 3 minutes).
+copies `index.html`, `privacy.html`, `manifest.webmanifest`, `icons/` and `vendor/` into the APK, so you only ever
+edit the web app. A push to `main` that changes one of those, or `android/` itself, runs
+`.github/workflows/flatmates-apk.yml`, which builds the APK and replaces the file at the link above (about 3
+minutes). Changes that don't go into the app (reports, marketing files, tests, this README, the database scripts,
+the website-only files) don't start a build: each build has a new number, and a new number with nothing new in it
+would show people the "new version" card for no reason.
 
 To build on your own computer instead: open `flatmates/android` in Android Studio and press Run,
 or run `./gradlew assembleRelease` there (output in `app/build/outputs/apk/release/`).

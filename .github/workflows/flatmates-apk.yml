@@ -1,14 +1,26 @@
 name: FindMeFlatMate Android APK
 
-# Builds the Android app from flatmates/ on every change and publishes it as
+# Builds the Android app from flatmates/ whenever something that goes into the app changes, and publishes it as
 # the "flatmates-apk" release. The website's publish job (kamalmotiani1989-cmd/findmeflatmate) copies
 # it to that repo's own "flatmates-apk" release, which is the public download link (it keeps working
 # when this repo is private):
 # https://github.com/kamalmotiani1989-cmd/findmeflatmate/releases/download/flatmates-apk/flatmates.apk
+#
+# Only the files the app carries start a build: the pages, icons and vendor files that copyWeb packs
+# (android/app/build.gradle) and the Android project itself. Reports, marketing files, tests, the README, the
+# database scripts and the website-only files don't. Every build gets a new build number, and the app tells
+# people "a new version is ready" when it sees a higher one, so a build with nothing new in it is a false alarm.
 on:
   push:
     branches: [main, "claude/rental-flat-roommate-app-*"]
-    paths: ["flatmates/**", ".github/workflows/flatmates-apk.yml"]
+    paths:
+      - "flatmates/index.html"
+      - "flatmates/privacy.html"
+      - "flatmates/manifest.webmanifest"
+      - "flatmates/icons/**"
+      - "flatmates/vendor/**"
+      - "flatmates/android/**"
+      - ".github/workflows/flatmates-apk.yml"
   workflow_dispatch:
 
 permissions:
