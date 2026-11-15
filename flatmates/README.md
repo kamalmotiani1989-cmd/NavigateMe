@@ -417,6 +417,36 @@ group can't read it any more, and nobody can before the yes (`fm_thread_open` sa
 `fm_thread_open`, `fm_thread_get` (last 200, marks read), `fm_thread_send` (120 an hour, 600 a day),
 `fm_thread_list`. Messages go when the account goes. Demo mode: the other person answers once, a moment later.
 
+## Match reasons and scam flags (Kamal, 15 Nov)
+
+- **Match reasons:** next to the match %, home cards and tribe cards say "N things in common · No smoking · Tidy most
+  days · Quiet home" (`matchReasons`). The most important answers come first: food, smoking, sleep, cleanliness,
+  pets, then guests.
+- **Scam flags** (`scamFlag`, rules that run on the phone): a message from the other person, or a listing's
+  description, that asks for money up front gets a calm warning. Examples are a "token", an "advance", a "booking
+  amount", paying by UPI, GPay or Paytm, a QR code, or sharing an OTP.
+  - The warning: never pay before you've visited and met them, and FindMeFlatMate never asks you to pay anyone.
+  - Your own messages are never flagged, and ordinary chat ("transferred to Pune", "deposit at move-in") isn't
+    either.
+
+## The Move-in kit (Kamal, 15 Nov)
+
+After a yes, the accepted room request (on both sides) and a bonded tribe get **🔑 Move-in kit** (`dlgKit`). It has
+three parts:
+1. **A flatmate agreement**, filled in from the home and the answers: names, rent and deposit each, the day rent is
+   due, the move-in date, how bills are split, notice, and house rules taken from the household's answers (smoking,
+   guests, cleaning, food, pets, quiet hours, groceries).
+   - Everything can be edited, and the agreement updates as you type.
+   - "Share the agreement" uses Android's share sheet in the app, the phone's share sheet on the web, or WhatsApp.
+     There's also Copy.
+   - It says it's a simple understanding between flatmates, not a rental agreement with the owner.
+2. **A move-in checklist** of 10 things: visit together, meet everyone, see the owner's ID and agreement, get a
+   receipt for the deposit, photos on move-in day, meter readings, keys, Flatsplits, emergency contacts, a cleaning
+   rota.
+3. **Rent and bills:** straight to Flatsplits.
+
+It all stays on the phone (`state.kits`). There's no database change.
+
 ## Report and block
 
 Kamal, 10 Nov. **Report or block** is on a chat (and **Report** on each of the other person's messages), people's
