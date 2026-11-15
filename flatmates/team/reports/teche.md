@@ -1,5 +1,46 @@
 # Teche · reports
 
+## 2026-11-15, faster app, every home in one list, the Escape's vibe score (#106, #107) live
+
+- **What Kamal asked (15 Nov):** "Can u check the app is slow.. use ur skills and make it better. Also whther the
+  vibe matches or not all properties should be shown. Starting with highest vibescore to lowest. Also in escape the
+  room vibe score should be visible".
+- **Speed.** Measured on a phone-sized browser slowed four times, against a stand-in server (250 ms a call):
+  - first thing on screen 1.1 s, now 0.4 s; first homes 1.4 s, now about 1 s (slow connection, 600 ms a call:
+    2.2 and 3.4 s, now 0.4 and 1.75 s);
+  - server calls at start 17, now 12; going back to a tab was 4 to 8 calls, now none within 20 seconds.
+  - Why it was slow: the screen stayed blank while the app asked the server three things one after another ("who
+    am I" three times); every tab change asked 4 to 8 things again, some twice; and the typeface came from Google
+    Fonts, which had to answer before anything could show. The server itself is quick (the homes list: about 50 ms).
+  - What changed: the first screen is drawn at once from what the phone remembers; answers are kept for 20 seconds
+    and emptied by any change; the typeface is in `vendor/fonts`. README, "Speed", has the rest, including what to
+    do when adding a server function.
+- **Discover:** one list of every home in the city, highest vibe score first, with a line saying so. The "Your vibe
+  matches" row (80%+ only) and the "Minimum match" filter are gone. Homes that filters or the kind of home picked
+  leave out show in a block under the list; only Women only / Men only takes a home off the page.
+- **Escape:** every person shows their score with "vibe match" under it, best first.
+  - Why it was missing: one live room (Pune, posted 9 Nov) had none of the home's living-style answers, so nobody
+    could be scored against it. The posting form took those answers from a copy kept on the phone the account was
+    set up on.
+  - Database: `fm_listing_vibe` and a trigger put the lister's own answers on a listing that has none, on every
+    post and edit; one statement filled that room. All 8 people looking there now have a score (40 to 60%).
+  - If nobody can be scored, the Escape says so, with "Add them now".
+- **Not changed:** the login process, onboarding questions, colours.
+- **Tests:** 26 demo suites, 587 checks; new `p28` (45) runs the real page against a stand-in server and counts the
+  calls. Database: 205 checks, 18 new. The runner used to count a suite that stopped on an error as a pass with fewer
+  checks; it now fails it.
+- **Published:** 90b01f8; Android build 213 (file checked, checksum matches); website repo `main` and `gh-pages` say
+  "Publish the app from NavigateMe 90b01f8", and the published copy was run against the stand-in. Live database:
+  the merged `schema.sql` applied (checksum checked first) and verified read-only. #107 corrected two lines in the
+  README (no build).
+- **Choices I made, for Kamal to overrule:** with "Private room" picked, private rooms still come first and the other
+  kinds go under "More homes"; a whole flat nobody has answered for has no score and comes last.
+- **Privacy page:** Google Fonts is off its list of services (no longer used), date 15 Nov. Noticed while there: the
+  page names OpenStreetMap for maps, but the app uses Google Maps when its key is set, which it is. For King and
+  Kamal, with #86.
+- **For Kamal:** nothing needed. Still open: #86 privacy blanks, #95 merge or close, the host page and the strip
+  behind the clock (both raised with #104).
+
 ## 2026-11-15, website repo PR #2 merged (status message), on Kamal's yes
 
 - **What:** findmeflatmate PR #2 is merged (8679471). One line in the last step of its `publish.yml`: the step now
@@ -162,30 +203,3 @@
   is shown), and the spacing is a little tighter at the scale's 12.5 px.
 - **Tests:** 19 demo suites pass. No database change. Published 5725b62.
 - **Screenshots:** [before/after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/f5d61e960c787b5c68bff62668b42a5fc8a43488/vibecard-before-after.png).
-
-## 2026-11-13, avatars (#96) live
-
-- **What (Kamal, through King):** people build a cartoon of themselves, and it shows where their initial used to.
-  - The maker is one screen with six rows: skin tone (6), face, hair and colour, head covering (hijab, turban or
-    cap) and colour, glasses and beard, top colour. It updates live as you tap.
-  - Skip is always there, and nothing is picked for you.
-  - Seekers see it once after onboarding's reveal. Everyone can open it from Account or the Vibe Card; owners also
-    from their own row in "who lives there".
-  - The flatmate type sits on top: the scene comes from the rhythm, the held prop from the habit (12 props, 9 new),
-    and it follows the answers.
-- **Shows in:** the top bar, home cards, Tribe (cards, map, bonded), Escape and My flat, requests, messages and the
-  chat header, FlatMart sellers, party guest requests, Account, and the Vibe Card. On the Vibe Card it moves on
-  screen and is a still in the shared image.
-  - No avatar shows a neutral default.
-  - Only the Vibe Card, Account and the maker move. Reduced motion means nothing moves.
-- **Database (live first):** fm_profiles.avatar, plus fm_avatar_valid (palette-only values, also a check on the
-  table), fm_set_avatar and fm_avatars(kind, ids).
-  - The schema was checked by md5 (0dcc3b9c…) and applied live.
-  - The rolled-back live check passed: save and read OK, bad values refused, signed-in only.
-- **Privacy:** a line about avatars added to the #86 draft.
-- **Tests:** DB 187 checks, 0 failed. Demo 19 suites, 0 failed (new p21: 30 checks). The p13 and p19 contrast
-  audits pass.
-- **Published:** ebe68c4. Before and after screenshots at 390 wide: [before/after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-before-after.png),
-  [maker](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-maker.png), [chat](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-chat.png).
-- **Note:** I couldn't confirm the Open Peeps licence (the site doesn't resolve from here), so all the parts are our
-  own drawings.
