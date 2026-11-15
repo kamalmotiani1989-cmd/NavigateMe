@@ -1,5 +1,43 @@
 # Teche · reports
 
+## 2026-11-15, clean login page, Parties as its own section, two layers on every screen (#104) live
+
+- **What Kamal asked (15 Nov):** "Make parties near by a seperate section all together and an amazing one. Also work
+  on the entire design and UI interface… make the app and website look amazing. The double color shade looks super
+  amazing and the bottow bar looks cool. Reduce the information on the login page of website and app as people might
+  copy the same. Make it more clean."
+- **Login page (website and app), short on purpose:** the headline, one line, the sign-up card, a row of our cartoon
+  people and one line of small print. On a phone it went from 8,767 px long to 1,303. The sections that explained
+  the app (how it works, try a search, safety, more than a room, the questions, the closing band, the FAQ data for
+  search engines) are off the page; what the app does is shown after sign-in. Two layers: the words on a lavender
+  band, the card on the sheet. **The sign-up card and its steps are untouched.** `p25` now fails if a feature is
+  named on this page outside the card.
+  - This undoes most of the morning's website refresh (#101). The title, the share picture, robots.txt and the
+    sitemap stay.
+- **Parties, its own section:** a Parties tab for everyone (butter). Before it's on: what it is in three lines and
+  the switch. Once on: your requests first, then the parties near you as cards, with Today / This weekend / Free
+  entry, the parties you're hosting, "Host a party", the rules, and a way to switch it off. Nearby parties no longer
+  show inside Splits; Account keeps the switch. The rules are unchanged (off by default, 21 and over, the address
+  only after a yes). No database change.
+- **Two layers on every main screen (phones):** each screen opens on its own pastel band with the sheet over it.
+  Account shows the name first, the passes under it. The old teal "N selected" bar on Escape is near-black now.
+- **Not changed:** the login process, onboarding questions, colours (our pastels only), the database, the Android
+  shell, the host page, the privacy page, computers' layout.
+- **Tests:** all 25 demo suites pass. `p25` rewritten (20 checks), new `p27` (32 checks: Parties and every band),
+  `p9` (35) now runs on the Parties screen. `p25` and `p27` also pass on the compacted page.
+- **Published:** c5320a0; Android build 211 (file checked: checksum matches, it carries Parties and the short login
+  page). The website repo's `main` and `gh-pages` say "Publish the app from NavigateMe c5320a0".
+- **For Mark and Salu:** the website no longer explains features, so posts shouldn't point people to it for "how it
+  works". Screenshots of the app need retaking (new tab, new tops on every screen).
+- **Screenshots:** [login, phone](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/login-phone.png),
+  [login, computer](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/login-computer.png),
+  [Parties](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/parties.png),
+  [Splits and Market](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/bands.png),
+  [Tribe and Account](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/bands2.png).
+- **Not done, for Kamal to decide:** the band's colour behind the clock and battery (needs an Android shell change
+  I can't try on a phone); the host page (`#host`) still lists who's looking near an area, which is also public.
+- **Still waiting on Kamal:** findmeflatmate PR #2 (one line), #86 privacy blanks, #95 merge or close.
+
 ## 2026-11-15, two-layer home and frosted bottom bar on phones (#103) live
 
 - **What (Kamal, from a screenshot of Dwelo's home: "the double shade looks super amazing and the bottom bar looks
@@ -146,15 +184,3 @@
 - **Screenshots:** [before](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4ec0b2b9b73565cb9afc352db06b671a9638fde8/owner-before.png), [after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4ec0b2b9b73565cb9afc352db06b671a9638fde8/owner-after.png).
 - **Earlier:** the 10 Nov "city card overlap" was the first photo on Kamal's Pune listing, which looks like a
   screenshot of the app. It isn't a code bug.
-
-## 2026-11-10, Discover declutter (#90) live
-
-- **What:** Discover no longer has the area chips or the quick-filter chips (Women only, Veg kitchen and the
-  others), as Kamal asked: the map already shows where homes are, and this frees up the page.
-  - Areas are now the first section of Filters ("Areas in <city>", with + Add area; none picked means the whole
-    city).
-  - The areas and filters you chose show as removable chips under the Filters button.
-- **Database:** no change.
-- **Tests:** demo suite, 16 suites, 0 failed. p12 and p15 now go through Filters.
-- **Open:** Kamal's screenshot showed a listing's tags drawn over the "Which city are you moving to?" card. Not
-  looked into yet; offered as the next fix.
