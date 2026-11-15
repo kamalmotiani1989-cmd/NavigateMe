@@ -335,8 +335,9 @@ the room comes second.
     `fm_market_sale_start`; while charges are off (`fm_settings.charges_enabled`), both are free.
     **Requests**, **Messages** and **Saved** (the shortlist, a heart) sit as round buttons in the phone's top bar
     (Requests and Messages with their badges), next to the avatar for Account, so the bottom bar keeps the main
-    places: Discover, Tribe, Parties, Splits, Market and Passes for seekers; My flat, Escape, Post, Parties,
-    Splits, Market and Passes for owners. Tribe and Saved changed places on 15 Nov (Kamal: "Interchange the
+    places: Discover, Tribe, Parties, Splits and Market for seekers; My flat, Escape, Post, Parties, Splits and
+    Market for owners. (Passes left the bar on 15 Nov: see "Where people see passes" under Pricing.) Tribe and Saved
+    changed places on 15 Nov (Kamal: "Interchange the
     position of tribe and saved or shortlisted buttons on the app"): until then Tribe was a named button in the
     top bar and Saved a tab in the bottom bar. On a computer both are tabs in the top row, as before.
 
@@ -459,8 +460,43 @@ it), `fm_thread_messages` (1 to 1,000 characters, HTML stripped), `fm_thread_rea
 worked out from the connection each time (`fm_thread_people`): an approved request (seeker and lister), a bonded
 tribe link, an accepted offer (buyer and seller), the group's members by phone. So someone who leaves a tribe or a
 group can't read it any more, and nobody can before the yes (`fm_thread_open` says `not-yet`). Functions:
-`fm_thread_open`, `fm_thread_get` (last 200, marks read), `fm_thread_send` (120 an hour, 600 a day),
-`fm_thread_list`. Messages go when the account goes. Demo mode: the other person answers once, a moment later.
+`fm_thread_open`, `fm_thread_get` (last 200, marks read), `fm_thread_send` (30 an hour, 60 a day; a first message
+to someone new, 5 an hour, 10 a day), `fm_thread_list`. Messages go when the account goes. Demo mode: the other
+person answers once, a moment later.
+
+**Quick messaging** (Kamal, 15 Nov: "make the messaging quicker"). On a normal mobile connection a chat used to
+take two answers from the server before it showed anything, sending locked the box for two more, and the other
+person's message could take 5 seconds to show. Now:
+- **A chat opens the moment it's tapped.** It shows what was read last time (`msgSeen`), or its name and "Opening
+  the chat…", and fills in when the server answers. The phone remembers which chat goes with which connection
+  (`state.msgIds`, also learnt from the list of chats), so a Message button needs one call, not two.
+- **A message shows the moment it's sent**, marked "Sending…", and the box is free for the next one. Messages go
+  to the server behind the scenes, one at a time and in order (`msgOut`, `msgPump`).
+  - Each message carries its own id (`fm_thread_send(p_thread, p_body, p_id)`), so one that did arrive is never
+    saved, counted or notified twice when it's tried again.
+  - When the connection dropped, the app tries again by itself (after 1.5 seconds, then 4). A message that still
+    can't go, or that the server refused (too many, paused, blocked), says **Not sent** with **Try again** and
+    **Remove**; the ones typed after it wait behind it, so they never arrive out of order.
+- **While a chat is open it asks every 2 seconds** (it was 5), and only for what's new:
+  `fm_thread_get(p_thread, p_after)` returns the messages from that moment on, and the app adds them as new bubbles
+  without redrawing the rest (so a screen reader hears the new message, not the whole chat). It asks from 15
+  seconds before the newest message it has, because two messages sent in the same moment can be saved in the other
+  order. After 2 quiet minutes it asks every 5 seconds; a closed chat asks nothing. Opening a chat always reads
+  the whole of it once (the last 200).
+- **"Read" is written only when there is something new to mark** (`fm_thread_get`), so asking every 2 seconds
+  doesn't write to the database every 2 seconds.
+- **The count on the chat button** is checked every 20 seconds (it was 60) while the app is open, with a short
+  notice ("New message · Room in Baner"); on the Messages screen the list itself is brought up to date.
+- **The chat fills the screen** (Kamal, 15 Nov: "why is it showing so much blank space down"): the messages take
+  all the room and scroll, the newest at the bottom, and the box to write in stays at the bottom, above the
+  keyboard. It used to sit right under the last message with the rest of the screen empty.
+- An app from before this keeps working: it calls `fm_thread_get` and `fm_thread_send` without the new arguments
+  and gets what it always got. Should the app ever be ahead of the database, it falls back to those plain calls.
+- Nothing of one account's chats stays in memory for the next number on the same phone, or after a block
+  (`msgForget`).
+Not used: a live connection to the server (Supabase Realtime); asking every 2 seconds is simpler and can be tested
+here. The limit of 30 messages an hour and 60 a day is unchanged; it may be low for people who chat a lot.
+Checks: `tests/demo/p29.test.js` (against the stand-in server) and `tests/db/parties-16-quick-messages.sql`.
 
 ## Match reasons and scam flags (Kamal, 15 Nov)
 
@@ -542,11 +578,37 @@ people can't call either. **Messages** are limited to 30 an hour and 60 a day, a
   tribe", and "Riya joined your tribe" for the others), and anyone leaving.
 - **Help tickets:** when the team changes a ticket's status or replies.
 
-**Help & support.** A Help button (bottom right) opens a built-in assistant, no AI service: it answers common
-questions by keywords (finding a room, posting, tribes, vibe score, prices, Flatsplits, parties, FlatMart,
-maps, notifications, account and deletion, privacy, safety) with buttons to the right page, and files
-**reports** (a broker, a fake listing, a scam, harassment, spam) and **grievances** (payment, account, listing,
-privacy, a bug) step by step as tickets with a code (`FMF-XXXXXX`), up to 10 a day per person. "My tickets"
+**Help & support.** A Help button (bottom right) opens a built-in assistant. It uses no AI service: everything
+runs on the phone, and nothing typed there leaves it until a ticket is sent. It answers questions about the app
+with buttons to the right page, and files **reports** (a broker, a fake listing, a scam, harassment, spam) and
+**grievances** (payment, account, listing, privacy, a bug) step by step as tickets with a code (`FMF-XXXXXX`), up
+to 10 a day per person.
+
+Rebuilt on 15 Nov (Kamal: "fix the chat bot, make it much better"). It used to count any keyword it saw, so "how
+do I message the owner" got the answer about listing a room, and most everyday questions (the sign-in code,
+passes, blocking, saved homes, visits) got "I'm not sure". How it works now (`HB_TOPICS`, `hbRank`, `hbReply`):
+- **About 60 topics**, written from the app as it is: sending a request, no reply yet, a no and "Compromise and
+  ask again", what to do after a yes, messages, visits, the Move-in kit, saved homes and compare, tribes, the
+  Escape, listing and editing a room, "my room is rented", getting more requests, the vibe score and changing
+  answers, passes and free contacts, payments and refunds, signing in, changing a number or a name, the account,
+  avatars, hiding, privacy, safety, brokers, blocking, Flatsplits, the Pays-on-time badge, party invites, parties
+  nearby, FlatMart, the map, cities, notifications, inviting friends, the Android app, and more.
+- **Words have weights.** What's typed is first made plain (small letters; "log in", "sign-in" and "login" as one
+  word; "didn't", "isn't", "nahi" as "not"). Each topic has its own words: a phrase that settles it counts 3, a
+  word 2, and a word half the app shares ("room", "owner", "pay") only 1, so it can break a tie but never decide
+  alone. A tie goes to the longer phrase ("leave my tribe" over "tribe"). A topic that belongs to people looking,
+  or to people with a room, counts a little more for them. A long word one letter off still finds its topic
+  ("notifcations").
+- **Answers are personal where it helps:** your free contacts or your pass, looking for a room or filling one,
+  signed in or not, in the Android app or on the website, charges on or off. They use the app's own button names.
+- **Never a dead end.** When two topics are close it answers the likelier one and offers the other ("Or: …").
+  When it isn't sure it says so and offers its best guesses and a person.
+- **A search is a search:** "room in Pune under 15k" is offered as a search on Discover (`parseTalk`).
+- **"It's not working"** on any topic offers "Tell the team", which starts a grievance with the right kind filled in.
+- It says nothing about how sign-in codes are made or checked; while sign-up is open to a few people at a time
+  (`FM_CONFIG.testLogin`), the sign-in answer says a code may not reach you yet.
+- **Adding a topic:** one entry in `HB_TOPICS` (`t` its name on a button, `k` its words with `!` for 3 points and
+  `?` for 1, `say`, `acts`). Add a question for it to the list in `tests/demo/p29.test.js`. "My tickets"
 shows the status and the team's reply. **The team** works tickets in Supabase → Table Editor → `fm_tickets`:
 set `status` (`open`, `in_review`, `resolved`, `closed`) and write `reply`; the person is notified. Reply
 within 24 hours and resolve within 15 days (India's IT Rules); the grievance officer is named in the privacy policy.
@@ -667,7 +729,7 @@ The checks are in `tests/demo/p28.test.js`, which runs the real page with the li
 
 ## Pricing
 
-Prices exclude GST: 18% is added at checkout (`fm_settings.gst_percent`), and the Plans screen shows
+Prices exclude GST: 18% is added at checkout (`fm_settings.gst_percent`), and the Passes pop-up shows
 both, e.g. ₹500 + ₹90 GST = ₹590. Plans are one-time passes, not auto-renewing subscriptions.
 
 | Who | What | Price |
@@ -692,15 +754,22 @@ The rules live in the database (`fm_request`, `fm_decide`, `fm_tribe_answer`, `f
 `update fm_plans set enabled = true where id = 'featured7';`). The free invites per listing and the
 Room Pass extension are `fm_settings.free_invites` and `fm_settings.guarantee_days`.
 
-**Where people see passes:** a **Passes** tab in the bottom bar (top bar on a computer) until any pass
-is bought; after that the tab goes and the passes, with days left, sit at the top of Account, right under your
-name. Until
-then, now and then (at most once a day; every minute in demo mode) a gentle nudge arrives as a
+**Where people see passes** (Kamal, 15 Nov: "remove the passes from bottom bar and pop up wherever the same is
+required. It should be in profile near the account name"). There is no Passes tab and no Passes screen:
+- **By your name in Account:** a **Passes** button next to "Make your avatar". With a pass on it says which and for
+  how long ("Room Pass · 13 days left"), and the passes you own are listed right under it. A Flatsplits-only
+  account has no button (it has nothing to buy a pass for). The Passes row lower down in Account opens the same.
+- **A pop-up wherever a pass is needed** (`openPay`, `dlgPay`): asking for a room with no contacts left, teaming up
+  without a Tribe Pass, a second invite for a listing, the reminder card and the help bot's "See passes". It opens
+  over the screen you're on, says why it opened, and after paying carries on with what you were doing.
+- An old link or notification that points at `#plans` lands on your home screen with the pop-up open.
+
+Until a pass is bought, now and then (at most once a day; every minute in demo mode) a gentle nudge arrives as a
 notification and a card on Discover / My flat, benefit-first ("7 homes in Pune match your vibe",
-"An empty room costs rent every day") and opening Passes. Nudges stop for good once a pass is on.
+"An empty room costs rent every day") and opening the pop-up. Nudges stop for good once a pass is on.
 
 **Everything free for a while:** `update fm_settings set charges_enabled = false;` The app reads it
-(through `fm_me`): paywalls and nudges disappear, and Passes says "free while we test" with
+(through `fm_me`): paywalls and nudges disappear, and the Passes pop-up says "free while we test" with
 "Coming soon" buttons.
 
 **Payments (Razorpay):** `supabase/functions/fm-pay` creates the order for a plan (price + GST), checks
@@ -810,7 +879,7 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   Main buttons are **pills** (fully rounded); quiet buttons are white with a thin outline.
 - **Pastel panels** replace the navy feature cards, one colour per section, always with dark text: Flatsplits and
   Account lavender (`--lav`), FlatMart and parties butter (`--butter`), the Empty Room Escape and Tribe mint
-  (`--mint`), Passes blush (`--blush`). Olive, coral and periwinkle (`--olive`, `--coral`, `--peri`) are for small
+  (`--mint`), Saved blush (`--blush`). Olive, coral and periwinkle (`--olive`, `--coral`, `--peri`) are for small
   accents. **Coral** (`--coral` #E79078, dark text on it) is the colour of the count badges on the bell and Tribe
   and of the small "new" dots (`--dot` #E48C74); **red** is kept for errors.
 - **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700. The
@@ -840,9 +909,9 @@ Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it 
   top bar included; the rest of the page is a sheet with 30px round corners that comes up over the band
   (`.home-band`, `bandSync`). Words on a band are near-black, like every pastel panel.
   - Colours: Discover, Splits, Account and a seeker's Requests lavender; My flat, Post, Market, Parties and an
-    owner's Requests butter; Tribe, Escape and Messages mint; Saved and Passes blush (a quiet band: blush is close
+    owner's Requests butter; Tribe, Escape and Messages mint; Saved blush (a quiet band: blush is close
     to the page's beige).
-  - On the two home screens the band holds the greeting. On Splits, Market, Passes, Tribe, Escape and Account it
+  - On the two home screens the band holds the greeting. On Splits, Market, Tribe, Escape and Account it
     is the panel that was already there, now edge to edge. On Saved, Requests, Post and Messages it holds the title.
   - While you scroll, the top bar keeps the band's colour until the sheet reaches it, then goes back to the
     page's beige. Inside a Splits group and on a home's page there is no band.

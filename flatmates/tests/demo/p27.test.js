@@ -40,7 +40,7 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   let { ctx, p } = await open(b, person('9822200011', 'Asha', 'female'), 390, 844, 'parties');
   let B = await band(p), t = await tab(p);
   const tabs = await p.evaluate(() => [...document.querySelectorAll('#nav .tab')].filter(x => x.offsetParent).map(x => x.textContent.trim()));
-  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market,Passes' && t.view === 'parties' && t.bg === B.T.butter, 'Parties has its own place in the bottom bar, butter when you\'re on it: ' + tabs.join(' · '));
+  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market' && t.view === 'parties' && t.bg === B.T.butter, 'Parties has its own place in the bottom bar, butter when you\'re on it: ' + tabs.join(' · '));
   ok(B.band && B.colour === 'butter' && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, 'the Parties screen opens on a butter band with the sheet over it, words dark: ' + JSON.stringify({ colour: B.colour, gap: B.gap }));
   // off until you switch it on: what it is, in three lines, and the switch; nothing listed
   const off = await p.evaluate(() => ({ intro: !!document.querySelector('#pnBody .pn-intro'), points: document.querySelectorAll('#pnBody .pn-points li').length, btn: (document.querySelector('#pnBody [data-near-on]') || {}).textContent,
@@ -112,7 +112,7 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
 
   // ------------------------------------------------------------ the two-layer top on every main screen (phones)
   ({ ctx, p } = await open(b, person('9822200014', 'Neha', 'female'), 390, 844, 'discover'));
-  for(const [view, colour] of [['discover', 'lav'], ['saved', 'blush'], ['requests', 'lav'], ['tribe', 'mint'], ['splits', 'lav'], ['market', 'butter'], ['plans', 'blush'], ['messages', 'mint'], ['account', 'lav']]){
+  for(const [view, colour] of [['discover', 'lav'], ['saved', 'blush'], ['requests', 'lav'], ['tribe', 'mint'], ['splits', 'lav'], ['market', 'butter'], ['messages', 'mint'], ['account', 'lav']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1250); await closeDlgs(p); await p.waitForTimeout(250); B = await band(p);
     ok(B.band && B.colour === colour && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, view + ': a ' + colour + ' band from the top of the screen, the sheet over it, words dark' + (B.low && B.low.length ? ' ' + JSON.stringify(B.low) : ''));
     if(view === 'market' || view === 'tribe') await p.screenshot({ path: O + '/p27-band-' + view + '.png' }); }

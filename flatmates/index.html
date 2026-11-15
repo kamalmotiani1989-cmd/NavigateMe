@@ -1660,19 +1660,7 @@ html:has(> body.app){background:var(--app-bg)}
 .pass-on{display:flex; flex-direction:column; gap:4px; margin:0 0 12px; padding:12px 14px; border-radius:14px; background:var(--ok-soft); color:var(--ok); font-size:var(--fs-m)}
 .tag.feat{top:auto; bottom:10px; left:10px; background:var(--amber-90); color:var(--amber-27)}
 
-/* ---------- Passes tab and screen, nudges, passes on Account */
-.tab[data-view="plans"]{color:var(--brand)}
-.tab[data-view="plans"]::after{content:""; position:absolute; top:5px; right:calc(50% - 16px); width:7px; height:7px; border-radius:50%;
-  background:var(--dot); box-shadow:0 0 0 2px #fff; animation:passPulse 2s ease-in-out infinite}
-@media (min-width:721px){ .tab[data-view="plans"]::after{top:6px; right:6px; box-shadow:none} .app-head .tab[data-view="plans"]{color:var(--brand)} }
-@keyframes passPulse{50%{transform:scale(1.35); opacity:.7}}
-/* Seven tabs on a phone (the Passes tab is showing): slightly smaller labels so none gets cut off. */
-@media (max-width:720px){ .nav:has(> .tab:nth-child(8)) .tab{font-size:10.5px; letter-spacing:-.01em} }
-@media (max-width:380px){ .nav:has(> .tab:nth-child(8)) .tab{font-size:10px; letter-spacing:-.02em; padding-left:0; padding-right:0} }
-.plans-hero{margin:18px 0 14px; padding:22px 20px; border-radius:var(--r-card); background:var(--grad); color:#fff;
-  box-shadow:0 12px 30px rgba(27,36,64,.18)}
-.plans-hero .eyebrow{color:var(--hi)} .plans-hero h1{font-size:clamp(26px,5vw,34px); color:#fff}
-.plans-hero p{margin:8px 0 0; color:rgba(255,255,255,.92)}
+/* ---------- Passes (a pop-up wherever one is needed, and a button by your name in Account), nudges */
 .plans-trust{display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:14px; font-size:var(--fs-s); font-weight:700}
 .plans-free{display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:14px; background:var(--brand-soft); color:var(--brand-2); font-size:var(--fs-m)}
 .pass-nudge{position:relative; margin:16px 0 4px}
@@ -1997,16 +1985,16 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 
 /* the big panels that were navy: pastel tiles with dark text, each section its own colour */
 .fs-hero{background:var(--lav)} .mk-hero{background:var(--butter)} .esc-hero, .esc-promo{background:var(--mint)}
-.plans-hero{background:var(--blush)} .acc-hero{background:var(--lav)} .tribe-hero, .tribe-bond, .inv-banner, .inv-banner.tribe{background:var(--mint)}
+.acc-hero{background:var(--lav)} .tribe-hero, .tribe-bond, .inv-banner, .inv-banner.tribe{background:var(--mint)}
 .pt-hero, .pt-mini-top{background:var(--butter)} .h-end, .w-app{background:var(--lav)} .offline{background:var(--bg)}
-.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app, .offline{
+.fs-hero, .mk-hero, .esc-hero, .esc-promo, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app, .offline{
   color:var(--text); box-shadow:none; border-radius:var(--r-card)}
-:is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app, .offline)
+:is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app, .offline)
   :is(h1, h2, h3, p, small, span, b, strong, em, li, div, .eyebrow, a:not(.btn)){color:inherit}
-:is(.fs-hero, .mk-hero, .esc-hero, .plans-hero, .acc-hero, .tribe-hero, .pt-hero) :is(p, small, li){color:var(--text-2)}
-:is(.fs-hero, .mk-hero, .esc-hero, .plans-hero, .tribe-hero, .pt-hero) .eyebrow{color:var(--text-2)}
+:is(.fs-hero, .mk-hero, .esc-hero, .acc-hero, .tribe-hero, .pt-hero) :is(p, small, li){color:var(--text-2)}
+:is(.fs-hero, .mk-hero, .esc-hero, .tribe-hero, .pt-hero) .eyebrow{color:var(--text-2)}
 .acc-hero::after, .fs-hero::after, .mk-hero::after{background:rgba(255,255,255,.35)}
-:is(.mk-hero, .fs-hero, .plans-hero) .btn:not(.btn-ghost){background:var(--ink); color:#fff}
+:is(.mk-hero, .fs-hero) .btn:not(.btn-ghost){background:var(--ink); color:#fff}
 .profile .me, .wm-upi{background:var(--ink); color:#fff; box-shadow:none}
 
 /* welcome */
@@ -2182,7 +2170,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 /* links that are whole cards or panels keep their own colours; the dark footer keeps light links */
 .w-footer a:not([class]), .w-footer .linkbtn{color:inherit}
 /* inside the pastel panels and tiles: back to near-black */
-:is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .plans-hero, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app,
+:is(.fs-hero, .mk-hero, .esc-hero, .esc-promo, .acc-hero, .tribe-hero, .tribe-bond, .inv-banner, .pt-hero, .pt-mini-top, .h-end, .w-app,
     .role, .w-points li, .notice, .pp-card, .vibe-promo, .pass-nudge, .near-promo, .cm-banner, .safe-pay)
   :is(.eyebrow, a:not([class]), .linkbtn, .pk-more, h1 em, h1 b, h1 strong){color:var(--text)}
 /* Owner's My flat (Empty Room Escape card) and Account's passes panel: still had the navy-era white and mint text
@@ -2360,7 +2348,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   .tab[aria-current="true"]{background:var(--lav); color:var(--text)}
   .tab[aria-current="true"]:is([data-view="mine"], [data-view="post"], [data-view="market"], [data-view="parties"]){background:var(--butter)}
   .tab[aria-current="true"]:is([data-view="escape"], [data-view="tribe"]){background:var(--mint)}
-  .tab[aria-current="true"]:is([data-view="saved"], [data-view="plans"]){background:var(--blush)}
+  .tab[aria-current="true"][data-view="saved"]{background:var(--blush)}
   /* the "Invite several" bar on Escape rests just above the bottom bar (on short phones it sat a little under it),
      and the help button steps up out of its way while it shows */
   .esc-bar{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
@@ -2446,7 +2434,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .av-skip{font-weight:700}
 .vc-wrap{position:relative; width:min(300px, 72vw); margin:6px auto 16px} .vc-wrap .vc-img{width:100%; margin:0} @media (max-height:760px){ .vc-wrap{width:min(240px, 60vw)} } .vc-av-ask{text-align:center; margin:-6px 0 10px} .vc-live{position:absolute; border-radius:50%; overflow:hidden; pointer-events:none} .vc-live svg{width:100%; height:100%; display:block}
 .acc-av.has-av{overflow:hidden; padding:0; background:none; width:76px; height:76px} .acc-av.has-av svg{width:100%; height:100%; display:block}
-.acc-av-edit{margin-top:8px}
+.acc-btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+.acc-pass{display:inline-flex; align-items:center; gap:6px} .acc-pass svg{width:17px; height:17px; flex:none}
+#dlgPay .plans-trust{margin:0 0 14px; color:var(--text-2)}
 .nh-av.fm-avh{width:36px; height:36px}
 .msg-h-av{width:34px; height:34px; vertical-align:middle; margin-right:8px}
 /* messages */
@@ -2457,13 +2447,23 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .msg-last{grid-column:1; font-size:var(--fs-s); color:var(--text-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .msg-when{grid-column:2; grid-row:1 / span 3; align-self:center; font-size:var(--fs-xs); color:var(--text-3); white-space:nowrap}
 .msg-row.new b{font-weight:800} .msg-when .badge{position:static; display:inline-grid; margin-left:4px}
-.msg-dlg .mbody{display:flex; flex-direction:column; gap:10px; padding-bottom:16px}
-.msg-list{display:flex; flex-direction:column; gap:6px; min-height:200px; max-height:58dvh; overflow:auto; padding:4px 2px}
+/* The chat fills its window (Kamal, 15 Nov: "why is it showing so much blank space down"): the messages take all the
+   room there is and scroll, the newest at the bottom, and the box to write in stays at the bottom of the screen
+   (above the keyboard in the app). Before, the box sat right under the last message with the rest of the screen empty. */
+.msg-dlg[open]{display:flex; flex-direction:column; height:min(680px, calc(100dvh - 48px))}
+@media (max-width:640px){ .msg-dlg[open]{height:100dvh} }
+.msg-dlg .mhead{flex:none; margin-bottom:0}
+.msg-dlg .mbody{flex:1; min-height:0; display:flex; flex-direction:column; gap:10px; padding:12px 20px 14px}
+.msg-list{flex:1; min-height:0; display:flex; flex-direction:column; gap:6px; overflow:auto; overscroll-behavior:contain; padding:4px 2px}
+.msg-list > .msg-item:first-child > :first-child{margin-top:auto}   /* a short chat sits at the bottom, next to the box */
 .msg{max-width:80%; padding:8px 12px 6px; border-radius:16px; background:var(--surface-2)}
 .msg p{margin:0; white-space:pre-wrap; overflow-wrap:anywhere} .msg b{display:block; font-size:var(--fs-xs)}
 .msg time{display:block; text-align:right; font-size:11px; color:var(--text-3)}
 .msg.mine{align-self:flex-end; background:var(--brand-soft); border-bottom-right-radius:6px} .msg.theirs{align-self:flex-start; border-bottom-left-radius:6px}
 .msg-day{align-self:center; font-size:var(--fs-xs); color:var(--text-3); margin:6px 0 2px}
+.msg-item{display:contents}   /* one per message, so a new one is added without redrawing the rest */
+.msg.sending{opacity:.72} .msg.failed{box-shadow:inset 0 0 0 1.5px var(--danger)} .msg.failed time{color:var(--danger); font-weight:700}
+.msg time .linkbtn{font-size:11px; padding:0; color:inherit; text-decoration:underline}
 .msg-empty{text-align:center; margin:auto 0}
 .msg-form{display:flex; gap:8px; align-items:flex-end}
 .msg-form textarea{flex:1; resize:none; height:46px; min-height:46px; max-height:120px; border:1px solid var(--line-2); border-radius:18px; padding:10px 14px; background:var(--card)}
@@ -2944,23 +2944,12 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     <div id="msgsList" class="msgs-list"></div>
   </section>
 
-  <section id="view-plans" hidden>
-    <div class="plans-hero home-band" data-band="blush">
-      <p class="eyebrow">Passes</p>
-      <h1 id="plHead"></h1>
-      <p id="plSub"></p>
-      <div class="plans-trust"><span>✓ Pay once, no auto-renewal</span><span>✓ UPI, cards, netbanking</span><span>✓ Starts the moment you pay</span></div>
-    </div>
-    <div id="plFree"></div>
-    <div id="plCards" class="plans"></div>
-    <p class="hint" style="text-align:center;margin:16px 0 4px">Prices exclude 18% GST, added at checkout. Secure payments by Razorpay.</p>
-  </section>
-
   <section id="view-account" hidden>
     <div class="acc-hero home-band" data-band="lav">
       <span class="acc-av" id="accAvatar"></span>
       <div class="acc-id"><h1 id="accName"></h1><span class="acc-role" id="accRole"></span><span class="acc-phone" id="accPhone"></span>
-        <button class="btn btn-ghost btn-sm acc-av-edit" type="button" id="accAvEdit" data-av-edit="account">Make your avatar</button></div>
+        <div class="acc-btns"><button class="btn btn-ghost btn-sm acc-av-edit" type="button" id="accAvEdit" data-av-edit="account">Make your avatar</button>
+          <button class="btn btn-ghost btn-sm acc-pass" type="button" id="accPassBtn" hidden></button></div></div>
     </div>
     <div id="accPasses"></div>
     <div class="panel" id="vibePanel"><div class="panel-top">
@@ -2988,7 +2977,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
       <button class="acc-row" id="accSwitch" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-4-4M20 16H7l4 4"/></svg></i>
         <span><b id="accSwitchT"></b><small id="accSwitchS"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="acc-row" id="accPlans" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.5"/></svg></i>
-        <span><b>Plans &amp; passes</b><small id="accPlansSub"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+        <span><b>Passes</b><small id="accPlansSub"></small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="acc-row" type="button" data-quiz><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></svg></i>
         <span><b>My Vibe Card</b><small id="accVibeSub">Your flatmate type, to share with friends</small></span><svg class="acc-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
       <button class="acc-row" id="accGender" type="button"><i class="acc-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4 4.2-6 8-6s6.8 2 8 6"/></svg></i>
@@ -3102,8 +3091,10 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     <button class="btn btn-accent btn-block" type="button" id="giftGo" style="margin-top:16px">Use 1 to send my request</button>
   </div></dialog>
 
-<dialog id="dlgPay"><div class="mhead"><div><h2 id="payTitle">Plans</h2><div class="loc" id="payLead"></div></div><button class="x" data-close aria-label="Close">×</button></div>
-  <div class="mbody"><div id="payActive"></div><div id="payPlans" class="plans"></div><p class="hint" id="payNote"></p></div></dialog>
+<dialog id="dlgPay" aria-labelledby="payTitle"><div class="mhead"><div><h2 id="payTitle">Passes</h2><div class="loc" id="payLead"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody"><div id="payActive"></div>
+    <div class="plans-trust" id="payTrust"><span>✓ Pay once, no auto-renewal</span><span>✓ UPI, cards, netbanking</span><span>✓ Starts the moment you pay</span></div>
+    <div id="payPlans" class="plans"></div><p class="hint" id="payNote"></p></div></dialog>
 
 <dialog id="dlgFilters"><div class="mhead"><div><h2>Filters</h2><div class="loc">Saved for next time.</div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody">
@@ -3759,6 +3750,7 @@ function switchAccount(phone){
   state = Object.assign(freshState(), next || {}, shared, { account: phone });
   ob = null; save();
   if(typeof readKeep !== "undefined") readKeep.clear();   // nothing kept from the account before
+  if(typeof msgForget === "function") msgForget();
 }
 
 /* ============================================================ demo data */
@@ -4475,7 +4467,7 @@ const QUIET_READS = new Set(["fm_me", "fm_on_hold", "fm_listing_get", "fm_contac
   "fm_market_wants", "fm_market_want_matches", "fm_my_blocks", "fm_my_tickets", "fm_my_visits", "fm_on_time_status", "fm_listing_alerts", "fm_seeker_alerts",
   "fm_party_for_group", "fm_party_get", "fm_party_host_requests", "fm_party_nearby", "fm_party_nearby_get", "fm_party_nearby_me", "fm_party_open_for_group", "fm_split_invite"]);
 // Small notes to the server that change one kept list at most: only that one is read anew.
-const NARROW_WRITES = { fm_thread_get: ["fm_thread_list"], fm_tribe_seen: ["fm_tribe_list"], fm_tribe_refresh: ["fm_tribe_list"], fm_set_search: ["fm_tribe_list"],
+const NARROW_WRITES = { fm_thread_get: ["fm_thread_list"], fm_thread_send: ["fm_thread_list"], fm_thread_open: ["fm_thread_list"], fm_tribe_seen: ["fm_tribe_list"], fm_tribe_refresh: ["fm_tribe_list"], fm_set_search: ["fm_tribe_list"],
   fm_mark_seen: ["fm_inbox"], fm_market_seen: ["fm_market_inbox"], fm_listing_seen: [], fm_save_push_token: [], fm_set_attribution: [], fm_tickets_seen: [] };
 const readKeep = { map: new Map(), flying: new Map(), gen: 0, fnGen: {},
   // Everything, or only the named reads. Calls still on their way are let go too: whoever reads next asks afresh,
@@ -4523,6 +4515,7 @@ function makeLiveApi(sb){
     return copyOf(await p);
   };
   const one = rows => (rows && rows[0]) || {};
+  const oldChat = {}, noSuchFn = e => e && (e.code === "PGRST202" || /Could not find the function/i.test(e.message || ""));
   const plusPhone = p => p && !String(p).startsWith("+") ? "+" + p : p;
   const uid = async () => (await sb.auth.getUser()).data.user?.id;
   const fnUrl = path => FM_CONFIG.supabaseUrl + "/functions/v1/fm-pay/" + path;
@@ -4633,8 +4626,16 @@ function makeLiveApi(sb){
     async decide(rid, approve){ return one(await rpc("fm_decide", { p_request: rid, p_approve: approve })); },
     // Messages after a yes (fm_thread_*).
     async msgOpen(kind, ref){ return rpc("fm_thread_open", { p_kind: kind, p_ref: ref }); },
-    async msgGet(id){ return rpc("fm_thread_get", { p_thread: id }); },
-    async msgSend(id, body){ return rpc("fm_thread_send", { p_thread: id, p_body: body }); },
+    // p_after (only what's new) and p_id (a message's own id) came on 15 Nov. The database is always updated before
+    // the app, so the plain calls underneath are only for a server that somehow isn't there yet.
+    async msgGet(id, after){
+      if(after && !oldChat.get) try{ return await rpc("fm_thread_get", { p_thread: id, p_after: after }); }catch(e){ if(!noSuchFn(e)) throw e; oldChat.get = true; }
+      return rpc("fm_thread_get", { p_thread: id });
+    },
+    async msgSend(id, body, mid){
+      if(mid && !oldChat.send) try{ return await rpc("fm_thread_send", { p_thread: id, p_body: body, p_id: mid }); }catch(e){ if(!noSuchFn(e)) throw e; oldChat.send = true; }
+      return rpc("fm_thread_send", { p_thread: id, p_body: body });
+    },
     async msgList(){ return (await rpc("fm_thread_list")) || []; },
     // Report and block (fm_report, fm_block): by what was tapped, never an account id.
     async block(kind, ref){ return rpc("fm_block", { p_kind: kind, p_ref: ref }); },
@@ -5846,7 +5847,7 @@ function formOk(form){
 }
 
 /* ====================================================== screens + router */
-const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","parties","splits","market","plans","account","messages"], owner:["mine","escape","requests","post","parties","splits","market","plans","account","messages"],
+const ROLE_VIEWS = { seeker:["discover","tribe","requests","saved","parties","splits","market","account","messages"], owner:["mine","escape","requests","post","parties","splits","market","account","messages"],
   splits:["splits","market","parties","discover","account","messages"] };   // Discover and Parties show a lock until the vibe questions are answered
 const TAB = {
   discover:["Discover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>'],
@@ -5858,12 +5859,15 @@ const TAB = {
   post:["Post",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></svg>'],
   splits:["Splits",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'],
   market:["Market",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v10h16V10"/><path d="M2.5 10L5 4h14l2.5 6z"/><path d="M2.5 10a3.2 3.2 0 0 0 6.3 0 3.2 3.2 0 0 0 6.4 0 3.2 3.2 0 0 0 6.3 0"/><path d="M10 20v-5h4v5"/></svg>'],
-  plans:["Passes",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.2"/></svg>'],
   parties:["Parties",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l5-14 9 9-14 5z"/><path d="M14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0"/></svg>'],
   messages:["Messages",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'],
   account:["Account",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>'],
 };
-const VIEWS = ["discover","tribe","requests","saved","parties","mine","escape","post","splits","market","plans","account","messages"];
+// Passes are not a screen or a tab (Kamal, 15 Nov: "remove the passes from bottom bar and pop up whever the same is
+// required. It should be in profile near the accout name"): they open as a pop-up wherever one is needed (openPay),
+// and from the Passes button next to your name in Account.
+const PASS_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4z"/><path d="M14 6v12" stroke-dasharray="2 2.2"/></svg>';
+const VIEWS = ["discover","tribe","requests","saved","parties","mine","escape","post","splits","market","account","messages"];
 function showScreen(name){
   $("view-welcome").hidden = name !== "welcome";
   $("view-host").hidden = name !== "host";
@@ -5894,6 +5898,8 @@ function route(){
   const role = roleKey();
   if(!state.onboarded[role]){ currentView = null; showScreen("onboard"); startOnboarding(role); return; }
   const [h, arg] = location.hash.slice(1).split("/"), allowed = ROLE_VIEWS[role];
+  // "#plans" (a notification, or a link from when Passes was a screen): the home screen, with the passes over it.
+  if(h === "plans" && role !== "splits"){ history.replaceState(null, "", location.pathname + location.search + "#" + allowed[0]); setTimeout(() => openPay(null), 350); }
   if(h === "complete" && role === "seeker" && profileGaps().length){ currentView = null; showScreen("onboard"); startCompletion(); return; }
   const v = allowed.includes(h) ? h : allowed[0];
   routeArg = v === h ? decodeURIComponent(arg || "") : "";
@@ -5906,7 +5912,7 @@ function route(){
   setMeBtn(); avSync();
   setTimeout(maybeAskGender, 600);
   if(editing && v !== "post") endEdit();
-  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, parties:renderParties, splits:renderSplits, market:renderMarket, plans:renderPlans, account:renderAccount, messages:renderMessages })[v]();
+  ({ discover:renderDiscover, tribe:renderTribe, requests:renderRequests, saved:renderSaved, mine:renderMine, escape:renderEscape, post:renderPost, parties:renderParties, splits:renderSplits, market:renderMarket, account:renderAccount, messages:renderMessages })[v]();
   if(v !== "messages") refreshMsgUnseen();
   window.scrollTo(0, 0);
   // A home someone shared (?l=...): open it once the app is up.
@@ -5950,8 +5956,7 @@ $("dlgGender").addEventListener("click", async e => {
   catch(err){ console.error(err); toast("Couldn't save that. Please try again."); }
 });
 function renderNav(){
-  // The Passes tab is there until a pass is bought; after that, passes show at the top of Account.
-  const allowed = ROLE_VIEWS[roleKey()].filter(n => n !== "plans" || !anyPass() || currentView === "plans");
+  const allowed = ROLE_VIEWS[roleKey()];
   // Requests and Messages live in the top bar, next to the avatar, so the bottom bar has room for the rest.
   const TOP = ["messages", "requests"], count = n => n === "requests" ? unseen : n === "messages" ? msgUnseen : n === "tribe" ? tribeUnseen : n === "splits" ? splitsUnseen : n === "market" ? marketUnseen : 0;
   // Tribe sits next to Discover. On a phone that puts it in the bottom bar where Saved used to be, and Saved (the
@@ -7742,8 +7747,8 @@ function parseTalk(raw){
   const place = q.replace(/\b(?:near|nearby|close to|around|in|at|for|a|an|the|me|my|i|need|want|looking|find|show|with|and|please|to|of|by|on)\b/g, " ").replace(/[^a-z0-9\s'-]/g, " ").replace(/\s+/g, " ").trim();
   return { found: said.length > 0, patch, said, place: place.length >= 3 ? place : "" };
 }
-function talkSearch(q){
-  const t = parseTalk(q);
+function talkSearch(q, parsed){
+  const t = parsed || parseTalk(q);
   if(!t.found) return false;
   setPrefs(t.patch);
   if(t.patch.city && ![...$("fCity").options].some(o => o.value === t.patch.city)) setCitySelect($("fCity"), t.patch.city, "All cities");
@@ -8371,9 +8376,40 @@ $("kitBody").addEventListener("click", async e => {
 });
 document.addEventListener("click", e => { const b = e.target.closest("[data-kit]"); if(!b) return; const [kind, ...rest] = b.dataset.kit.split(":"); openKit(kind, rest.join(":")); });
 const msgBtn = (kind, ref, label) => ref ? `<button class="btn btn-ghost btn-sm" type="button" data-msg="${kind}:${esc(ref)}">💬 ${esc(label || "Message")}</button>` : "";
-let msgUnseen = 0, msgThread = null, msgData = null, msgPoll = null, msgBusy = false;
+let msgUnseen = 0, msgUnseenKnown = false, msgThread = null, msgData = null, msgPoll = null, msgRows = [];
+// Quick messaging (Kamal, 15 Nov: "make the messaging quicker"):
+//  - a chat opens at once, with what was read last time or a line saying it's opening, and fills in when the
+//    server answers (it used to wait for two answers before showing anything);
+//  - a message shows the moment you send it and you can go on typing; it goes to the server behind the scenes, in
+//    order, tries again by itself when the connection dropped, and says "Not sent" with a way to try again if it
+//    still couldn't (the box used to lock for two round trips). Each message carries its own id, so trying again
+//    can never send it twice (fm_thread_send, p_id);
+//  - while a chat is open the other person's messages are asked for every 2 seconds (it was 5): only the new ones
+//    come back (fm_thread_get, p_after) and only the new bubbles are drawn. After 2 quiet minutes it asks every 5;
+//  - the unread count on the chat button is checked every 20 seconds (it was 60).
+const MSG_POLL_MS = 2000, MSG_IDLE_MS = 5000, MSG_BUSY_FOR_MS = 120000, MSG_BADGE_MS = 20000, MSG_OVERLAP_MS = 15000, MSG_TRIES = 3;
+const msgSeen = {};   // thread id -> the conversation as last read: { thread, kind, title, people, messages, cursor }
+const msgOut = [];    // on their way: { id, thread, body, at, state: "sending" | "failed", tries }
+const msgIds = () => (state.msgIds = state.msgIds || {});   // "kind:ref" -> thread id, so a chat opens with one call
+const newId = () => crypto.randomUUID ? crypto.randomUUID()
+  : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+// Nothing of one account's chats stays for the next one on this phone; and nothing read before a block or unblock.
+function msgForget(){ for(const k in msgSeen) delete msgSeen[k]; msgOut.length = 0; msgRows = []; msgUnseenKnown = false; }
+// The list of chats, as just read: remembered for the chat's name while it opens, and which chat goes with which
+// connection (so its Message button needs one call, not two).
+function msgNote(rows){
+  msgRows = rows; let fresh = false;
+  for(const t of rows) if(t.kind && t.ref && msgIds()[t.kind + ":" + t.ref] !== t.thread){ msgIds()[t.kind + ":" + t.ref] = t.thread; fresh = true; }
+  if(fresh) save();
+  return rows.reduce((n, x) => n + (Number(x.unread) || 0), 0);
+}
 async function refreshMsgUnseen(){
-  try{ const n = (await api.msgList()).reduce((t, x) => t + (Number(x.unread) || 0), 0); if(n !== msgUnseen){ msgUnseen = n; renderNav(); } }catch(e){}
+  try{
+    const rows = await api.msgList(), n = msgNote(rows);
+    if(msgUnseenKnown && n > msgUnseen && !$("dlgMsg").open){ const top = rows.find(x => x.unread); toast("💬 New message" + (top && top.title ? " · " + top.title : "")); }
+    msgUnseenKnown = true;
+    if(n !== msgUnseen){ msgUnseen = n; renderNav(); }
+  }catch(e){}
 }
 // The demo: sample people answer once, a moment later; your own messages stay on this device.
 const DEMO_REPLIES = { room:"Hi! Thanks for writing. Saturday morning works for a visit. Does 11 suit you?", tribe:"Hey! Yes, let's shortlist a few flats this week.",
@@ -8400,22 +8436,23 @@ Object.assign(demoApi, {
       state.threads[t.id] = t; save(); }
     return { thread:t.id };
   },
-  async msgGet(id){
+  async msgGet(id, after){
     const t = (state.threads || {})[id], ok = t && this.msgOk_(t.kind, t.ref);
     if(!ok) return { error:"not-found" };
     t.read_at = new Date().toISOString(); save();
-    return { thread:t.id, kind:t.kind, ref:t.ref, title:ok.title, people: ok.other ? [ok.other] : [], messages:t.messages.slice(-200) };
+    return { thread:t.id, kind:t.kind, ref:t.ref, title:ok.title, people: ok.other ? [ok.other] : [], messages:t.messages.filter(m => !after || m.at >= after).slice(-200).map(m => Object.assign({}, m)) };
   },
-  async msgSend(id, body){
+  async msgSend(id, body, mid){
     const t = (state.threads || {})[id], ok = t && this.msgOk_(t.kind, t.ref), text = String(body || "").trim().slice(0, 1000);
     if(!ok) return { error:"not-found" }; if(!text) return { error:"empty" };
-    const at = new Date().toISOString();
-    t.messages.push({ id:"m" + Date.now(), mine:true, name:firstName(), body:text.replace(/</g, "‹").replace(/>/g, "›"), at }); t.last_at = at; t.read_at = at; save();
+    const sent = mid && t.messages.find(m => m.id === mid); if(sent) return { message:sent.id, at:sent.at, again:true };
+    const at = new Date().toISOString(); mid = mid || "m" + Date.now() + Math.random().toString(36).slice(2, 5);
+    t.messages.push({ id:mid, mine:true, name:firstName(), body:text.replace(/</g, "‹").replace(/>/g, "›"), at }); t.last_at = at; t.read_at = at; save();
     if(!t.replied && ok.other){ t.replied = true; save();
       setTimeout(() => { const x = (state.threads || {})[id]; if(!x) return; const now = new Date().toISOString();
-        x.messages.push({ id:"m" + Date.now(), mine:false, name:ok.other, body:DEMO_REPLIES[t.kind], at:now }); x.last_at = now; save();
+        x.messages.push({ id:"m" + Date.now() + "r", mine:false, name:ok.other, body:DEMO_REPLIES[t.kind], at:now }); x.last_at = now; save();
         if($("dlgMsg").open && msgThread === id) msgRefresh(true); else refreshMsgUnseen(); if(currentView === "messages") renderMessages(); }, 1500); }
-    return { message:"m" };
+    return { message:mid, at };
   },
   async msgList(){
     return Object.values(state.threads || {}).filter(t => t.messages.length && this.msgOk_(t.kind, t.ref)).map(t => { const ok = this.msgOk_(t.kind, t.ref), last = t.messages[t.messages.length - 1];
@@ -8423,33 +8460,150 @@ Object.assign(demoApi, {
         unread: t.messages.filter(m => !m.mine && m.at > (t.read_at || "")).length }; }).sort((a, b) => b.last_at.localeCompare(a.last_at));
   },
 });
-async function openMsg(kind, ref){
-  try{
-    const o = await api.msgOpen(kind, ref);
-    if(o.error){ toast(o.error === "not-yet" ? "You can message each other once you've both said yes." : o.error === "unavailable" ? "You can't message this person." : "Couldn't open the chat. Please try again."); return; }
-    msgThread = o.thread; await msgRefresh(true);
-    if(!$("dlgMsg").open) $("dlgMsg").showModal();
-    setTimeout(() => $("msgText") && $("msgText").focus(), 50);
-    clearInterval(msgPoll);
-    if(api.live) msgPoll = setInterval(() => { if(!$("dlgMsg").open){ clearInterval(msgPoll); return; } if(!msgBusy) msgRefresh(); }, 5000);
-  }catch(err){ console.error(err); toast("Couldn't open the chat. Please try again."); }
+// What "Couldn't open" says, by the server's reason.
+const msgWhyNot = why => why === "not-yet" ? "You can message each other once you've both said yes." : why === "unavailable" ? "You can't message this person." : "Couldn't open the chat. Please try again.";
+// Shows the chat and keeps it fresh while it is open (the live app; the demo's replies arrive by themselves):
+// every 2 seconds while people are writing, every 5 once it has been quiet for 2 minutes. One ask at a time.
+let msgActive = 0, msgFocus = false, msgOpenSeq = 0;
+function msgShow(){
+  if(!$("dlgMsg").open) $("dlgMsg").showModal();
+  msgActive = Date.now(); msgTick();
 }
-async function msgRefresh(scroll){
-  const before = msgData && msgData.messages ? msgData.messages.length : -1;
-  msgData = await api.msgGet(msgThread);
-  if(msgData.error){ $("msgTitle").textContent = "Messages"; $("msgSub").textContent = ""; $("msgTools").innerHTML = "";
-    $("msgList").innerHTML = `<p class="hint msg-empty">${msgData.error === "unavailable" ? "You can't message this person." : "This conversation isn't available any more."}</p>`; $("msgForm").hidden = true; return; }
-  $("msgTools").innerHTML = msgData.kind === "split" ? "" : safeBtn("thread", msgThread, msgData.people[0] || "");
+function msgTick(){
+  clearTimeout(msgPoll); msgPoll = null;
+  if(!$("dlgMsg").open || !api.live || (msgData && msgData.error)) return;   // closed, the demo, or a chat that's gone: nothing to ask
+  msgPoll = setTimeout(async () => {
+    if(!document.hidden && msgThread && !msgGetting) await msgRefresh().catch(() => {});
+    msgTick();
+  }, Date.now() - msgActive < MSG_BUSY_FOR_MS ? MSG_POLL_MS : MSG_IDLE_MS);
+}
+async function openMsg(kind, ref){
+  const seq = ++msgOpenSeq, key = kind + ":" + ref, known = msgIds()[key] || null;
+  // Shown straight away: the conversation as it was last read, or a line saying it's opening.
+  msgThread = known; msgData = (known && msgSeen[known]) || { thread: known, kind, opening: true };
+  msgFocus = true; msgShow(); msgDraw(true);
+  try{
+    if(!known){
+      const o = await api.msgOpen(kind, ref);
+      if(o.error){ if(seq === msgOpenSeq){ if($("dlgMsg").open) $("dlgMsg").close(); toast(msgWhyNot(o.error)); } return; }
+      msgIds()[key] = o.thread; save();
+      if(seq !== msgOpenSeq || !$("dlgMsg").open) return;   // another chat was opened, or this one was closed, while the server answered
+      msgThread = o.thread; msgData = msgSeen[msgThread] || { thread: msgThread, kind, opening: true };
+    }
+    await msgRefresh(true, true);
+    // The chat this phone remembered is gone (the connection was removed): ask the server which one it is now.
+    if(known && seq === msgOpenSeq && msgData && msgData.error === "not-found"){ delete msgIds()[key]; save(); return openMsg(kind, ref); }
+  }catch(err){ console.error(err); if(seq === msgOpenSeq && !msgSeen[msgThread]){ if($("dlgMsg").open) $("dlgMsg").close(); toast("Couldn't open the chat. Please try again."); } }
+}
+// Reads the open chat. On opening, all of it (the last 200); while it stays open, only what's new since the last
+// read, added to what's here. It asks from a little before the newest message it has (15 seconds), because two
+// messages sent in the same moment can be saved in the other order; a message it already has is not added twice.
+let msgGetting = false;
+async function msgRefresh(scroll, whole){
+  const id = msgThread; if(!id) return;
+  const had = msgSeen[id], after = !whole && had && had.cursor ? new Date(Date.parse(had.cursor) - MSG_OVERLAP_MS).toISOString() : null;
+  let d;
+  msgGetting = true;
+  try{ d = await api.msgGet(id, after); } finally{ msgGetting = false; }
+  if(d.error){ delete msgSeen[id]; if(id === msgThread){ msgData = d; msgDraw(); } return; }
+  const got = d.messages || [], ids = new Set(got.map(m => m.id));
+  let news = 0;
+  if(had){
+    const before = new Set(had.messages.map(m => m.id));
+    news = got.filter(m => !m.mine && !before.has(m.id)).length;
+    // Kept from before: when only what's new was asked for, everything; when the whole chat was, only a message of
+    // mine the server took while its answer was already on the way (a moment later it's in the answer too).
+    const keep = had.messages.filter(m => !ids.has(m.id) && (after || (m.local && Date.now() - Date.parse(m.at) < 30000)));
+    d.messages = keep.concat(got).sort((x, y) => Date.parse(x.at) - Date.parse(y.at)).slice(-200);
+  }else d.messages = got;
+  // "Since when" is the newest message the server itself gave (never this phone's clock).
+  d.cursor = d.messages.reduce((mx, m) => m.local || (mx && Date.parse(m.at) <= Date.parse(mx)) ? mx : m.at, null);
+  msgSeen[id] = d;
+  if(news) msgActive = Date.now();
+  if(id !== msgThread) return;   // another chat was opened while this one's answer was on its way
+  msgData = d; msgDraw(scroll);
+  if(scroll || news){ if(currentView === "messages") renderMessages(); else refreshMsgUnseen(); }
+}
+// Draws the open chat: what the server has, then what's still on its way. Each bubble has a key, so a new message
+// adds one bubble and a sent one changes its own line; nothing else on the page is touched (and a screen reader
+// hears the new message, not the whole chat again).
+let msgHeadSig = "", msgDrawn = { first: null, keys: [], html: [] };
+function msgPaint(l, items){
+  const was = msgDrawn, wrap = x => `<div class="msg-item" data-k="${esc(x.k)}">${x.html}</div>`;
+  const grows = was.first && was.first === l.firstElementChild && l.children.length === was.keys.length
+    && was.keys.length <= items.length && was.keys.every((k, i) => k === items[i].k);
+  let changed = !grows;
+  if(!grows) l.innerHTML = items.map(wrap).join("");
+  else items.forEach((x, i) => {
+    if(i >= was.keys.length){ l.insertAdjacentHTML("beforeend", wrap(x)); changed = true; }
+    else if(was.html[i] !== x.html){ l.children[i].innerHTML = x.html; changed = true; }
+  });
+  msgDrawn = { first: l.firstElementChild, keys: items.map(x => x.k), html: items.map(x => x.html) };
+  return changed;
+}
+function msgDraw(scroll){
+  const d = msgData, l = $("msgList");
+  if(!d || d.error || d.opening){
+    msgHeadSig = ""; msgDrawn = { first: null, keys: [], html: [] };
+    $("msgTitle").textContent = "Messages"; $("msgSub").textContent = d && !d.error ? MSG_KIND_LABEL[d.kind] || "" : ""; $("msgTools").innerHTML = "";
+    setHtml(l, `<p class="hint msg-empty">${!d || d.opening ? "Opening the chat…" : d.error === "unavailable" ? "You can't message this person." : "This conversation isn't available any more."}</p>`);
+    $("msgForm").hidden = true; return;
+  }
+  const people = d.people || [], sig = [d.thread, d.kind, d.title, people.join(","), d.loading ? 1 : 0].join("|");
+  if(sig !== msgHeadSig){
+    msgHeadSig = sig;
+    $("msgTools").innerHTML = d.kind === "split" || d.loading ? "" : safeBtn("thread", d.thread, people[0] || "");
+    $("msgTitle").innerHTML = (d.kind === "split" ? "" : avSpan("thread", d.thread, "msg-h-av")) + esc(people.length ? people.join(", ") : d.title || "Messages");
+    $("msgSub").textContent = [MSG_KIND_LABEL[d.kind], d.title].filter(Boolean).join(" · ");
+  }
   $("msgForm").hidden = false;
-  $("msgTitle").innerHTML = (msgData.kind === "split" ? "" : avSpan("thread", msgThread, "msg-h-av")) + esc(msgData.people.length ? msgData.people.join(", ") : msgData.title);
-  $("msgSub").textContent = MSG_KIND_LABEL[msgData.kind] + " · " + msgData.title;
+  if(msgFocus && $("dlgMsg").open){ msgFocus = false; setTimeout(() => $("msgText").focus(), 50); }
+  const have = new Set((d.messages || []).map(m => m.id));
+  const all = (d.messages || []).concat(msgOut.filter(m => m.thread === d.thread && !have.has(m.id)).map(m => ({ id: m.id, body: m.body, at: m.at, mine: true, out: m.state })));
   let day = "";
-  $("msgList").innerHTML = msgData.messages.length ? msgData.messages.map(m => { const d = fmtDate(m.at), head = d !== day ? `<p class="msg-day">${esc(d)}</p>` : ""; day = d;
-    return head + `<div class="msg ${m.mine ? "mine" : "theirs"}">${!m.mine && msgData.kind === "split" ? `<b>${esc(m.name)}</b>` : ""}<p>${esc(m.body)}</p>${!m.mine && scamFlag(m.body) ? SCAM_WARN : ""}
-      <time datetime="${esc(m.at)}">${new Date(m.at).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" })}${m.mine ? "" : ` · ${safeBtn("message", m.id, m.name, "Report")}`}</time></div>`; }).join("")
-    : `<p class="hint msg-empty">Say hello. ${SAFE_PAY_LINE}</p>`;
-  if(scroll || msgData.messages.length !== before){ const l = $("msgList"); l.scrollTop = l.scrollHeight; }
-  if(currentView === "messages") renderMessages(); else refreshMsgUnseen();
+  const items = all.map(m => {
+    const dd = fmtDate(m.at), head = dd !== day ? `<p class="msg-day">${esc(dd)}</p>` : ""; day = dd;
+    const when = new Date(m.at).toLocaleTimeString("en-IN", { hour:"numeric", minute:"2-digit" });
+    return { k: String(m.id), html: head + (m.out
+      ? `<div class="msg mine ${m.out}"><p>${esc(m.body)}</p><time>${m.out === "failed"
+          ? `Not sent · <button class="linkbtn" type="button" data-msg-retry>Try again</button> · <button class="linkbtn" type="button" data-msg-drop="${esc(m.id)}">Remove</button>` : "Sending…"}</time></div>`
+      : `<div class="msg ${m.mine ? "mine" : "theirs"}">${!m.mine && d.kind === "split" ? `<b>${esc(m.name)}</b>` : ""}<p>${esc(m.body)}</p>${!m.mine && scamFlag(m.body) ? SCAM_WARN : ""}
+      <time datetime="${esc(m.at)}">${when}${m.mine ? "" : ` · ${safeBtn("message", m.id, m.name, "Report")}`}</time></div>`) };
+  });
+  const nearEnd = l.scrollHeight - l.scrollTop - l.clientHeight < 90;
+  let changed;
+  if(items.length) changed = msgPaint(l, items);
+  else{ msgDrawn = { first: null, keys: [], html: [] }; changed = setHtml(l, `<p class="hint msg-empty">${d.loading ? "Opening the chat…" : "Say hello. " + SAFE_PAY_LINE}</p>`); }
+  if(scroll || (changed && nearEnd)) l.scrollTop = l.scrollHeight;
+}
+// Sends what's waiting, one at a time and in order. When the connection dropped it tries again by itself (after 1.5
+// and then 4 seconds; the message's own id means it can't arrive twice). A message that still can't go, or that the
+// server refused, stays, marked "Not sent", and so do the ones typed after it in that chat (so they never arrive
+// out of order).
+const msgSoftFail = why => /fetch|network|load failed|timed? ?out|aborted/i.test(why);
+let msgPumping = false;
+async function msgPump(){
+  if(msgPumping) return; msgPumping = true;
+  try{
+    for(let m; (m = msgOut.find(x => x.state === "sending")); ){
+      try{
+        const r = await api.msgSend(m.thread, m.body, m.id); if(r.error) throw new Error(r.error);
+        const i = msgOut.indexOf(m); if(i >= 0) msgOut.splice(i, 1);
+        const seen = msgSeen[m.thread];
+        if(i >= 0 && seen && !seen.messages.some(x => x.id === r.message)) seen.messages.push({ id: r.message, mine: true, name: firstName(), body: m.body, at: r.at || m.at, local: true });
+      }catch(err){
+        const why = String((err && err.message) || "");
+        if(msgSoftFail(why) && ++m.tries < MSG_TRIES && msgOut.includes(m)){ await new Promise(done => setTimeout(done, m.tries === 1 ? 1500 : 4000)); continue; }
+        console.error(err);
+        msgOut.filter(x => x.thread === m.thread && x.state === "sending").forEach(x => x.state = "failed");
+        toast(/rate-limited/.test(why) ? "That's a lot of messages. Please wait a while." : why === "unavailable" ? "You can't message this person."
+          : why === "paused" ? "Your messages are paused while we look at a report. You can write to us from Help." : "Couldn't send. Please try again.");
+        if(why === "unavailable" && m.thread === msgThread) msgRefresh(false, true).catch(() => {});
+      }
+      msgActive = Date.now();
+      if(m.thread === msgThread) msgDraw(true);
+    }
+  }finally{ msgPumping = false; }
 }
 const SAFE_PAY_LINE = "Never pay a token or deposit before you've seen the place and met the person.";
 // Scam flags (Kamal, 15 Nov): rules, on the phone, no outside service. A message or a listing that asks for money up
@@ -8457,35 +8611,53 @@ const SAFE_PAY_LINE = "Never pay a token or deposit before you've seen the place
 const SCAM_RE = /\b(token|advance|booking (?:amount|money|fee)|registration fee|pay (?:first|now|before|in advance)|send (?:the )?(?:money|amount|payment)|transfer (?:the |me )?(?:money|amount|deposit)|upi|gpay|google ?pay|phone ?pe|paytm|qr ?code|scan (?:the|this) ?qr|otp|bank details|refundable deposit (?:now|today|first))\b/i;
 const scamFlag = text => SCAM_RE.test(String(text || ""));
 const SCAM_WARN = `<p class="msg-warn" role="note">⚠️ <b>Careful:</b> never pay a token, advance or "booking amount" before you've visited and met them. FindMeFlatMate never asks you to pay anyone.</p>`;
-$("msgForm").addEventListener("submit", async e => {
+$("msgForm").addEventListener("submit", e => {
   e.preventDefault();
-  const text = $("msgText").value.trim(); if(!text || msgBusy) return;
-  msgBusy = true; const b = e.target.querySelector("button"); b.disabled = true;
-  try{ const r = await api.msgSend(msgThread, text); if(r.error) throw new Error(r.error); $("msgText").value = ""; await msgRefresh(true); }
-  catch(err){ console.error(err); const m = err.message || "";
-    toast(/rate-limited/.test(m) ? "That's a lot of messages. Please wait a while." : m === "unavailable" ? "You can't message this person."
-      : m === "paused" ? "Your messages are paused while we look at a report. You can write to us from Help." : "Couldn't send. Please try again.");
-    if(m === "unavailable") await msgRefresh(); }
-  msgBusy = false; b.disabled = false; $("msgText").focus();
+  const text = $("msgText").value.trim(); if(!text || !msgThread || !msgData || msgData.error || msgData.opening) return;
+  $("msgText").value = "";
+  // Anything of this chat that couldn't go goes first, so the order stays as it was written.
+  msgOut.forEach(x => { if(x.thread === msgThread && x.state === "failed"){ x.state = "sending"; x.tries = 0; } });
+  msgOut.push({ id: newId(), thread: msgThread, body: text, at: new Date().toISOString(), state: "sending", tries: 0 });
+  msgActive = Date.now(); msgDraw(true); msgPump(); msgTick(); $("msgText").focus();
 });
 $("msgText").addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); $("msgForm").requestSubmit(); } });
-$("dlgMsg").addEventListener("close", () => { clearInterval(msgPoll); refreshMsgUnseen(); });
+$("msgList").addEventListener("click", e => {
+  const drop = e.target.closest("[data-msg-drop]");
+  if(e.target.closest("[data-msg-retry]")){ msgOut.forEach(x => { if(x.thread === msgThread && x.state === "failed"){ x.state = "sending"; x.tries = 0; } }); msgDraw(true); msgPump(); }
+  if(drop){ const i = msgOut.findIndex(x => x.id === drop.dataset.msgDrop && x.state === "failed"); if(i >= 0) msgOut.splice(i, 1); msgDraw(); }
+});
+$("dlgMsg").addEventListener("close", () => { clearTimeout(msgPoll); msgPoll = null; if(currentView === "messages") renderMessages(); else refreshMsgUnseen(); });
+// When the keyboard comes up the list gets shorter: it stays on the newest message if that's where it was.
+let msgAtEnd = true;
+$("msgList").addEventListener("scroll", () => { const l = $("msgList"); msgAtEnd = l.scrollHeight - l.scrollTop - l.clientHeight < 90; }, { passive: true });
+if(window.ResizeObserver) new ResizeObserver(() => { const l = $("msgList"); if(msgAtEnd && $("dlgMsg").open) l.scrollTop = l.scrollHeight; }).observe($("msgList"));
+// Back in the app with a chat open: read it now, not at the next tick.
+document.addEventListener("visibilitychange", () => { if(!document.hidden && $("dlgMsg").open && msgThread && !msgGetting){ msgActive = Date.now(); msgRefresh().catch(() => {}); msgTick(); } });
 document.addEventListener("click", e => { const b = e.target.closest("[data-msg]"); if(!b) return; e.preventDefault(); e.stopPropagation();
   const [kind, ref] = b.dataset.msg.split(":"); openMsg(kind, ref); }, true);
 async function renderMessages(){
-  const rows = await api.msgList().catch(() => []);
-  msgUnseen = rows.reduce((t, x) => t + (Number(x.unread) || 0), 0); renderNav();
-  $("msgsList").innerHTML = rows.length ? rows.map(t => `<button type="button" class="msg-row${t.unread ? " new" : ""}" data-thread="${esc(t.thread)}">${avSpan("thread", t.thread)}
+  const rows = await api.msgList().catch(() => null);
+  if(!rows && msgRows.length) return;   // couldn't ask just now: what's on the screen stays
+  msgUnseen = msgNote(rows || []); msgUnseenKnown = true; renderNav();
+  setHtml($("msgsList"), msgRows.length ? msgRows.map(t => `<button type="button" class="msg-row${t.unread ? " new" : ""}" data-thread="${esc(t.thread)}">${avSpan("thread", t.thread)}
       <span class="msg-kind">${esc(MSG_KIND_LABEL[t.kind])}</span><b>${esc(t.title || "")}</b>
       <span class="msg-last">${t.last ? (t.last.mine ? "You: " : "") + esc(t.last.body) : ""}</span>
       <span class="msg-when">${timeAgo(t.last_at)}${t.unread ? ` <i class="badge" aria-label="${t.unread} new">${t.unread}</i>` : ""}</span></button>`).join("")
     : `<div class="empty"><div class="empty-ic" aria-hidden="true">${ic("chat", 30, 1.8)}</div><h3>No messages yet</h3>
-        <p>Once you and someone have both said yes (a room, your tribe, a FlatMart deal) or you're in a Flatsplits group together, tap <b>Message</b> there to chat here.</p></div>`;
+        <p>Once you and someone have both said yes (a room, your tribe, a FlatMart deal) or you're in a Flatsplits group together, tap <b>Message</b> there to chat here.</p></div>`);
 }
-$("msgsList").addEventListener("click", async e => { const b = e.target.closest("[data-thread]"); if(!b) return;
-  msgThread = b.dataset.thread; await msgRefresh(true); if(!$("dlgMsg").open) $("dlgMsg").showModal();
-  clearInterval(msgPoll); if(api.live) msgPoll = setInterval(() => { if(!$("dlgMsg").open){ clearInterval(msgPoll); return; } if(!msgBusy) msgRefresh(); }, 5000); });
-setInterval(() => { if(state.user && !document.hidden && !$("dlgMsg").open) refreshMsgUnseen(); }, 60000);
+// From the list: the chat shows at once (as last read, or its name and a line saying it's opening), then fills in.
+$("msgsList").addEventListener("click", e => { const b = e.target.closest("[data-thread]"); if(!b) return;
+  const seq = ++msgOpenSeq, id = msgThread = b.dataset.thread, row = msgRows.find(x => x.thread === id) || {};
+  msgData = msgSeen[id] || { thread: id, kind: row.kind, title: row.title, people: [], messages: [], loading: true };
+  msgFocus = false; msgShow(); msgDraw(true);
+  msgRefresh(true, true).catch(err => { console.error(err);
+    if(seq === msgOpenSeq && !msgSeen[id]){ if($("dlgMsg").open) $("dlgMsg").close(); toast("Couldn't open the chat. Please try again."); } }); });
+// New messages while the app is open and no chat is: the count on the chat button (and the list, when that is the
+// screen) is brought up to date every 20 seconds.
+setInterval(() => { if(!state.user || document.hidden || $("dlgMsg").open) return;
+  if(api.fresh) api.fresh("fm_thread_list");
+  if(currentView === "messages") renderMessages(); else refreshMsgUnseen(); }, MSG_BADGE_MS);
 
 /* ---- avatar parts: the same library as design/avatars-human/avatar.js (without its samples) ---- */
 // FindMeFlatMate: cartoon avatars people build themselves (design preview, 13 Nov 2026; not in the app).
@@ -8953,6 +9125,7 @@ async function safeDone(r, what){
   $("dlgSafe").close();
   toast(what === "block" || r.blocked ? `Blocked. You won't hear from ${safeCtx.name || "them"} again.` : "Thanks. We'll look into it.");
   if(r.blocked || what === "block"){
+    msgForget();
     if($("dlgMsg").open) $("dlgMsg").close();
     if($("dlgListing").open && ["listing", "request"].includes(safeCtx.kind)) $("dlgListing").close();
     if($("dlgMk").open && ["item", "offer"].includes(safeCtx.kind)) $("dlgMk").close();
@@ -8981,7 +9154,7 @@ async function openBlocked(){
   if(!$("dlgBlocked").open) $("dlgBlocked").showModal();
 }
 $("blBody").addEventListener("click", async e => { const b = e.target.closest("[data-unblock]"); if(!b) return; b.disabled = true;
-  try{ await api.unblock(b.dataset.unblock); toast("Unblocked."); openBlocked(); }catch(err){ console.error(err); toast("Couldn't unblock right now."); b.disabled = false; } });
+  try{ await api.unblock(b.dataset.unblock); msgForget(); toast("Unblocked."); openBlocked(); }catch(err){ console.error(err); toast("Couldn't unblock right now."); b.disabled = false; } });
 $("accBlocked").addEventListener("click", openBlocked);
 
 /* ========================================================= welcome gift */
@@ -9031,7 +9204,8 @@ let afterPay = null, payPlans = [];
 async function openPay(then, focus, lead){
   afterPay = then || null;
   const role = isOwner() ? "owner" : "seeker";
-  $("payTitle").textContent = isOwner() ? "Escape Pass" : "Plans";
+  $("payTitle").textContent = isOwner() ? "Escape Pass" : "Passes";
+  $("payTrust").hidden = !CHARGES_ON;
   $("payLead").textContent = lead || (focus === "tribe7" ? "Sending a tribe request needs a Tribe Pass. Accepting one is always free."
     : focus === "escape7" ? `Your free invite for this listing is used.`
     : focus === "room30" ? (state.packs ? "You've used your contacts." : `You've used your ${WELCOME_CREDITS} free contacts.`) : "Prices exclude 18% GST, added at checkout.");
@@ -9061,7 +9235,7 @@ function planCardsHtml(list, focus){
     </article>`;
   }).join("");
 }
-// Pays for a plan; afterwards the pass is on and the Passes tab goes (passes then show at the top of Account).
+// Pays for a plan; afterwards the pass is on (it shows by your name in Account, with the days left).
 async function buyPlan(p, root){
   root.querySelectorAll("[data-buy]").forEach(x => x.disabled = true);
   try{
@@ -9070,7 +9244,7 @@ async function buyPlan(p, root){
     if($("dlgPay").open) $("dlgPay").close();
     toast(`${p.name} is on. ${["room", "tribe", "escape"].filter(k => p[k + "_days"]).map(k => `${PASS_NAMES[k]} till ${untilLabel(passUntil(k))}`).join(", ")}.`);
     const next = afterPay; afterPay = null;
-    if(next) next(); else if(currentView === "plans") go("account"); else refreshCurrent();
+    if(next) next(); else refreshCurrent();
   }catch(err){
     const m = err && err.message;
     if(m === "payments-not-set-up") toast("Payments aren't switched on yet. Please try again later.");
@@ -9081,24 +9255,6 @@ $("payPlans").addEventListener("click", e => {
   const b = e.target.closest("[data-buy]"), p = b && payPlans.find(x => x.id === b.dataset.buy);
   if(p) buyPlan(p, $("payPlans"));
 });
-// The Passes screen.
-async function renderPlans(){
-  const owner = isOwner();
-  $("plHead").textContent = owner ? "Fill your room faster." : "Find your room faster.";
-  $("plSub").textContent = owner ? "Invite everyone who fits your home, and pay only for the weeks you need."
-    : "Ask every owner you like, team up with flatmates who match your vibe, and pay once for the time you need.";
-  const active = Object.keys(PASS_NAMES).filter(k => passUntil(k));
-  $("plFree").innerHTML = active.length ? `<div class="pass-on">${active.map(k => `<span>✓ <b>${PASS_NAMES[k]}</b> till ${untilLabel(passUntil(k))}</span>`).join("")}</div>` : "";
-  $("plCards").innerHTML = `<p class="hint" style="text-align:center;padding:24px 0">Loading passes…</p>`;
-  try{ payPlans = await api.plans(); }catch(err){ console.error(err); payPlans = []; }
-  if(currentView !== "plans") return;
-  $("plCards").innerHTML = planCardsHtml(payPlans.filter(p => p.who === (owner ? "owner" : "seeker")), owner ? "escape7" : "room30");
-}
-$("plCards").addEventListener("click", e => {
-  const b = e.target.closest("[data-buy]"), p = b && payPlans.find(x => x.id === b.dataset.buy);
-  if(p){ afterPay = null; buyPlan(p, $("plCards")); }
-});
-
 /* ========================================================== pass nudges */
 // Now and then, until a pass is bought: a notification (when they're allowed) and a card on the home
 // screen, benefit-first rather than a hard sell. At most one a day (every minute in demo mode), none
@@ -9139,7 +9295,7 @@ function renderNudgeCards(){
   $("passNudgeD").innerHTML = html; $("passNudgeM").innerHTML = html;
 }
 document.addEventListener("click", e => {
-  if(e.target.closest("[data-nudge-go]")) go("plans");
+  if(e.target.closest("[data-nudge-go]")) openPay(null);
   else if(e.target.closest("[data-nudge-hide]")){ state.nudgeHidden = true; save(); renderNudgeCards(); }
 });
 
@@ -11826,8 +11982,21 @@ $("areaSugg").addEventListener("click", e => { const b = e.target.closest("[data
 $("areaForm").addEventListener("submit", e => { e.preventDefault(); chooseArea($("areaQ").value); });
 
 /* ============================================================ help assistant */
-// A built-in helper (no AI service): it answers common questions by keywords, takes people to the right
-// page, and files grievances and reports as tickets the team answers (fm_tickets).
+// A built-in helper. No AI service: everything here runs on the phone. It answers questions about the app, takes
+// people to the right page, and files grievances and reports as tickets the team answers (fm_tickets).
+// Rebuilt on 15 Nov (Kamal: "fix the chat bot, make it much better"). Before, it counted any keyword it saw, so
+// "how do I message the owner" got the answer about listing a room, and most everyday questions (the sign-in code,
+// passes, blocking, saved homes, visits) got "I'm not sure". Now:
+//  - what's typed is made plain first (small letters, the many spellings of "sign in", "OTP", "can't" as one);
+//  - every topic has its own words with a weight: a phrase that settles it counts 3, a word 2, and a word half the
+//    app shares ("room", "owner", "pay") only 1, so it can break a tie but never decide alone;
+//  - the answers are about the app as it is today, and personal where that helps (your free contacts, your pass,
+//    looking for a room or filling one, signed in or not);
+//  - when two topics are close it answers the likelier one and offers the other; when it isn't sure it says so and
+//    offers its best guesses and a person, never a dead end;
+//  - "room in Pune under 15k" is a search, so it offers to run it on Discover (parseTalk);
+//  - "it's not working" on any topic offers to tell the team, with the right category filled in.
+// It never says anything about how sign-in codes are made or checked.
 const HELP_OFFICER = { name: "Richa Wadhwani", email: "privacy@findmeflatmate.com" };
 const TICKET_CATS = {
   report: [["broker", "A broker posing as an owner"], ["fake", "A fake or misleading listing"], ["scam", "Asked for money, or a scam"],
@@ -11837,67 +12006,221 @@ const TICKET_CATS = {
 };
 const TICKET_STATUS = { open: "Received", in_review: "Being looked at", resolved: "Resolved", closed: "Closed" };
 const catLabel = (kind, c) => ((TICKET_CATS[kind] || []).find(x => x[0] === c) || [c, c])[1];
-// Each topic: words that point to it, the answer, and buttons. Actions: "go:<view>", or a helper below.
+const hbHi = () => firstName() ? " " + esc(firstName()) : "";
+const hbSeeker = () => Boolean(state.user) && !isOwner() && !isSplits();
+const hbInApp = () => document.documentElement.classList.contains("in-apk");
+// What this person has right now, in a line: for the answers about requests and prices.
+const hbContacts = () => !hbSeeker() ? "" : !CHARGES_ON ? " It's free right now."
+  : roomPass() ? ` Your Room Pass is on till ${untilLabel(passUntil("room"))}, so you can send as many requests as you like.`
+  : !state.giftGiven && !state.credits ? " Your first request comes with a welcome gift: 5 free contacts. One is used only when an owner says yes."
+  : ` You have <b>${contactsLeft()} free ${contactsLeft() === 1 ? "contact" : "contacts"}</b> left. One is used only when an owner says yes.`;
+const hbTeam = () => `our grievance officer, ${HELP_OFFICER.name} (<a href="mailto:${HELP_OFFICER.email}">${HELP_OFFICER.email}</a>)`;
+// Each topic: t = its name on a button; k = the words that point to it ("!" settles it: 3, plain: 2, "?" shared
+// by many topics: 1; "$" = the whole word only); say = the answer; acts = buttons under it. role = whose topic it
+// mostly is (a point more for them, a point less for the others). cat = the grievance category when it isn't working.
+// Button actions: "go:<view>", "t:<topic>", or one of the helpers in hbAct.
 const HB_TOPICS = [
-  { id: "hello", words: ["hi", "hello", "hey", "namaste", "good morning", "good evening"], say: () => `Hi${firstName() ? " " + esc(firstName()) : ""}! What can I help you with?`, home: true },
-  { id: "thanks", words: ["thanks", "thank you", "thx", "great", "awesome", "dhanyavad", "shukriya"], say: () => "Happy to help! Anything else?", home: true },
-  { id: "about", words: ["how does", "how it works", "how it work", "what is this", "what is findmeflatmate", "about", "findmeflatmate", "explain", "kaise"],
-    say: () => `FindMeFlatMate matches you with flatmates who live like you. Answer 12 quick questions about how you live (bedtime, food, guests…), and every home shows a vibe match with the people already there. Ask to meet, and numbers are shared only when both say yes. Owners list rooms free, and no brokers are allowed.`,
-    acts: () => state.user ? [["🔎 Find a room", "t:find"], ["👯 How tribes work", "t:tribe"]] : [["Get started", "go:discover"], ["🏠 List my room", "t:post"]] },
-  { id: "find", words: ["find", "search", "room", "flat", "pg", "rent", "kamra", "ghar", "house", "home", "looking", "accommodation", "discover"],
-    say: () => `Discover shows homes by how well you'd live with the people there. Type a locality, landmark, society or metro station in the search bar, pick what you're looking for (private room, shared room or whole flat), and switch to <b>Map</b> to see prices on the map. Best vibe match comes first, then the nearest.`,
-    acts: () => isOwner() ? [["See who's looking (Escape)", "go:escape"]] : [["Search near a place", "near"], ["Open Discover", "go:discover"]] },
-  { id: "post", words: ["post", "list my", "listing", "advertise", "owner", "landlord", "spare room", "tenant", "let out", "my flat"],
-    say: () => isOwner() ? `Tap <b>Post</b>: start with "Where's the flat?" (it fills in the area and the pin), add photos and the rent, and you're live. Posting is free.`
-      : `To list a room you need to switch to "Posting a flat or a room" in Account. Posting is free, and you can switch back any time.`,
-    acts: () => isOwner() ? [["Post a room", "go:post"], ["My flat", "go:mine"]] : [["Open Account", "go:account"]] },
-  { id: "tribe", words: ["tribe", "team", "team up", "bond", "together", "friends", "group", "dost", "share a flat"],
-    say: () => `<b>Tribe</b> is for finding people first, then the flat. You see people looking in your areas who match your vibe 70%+, people wanting the same kind of home first. When you both say yes you're a tribe (up to 3), numbers are shared, and we show homes that fit all of you: whole flats with a bedroom each, or flats with that many rooms free.`,
-    acts: () => isOwner() ? [] : [["Open Tribe", "go:tribe"]] },
-  { id: "vibe", words: ["vibe", "match", "score", "compatib", "percent", "%", "quiz", "personality"],
-    say: () => `Your vibe score compares 12 answers about how you live (bedtime, cleanliness, food, guests, noise…) with each household. Food, smoking and pets count double. Open any home and tap the score for the full compatibility analysis: where you click and what to talk about.`,
-    acts: () => [["My Vibe Card", "vibe"]] },
-  { id: "contact", words: ["number", "phone", "contact", "call", "whatsapp", "reach owner", "talk to owner"],
-    say: () => isOwner() ? `People ask to meet you from your listing. Numbers are shared only when you say yes, both ways.`
-      : `Tap <b>Ask to meet</b> on a home. The owner sees your vibe and says yes or no. Numbers are shared only after a yes, so nobody gets your number without your say.`,
-    acts: () => [["My requests", "go:requests"]] },
-  { id: "price", words: ["price", "cost", "pass", "pay", "paid", "charge", "fee", "free", "subscription", "premium", "money", "paisa"],
-    say: () => CHARGES_ON ? `Browsing, matching, posting and Flatsplits are free. Passes (Room, Tribe, Escape) are one-time payments for a few weeks, no auto-renewal.` : `Everything is free right now: browsing, asking to meet, tribes, posting a room, Flatsplits and FlatMart.`,
-    acts: () => CHARGES_ON ? [["See passes", "go:plans"]] : [] },
-  { id: "splits", words: ["split", "flatsplit", "expense", "bill", "electricity", "groceries", "owe", "settle", "upi", "rent split", "hisab"],
-    say: () => `Flatsplits splits rent and bills with flatmates: add an expense, see who owes whom, and settle by UPI. Trips and house parties get their own groups, so household spending stays separate.`,
-    acts: () => [["Open Flatsplits", "go:splits"]] },
-  { id: "party", words: ["party", "invite", "movie night", "game night", "potluck", "birthday", "housewarming", "celebrat"],
-    say: () => `In Flatsplits tap <b>New house party</b>, then make an invite card: pick the occasion, the time, and "at my home" or the address. Share it on WhatsApp; friends say if they're coming without signing in, and your flatmates get a heads-up.`,
-    acts: () => [["Plan a party", "party"]] },
-  { id: "market", words: ["sell", "buy", "furniture", "fridge", "bed", "sofa", "market", "flatmart", "second hand", "moving out sale"],
-    say: () => `FlatMart is for buying and selling with people nearby: beds, fridges, cycles… Make an offer; numbers are shared only when the seller accepts.`,
-    acts: () => [["Open FlatMart", "go:market"]] },
-  { id: "map", words: ["map", "location", "near", "nearby", "distance", "km", "metro", "landmark", "society", "address"],
-    say: () => `On Discover, type a place in the search bar (or "Use my current location") and pick how far: 1 to 20 km. Switch to <b>Map</b> for price pins. Exact addresses are shared only after an owner says yes.`,
-    acts: () => isOwner() ? [] : [["Search near a place", "near"]] },
-  { id: "notify", words: ["notification", "notify", "alert", "updates", "ping"],
-    say: () => `We notify you about new requests, answers, tribe matches, new flats that fit you, Flatsplits expenses and updates on your tickets. Turn them on so you don't miss an owner's yes.`,
+  { id: "hello", t: "Hello", k: "hi$!, hii!, hello!, hey$!, heya!, namaste!, namaskar!, good morning!, good evening!, good afternoon!",
+    say: () => `Hi${hbHi()}! What can I help you with?`, home: true },
+  { id: "thanks", t: "Thanks", k: "thanks!, thank you!, thankyou!, thx$!, thnx!, tysm!, great$, awesome, perfect$, dhanyavad!, shukriya!, got it!, ok$, okay$, cool$, nice$, helpful, good app!, nice app!, great app!, love it!, love this!, well done!",
+    say: () => "Happy to help! Anything else?", home: true },
+  { id: "bye", t: "Bye", k: "bye!, goodbye!, see you!, tata$!, good night!", say: () => `Bye${hbHi()}! I'm here whenever you need me.`, home: true },
+  { id: "about", t: "How it works", k: "how does it work!, how it works!, how does this work!, how this works!, what is this!, what is findmeflatmate!, what is find me flatmate!, what does this app!, what do you do!, what do you guys!, you guys do!, what can you do!, tell me about!, how to use!, how do i use!, how do i start!, where do i start!, get started!, getting started!, about$, explain?, kaise kaam!, kya hai!",
+    say: () => `FindMeFlatMate matches you with flatmates who live like you. You answer 12 quick questions about how you live (bedtime, food, guests…), and every home shows a vibe score with the people already there. You send a request, and numbers are shared only when both of you say yes. Listing a room is free, and brokers aren't allowed.`,
+    acts: () => state.user ? [[isOwner() ? "🚪 The Escape" : "🔎 Find a room", isOwner() ? "t:escape" : "t:find"], ["👯 How tribes work", "t:tribe"], ["🎟️ What's free", "t:price"]] : [["Get started", "go:discover"], ["🏠 List my room", "t:post"], ["🔑 Signing in", "t:login"]] },
+  { id: "find", t: "Finding a room", role: "seeker", k: "find a room!, find room!, find a flat$!, find flat$!, find a home!, looking for a room!, looking for room!, looking for a flat$!, looking for flat$!, need a room!, need room!, need a flat$!, want a room!, want a flat$!, room chahiye!, flat chahiye!, search!, discover!, where are the rooms!, show me rooms!, show rooms!, show me homes!, room$?, rooms?, flat$?, flats?, home$?, homes?, house?, kamra, ghar$?, makaan, accommodation, pg$, hostel, rent$?, bhk",
+    say: () => isOwner() ? `You're set up as someone with a room to fill, so you see people, not homes: <b>Escape</b> lists who's looking in your area. To look for a room yourself, open Account and tap <b>Look for a room instead</b>.`
+      : isSplits() ? `Rooms open up once you've answered 12 quick questions about how you live. Open <b>Discover</b> and tap <b>I need a room</b>.`
+      : `<b>Discover</b> lists every home in your city, highest vibe score first. Type a locality, landmark, society or metro station in the search bar, or say it the way you'd tell a friend: “room near Baner under 15k, veg”. Pick what you're after (private room, shared room or whole flat), and use <b>Filters</b> for budget, furnishing and house rules. <b>Map</b> shows the prices on a map.`,
+    acts: () => isOwner() ? [["Open Escape", "go:escape"], ["Open Account", "go:account"]] : isSplits() ? [["Open Discover", "go:discover"]] : state.user ? [["Search near a place", "near"], ["Open Discover", "go:discover"]] : [["Get started", "go:discover"]] },
+  { id: "nohomes", t: "No homes showing", role: "seeker", cat: "bug", k: "no homes!, no rooms!, no flats!, no results!, nothing found!, no listings!, cant i see any!, cant see any!, not see any!, not showing any!, zero homes!, empty list!, list is empty!, few homes!, very few!, only a few!",
+    say: () => `If Discover shows few or no homes: check the city at the top, then open <b>Filters</b> and loosen them (when nothing fits, the app names the one change that brings most homes back). We're new, so some cities have only a few homes so far. Turn on notifications and we'll tell you the moment one that fits you is listed.`,
+    acts: () => hbSeeker() ? [["Open Discover", "go:discover"], ["Turn on notifications", "notify"]] : [] },
+  { id: "sort", t: "The order homes come in", role: "seeker", k: "highest!, order?, sorted!, sort!, sorting!, lowest rent!, cheapest!, nearest!, newest!, low match!, low score!, low vibe!, why am i seeing!, why do i see!, not matching!, doesnt match!, dont match!, more homes!, ranking!, ranked!, all homes!, all properties!, every home!, hidden!, best match!, shown first!, comes first!, come first!, far away!, first$?",
+    say: () => `Discover shows every home in the city, from the highest vibe score to the lowest. A low score never hides a home, it only moves it down. Homes your filters leave out are still on the page, under <b>More homes</b>, with a line saying why. Want another order? The sort menu has Nearest, Newest and Lowest rent.`,
+    acts: () => hbSeeker() ? [["Open Discover", "go:discover"]] : [] },
+  { id: "filters", t: "Filters", role: "seeker", k: "filter!, filters!, area$, areas$, add area!, another area!, change area!, change my area!, locality$?, budget!, furnished!, furnishing!, unfurnished!, veg$!, vegetarian!, non veg!, nonveg!, no smoking!, smoking?, alcohol?, pet!, pets!, dog$!, cat$, bachelor!, bachelors!, amenit!, wifi!, parking!, attached washroom!, attached bathroom!, washroom!, bathroom!, balcony!, master bedroom!, move in date!, lift!, gym!, ac$!",
+    say: () => `Tap <b>Filters</b> on Discover: your areas (<b>+ Add area</b> takes any neighbourhood), your budget, the kind of room, who it's open to, furnishing, move-in date, must-have amenities and house rules (veg-only kitchen, no smoking, no alcohol, pet-friendly), plus attached washroom, balcony and master bedroom. The button shows how many homes fit before you apply. What you picked shows as chips you can remove with a tap.`,
+    acts: () => hbSeeker() ? [["Open Discover", "go:discover"]] : [] },
+  { id: "women", t: "Women-only homes", k: "women only!, woman only!, women-only!, girls only!, ladies only!, female only!, only women!, only girls!, only for girls!, for girls!, for women!, for ladies!, girls?, women?, ladies?, men only!, boys only!, gents only!, male only!, only men!, only boys!, safe for women!, safe for girls!",
+    say: () => `In <b>Filters</b>, <b>Women only</b> shows homes where only women live and only women are welcome, not just homes “open to women”. They say <b>Women-only home</b> on the card. (Men only works the same way.) You also choose who can find you: Account → <b>Who can find you</b> → Everyone, Women only or Men only.`,
+    acts: () => hbSeeker() ? [["Open Discover", "go:discover"], ["Who can find me", "go:account"]] : [["🛡️ Staying safe", "t:safety"]] },
+  { id: "ask", t: "Sending a request", k: "ask to meet!, send request!, send a request!, sending a request!, send the request!, request to meet!, contact the owner!, contact owner!, contact an owner!, talk to owner!, talk to the owner!, reach the owner!, reach owner!, owner number!, owners number!, owner s number!, phone number?, mobile number?, call the owner!, call owner!, get the number!, get number!, get their number!, see the number!, ka number!, number kaise!, number chahiye!, number milega!, number?, call$?, whatsapp?, how do i apply!, apply$!, interested!, book the room!, book a room!, book room!, i like a room!, i like this room!, request$, requests, accept a request!, accept request!, sent me a request!, see requests!, my requests!",
+    say: () => isOwner() ? `People send you a request from your listing. Each one is in <b>Requests</b> with their vibe match and their answers next to yours. Numbers are shared, both ways, only when you say yes. You don't have to wait either: <b>Escape</b> shows who's looking in your area, and you can invite them.`
+      : `Open a home and tap <b>Send request</b>. The owner sees your first name, what you do and your vibe match, and says yes or no. Only on a yes do you both get each other's number, and you get the address. A no costs nothing.${hbContacts()}`,
+    acts: () => isOwner() ? [["Open Requests", "go:requests"], ["Open Escape", "go:escape"]] : hbSeeker() ? [["My requests", "go:requests"], ["Open Discover", "go:discover"]] : [] },
+  { id: "waiting", t: "No reply yet", k: "not replying!, no reply!, no response!, not responding!, hasnt replied!, havent replied!, didnt reply!, not answering!, no answer!, still waiting!, waiting!, pending!, how long!, when will!, ignored!, ignoring!, no one replied!, nobody replied!, koi reply!",
+    say: () => isOwner() ? `Requests waiting for you are in <b>Requests</b>. Answering within a day keeps your “Replies within hours” line, which brings more people.`
+      : `Owners answer in their own time; a home's page says how fast its owner usually is (“Replies within hours”), and we remind them once a day while you wait. A waiting request holds one contact, and it's only used if the answer is yes. Meanwhile, send a request to a few more homes that match you: that's the quickest way to a yes.`,
+    acts: () => state.user ? [["My requests", "go:requests"]].concat(hbSeeker() ? [["Open Discover", "go:discover"]] : []) : [] },
+  { id: "withdraw", t: "Taking a request back", role: "seeker", k: "cancel my request!, cancel request!, cancel the request!, cancel a request!, withdraw!, take back!, take it back!, undo my request!, unsend!, changed my mind!, cancel$?",
+    say: () => `A request that's still waiting can be taken back: open the home (it's in <b>Requests</b>) and tap <b>Withdraw request</b>. The contact it was holding is free again. In a tribe, <b>Take back</b> undoes a yes the other person hasn't answered yet.`,
+    acts: () => state.user ? [["My requests", "go:requests"]] : [] },
+  { id: "declined", t: "When an owner says no", role: "seeker", k: "declined!, rejected!, reject?, said no!, says no!, refused!, compromise!, ask again!, turned down!, not this time!",
+    say: () => `A no costs you nothing. If you'd still like that home, tap <b>Compromise and ask again</b> on the request: you see only the answers that clash with that household, you can change them for that home alone, and the owner decides again. It works once per home, and only if your score goes up.`,
+    acts: () => hbSeeker() ? [["My requests", "go:requests"]] : [] },
+  { id: "yes", t: "After a yes", k: "accepted!, accepts!, accept$?, after owner!, what happens after!, said yes!, says yes!, approved!, got a yes!, got yes!, what next!, whats next!, after yes!, after a yes!, after the yes!, what now!, next step!",
+    say: () => `After a yes you both have each other's number${isOwner() ? "" : ", and you have the address"}. Call or WhatsApp soon (good rooms go fast), tap <b>Message</b> to chat in the app, ${isOwner() ? "and" : "use <b>Book a visit</b> to fix a time, and"} open the <b>🔑 Move-in kit</b> for a flatmate agreement and a move-in checklist. Never pay anything before you've visited.`,
+    acts: () => state.user ? [["My requests", "go:requests"], ["💬 Messages", "t:messages"]] : [] },
+  { id: "messages", t: "Messages", cat: "bug", k: "message!, messages!, messaging!, msg!, chat!, chats!, chatting!, inbox!, dm$!, text them!, text him!, text her!, text the owner!, write to the owner!, write to them!, reply?, talk to them!, group chat!",
+    say: x => (x && x.trouble ? `You can message someone only after you've both said yes. If a chat says “You can't message this person”, they're no longer available to you. A message that couldn't go says <b>Not sent</b> with <b>Try again</b> under it. And to keep spam out, there's a limit of 30 messages an hour.<br><br>` : "")
+      + `Once you've both said yes, a <b>Message</b> button appears: on the accepted request (in Requests and on the home's page), on your tribe's card once you've bonded, on an accepted FlatMart offer, and as <b>Group chat</b> in a Flatsplits group. All your chats are under the chat icon at the top of the screen. Never pay a token or deposit before you've seen the place and met the person.`,
+    acts: () => state.user ? [["Open Messages", "go:messages"], ["My requests", "go:requests"]] : [] },
+  { id: "visit", t: "Booking a visit", role: "seeker", k: "visit!, visits!, visiting!, book a visit!, see the room!, see the flat!, see the place!, viewing!, schedule!, appointment!, when can i see!, site visit!, come and see!",
+    say: () => isOwner() ? `Once you've said yes, the person can send you a visit request with a day and time. You'll see it on <b>My flat</b>, under the listing, and confirm it there.`
+      : `After the owner says yes, the home's page has <b>Book a visit</b>: pick a day and a time, add a note, and the owner gets your visit request. Always visit before you pay anything.`,
+    acts: () => state.user ? [[isOwner() ? "My flat" : "My requests", isOwner() ? "go:mine" : "go:requests"]] : [] },
+  { id: "kit", t: "The Move-in kit", k: "move in kit!, move-in kit!, movein kit!, moving in!, move in checklist!, checklist!, flatmate agreement!, agreement!, rent agreement!, rental agreement!, kit$!, house rules!",
+    say: () => `After a yes, the accepted request (and a bonded tribe) gets a <b>🔑 Move-in kit</b>: a simple flatmate agreement filled in from the home and your answers (rent, deposit, bills, notice, house rules; you can edit and share it), a 10-step move-in checklist, and a shortcut to Flatsplits for rent and bills. It's an understanding between flatmates, not the rental agreement with the owner.`,
+    acts: () => state.user ? [["My requests", "go:requests"]] : [] },
+  { id: "saved", t: "Saved homes and compare", role: "seeker", k: "saved!, save a!, save this!, save homes!, shortlist!, shortlisted!, favourite!, favorite!, favourites!, favorites!, heart!, wishlist!, compare!, comparing!, comparison!, bookmark!, liked!",
+    say: () => `Tap the ♥ on any home to save it. Your shortlist is under the heart at the top of the screen (<b>Saved</b>). With two or more saved, <b>Compare side by side</b> puts the rent, expenses, deposit, vibe match and the owner's reply speed in one table. In a tribe, everyone sees what the others saved.`,
+    acts: () => hbSeeker() ? [["Open Saved", "go:saved"]] : [] },
+  { id: "tribe", t: "Tribes", role: "seeker", k: "tribe!, tribes!, team up!, teamup!, bond!, bonded!, find a flatmate!, find flatmate!, find flatmates!, find a roommate!, find roommate!, find people!, need a flatmate!, flatmate?, roommate?, together?, friends?, dost?, share a flat!, flat share!, share karna!, ke saath!, with a friend!, with my friend!, with friends!, two people!, 2 people!, two of us!, both of us!, me and my friend!, hunt together!, search together!, build my tribe!",
+    say: () => isOwner() ? `Tribes are for people looking for a room: two or three who live alike team up, then hunt for a flat together. If your place is a whole flat, tribes that fit its size will find it.`
+      : `<b>Tribe</b> is for finding the people first, then the flat. You see people looking in your areas who match your vibe 70% or more. Tap <b>Team up</b>; when you both say yes you're a tribe (up to 3), numbers are shared, and <b>Hunt together</b> shows homes that fit all of you, with the rent per person.${CHARGES_ON && hbSeeker() ? " Sending a tribe request needs a Tribe Pass; saying yes to one is always free." : ""}`,
+    acts: () => hbSeeker() ? [["Open Tribe", "go:tribe"]] : [] },
+  { id: "leave", t: "Leaving a tribe", role: "seeker", k: "leave tribe!, leave my tribe!, leave the tribe!, exit tribe!, quit tribe!, remove from tribe!, leaving tribe!, leave a tribe!",
+    say: () => `On the <b>Tribe</b> page, your tribe's card has <b>Leave tribe</b>. The others are told, and your shared shortlist stops being shared. People who've left a tribe aren't suggested to each other again.`,
+    acts: () => hbSeeker() ? [["Open Tribe", "go:tribe"]] : [] },
+  { id: "escape", t: "The Escape (finding people for your room)", role: "owner", k: "escape!, empty room!, invite seekers!, invite people!, invite someone!, invite them!, find tenant!, find a tenant!, find tenants!, find someone for my room!, find a flatmate for my!, who is looking!, whos looking!, who s looking!, people looking!, owners find me!, owner find me!, find me$!, be found!, get found!, tenant?, tenants?, invite$?, invites?, invited!, invitation!, got an invite!",
+    say: () => isOwner() ? `<b>Escape</b> shows everyone looking for a room in your listing's area, best vibe match first, with their budget and a line on why they fit. Tap <b>Invite</b>: they see your home and answer “Yes, let's meet” or “Not for me”. Numbers are shared only when they say yes, and an invite waits 3 days. ${CHARGES_ON ? "The first invite for each listing is free; the Escape Pass gives you as many as you like for 7 days." : "Invites are free right now."}`
+      : `The Escape is for people with a room to fill: it shows them who's looking in their area. When an owner invites you, it's in <b>Requests</b> with their home: answer <b>Yes, let's meet</b> or <b>Not for me</b>. A yes shares numbers and the address, and is free for you. Invites lapse after 3 days. To stay out of it: Account → <b>Who can find you</b>.`,
+    acts: () => isOwner() ? [["Open Escape", "go:escape"]] : state.user ? [["My requests", "go:requests"], ["Who can find me", "go:account"]] : [] },
+  { id: "post", t: "Listing a room", k: "post a!, post my!, posting!, post$!, list my!, list a room!, list a flat!, listing a!, list room!, advertise!, put up!, add my room!, add a room!, add my flat!, rent out!, let out!, spare room!, i have a room!, i have a flat!, i have a spare!, give my room!, put my room!, put my flat!, put up my!, room on the app!, flat on the app!, my room?, my flat?, landlord?, owner?, listing?",
+    say: () => isOwner() ? `Tap <b>Post</b>. Start with “Where's the flat?” (one search fills in the area and drops the pin), then what you're offering, the rent and a few photos. Only the area and the rent are a must; the rest waits under <b>More details</b>. Listing is free.`
+      : state.user ? `Listing is free. You're set up as ${isSplits() ? "Flatsplits and FlatMart only" : "looking for a room"}, so first open Account and tap <b>${isSplits() ? "Look for a room or post one" : "Post a flat instead"}</b>. You can switch back any time.`
+      : `Listing a room is free. Sign up, choose <b>Posting a flat or a room</b>, answer a few questions about your home, and post: where the flat is, the rent and a few photos.`,
+    acts: () => isOwner() ? [["Post a room", "go:post"], ["My flat", "go:mine"]] : state.user ? [["Open Account", "go:account"]] : [["Get started", "go:discover"]] },
+  { id: "edit", t: "Changing my listing", role: "owner", cat: "listing", k: "photo$, room photo!, my room photo!, flat photo!, edit listing!, edit my listing!, edit the listing!, edit my room!, edit my flat!, change the rent!, change rent!, change my rent!, update listing!, update my listing!, add photos!, more photos!, change photos!, remove photo!, listing strength!, change the address!, wrong address!, change description!, edit post!, change my listing!",
+    say: () => `On <b>My flat</b>, tap <b>Edit listing</b>: it opens the form filled in, so you can change the room, the rent, the photos (6 in all), who lives there and the description. The address and your number stay as posted; the map pin can move. <b>Listing strength</b> on My flat says what would bring more requests.`,
+    acts: () => isOwner() ? [["My flat", "go:mine"]] : [] },
+  { id: "norequests", t: "Getting more requests", role: "owner", cat: "listing", k: "nobody is sending!, no one is sending!, no requests!, not getting requests!, not getting any requests!, no one is asking!, nobody is asking!, no enquir!, no inquir!, no interest!, more requests!, get requests!, no response on my!, nobody is interested!, no one is interested!",
+    say: () => `Three things bring requests faster. Add photos and the home's answers: <b>My flat</b> shows your <b>listing strength</b> and what's missing. Answer the requests you get within a day. And don't wait: <b>Escape</b> shows who's looking in your area right now, and you can invite them.`,
+    acts: () => isOwner() ? [["My flat", "go:mine"], ["Open Escape", "go:escape"]] : [] },
+  { id: "share", t: "Sharing a home", k: "share my listing!, share listing!, share my room!, share my flat!, share this home!, share a home!, share the flat!, share a flat on!, share on whatsapp!, share it!, share$?, link to my!, send to a friend!, forward!",
+    say: () => `${isOwner() ? "On <b>My flat</b>, tap <b>Share</b>" : "On a home's page, tap the share button"}: it makes a picture of the home with the rent, the area and a link, ready for WhatsApp or Instagram. The link opens that home once the person has signed in.`,
+    acts: () => isOwner() ? [["My flat", "go:mine"]] : [] },
+  { id: "rented", t: "My room is taken", role: "owner", cat: "listing", k: "rented!, mark as rented!, room is taken!, room taken!, room is gone!, got a tenant!, found a tenant!, found someone!, filled!, remove listing!, remove my listing!, delete listing!, delete my listing!, delete my room!, take down!, take it down!, listing down!, take my listing!, take the listing!, hide listing!, hide my listing!, pause listing!, pause my listing!, reopen!, close listing!, unlist!",
+    say: () => `On <b>My flat</b>, tap <b>Mark as rented</b>: the room comes off Discover straight away. If it's free again later, <b>Reopen</b> puts it back, with everything as it was.`,
+    acts: () => isOwner() ? [["My flat", "go:mine"]] : [] },
+  { id: "vibe", t: "The vibe score", k: "vibe!, score!, scores!, my match!, match$?, matching?, matches?, so low!, too low!, compatib!, percent!, percentage!, %!, how is the score!, how do you calculate!, calculated!, calculate!, vibe card!, flatmate type!, my type!, night owl!, early bird!, personality!, quiz?",
+    say: () => `Your vibe score compares your 12 answers about how you live (bedtime, cleanliness, food, guests, noise…) with a household's. Food, smoking and pets count double, and being the same generation adds a little. Tap the score on any home for the full picture: where you click, and what to talk about first. Your answers also make your flatmate type, which you can share as a <b>Vibe Card</b>.`,
+    acts: () => state.user ? [["My Vibe Card", "vibe"], ["Change my answers", "t:answers"]] : [["Get started", "go:discover"]] },
+  { id: "answers", t: "Changing my answers", k: "change my answers!, change answers!, change my answer!, edit answers!, edit my answers!, update my answers!, update answers!, redo the quiz!, retake!, redo!, vibe quiz!, quiz again!, answered$!, question wrong!, mistake in my!, how you live!, 12 questions!, twelve questions!, my answers!, living style!, change my vibe!, complete my profile!, finish my profile!, complete profile!, profile incomplete!, wrong answer!, answered wrong!, answers?",
+    say: () => isOwner() ? `Your home's answers live on the listing: <b>My flat</b> → <b>Edit listing</b>, at the “how the home lives” questions. Scores for everyone looking update straight away.`
+      : `Account → <b>How you live</b> shows your 12 answers. Tap any of them to change it; your scores everywhere update straight away.`,
+    acts: () => state.user ? [[isOwner() ? "My flat" : "Open Account", isOwner() ? "go:mine" : "go:account"]] : [] },
+  { id: "price", t: "Passes and what's free", cat: "payment", k: "pass$!, passes!, room pass!, tribe pass!, escape pass!, premium!, price!, prices!, pricing!, cost!, costs!, charge!, charges!, fee$!, fees!, free$!, paid$, subscription!, plan$?, plans!, paisa!, paise!, kitna!, how much!, money?, pay$, paying!, have to pay!, need to pay!, pay anything!, upgrade!, buy a pass!, buy pass!, buy the pass!, pass last!, pass valid!, validity!, valid for!, days left!, expire!, expiry!",
+    say: () => !CHARGES_ON ? `Everything is free right now while we're getting started: requests, tribes, invites, listing a room, Flatsplits and FlatMart. Passes come later${state.user && !isSplits() ? "; you can see them in Account, next to your name" : ""}.`
+      : isOwner() ? `Listing a room is free, and so is the first invite for each listing. The <b>Escape Pass</b> lets you invite as many people as you like for 7 days. It's a one-time payment, with no auto-renewal. You'll find it in Account, next to your name.`
+      : `Looking, matching, Flatsplits and FlatMart are free, and so are your first 5 contacts.${hbSeeker() ? hbContacts() : ""} After that there's the <b>Room Pass</b> (30 days of unlimited requests), the <b>Tribe Pass</b> (7 days to send tribe requests) and <b>Premium</b> (both, for longer). They're one-time payments, with no auto-renewal. ${state.user ? "You'll find them in Account, next to your name." : ""}`,
+    acts: () => state.user && !isSplits() ? [["🎟️ See passes", "passes"]] : [] },
+  { id: "contacts", t: "Free contacts", role: "seeker", k: "contacts left!, contact left!, free contact!, how many contacts!, my contacts!, credits!, credit!, 5 free!, five free!, welcome gift!, gift!, contacts?",
+    say: () => !CHARGES_ON ? `Everything is free right now, so contacts aren't being counted: send as many requests as you like.`
+      : `A contact is used only when an owner says yes to your request. A no, or no answer, costs nothing.${hbSeeker() ? hbContacts() : " You start with 5 free ones."} When they run out, a Room Pass gives 30 days of unlimited requests, and every 2 friends who join with your link earn you 1 more.`,
+    acts: () => hbSeeker() ? (CHARGES_ON ? [["🎟️ See passes", "passes"]] : []).concat([["Invite friends", "t:refer"]]) : [] },
+  { id: "payment", t: "A payment or refund", cat: "payment", k: "refund!, refunds!, payment failed!, payment!, payments!, paid but!, i paid!, not active!, not activated!, pass not!, pass didnt!, not started!, money deducted!, deducted!, debited!, charged twice!, double charged!, charged me!, was charged!, got charged!, been charged!, charged but!, transaction!, razorpay!, upi failed!, invoice!, receipt?, gst!, money back!, paise wapas!",
+    say: () => !CHARGES_ON ? `Nothing is being charged right now: everything is free while we're getting started. If money left your account anyway, tell our team and a person will look at it within 24 hours.`
+      : `Sorry about that. A pass starts the moment its payment goes through. If money left your account and the pass didn't start, tell our team with the payment reference and the time, and a person will sort it out within 24 hours.`,
+    acts: () => [["📝 Tell the team", "fix:payment"]].concat(state.user && !isSplits() ? [["🎟️ My passes", "passes"]] : []) },
+  { id: "login", t: "Signing in and the code", cat: "account", k: "login!, otp!, verification code!, sign up!, signup!, signing up!, register!, registration!, create account!, create an account!, new account!, password!, wrong code!, invalid code!, code not!, no code!, the code!, type the code!, enter the code!, 6 digit!, six digit!, resend!, send again!, didnt get the code!, not received!, code$?, verify my number!, verify number!",
+    say: () => (LIVE && FM_CONFIG.testLogin
+        ? `You sign in with your mobile number and a 6-digit code; there's no password. We're opening up to a few people at a time and launching soon, so a code may not reach you yet.`
+        : `You sign in with your mobile number and a 6-digit code; there's no password. The code comes on WhatsApp, or by SMS if you tap <b>Send it by SMS instead</b>. It can take a minute. Check the number (10 digits, no +91), and after a minute you can send it again.`)
+      + (state.user ? ` If you're stuck, tell our team and a person will help.` : ` If you can't get in, write to ${hbTeam()}.`),
+    acts: () => state.user ? [["📝 Tell the team", "fix:account"]] : [["Get started", "go:discover"]] },
+  { id: "number", t: "Changing my number", cat: "account", k: "change my number!, change number!, change my phone!, change phone!, change mobile!, change my mobile!, new number!, different number!, another number!, update my number!, update number!, number badal!",
+    say: () => `Your account goes with your mobile number, so the number on an account can't be changed. To use a new number, sign out and sign in with it: it starts as a new account, with its own answers. If you'd like the old one gone, use <b>Delete my account</b> there first.`,
+    acts: () => state.user ? [["Open Account", "go:account"]] : [] },
+  { id: "name", t: "Changing my name", cat: "account", k: "change my name!, change name!, edit name!, edit my name!, wrong name!, name is wrong!, spelling!, update my name!, naam!",
+    say: () => `Your name is fixed once you sign up, so people always meet the same person. If it's wrong, tell our team and a person will help. (Or delete the account in Account and sign up again with the right name.)`,
+    acts: () => state.user ? [["📝 Tell the team", "fix:account"], ["Open Account", "go:account"]] : [] },
+  { id: "account", t: "My account and profile", cat: "account", k: "account!, profile!, settings!, my details!, edit profile!, gender!, occupation!, what i do!, generation!, gen z!, millennial!, switch!, switch role!, change role!, look for a room instead!, post a flat instead!, i am an owner!, i am a seeker!, become an owner!",
+    say: () => `<b>Account</b> (your picture, at the top right) has your profile and avatar, <b>Passes</b>, <b>How you live</b>, <b>Who can find you</b>, <b>Gender</b>, switching between looking for a room and having one to fill, <b>Invite friends</b>, <b>Blocked people</b>, <b>Sign out</b> and <b>Delete my account</b>. Your name is fixed once you sign up.`,
+    acts: () => state.user ? [["Open Account", "go:account"]] : [["Get started", "go:discover"]] },
+  { id: "avatar", t: "My avatar", k: "avatar!, profile picture!, profile photo!, profile pic!, my photo!, my picture!, dp$!, cartoon!, my face!, upload my photo!, selfie!",
+    say: () => `There are no photos of people here. Instead you build an avatar: Account → <b>Make your avatar</b>. Pick the skin tone, face, hair, glasses and colours; it shows on your cards, requests and chats, and you can change or remove it any time.`,
+    acts: () => state.user ? [["Make my avatar", "avatar"]] : [] },
+  { id: "signout", t: "Signing out", k: "sign out!, signout!, signing out!, log out!, logout!, logging out!",
+    say: () => `Account → <b>Sign out</b>, near the bottom. Your answers stay saved for when you sign in again.`,
+    acts: () => state.user ? [["Open Account", "go:account"]] : [] },
+  { id: "delete", t: "Deleting my account", cat: "privacy", k: "delete my account!, delete account!, delete the account!, remove my account!, close my account!, close account!, deactivate!, delete my data!, delete my profile!, erase!, account delete!, delete karo!, delete$?",
+    say: () => `Account → <b>Delete my account</b>, at the very bottom. It removes your profile, your answers, your listings and your messages for good, and can't be undone. If you only want a break, hide yourself instead: Account → <b>Who can find you</b>.`,
+    acts: () => state.user ? [["Open Account", "go:account"]] : [] },
+  { id: "hide", t: "Who can find me", k: "hide me!, hide my profile!, hide myself!, hide my!, see my profile!, owners see!, who can see my profile!, who can find!, dont show me!, stop showing me!, invisible!, discoverable!, visible!, visibility!, appear!, show me to!",
+    say: () => `Account → <b>Who can find you</b>. You choose separately for tribe matches and for owners in the Escape: Everyone, Women only or Men only, or switch yourself off there altogether. Homes you send a request to always see your profile, since you asked them.`,
+    acts: () => state.user ? [["Open Account", "go:account"]] : [] },
+  { id: "privacy", t: "Privacy and my number", cat: "privacy", k: "privacy!, private!, my data!, personal data!, personal information!, data?, who can see!, who sees!, see my number!, get my number!, gets my number!, have my number!, my number$, share my number!, is my number!, hide my number!, number safe!, dpdp!, policy!, my address!, exact address!, address shown!, see my address!, address?",
+    say: () => `Your number and your exact address stay private until you say yes to someone: nobody gets them just by looking. On the map, others see a circle about a kilometre wide, not your building. You can see, correct or delete your data any time. The privacy policy has the details; ${hbTeam()} answers privacy questions.`,
+    acts: () => [["Privacy policy", "privacy"]].concat(state.user ? [["📝 Tell the team", "fix:privacy"]] : []) },
+  { id: "safety", t: "Staying safe", k: "safe$!, safety!, scam!, fraud!, fake!, cheat!, token!, advance!, booking amount!, deposit?, trust!, genuine!, dhoka!, suspicious!, asked for money!, asking for money!, asks for money!, pay before!, pay first!, qr code!",
+    say: () => `Visit before you pay. Never pay a “token”, an advance or a deposit before you've seen the flat and met the person, and check the owner's ID and the agreement. We never ask for money in a chat or on WhatsApp, and we never collect rent or deposits. In a chat, a message that asks for money up front gets a warning. If something feels off, report it and we'll look into it.`,
+    acts: () => [["⚠️ Report a problem", "report"], ["🚫 Blocking someone", "t:block"]] },
+  { id: "verified", t: "“Phone verified”", k: "verified!, verify my listing!, verify my profile!, verification$?, verify$?, phone verified!, id proof!, kyc!, aadhaar!, aadhar!, blue tick!, id card!, documents!",
+    say: () => `Everyone signs in with their own mobile number, so listings say <b>phone verified</b>. We don't check ID or ownership papers, so ask to see the owner's ID and the agreement when you visit, before you pay anything.`,
+    acts: () => [["🛡️ Staying safe", "t:safety"]] },
+  { id: "broker", t: "Brokers", k: "broker!, brokers!, brokerage!, dalal!, middleman!, agent$?, commission!",
+    say: () => `No brokers here, and no brokerage: listings come from owners, and from flatmates who live in the flat. An account can list at most two addresses. If someone turns out to be a broker, report them; after a yes, the contact section also has <b>Report a broker</b>, which takes the listing down straight away.`,
+    acts: () => [["⚠️ Report a problem", "report"]] },
+  { id: "block", t: "Blocking someone", k: "block!, unblock!, stop them!, stop him!, stop her!, stop seeing!, dont want to hear!, dont want to see!, bothering!, annoying!, mute them!, remove them!, get rid of!",
+    say: () => `To block someone, tap <b>Report or block</b> on your chat with them, on their card (Requests, Tribe, Escape, FlatMart offers), on a home's page or on a FlatMart item, then <b>Block</b>. You stop seeing each other everywhere and can't message or send each other requests. They aren't told. To undo it: Account → <b>Blocked people</b>.`,
+    acts: () => state.user ? [["Blocked people", "blocked"], ["⚠️ Report someone", "report"]] : [] },
+  { id: "splits", t: "Flatsplits", k: "flatsplit!, flatsplits!, flat split!, split!, splits!, splitting!, expense!, expenses!, bills!, bill$?, electricity!, groceries!, grocery!, owe!, owes!, settle!, settle up!, upi?, hisab!, splitwise!, who pays!, rent split!, monthly bills!, export!, maid!, wifi bill!, pay my flatmate!, pay flatmate!, pay a flatmate!, by upi!, upi id!",
+    say: () => `<b>Flatsplits</b> splits rent and bills with the people you live with. Make a group, add your flatmates by number, and add an expense: split it equally, by exact amounts or by shares. Every group shows who pays whom in the fewest payments; <b>Settle up</b> records a payment and <b>Pay by UPI</b> opens your UPI app with the amount filled in. Monthly bills (rent, Wi-Fi, the maid) add themselves. Trips and house parties get groups of their own.`,
+    acts: () => state.user ? [["Open Flatsplits", "go:splits"]] : [["Get started", "go:discover"]] },
+  { id: "ontime", t: "The Pays-on-time badge", k: "pays on time!, pay on time!, on time!, on-time!, badge!, show my badge!",
+    say: () => `Settle up in your flat's Flatsplits group by the 10th of the next month, three months running, and you earn <b>✓ Pays on time</b>. It stays off until you switch on <b>Show my badge</b> in Account; then owners see it on your requests and in the Escape.`,
+    acts: () => state.user ? [["Open Flatsplits", "go:splits"], ["Open Account", "go:account"]] : [] },
+  { id: "party", t: "A house party invite", k: "house party!, party invite!, invite card!, movie night!, game night!, potluck!, birthday!, housewarming!, plan a party!, planning a party!, host a party!, hosting a party!, throw a party!, celebrat!, farewell!, invite my friends!",
+    say: () => `In <b>Splits</b>, tap <b>New house party</b>, then make an invite card: pick the occasion, the day and time, and “at my home” or the full address. Share it on WhatsApp; friends answer I'm in, Maybe or Can't make it without signing in, and your flatmates get a heads-up. What everyone chips in is split on Flatsplits after.`,
+    acts: () => state.user ? [["Plan a party", "party"]] : [["Get started", "go:discover"]] },
+  { id: "near", t: "Parties nearby", k: "parties nearby!, party nearby!, nearby parties!, nearby party!, parties near!, party near!, parties!, party$?, join a party!, join party!, check in code!, check-in code!, checkin code!, party rules!, request to join!",
+    say: () => `<b>Parties</b> has its own tab. Switch on <b>Show me parties nearby</b> and pick a place once (we don't follow your location). You see what's on near you: what, when, how far and the entry, never the address. Tap <b>Request to join</b>; the host decides, and on a yes you get the address, the host's number and a check-in code for the door. It's for people 21 and over, and the party rules apply.`,
+    acts: () => state.user ? [["Open Parties", "go:parties"]] : [["Get started", "go:discover"]] },
+  { id: "market", t: "FlatMart", k: "flatmart!, flat mart!, sell!, selling!, sold!, buy$?, buying!, furniture!, fridge!, bed$!, beds!, mattress!, sofa!, table!, chair!, cycle!, bike!, washing machine!, cooler!, appliance!, second hand!, secondhand!, used$!, moving out!, moving-out!, market!, olx!, give away!, wanted!, offer$?, offers?, boost!, pick up!, pickup!",
+    say: () => `<b>FlatMart</b> is for buying and selling with people nearby: beds, fridges, furniture, cycles, books. Post in a minute with up to 4 photos, or give it away free. A buyer makes an offer; numbers are shared only when the seller accepts, and then you fix a pick-up time. Looking for something? Post it under <b>Wanted</b> and you're told the moment one is listed.`,
+    acts: () => state.user ? [["Open FlatMart", "go:market"]] : [["Get started", "go:discover"]] },
+  { id: "map", t: "Searching near a place", role: "seeker", k: "map!, maps!, near me!, nearby?, distance!, km$!, kms!, metro!, landmark!, society!, location!, current location!, around me!, close to!, near my office!, near office!, near college!, commute!",
+    say: () => `On Discover, type a place in the search bar (a locality, landmark, society or metro station), or tap <b>Use my current location</b>, and pick how far: 1 to 20 km. Each home says how far it is, and <b>Map</b> shows the prices as pins. An exact address is shared only after the owner says yes.`,
+    acts: () => hbSeeker() ? [["Search near a place", "near"]] : [] },
+  { id: "cities", t: "Cities", k: "which cities!, what cities!, which city!, cities!, city$?, available in!, do you have rooms in!, is it available!, in my city!, my city!, other city!, another city!, change city!, change my city!, switch city!, different city!, pan india!, all india!, all over india!, do you work in!, do you operate!, do you cover!, are you in!, cover my!, bangalore?, bengaluru?, mumbai?, delhi?, pune?, hyderabad?, chennai?, kolkata?, gurgaon?, noida?",
+    say: () => `FindMeFlatMate works across India. The city picker lists the ten big cities first (${CITIES.slice(0, 5).join(", ")} and more), then 45 others, and <b>Another city…</b> takes any name. We're new, so some cities have only a few homes so far; listing yours is free and takes a few minutes.`,
+    acts: () => hbSeeker() ? [["Open Discover", "go:discover"]] : state.user ? [] : [["Get started", "go:discover"]] },
+  { id: "alerts", t: "New homes that fit me", role: "seeker", k: "new homes!, new home!, new listings!, new listing!, new rooms!, new room!, new flats!, notify me when!, alert me!, alerts!, tell me when!, let me know when!",
+    say: () => `You're told when a new home fits what you're looking for: your city and areas, the kind of home, and a vibe score of 70 or more. Turn notifications on so it reaches you when the app is closed.`,
     acts: () => [["Turn on notifications", "notify"]] },
-  { id: "account", words: ["account", "profile", "edit", "name", "gender", "delete", "remove my", "logout", "log out", "sign out", "switch"],
-    say: () => `Account has your profile, how you live (edit any answer), who can see you, switching between looking for a room and having a flat, signing out, and <b>Delete my account</b> at the bottom. Your name is fixed once you sign up: to use a different one, delete the account and sign up again.`,
-    acts: () => [["Open Account", "go:account"]] },
-  { id: "privacy", words: ["privacy", "data", "personal", "safe data", "dpdp"],
-    say: () => `Your number and exact address stay private until you say yes to someone. You can see, correct or delete your data any time. The privacy policy has the details, and our grievance officer is ${HELP_OFFICER.name} (<a href="mailto:${HELP_OFFICER.email}">${HELP_OFFICER.email}</a>).`,
-    acts: () => [["Privacy policy", "privacy"], ["Raise a grievance", "grievance"]] },
-  { id: "safety", words: ["safe", "safety", "scam", "fraud", "broker", "fake", "cheat", "advance", "token money", "dhoka", "suspicious"],
-    say: () => `Stay safe: visit before you pay, never pay a "token" or deposit before seeing the flat and the owner, and check the owner's ID and the agreement. FindMeFlatMate never asks for money on WhatsApp. If something feels off, report it and we'll look into it.`,
-    acts: () => [["Report a problem", "report"]] },
-  { id: "report", words: ["report", "complain", "complaint", "abuse", "harass", "spam", "block", "shikayat"], flow: "report" },
-  { id: "grievance", words: ["grievance", "refund", "problem", "issue", "not working", "bug", "error", "help me", "support", "stuck"], flow: "grievance" },
-  { id: "tickets", words: ["ticket", "my report", "my complaint", "status", "fmf-"], flow: "tickets" },
-  { id: "human", words: ["human", "person", "agent", "talk to", "speak", "customer care", "email", "officer"],
-    say: () => `Raise a grievance here and a person from our team replies, within 24 hours. You can also write to our grievance officer, ${HELP_OFFICER.name}, at <a href="mailto:${HELP_OFFICER.email}">${HELP_OFFICER.email}</a>.`,
-    acts: () => [["Raise a grievance", "grievance"]] },
+  { id: "notify", t: "Notifications", cat: "bug", k: "notification!, notify$?, alert$?, reminder!, ping$!, push!, mute$!, how do i know!, how will i know!, will i know!, will i be told!",
+    say: () => `We tell you about new requests and answers, messages, tribe matches, new homes that fit you, Flatsplits expenses and replies to your tickets. Turn them on so you don't miss an owner's yes. To stop them, switch off notifications for FindMeFlatMate in your phone's settings.`,
+    acts: () => [["Turn on notifications", "notify"]] },
+  { id: "refer", t: "Inviting friends", k: "refer!, referral!, referrals!, invite friends!, invite a friend!, invite my friend!, share link!, share my link!, my link!, my code!, referral code!, earn!, inviting!, more contacts!, get contacts!, get free contacts!, free contact?",
+    say: () => `Account → <b>Invite friends, earn contacts</b> sends your link on WhatsApp. Every 2 friends who join with it and finish signing up earn you 1 free contact, up to 5.`,
+    acts: () => state.user ? [["Invite friends", "invite"]] : [] },
+  { id: "app", t: "The Android app", cat: "bug", k: "android app!, apk!, play store!, playstore!, google play!, install!, installing!, download!, iphone!, ios!, app store!, update the app!, update app!, app update!, new version!, latest version!, update$?, app$?",
+    say: () => hbInApp() ? `You're in the Android app. When a new version is ready, a card says so with an <b>Update</b> button: tap it, then open the downloaded file to install. Nothing of yours is lost. There's no iPhone app yet; on an iPhone the website does the same in the browser.`
+      : `The website does everything in your phone's browser. For Android, ${state.user ? "Account has <b>Get the Android app</b>" : "the app is on its way"}, and it tells you the moment an owner says yes. There's no iPhone app yet.`,
+    acts: () => [] },
+  { id: "language", t: "Languages", k: "hindi!, language!, languages!, marathi!, kannada!, tamil!, telugu!, bengali!, gujarati!, english?, bhasha!",
+    say: () => `The app is in English for now.`, acts: () => [] },
+  { id: "bug", t: "Something isn't working", cat: "bug", k: "not working!, isnt working!, doesnt work!, dont work!, not loading!, wont load!, wont open!, not opening!, stuck!, crash!, crashes!, crashing!, crashed!, freez!, hang$!, hangs!, hanging!, blank!, white screen!, error!, errors!, bug$!, bugs!, glitch!, slow!, lag!, laggy!, broken!, went wrong!, cant see!, nothing happens!, does nothing!, nothing is!, loading!, keeps loading!, not showing!, button$, not respond!",
+    say: () => `Sorry about that. Three things usually fix it: check your internet, close the app fully and open it again${hbInApp() ? ", and take the update if a “new version is ready” card shows" : ", and reload the page"}. If it's still wrong, tell me what you were doing and I'll pass it to our team.`,
+    acts: () => [["🛠 Tell the team", "fix:bug"]] },
+  { id: "report", t: "Reporting someone or something", k: "report!, reporting!, complain!, complaint!, complaints!, abuse!, abusive!, abused!, harass!, harassment!, harassing!, spam!, spamming!, misbehav!, threat!, threatening!, shikayat!, creepy!, vulgar!, inappropriate!, rude!", flow: "report" },
+  { id: "grievance", t: "Raising a grievance", k: "grievance!, raise a ticket!, raise ticket!, new ticket!, file a complaint!, write to the team!, tell the team!, contact support!, support?, help me!, need help!, madad!, problem?, issue?", flow: "grievance" },
+  { id: "tickets", t: "My tickets", k: "ticket!, tickets!, my report!, my complaint!, my grievance!, status of my!, ticket status!, fmf-!, fmf$!", flow: "tickets" },
+  { id: "bot", t: "Who am I talking to?", k: "are you a robot!, are you a bot!, are you human!, are you a human!, are you real!, are you a person!, are you ai!, are you an ai!, who are you!, what are you!, chatbot!, robot!, bot$!, your name!",
+    say: () => `I'm FindMeFlatMate's built-in helper: a small program inside the app, not a person and not an AI service. What you type here stays on your phone unless you send it to our team as a ticket. I know my way around the app, and when you need a person I pass your message to our team, who reply within 24 hours.`,
+    acts: () => [["🙋 Talk to a person", "t:human"]] },
+  { id: "human", t: "Talking to a person", k: "human!, real person!, a person!, person$?, agent!, talk to someone!, speak to someone!, speak to!, speak with!, talk with!, support team!, with support!, customer care!, customer support!, helpline!, call you!, call support!, support number!, contact number!, contact you!, contact us!, email!, mail you!, officer!, representative!, executive!",
+    say: () => `${state.user ? "Raise a grievance here and a person from our team replies within 24 hours" : "Sign in and raise a grievance here, and a person from our team replies within 24 hours"}. There's no phone line. You can also write to ${hbTeam()}.`,
+    acts: () => [["📝 Raise a grievance", "grievance"]] },
 ];
 let hb = { log: [], flow: null, open: false };
-const HB_HOME = () => (state.user ? [["🔎 Find a room", "t:find"], ["👯 How tribes work", "t:tribe"], ["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["📋 My tickets", "tickets"]]
-    : [["🔎 How it works", "t:about"], ["🏠 List my room", "t:post"], ["⚠️ Report a problem", "report"], ["🔒 Privacy", "t:privacy"]]);
+const HB_HOME = () => !state.user ? [["🔎 How it works", "t:about"], ["🏠 List my room", "t:post"], ["🔑 Signing in", "t:login"], ["⚠️ Report a problem", "report"], ["🔒 Privacy", "t:privacy"]]
+  : (isOwner() ? [["🚪 Find people for my room", "t:escape"], ["✏️ Change my listing", "t:edit"], ["💬 Messages", "t:messages"]]
+    : isSplits() ? [["🧾 Flatsplits", "t:splits"], ["🛒 FlatMart", "t:market"], ["🔎 Find a room", "t:find"]]
+    : [["🔎 Find a room", "t:find"], ["👯 How tribes work", "t:tribe"], ["💬 Messages", "t:messages"]])
+    .concat([["⚠️ Report a problem", "report"], ["📝 Raise a grievance", "grievance"], ["📋 My tickets", "tickets"]]);
 function hbSay(html, chips){ hb.log.push({ who: "bot", html, chips: chips || [] }); drawHelp(); }
 function hbMine(text){ hb.log.push({ who: "usr", html: esc(text) }); }
 function drawHelp(){
@@ -11909,37 +12232,109 @@ function drawHelp(){
 }
 const HB_ICON = `<svg class="hf" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path class="hf-bubble" d="M12 2.5c-5.4 0-9.5 3.6-9.5 8.1 0 2.3 1.1 4.4 3 5.8L4.6 21.5l5-2.3c.8.2 1.6.3 2.4.3 5.4 0 9.5-3.6 9.5-8.1S17.4 2.5 12 2.5z"/><circle class="hf-eye" cx="9.2" cy="10.2" r="1.25"/><circle class="hf-eye" cx="14.8" cy="10.2" r="1.25"/><path class="hf-mouth" d="M8.9 13.3c.8 1.1 1.9 1.7 3.1 1.7s2.3-.6 3.1-1.7"/></svg>`;
 function openHelp(start){
-  if(!hb.log.length) hbSay(`Hi${firstName() ? " " + esc(firstName()) : ""}! 👋 I can show you around FindMeFlatMate, answer questions, or take a complaint or report to our team. What would you like to do?`, HB_HOME());
+  if(!hb.log.length) hbSay(`Hi${hbHi()}! 👋 Ask me anything about FindMeFlatMate, in your own words. I can also show you around, or take a complaint or report to our team.`, HB_HOME());
   if(!$("dlgHelp").open) $("dlgHelp").showModal();
   drawHelp();
   if(start) hbAct(start);
   setTimeout(() => $("hbIn").focus(), 80);
 }
-// The best topic for what someone typed: most matching words (longer words count more).
-function hbTopic(text){
-  const t = " " + text.toLowerCase().replace(/[^a-z0-9%\- ]+/g, " ").replace(/\s+/g, " ") + " ";
-  let best = null, top = 0;
-  for(const x of HB_TOPICS){
-    let n = x.words.reduce((a, w) => a + (t.includes(" " + w) ? (w.length > 4 ? 2 : 1) : 0), 0);
-    if(n && x.flow) n += 1;   // "report a broker" files a report rather than explaining brokers
-    if(n > top){ top = n; best = x; }
-  }
-  return best;
+// What someone typed, made plain: small letters, no punctuation, and the many ways of writing the same thing as one.
+const HB_SAME = [[/\b(?:sign|log|logg) ?(?:in|ing in|ed in)\b|\bsignin\b|\blogin\b/g, "login"], [/\bo ?t ?p\b|\bone time (?:code|password|pin)\b|\bsms code\b|\bwhatsapp code\b|\blogin code\b/g, "otp"],
+  [/\b(?:can ?not|cant|couldnt|could not|unable to|not able to|am not able to|im not able to)\b/g, "cant"],
+  [/\b(?:did|does|do|is|are|was|were|has|have|had|will|would) ?(?:nt|not)\b|\bdont\b|\bwont\b|\bnever\b|\b(?:nahi|nhi|nai)\b/g, "not"],
+  [/\b(?:msgs?|mesages?|messeges?|massages?)\b/g, "message"], [/\b(?:room ?mates?|roomies?|flat mates?|flatmates)\b/g, "flatmate"], [/\b(?:pic|pics|photos|photo|picture|pictures|image|images)\b/g, m => /^pic/.test(m) ? "picture" : m.replace(/s$/, "")],
+  [/\bwhats ?app\b|\bwatsapp\b/g, "whatsapp"], [/\be ?mail\b/g, "email"], [/\bacc(?:oun)?t\b/g, "account"]];
+function hbPlain(text){
+  let t = " " + String(text || "").toLowerCase().replace(/[’'`]/g, "").replace(/%/g, " % ").replace(/[^a-z0-9% ]+/g, " ").replace(/\s+/g, " ").trim() + " ";
+  for(const [re, to] of HB_SAME) t = t.replace(re, to);
+  return t.replace(/\s+/g, " ");
 }
-function hbAnswer(x){
+// A topic's words, ready to look for: made plain the same way as what's typed, each with its points. A word that
+// only repeats a shorter one of the same topic ("blocked" next to "block") is dropped, so it isn't counted twice.
+const hbKeys = x => { if(x.keys) return x.keys;
+  const all = x.k.split(",").map(s => s.trim()).filter(Boolean).map(s => {
+    const w = s.endsWith("!") ? 3 : s.endsWith("?") ? 1 : 2; s = s.replace(/[!?]$/, "");
+    const whole = s.endsWith("$"), p = hbPlain(s.replace(/\$$/, ""));
+    return { p: whole ? p : p.slice(0, -1), w, whole }; });
+  return x.keys = all.filter((k, i) => !all.some((o, j) => j !== i && (o.p === k.p ? j < i : !o.whole && !o.p.trim().includes(" ") && !k.p.trim().includes(" ") && k.p.startsWith(o.p)))); };
+const HB_TROUBLE = / (?:cant|not work|not load|not open|not show|not com|not get|not got|not receiv|not sen|not go|not active|not start|error|failed|failing|fails|stuck|crash|problem|issue|bug|broken)/;
+// One letter wrong, missing, extra or swapped ("notifcation", "pasword", "tirbe"): still the same word.
+function hbNear(a, b){
+  if(a === b) return true; const la = a.length, lb = b.length; if(Math.abs(la - lb) > 1) return false;
+  let i = 0; while(i < la && i < lb && a[i] === b[i]) i++;
+  if(la === lb) return a.slice(i + 1) === b.slice(i + 1) || (a[i] === b[i + 1] && a[i + 1] === b[i] && a.slice(i + 2) === b.slice(i + 2));
+  return la > lb ? a.slice(i + 1) === b.slice(i) : a.slice(i) === b.slice(i + 1);
+}
+// The topics that fit what was typed, best first, each with its points. loose: when nothing fitted, long single
+// words are also matched one letter off.
+function hbRank(text, loose){
+  const t = hbPlain(text), who = isOwner() ? "owner" : "seeker", words = loose ? t.trim().split(" ").filter(w => w.length >= 5) : [];
+  // (only words of 7 letters or more, with the right first letter: "change" must never become "charge")
+  const off = (w, k) => w[0] === k[0] && (hbNear(w, k) || [k.length - 1, k.length, k.length + 1].some(n => n < w.length && hbNear(w.slice(0, n), k)));
+  const has = k => t.includes(k.p) || (loose && k.w >= 2 && k.p.trim().length >= 7 && !k.p.trim().includes(" ") && words.some(w => off(w, k.p.trim())));
+  return HB_TOPICS.map(x => { let n = 0, len = 0; for(const k of hbKeys(x)) if(has(k)){ n += k.w; len = Math.max(len, k.p.length); }
+      if(n && x.role && state.user) n += x.role === who ? 1 : -1;
+      if(n && x.flow) n += 1;   // "report a broker" files a report rather than explaining brokers
+      return { x, n, len }; })
+    .filter(r => r.n > 0).sort((a, b) => b.n - a.n || b.len - a.len);   // a tie goes to the longer phrase: "leave my tribe" over "tribe"
+}
+// The answer to one topic. o.also: other topics it might have been (offered as buttons); o.trouble: they said it
+// isn't working, so "tell the team" is offered with the topic's category.
+function hbAnswer(x, o = {}){
   if(x.flow) return hbAct(x.flow);
-  hbSay(x.say(), (x.acts ? x.acts() : []).concat(x.home ? HB_HOME() : [["↩ Something else", "home"]]));
+  const chips = (x.acts ? x.acts() : []).slice();
+  if(o.trouble && x.cat && state.user && !chips.some(c => c[1].startsWith("fix:"))) chips.push(["🛠 Still stuck? Tell the team", "fix:" + x.cat]);
+  (o.also || []).forEach(y => chips.push(["Or: " + y.t, "t:" + y.id]));
+  hbSay(x.say(o), chips.concat(x.home ? HB_HOME() : [["↩ Something else", "home"]]));
+}
+// Something typed in the box, outside a ticket.
+const HB_SEARCHY = ["find", "women", "filters", "map", "cities", "sort"];   // topics a search can stand in for
+function hbReply(text){
+  if(/\bfmf-?\w+/i.test(text)) return hbAct("tickets");
+  let ranked = hbRank(text);
+  if(!ranked[0] || ranked[0].n < 2){ const near = hbRank(text, true); if(near[0] && near[0].n >= 2) ranked = near; }   // "notifcation", "pasword"
+  // "hey, how do I message the owner" is a question, not a hello
+  const top = ranked.find(r => r.n >= 2 && !r.x.home) || ranked[0], trouble = HB_TROUBLE.test(hbPlain(text));
+  // A search, said the way you'd tell a friend ("room in Pune under 15k"): offered as a search on Discover.
+  // A question with a clear topic ("is it available in Jaipur?") gets its answer instead.
+  const asks = /^ (?:is|are|do|does|can|could|will|would|which|what|whats|why|how|where|when|who|kya|kaise|kab|kaha|kahan) /.test(hbPlain(text));
+  if(hbSeeker() && (!top || top.n < 3 || (HB_SEARCHY.includes(top.x.id) && !asks))){
+    const s = parseTalk(text), p = s.patch || {};
+    if(s.found && (p.max || p.min || p.city || (p.areas && p.areas.length))){
+      if(asks || !/\b(?:near|nearby|close to|around|opposite|behind|next to|beside)\b/i.test(text)) s.place = "";   // only a place they named as one
+      hb.find = s;
+      return hbSay(`Looks like you're searching: <b>${esc(s.said.join(" · "))}${s.place ? " · near " + esc(s.place) : ""}</b>. Shall I show you these homes on Discover?`, [["🔎 Show me these homes", "find"], ["↩ Something else", "home"]]);
+    }
+  }
+  if(top && top.n >= 2){
+    const close = ranked.filter(r => r !== top && r.n >= 2 && top.n - r.n < 2 && !r.x.home && !top.x.home).slice(0, 2).map(r => r.x);
+    return hbAnswer(top.x, { also: close, trouble });
+  }
+  // One or two words and only one thing they could mean ("delete"): that one.
+  if(ranked.length === 1 && hbPlain(text).trim().split(" ").length <= 2 && !ranked[0].x.home) return hbAnswer(ranked[0].x, { trouble });
+  // Not sure: its best guesses, and a person. Never a dead end.
+  const guess = ranked.slice(0, 3).filter(r => !r.x.home && !r.x.flow).map(r => [r.x.t, "t:" + r.x.id]);
+  if(trouble) return hbSay(`I'm not sure what went wrong there. ${state.user ? "Tell me a little more, or I can pass it straight to our team." : "Tell me a little more: what were you trying to do?"}`,
+    guess.concat(state.user ? [["🛠 Tell the team", "fix:bug"]] : []).concat([["🙋 Talk to a person", "t:human"], ["↩ Something else", "home"]]));
+  hbSay(guess.length ? "I'm not sure I got that. Did you mean one of these?" : "I'm not sure about that one. Try saying it another way, pick one of these, or ask for a person from our team.",
+    (guess.length ? guess : HB_HOME().slice(0, 3)).concat([["🙋 Talk to a person", "t:human"], ["↩ Something else", "home"]]));
 }
 async function hbAct(a){
   if(a === "home") return hbSay("What else can I help with?", HB_HOME());
-  if(a.startsWith("t:")) return hbAnswer(HB_TOPICS.find(x => x.id === a.slice(2)));
+  if(a.startsWith("t:")){ const x = HB_TOPICS.find(y => y.id === a.slice(2)); return x ? hbAnswer(x) : hbAct("home"); }
   if(a.startsWith("go:")){ $("dlgHelp").close(); return go(a.slice(3)); }
   if(a === "near"){ $("dlgHelp").close(); go("discover"); return setTimeout(() => { $("dsQ").focus(); $("dsQ").scrollIntoView({ block: "center" }); }, 400); }
+  if(a === "find"){ const q = hb.find; hb.find = null; $("dlgHelp").close(); go("discover"); return setTimeout(() => { if(q) talkSearch("", q); }, 450); }
+  if(a === "passes"){ $("dlgHelp").close(); return openPay(null); }
+  if(a === "blocked"){ $("dlgHelp").close(); return openBlocked(); }
+  if(a === "avatar"){ $("dlgHelp").close(); return openAvatarMaker("account"); }
+  if(a === "invite"){ $("dlgHelp").close(); go("account"); return setTimeout(() => { const r = $("accInvite"); if(r){ r.scrollIntoView({ block: "center" }); r.focus(); } }, 450); }
   if(a === "vibe"){ $("dlgHelp").close(); return state.vibe && answered(state.vibe) ? openVibeCard(state.vibe) : openQuiz(); }
   if(a === "party"){ $("dlgHelp").close(); go("splits"); return setTimeout(() => openNewEvent("party", false), 500); }
-  if(a === "notify"){ const okN = await Notify.ask(); return hbSay(okN ? "Done: notifications are on. ✓" : "Your phone blocked them. You can allow notifications for the app in your phone's settings.", HB_HOME()); }
+  if(a === "notify"){ const okN = await Notify.ask(); return hbSay(okN ? "Done: notifications are on. ✓" : "Your phone blocked them. You can allow notifications for FindMeFlatMate in your phone's settings.", HB_HOME()); }
   if(a === "privacy"){ window.open("privacy.html", "_blank", "noopener"); return; }
   if(a === "report" || a === "grievance") return hbStartTicket(a);
+  if(a.startsWith("fix:")) return hbStartTicket("grievance", a.slice(4));
   if(a === "tickets") return hbTickets();
   if(a.startsWith("cat:")) return hbPickCat(a.slice(4));
   if(a.startsWith("about:")) return hbPickAbout(Number(a.slice(6)));
@@ -11948,15 +12343,18 @@ async function hbAct(a){
   if(a === "cancel"){ hb.flow = null; return hbSay("No problem, I've dropped it. Anything else?", HB_HOME()); }
 }
 // ---- grievances and reports
-function hbStartTicket(kind){
-  if(!state.user) return hbSay(`Please sign in first, so our team can reply to you. It takes a minute with your mobile number.`, [["Sign in", "go:discover"], ["↩ Something else", "home"]]);
+function hbStartTicket(kind, cat){
+  if(!state.user) return hbSay(`Please sign in first, so our team can reply to you. It takes a minute with your mobile number. You can also write to ${hbTeam()}.`, [["Sign in", "go:discover"], ["↩ Something else", "home"]]);
   hb.flow = { kind, step: "cat" };
-  hbSay(kind === "report" ? "Sorry something went wrong. What would you like to report?" : "I'll pass this to our team. What's it about?",
+  if(cat && TICKET_CATS[kind].some(c => c[0] === cat)) return hbPickCat(cat, true);
+  hbSay(kind === "report" ? "Sorry that happened. What would you like to report?" : "I'll pass this to our team. What's it about?",
     TICKET_CATS[kind].map(([k, t]) => [t, "cat:" + k]).concat([["Cancel", "cancel"]]));
 }
-async function hbPickCat(cat){
+// quiet: the category came from the topic they were on ("Tell the team" under the answer about payments), not from
+// a tap on the list, so it isn't written as something they said.
+async function hbPickCat(cat, quiet){
   const f = hb.flow; if(!f) return;
-  f.cat = cat; hbMine(catLabel(f.kind, cat));
+  f.cat = cat; if(!quiet) hbMine(catLabel(f.kind, cat));
   if(f.kind === "report" && cat !== "other"){
     // Who or what it's about: homes and people you've been in touch with, newest first.
     const opts = [];
@@ -11973,8 +12371,8 @@ async function hbPickCat(cat){
     return hbSay("Who or what is it about?", f.opts.map((o, i) => [o[0], "about:" + i]).concat([["It's not listed here", "about:-1"], ["Cancel", "cancel"]]));
   }
   f.step = "text";
-  hbSay(f.kind === "report" ? "Tell us what happened: who, when, and anything they asked for. Please don't share passwords or OTPs."
-    : "Tell us what happened. Include anything that helps us find it (a payment reference, the screen, the time).", [["Cancel", "cancel"]]);
+  hbSay((quiet ? `I'll pass this to our team under “${esc(catLabel(f.kind, cat))}”. ` : "") + (f.kind === "report" ? "Tell us what happened: who, when, and anything they asked for. Please don't share passwords or OTPs."
+    : "Tell us what happened. Include anything that helps us find it (a payment reference, the screen, the time). Please don't share passwords or OTPs."), [["Cancel", "cancel"]]);
 }
 function hbPickAbout(i){
   const f = hb.flow; if(!f) return;
@@ -12041,9 +12439,7 @@ $("hbForm").addEventListener("submit", e => {
   $("hbIn").value = ""; hbMine(text);
   if(hb.flow && hb.flow.step === "text") return hbText(text);
   if(hb.flow && hb.flow.step !== "confirm"){ hb.flow = null; }
-  const x = /\bfmf-\w+/i.test(text) ? HB_TOPICS.find(t => t.id === "tickets") : hbTopic(text);
-  if(x) return hbAnswer(x);
-  hbSay("I'm not sure about that one. Try one of these, or raise a grievance and a person from our team will reply.", HB_HOME().concat([["🙋 Talk to a person", "t:human"]]));
+  hbReply(text);
 });
 // Ticket updates from the team: a badge on the help button and a notification.
 let ticketUnseen = 0;
@@ -12448,6 +12844,11 @@ async function renderAccount(){
   $("accAvatar").innerHTML = state.avatar && state.avatar.s ? avSvg(state.avatar, { live: true, label: "Your avatar" }) : esc((firstName()[0] || "?").toUpperCase());
   $("accAvatar").classList.toggle("has-av", !!(state.avatar && state.avatar.s));
   $("accAvEdit").textContent = state.avatar && state.avatar.s ? "Edit avatar" : "Make your avatar";
+  // Passes, by your name: what's on and for how long, or the way to the passes. (Flatsplits-only accounts have none.)
+  const first = owned[0], days = first ? Math.max(1, Math.ceil((passUntil(first) - Date.now()) / 864e5)) : 0;
+  $("accPassBtn").hidden = isSplits();
+  $("accPassBtn").innerHTML = PASS_SVG + `<span>${first ? `${PASS_NAMES[first]} · ${days} ${days === 1 ? "day" : "days"} left${owned.length > 1 ? ` +${owned.length - 1}` : ""}` : "Passes"}</span>`;
+  $("accPassBtn").setAttribute("aria-label", first ? `Your passes: ${owned.map(k => PASS_NAMES[k]).join(", ")}. Open passes` : "Open passes");
   $("accName").textContent = state.user.name || "Your account";
   const phone = "+91 " + String(state.user.phone).replace(/^(\d{5})(\d{5})$/, "$1 $2");
   $("accPhone").textContent = $("accOutSub").textContent = $("soPhone").textContent = phone;
@@ -12508,7 +12909,7 @@ $("view-account").addEventListener("click", async e => {
   try{
     if(b.dataset.action === "signout") return $("dlgSignOut").showModal();
     if(b.dataset.action === "delete"){ $("delType").value = ""; $("delYes").disabled = true; $("dlgDelete").showModal(); return $("delType").focus(); }
-    if(b.id === "accPlans" || b.dataset.moreTime !== undefined) return openPay(null);
+    if(b.id === "accPlans" || b.id === "accPassBtn" || b.dataset.moreTime !== undefined) return openPay(null);
     if(b.id === "accSwitch"){ if(isSplits()) return go("discover"); await api.setRole(isOwner() ? "seeker" : "owner"); location.hash = ""; return route(); }
     if(b.dataset.open) return openListing(b.dataset.open);
     if(b.dataset.cancel){ await api.setVisitStatus(b.dataset.cancel, "cancelled"); return renderAccount(); }
@@ -12537,7 +12938,7 @@ $("accInvite").addEventListener("click", e => {
 });
 $("soYes").addEventListener("click", async () => {
   try{
-    await api.signOut(); unseen = 0; $("dlgSignOut").close();
+    await api.signOut(); unseen = 0; msgUnseen = 0; msgForget(); $("dlgSignOut").close();
     location.hash = ""; await route();
     toast("You're signed out. See you soon!");
   }catch(err){ toast(err.message || "Couldn't sign out. Try again."); }
@@ -13276,7 +13677,7 @@ $("vibePromo").addEventListener("click", e => { if(e.target.closest("[data-vp-hi
    pack the rest, without missing anything"). Which text: the paragraph in each section's big panel, page intros,
    tips, notices and settings notes. Headlines, prices, buttons, warnings and anything you must read stay whole. */
 const PACK = [
-  [".fs-hero p, .mk-hero p, .plans-hero > p, .esc-hero p, .tribe-hero .lede, .pt-hero p", 2],
+  [".fs-hero p, .mk-hero p, .esc-hero p, .tribe-hero .lede, .pt-hero p", 2],
   [".page-h > p", 2], [".notice.notif-ask p", 1], [".pp-card small", 1], [".near-promo small", 1],
   ["#view-account p.sub, #view-account p.hint, #view-account small.hint", 1],
   ["#view-tribe p.hint, .ps-lead, .empty p, #view-post .field .hint", 2],
