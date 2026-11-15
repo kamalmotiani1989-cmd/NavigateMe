@@ -675,6 +675,9 @@ and the sun, moon or stars moving a little.
   (BHK, furnishing), the people, and the trust line under a thin rule.
 - **Notifications:** the ask says what you'll get (new matches and invites, messages, safety and account updates),
   with "Not now", which hides it for a week.
+- **Filters:** each section sits on its own card with a small label. The rent has a two-thumb slider (₹0 to ₹1L+)
+  that stays in step with the Min and Max boxes and the price bands, and the "Show N homes" button is pinned at the
+  bottom. The filters themselves are the same as before.
 - **Not doing:** no photo is required anywhere, and no question about religion.
 
 Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it replaces the navy-and-green look of
