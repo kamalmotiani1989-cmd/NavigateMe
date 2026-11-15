@@ -2271,6 +2271,15 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .msg-warn b{display:inline; font-size:inherit}
 .msg-warn{margin:6px 0 2px; padding:8px 10px; border-radius:12px; background:var(--amber-92); color:var(--text); font-size:var(--fs-xs); line-height:1.4}
 .scam-flag{margin:10px 0; padding:12px 14px; border-radius:14px; background:var(--amber-92); color:var(--text); font-size:var(--fs-s); line-height:1.45}
+/* the Move-in kit */
+.kit-dlg .mbody{background:var(--bg)}
+.kit-card{background:var(--surface); border-radius:20px; padding:14px 16px 16px; margin:0 0 12px; box-shadow:0 2px 10px rgba(60,40,30,.05)}
+.kit-card .section-h{margin-top:0; display:flex; justify-content:space-between; align-items:center}
+.kit-count{font-size:var(--fs-xs); color:var(--text-2); letter-spacing:0; text-transform:none}
+.kit-prev summary{cursor:pointer; font-weight:700; margin:6px 0} .kit-prev pre{white-space:pre-wrap; font:inherit; font-size:var(--fs-s); background:var(--surface-2); padding:12px; border-radius:12px; margin:6px 0 0}
+.kit-acts{display:flex; gap:10px; margin-top:12px} .kit-note{margin-top:8px}
+.kit-check{display:grid; gap:2px} .kit-item{display:flex; gap:10px; align-items:flex-start; padding:8px 0; box-shadow:0 1px 0 var(--hair)} .kit-item:last-child{box-shadow:none}
+.kit-item input{width:20px; height:20px; flex:none; margin-top:1px; accent-color:var(--ink)} .kit-item:has(input:checked) span{text-decoration:line-through; color:var(--text-2)}
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -3005,6 +3014,8 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 <dialog id="dlgShare" aria-labelledby="shTitle"><div class="mhead"><div><h2 id="shTitle">Share this home</h2><div class="loc" id="shSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
   <div class="mbody" id="shBody" style="text-align:center"></div></dialog>
 
+<dialog id="dlgKit" class="kit-dlg" aria-labelledby="kitTitle"><div class="mhead"><div><h2 id="kitTitle">Move-in kit</h2><div class="loc" id="kitSub"></div></div><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="mbody" id="kitBody"></div></dialog>
 <dialog id="dlgStory" class="story-dlg" aria-label="How FindMeFlatMate works"><div class="st-top"><div class="st-dots" id="stDots"></div><button class="linkbtn st-skip" type="button" id="stSkip">Skip</button></div>
   <div class="st-stage" id="stStage"></div>
   <div class="st-acts"><button class="btn btn-primary btn-block" type="button" id="stNext" autofocus>Next</button></div></dialog>
@@ -6169,7 +6180,7 @@ async function renderTribe(){
       <h2>You${bonded.map(t => " + " + esc(t.name)).join("")}</h2>
       <p>${budget ? `Together you can spend up to <b>${inr(budget)}</b> a month. ` : ""}Hunt for a whole flat and split it ${size} ways.</p>
       ${bonded.map(t => `<div class="bond-row"><span><b>${esc(t.name)}</b> · ${esc(occLine(t.occupation))}<small>Bonded ${timeAgo(t.bonded_at)} · ${t.match_pct}% vibe</small></span>
-        <span class="acts">${msgBtn("tribe", t.id, "Message")}${safeBtn("tribe", t.id, t.name)}${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
+        <span class="acts">${msgBtn("tribe", t.id, "Message")}${kitBtn("tribe", t.id)}${safeBtn("tribe", t.id, t.name)}${!t.phone ? `${SAMPLE_TAG}<small style="margin:0">A sample person, so no number to call</small>` : `<a class="btn btn-accent btn-sm" href="tel:${esc(t.phone)}">Call · ${esc(t.phone)}</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMeFlatMate. Let's find our flat!`)}">WhatsApp</a>`}</span></div>`).join("")}
       <button class="tribe-leave-btn" type="button" data-tleave>Leave tribe</button>
     </div>` : "";
@@ -8061,7 +8072,7 @@ function incomingHtml(r, l){
       <div class="acts">${safeBtn("request", r.id, first)}${compatOf(hh, v) ? `<button class="btn btn-ghost btn-sm" data-compat="${esc(r.id)}">Compatibility analysis</button>` : ""}
         ${r.status === "pending" && r.by !== "owner" ? `<button class="btn btn-primary btn-sm" data-accept="${esc(r.id)}">Accept and share numbers</button>
           <button class="btn btn-ghost btn-sm" data-decline="${esc(r.id)}">Not this time</button>`
-        : r.status === "approved" && r.phone ? `${msgBtn("room", r.id, "Message")}<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
+        : r.status === "approved" && r.phone ? `${msgBtn("room", r.id, "Message")}${kitBtn("room", r.id)}<a class="btn btn-primary btn-sm" href="tel:${esc(r.phone)}">Call ${esc((r.name || "").split(" ")[0])} · ${esc(r.phone)}</a>
           <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc(r.phone.replace(/^\+/, ""))}">WhatsApp</a>` : ""}</div>
     </div></article>`;
 }
@@ -8091,7 +8102,7 @@ function outgoingHtml(r){
         ? `Declined.${CHARGES_ON ? " No contact used." : ""} <button class="btn btn-accent btn-sm" style="margin-top:8px" data-cm="${esc(r.id)}" data-cml="${esc(r.listing_id)}">🤝 Compromise and ask again</button>`
         : r.status === "declined"
         ? "They went with someone else." + (CHARGES_ON ? " No contact used." : "") : "Sent " + timeAgo(r.created_at) + ". We'll notify you when they reply."}</div>
-      ${r.status === "approved" ? `<div class="acts">${msgBtn("room", r.id, "Message " + (r.name || "the owner"))}</div>` : ""}</div></article>`;
+      ${r.status === "approved" ? `<div class="acts">${msgBtn("room", r.id, "Message " + (r.name || "the owner"))}${kitBtn("room", r.id)}</div>` : ""}</div></article>`;
 }
 $("reqList").addEventListener("click", async e => {
   const cmb = e.target.closest("[data-cm]");
@@ -8119,6 +8130,111 @@ $("reqList").addEventListener("click", async e => {
 // accepted FlatMart offer, a Flatsplits group. Never before the yes (fm_thread_open). Messages are under the chat
 // icon in the top bar; a push goes to the others when the app is closed (fm-notify).
 const MSG_KIND_LABEL = { room:"Room", tribe:"Tribe", market:"FlatMart", split:"Flatsplits" };
+/* ===================================================== the after-match kit */
+// (Kamal, 15 Nov, from the competitive teardown: "every competitor ends at the match or the chat".) Once both have
+// said yes, a room request or a tribe gets a Move-in kit: a simple flatmate agreement filled in from the home and the
+// answers (editable, shared on WhatsApp or saved as a file), a move-in checklist, and Flatsplits for rent and bills.
+// It all stays on this phone (state.kits). The agreement is between flatmates; it is not a rental agreement with the owner.
+const kitBtn = (kind, ref) => ref ? `<button class="btn btn-ghost btn-sm" type="button" data-kit="${kind}:${esc(ref)}">🔑 Move-in kit</button>` : "";
+const KIT_RULES = {
+  smoke:  ["No smoking anywhere in the flat", "Smoking outside or on the balcony only", "Smoking indoors is fine"],
+  guests: ["Guests rarely; overnight guests only after asking", "Guests welcome with a heads-up", "Guests welcome; overnight stays with a heads-up"],
+  clean:  ["Dishes done the same day and common areas kept clear", "Common areas tidied every week, on a rota", "A shared cleaning rota for the common areas"],
+  food:   ["A vegetarian-only kitchen", "A vegetarian kitchen; eggs are fine", ""],
+  pets:   ["No pets", "Pets only if everyone agrees first", "A pet lives here; everyone is fine with that"],
+  noise:  ["Quiet hours from 10 pm", "Quiet hours from 11 pm", "Quiet hours from midnight"],
+  sharing:["Groceries and household items split equally, on a shared list", "Basics shared (milk, cleaning supplies); the rest kept separate", "Groceries kept separate"]
+};
+const KIT_CHECK = ["Visit the flat together, in daylight", "Meet everyone who lives there", "See the owner's ID and the rental agreement",
+  "Agree the deposit, and get a receipt for anything you pay", "Take photos of your room on move-in day", "Note the meter readings (electricity, gas, water)",
+  "Get keys for everyone", "Set up Flatsplits for rent and bills", "Share emergency contacts", "Agree a cleaning rota"];
+let kitKey = "", kitCtx = null;
+async function openKit(kind, ref){
+  let ctx = { kind, ref, other: "", home: "", rent: 0, deposit: 0, hh: null };
+  try{
+    if(kind === "room"){
+      const r = (await api.inbox()).find(x => x.id === ref) || {};
+      const l = r.listing_id ? await api.get(r.listing_id).catch(() => null) : null;
+      Object.assign(ctx, { other: (r.name || "").split(" ")[0], home: l ? `${l.title}, ${l.locality}, ${l.city}` : r.listing_title || "", rent: l ? l.rent : 0, deposit: l ? l.deposit : 0,
+        hh: l ? l.household : null, move: l && l.available_from });
+    }else{
+      const t = (state.tribe || []).find(x => x.id === ref) || ((await api.tribeList().catch(() => [])) || []).find(x => x.id === ref) || {};
+      Object.assign(ctx, { other: (t.name || "").split(" ")[0], hh: t.vibe || null });
+    }
+  }catch(err){ console.error(err); }
+  kitKey = kind + ":" + ref; kitCtx = ctx;
+  state.kits = state.kits || {};
+  const k = state.kits[kitKey] = state.kits[kitKey] || {};
+  if(!k.form){
+    const v = Object.assign({}, state.vibe || {}), h = ctx.hh || {};
+    const rules = Object.keys(KIT_RULES).map(key => { const a = Number.isInteger(h[key]) ? h[key] : v[key]; return Number.isInteger(a) ? KIT_RULES[key][a] : ""; }).filter(Boolean);
+    const shareOf = n => n && Number(h.residents) > 0 ? Math.round(n) : n || 0;
+    k.form = { rent: shareOf(ctx.rent) || "", deposit: shareOf(ctx.deposit) || "", due: 5, notice: "1 month", bills: "equally", move: ctx.move || "", rules: rules.join("\n"),
+      names: [firstName() || "Me", ctx.other || "Flatmate"].join(", ") };
+    save();
+  }
+  renderKit();
+  if(!$("dlgKit").open) $("dlgKit").showModal();
+}
+function kitText(f){
+  const lines = ["FLATMATE AGREEMENT", "", kitCtx.home ? `Home: ${kitCtx.home}` : "", `Between: ${f.names}`, f.move ? `Move-in date: ${fmtDate(f.move)}` : "",
+    f.rent ? `Rent: ${inr(Number(f.rent))} a month each, paid by the ${f.due}${["th", "st", "nd", "rd"][(f.due % 10 < 4 && Math.floor(f.due / 10) !== 1) ? f.due % 10 : 0]} of every month.` : "Rent: shared as agreed with the owner, paid on time every month.",
+    f.deposit ? `Deposit: ${inr(Number(f.deposit))} each, returned at move-out (less any damage everyone agrees on) within 30 days.` : "",
+    `Bills (electricity, Wi-Fi, gas, cleaning): split ${f.bills}, tracked in Flatsplits.`,
+    `Moving out: ${f.notice}'s notice to the others, or a replacement everyone agrees on.`, "", "House rules:",
+    ...String(f.rules || "").split("\n").map(x => x.trim()).filter(Boolean).map(x => "• " + x), "",
+    "If we disagree, we talk first. If it can't be settled, anyone can give notice as above.", "",
+    ...String(f.names).split(",").map(n => `Signed: ________________ (${n.trim()})   Date: ________`), "",
+    "A simple understanding between flatmates, made with FindMeFlatMate. It is not a rental agreement with the owner."];
+  return lines.filter((x, i, a) => x !== "" || a[i - 1] !== "").join("\n").replace(/^\n+/, "");
+}
+function renderKit(){
+  const k = state.kits[kitKey], f = k.form, done = k.done || [];
+  $("kitSub").textContent = kitCtx.other ? `For you and ${kitCtx.other}` : "For you and your flatmates";
+  $("kitBody").innerHTML = `
+    <section class="kit-card"><h3 class="section-h">1 · Flatmate agreement</h3>
+      <p class="hint">Filled in from the home and your answers. Change anything, then share it.</p>
+      <form id="kitForm" novalidate>
+        <div class="field"><label for="kNames">Flatmates (names, with commas)</label><input id="kNames" name="names" type="text" value="${esc(f.names)}"></div>
+        <div class="grid2"><div class="field"><label for="kRent">Rent each (₹ a month)</label><input id="kRent" name="rent" type="number" inputmode="numeric" min="0" value="${esc(String(f.rent))}"></div>
+          <div class="field"><label for="kDep">Deposit each (₹)</label><input id="kDep" name="deposit" type="number" inputmode="numeric" min="0" value="${esc(String(f.deposit))}"></div></div>
+        <div class="grid2"><div class="field"><label for="kDue">Rent due by (day of month)</label><input id="kDue" name="due" type="number" min="1" max="28" value="${esc(String(f.due))}"></div>
+          <div class="field"><label for="kMove">Move-in date</label><input id="kMove" name="move" type="date" value="${esc(f.move || "")}"></div></div>
+        <div class="grid2"><div class="field"><label for="kBills">Bills split</label><select id="kBills" name="bills">${["equally", "by room size", "as we agree each month"].map(x => `<option${x === f.bills ? " selected" : ""}>${x}</option>`).join("")}</select></div>
+          <div class="field"><label for="kNotice">Notice to move out</label><select id="kNotice" name="notice">${["2 weeks", "1 month", "2 months"].map(x => `<option${x === f.notice ? " selected" : ""}>${x}</option>`).join("")}</select></div></div>
+        <div class="field"><label for="kRules">House rules (one a line)</label><textarea id="kRules" name="rules" rows="6">${esc(f.rules)}</textarea></div>
+      </form>
+      <details class="kit-prev"><summary>See the agreement</summary><pre id="kitPrev">${esc(kitText(f))}</pre></details>
+      <div class="kit-acts"><button class="btn btn-primary btn-sm" type="button" data-kit-act="share">Share the agreement</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-kit-act="copy">Copy</button></div>
+      <p class="hint kit-note">A simple understanding between flatmates. It isn't a rental agreement with the owner.</p></section>
+    <section class="kit-card"><h3 class="section-h">2 · Move-in checklist <span class="kit-count">${done.length} of ${KIT_CHECK.length}</span></h3>
+      <div class="kit-check">${KIT_CHECK.map((t, i) => `<label class="kit-item"><input type="checkbox" data-kit-i="${i}"${done.includes(i) ? " checked" : ""}><span>${esc(t)}</span></label>`).join("")}</div></section>
+    <section class="kit-card"><h3 class="section-h">3 · Rent and bills</h3>
+      <p class="hint">Add everyone to a Flatsplits group: rent, electricity and Wi-Fi, split and settled each month.</p>
+      <button class="btn btn-ghost btn-sm" type="button" data-kit-act="splits">Open Flatsplits</button></section>`;
+}
+$("kitBody").addEventListener("input", e => {
+  const f = e.target.closest("#kitForm"); if(!f) return;
+  const k = state.kits[kitKey]; k.form[e.target.name] = e.target.value; save();
+  $("kitPrev").textContent = kitText(k.form);
+});
+$("kitBody").addEventListener("change", e => {
+  if(e.target.closest("#kitForm")){ const k = state.kits[kitKey]; k.form[e.target.name] = e.target.value; save(); $("kitPrev").textContent = kitText(k.form); return; }
+  const i = e.target.dataset.kitI; if(i == null) return;
+  const k = state.kits[kitKey], done = new Set(k.done || []); e.target.checked ? done.add(Number(i)) : done.delete(Number(i)); k.done = [...done].sort((a, b) => a - b); save();
+  document.querySelector("#kitBody .kit-count").textContent = `${k.done.length} of ${KIT_CHECK.length}`;
+});
+$("kitBody").addEventListener("click", async e => {
+  const b = e.target.closest("[data-kit-act]"); if(!b) return;
+  const text = kitText(state.kits[kitKey].form), a = b.dataset.kitAct;
+  if(a === "splits"){ $("dlgKit").close(); go("splits"); return; }
+  if(a === "copy"){ try{ await navigator.clipboard.writeText(text); toast("Copied. Paste it in your chat."); }catch(err){ toast("Couldn't copy. Open “See the agreement” and copy it from there."); } return; }
+  if(Notify.native()){ FlatmatesNative.postMessage(JSON.stringify({ type:"shareFile", b64: btoa(unescape(encodeURIComponent(text))), mime:"text/plain", name:"flatmate-agreement.txt", text:"Our flatmate agreement", title:"Share the agreement" })); return; }
+  if(navigator.share){ try{ await navigator.share({ title: "Flatmate agreement", text }); return; }catch(err){ if(err && err.name === "AbortError") return; } }
+  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+});
+document.addEventListener("click", e => { const b = e.target.closest("[data-kit]"); if(!b) return; const [kind, ...rest] = b.dataset.kit.split(":"); openKit(kind, rest.join(":")); });
 const msgBtn = (kind, ref, label) => ref ? `<button class="btn btn-ghost btn-sm" type="button" data-msg="${kind}:${esc(ref)}">💬 ${esc(label || "Message")}</button>` : "";
 let msgUnseen = 0, msgThread = null, msgData = null, msgPoll = null, msgBusy = false;
 async function refreshMsgUnseen(){

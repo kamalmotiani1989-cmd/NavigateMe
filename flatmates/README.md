@@ -429,6 +429,24 @@ group can't read it any more, and nobody can before the yes (`fm_thread_open` sa
   - Your own messages are never flagged, and ordinary chat ("transferred to Pune", "deposit at move-in") isn't
     either.
 
+## The Move-in kit (Kamal, 15 Nov)
+
+After a yes, the accepted room request (on both sides) and a bonded tribe get **🔑 Move-in kit** (`dlgKit`). It has
+three parts:
+1. **A flatmate agreement**, filled in from the home and the answers: names, rent and deposit each, the day rent is
+   due, the move-in date, how bills are split, notice, and house rules taken from the household's answers (smoking,
+   guests, cleaning, food, pets, quiet hours, groceries).
+   - Everything can be edited, and the agreement updates as you type.
+   - "Share the agreement" uses Android's share sheet in the app, the phone's share sheet on the web, or WhatsApp.
+     There's also Copy.
+   - It says it's a simple understanding between flatmates, not a rental agreement with the owner.
+2. **A move-in checklist** of 10 things: visit together, meet everyone, see the owner's ID and agreement, get a
+   receipt for the deposit, photos on move-in day, meter readings, keys, Flatsplits, emergency contacts, a cleaning
+   rota.
+3. **Rent and bills:** straight to Flatsplits.
+
+It all stays on the phone (`state.kits`). There's no database change.
+
 ## Report and block
 
 Kamal, 10 Nov. **Report or block** is on a chat (and **Report** on each of the other person's messages), people's
