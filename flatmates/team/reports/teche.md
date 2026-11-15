@@ -1,5 +1,29 @@
 # Teche · reports
 
+## 2026-11-15, number-last sign-up, clean UI, match reasons, scam warnings, Move-in kit (#98, #99, #100) live
+
+- **Sign-up, number last (#98; Kamal approved):** what brings you, then name, then Woman/Man, then the number and
+  18+. Each step has "x of 4", a back arrow and a line using the name. Name and gender are saved on verify, so
+  onboarding skips them. "I already have an account" goes straight to the number. Our colours are kept.
+- **Clean UI (#99, after Kamal's look at Dwelo):**
+  - search like you'd talk (sentences become filters, on the phone);
+  - a 4-screen opening story drawn with our avatars;
+  - a welcome screen after sign-up;
+  - cleaner home cards, with rent first and a row of chips;
+  - filters as cards with a two-thumb rent slider;
+  - a friendlier notifications ask, with "Not now".
+  As Kamal asked: no required photos, no religion.
+- **From Kamal's competitive teardown (#100):** "N things in common" on cards; scam warnings on messages and listings
+  that ask for money up front; a Move-in kit after a yes (an editable flatmate agreement, a 10-item checklist,
+  Flatsplits).
+- **Tests:** all 24 demo suites pass. No database change in any of these.
+- **Published:** 6cca460 (#99, which included #98); #100 publishing now.
+- **Screenshots:** [sign-up](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/42be35711526470cb4da890a9e99da56d22ec160/signup-before-after.png),
+  [clean UI](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c655911da69c29ec39ed28441790e36f42fedbaa/clean-ui.png),
+  [reasons/scam/kit](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4bd89ee19de7ae720c6786f136a122e2b329c49c/reasons-scam-kit.png).
+- **Open for Kamal (from the teardown):** the name risk (findmyflatmate.in is a live Bangalore site), city focus,
+  and the #86 privacy blanks (including a named grievance officer).
+
 ## 2026-11-13, Vibe Card pastel and trust line (#97) live
 
 - **Vibe Card (King's follow-up):** on screen and in the 1080×1920 share image it's now the rhythm's pastel panel,
@@ -116,17 +140,3 @@
   (version 7), then the merge. Published: findmeflatmate main says "Publish the app from NavigateMe 1ddaedf".
 - **Next:** block/report inside a chat before a public launch. #86 (privacy) has the matching lines and waits for
   Kamal's [TO FILL]s.
-
-## 2026-11-10, women-only homes: #85 live; privacy and security pages in #86
-
-- **Women only (#85, live):** Kamal's wife searched "Women only" and kept getting homes open to anyone. Now it shows
-  only homes listed Women only that are a whole flat, or where everyone living there is a woman. The lister counts by
-  their profile gender, and each flatmate by a new required Woman / Man in the posting form. Older listings that
-  don't say who lives there sit in their own block under the results. Mixed and "Anyone" homes never show. A
-  "Women-only home" badge appears only when the data supports it. Same for men.
-- **Live:** the database went first (md5-checked; a rolled-back check found 104 homes, 14 for women only: 6 confirmed,
-  8 not confirmed yet, none open to anyone), then the merge. The site and app are published: findmeflatmate main says
-  "Publish the app from NavigateMe fc6c8cf".
-- **Privacy (#86, not merged):** the policy is rewritten to the DPDP structure, with every claim checked against the
-  code. There's a new security.html, and the gap list is in design/dpdp-gaps.md. Kamal fills the [TO FILL]s
-  (entity, grievance officer, address, times, backups, access, city) before merging. Draft for a lawyer's review.
