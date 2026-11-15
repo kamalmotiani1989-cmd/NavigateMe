@@ -2397,6 +2397,50 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   .story-dlg, .hello-dlg{height:auto; min-height:620px; max-height:min(760px, 92dvh); border-radius:32px; background:var(--surface); box-shadow:0 30px 80px rgba(60,40,30,.18); padding:26px 28px 28px}
   .hello-dlg .hl-art span{box-shadow:0 0 0 5px var(--surface), 0 14px 30px rgba(60,40,30,.14)}
 }
+/* =====================================================================================================
+   Two layers on the home screens, and a lighter bottom bar (Kamal, 15 Nov, from another app's home screen:
+   "the double shade looks super amazing and the bottom bar looks cool"). Phones only, in our colours.
+   - Home (Discover for people looking, My flat for owners): the greeting sits on a pastel band (lavender,
+     butter) that fills the top of the screen, top bar included. The rest of the page is a sheet with round
+     corners that comes up over it. Words on the band are near-black, as in every pastel panel.
+   - Bottom bar: a frosted pill. The screen you're on is a soft pill in that screen's own pastel, with dark
+     icon and words, where it used to be a black button.
+   ===================================================================================================== */
+.home-band[data-band="lav"], .app-head[data-band="lav"]{--band:var(--lav)}
+.home-band[data-band="butter"], .app-head[data-band="butter"]{--band:var(--butter)}
+@media (max-width:720px){
+  /* edge to edge: out to the sides of the screen, the words kept in line with the page below */
+  .home-band{position:relative; overflow:hidden; margin:0 calc(50% - 50vw) -10px; padding:12px calc(50vw - 50%) 52px; color:var(--text);
+    background:radial-gradient(circle at 8% 118%, rgba(255,255,255,.26) 0 96px, transparent 97px) var(--band)}
+  .home-band + .d-controls{margin-top:10px}
+  .home-band::before{content:""; position:absolute; right:-76px; top:-96px; width:236px; height:236px; border-radius:50%; background:rgba(255,255,255,.3); pointer-events:none}
+  /* the top of the sheet: the page's own colour, rounded, drawn over the foot of the band */
+  .home-band::after{content:""; position:absolute; left:0; right:0; bottom:-1px; height:30px; border-radius:30px 30px 0 0; background:var(--bg); pointer-events:none}
+  .home-band > *{position:relative}
+  .home-band .eyebrow, .home-band p.eyebrow, .home-band p, .home-band :is(a, .linkbtn){color:var(--text)}
+  .home-band a{font-weight:700; text-decoration:underline; text-underline-offset:3px}
+  .home-band h1{color:var(--ink)}
+  .home-band .gift-pill{background:#fff; color:var(--text)}
+  /* the top bar is part of the band while the band is under it (bandSync), then goes back to the page's colour */
+  .app-head.on-band, .app-head.on-band.scrolled{background:var(--band); box-shadow:none}
+
+  .nav{left:16px; right:16px; bottom:calc(12px + env(safe-area-inset-bottom,0px)); padding:6px; gap:2px; border-radius:999px;
+    background:rgba(255,255,255,.82); -webkit-backdrop-filter:saturate(1.6) blur(14px); backdrop-filter:saturate(1.6) blur(14px);   /* .82: the words stay readable even over a dark photo */
+    box-shadow:0 18px 44px rgba(60,40,30,.2), inset 0 0 0 1px rgba(255,255,255,.8)}
+  .tab{padding:8px 2px 7px; border-radius:999px; color:var(--text-2); transition:background .2s, color .2s}
+  .tab svg{width:22px; height:22px}
+  .tab[aria-current="true"]{background:var(--lav); color:var(--text)}
+  .tab[aria-current="true"]:is([data-view="mine"], [data-view="post"], [data-view="market"]){background:var(--butter)}
+  .tab[aria-current="true"]:is([data-view="escape"], [data-view="tribe"]){background:var(--mint)}
+  .tab[aria-current="true"]:is([data-view="saved"], [data-view="plans"]){background:var(--blush)}
+  /* the "Invite several" bar on Escape rests just above the bottom bar (on short phones it sat a little under it),
+     and the help button steps up out of its way while it shows */
+  .esc-bar{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  body:has(#escBar:not([hidden])) .help-fab{bottom:calc(152px + env(safe-area-inset-bottom,0px))}
+}
+/* the smallest phones (320 wide): the round buttons in the top bar keep their shape, and Tribe is its icon alone */
+.app-head .me, .hd-ic{flex:none}
+@media (max-width:350px){ .hd-tribe{width:44px; padding:0; justify-content:center} .hd-tribe span{display:none} }
 .ghome{display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:var(--fs-xs); font-weight:700; padding:2px 10px; border-radius:999px; background:var(--surface-2); color:var(--text)}
 .ghome::before{content:"✓"; color:var(--ok)}
 .unconf{margin-top:28px} .unconf .hint{margin:0 0 12px}
@@ -2886,7 +2930,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   <!-- seeker: discover -->
   <section id="view-discover" hidden>
     <div id="roomLock" hidden></div>
-    <div class="greet"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
+    <div class="greet home-band" data-band="lav"><p class="eyebrow" id="greetTime"></p><h1 id="greetName"></h1><p id="greetSub"></p><div id="giftPill"></div></div>
     <div class="d-controls">
       <div class="d-search ps-anchor" role="search">
         <label class="ds-city"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><select id="fCity" aria-label="City"></select></label>
@@ -2962,7 +3006,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- owner: my listings -->
   <section id="view-mine" hidden>
-    <div class="greet"><p class="eyebrow" id="mineTime"></p><h1 id="mineName"></h1><p id="mineSub"></p></div>
+    <div class="greet home-band" data-band="butter"><p class="eyebrow" id="mineTime"></p><h1 id="mineName"></h1><p id="mineSub"></p></div>
     <div id="passNudgeM"></div>
     <div id="extrasM"></div>
     <div id="mineList"></div>
@@ -6037,8 +6081,8 @@ function renderNav(){
     count(n) ? `<i class="badge" aria-label="${count(n)} new">${count(n)}</i>` : ""}</button>`).join("");
   $("topActs").innerHTML = allowed.filter(n => TOP.includes(n)).map(n => `<button class="hd-ic" type="button" data-view="${n}" aria-current="${n === currentView}"
     aria-label="${TAB[n][0]}${count(n) ? ` (${count(n)} new)` : ""}" title="${TAB[n][0]}">${TAB[n][1]}${count(n) ? `<i class="badge" aria-hidden="true">${count(n)}</i>` : ""}</button>`).join("")
-    + (allowed.includes("tribe") ? `<button class="hd-tribe" type="button" data-view="tribe" aria-current="${currentView === "tribe"}">${TAB.tribe[1]}<span>Tribe</span>${
-      tribeUnseen ? `<i class="badge" aria-label="${tribeUnseen} new">${tribeUnseen}</i>` : ""}</button>` : "");
+    + (allowed.includes("tribe") ? `<button class="hd-tribe" type="button" data-view="tribe" aria-label="Tribe${tribeUnseen ? ` (${tribeUnseen} new)` : ""}" aria-current="${currentView === "tribe"}">${TAB.tribe[1]}<span>Tribe</span>${
+      tribeUnseen ? `<i class="badge" aria-hidden="true">${tribeUnseen}</i>` : ""}</button>` : "");
 }
 $("nav").addEventListener("click", e => { const t = e.target.closest(".tab"); if(t) go(t.dataset.view); });
 $("topActs").addEventListener("click", e => { const t = e.target.closest("[data-view]"); if(t) go(t.dataset.view); });
@@ -13304,7 +13348,19 @@ let packQueued = false;
 new MutationObserver(() => { if(packQueued) return; packQueued = true; requestAnimationFrame(() => { packQueued = false; packText(); }); })
   .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
 // The top bar gets a soft shade only once the page scrolls under it.
-addEventListener("scroll", () => { const h = $("appHead"); if(h) h.classList.toggle("scrolled", scrollY > 4); }, { passive: true });
+addEventListener("scroll", () => { const h = $("appHead"); if(h) h.classList.toggle("scrolled", scrollY > 4); bandSync(); }, { passive: true });
+// The home band (phones; Kamal, 15 Nov): while the greeting's pastel band is under the top bar, the bar takes the
+// band's colour, so the two read as one layer. Once the sheet below reaches the bar, it goes back to the page's.
+const PHONE_WIDE = matchMedia("(max-width:720px)");
+function bandSync(){
+  const h = $("appHead"), b = document.querySelector("#appMain > section:not([hidden]) > .home-band");
+  const on = Boolean(b && b.offsetParent && PHONE_WIDE.matches && b.getBoundingClientRect().bottom - 30 > h.getBoundingClientRect().bottom);
+  if(on) h.dataset.band = b.dataset.band;
+  h.classList.toggle("on-band", on);
+}
+// the band's size changes when its view is shown or hidden, when its words arrive, and when the screen turns
+if(window.ResizeObserver){ const ro = new ResizeObserver(bandSync); document.querySelectorAll(".home-band").forEach(b => ro.observe(b)); }
+addEventListener("resize", bandSync, { passive: true });
 // Sign-up: the line explaining the picked choice shows under the tiles (on phones the tiles show only their titles).
 $("loginForm").addEventListener("change", e => {
   const r = e.target.closest("input[name=role]"); if(!r) return;
