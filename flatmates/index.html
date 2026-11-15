@@ -37,10 +37,20 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="FindMeFlatMate">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Urbanist:wght@300;400;500;600;700;800&display=swap">
+<!-- The typeface travels with the app (vendor/fonts, SIL Open Font License): nothing waits on another site before
+     the first screen can show, and the Android app has it without a connection. -->
+<link rel="preload" href="vendor/fonts/urbanist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Urbanist for the app; Plus Jakarta Sans only for the privacy page and three share pictures. Each file is one
+   variable font (every weight); the second file of each holds the rupee sign and accented letters. */
+@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 900; font-display:swap; src:url(vendor/fonts/urbanist-latin-wght-normal.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 900; font-display:swap; src:url(vendor/fonts/urbanist-latin-ext-wght-normal.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Plus Jakarta Sans"; font-style:normal; font-weight:200 800; font-display:swap; src:url(vendor/fonts/plus-jakarta-sans-latin-wght-normal.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Plus Jakarta Sans"; font-style:normal; font-weight:200 800; font-display:swap; src:url(vendor/fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 /* Frameless, white and quiet. Content sits directly on the page: hairline dividers,
    light grey fills for inputs and chips, and photos with rounded corners carry the
    structure instead of boxes, borders and shadows. One typeface, Plus Jakarta Sans.
@@ -259,6 +269,7 @@ textarea{min-height:96px; resize:vertical}
 .greet p{color:var(--text-2); margin:6px 0 0}
 .count{color:var(--text-3); font-size:var(--fs-s); font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin:8px 0 12px}
 .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:36px 24px; padding-bottom:40px}
+#cardsA{padding-bottom:0} #cardsA:not(:empty){margin-bottom:20px} #cardsB:empty{padding-bottom:0}
 .card{position:relative; display:flex; flex-direction:column; cursor:pointer; animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 40ms)}
 .card:hover .thumb > img, .card:hover .thumb > .art{transform:scale(1.03)}
 @keyframes rise{from{transform:translateY(8px)}to{transform:none}}
@@ -530,13 +541,6 @@ dialog::backdrop{background:rgba(16,20,24,.45)}
 .notif-ask .na-acts{grid-column:1 / -1; display:flex; align-items:center; gap:14px; margin-top:8px}
 
 /* ---------- vibe matches + interests */
-#vibeRow{margin:14px 0 22px}
-.vrow-h h2{font-size:22px}
-.vrow-h .eyebrow{color:var(--accent); margin:0 0 2px}
-.vrow{display:grid; grid-auto-flow:column; grid-auto-columns:min(74vw, 280px); gap:18px; overflow-x:auto; padding:14px 2px 6px;
-  scroll-snap-type:x mandatory; scrollbar-width:none}
-.vrow::-webkit-scrollbar{display:none}
-.vrow .card{scroll-snap-align:start}
 .both{font-size:var(--fs-s); font-weight:700; color:var(--accent)}
 .traits.likes span.g{background:var(--accent-soft); color:var(--accent); font-weight:700}
 .foot{color:var(--text-3); font-size:var(--fs-s); padding-block:28px 40px; box-shadow:0 -1px 0 var(--line); margin-top:16px}
@@ -654,7 +658,10 @@ div.cx-area{cursor:default}
 .seek-top{display:flex; gap:12px; align-items:center}
 .seek-top .av{width:48px; height:48px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; font-size:19px; flex:none}
 .seek-top h3{font-size:var(--fs-l)}
-.seek-ring{border:0; background:none; padding:0; cursor:pointer; flex:none}
+.seek-ring{border:0; background:none; padding:0; cursor:pointer; flex:none; display:grid; justify-items:center; gap:3px; color:var(--text-2); font-family:var(--body)}
+.seek-ring small{font-size:var(--fs-xs); font-weight:700; line-height:1.1; white-space:nowrap}
+.esc-noscore{margin:0 0 14px; padding:16px 18px; border-radius:var(--r-card, 18px); background:var(--butter); color:var(--text)}
+.esc-noscore b{display:block; font-size:var(--fs-m)} .esc-noscore p{margin:4px 0 12px; font-size:var(--fs-s); color:var(--text)}
 .seek-facts{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0 4px; padding-top:12px; box-shadow:0 -1px 0 var(--line)}
 .seek-facts span{display:block; font-size:var(--fs-xs); color:var(--text-3)}
 .seek-facts b{font-size:var(--fs-m); display:block} .seek-facts strong{color:var(--brand)}
@@ -1242,7 +1249,6 @@ input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--brand),
 .card .body{padding:12px 14px 16px}
 .card:active{transform:scale(.985)}
 @media (hover:hover){ .card:hover{transform:translateY(-3px); box-shadow:var(--card-shadow-hi)} }
-.vrow{padding:12px 4px 18px; gap:14px}
 .mine-card, .req, .panel, .mk-offer, .empty, #fsGroups, #fsPanel, .extras a, .notice{background:var(--card); border-radius:var(--r-card); box-shadow:var(--card-shadow)}
 .mine-card{padding:14px; margin:14px 0; gap:16px}
 .mine-card:first-child{box-shadow:var(--card-shadow)}
@@ -1291,7 +1297,7 @@ input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--brand),
 @keyframes pillIn{from{transform:translateX(-50%) scaleX(.4); opacity:0}}
 
 /* screens fade in; toasts slide up above the bottom bar */
-#appMain > section:not([hidden]){animation:screenIn .28s ease both}
+#appMain > section:not([hidden]){animation:screenIn .16s ease both}   /* a quick settle, not a wait: .28s made every tab feel slow */
 @keyframes screenIn{from{opacity:0; transform:translateY(6px)}}
 .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px)); max-width:min(92vw,460px); width:max-content; border-radius:16px; padding:12px 16px;
   font-size:var(--fs-m); line-height:1.4; box-shadow:0 12px 32px rgba(16,20,24,.28); background:rgba(16,20,24,.94); animation:toastIn .3s cubic-bezier(.2,.8,.2,1)}
@@ -2726,20 +2732,23 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     </div>
     <div id="urgent"></div>
     <div class="d-map" id="dMap" hidden><div class="d-map-el" id="dMapEl"></div><div id="dMapCard"></div></div>
-    <section id="vibeRow" hidden>
-      <div class="vrow-h"><div><p class="eyebrow">80%+ match</p><h2>Your vibe matches</h2><p class="hint" id="vibeRowSub" style="margin:2px 0 0"></p></div></div>
-      <div class="vrow" id="vibeCards"></div>
-    </section>
-    <!-- Nudges (finish your profile, your type, a pass, Flatsplits and FlatMart) come after the first homes, so a
-         new person sees homes on the first screen; anything urgent (an answer, a visit) stays at the top. -->
-    <div id="profilePromo"></div>
-    <div id="vibePromo"></div>
-    <div id="passNudgeD"></div>
-    <div id="extrasD"></div>
     <p class="count" id="count"></p>
-    <div class="cards" id="cards"></div>
+    <!-- The homes, one list: the first row of them, then the nudges (finish your profile, your type, a pass,
+         Flatsplits and FlatMart), then the rest. So a new person sees homes on the first screen, and the "no homes
+         match" help (which goes in the first row's place) comes ahead of the nudges. Anything urgent stays at the top. -->
+    <div id="cards">
+      <div class="cards" id="cardsA"></div>
+      <div id="profilePromo"></div>
+      <div id="vibePromo"></div>
+      <div id="passNudgeD"></div>
+      <div id="extrasD"></div>
+      <div class="cards" id="cardsB"></div>
+    </div>
     <section class="unconf" id="cardsUnc" hidden aria-labelledby="uncH"><h2 class="section-h" id="uncH"></h2>
       <p class="hint" id="uncSub"></p><div class="cards" id="uncCards"></div></section>
+    <!-- Every home is shown (Kamal, 15 Nov): the ones your filters or your choice of home leave out come here, under the rest. -->
+    <section class="unconf" id="cardsMore" hidden aria-labelledby="moreH"><h2 class="section-h" id="moreH"></h2>
+      <p class="hint" id="moreSub"></p><div class="cards" id="moreCards"></div></section>
   </section>
 
   <!-- both: requests -->
@@ -3141,12 +3150,6 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         <label class="chip"><input type="checkbox" name="fRule" value="noDrinks">No alcohol</label>
         <label class="chip"><input type="checkbox" name="fRule" value="pets">Pet-friendly</label>
         <label class="chip"><input type="checkbox" name="fRule" value="bach">Bachelors welcome</label></div>
-      <h3 class="section-h">Minimum match</h3>
-      <div class="chips">
-        <label class="chip"><input type="radio" name="fMatch" value="0" checked>Any</label>
-        <label class="chip"><input type="radio" name="fMatch" value="60">60%+</label>
-        <label class="chip"><input type="radio" name="fMatch" value="75">75%+</label>
-        <label class="chip"><input type="radio" name="fMatch" value="85">85%+</label></div>
       <div class="f-actions"><button class="btn btn-ghost" type="button" id="fReset">Reset</button>
         <button class="btn btn-primary" type="submit" id="fApply">Show homes</button></div>
     </form>
@@ -3347,12 +3350,28 @@ const $ = id => document.getElementById(id);
 const skeletonHtml = (n, rows) => Array.from({ length: n }, (_, i) => rows
   ? `<div class="skel-row" aria-hidden="true" style="--i:${i}"><div class="sk sk-av"></div><div><div class="sk sk-l"></div><div class="sk sk-s"></div></div></div>`
   : `<div class="skel-card" aria-hidden="true" style="--i:${i}"><div class="sk sk-img"></div><div class="sk sk-l"></div><div class="sk sk-s"></div><div class="sk sk-s w50"></div></div>`).join("");
+// Lists are redrawn whenever their data is read again. When nothing changed, the page is left alone: nothing
+// flickers, the cards don't slide in a second time, and a slow phone has nothing to lay out.
+// (Skipped only while the element still holds what was written here last time: a skeleton or anything else put in
+// since then is replaced as usual.)
+const lastHtml = new WeakMap();
+function setHtml(el, html){
+  const was = lastHtml.get(el);
+  if(was && was.html === html && was.first === el.firstChild) return false;
+  el.innerHTML = html; lastHtml.set(el, { html, first: el.firstChild }); return true;
+}
 const showSkeleton = (id, n, rows) => { const el = $(id); if(api.live && el && !el.children.length) el.innerHTML = skeletonHtml(n, rows); };
 // On hold (see README, "On hold"): the server answers every request with 'on-hold'; only Coming soon shows.
 // Private preview: 7 taps on the logo of the Coming soon screen open the door to the sign-in. The server still
 // decides: only numbers in fm_settings.hold_allow get past it; anyone else is back on Coming soon on signing in.
 let holdDoor = false, holdTimer = null;
+// On hold the last time this phone asked: start-up then waits for the server before drawing anything, so the app's
+// own screens never flash up ahead of Coming soon.
+const HOLD_SEEN_KEY = "fm_hold_seen";
+const holdSeen = () => { try{ return localStorage.getItem(HOLD_SEEN_KEY) === "1"; }catch(e){ return false; } };
+const noteHold = on => { try{ if(on) localStorage.setItem(HOLD_SEEN_KEY, "1"); else localStorage.removeItem(HOLD_SEEN_KEY); }catch(e){} };
 function showHold(){
+  noteHold(true);
   if(holdDoor) return;
   const h = $("holdScreen"); if(!h || !h.hidden) return;
   h.hidden = false; document.documentElement.classList.add("on-hold");
@@ -3421,6 +3440,14 @@ function readQuiz(root, prefix){
   return out;
 }
 const answered = v => VIBE_QS.filter(x => v && Number.isInteger(v[x.k])).length;
+// A listing's living-style answers: its own when it has at least 4; else the lister's own answers, with whatever the
+// listing does say on top. Same rule as fm_listing_vibe in schema.sql (the server applies it on every post and edit;
+// this is the demo's copy).
+function listingVibe(hh, own){
+  if(answered(hh) >= 4 || answered(own) < 4) return hh;
+  const mine = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(own[x.k])).map(x => [x.k, own[x.k]]).concat(["z", "m", "g", "x"].includes(own.gen) ? [["gen", own.gen]] : []));
+  return Object.assign(mine, hh || {});
+}
 // Sign-up and the quiz ask 6 of the 12 (food, smoking, bedtime, tidiness, cooking, social); the other 6
 // come later, in "Complete your profile". Six answers are enough to match (fm_vibe_count in schema.sql).
 const CORE_KEYS = ["sleep", "clean", "food", "cook", "smoke", "social"];
@@ -3731,6 +3758,7 @@ function switchAccount(phone){
   const shared = api.live ? {} : { myListings: state.myListings, visits: state.visits, requests: state.requests, splits: state.splits, market: state.market, parties: state.parties };
   state = Object.assign(freshState(), next || {}, shared, { account: phone });
   ob = null; save();
+  if(typeof readKeep !== "undefined") readKeep.clear();   // nothing kept from the account before
 }
 
 /* ============================================================ demo data */
@@ -4346,6 +4374,7 @@ const demoApi = {
     const id = "mine-" + Date.now().toString(36);
     const l = { ...p.listing, id, owner_phone: state.user.phone, status:"active",
       created_at: new Date().toISOString(), unlock_count:0, private: p.private };
+    l.household = listingVibe(l.household, state.vibe);
     state.myListings.push(l);
     state.demoIncoming[id] = Date.now() + DEMO_INCOMING_MS;
     (state.demoSeekerAt = state.demoSeekerAt || {})[id] = Date.now() + DEMO_INCOMING_MS + 7000;   // a sample seeker starts looking here
@@ -4365,6 +4394,7 @@ const demoApi = {
     if(!l || l.status === "delisted") throw new Error("not-found");
     const was = Object.assign({}, l);
     Object.assign(l, p.listing, { geo: p.listing.geo || l.geo });
+    l.household = listingVibe(l.household, state.vibe);
     if(p.pin && l.private) l.private.address_parts = Object.assign({}, l.private.address_parts, p.pin);
     let photos = "kept";
     if(!save() && (l.photos || []).length){
@@ -4431,9 +4461,34 @@ const demoApi = {
   async setAttribution(a){ if(state.attribution) return false; state.attribution = Object.assign({}, a, { signed_up_at: new Date().toISOString() }); save(); return true; },
 };
 
+// Lists the screens read again and again (Discover's homes, your requests, your tribe...). An answer is kept for
+// READ_KEEP_MS, so going back to a tab doesn't ask the server again, and two screens asking the same thing at the same
+// moment share one call. A change (a request, a save, a post: any call not named below) empties the lot, so a list
+// read after a change is always new. The kept copy is never handed out: each caller gets its own.
+// Checked against schema.sql: every name in KEPT_READS and QUIET_READS only reads, except the three noted.
+const READ_KEEP_MS = 20000;
+const KEPT_READS = new Set(["fm_search", "fm_search_near", "fm_my_listings", "fm_inbox", "fm_tribe_list", "fm_tribe_saves", "fm_thread_list", "fm_split_groups",
+  "fm_avatars", "fm_find_seekers", "fm_incoming_visits", "fm_market_search", "fm_party_feed", "fm_market_inbox"]);
+// Reads that aren't kept, and leave the kept answers alone. (fm_me, fm_on_time_status and fm_market_want_matches note
+// things on the server, such as when you were last here, but nothing a kept list shows.) fm_me is shared in flight.
+const QUIET_READS = new Set(["fm_me", "fm_on_hold", "fm_listing_get", "fm_contact", "fm_plan_list", "fm_area_demand", "fm_market_price_guide", "fm_market_sale",
+  "fm_market_wants", "fm_market_want_matches", "fm_my_blocks", "fm_my_tickets", "fm_my_visits", "fm_on_time_status", "fm_listing_alerts", "fm_seeker_alerts",
+  "fm_party_for_group", "fm_party_get", "fm_party_host_requests", "fm_party_nearby", "fm_party_nearby_get", "fm_party_nearby_me", "fm_party_open_for_group", "fm_split_invite"]);
+// Small notes to the server that change one kept list at most: only that one is read anew.
+const NARROW_WRITES = { fm_thread_get: ["fm_thread_list"], fm_tribe_seen: ["fm_tribe_list"], fm_tribe_refresh: ["fm_tribe_list"], fm_set_search: ["fm_tribe_list"],
+  fm_mark_seen: ["fm_inbox"], fm_market_seen: ["fm_market_inbox"], fm_listing_seen: [], fm_save_push_token: [], fm_set_attribution: [], fm_tickets_seen: [] };
+const readKeep = { map: new Map(), flying: new Map(), gen: 0, fnGen: {},
+  // Everything, or only the named reads. Calls still on their way are let go too: whoever reads next asks afresh,
+  // and an answer that was already on its way when the change happened is not kept (gen, fnGen).
+  clear(...fns){
+    if(!fns.length){ this.map.clear(); this.flying.clear(); this.gen++; return; }
+    for(const f of fns) this.fnGen[f] = (this.fnGen[f] || 0) + 1;
+    for(const m of [this.map, this.flying]) for(const k of [...m.keys()]) if(fns.includes(k.split("|")[0])) m.delete(k);
+  } };
+const copyOf = v => v == null || typeof v !== "object" ? v : JSON.parse(JSON.stringify(v));
 function makeLiveApi(sb){
   const seenIds = new Set();
-  const rpc = async (fn, args) => {
+  const call = async (fn, args) => {
     const { data, error } = await sb.rpc(fn, args || {});
     if(error){
       // The server's limits on searches, page views and posts (fm_throttle). Shown after the caller's own message.
@@ -4442,6 +4497,30 @@ function makeLiveApi(sb){
       throw error;
     }
     return data;
+  };
+  const rpc = async (fn, args) => {
+    const kept = KEPT_READS.has(fn);
+    if(!kept && fn !== "fm_me"){
+      if(QUIET_READS.has(fn)) return call(fn, args);
+      const only = NARROW_WRITES[fn], forget = () => { if(!only) readKeep.clear(); else if(only.length) readKeep.clear(...only); };
+      forget();   // a change: lists read from here on are new, and so are the ones read once it's done
+      try{ return await call(fn, args); } finally{ forget(); }
+    }
+    const key = fn + "|" + JSON.stringify(args || {}), hit = readKeep.map.get(key);
+    if(kept && hit && Date.now() - hit.at < READ_KEEP_MS) return copyOf(hit.data);
+    let p = readKeep.flying.get(key);
+    if(!p){
+      const gen = readKeep.gen, fg = readKeep.fnGen[fn] || 0;
+      p = call(fn, args).then(data => {
+          if(kept && gen === readKeep.gen && fg === (readKeep.fnGen[fn] || 0)){
+            for(const [k, v] of readKeep.map) if(Date.now() - v.at >= READ_KEEP_MS) readKeep.map.delete(k);   // nothing older than it is useful stays around
+            readKeep.map.set(key, { at: Date.now(), data });
+          }
+          return data; })
+        .finally(() => { if(readKeep.flying.get(key) === p) readKeep.flying.delete(key); });
+      readKeep.flying.set(key, p);
+    }
+    return copyOf(await p);
   };
   const one = rows => (rows && rows[0]) || {};
   const plusPhone = p => p && !String(p).startsWith("+") ? "+" + p : p;
@@ -4454,6 +4533,7 @@ function makeLiveApi(sb){
                 Authorization: "Bearer " + (data.session?.access_token || "") },
       body: JSON.stringify(body || {}) });
     const j = await r.json();
+    readKeep.clear();   // a payment changes what the lists show (a pass, a boost)
     if(!r.ok) throw new Error(j.error || "payment");
     return j;
   }
@@ -4467,6 +4547,8 @@ function makeLiveApi(sb){
   }
   return {
     live:true,
+    // Forget kept answers (all of them, or the named reads), so the next read asks the server.
+    fresh(...fns){ readKeep.clear(...fns); },
     // fm_otp_request first (the abuse limits, and which channel fm-send-otp should use), then the code.
     async sendOtp(phone, name, role, opts = {}){
       const channel = opts.channel === "sms" ? "sms" : "whatsapp";
@@ -4495,14 +4577,14 @@ function makeLiveApi(sb){
       await rpc("fm_set_profile", { p_name: pendingOtp.name || null, p_role: pendingOtp.role || null });
       pendingOtp = null; await this.me();
     },
-    async signOut(){ await sb.auth.signOut(); state.user = null; state.credits = 0; save(); },
+    async signOut(){ await sb.auth.signOut(); readKeep.clear(); state.user = null; state.credits = 0; save(); },
     async me(){
       const r = one(await rpc("fm_me"));
       if(!r.phone){ state.user = null; state.credits = 0; save(); return state; }
       const phone = r.phone.replace(/^\+?91/, "");
       if((state.account || (state.user && state.user.phone)) !== phone) switchAccount(phone);
       state.user = { phone, name: r.full_name || "", role: r.role || null, occupation: r.occupation || {} };
-      CHARGES_ON = r.charges_on !== false;
+      CHARGES_ON = r.charges_on !== false; state.chargesOn = CHARGES_ON;   // remembered, so the next start draws the right thing at once
       Object.assign(state, { credits: r.credits, packs: Number(r.packs), pending: Number(r.pending), giftGiven: r.gift_given,
         passes: { room: r.room_until, tribe: r.tribe_until, escape: r.escape_until },
         refCode: r.ref_code, refJoined: r.ref_joined || 0, refBonus: r.ref_bonus || 0 });
@@ -5627,20 +5709,34 @@ function liveExtras(rpc){
   };
 }
 
-let api = demoApi;
+// Live: until the server client is loaded and has said whether someone is signed in, every call simply waits for
+// it. So the first screen can be drawn straight away from what this phone remembers, and nothing can ever reach the
+// demo data by being early.
+let apiIsReady = null;
+const apiReady = new Promise(res => { apiIsReady = res; });
+const waitingApi = new Proxy({}, { get: (_, k) => k === "live" ? true : k === "then" ? undefined : (...a) => apiReady.then(() => api[k](...a)) });
+let api = LIVE ? waitingApi : demoApi;
+// Has the server said who this is yet? The one-time questions (18 or older, gender) wait for it: this phone's copy may be older.
+let serverSaid = !LIVE;
+let sbLoad = null;
 async function initApi(){
   if(!LIVE) return;
-  await new Promise((res, rej) => {
+  // One load, however often start-up is retried after "Can't connect right now".
+  await (sbLoad || (sbLoad = new Promise((res, rej) => {
     const s = document.createElement("script");
     s.src = "vendor/supabase-2.45.4.js";   // bundled, so the app never depends on a CDN
-    s.onload = res; s.onerror = rej; document.head.appendChild(s);
-  });
+    s.onload = res; s.onerror = () => { sbLoad = null; s.remove(); rej(new Error("supabase-js")); }; document.head.appendChild(s);
+  })));
   const sb = window.supabase.createClient(FM_CONFIG.supabaseUrl, FM_CONFIG.supabaseAnonKey);
-  api = makeLiveApi(sb);
+  const live = makeLiveApi(sb);
   // On hold? Asked first, signed in or not: the server refuses it with 'on-hold' (showHold) while it is.
-  sb.rpc("fm_on_hold").then(({ data: held, error }) => { if(held === true || /on-hold/.test((error && error.message) || "")) showHold(); });
+  sb.rpc("fm_on_hold").then(({ data: held, error }) => { if(held === true || /on-hold/.test((error && error.message) || "")) showHold(); else if(held === false) noteHold(false); });
   const { data } = await sb.auth.getSession();
-  if(data && data.session) await api.me(); else { state.user = null; state.credits = 0; save(); }
+  const signedIn = Boolean(data && data.session);
+  if(!signedIn){ state.user = null; state.credits = 0; save(); }
+  // From here the screens' own calls go out, alongside "who am I" (fm_me) instead of after it.
+  api = live; apiIsReady();
+  if(signedIn) await api.me();
 }
 
 /* ===================================================== small components */
@@ -5823,7 +5919,7 @@ let unseen = 0, tribeUnseen = 0;
 // 18 or older: ticked on the sign-in card; accounts from before are asked once, before anything else, and the box
 // can't be closed until they tick.
 function maybeAskAdult(){
-  if(!state.user || state.user.adultAt || !currentView || $("dlgAge").open) return false;
+  if(!serverSaid || !state.user || state.user.adultAt || !currentView || $("dlgAge").open) return false;
   document.querySelectorAll("dialog[open]").forEach(d => d.close());
   $("agForm").reset(); $("dlgAge").showModal(); return true;
 }
@@ -5838,7 +5934,7 @@ $("agForm").addEventListener("submit", async e => {
 let genderAsked = false;
 function maybeAskGender(){
   if(maybeAskAdult()) return;
-  if(genderAsked || !state.user || state.user.gender || !currentView || document.querySelector("dialog[open]")) return;
+  if(!serverSaid || genderAsked || !state.user || state.user.gender || !currentView || document.querySelector("dialog[open]")) return;
   genderAsked = true; openGender(true);
 }
 function openGender(first){
@@ -5915,6 +6011,9 @@ $("discToggle").addEventListener("change", e => {
 const ESC_FILTERS = [["all", "Everyone"], ["fit", "Budget fits my rent"], ["vibe", "80%+ vibe"], ["new", "Not invited yet"]];
 let escSeekers = [], escListing = null;
 async function renderEscape(){
+  // Asked together, not one after the other: your invites need nothing from the listings, and the people looking are
+  // asked for the listing picked last time (nearly always still the one).
+  const inboxP = api.inbox().catch(() => []), guessId = state.escListing, guessP = guessId ? api.findSeekers(guessId).catch(() => null) : null;
   const listings = (await api.myListings()).filter(l => l.status !== "closed");
   $("escRule").hidden = !listings.length;
   $("escPick").closest(".d-controls").hidden = !listings.length;
@@ -5928,7 +6027,7 @@ async function renderEscape(){
   escListing = listings.find(l => l.id === state.escListing);
   $("escPick").hidden = listings.length < 2;
   $("escPick").innerHTML = listings.map(l => `<option value="${esc(l.id)}"${l.id === escListing.id ? " selected" : ""}>${esc(l.title)}</option>`).join("");
-  const [seekers, inbox] = await Promise.all([api.findSeekers(escListing.id), api.inbox().catch(() => [])]);
+  const [seekers, inbox] = await Promise.all([guessP && guessId === escListing.id ? guessP.then(r => r || api.findSeekers(escListing.id)) : api.findSeekers(escListing.id), inboxP]);
   escSeekers = seekers; escSel = new Set(); escSelecting = false;
   const fit = escSeekers.filter(x => x.budget && x.budget >= escListing.rent).length, hi = escSeekers.filter(x => x.match_pct >= 80).length;
   // Your invites so far (every listing): sent, said yes, passed, lapsed, waiting.
@@ -5951,11 +6050,19 @@ async function renderEscape(){
 // Someone who can be invited now: never invited, or an earlier invite lapsed or was withdrawn.
 const canInvite = x => !x.invite_status || x.invite_status === "withdrawn" || x.invite_status === "expired";
 let escSel = new Set(), escSelecting = false;   // "Invite several": the people ticked
+// The vibe score is the point of this screen (Kamal, 15 Nov: "in escape the room vibe score should be visible"). It
+// compares each person's answers with the home's, so a listing without the home's living-style answers can't be
+// scored: say so, with the way to add them, instead of showing people with nothing next to their names.
+const escNoScore = () => escSeekers.length > 0 && escSeekers.every(x => x.match_pct == null);
 function drawSeekers(){
   const l = escListing, f = state.escFilter || "all";
-  const rows = escSeekers.filter(x => f === "fit" ? x.budget && x.budget >= l.rent : f === "vibe" ? x.match_pct >= 80 : f === "new" ? canInvite(x) : true);
-  $("escList").innerHTML = rows.length ? rows.map((x, i) => seekerHtml(x, l, i)).join("")
-    : `<div class="empty"><h3>No one here yet</h3><p>${escSeekers.length ? "Try another filter." : `Nobody is searching in ${esc(l.locality)} right now. New people sign up every day, so check back soon.`}</p></div>`;
+  const rows = escSeekers.filter(x => f === "fit" ? x.budget && x.budget >= l.rent : f === "vibe" ? x.match_pct >= 80 : f === "new" ? canInvite(x) : true)
+    .sort((a, b) => (b.match_pct ?? -1) - (a.match_pct ?? -1));   // highest vibe score first, whatever the filter
+  const ask = escNoScore() ? `<div class="esc-noscore" role="note"><b>No vibe scores for this room yet</b>
+      <p>We score each person against how your home lives, and this listing doesn't have those answers yet: 12 quick questions, about a minute.</p>
+      <button class="btn btn-primary btn-sm" type="button" data-esc-answers="${esc(l.id)}">Add them now</button></div>` : "";
+  setHtml($("escList"), ask + (rows.length ? rows.map((x, i) => seekerHtml(x, l, i)).join("")
+    : `<div class="empty"><h3>No one here yet</h3><p>${escSeekers.length ? "Try another filter." : `Nobody is searching in ${esc(l.locality)} right now. New people sign up every day, so check back soon.`}</p></div>`));
   drawEscBar();
 }
 function drawEscBar(){
@@ -5997,7 +6104,7 @@ function seekerHtml(x, l, i){
     <div class="seek-top">${avSpan("profile", x.seeker_id)}
       <div style="min-width:0;flex:1"><h3>${esc(first)} ${genBadge((x.vibe || {}).gen)}${onTimeBadge(x)}${isSample(x) ? SAMPLE_TAG : ""}</h3><div class="occ">${esc(occLine(x.occupation))}</div>
         <div class="occ">Active ${timeAgo(x.active_at)}</div></div>
-      ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="Compatibility with ${esc(first)}">${ringSvg(x.match_pct, 58)}</button>` : ""}</div>
+      ${x.match_pct != null ? `<button class="seek-ring" data-scompat="${esc(x.seeker_id)}" aria-label="${x.match_pct}% vibe match with ${esc(first)}. Open the compatibility analysis">${ringSvg(x.match_pct, 58)}<small>vibe match</small></button>` : ""}</div>
     <div class="seek-facts">
       <div><span>Budget</span><b>${x.budget ? "Up to " + inr(x.budget) : "Not set"}</b>${fit}</div>
       <div><span>Looking in</span><b style="font-weight:600">${areas}</b></div>
@@ -6024,6 +6131,8 @@ $("escFilters").addEventListener("click", e => {
   drawSeekers();
 });
 $("escList").addEventListener("click", async e => {
+  const add = e.target.closest("[data-esc-answers]");
+  if(add) return startEdit(add.dataset.escAnswers, 2);   // the editor, on the step with "Review living-style answers" opened
   const c = e.target.closest("[data-scompat]");
   if(c){
     const x = escSeekers.find(y => y.seeker_id === c.dataset.scompat), hh = escListing.household || {};
@@ -6375,7 +6484,7 @@ if(Notify.native()){
     let m; try{ m = JSON.parse(e.data); }catch(err){ return; }
     if(m.type === "status"){ Notify.nativeOn = Boolean(m.granted); if(m.build) checkAppUpdate(m.build); }
     if(m.type === "token"){ pushToken = m.token; savePushToken(); }
-    if(m.type === "open" && state.user) go(m.view || "requests");
+    if(m.type === "open" && state.user){ if(api.fresh) api.fresh(); go(m.view || "requests"); }   // a tapped notification: the screen it opens reads anew
   };
   FlatmatesNative.postMessage(JSON.stringify({ type:"hello" }));
 }
@@ -6395,10 +6504,13 @@ document.addEventListener("click", async e => {
 
 // Reminder if a seeker hasn't called an owner who accepted them.
 const REMIND_MS = LIVE ? 2 * 36e5 : 60e3;
-async function checkInbox(){
+async function checkInbox(atStart){
   if(!state.user || !state.onboarded[roleKey()]) return;
   let rows;
-  try{ rows = await api.inbox(); await api.me(); }catch(err){ return; }
+  // Every round asks the server anew (the kept answers are for screens, not for this); at start-up the first
+  // screen's own answers are a moment old, and so is "who am I".
+  if(atStart !== true && api.fresh) api.fresh("fm_inbox", "fm_tribe_list", "fm_tribe_saves");
+  try{ rows = await api.inbox(); if(atStart !== true) await api.me(); }catch(err){ return; }
   // Only the current role's side: someone who switched roles shouldn't see the other side's alerts.
   const side = isOwner() ? "incoming" : "outgoing";
   const fresh = rows.filter(r => r.unseen && r.direction === side);
@@ -6517,9 +6629,10 @@ async function checkInbox(){
     if($("dlgListing").open && currentId && fresh.some(r => r.listing_id === currentId)) openListing(currentId);
   }
 }
-setInterval(checkInbox, LIVE ? 30000 : 2000);
+setInterval(() => checkInbox(), LIVE ? 30000 : 2000);
 setInterval(() => { maybeNudge(); maybeProfileNudge(); }, LIVE ? 60000 : 5000);
-document.addEventListener("visibilitychange", () => { if(!document.hidden) checkInbox(); });
+// Back in the app after a while: nothing kept from before, and the news straight away.
+document.addEventListener("visibilitychange", () => { if(document.hidden) return; if(api.fresh) api.fresh(); checkInbox(); });
 const othersLine = l => l && l.unlock_count > 1 ? `${l.unlock_count - 1} other ${l.unlock_count - 1 === 1 ? "person has" : "people have"} asked about this home. ` : "";
 
 // Accepted but not yet called: a loud card at the top of Discover and Requests.
@@ -6550,8 +6663,8 @@ async function renderUrgent(){
           href="https://wa.me/91${esc(c.contact_phone)}?text=${encodeURIComponent("Hi " + first + ", I'm " + (state.user.name || "") + " from FindMeFlatMate. Thanks for accepting! When can I come and see the room?")}">WhatsApp</a>
         <button class="btn btn-ghost btn-sm" type="button" data-called="${esc(r.listing_id)}">I've called</button></div></div></article>`;
   }));
-  $("urgent").innerHTML = inviteCard + tribeCard + cards.join("") + refCardHtml();
-  $("urgentReq").innerHTML = cards.join("") + refCardHtml();
+  setHtml($("urgent"), inviteCard + tribeCard + cards.join("") + refCardHtml());
+  setHtml($("urgentReq"), cards.join("") + refCardHtml());
 }
 // After a seeker's first yes: invite friends (the link carries the referral code).
 function refCardHtml(){
@@ -7145,7 +7258,9 @@ async function finishOnboarding(){
 }
 /* ====================================================== search preferences */
 // A seeker's search, saved on the device: city, areas and everything in the Filters panel.
-const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], room:[], minMatch:0 };
+// No filter on the vibe score (Kamal, 15 Nov: "whether the vibe matches or not all properties should be shown"): the
+// score orders the homes, it never hides one. A "minimum match" saved by an older version is ignored.
+const DEFAULT_PREFS = { city:"", areas:[], near:null, look:"", min:0, max:0, kinds:[], gender:"", furn:[], moveBy:"", moveIn:"", must:[], rules:[], room:[] };
 const ROOM_FILTERS = { wash: ["Attached washroom", l => (l.room || {}).washroom === "attached"], balcony: ["Balcony", l => (l.room || {}).balcony === true], master: ["Master bedroom", l => (l.room || {}).master === true] };
 const prefs = () => {
   const p = Object.assign({}, DEFAULT_PREFS, state.prefs);
@@ -7193,7 +7308,6 @@ function applyFilters(rows, f){
     // House rules only apply where someone already lives; a whole flat is yours to set.
     if(shared && f.rules.some(r => RULES[r] && !RULES[r][1](hh))) return false;
     if(f.rules.includes("bach") && l.bachelors === false) return false;
-    if(f.minMatch && shared){ const m = vibeMatch(state.vibe, hh); if(!m || m.pct < f.minMatch) return false; }
     return true;
   });
 }
@@ -7209,7 +7323,6 @@ function activeFilters(f){
   f.must.forEach(a => out.push(["must:" + a, a]));
   f.rules.forEach(r => RULES[r] && out.push(["rules:" + r, RULES[r][0]]));
   (f.room || []).forEach(k => ROOM_FILTERS[k] && out.push(["room:" + k, ROOM_FILTERS[k][0]]));
-  if(f.minMatch) out.push(["minMatch", f.minMatch + "%+ match"]);
   return out;
 }
 const QUICK = [["gender", "female", "Women only"], ["gender", "male", "Men only"], ["rules", "veg", "Veg kitchen"], ["rules", "noSmoke", "No smoking"], ["max", 15000, "Under ₹15k"]];
@@ -7347,11 +7460,12 @@ async function renderDiscover(){
   avSync();
   const seq = ++browseSeq, f = prefs(), near = f.near && f.near.lat ? f.near : null;
   nearNow = near;
-  showSkeleton("cards", 4);
+  showSkeleton("cardsA", 4);
   if(!near && $("fSort").value === "near") $("fSort").value = "match";
   $("fSort").querySelector("[value=near]").hidden = !near;
   const sort = $("fSort").value, mapView = state.dView === "map";
   renderProfilePromo(); renderVibePromo(); renderNudgeCards(); oneDiscoverNudge();
+  renderUrgent();   // an answer or a visit to act on: asked for alongside the homes, not after them
   const [rows, , bonded] = await Promise.all([near ? api.searchNear(near) : api.search({ city: f.city }), isSeeker() ? syncSaves() : null, bondedTribe()]);
   if(seq !== browseSeq) return;
   const dist = distFrom(f);
@@ -7369,7 +7483,10 @@ async function renderDiscover(){
 
   const look = f.look || "";
   $("dsLook").innerHTML = LOOKS.map(([k, t]) => `<button type="button" data-look="${k}" aria-pressed="${look === k}">${t}</button>`).join("");
-  let list = applyFilters(rows, near ? Object.assign({}, f, { areas: [] }) : f).filter(l => lookRank(look, l.kind) >= 0);
+  const ff = near ? Object.assign({}, f, { areas: [] }) : f;
+  let list = applyFilters(rows, ff).filter(l => lookRank(look, l.kind) >= 0);
+  // Every home shows, whatever its vibe score, from the highest score to the lowest (Kamal, 15 Nov). A home whose
+  // household hasn't answered has no score and comes after the ones that have. The other orders are in the Sort menu.
   const score = l => (vibeMatch(state.vibe, l.household) || { pct: -1 }).pct, d = l => l._d ?? 999;
   const within = { match: (a, b) => score(b) - score(a) || d(a) - d(b) || b.created_at.localeCompare(a.created_at),
     near: (a, b) => d(a) - d(b) || score(b) - score(a), cost: (a, b) => a.rent - b.rent || score(b) - score(a),
@@ -7382,34 +7499,39 @@ async function renderDiscover(){
   $("greetName").textContent = "Here's who you'd get along with";
   $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} ${near ? "within" : "in"} ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
-  renderUrgent();
-  // Vibe matches: 80%+ in this city, whatever the area/budget filters say, so great fits aren't missed.
-  // (Women only / Men only is a dealbreaker, so it applies here too.)
-  const vibes = mapView ? [] : rows.filter(l => !l.request_status && !l.is_owner && score(l) >= 80 && lookRank(look, l.kind) >= 0 && (!f.gender || l.home_gender === f.gender))
-    .sort((a, b) => lookRank(look, a.kind) - lookRank(look, b.kind) || score(b) - score(a) || d(a) - d(b)).slice(0, 12);
-  $("vibeRow").hidden = !vibes.length;
-  $("vibeRowSub").textContent = `${vibes.length} ${vibes.length === 1 ? "home" : "homes"} ${near ? "within " + where : "in " + (f.city || "all cities")} where the people live like you`;
   $("dMap").hidden = !mapView;
-  // Nothing to show: the "no homes match" help goes straight under the controls, ahead of the nudges.
-  if(list.length) $("extrasD").after($("count"), $("cards"), $("cardsUnc")); else $("profilePromo").before($("count"), $("cards"), $("cardsUnc"));
   // Women only / Men only: homes that say so but haven't said who lives there come in their own block, under the rest.
-  const unc = f.gender && !mapView ? applyFilters(rows.map(l => l.home_gender === f.gender + "?" ? Object.assign({}, l, { home_gender: f.gender }) : null).filter(Boolean),
-    near ? Object.assign({}, f, { areas: [] }) : f).filter(l => lookRank(look, l.kind) >= 0).map(l => rows.find(x => x.id === l.id)) : [];
+  const unc = f.gender && !mapView ? applyFilters(rows.map(l => l.home_gender === f.gender + "?" ? Object.assign({}, l, { home_gender: f.gender }) : null).filter(Boolean), ff)
+    .filter(l => lookRank(look, l.kind) >= 0).map(l => rows.find(x => x.id === l.id)) : [];
   $("cardsUnc").hidden = !unc.length;
   if(unc.length){ $("uncH").textContent = `Open to ${f.gender === "female" ? "women" : "men"}; who lives there isn't confirmed`;
     $("uncSub").textContent = `The owner hasn't said who lives there yet, so we can't call ${unc.length === 1 ? "it" : "them"} ${f.gender === "female" ? "women" : "men"}-only. Once they do, ${unc.length === 1 ? "it moves" : "they move"} up.`;
-    $("uncCards").innerHTML = unc.sort(within).map(cardHtml).join(""); }
-  if(mapView){ $("count").textContent = ""; $("cards").innerHTML = list.length ? "" : emptyHtml(rows, f); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
-  $("vibeCards").innerHTML = vibes.map(cardHtml).join("");
-  const shown = new Set(vibes.map(l => l.id)), rest = list.filter(l => !shown.has(l.id));
-  $("count").textContent = rest.length && !look ? (vibes.length ? "More homes" : "") : "";
+    setHtml($("uncCards"), unc.sort(within).map(cardHtml).join("")); }
+  // The rest of the homes here: the ones your filters or your choice of home leave out. They used to show only at
+  // 80%+ ("Your vibe matches"); now all of them do, under the homes that fit, highest score first. Women only / Men
+  // only stays a dealbreaker: a home that isn't doesn't come back this way.
+  const got = new Set(list.concat(unc).map(l => l.id));
+  const more = mapView ? [] : rows.filter(l => !got.has(l.id) && (!f.gender || l.home_gender === f.gender)).sort(within);
+  $("cardsMore").hidden = !more.length;
+  if(more.length){
+    const place = near ? `within ${near.km} km of ${near.label}` : "in " + (f.city || "all cities"), nf = activeFilters(ff).length;
+    $("moreH").textContent = `${list.length ? "More homes" : "Homes"} ${place}`;
+    $("moreSub").textContent = `${more.length === 1 ? "This one is" : `These ${more.length} are`} outside ${nf && look ? "your filters or the kind of home you picked" : look ? "the kind of home you picked" : "your filters"}.${sort === "match" ? " Highest vibe score first." : ""}`;
+    setHtml($("moreCards"), more.map(cardHtml).join(""));
+  }
+  if(mapView){ $("count").textContent = ""; setHtml($("cardsA"), list.length ? "" : emptyHtml(rows, f)); setHtml($("cardsB"), ""); if(list.length || near) drawDiscoverMap(list, near, f.city, score); return; }
+  $("count").textContent = list.length ? { match: "Highest vibe score first", near: "Nearest first", cost: "Lowest rent first", new: "Newest first" }[sort] || "Highest vibe score first" : "";
   // With a choice made, the homes come in groups (private rooms, then whole flats...), each with a heading.
   let lastGroup = null;
-  $("cards").innerHTML = rest.length ? rest.map((l, i) => {
-      const gname = look ? GROUP_NAME[l.kind] : null, n = gname ? rest.filter(x => GROUP_NAME[x.kind] === gname).length : 0;
+  const items = list.map((l, i) => {
+      const gname = look ? GROUP_NAME[l.kind] : null, n = gname ? list.filter(x => GROUP_NAME[x.kind] === gname).length : 0;
       const head = gname && gname !== lastGroup ? `<h2 class="d-group" style="grid-column:1 / -1">${esc(gname)} <span>${n}</span>${lastGroup === null && gname !== GROUP_NAME[(LOOK_GROUPS[look] || [[]])[0][0]]
         ? `<small>No ${esc(lookLabel(look).toLowerCase())}s here yet, so these come next.</small>` : ""}</h2>` : "";
-      lastGroup = gname || lastGroup; return head + cardHtml(l, i); }).join("") : vibes.length && list.length ? "" : emptyHtml(rows, f);
+      lastGroup = gname || lastGroup; return head + cardHtml(l, i); });
+  // The first row of homes (one on a phone, as many as fit across on a computer), the nudges, then the rest.
+  const across = Math.max(1, getComputedStyle($("cardsA")).gridTemplateColumns.split(" ").filter(Boolean).length);
+  setHtml($("cardsA"), list.length ? items.slice(0, across).join("") : emptyHtml(rows, f));
+  setHtml($("cardsB"), items.slice(across).join(""));
 }
 // When nothing matches, offer the changes that would bring homes back, with counts.
 let suggestions = [];
@@ -7658,14 +7780,13 @@ function openFilters(){
   form.querySelectorAll("[name=fRule]").forEach(x => x.checked = f.rules.includes(x.value));
   form.querySelectorAll("[name=fRoom]").forEach(x => x.checked = (f.room || []).includes(x.value));
   form.querySelectorAll("[name=fGender]").forEach(x => x.checked = x.value === f.gender);
-  form.querySelectorAll("[name=fMatch]").forEach(x => x.checked = Number(x.value) === f.minMatch);
   rentSlider(); updateFilterCount();
   $("dlgFilters").showModal();
 }
 function readFilterForm(){
   const form = $("filterForm"), vals = n => [...form.querySelectorAll(`[name=${n}]:checked`)].map(x => x.value);
   return { ...($("fAreaBox").hidden ? {} : { areas: vals("fArea") }), min: Number($("fMin").value) || 0, max: Number($("fMax").value) || 0, kinds: vals("fKind"), furn: vals("fFurn"),
-    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), room: vals("fRoom"), minMatch: Number(vals("fMatch")[0]) || 0 };
+    gender: vals("fGender")[0] || "", moveBy: $("fMove").value, moveIn: $("fMoveIn").value, must: vals("fMust"), rules: vals("fRule"), room: vals("fRoom") };
 }
 function updateFilterCount(){
   const n = applyFilters(cityRows, Object.assign(prefs(), readFilterForm())).length;
@@ -7729,7 +7850,7 @@ function onCardKey(e){
   if(e.target.closest("[data-save]")) return;
   const c = e.target.closest("[data-id]"); if(c && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); openListing(c.dataset.id); }
 }
-["cards","uncCards","savedCards","vibeCards","tribeHunt","tribeShort","dMapCard"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
+["cards","uncCards","moreCards","savedCards","tribeHunt","tribeShort","dMapCard"].forEach(id => { $(id).addEventListener("click", onCardClick); $(id).addEventListener("keydown", onCardKey); });
 
 /* ======================================================= listing detail */
 let currentId = null, currentListing = null;
@@ -8011,7 +8132,7 @@ async function renderRequests(){
   const waiting = list.filter(r => r.status === "pending" && r.by !== "owner").length;
   const invites = owner ? [] : list.filter(r => r.by === "owner" && r.status === "pending");
   $("reqTitle").textContent = owner ? "People who'd like to meet you" : "Your requests";
-  $("reqBand").dataset.band = owner ? "butter" : "lav";   // the band takes the side's colour: butter for owners, lavender for people looking
+  $("reqBand").dataset.band = owner ? "butter" : "lav"; bandSync();   // the band takes the side's colour: butter for owners, lavender for people looking
   $("notifReq").innerHTML = notifyCard(owner ? "Get a notification the moment someone asks to meet you, even when the app is closed."
     : "Get a notification the moment an owner says yes, so you can call before anyone else.");
   renderUrgent();
@@ -9199,6 +9320,7 @@ async function fillPostForm(l){
   $("hFree").value = String(Math.min(4, Math.max(1, Number(hh.rooms_free) || 1))); $("hFree").dataset.touched = "1";
   $("fmRows").innerHTML = fmRowsHtml(hh.flatmates || [], Number($("hCount").value), "p", hh.flatmate_genders);
   $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
+  $("hQuiz").closest("details").open = answered(hh) < MIN_VIBE;   // no answers on this listing yet: shown, not tucked away
   $("hInt").innerHTML = interestChips("hi", hh.interests);
   syncRoomsFree();
   keepPhotos = photosOf(l); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
@@ -9329,8 +9451,17 @@ attachAreaSuggest($("pLocality"), () => $("pCity").value);
 function renderPost(){
   if(editing) return fillPostForm(editing);
   showPostStep(1);
-  const d = state.homeDraft || {};
+  // The home's living-style answers come from the ones given at sign-up, kept on this phone. On another phone, or
+  // after a reinstall, there are none: use your own answers, and then the ones on your newest listing, so a room is
+  // never posted without them (without them nobody can be scored against it, in Discover or in the Escape).
+  const own = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger((state.vibe || {})[x.k])).map(x => [x.k, state.vibe[x.k]]).concat(GEN_BADGE[(state.vibe || {}).gen] ? [["gen", state.vibe.gen]] : []));
+  const d = answered(state.homeDraft) >= MIN_VIBE || answered(own) < MIN_VIBE ? state.homeDraft || {} : Object.assign({}, state.homeDraft, own);
   $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
+  $("hQuiz").closest("details").open = false;
+  if(answered(d) < MIN_VIBE) api.myListings().then(ls => {
+    const src = ls.find(l => answered(l.household) >= MIN_VIBE);
+    if(src && !editing && currentView === "post" && !$("hQuiz").querySelector("input:checked")) $("hQuiz").innerHTML = genHtml("h", src.household.gen, "Your household's generation") + quizHtml("h", src.household);
+  }).catch(() => {});
   $("hInt").innerHTML = interestChips("hi", d.interests);
   if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
   $("fmRows").innerHTML = ""; renderFmRows();
@@ -13152,11 +13283,20 @@ const PACK = [
   ["#lBody .lock > p:not(.safe-pay)", 2]
 ];
 function packText(){
-  for(const [sel, n] of PACK) document.querySelectorAll(sel).forEach(el => {
-    if(el.dataset.pk || !el.offsetParent || el.closest(".pk")) return;
-    if(el.textContent.trim().length < 100){ el.dataset.pk = "short"; return; }   // a "More" link for a short sentence saves nothing
-    el.dataset.pk = "1"; el.classList.add("pk"); el.style.setProperty("--pk", n);
-    if(el.scrollHeight <= el.clientHeight + 2){ el.classList.remove("pk"); return; }
+  // Look first, then change, then measure once, then add the links: the page is laid out twice for the whole batch,
+  // not once per paragraph (which made every screen change stutter on a slow phone).
+  const fresh = [], short = [];
+  for(const [sel, n] of PACK) for(const el of document.querySelectorAll(sel)){
+    if(el.dataset.pk || !el.offsetParent || el.closest(".pk")) continue;
+    if(el.textContent.trim().length < 100) short.push(el); else fresh.push([el, n]);   // a "More" link for a short sentence saves nothing
+  }
+  for(const el of short) el.dataset.pk = "short";
+  const todo = fresh.filter(([el]) => !fresh.some(([o]) => o !== el && o.contains(el)));
+  if(!todo.length) return;
+  for(const [el, n] of todo){ el.dataset.pk = "1"; el.classList.add("pk"); el.style.setProperty("--pk", n); }
+  const fits = todo.map(([el]) => el.scrollHeight <= el.clientHeight + 2);
+  todo.forEach(([el], i) => {
+    if(fits[i]){ el.classList.remove("pk"); return; }
     const b = document.createElement("button");
     Object.assign(b, { type: "button", className: "pk-more", textContent: "More" }); b.setAttribute("aria-expanded", "false");
     b.addEventListener("click", () => { const o = el.classList.toggle("open"); b.textContent = o ? "Less" : "More"; b.setAttribute("aria-expanded", String(o)); });
@@ -13164,21 +13304,37 @@ function packText(){
   });
 }
 let packQueued = false;
-new MutationObserver(() => { if(packQueued) return; packQueued = true; requestAnimationFrame(() => { packQueued = false; packText(); }); })
-  .observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
-// The top bar gets a soft shade only once the page scrolls under it.
-addEventListener("scroll", () => { const h = $("appHead"); if(h) h.classList.toggle("scrolled", scrollY > 4); bandSync(); }, { passive: true });
+// Changes inside the top and bottom bars (a badge, the tab you're on) and toasts bring no new paragraphs: nothing to do.
+const PACK_SKIP = "#appHead, .toast";
+new MutationObserver(recs => {
+  if(packQueued || recs.every(r => { const t = r.target.nodeType === 1 ? r.target : r.target.parentElement; return t && t.closest(PACK_SKIP); })) return;
+  packQueued = true; requestAnimationFrame(() => { packQueued = false; packText(); });
+}).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
+// The top bar gets a soft shade only once the page scrolls under it. While scrolling, the page is only touched at the
+// two moments something changes (the shade, the band's colour): nothing is measured and nothing is written in between.
+let headShade = null;
+addEventListener("scroll", () => {
+  const on = scrollY > 4;
+  if(on !== headShade){ headShade = on; const h = $("appHead"); if(h) h.classList.toggle("scrolled", on); }
+  bandApply();
+}, { passive: true });
 // The home band (phones; Kamal, 15 Nov): while the greeting's pastel band is under the top bar, the bar takes the
 // band's colour, so the two read as one layer. Once the sheet below reaches the bar, it goes back to the page's.
+// bandSync measures (when a screen shows, its words arrive or the phone turns); bandApply only compares numbers.
 const PHONE_WIDE = matchMedia("(max-width:720px)");
+let bandGeo = null;   // { band: its colour name, bottom: where it ends on the page, head: where the top bar ends on the screen }
 function bandSync(){
   const h = $("appHead"), b = document.querySelector("#appMain > section:not([hidden]) .home-band");
-  const on = Boolean(b && b.offsetParent && PHONE_WIDE.matches && b.getBoundingClientRect().bottom - 30 > h.getBoundingClientRect().bottom);
-  if(on) h.dataset.band = b.dataset.band;
-  h.classList.toggle("on-band", on);
+  bandGeo = b && b.offsetParent && PHONE_WIDE.matches ? { band: b.dataset.band, bottom: b.getBoundingClientRect().bottom + scrollY, head: h.getBoundingClientRect().bottom } : null;
+  bandApply();
+}
+function bandApply(){
+  const h = $("appHead"), on = Boolean(bandGeo && bandGeo.bottom - scrollY - 30 > bandGeo.head);
+  if(on && h.dataset.band !== bandGeo.band) h.dataset.band = bandGeo.band;
+  if(h.classList.contains("on-band") !== on) h.classList.toggle("on-band", on);
 }
 // the band's size changes when its view is shown or hidden, when its words arrive, and when the screen turns
-if(window.ResizeObserver){ const ro = new ResizeObserver(bandSync); document.querySelectorAll(".home-band").forEach(b => ro.observe(b)); }
+if(window.ResizeObserver){ const ro = new ResizeObserver(bandSync); document.querySelectorAll(".home-band").forEach(b => ro.observe(b)); ro.observe($("appHead")); }
 addEventListener("resize", bandSync, { passive: true });
 // Sign-up: the line explaining the picked choice shows under the tiles (on phones the tiles show only their titles).
 $("loginForm").addEventListener("change", e => {
@@ -13194,27 +13350,40 @@ setCitySelect($("fCity"), "", "All cities");
 setCitySelect($("pCity"), CITIES[0]);
 $("pAmen").innerHTML = AMENITIES.map(a => `<label class="chip"><input type="checkbox" value="${esc(a)}">${esc(a)}</label>`).join("");
 
+// What the first screen is drawn from. If the server's answer (fm_me) changes none of it, that screen stays as it is.
+const bootSig = () => JSON.stringify([state.account, state.user, state.onboarded, state.vibe, state.interests, state.credits, state.pending, state.packs,
+  state.passes, state.giftGiven, state.discoverable, CHARGES_ON]);
 (async function boot(){
   loadAds();
   load();
+  applyPrefs();
+  const note = LIVE ? "" : "Demo mode: sample homes, and nothing you enter leaves this browser. Sample owners reply to requests within a few seconds.";
+  $("modeNote").textContent = note; $("appFoot").textContent = note;
+  // Live: the first screen shows at once, from what this phone remembers (the welcome page for a new visitor, the
+  // app's own frame for someone signed in), while the server is asked. Its calls wait for the server client (waitingApi).
+  let drawn = null;
+  if(LIVE && !holdSeen()){ if(state.chargesOn === false) CHARGES_ON = false; drawn = bootSig(); route(); }
   // Live mode never falls back to demo data: that would let someone post a listing nobody else can see.
+  let retried = false;
   for(;;){
-    try{ await initApi(); if(state.user) await api.me(); break; }
+    try{ await initApi(); if(!LIVE && state.user) await api.me(); break; }
     catch(err){
       console.error("Couldn't reach the server.", err);
       if(!LIVE){ api = demoApi; break; }
-      await offlineWait();
+      await offlineWait(); retried = true;
     }
   }
   applyPrefs();
-  const note = api.live ? "" : "Demo mode: sample homes, and nothing you enter leaves this browser. Sample owners reply to requests within a few seconds.";
-  $("modeNote").textContent = note; $("appFoot").textContent = note;
-  route();
+  serverSaid = true;
+  // Drawn again when it must be: demo mode; the server knows something this phone didn't (signed out, another role,
+  // new answers); or the connection failed on the way, so whatever the first screen asked for never arrived.
+  if(retried || drawn !== bootSig()) route();
+  else setTimeout(maybeAskGender, 600);
   renderWelcomeInvite();
   maybeShowVibeInvite();
   claimReferral();
   claimAttribution();
-  checkInbox();
+  checkInbox(true);
   checkExtras();
   // The Android app ships its files inside the APK, so it doesn't need one.
   if("serviceWorker" in navigator && location.hostname !== "appassets.androidplatform.net" &&
