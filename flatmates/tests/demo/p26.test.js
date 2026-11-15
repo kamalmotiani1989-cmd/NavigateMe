@@ -23,7 +23,7 @@ const open = async (b, st, w, h, hash) => { const ctx = await b.newContext({ vie
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); await p.goto(U + '#' + hash); await p.waitForTimeout(1700); await closeDlgs(p); await p.waitForTimeout(200); return { ctx, p }; };
 // what the band, the top bar and the sheet look like right now
 const look = p => p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
-  const band = document.querySelector('#appMain > section:not([hidden]) > .home-band'), head = $('appHead'), r = e => e.getBoundingClientRect();
+  const band = [...document.querySelectorAll('#appMain > section:not([hidden]) .home-band')].find(e => e.offsetParent), head = $('appHead'), r = e => e.getBoundingClientRect();
   if(!band || !band.offsetParent) return { band: false, onBand: head.classList.contains('on-band'), headBg: getComputedStyle(head).backgroundColor, page: tok('--bg') };
   const cs = getComputedStyle(band), after = getComputedStyle(band, '::after'), next = band.nextElementSibling;
   const rgb = s => (s.match(/[\d.]+/g) || []).map(Number), lum = c => { const a = c.slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
@@ -66,11 +66,11 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   ok(B.radius >= 30 && B.alpha >= .7 && B.alpha < 1 && B.blur && B.left >= 12 && B.right >= 12 && B.bottom >= 10, 'bottom bar: a frosted pill floating above the edge: ' + JSON.stringify({ radius: B.radius, alpha: B.alpha, blur: B.blur, left: B.left, right: B.right, bottom: B.bottom }));
   ok(B.names.join() === 'Discover,Saved,Parties,Splits,Market,Passes' && B.icons && !B.cut.length, 'every place keeps its icon and its name: ' + B.names.join(' · '));
   ok(B.cur.view === 'discover' && B.cur.bg === B.tok.lav && B.cur.color === B.tok.text && B.cur.radius >= 24 && B.idle === B.tok.text2, 'the screen you\'re on is a soft lavender pill with dark words (not a black button): ' + JSON.stringify(B.cur));
-  // other screens: their own pastel on the tab, and no band
-  for(const [view, name, col] of [['saved', 'Saved', 'blush'], ['splits', 'Splits', 'lav'], ['market', 'Market', 'butter'], ['plans', 'Passes', 'blush']]){   // (Parties has a band of its own: p27)
+  // other screens: their own pastel on the tab, the same as the band at the top of the screen (p27 walks every band)
+  for(const [view, name, col] of [['saved', 'Saved', 'blush'], ['parties', 'Parties', 'butter'], ['splits', 'Splits', 'lav'], ['market', 'Market', 'butter'], ['plans', 'Passes', 'blush']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250);
     B = await bar(p); L = await look(p);
-    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok[col] && B.cur.color === B.tok.text && !L.band && !L.onBand && L.headBg !== B.tok.lav, name + ': the tab is a ' + col + ' pill; no band, and the top bar is back on the page');
+    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok[col] && B.cur.color === B.tok.text && L.band && L.bandBg === B.tok[col] && L.onBand && L.headBg === B.tok[col], name + ': the tab is a ' + col + ' pill, the colour of the screen\'s own band');
     if(view === 'market') await p.screenshot({ path: O + '/p26-bar-market.png' }); }
   await p.goto(U + '#discover'); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); L = await look(p);
   ok(L.onBand && L.headBg === L.lav, 'back on Discover: the band and the bar\'s colour return');
@@ -85,7 +85,7 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   await p.screenshot({ path: O + '/p26-home-owner.png' });
   for(const [view, col] of [['escape', 'mint'], ['post', 'butter']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); B = await bar(p); L = await look(p);
-    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok[col] && !L.onBand, view + ': the tab is a ' + col + ' pill, no band'); }
+    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok[col] && L.band && L.bandBg === B.tok[col] && L.onBand, view + ': the tab is a ' + col + ' pill, the colour of the screen\'s own band'); }
   await ctx.close();
   // seven places still fit on small phones, names whole
   for(const w of [320, 360]){ ({ ctx, p } = await open(b, owner, w, 700, 'mine')); B = await bar(p);

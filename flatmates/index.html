@@ -2329,19 +2329,22 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
    ===================================================================================================== */
 .home-band[data-band="lav"], .app-head[data-band="lav"]{--band:var(--lav)}
 .home-band[data-band="butter"], .app-head[data-band="butter"]{--band:var(--butter)}
+.home-band[data-band="mint"], .app-head[data-band="mint"]{--band:var(--mint)}
+.home-band[data-band="blush"], .app-head[data-band="blush"]{--band:var(--blush)}
 @media (max-width:720px){
   /* edge to edge: out to the sides of the screen, the words kept in line with the page below */
-  .home-band{position:relative; overflow:hidden; margin:0 calc(50% - 50vw) -10px; padding:12px calc(50vw - 50%) 52px; color:var(--text);
+  .home-band{position:relative; overflow:hidden; margin:0 calc(50% - 50vw) -10px; padding:12px calc(50vw - 50%) 52px; border-radius:0; box-shadow:none; color:var(--text);
     background:radial-gradient(circle at 8% 118%, rgba(255,255,255,.26) 0 96px, transparent 97px) var(--band)}
   .home-band + .d-controls{margin-top:10px}
-  .home-band::before{content:""; position:absolute; right:-76px; top:-96px; width:236px; height:236px; border-radius:50%; background:rgba(255,255,255,.3); pointer-events:none}
+  .home-band::before{content:""; position:absolute; left:auto; bottom:auto; right:-76px; top:-96px; width:236px; height:236px; border-radius:50%; background:rgba(255,255,255,.3); pointer-events:none}
   /* the top of the sheet: the page's own colour, rounded, drawn over the foot of the band */
-  .home-band::after{content:""; position:absolute; left:0; right:0; bottom:-1px; height:30px; border-radius:30px 30px 0 0; background:var(--bg); pointer-events:none}
+  .home-band::after{content:""; position:absolute; top:auto; width:auto; left:0; right:0; bottom:-1px; height:30px; border-radius:30px 30px 0 0; background:var(--bg); pointer-events:none}
   .home-band > *{position:relative}
-  .home-band .eyebrow, .home-band p.eyebrow, .home-band p, .home-band :is(a, .linkbtn){color:var(--text)}
+  .home-band .eyebrow, .home-band p.eyebrow, .home-band p, .home-band :is(small, li), .home-band :is(a, .linkbtn){color:var(--text)}
   .home-band a{font-weight:700; text-decoration:underline; text-underline-offset:3px}
   .home-band h1{color:var(--ink)}
   .home-band .gift-pill{background:#fff; color:var(--text)}
+  #view-account .acc-hero.home-band{margin-top:0}
   /* the top bar is part of the band while the band is under it (bandSync), then goes back to the page's colour */
   .app-head.on-band, .app-head.on-band.scrolled{background:var(--band); box-shadow:none}
 
@@ -2359,6 +2362,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   .esc-bar{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
   body:has(#escBar:not([hidden])) .help-fab{bottom:calc(152px + env(safe-area-inset-bottom,0px))}
 }
+/* small things put right on the way (15 Nov) */
+.empty .pk-more{display:block; margin:2px auto 10px}                      /* "More" sat on the same line as the button below it */
+.esc-bar{background:var(--ink); color:#fff} .esc-bar .btn-accent{background:#fff; color:var(--ink)}   /* the "N selected" bar was the old teal */
 /* the smallest phones (320 wide): the round buttons in the top bar keep their shape, and Tribe is its icon alone */
 .app-head .me, .hd-ic{flex:none}
 @media (max-width:350px){ .hd-tribe{width:44px; padding:0; justify-content:center} .hd-tribe span{display:none} }
@@ -2741,7 +2747,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- both: requests -->
   <section id="view-requests" hidden>
-    <div class="page-h"><h1 id="reqTitle">Requests</h1><p id="reqSub"></p></div>
+    <div class="page-h home-band" data-band="lav" id="reqBand"><h1 id="reqTitle">Requests</h1><p id="reqSub"></p></div>
     <div id="urgentReq"></div>
     <div id="notifReq"></div>
     <div id="reqList"></div>
@@ -2749,7 +2755,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- seeker: Build your tribe -->
   <section id="view-tribe" hidden>
-    <div class="tribe-hero">
+    <div class="tribe-hero home-band" data-band="mint">
       <div class="orbit" id="tribeOrbit" aria-hidden="true"></div>
       <p class="eyebrow">Build your tribe</p>
       <h1>Find your people first. Then the flat.</h1>
@@ -2770,7 +2776,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- seeker: saved -->
   <section id="view-saved" hidden>
-    <div class="page-h"><h1>Saved flats</h1><p id="savedSub">Your shortlist. Compare them here before you decide which ones to contact.</p></div>
+    <div class="page-h home-band" data-band="blush"><h1>Saved flats</h1><p id="savedSub">Your shortlist. Compare them here before you decide which ones to contact.</p></div>
     <div class="cards" id="savedCards" style="margin-top:18px"></div>
   </section>
 
@@ -2794,7 +2800,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- owner: The Empty Room Escape -->
   <section id="view-escape" hidden>
-    <div class="esc-hero">
+    <div class="esc-hero home-band" data-band="mint">
       <p class="eyebrow">Don't wait for them to find you</p>
       <h1>The Empty Room Escape</h1>
       <p id="escLead">People already looking for a room in your area, with their budget and how well they'd fit your home.
@@ -2813,7 +2819,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- owner: post -->
   <section id="view-post" hidden>
-    <div class="page-h"><h1 id="postH1">Describe your room</h1><p id="postIntro">Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
+    <div class="page-h home-band" data-band="butter"><h1 id="postH1">Describe your room</h1><p id="postIntro">Your phone number and exact address stay private. Only people who unlock your listing see them.</p></div>
     <div class="panel">
       <div class="edit-bar" id="editBar" hidden><span>Editing <b id="editTitle"></b></span><button class="btn btn-ghost btn-sm" type="button" id="editCancel">Cancel</button></div>
       <form id="postForm" novalidate autocomplete="on">
@@ -2928,12 +2934,12 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   <!-- both: account -->
   <!-- both: Passes (a tab until a pass is bought) -->
   <section id="view-messages" hidden>
-    <div class="greet"><p class="eyebrow">Messages</p><h1>Your chats</h1><p>With people you've both said yes to: rooms, your tribe, FlatMart deals and Flatsplits groups.</p></div>
+    <div class="greet home-band" data-band="mint"><p class="eyebrow">Messages</p><h1>Your chats</h1><p>With people you've both said yes to: rooms, your tribe, FlatMart deals and Flatsplits groups.</p></div>
     <div id="msgsList" class="msgs-list"></div>
   </section>
 
   <section id="view-plans" hidden>
-    <div class="plans-hero">
+    <div class="plans-hero home-band" data-band="blush">
       <p class="eyebrow">Passes</p>
       <h1 id="plHead"></h1>
       <p id="plSub"></p>
@@ -2945,12 +2951,12 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   </section>
 
   <section id="view-account" hidden>
-    <div id="accPasses"></div>
-    <div class="acc-hero">
+    <div class="acc-hero home-band" data-band="lav">
       <span class="acc-av" id="accAvatar"></span>
       <div class="acc-id"><h1 id="accName"></h1><span class="acc-role" id="accRole"></span><span class="acc-phone" id="accPhone"></span>
         <button class="btn btn-ghost btn-sm acc-av-edit" type="button" id="accAvEdit" data-av-edit="account">Make your avatar</button></div>
     </div>
+    <div id="accPasses"></div>
     <div class="panel" id="vibePanel"><div class="panel-top">
       <div><h2>How you live</h2><p class="sub">Used to work out your match with each household.</p></div>
       <button class="btn btn-ghost btn-sm" data-vibe-open>Edit</button></div>
@@ -3001,7 +3007,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
   <!-- both: Flatsplits -->
   <section id="view-splits" hidden>
     <div id="fsHome">
-      <div class="fs-hero">
+      <div class="fs-hero home-band" data-band="lav">
         <p class="eyebrow">Flatsplits</p>
         <h1>Split rent, bills and groceries. Stay friends.</h1>
         <p>Add an expense in seconds and see who owes whom. Pay back over UPI in one tap. Rent, Wi-Fi and the maid can be added automatically every month.</p>
@@ -3014,7 +3020,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
   <!-- both: FlatMart -->
   <section id="view-market" hidden>
-    <div class="mk-hero">
+    <div class="mk-hero home-band" data-band="butter">
       <p class="eyebrow">FlatMart</p>
       <h1>Buy and sell with people who live nearby.</h1>
       <p>Moving in? Pick up a bed, a fridge or a study table for a fraction of the price. Moving out? Sell it to someone down the road.
@@ -8007,6 +8013,7 @@ async function renderRequests(){
   const waiting = list.filter(r => r.status === "pending" && r.by !== "owner").length;
   const invites = owner ? [] : list.filter(r => r.by === "owner" && r.status === "pending");
   $("reqTitle").textContent = owner ? "People who'd like to meet you" : "Your requests";
+  $("reqBand").dataset.band = owner ? "butter" : "lav";   // the band takes the side's colour: butter for owners, lavender for people looking
   $("notifReq").innerHTML = notifyCard(owner ? "Get a notification the moment someone asks to meet you, even when the app is closed."
     : "Get a notification the moment an owner says yes, so you can call before anyone else.");
   renderUrgent();
@@ -13167,7 +13174,7 @@ addEventListener("scroll", () => { const h = $("appHead"); if(h) h.classList.tog
 // band's colour, so the two read as one layer. Once the sheet below reaches the bar, it goes back to the page's.
 const PHONE_WIDE = matchMedia("(max-width:720px)");
 function bandSync(){
-  const h = $("appHead"), b = document.querySelector("#appMain > section:not([hidden]) > .home-band");
+  const h = $("appHead"), b = document.querySelector("#appMain > section:not([hidden]) .home-band");
   const on = Boolean(b && b.offsetParent && PHONE_WIDE.matches && b.getBoundingClientRect().bottom - 30 > h.getBoundingClientRect().bottom);
   if(on) h.dataset.band = b.dataset.band;
   h.classList.toggle("on-band", on);
