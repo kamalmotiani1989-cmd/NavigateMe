@@ -1,5 +1,24 @@
 # Teche · reports
 
+## 2026-11-15, website repo PR #2 merged (status message), on Kamal's yes
+
+- **What:** findmeflatmate PR #2 is merged (8679471). One line in the last step of its `publish.yml`: the step now
+  knows the site by how its title starts, so it stops printing "not this site yet" for a site that is fine.
+- **Who merged, and why me:** priorities says Kamal merges there. He tried on his phone and found no merge button:
+  his phone's browser is signed in to GitHub with a different account from `kamalmotiani1989-cmd` (in his screenshot
+  the picture at the top right is not the PR author's), and an account that can't write to the repo is shown no
+  merge button. I asked him; he chose "Yes, merge it". Merged on that yes, not on my own.
+- **Checked:** ran `publish.yml` once (run 141, passed). Its summary now reads "(FindMeFlatMate)" for all three
+  addresses. The site's files are unchanged; Android build 212 is unchanged (same checksum).
+- **Good to know:**
+  - The website repo's `main` and `gh-pages` are both 8679471, the merge, until the next app change is published;
+    after that they say "Publish the app from NavigateMe <sha>" again.
+  - "status: errored" in the job's summary is not a failure. Every publish starts two Pages builds (one from its
+    push, one it asks for); the first is replaced by the second and shows as cancelled, the second passes. The
+    build for 8679471 passed.
+- **For Kamal:** nothing. Still open: #86 privacy blanks, #95 merge or close, the host page and the strip behind
+  the clock (both raised with #104).
+
 ## 2026-11-15, Tribe and Saved change places on phones (#105) live
 
 - **What (Kamal: "Interchange the position of tribe and saved or shortlisted buttons on the app"):** on phones Tribe
@@ -170,14 +189,3 @@
   [maker](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-maker.png), [chat](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c5a27a7a88a2e3336e88dd4ba1b9b03fa8097866/avatars-chat.png).
 - **Note:** I couldn't confirm the Open Peeps licence (the site doesn't resolve from here), so all the parts are our
   own drawings.
-
-## 2026-11-13, app update card (#92) live
-
-- **What (Kamal):** the Android app now says "A new version of the app is ready", with an Update button, when a
-  newer build is out.
-  - How: it compares its own build number (sent from MainActivity) with the "build N" in the public flatmates-apk
-    release notes, at most every 6 hours.
-  - The × hides it for a day, per version. The website never shows it.
-- **Published:** 663d7aa; the release notes say build 197. The APK build passed, so the Java change compiles.
-- **Note:** only phones on build 197 or later can check, so everyone needs one manual download first.
-- **Tests:** new suite p20; 18 suites, 0 failed. No database change.
