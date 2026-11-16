@@ -1,5 +1,38 @@
 # Teche · reports
 
+## 2026-11-16, Monday check: all green. A preview of a new look is with Kamal (nothing merged)
+
+- **Monday check:** the last runs on `main` are green (the website workflow, Pages, and Android build 215 on the
+  #109 merge). The demo suites last ran on exactly this app code when #109 was merged (28 suites, 668 checks;
+  database 235); I did not run them a second time today. Open PRs: seven, none new (#62, #73, #84, #86, #93, #94,
+  #95), all waiting on Kamal or King. Supabase advisors: nothing new. The warnings are the known ones: the app's
+  functions run as "security definer" (that is how the app talks to the database; the eight a signed-out visitor
+  can call are exactly the ones `schema.sql` grants), `pg_net` sits in the public schema, the leaked-password check
+  is off (we have no passwords), and there are info notes on indexes.
+- **What Kamal asked (16 Nov):** two recordings and "Fix this. Also copy syle and colors of dwelo. Change the orange
+  color to light red color show me 2 -3 pages before finalising".
+- **This goes against a standing rule, and Kamal wins:** my brief says to keep the look Kamal chose on 8 Nov with no
+  new colours. Kamal himself now asks for the change and asks to see it first. So nothing is merged, pushed or
+  published. The preview is only on my machine (branch `claude/dwelo-look`, not pushed: the demo suites check
+  today's colours, so they would not pass, and nothing goes up untested).
+- **What I showed him:** before and after pictures of the first page, the home screen and a home's page, plus
+  Profile and Tribe in the new look.
+  - A cream page with white cards and warm shadows.
+  - One light red (`#EE6468`) where the orange was: the logo, the small labels, links, the place you are on in the
+    bottom bar and the main buttons.
+  - A deep aubergine for text and the few dark pieces (the flatmate-type card, a home's header with no photo).
+  - Headings in a serif (DM Serif Display, open licence, bundled like our other fonts). The rest stays Urbanist.
+  - The login steps and the onboarding questions are untouched.
+- **A choice I made, for Kamal to overrule:** the main buttons carry dark words on the light red (5.4:1). White
+  words, as Dwelo has, would be 3.1:1, under the 4.5:1 our tests hold every screen to. Our light red is also a
+  touch redder than Dwelo's coral, because he asked for light red.
+- **"Fix this" is not understood yet:** one recording is of Dwelo (its home, profile and delete-account steps). The
+  other is of a different, unrelated app from March 2025. I asked Kamal what he wants fixed.
+- **Waiting on Kamal:** a yes or changes to the look, and what "fix this" means. Still open from before: whether
+  Tribe matches under 70% should be announced, and the message limit of 30 an hour and 60 a day.
+- **Left to do after his yes:** every other screen in the same look, the app icon and share pictures in light red,
+  the tests that check colours, the README's "Look and feel", then the usual PR, build and publish.
+
 ## 2026-11-16, Tribe shows people down to a 30% vibe match (#109) live
 
 - **What Kamal asked (16 Nov):** "In tribe show the match upto 30%".
@@ -202,34 +235,3 @@
   behind the clock and battery (needs a change in the Android shell, which I can't try on a phone from here);
   icons only in the bottom bar.
 - **Still waiting on Kamal:** findmeflatmate PR #2 (one line), #86 privacy blanks, #95 merge or close.
-
-## 2026-11-15, website refresh (#101) live; Android builds only for app changes (#102)
-
-- **What (Kamal: "make the website also better"):** the page a visitor sees before signing in.
-  - The picture at the top is a match card drawn from our cartoon people, where the grey skyline was.
-  - "How it works" is a card for each side, each with its own button.
-  - New parts: try a search (the app's own search reader, live), Safety (six things the app already does), the
-    Move-in kit and flatmate-type cards, ten questions and answers, a closing band.
-  - On a phone the "More than a room" cards are a row to swipe; nothing scrolls sideways from 320 wide.
-  - On a computer the opening story and the welcome are a card in the middle of the screen.
-- **For search engines and shared links:** the title is now "FindMeFlatMate: find flatmates who match your vibe"; a
-  1200 x 630 share picture (`og-image.png`); `robots.txt`, `sitemap.xml`; the FAQ as schema.org data. No ads, no
-  "download now" wording added; sign-up is as before.
-- **Not changed:** login, colours, onboarding questions. No database change.
-- **Checked against the README:** every claim on the page (pricing, two addresses, what a report pauses, the kit).
-- **Tests:** all 23 demo suites pass; new suite `p25` (32 checks), also run on the compacted page.
-- **Published:** c3c590d; Android build 209. I can't open findmeflatmate.com from my machine (its network blocks
-  it), so I checked the website repo: `gh-pages` holds the new page and the three new files.
-- **Also fixed (#102):** every push under `flatmates/` (reports, marketing files, tests, the README) started an
-  Android build with a new number, and since #92 the app shows "a new version is ready" for any higher number. So
-  people with the app were being told to update when nothing had changed. The build now starts only when the app's
-  own files change (`index.html`, `privacy.html`, the manifest, `icons/`, `vendor/`, `android/`). Reports no longer
-  start one. Newest build is still 209.
-- **Waiting on Kamal:** findmeflatmate PR #2, one line. The publish job's status line looks for the exact old title
-  and now prints "not this site yet" for a site that is fine. It only reports; publishing works as before.
-- **Screenshots:** [computer](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-computer.png),
-  [phone](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-phone-before-after.png),
-  [new parts](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-phone-new.png),
-  [share picture](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-share-picture.png).
-- **Next (Kamal, 15 Nov, from a Dwelo screenshot):** a two-layer home (colour on top, a rounded sheet over it) and a
-  lighter floating bottom bar, in our colours.
