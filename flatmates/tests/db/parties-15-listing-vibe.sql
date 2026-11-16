@@ -5,6 +5,9 @@
 -- Kamal, 16 Nov: "Fix the vibe fill-in when the lister doesn't live in the flat". The lister's answers stand in for
 -- the household only when the lister is one of them (a room, a bed or a flatmate listing with 1 or more people
 -- living there). A whole flat, or a home nobody lives in yet, carries no living-style answers at all, so no score.
+-- Kamal, 16 Nov, "Go and yes to all": the posting form asks "Do you live in this flat?" (household.lister_lives_here).
+-- On No the lister's answers are never copied, though people live there; answers given for the household are kept.
+-- A listing that doesn't say is read as before: the lister lives there when anyone does.
 insert into auth.users (id, phone) values ('75000000-0000-4000-8000-000000000151', '919800000151'), ('75000000-0000-4000-8000-000000000152', '919800000152'),
   ('75000000-0000-4000-8000-000000000153', '919800000153') on conflict do nothing;
 insert into fm_profiles (id, phone, full_name, role, gender, vibe, search, discoverable) values
@@ -19,7 +22,14 @@ select pg_temp.ok(fm_lister_lives('room', '{"residents":1}') and fm_lister_lives
   'the lister lives there: a room, a bed or a flatmate listing with 1 or more people living there');
 select pg_temp.ok(not fm_lister_lives('room', '{"residents":0}') and not fm_lister_lives('flat', '{"residents":3}') and not fm_lister_lives('room', '{}')
   and not fm_lister_lives('room', null) and not fm_lister_lives('shared', '{"residents":"many"}') and not fm_lister_lives('flatmate', '[1]'),
-  'the lister does not: a home nobody lives in, any whole flat, and a listing that doesn''t say (never an error)');
+  'the lister does not: a home nobody lives in, any whole flat, and a listing with no count of people (never an error)');
+select pg_temp.ok(fm_home_lived_in('room', '{"residents":1}') and fm_home_lived_in('shared', '{"residents":4,"lister_lives_here":false}') and fm_home_lived_in('flatmate', '{"residents":"2"}')
+  and not fm_home_lived_in('room', '{"residents":0}') and not fm_home_lived_in('flat', '{"residents":3}') and not fm_home_lived_in('room', '{}') and not fm_home_lived_in('room', null),
+  'someone lives there: a room, a bed or a flatmate listing with 1 or more people, whoever the lister is');
+select pg_temp.ok(fm_lister_lives('room', '{"residents":2,"lister_lives_here":true}') and fm_lister_lives('room', '{"residents":2}')
+  and not fm_lister_lives('room', '{"residents":2,"lister_lives_here":false}') and not fm_lister_lives('shared', '{"residents":1,"lister_lives_here":"false"}')
+  and not fm_lister_lives('room', '{"residents":0,"lister_lives_here":true}') and not fm_lister_lives('flat', '{"residents":2,"lister_lives_here":true}'),
+  'the lister is one of them: when the listing says yes, or doesn''t say; not when it says no; never where nobody lives or in a whole flat');
 -- the rule itself, where the lister lives there
 select pg_temp.ok(fm_vibe_count(fm_listing_vibe('room', '{"residents":1}', '{"sleep":1,"clean":1,"food":1,"cook":1,"gen":"z"}')) = 4
   and fm_listing_vibe('room', '{"residents":1}', '{"sleep":1,"clean":1,"food":1,"cook":1,"gen":"z"}')->>'gen' = 'z'
@@ -41,6 +51,16 @@ select pg_temp.ok(fm_listing_vibe('room', '{"residents":0}', '{"sleep":1,"clean"
 select pg_temp.ok(fm_listing_vibe('room', '{"residents":0,"sleep":0,"clean":0,"food":0,"cook":0,"smoke":1,"gen":"g","interests":{"music":["Indie"]}}', '{"sleep":0,"clean":0,"food":0,"cook":0,"smoke":1,"gen":"g"}') = '{"residents":0,"interests":{"music":["Indie"]}}'::jsonb
   and fm_listing_vibe('flat', '{"residents":1,"sleep":2,"clean":2,"food":2,"cook":2,"pets":1,"gen":"z","rooms_free":1}', null) = '{"residents":1,"rooms_free":1}'::jsonb,
   'listing vibe: answers sent for a home the lister doesn''t live in (an older app pre-fills them) are dropped, with the generation; the rest stays');
+-- the rule itself, where people live there and the lister says they are not one of them
+select pg_temp.ok(fm_listing_vibe('room', '{"residents":2,"lister_lives_here":false}', '{"sleep":1,"clean":1,"food":1,"cook":1,"smoke":1,"gen":"z"}') = '{"residents":2,"lister_lives_here":false}'::jsonb,
+  'listing vibe: tenants live there, the lister doesn''t: the lister''s answers are not copied, and the listing stays without');
+select pg_temp.ok(fm_listing_vibe('shared', '{"residents":2,"lister_lives_here":false,"sleep":0,"clean":0,"food":0,"cook":0,"smoke":2,"gen":"g"}', '{"sleep":2,"clean":2,"food":2,"cook":2,"smoke":0,"gen":"z"}')
+    = '{"residents":2,"lister_lives_here":false,"sleep":0,"clean":0,"food":0,"cook":0,"smoke":2,"gen":"g"}'::jsonb
+  and fm_listing_vibe('room', '{"residents":1,"lister_lives_here":false,"sleep":0,"clean":0}', '{"sleep":2,"clean":2,"food":2,"cook":2,"gen":"z"}') = '{"residents":1,"lister_lives_here":false,"sleep":0,"clean":0}'::jsonb,
+  'listing vibe: answers the lister gave for the people who live there are kept exactly, 4 or more, or fewer; nothing of the lister''s own is added');
+select pg_temp.ok(fm_vibe_count(fm_listing_vibe('room', '{"residents":2,"lister_lives_here":true}', '{"sleep":1,"clean":1,"food":1,"cook":1,"gen":"z"}')) = 4
+  and fm_listing_vibe('room', '{"residents":0,"lister_lives_here":true,"sleep":1,"clean":1,"food":1,"cook":1}', null) = '{"residents":0,"lister_lives_here":true}'::jsonb,
+  'listing vibe: a yes copies as before; and a yes on a home nobody lives in still keeps no answers');
 -- on the table: filled when posted where the lister lives there, kept when it has its own, left empty when the lister has none, never filled where nobody lives
 insert into fm_listings (id, owner_id, kind, title, city, locality, bhk, rent, status, gender, household) values
   ('7b000000-0000-4000-8000-000000000151', '75000000-0000-4000-8000-000000000151', 'room', 'V1 the lister lives there', 'Vtest', 'Varea', 2, 9000, 'active', 'any', '{"residents":1}'),
@@ -51,7 +71,13 @@ insert into fm_listings (id, owner_id, kind, title, city, locality, bhk, rent, s
   ('7b000000-0000-4000-8000-000000000157', '75000000-0000-4000-8000-000000000151', 'room', 'V7 nobody lives there, an older app sent the lister''s answers', 'Vtest', 'Varea', 2, 9000, 'active', 'any',
      '{"residents":0,"sleep":2,"clean":1,"food":0,"cook":1,"smoke":0,"drinks":1,"guests":1,"noise":0,"social":1,"sharing":1,"work":0,"pets":1,"gen":"m","interests":{"music":["Indie"],"hobbies":[]}}'),
   ('7b000000-0000-4000-8000-000000000158', '75000000-0000-4000-8000-000000000151', 'flat', 'V8 whole flat, sent with answers', 'Vtest', 'Varea', 2, 30000, 'active', 'any',
-     '{"residents":1,"sleep":2,"clean":1,"food":0,"cook":1,"smoke":0,"gen":"m"}')
+     '{"residents":1,"sleep":2,"clean":1,"food":0,"cook":1,"smoke":0,"gen":"m"}'),
+  ('7b000000-0000-4000-8000-00000000015d', '75000000-0000-4000-8000-000000000151', 'room', 'V13 tenants live there, the lister says no, no answers', 'Vtest', 'Varea', 3, 9000, 'active', 'any',
+     '{"residents":2,"lister_lives_here":false,"flatmates":[{"type":"working","what":"Nurse"}],"flatmate_genders":["female","female"]}'),
+  ('7b000000-0000-4000-8000-00000000015e', '75000000-0000-4000-8000-000000000151', 'room', 'V14 tenants live there, the lister says no and answered for them', 'Vtest', 'Varea', 3, 9000, 'active', 'any',
+     '{"residents":2,"lister_lives_here":false,"sleep":0,"clean":0,"food":2,"cook":0,"smoke":2,"drinks":2,"gen":"z"}'),
+  ('7b000000-0000-4000-8000-00000000015f', '75000000-0000-4000-8000-000000000151', 'flatmate', 'V15 the lister says yes, no answers', 'Vtest', 'Varea', 3, 9000, 'active', 'any',
+     '{"residents":2,"lister_lives_here":true}')
   on conflict (id) do nothing;
 select pg_temp.ok((select fm_vibe_count(household) = 12 and household->>'gen' = 'm' and household->>'residents' = '1' and not household ? 'junk' from fm_listings where id = '7b000000-0000-4000-8000-000000000151'),
   'the lister lives there, posted without answers: the listing now carries the lister''s 12 answers and generation');
@@ -63,6 +89,12 @@ select pg_temp.ok((select household = '{"residents":0,"flatmates":[]}'::jsonb fr
 select pg_temp.ok((select household = '{"residents":0,"interests":{"music":["Indie"],"hobbies":[]}}'::jsonb from fm_listings where id = '7b000000-0000-4000-8000-000000000157'),
   'nobody lives there and an older app sent the lister''s own answers: they are not kept; the rest of the listing is');
 select pg_temp.ok((select household = '{"residents":1}'::jsonb from fm_listings where id = '7b000000-0000-4000-8000-000000000158'), 'a whole flat keeps no living-style answers, whatever it says about who lives there');
+select pg_temp.ok((select fm_vibe_count(household) = 0 and not household ? 'gen' and household->>'lister_lives_here' = 'false' and household->>'residents' = '2' and household ? 'flatmate_genders' from fm_listings where id = '7b000000-0000-4000-8000-00000000015d'),
+  '"Do you live in this flat?" No, with tenants living there: the lister''s 12 answers are NOT copied; the rest of the listing is kept');
+select pg_temp.ok((select fm_vibe_count(household) = 6 and household->>'sleep' = '0' and household->>'gen' = 'z' from fm_listings where id = '7b000000-0000-4000-8000-00000000015e'),
+  'No, and the lister answered for the people who live there: those answers are kept as given');
+select pg_temp.ok((select fm_vibe_count(household) = 12 and household->>'gen' = 'm' and household->>'lister_lives_here' = 'true' from fm_listings where id = '7b000000-0000-4000-8000-00000000015f'),
+  'Yes, posted without answers: the lister''s own stand in, as before');
 -- The Empty Room Escape: a score where the lister lives there, none where nobody does
 select pg_temp.as_user('75000000-0000-4000-8000-000000000151');
 select pg_temp.ok((select match_pct from fm_find_seekers('7b000000-0000-4000-8000-000000000151') where seeker_id = '75000000-0000-4000-8000-000000000153') =
@@ -72,6 +104,10 @@ select pg_temp.ok((select match_pct from fm_find_seekers('7b000000-0000-4000-800
 select pg_temp.ok((select count(*) = 1 and bool_and(match_pct is null) from fm_find_seekers('7b000000-0000-4000-8000-000000000156'))
   and (select count(*) = 1 and bool_and(match_pct is null) from fm_find_seekers('7b000000-0000-4000-8000-000000000157')),
   'Escape: a room nobody lives in still lists the people looking, with no score (the app says why)');
+select pg_temp.ok((select count(*) = 1 and bool_and(match_pct is null) from fm_find_seekers('7b000000-0000-4000-8000-00000000015d'))
+  and (select match_pct from fm_find_seekers('7b000000-0000-4000-8000-00000000015e') where seeker_id = '75000000-0000-4000-8000-000000000153') =
+      fm_match((select vibe from fm_profiles where id = '75000000-0000-4000-8000-000000000153'), (select household from fm_listings where id = '7b000000-0000-4000-8000-00000000015e')),
+  'Escape: a lister who doesn''t live there gets no score from their own answers, and a score against the household''s once given');
 select pg_temp.as_user('75000000-0000-4000-8000-000000000152');
 select pg_temp.ok((select count(*) = 1 and bool_and(match_pct is null) from fm_find_seekers('7b000000-0000-4000-8000-000000000153')), 'Escape: no answers anywhere means no score (the app then asks the lister to add them)');
 -- the seeker sees the same on the home: a score where there is a household, none where there isn't
@@ -106,6 +142,17 @@ select fm_update_listing(p_listing => '7b000000-0000-4000-8000-000000000152', p_
   p_household => '{"residents":2,"sleep":0,"clean":0,"food":2,"cook":0,"smoke":2,"drinks":2,"guests":0,"noise":2,"social":0,"sharing":0,"work":2,"pets":0,"gen":"z"}') is null as edited;
 select pg_temp.ok((select kind = 'flat' and household = '{"residents":2}'::jsonb from fm_listings where id = '7b000000-0000-4000-8000-000000000152'),
   'a room turned into a whole flat: it no longer carries a household''s answers');
+-- the answer to "Do you live in this flat?" changes
+select fm_update_listing(p_listing => '7b000000-0000-4000-8000-00000000015d', p_kind => 'room', p_title => 'V13 the lister moved in', p_city => 'Vtest', p_locality => 'Varea', p_bhk => 3,
+  p_rent => 9000, p_deposit => 0, p_available_from => current_date, p_gender => 'any', p_furnishing => 'semi', p_amenities => '{}', p_description => 'Edited.',
+  p_household => '{"residents":3,"lister_lives_here":true}') is null as edited;
+select pg_temp.ok((select fm_vibe_count(household) = 12 and household->>'lister_lives_here' = 'true' from fm_listings where id = '7b000000-0000-4000-8000-00000000015d'),
+  'an edit from No to Yes, sent without answers: the listing takes the lister''s own');
+select fm_update_listing(p_listing => '7b000000-0000-4000-8000-00000000015f', p_kind => 'flatmate', p_title => 'V15 the lister moved out, tenants stay', p_city => 'Vtest', p_locality => 'Varea', p_bhk => 3,
+  p_rent => 9000, p_deposit => 0, p_available_from => current_date, p_gender => 'any', p_furnishing => 'semi', p_amenities => '{}', p_description => 'Edited.',
+  p_household => '{"residents":1,"lister_lives_here":false}') is null as edited;
+select pg_temp.ok((select household = '{"residents":1,"lister_lives_here":false}'::jsonb from fm_listings where id = '7b000000-0000-4000-8000-00000000015f'),
+  'an edit from Yes to No, sent without answers (the app clears the copy of the lister''s own when they say No): none are added back');
 -- new posts through the app's own function
 select fm_post_listing(p_kind => 'room', p_title => 'V4 posted from another phone', p_city => 'Vtest', p_locality => 'Varea', p_bhk => 2, p_rent => 11000, p_deposit => 0,
   p_available_from => current_date, p_gender => 'any', p_furnishing => 'semi', p_amenities => '{}', p_description => 'Posted without the household answers.',
@@ -135,7 +182,7 @@ update public.fm_listings l set household = fm_listing_vibe(l.kind, l.household,
   from public.fm_profiles o
  where o.id = l.owner_id and fm_lister_lives(l.kind, l.household) and fm_vibe_count(l.household) < 4 and fm_vibe_count(o.vibe) >= 4;
 update public.fm_listings l set household = fm_listing_vibe(l.kind, l.household, null)
- where not fm_lister_lives(l.kind, l.household) and jsonb_typeof(l.household) = 'object'
+ where not fm_home_lived_in(l.kind, l.household) and jsonb_typeof(l.household) = 'object'
    and l.household ?| array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen'];
 select pg_temp.ok((select fm_vibe_count(household) = 12 from fm_listings where id = '7b000000-0000-4000-8000-000000000155')
   and (select fm_vibe_count(household) = 0 from fm_listings where id = '7b000000-0000-4000-8000-000000000153'),
@@ -145,10 +192,12 @@ select pg_temp.ok((select household = '{"residents":0,"flatmates":[],"interests"
 select pg_temp.ok((select household = '{"residents":1}'::jsonb from fm_listings where id = '7b000000-0000-4000-8000-00000000015b')
   and (select household = '{"residents":0}'::jsonb from fm_listings where id = '7b000000-0000-4000-8000-00000000015c'), 'and off a whole flat; a home with nothing to clear is not touched');
 select pg_temp.ok((select fm_vibe_count(household) = 12 and household->>'gen' = 'm' from fm_listings where id = '7b000000-0000-4000-8000-000000000151')
-  and (select fm_vibe_count(household) = 12 from fm_listings where id = :'v4'),
-  'the one-time clear leaves every home the lister lives in exactly as it was');
+  and (select fm_vibe_count(household) = 12 from fm_listings where id = :'v4')
+  and (select fm_vibe_count(household) = 6 and household->>'lister_lives_here' = 'false' from fm_listings where id = '7b000000-0000-4000-8000-00000000015e'),
+  'the one-time clear leaves every home people live in exactly as it was, whether the lister is one of them or not');
 -- none of the helpers can be called from the app, and the older two-argument form is gone
 select pg_temp.ok(not has_function_privilege('authenticated', 'public.fm_listing_vibe(text, jsonb, jsonb)', 'execute') and not has_function_privilege('anon', 'public.fm_listing_vibe(text, jsonb, jsonb)', 'execute')
   and not has_function_privilege('authenticated', 'public.fm_listing_vibe_fill()', 'execute')
   and not has_function_privilege('authenticated', 'public.fm_lister_lives(text, jsonb)', 'execute') and not has_function_privilege('anon', 'public.fm_lister_lives(text, jsonb)', 'execute')
-  and to_regprocedure('public.fm_listing_vibe(jsonb, jsonb)') is null, 'the three helpers are not callable from the app, and the older form of fm_listing_vibe is gone');
+  and not has_function_privilege('authenticated', 'public.fm_home_lived_in(text, jsonb)', 'execute') and not has_function_privilege('anon', 'public.fm_home_lived_in(text, jsonb)', 'execute')
+  and to_regprocedure('public.fm_listing_vibe(jsonb, jsonb)') is null, 'the four helpers are not callable from the app, and the older form of fm_listing_vibe is gone');

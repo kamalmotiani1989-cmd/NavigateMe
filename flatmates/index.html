@@ -3066,8 +3066,12 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
         <fieldset class="ps" data-step="2" hidden>
         <div class="household" style="margin-bottom:14px">
           <h3 class="section-h" style="margin-top:0">Your household</h3>
-          <p class="hint" style="margin:0 0 10px">From your answers earlier. Seekers see who they'd live with and how well they'd fit.</p>
-          <div class="field"><label for="hCount">People living there now (including you)</label>
+          <p class="hint" id="hLead" style="margin:0 0 10px">From your answers earlier. Seekers see who they'd live with and how well they'd fit.</p>
+          <!-- Kamal, 16 Nov: asked of everyone who posts a room, a bed or a flatmate listing; a whole flat isn't asked. -->
+          <div class="field" id="hLivesF"><label>Do you live in this flat?</label><div class="chips">
+            <label class="chip"><input type="radio" name="hLives" value="yes" required aria-label="Do you live in this flat?">Yes, I live there</label>
+            <label class="chip"><input type="radio" name="hLives" value="no" required aria-label="Do you live in this flat?">No, I don't</label></div></div>
+          <div class="field"><label for="hCount" id="hCountL">People living there now (including you)</label>
             <select id="hCount"><option value="0">Nobody, it's a whole flat</option><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
           <div class="field" id="hFreeF"><label for="hFree">Private rooms free in this flat</label>
             <select id="hFree"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
@@ -3488,16 +3492,18 @@ const KIND_LABEL = {room:"Private room", shared:"Shared room", flatmate:"Flatmat
 const FURN_LABEL = {full:"Fully furnished", semi:"Semi furnished", none:"Unfurnished"};
 const GENDER_LABEL = {any:"Anyone", male:"Men only", female:"Women only"};
 // Women-only / men-only homes, the same rule as fm_home_gender in schema.sql: the listing says so, and it's a whole
-// flat (or nobody lives there yet), or everyone living there is that gender (the lister by their own profile, the
-// others by the Woman / Man given for them). "female?" / "male?": nothing says otherwise, but it isn't confirmed.
+// flat (or nobody lives there yet), or everyone living there is that gender (the lister, when they live there, by
+// their own profile; the others by the Woman / Man given for them). A lister who answered "Do you live in this
+// flat?" with No doesn't count, and flatmate_genders then has an entry for each person who does live there.
+// "female?" / "male?": nothing says otherwise, but it isn't confirmed.
 function homeGender(kind, gender, hh, ownerGender){
   if(gender !== "female" && gender !== "male") return null;
   const n = /^\d{1,2}$/.test(String((hh || {}).residents ?? "")) ? Number(hh.residents) : 0;
   if(kind === "flat" || n === 0) return gender;
-  let missing = false;
-  if(!ownerGender) missing = true; else if(ownerGender !== gender) return null;
+  let missing = false; const lister = !saysNotLiving(hh);
+  if(lister){ if(!ownerGender) missing = true; else if(ownerGender !== gender) return null; }
   const g = Array.isArray(hh.flatmate_genders) ? hh.flatmate_genders : [];
-  for(let k = 0; k < n - 1; k++){ if(g[k] == null) missing = true; else if(g[k] !== gender) return null; }
+  for(let k = 0; k < n - (lister ? 1 : 0); k++){ if(g[k] == null) missing = true; else if(g[k] !== gender) return null; }
   return missing ? gender + "?" : gender;
 }
 const HOME_GENDER_LABEL = { female:"Women-only home", male:"Men-only home" };
@@ -3604,20 +3610,27 @@ function readQuiz(root, prefix){
   return out;
 }
 const answered = v => VIBE_QS.filter(x => v && Number.isInteger(v[x.k])).length;
-// The lister lives in the home when it is a room, a bed or a flatmate listing and "People living there now (including
-// you)" is 1 or more. A whole flat, or a home nobody lives in yet, has no household (Kamal, 16 Nov: "Fix the vibe
-// fill-in when the lister doesn't live in the flat"). Same rule as fm_lister_lives in schema.sql.
-const listerLives = (kind, hh) => kind !== "flat" && (/^\d{1,2}$/.test(String((hh || {}).residents ?? "")) ? Number(hh.residents) : 0) >= 1;
-// A listing's living-style answers. Where the lister doesn't live there: none, whatever was sent, so there is no vibe
-// score for a household that isn't there. Where they do: the listing's own when it has at least 4; else the lister's
-// own answers, with whatever the listing does say on top. Same rule as fm_listing_vibe in schema.sql (the server
-// applies it on every post and edit; this is the demo's copy).
+// Someone lives in the home when it is a room, a bed or a flatmate listing and "People living there now" is 1 or
+// more. A whole flat, or a home nobody lives in yet, has no household (Kamal, 16 Nov: "Fix the vibe fill-in when the
+// lister doesn't live in the flat"). Same rule as fm_home_lived_in in schema.sql.
+const livedIn = (kind, hh) => kind !== "flat" && (/^\d{1,2}$/.test(String((hh || {}).residents ?? "")) ? Number(hh.residents) : 0) >= 1;
+// Is the lister one of them? The posting form asks "Do you live in this flat?" (household.lister_lives_here; Kamal,
+// 16 Nov: "Go and yes to all"), because the count alone can't tell a flatmate from a landlord who counts their
+// tenants. A listing that doesn't say (posted before the question, or from an older build) is read as it always was:
+// the lister lives there when anyone does. Same rule as fm_lister_lives in schema.sql.
+const saysNotLiving = hh => String((hh || {}).lister_lives_here ?? "").toLowerCase() === "false";
+const listerLives = (kind, hh) => livedIn(kind, hh) && !saysNotLiving(hh);
+// A listing's living-style answers. Where nobody lives there: none, whatever was sent, so there is no vibe score for a
+// household that isn't there. Where people do: the listing's own when it has at least 4; else, if the lister is one
+// of them, the lister's own answers with whatever the listing does say on top; else as it is (a lister who doesn't
+// live there answers for the people who do, or the home has no score yet). Same rule as fm_listing_vibe in
+// schema.sql (the server applies it on every post and edit; this is the demo's copy).
 function listingVibe(kind, hh, own){
-  if(!listerLives(kind, hh)){
+  if(!livedIn(kind, hh)){
     if(!hh || typeof hh !== "object") return hh;
     const out = Object.assign({}, hh); VIBE_QS.forEach(x => delete out[x.k]); delete out.gen; return out;
   }
-  if(answered(hh) >= 4 || answered(own) < 4) return hh;
+  if(answered(hh) >= 4 || answered(own) < 4 || !listerLives(kind, hh)) return hh;
   const mine = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(own[x.k])).map(x => [x.k, own[x.k]]).concat(["z", "m", "g", "x"].includes(own.gen) ? [["gen", own.gen]] : []));
   return Object.assign(mine, hh || {});
 }
@@ -6251,17 +6264,20 @@ let escSel = new Set(), escSelecting = false;   // "Invite several": the people 
 // compares each person's answers with the home's, so a listing without the home's living-style answers can't be
 // scored: say so, with the way to add them, instead of showing people with nothing next to their names.
 const escNoScore = () => escSeekers.length > 0 && escSeekers.every(x => x.match_pct == null);
-// Why a room, a bed or a flatmate listing has no vibe score, in the lister's words, and the button that fixes it. Two
-// cases: the lister lives there and the answers are missing (12 questions), or the listing says nobody lives there
-// (then there is no household to score against: the way to a score is to say who lives there and answer for them).
-// A whole flat never has one, so it is asked nothing.
+// Why a room, a bed or a flatmate listing has no vibe score, in the lister's words, and the button that fixes it.
+// Three cases: the listing says nobody lives there (then there is no household to score against: the way to a score
+// is to say who lives there and answer for them); people live there, the lister is one of them and the answers are
+// missing (12 questions); people live there and the lister isn't one of them (their own answers aren't used: they
+// answer for the household). A whole flat never has one, so it is asked nothing.
 function noScoreAsk(l){
   if(!l || l.kind === "flat" || answered(l.household) >= 4) return null;
+  if(!livedIn(l.kind, l.household)) return { h: "No vibe scores for this room", b: "Say who lives there",
+    p: "The listing says nobody lives there now, so there is no household to score people against. If people do live there, say how many and answer for them." };
   return listerLives(l.kind, l.household)
     ? { h: "No vibe scores for this room yet", b: "Add them now",
         p: "We score each person against how your home lives, and this listing doesn't have those answers yet: 12 quick questions, about a minute." }
-    : { h: "No vibe scores for this room", b: "Say who lives there",
-        p: "The listing says nobody lives there now, so there is no household to score people against. If people do live there, say how many and answer for them." };
+    : { h: "No vibe scores for this room yet", b: "Answer for the household",
+        p: "You don't live there, so your own answers aren't used. We score each person against how the people living there live: answer the 12 questions for them, about a minute." };
 }
 const noScoreHtml = l => (why => why ? `<div class="esc-noscore" role="note"><b>${why.h}</b><p>${why.p}</p>
     <button class="btn btn-primary btn-sm" type="button" data-edit="${esc(l.id)}" data-step="2">${why.b}</button></div>` : "")(noScoreAsk(l));
@@ -7238,22 +7254,25 @@ function obTextStep(){
 }
 // The posting form (prefix "p") also asks Woman / Man for each person, for women-only and men-only homes. For you it
 // uses your profile, and asks only if that isn't set. The owner onboarding (prefix "o") is unchanged.
-function fmGenderHtml(i, prefix, genders){
+// noLister (the posting form only): the lister said they don't live there, so no row is "You": every row is one of
+// the people who do, each with a Woman / Man of their own (flatmate_genders then has one entry per row).
+function fmGenderHtml(i, prefix, genders, noLister){
   if(prefix !== "p") return "";
-  const mine = i === 0 && state.user && state.user.gender;
+  const mine = !noLister && i === 0 && state.user && state.user.gender;
   if(mine) return `<p class="hint fm-g">${mine === "female" ? "Woman" : "Man"}, from your profile</p>${avPostLink()}`;
-  const cur = i === 0 ? null : (genders || [])[i - 1];
+  const cur = noLister ? (genders || [])[i] : i === 0 ? null : (genders || [])[i - 1];
   return `<div class="chips fm-g">${[["female", "Woman"], ["male", "Man"]].map(([v, t]) => `<label class="chip"><input type="radio" name="pg${i}" value="${v}" required
-    aria-label="${i === 0 ? "You: woman or man" : `Flatmate ${i + 1}: woman or man`}"${cur === v ? " checked" : ""}>${t}</label>`).join("")}</div>`;
+    aria-label="${noLister ? `Person ${i + 1}: woman or man` : i === 0 ? "You: woman or man" : `Flatmate ${i + 1}: woman or man`}"${cur === v ? " checked" : ""}>${t}</label>`).join("")}</div>`;
 }
-function readFmGenders(root, n){
+function readFmGenders(root, n, noLister){
   const v = i => (root.querySelector(`[name=pg${i}]:checked`) || {}).value || null;
-  return { me: v(0), others: Array.from({ length: Math.max(0, n - 1) }, (_, k) => v(k + 1)) };
+  return noLister ? { me: null, others: Array.from({ length: n }, (_, k) => v(k)) }
+    : { me: v(0), others: Array.from({ length: Math.max(0, n - 1) }, (_, k) => v(k + 1)) };
 }
-function fmRowsHtml(list, n, prefix, genders){
+function fmRowsHtml(list, n, prefix, genders, noLister){
   return Array.from({ length: n }, (_, i) => {
     const m = list[i] || {};
-    return `<div class="fm-row" data-i="${i}"><b>${i === 0 ? "You" : "Flatmate " + (i + 1)}</b>${fmGenderHtml(i, prefix, genders)}
+    return `<div class="fm-row" data-i="${i}"><b>${noLister ? "Person " + (i + 1) : i === 0 ? "You" : "Flatmate " + (i + 1)}</b>${fmGenderHtml(i, prefix, genders, noLister)}
       <div class="chips">${["working","student","self"].map(t => `<label class="chip"><input type="radio" name="${prefix}type${i}" value="${t}"${m.type === t ? " checked" : ""}>${OCC_SHORT[t]}</label>`).join("")}</div>
       <div class="grid2"><input type="text" name="${prefix}what${i}" maxlength="80" value="${esc(m.what || "")}" placeholder="${i === 0 ? "e.g. Designer at an agency" : "e.g. Final-year law student"}" aria-label="What they do">
         <select name="${prefix}age${i}" aria-label="Age range"><option value="">Age range</option>${AGES.map(a => `<option value="${a}"${m.age === a ? " selected" : ""}>${a} · ${GEN_BADGE[AGE_GEN[a]][1]}</option>`).join("")}</select></div></div>`;
@@ -7606,7 +7625,7 @@ function listingScore(l){
     { pts: 20, got: (l.description || "").trim().length >= 80 ? 20 : 0, tip: "Describe the flat: house rules, the commute, what's included", step: 2 },
     { pts: 10, got: (l.amenities || []).length >= 3 ? 10 : 0, tip: "Tick the amenities", step: 1 },
     { pts: 15, got: whole || matesOf(hh).some(m => m.what || m.type) ? 15 : 0, tip: "Say who lives there and what they do", step: 2 },
-    { pts: 15, got: !listerLives(l.kind, hh) || answered(hh) >= MIN_VIBE ? 15 : 0, tip: "Answer the living-style questions for your home", step: 2 },
+    { pts: 15, got: !livedIn(l.kind, hh) || answered(hh) >= MIN_VIBE ? 15 : 0, tip: "Answer the living-style questions for your home", step: 2 },
     { pts: 10, got: l.geo && l.geo.lat ? 10 : 0, tip: "Pin the building on the map", step: 3 },
   ];
   const pct = Math.round(checks.reduce((a, c) => a + c.got, 0) / checks.reduce((a, c) => a + c.pts, 0) * 100);
@@ -7652,7 +7671,7 @@ function cardHtml(l, i){
 // Shown before a request and again once the number is shared: the scam people actually hit is a "token" over UPI.
 const SAFE_PAY = `<div class="safe-pay" role="note"><b aria-hidden="true">${"\u{1F6E1}\uFE0F"}</b><span><b>Never pay before you visit.</b> No token, deposit or "booking amount" until you've seen the flat and met the owner. FindMeFlatMate never asks for money on WhatsApp.</span></div>`;
 function trustLine(l){
-  const flatmate = l.kind !== "flat" && Number((l.household || {}).residents) > 0;
+  const flatmate = listerLives(l.kind, l.household);   // not a lister who said they don't live there, though people do
   return `<b>✓ ${flatmate ? "Listed by a flatmate who lives here" : "Owner-listed"}</b>${l.owner_verified && !isSample(l) ? ` · <span class="verified">phone verified</span>` : ""}`;
 }
 // Only what helps a tap: "New this week" for a fresh listing, and the reply speed only when it is fast.
@@ -9708,9 +9727,17 @@ async function fillPostForm(l){
   $("pDesc").value = l.description || "";
   $("hCount").value = String(Math.min(4, Math.max(0, Number(hh.residents) || 0)));
   $("hFree").value = String(Math.min(4, Math.max(1, Number(hh.rooms_free) || 1))); $("hFree").dataset.touched = "1";
-  $("fmRows").innerHTML = fmRowsHtml(hh.flatmates || [], Number($("hCount").value), "p", hh.flatmate_genders);
-  $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
+  // "Do you live in this flat?": as the listing says. One posted before the question has no answer, and asks on the next save.
+  f.querySelectorAll("[name=hLives]").forEach(i => { i.checked = hh.lister_lives_here === (i.value === "yes"); });
+  fmNoLister = hh.lister_lives_here === false && l.kind !== "flat";
+  $("fmRows").innerHTML = fmRowsHtml(hh.flatmates || [], Number($("hCount").value), "p", hh.flatmate_genders, fmNoLister);
+  drawQuiz(hh);
   $("hQuiz").closest("details").open = answered(hh) < MIN_VIBE;   // no answers on this listing yet: shown, not tucked away
+  // Your own answers, for a yes on a listing that has none. And if what the listing carries is your own answers word for
+  // word (the copy made when the listing had none), a no takes it out: those answers were never about the people there.
+  const mine = state.vibe || {};
+  hQuizSrc = answered(mine) >= 4 ? Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(mine[x.k])).map(x => [x.k, mine[x.k]]).concat(GEN_BADGE[mine.gen] ? [["gen", mine.gen]] : [])) : null;
+  hQuizAuto = answered(hh) >= 4 && VIBE_QS.every(x => (Number.isInteger(hh[x.k]) ? hh[x.k] : null) === (Number.isInteger(mine[x.k]) ? mine[x.k] : null));
   $("hInt").innerHTML = interestChips("hi", hh.interests);
   syncRoomsFree(); syncLiving();
   keepPhotos = photosOf(l); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
@@ -9779,26 +9806,56 @@ const addressFromForm = () => ({ flat:$("aFlat").value.trim(), building:$("aBuil
   landmark:$("aLandmark").value.trim(), pin:$("aPin").value.trim() });
 $("mapCheck").addEventListener("click", openPinPicker);
 
+// "Do you live in this flat?" (Kamal, 16 Nov), asked for a room, a bed or a flatmate listing: "yes", "no", or ""
+// while it isn't answered. A whole flat isn't asked. With a no, nobody in "who lives there" is you.
+const formKind = () => ($("postForm").querySelector("[name=kind]:checked") || {}).value;
+const formSays = () => formKind() === "flat" ? "" : (($("postForm").querySelector("[name=hLives]:checked") || {}).value || "");
+const formLived = () => livedIn(formKind(), { residents: Number($("hCount").value) });
+let fmNoLister = false;   // the rows as last drawn: false while the first of them is "You"
 function renderFmRows(){
-  const n = Number($("hCount").value);
-  const had = $("fmRows").children.length, keep = had ? readFmRows($("fmRows"), had, "p") : (state.homeDraft.flatmates || []);
-  const genders = had ? readFmGenders($("fmRows"), had).others : (state.homeDraft.flatmate_genders || []);
-  $("fmRows").innerHTML = fmRowsHtml(keep, n, "p", genders);
+  const n = Number($("hCount").value), noLister = formSays() === "no", root = $("fmRows"), had = root.children.length, draft = state.homeDraft || {};
+  // what is typed in the rows now, row for row (readFmRows drops empty rows, which would shift people when the first one is taken out)
+  let rows = had ? Array.from({ length: had }, (_, i) => ({ type: (root.querySelector(`[name=ptype${i}]:checked`) || {}).value || "", what: (root.querySelector(`[name=pwhat${i}]`) || {}).value?.trim() || "",
+      age: (root.querySelector(`[name=page${i}]`) || {}).value || "" })) : (draft.flatmates || []).slice();
+  const genders = had ? readFmGenders(root, had, fmNoLister).others : (draft.flatmate_genders || []).slice();
+  // the answer changed: your own row goes (or comes back, first); the other people and their Woman / Man stay as typed
+  if(noLister && !fmNoLister) rows = rows.slice(1);
+  if(!noLister && fmNoLister) rows = [(draft.flatmates || [])[0] || {}].concat(rows);
+  fmNoLister = noLister;
+  root.innerHTML = fmRowsHtml(rows, n, "p", genders, noLister);
 }
 $("hCount").addEventListener("change", renderFmRows);
 // Living-style answers describe the people who live there, so they are asked only when someone does: a room, a bed or
-// a flatmate listing with 1 or more people living there (the first of them is you). For a whole flat, or a home nobody
-// lives in yet, the questions are put away and nothing is sent (Kamal, 16 Nov: "Fix the vibe fill-in when the lister
-// doesn't live in the flat"); the server keeps none for such a home either (fm_listing_vibe).
-const formKind = () => ($("postForm").querySelector("[name=kind]:checked") || {}).value;
-const formLives = () => listerLives(formKind(), { residents: Number($("hCount").value) });
+// a flatmate listing with 1 or more people living there. For a whole flat, or a home nobody lives in yet, the
+// questions are put away and nothing is sent (Kamal, 16 Nov: "Fix the vibe fill-in when the lister doesn't live in the
+// flat"); the server keeps none for such a home either (fm_listing_vibe). And they are filled in from your own
+// answers only when you say you live there: with a no they start empty, for you to answer for the people who do.
+let hQuizSrc = null;      // your own answers (sign-up's, your profile's or your newest listing's), to fill the questions from
+let hQuizAuto = false;    // the questions show those, untouched: so a no can take them out again
+const quizEmpty = () => !$("hQuiz").querySelector("input:checked");
+const drawQuiz = v => { $("hQuiz").innerHTML = genHtml("h", (v || {}).gen, "Your household's generation") + quizHtml("h", v || {}); };
+$("hQuiz").addEventListener("change", () => { hQuizAuto = false; });
 function syncLiving(){
-  const lives = formLives();
-  $("hQuizBox").hidden = !lives; $("hNoVibe").hidden = lives;
-  $("hNoVibe").textContent = formKind() === "flat" ? "A whole flat has no household to match with, so it shows no vibe score."
-    : "Nobody lives there now, so this home shows no vibe score. If people do live there, pick how many and answer for them.";
+  const flat = formKind() === "flat", says = formSays(), c = $("hCount");
+  $("hLivesF").hidden = flat; $("postForm").querySelectorAll("[name=hLives]").forEach(i => { i.disabled = flat; });
+  // the count follows the answer: with a yes it includes you, so it can't be nobody
+  $("hCountL").textContent = "People living there now" + (flat || says === "yes" ? " (including you)" : says === "no" ? " (not counting you)" : "");
+  c.options[0].textContent = flat ? "Nobody, it's a whole flat" : "Nobody yet"; c.options[0].disabled = says === "yes";
+  if(says === "yes" && c.value === "0"){ c.value = "1"; syncRoomsFree(); }
+  if((says === "no") !== fmNoLister || $("fmRows").children.length !== Number(c.value)) renderFmRows();
+  const lived = formLived();
+  $("hQuizBox").hidden = !lived;
+  if(lived && says === "no" && hQuizAuto){ drawQuiz(null); hQuizAuto = false; }
+  if(lived && says === "yes" && hQuizSrc && quizEmpty()){ drawQuiz(hQuizSrc); hQuizAuto = true; }
+  if(lived && says === "no" && quizEmpty()) $("hQuizBox").open = true;
+  $("hLead").textContent = (says === "no" ? "" : "From your answers earlier. ") + "Seekers see who they'd live with and how well they'd fit.";
+  const note = flat ? "A whole flat has no household to match with, so it shows no vibe score."
+    : !lived ? "Nobody lives there now, so this home shows no vibe score. If people do live there, pick how many and answer for them."
+    : says === "no" ? "You don't live there, so the living-style questions are about the people who do. Answer for them, or seekers see no vibe score." : "";
+  $("hNoVibe").hidden = !note; $("hNoVibe").textContent = note;
 }
 $("hCount").addEventListener("change", syncLiving);
+$("postForm").addEventListener("change", e => { if(e.target.name === "hLives") syncLiving(); });
 // Rooms free: shown for private rooms, guessed as bedrooms minus people living there until the owner picks.
 function syncRoomsFree(){
   const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value;
@@ -9860,15 +9917,19 @@ function renderPost(){
   // Escape). They are shown and sent only where someone lives there (syncLiving, below the form's count of people).
   const own = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger((state.vibe || {})[x.k])).map(x => [x.k, state.vibe[x.k]]).concat(GEN_BADGE[(state.vibe || {}).gen] ? [["gen", state.vibe.gen]] : []));
   const d = answered(state.homeDraft) >= MIN_VIBE || answered(own) < MIN_VIBE ? state.homeDraft || {} : Object.assign({}, state.homeDraft, own);
-  $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
+  // Filled in unless you have already said you don't live there (syncLiving takes them out on a no, puts them back on a yes).
+  hQuizSrc = answered(d) >= 4 ? d : null; hQuizAuto = false;
+  if(formSays() === "no") drawQuiz(null); else { drawQuiz(d); hQuizAuto = answered(d) > 0; }
   $("hQuiz").closest("details").open = false;
   if(answered(d) < MIN_VIBE) api.myListings().then(ls => {
-    const src = ls.find(l => answered(l.household) >= MIN_VIBE);
-    if(src && !editing && currentView === "post" && !$("hQuiz").querySelector("input:checked")) $("hQuiz").innerHTML = genHtml("h", src.household.gen, "Your household's generation") + quizHtml("h", src.household);
+    const src = ls.find(l => answered(l.household) >= MIN_VIBE && listerLives(l.kind, l.household));
+    if(!src || editing || currentView !== "post") return;
+    hQuizSrc = src.household;
+    if(quizEmpty() && formSays() !== "no"){ drawQuiz(src.household); hQuizAuto = true; }
   }).catch(() => {});
   $("hInt").innerHTML = interestChips("hi", d.interests);
   if(Number.isInteger(d.residents)) $("hCount").value = String(d.residents);
-  $("fmRows").innerHTML = ""; renderFmRows();
+  $("fmRows").innerHTML = ""; fmNoLister = false; renderFmRows();
   const h = readLS(HOST_KEY);   // came from the host page: start with the city and area picked there
   if(h && h.city && !$("pLocality").value){ setCitySelect($("pCity"), h.city); if(h.area) $("pLocality").value = h.area; writeLS(HOST_KEY, null); }
   fillAreaList();
@@ -9911,7 +9972,7 @@ $("postForm").addEventListener("submit", async e => {
   if(!isOwner()){ toast("Switch to posting a flat from your account first."); return; }
   for(const fs of e.target.querySelectorAll("fieldset.ps")){ if(!stepOk(fs)){ showPostStep(Number(fs.dataset.step)); return; } }
   const f = e.target, btn = f.querySelector("[type=submit]");
-  const residents = Number($("hCount").value);
+  const residents = Number($("hCount").value), says = formSays(), noLister = says === "no";
   const p = {
     listing: {
       kind: f.querySelector("[name=kind]:checked").value,
@@ -9922,9 +9983,10 @@ $("postForm").addEventListener("submit", async e => {
       room: roomFromForm(),
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
-        residents > 1 ? { flatmate_genders: readFmGenders($("fmRows"), residents).others } : {},
+        says ? { lister_lives_here: says === "yes" } : {},   // "Do you live in this flat?"; a whole flat isn't asked
+        residents > (noLister ? 0 : 1) ? { flatmate_genders: readFmGenders($("fmRows"), residents, noLister).others } : {},
         PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {},
-        formLives() ? readQuiz($("hQuiz"), "h") : {}),   // living-style answers only where someone lives there (syncLiving)
+        formLived() ? readQuiz($("hQuiz"), "h") : {}),   // living-style answers only where someone lives there (syncLiving)
       costs: expensesFromForm(),
       // Public: rounded to about a kilometre. The exact pin stays in the private part below.
       geo: pinGeo ? { lat: Math.round(pinGeo.lat * 100) / 100, lng: Math.round(pinGeo.lng * 100) / 100 } : null
@@ -9934,7 +9996,7 @@ $("postForm").addEventListener("submit", async e => {
   };
   btn.disabled = true;
   // You live there, and your profile doesn't say woman or man yet: the form asked, so it's saved to your profile.
-  const meG = residents > 0 ? readFmGenders($("fmRows"), residents).me : null;
+  const meG = residents > 0 && !noLister ? readFmGenders($("fmRows"), residents).me : null;
   if(meG && !state.user.gender) await api.setGender(meG).catch(err => console.error(err));
   try{
     let skipped = 0;

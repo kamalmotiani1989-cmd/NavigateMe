@@ -115,22 +115,33 @@ the room comes second.
        ("No vibe scores for this room yet") with **Add them now**, which opens the listing on those questions.
    - **Only where the lister lives there** (Kamal, 16 Nov: "Fix the vibe fill-in when the lister doesn't live in
      the flat"). A vibe score says how well you'd get on with the people in a home. The lister's own answers can
-     stand in for the household only when the lister is one of them:
-     - **the lister lives there** when it is a room, a bed or a flatmate listing and the form's "People living
-       there now (including you)" is 1 or more (`fm_lister_lives`, `listerLives`). The form has no other way to
-       tell: a landlord who counts their tenants there is taken to live there too;
-     - **any other home** (a whole flat, or a room in a flat nobody lives in yet) carries no living-style answers
-       and no household generation, so it has no score: the server drops them on every post and edit, whichever
-       version of the app sends them (older builds pre-fill the form with the lister's own), and cleared once the
-       homes that had them;
-     - **someone looking** sees "Vibe score after the household answers" on such a room or bed, on the card and
-       on its page, and can still ask to meet. In Discover it comes after the homes with a score;
-     - **the lister** is told why in My flat and in the Escape: "No vibe scores for this room", with **Say who
-       lives there**, which opens the listing on "Your household". (Where the lister lives there and the answers
-       are simply missing, it is "No vibe scores for this room yet" with **Add them now**, as before.) A whole
-       flat is asked nothing;
+     stand in for the household only when the lister is one of them. Two things decide it:
+     - **does anyone live there?** A room, a bed or a flatmate listing whose "People living there now" is 1 or
+       more (`fm_home_lived_in`, `livedIn`). Any other home (a whole flat, or a room in a flat nobody lives in
+       yet) carries no living-style answers and no household generation, so it has no score: the server drops
+       them on every post and edit, whichever version of the app sends them (older builds pre-fill the form
+       with the lister's own), and cleared once the homes that had them;
+     - **is the lister one of them?** The posting form asks **"Do you live in this flat?"** (Kamal, 16 Nov: "Go
+       and yes to all"), for a room, a bed or a flatmate listing, with no answer picked for you, and stores it
+       as `household.lister_lives_here` (`fm_lister_lives`, `listerLives`). The count alone could not tell a
+       flatmate from a landlord who entered their tenants. A whole flat isn't asked;
+       - **Yes:** as it always was. The count includes you, the first person listed is "You", and a listing
+         with fewer than 4 answers takes your own;
+       - **No:** the count is the people who do live there, and none of them is "You" (each has a Woman / Man
+         of their own). Your own answers are never copied: the living-style questions start empty, for you to
+         answer for the household, and until you do the home has no score. A copy of your own that the listing
+         carried is taken out when you say No. The home says "Owner-listed", and your own gender no longer
+         counts in the women-only check;
+       - **no answer** (posted before the question, or from an older build): read as before, the lister lives
+         there when anyone does. The editor asks on the next save;
+     - **someone looking** sees "Vibe score after the household answers" on a room or bed without a score, on
+       the card and on its page, and can still ask to meet. In Discover it comes after the homes with a score;
+     - **the lister** is told why in My flat and in the Escape, with the button that leads to a score: "Say who
+       lives there" (nobody is listed as living there), "Add them now" (the lister lives there and the answers
+       are missing) or "Answer for the household" (people live there and the lister doesn't). Each opens the
+       listing on "Your household". A whole flat is asked nothing;
      - **the posting form** shows the living-style questions only while someone lives there. For a whole flat,
-       or with "Nobody" picked, they are put away, a line says why, and nothing is sent.
+       or with "Nobody yet" picked, they are put away, a line says why, and nothing is sent.
    - **My flat** shows the top 3 people looking in the listing's area with an Invite button each.
    - **New seekers in your area:** a seeker who sets or changes their city or areas (or whose answers become
      enough to match) brings owners with a fitting listing there (70%+ vibe, not yet in touch) a notification
@@ -452,7 +463,8 @@ the room comes second.
     title, area and expenses, the people living there, one highlight (shared interests or bachelors welcome),
     "New this week" for a home posted in the last 7 days and a fast reply line. The last line says who listed it
     and the promise: "Listed by a flatmate who lives here" for a room in a flat with people living in it,
-    "Owner-listed" for a whole flat (or a room nobody lives in yet), then "your number is shared only if you
+    "Owner-listed" for a whole flat, a room nobody lives in yet, or a lister who said they don't live there
+    ("Do you live in this flat?"), then "your number is shared only if you
     both say yes". Furnishing, move-in date, deposit and when it was posted are on the home's page, not the card.
 
 23. **Reply speed.** From the owner's median time to answer seekers' requests over the last four months
@@ -692,7 +704,8 @@ chose show, as removable chips.
 (men) live and only women (men) are welcome, not just "open to women". A home counts when the listing says
 "Women only" and it's a whole flat (or nobody lives there yet), or everyone living there is a woman: the lister
 by their own profile gender, and each other person by the **Woman / Man** the posting form asks for them
-(required; saved with the household as `flatmate_genders`). Rule: `fm_home_gender` in schema.sql (used by
+(required; saved with the household as `flatmate_genders`). A lister who answered "Do you live in this flat?"
+with No is not one of them: their own gender doesn't count, and every person living there has a Woman / Man. Rule: `fm_home_gender` in schema.sql (used by
 `fm_search`, `fm_search_near`, `fm_listing_get` and `fm_my_listings`, which return it as `home_gender`) and
 `homeGender` in the app (demo mode). "Open to anyone" homes and mixed homes never show. Older listings that
 haven't said who lives there (or whose lister hasn't set their own gender) come in a separate block under the

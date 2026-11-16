@@ -10,7 +10,7 @@ cp "$APP/index.html" "$OUT/srv/live.html"
 cp -r "$APP/icons" "$APP/vendor" "$APP/manifest.webmanifest" "$APP/sw.js" "$APP/privacy.html" "$APP/og-image.png" "$APP/robots.txt" "$APP/sitemap.xml" "$OUT/srv/" 2>/dev/null
 (cd "$OUT/srv" && exec python3 -m http.server 8765 --bind 127.0.0.1 >/dev/null 2>&1) & SRV=$!
 for i in $(seq 1 100); do curl -s -o /dev/null http://127.0.0.1:8765/index.html && break; sleep 0.1; done
-SUITES="${*:-welcome ob pass3 p5 p6 p7 p8 p9 p10 p11 p12 p13 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32}"; fail=0
+SUITES="${*:-welcome ob pass3 p5 p6 p7 p8 p9 p10 p11 p12 p13 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30 p31 p32 p33}"; fail=0
 for s in $SUITES; do
   out=$(cd "$HERE" && timeout 400 node "$s.test.js" "$OUT/shots" 2>&1); rc=$?; p=$(echo "$out" | grep -c '^PASS'); f=$(echo "$out" | grep -c '^FAIL')
   # A suite that stops early (an error in the page it drives, or the time limit) prints no FAIL line for what it

@@ -59,6 +59,11 @@ const seed = (ctx, s) => ctx.addInitScript(s => { if(!localStorage.getItem('fm_s
   const pv = await p.evaluate(() => document.querySelectorAll('#pPreviews figure').length);
   ok(pv === 1, 'owner: new photo previewed: ' + pv);
   await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(400);
+  // a listing posted before "Do you live in this flat?" was asked has no answer: the editor asks before it saves
+  await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(400);
+  const asks = await p.evaluate(() => ({ step2: !document.querySelector('fieldset[data-step="2"]').hidden, err: (document.querySelector('fieldset[data-step="2"] .form-err') || {}).textContent || '', picked: !!document.querySelector('[name=hLives]:checked') }));
+  ok(asks.step2 && !asks.picked && /Do you live in this flat\?/.test(asks.err), 'owner: an older listing has no answer to "Do you live in this flat?", and the editor asks for it before going on: ' + asks.err);
+  await p.click('label.chip:has([name=hLives][value=yes])'); await p.waitForTimeout(300);
   await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(400);
   ok(await p.isVisible('fieldset[data-step="3"]') && !(await p.isHidden('#privKept')), 'owner: step 3 shows the kept-private note');
   await p.click('#postSubmit'); await p.waitForTimeout(2500);

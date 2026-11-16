@@ -192,6 +192,7 @@ const falling = a => a.every((x, i) => !i || (a[i - 1].score ?? -1) >= (x.score 
   ok(t.post && t.step === 2 && t.open && t.shown && /Edit/.test(t.title), '"Add them now" opens the listing on the questions, already unfolded: ' + JSON.stringify(t));
   // answer them and save: the scores are there
   await p.evaluate(() => { document.querySelectorAll('#hQuiz fieldset').forEach(f => { const i = f.querySelector('input'); if(i) i.checked = true; }); });
+  await p.evaluate(() => document.querySelector('[name=hLives][value=yes]').click());   // "Do you live in this flat?" (p33): the lister does
   await p.evaluate(() => $('postForm').requestSubmit()); await p.waitForTimeout(2200); await closeDlgs(p);
   await p.evaluate(() => { location.hash = 'escape'; }); await p.waitForTimeout(1600);
   t = await p.evaluate(() => ({ rings: document.querySelectorAll('#escList .seek-ring').length, people: document.querySelectorAll('#escList .seek-card').length, ask: !!document.querySelector('.esc-noscore') }));

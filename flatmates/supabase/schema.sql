@@ -608,28 +608,40 @@ $$;
 -- Only where the lister lives there (Kamal, 16 Nov: "Fix the vibe fill-in when the lister doesn't live in the
 -- flat"). A vibe score says how well you'd get on with the people in a home. The lister's own answers can stand in
 -- for the household when the lister is one of them; when they aren't, the score would describe someone the seeker
--- will never share the flat with. fm_lister_lives: a room, a bed or a flatmate listing whose "People living there
--- now (including you)" is 1 or more. A whole flat, or a home nobody lives in yet, has no household: it carries no
--- living-style answers at all, whichever version of the app sends them (older builds pre-fill the form with the
--- lister's own), so it shows no score until someone is listed as living there and has answered.
-create or replace function public.fm_lister_lives(p_kind text, p_hh jsonb) returns boolean
+-- will never share the flat with. Two questions decide it:
+--   * does anyone live there? fm_home_lived_in: a room, a bed or a flatmate listing whose "People living there now"
+--     is 1 or more. A whole flat, or a home nobody lives in yet, has no household: it carries no living-style answers
+--     at all, whichever version of the app sends them (older builds pre-fill the form with the lister's own), so it
+--     shows no score until someone is listed as living there and has answered;
+--   * is the lister one of them? fm_lister_lives. The posting form asks "Do you live in this flat?" and stores the
+--     answer as household.lister_lives_here (Kamal, 16 Nov: "Go and yes to all"), because the count alone cannot
+--     tell a flatmate from a landlord who counts their tenants. A listing that doesn't say (posted before the
+--     question, or from an older build) is taken as it always was: the lister lives there when anyone does.
+create or replace function public.fm_home_lived_in(p_kind text, p_hh jsonb) returns boolean
 language sql immutable set search_path = public as $$
   select coalesce(p_kind, '') <> 'flat'
      and (case when coalesce(p_hh->>'residents', '') ~ '^\d{1,2}$' then (p_hh->>'residents')::int else 0 end) >= 1;
 $$;
+create or replace function public.fm_lister_lives(p_kind text, p_hh jsonb) returns boolean
+language sql immutable set search_path = public as $$
+  select fm_home_lived_in(p_kind, p_hh) and lower(coalesce(p_hh->>'lister_lives_here', '')) <> 'false';
+$$;
 -- fm_listing_vibe: what a listing's household should say about living style.
---   * the lister doesn't live there: no answers and no generation; everything else the listing says is kept;
---   * the lister lives there and the listing has at least 4 answers of its own: exactly as sent;
---   * the lister lives there and it has fewer: the lister's own answers (the 12 questions and the generation, from
---     their profile) with whatever the listing does say on top; nothing if the lister has fewer than 4 too.
+--   * nobody lives there: no answers and no generation; everything else the listing says is kept;
+--   * people live there and the listing has at least 4 answers of its own: exactly as sent (given for the
+--     household, by the lister who lives there or by a lister who doesn't);
+--   * it has fewer and the lister lives there: the lister's own answers (the 12 questions and the generation, from
+--     their profile) with whatever the listing does say on top; nothing if the lister has fewer than 4 too;
+--   * it has fewer and the lister doesn't live there: left as it is, so it has no score until the lister answers
+--     for the people who do.
 drop function if exists public.fm_listing_vibe(jsonb, jsonb);
 create or replace function public.fm_listing_vibe(p_kind text, p_hh jsonb, p_owner_vibe jsonb) returns jsonb
 language sql immutable set search_path = public as $$
   select case
-    when not fm_lister_lives(p_kind, p_hh) then
+    when not fm_home_lived_in(p_kind, p_hh) then
       case when jsonb_typeof(p_hh) = 'object'
            then p_hh - array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen'] else p_hh end
-    when fm_vibe_count(p_hh) >= 4 or fm_vibe_count(p_owner_vibe) < 4 then p_hh
+    when fm_vibe_count(p_hh) >= 4 or fm_vibe_count(p_owner_vibe) < 4 or not fm_lister_lives(p_kind, p_hh) then p_hh
     else (select coalesce(jsonb_object_agg(k, p_owner_vibe->k), '{}'::jsonb)
             from unnest(array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen']) k
            where (k = 'gen' and p_owner_vibe->>k in ('z','m','g','x')) or (k <> 'gen' and jsonb_typeof(p_owner_vibe->k) = 'number'))
@@ -640,7 +652,7 @@ $$;
 create or replace function public.fm_listing_vibe_fill() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  if not fm_lister_lives(new.kind, new.household) or fm_vibe_count(new.household) < 4 then
+  if not fm_home_lived_in(new.kind, new.household) or fm_vibe_count(new.household) < 4 then
     new.household := fm_listing_vibe(new.kind, new.household, (select o.vibe from fm_profiles o where o.id = new.owner_id));
   end if;
   return new;
@@ -652,10 +664,10 @@ create trigger fm_listings_vibe_fill before insert or update of household, kind 
 update public.fm_listings l set household = fm_listing_vibe(l.kind, l.household, o.vibe)
   from public.fm_profiles o
  where o.id = l.owner_id and fm_lister_lives(l.kind, l.household) and fm_vibe_count(l.household) < 4 and fm_vibe_count(o.vibe) >= 4;
--- Once, for the homes that carry answers although the lister doesn't live there: the fill of 15 Nov copied the
--- lister's own onto them, or the form pre-filled them (no-op afterwards: the trigger keeps them without).
+-- Once, for the homes that carry answers although nobody lives there: the fill of 15 Nov copied the lister's own
+-- onto them, or the form pre-filled them (no-op afterwards: the trigger keeps them without).
 update public.fm_listings l set household = fm_listing_vibe(l.kind, l.household, null)
- where not fm_lister_lives(l.kind, l.household) and jsonb_typeof(l.household) = 'object'
+ where not fm_home_lived_in(l.kind, l.household) and jsonb_typeof(l.household) = 'object'
    and l.household ?| array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen'];
 
 -- Listings, with whether the caller can see the contact and where their request stands.
@@ -683,22 +695,29 @@ end $$;
 -- Women-only and men-only homes (Kamal, 10 Nov). "Women only" means only women live there and only women are
 -- welcome, not just "open to women". A home qualifies when its listing says so (gender) and:
 --   * it's a whole flat, or nobody lives there yet; or
---   * everyone living there is that gender: the lister (who lives there, by the form's "including you") by their
---     own profile gender, and each other person by the Woman / Man the lister gave for them
---     (household.flatmate_genders, one per person after the lister).
+--   * everyone living there is that gender: the lister, when they live there, by their own profile gender, and
+--     each other person by the Woman / Man the lister gave for them (household.flatmate_genders, one per person
+--     after the lister).
+--   The lister lives there unless the listing says not (household.lister_lives_here = false, the posting form's
+--   "Do you live in this flat?"): then the lister's own gender doesn't count, and flatmate_genders has one entry
+--   for each of the people who do live there. A listing that doesn't say is read as before (the form's count said
+--   "including you").
 -- Returns the gender ('female' / 'male') when it qualifies; 'female?' / 'male?' when nothing contradicts it but who
 -- lives there isn't confirmed (older listings, or the lister's gender not set); null for 'any' or a mixed home.
 -- An older listing whose lister lives there alone counts, from the lister's own gender.
 create or replace function public.fm_home_gender(p_kind text, p_gender text, p_hh jsonb, p_owner_gender text) returns text
 language plpgsql immutable set search_path = public as $$
-declare n int; g jsonb; k int; missing boolean := false;
+declare n int; g jsonb; k int; missing boolean := false; v_lister boolean;
 begin
   if p_gender is null or p_gender not in ('female','male') then return null; end if;
   n := case when coalesce(p_hh->>'residents', '') ~ '^\d{1,2}$' then (p_hh->>'residents')::int else 0 end;
   if p_kind = 'flat' or n = 0 then return p_gender; end if;
-  if p_owner_gender is null then missing := true; elsif p_owner_gender <> p_gender then return null; end if;
+  v_lister := lower(coalesce(p_hh->>'lister_lives_here', '')) <> 'false';
+  if v_lister then
+    if p_owner_gender is null then missing := true; elsif p_owner_gender <> p_gender then return null; end if;
+  end if;
   g := case when jsonb_typeof(p_hh->'flatmate_genders') = 'array' then p_hh->'flatmate_genders' else '[]'::jsonb end;
-  for k in 0 .. n - 2 loop
+  for k in 0 .. n - 1 - (case when v_lister then 1 else 0 end) loop
     if g->>k is null then missing := true;
     elsif g->>k <> p_gender then return null; end if;
   end loop;
@@ -4333,7 +4352,7 @@ begin
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
                      'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok',
                      'fm_blocked', 'fm_block_target', 'fm_avatar_valid', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear',
-                     'fm_listing_vibe', 'fm_listing_vibe_fill', 'fm_lister_lives') then
+                     'fm_listing_vibe', 'fm_listing_vibe_fill', 'fm_lister_lives', 'fm_home_lived_in') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);
