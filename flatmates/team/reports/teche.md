@@ -1,5 +1,65 @@
 # Teche · reports
 
+## 2026-11-16, the app in the logo's colours (orange and white), and a page-by-page audit (#112) live
+
+- **What Kamal asked (16 Nov, after #111):** "Also take the app color as the color of logo which was earlier and
+  white. Plus check the font color accordingly. Do your best here. Audit once done. Spend some time on each page and
+  audit the gaps of colors font everything".
+- **Standing rule and Kamal:** my brief still says to keep the look of 8 Nov with no new colours. Kamal asked for
+  this himself, as he did for #110. **King: the look sentence in my brief needs your update** (wording in my
+  message to you).
+- **The colours now:**
+  - white for the page and the cards, and for words on anything orange;
+  - the logo's orange (`#C2410C`) for main buttons, small labels, links, badges, the bottom bar's current screen,
+    progress bars, switches, tick boxes and focus rings;
+  - the wordmark's near-black and grey for text and the few dark pieces;
+  - bands and panels in pale tints of the orange;
+  - the light red and the deep aubergine of #110 are gone. Its style stays (serif headings, pill buttons, white
+    cards, spaced capital labels).
+- **Danger moved to a crimson.** The old red sat a few degrees from the logo's orange, so an error edge and the
+  focus edge of a box looked alike. Green and amber keep their meanings.
+- **It also covers** the pictures people share (now an orange card with white words), the Vibe Card, the chart and
+  people-dot colours, map pins, the payment sheet, the picture shown with a shared link, the privacy and Coming soon
+  pages, the installed app's colours, and the Android window, strip and notification colour.
+- **How the audit was done:**
+  - 60 full-page pictures (phone and computer) plus the suites' own 129 screenshots, read one by one;
+  - a census inside every page the 29 suites open: every colour, every text style, every text under 4.5:1;
+  - result after the fixes: no colour outside the palette, no text under the floor.
+- **What the audit found and fixed:**
+  - a "live" dot on invitation banners was a pale tint on a pale panel, invisible;
+  - "Sell something" in FlatMart was the last dark main button;
+  - Sign out and Delete my account had taken the accent colour in #110;
+  - the letters in front of sign-up and quiz answers sat on eight unrelated colours;
+  - "what you wrote" was a dark bubble in the help chat and a pale one in a real chat;
+  - the party form's two time boxes had the browser's own look;
+  - on a computer the Passes pop-up was too narrow for three passes: titles broke in two and a tag covered a name;
+  - small capital captions came in four sizes, two weights and seven spacings (now one style), and a section label
+    that ran to a second line started it under the dash;
+  - words picked out inside a serif heading computed as bold; bold inside bold was drawn at the blackest cut; four
+    text sizes were off the scale;
+  - a hint in the area box was cut off on phones ("e.g. HSR Layou");
+  - one leftover aubergine line in the tribe drawing.
+- **Looked at and left alone:** badge text under 12px (the spec allows it); the amber family; the cartoon people;
+  the score ring's colours; the very wide "Show me parties near me" button on a computer; the strip behind the
+  clock on Android stays near-black because I cannot try another colour on a phone.
+- **Not changed:** the login process, the onboarding questions, any screen's layout or words (one hint aside), the
+  logo's files, the database.
+- **Tests:** 29 demo suites, 719 checks (was 704). `p31` has 15 more checks: the palette is the logo's own
+  colours, and one for each audit fix. `p8`, `p26` and `p27` describe the new colours; `p8` now reads every piece
+  of orange text against what is behind it.
+- **Published:** 456cc10; Android build 218 (file checked: the app inside has the new colours and none of the old,
+  the launcher icons are the orange tile, the checksum matches the release); the website repo's `main` and
+  `gh-pages` say "Publish the app from NavigateMe 456cc10"; the published copy opens with no page errors, with the
+  orange button, white page, the logo, and the privacy and Coming soon pages in the same colours.
+- **For King to pass on to Mark:** the app's accent is the logo's orange again, so creatives made before 16 Nov
+  match it. Screens shown in them have changed (white pages, serif headings).
+- **Next (priorities, 000000):** the vibe fill-in only where the lister lives there. I start it now, as one PR, and
+  deploy only on Kamal's word, database first. No new question goes into the form: its "People living there now
+  (including you)" already tells the two cases apart (in chat I had first told Kamal a question would be added; I
+  am correcting that with him).
+- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and 60
+  a day.
+
 ## 2026-11-16, the logo is back as it was: Kamal's own drawing and its orange (#111) live
 
 - **What Kamal asked (16 Nov, after seeing #110 live):** "App and website logo to stay the same as ealier" and
@@ -242,19 +302,3 @@
     build for 8679471 passed.
 - **For Kamal:** nothing. Still open: #86 privacy blanks, #95 merge or close, the host page and the strip behind
   the clock (both raised with #104).
-
-## 2026-11-15, Tribe and Saved change places on phones (#105) live
-
-- **What (Kamal: "Interchange the position of tribe and saved or shortlisted buttons on the app"):** on phones Tribe
-  is a tab in the bottom bar where Saved was (mint when you're on it, with its count), and Saved is a round heart
-  button in the top bar where the Tribe button was (black when you're on it). The bottom bar for someone looking is
-  Discover, Tribe, Parties, Splits, Market, Passes. On a computer both stay tabs in the top row.
-- **Not changed:** what the two screens do; owners and Flatsplits-only accounts (they have neither). No database
-  change.
-- **Tests:** all 25 demo suites pass; `p26` (31 checks) covers the swap.
-- **Published:** 6dbe1a7; Android build 212 (file checked: checksum matches). The website repo's `main` and
-  `gh-pages` say "Publish the app from NavigateMe 6dbe1a7".
-- **Screenshot:** [before and after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/d107412349b44e8234239f1517ede1b9694b7746/tribe-saved.png).
-- **For Kamal:** he asked for the steps to merge findmeflatmate PR #2; I gave them (open the PR, Merge pull request,
-  Confirm merge). Still open: #86 privacy blanks, #95 merge or close, the host page and the strip behind the clock
-  (both raised with #104).
