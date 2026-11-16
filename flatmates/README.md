@@ -299,8 +299,8 @@ the room comes second.
     Tests: `flatmates/tests/db/run.sh` (schema applied twice, then every function and refusal) and demo suite p9.
 
     **Parties is a section of its own** (Kamal, 15 Nov: "Make parties near by a seperate section all together and
-    an amazing one"): a **Parties** tab in the bottom bar (top bar on a computer) for everyone, butter like its
-    panels. Nearby parties no longer show inside Splits; Account keeps the switch as a setting.
+    an amazing one"): a **Parties** tab in the bottom bar (top bar on a computer) for everyone, in the apricot tint of
+    its panels (`--butter`). Nearby parties no longer show inside Splits; Account keeps the switch as a setting.
     - **Before it's switched on:** what it is in three lines (what, when and how far, never the address; ask to
       join and the host decides; once in, the address, the host's number and a check-in code), the switch, and
       "Off until you switch it on. 21 and over. You pick a place once; we don't follow your location."
@@ -361,7 +361,11 @@ the room comes second.
     home's card ("♥ Riya shortlisted this") and in "Your tribe's shortlist" on the Tribe tab, and get a
     notification. **Search together** sets Discover to every tribe member's areas at once.
 18. **PAN India.** City pickers list the 10 big cities first, then 45 more under "Other cities", and "Another
-    city…" takes any name. Onboarding has an "Other city" option. Areas aren't limited to the built-in lists:
+    city…" takes any name. Onboarding has an "Other city" option: a box to type in with the other cities as chips
+    under it. The chips follow what you type (names that start with your letters first; names that only contain
+    them once you've typed three), and any name can be typed and continued with. The box has no pop-up list of its
+    own: the phone's list used to open over the chips, the keyboard and Continue (Kamal, 16 Nov), and on a phone the
+    keyboard waits until you tap the box. `p31` checks it. Areas aren't limited to the built-in lists:
     "+ Add area" (Discover and onboarding) and the area boxes on the post and FlatMart forms search any
     neighbourhood through OpenStreetMap.
 19. **Search by place, on a real map.** Discover opens with a search bar like the property sites: the city,
@@ -708,8 +712,9 @@ server nothing. What was changed, and what to keep in mind:
     notification (`api.fresh()`).
   - Each caller gets its own copy of a kept answer.
 - **Lists aren't redrawn when nothing changed** (`setHtml`): no flicker, and the cards don't slide in again.
-- **The typeface is in the app** (`vendor/fonts`: Urbanist, and Plus Jakarta Sans for the privacy page and three
-  share pictures; SIL Open Font License, texts alongside). It used to be a stylesheet from Google Fonts in the page's
+- **The typefaces are in the app** (`vendor/fonts`: Urbanist, and DM Serif Display for headings; Plus Jakarta Sans,
+  the older typeface, is kept only as a stand-in; SIL Open Font License, texts alongside). The two the first screen
+  needs are preloaded. It used to be a stylesheet from Google Fonts in the page's
   head, and nothing could show until that had answered.
 - **Scrolling does no work unless something changes.** The scroll handler only compares numbers (`bandApply`);
   the measuring happens when a screen shows or the phone turns (`bandSync`). `packText` (the "More" links) reads
@@ -842,9 +847,9 @@ The cartoon updates as you tap. It starts neutral: no skin tone is picked for yo
 Home cards don't carry an avatar: their trust line ("✓ Listed by a flatmate who lives here · phone verified") has
 to stay on one line at 360 and 390 wide.
 
-**The Vibe Card in the pastel look** (King, 13 Nov): the whole card is the rhythm's panel colour (butter for Early
-Bird, lavender for Midnight, mint for Night Owl), with dark ink text, the logo and wordmark, and the avatar large. The
-words are the same as before. Its colours are in `VC_PALETTE`, and p13 checks every text colour on every background
+**The Vibe Card** (King, 13 Nov; in the look of 16 Nov): the whole card is a warm tint for the rhythm (apricot for
+Early Bird, rose for Midnight, peach for Night Owl), with dark ink text, the type's name in the serif, the logo and
+wordmark, and the avatar large. The words are the same as before. Its colours are in `VC_PALETTE`, and p13 checks every text colour on every background
 in it.
 
 People without an avatar show a **neutral default**: a plain silhouette in beige.
@@ -886,70 +891,93 @@ and the sun, moon or stars moving a little.
   bottom. The filters themselves are the same as before.
 - **Not doing:** no photo is required anywhere, and no question about religion.
 
-Soft and pastel, set on 9 Nov 2026 by Kamal himself from a reference design; it replaces the navy-and-green look of
-8 Nov. Every screen keeps its layout and words; the look lives in one style layer at the end of the stylesheet.
-- **Page and cards:** a warm blush-beige page (`--bg` #EFE4DC) with off-white cards (`--surface` #FBF8F6) and soft
-  warm shadows. The status bar and the Android window match the beige.
-- **Near-black** (`--ink` #141414) for text, the main buttons, selected chips and the help button.
-  Main buttons are **pills** (fully rounded); quiet buttons are white with a thin outline.
-- **Pastel panels** replace the navy feature cards, one colour per section, always with dark text: Flatsplits and
-  Account lavender (`--lav`), FlatMart and parties butter (`--butter`), the Empty Room Escape and Tribe mint
-  (`--mint`), Saved blush (`--blush`). Olive, coral and periwinkle (`--olive`, `--coral`, `--peri`) are for small
-  accents. **Coral** (`--coral` #E79078, dark text on it) is the colour of the count badges on the bell and Tribe
-  and of the small "new" dots (`--dot` #E48C74); **red** is kept for errors.
-- **Type:** Urbanist. Headlines are light (400) with the key words in bold (800); section headings are 700. The
-  typeface is part of the app (`vendor/fonts`, see "Speed"), not fetched from Google Fonts.
+Cream, white and one light red, set on 16 Nov 2026 by Kamal after looking at another app ("copy style and colors
+of dwelo. Change the orange color to light red color", and once he had seen five pages of it: "Do it for the entire
+app and website"). It replaces the pastel look of 9 Nov. Every screen keeps its layout and words; the look lives in
+one style layer at the end of the stylesheet ("The look of 16 Nov 2026").
+- **Page and cards:** a cream page (`--bg` #FDF8F1) with white cards (`--surface`), beige for quiet fills
+  (`--surface-2` #F8F0E7), warm hairlines and soft warm shadows. The browser's bar, the installed app and the Android
+  window match the cream. On Android the strip behind the clock is the deep aubergine, with white icons.
+- **Light red** (`--red` #EE6468) is the one accent, where the logo's orange was: the logo, the main buttons, the
+  short line in front of small labels, count badges and "new" dots, the saved heart, the edge of the box you're
+  typing in, and the screen you're on in the bottom bar.
+  - Main buttons are light red **pills** with dark words on them (5.4:1). White words on that red would be 3.1:1,
+    so we don't use them. Quiet buttons are white with a thin outline.
+  - Small red text uses deeper shades of the same red, so it reads at 4.5:1: `--red-text` #CE3A44 on white and
+    cream (links, small labels, the greeting), `--red-deep` #B92F3A on the tints and the beige. `p8` fails if
+    `--red-text` shows on a pink tint or the beige.
+- **Deep aubergine** (`--ink` #1F1B2E; text is `--text` #1E1A2B) for text and the few dark pieces: what is picked
+  (chips, the kind-of-home switch), the vibe-score discs, the help button, your initial, the "Your flatmate type"
+  card on Profile, and a home's header while it has no photo (`--dark-card`, `--dark-hero`). Secondary text is
+  `--text-2` #5A5361.
+- **Tinted panels** replace the pastel ones, always with dark text. They are rose, apricot and peach tints of one
+  family, and the tokens keep their old names: `--lav` #FBE3DA (Flatsplits, Account), `--butter` #FBE9D6 (FlatMart,
+  parties), `--mint` #F9E6DC (the Empty Room Escape, Tribe), `--blush` #FBEDE5 (Saved). Something picked softly
+  (a chosen row, a tag) sits on pink (`--red-soft` #FDECEA).
+- **What colours still mean:** green is a match or a check that passed (`--ok`), amber means look twice (`--warn`:
+  compromises, timers), the strong red is danger and errors (`--danger`).
+- **Type:** headings (`h1`, `h2`, a home's name on its page, the titles on share pictures) are in DM Serif Display,
+  a serif with one weight; they are never bold and never tightened. Everything else is Urbanist. The small labels
+  over a section (`.section-h`) are spaced capitals in the red with a short red line in front. Both typefaces are
+  part of the app (`vendor/fonts`, see "Speed"), not fetched from Google Fonts.
 - **Shapes:** cards and panels have 28px corners (`--r-card`), inputs 18px, buttons and chips are pills.
-- **Logo** (9 Nov, Kamal's own files, kept in `marketing/`): an orange tile (#C2410C) with a white roof over "fm"
-  (`icons/logo-icon.svg`), and the wordmark findme (#1C1917) + flatmate (#C2410C) + .com (#57534E)
-  (`icons/wordmark.svg`; `wordmark-app.svg` without .com for small phones; `wordmark-light.svg` on dark backgrounds).
-  The tile is the logo itself: it never sits on another tile. All app and home-screen icons are made from it.
-- **Text in the logo's colours** (9 Nov, Kamal): text and black buttons are the logo's near-black (`--text`/`--ink`
-  #1C1917); secondary text its warm grey (`--text-2` #57534E; hints `--text-3` #615A55). Orange marks what matters:
-  the bold words in headlines in the logo's exact orange (`--orange` #C2410C, big text only), and links, the greeting
-  and small section labels in `--orange-text` #B23A0A, a hair deeper so small text reads at 4.5:1 on the beige.
-  Orange text sits only on beige, white and off-white; inside pastel panels and tiles text stays near-black.
-- **Top bar** (9 Nov, Kamal): no background or line of its own; it sits on the beige page and gets a soft shade only
-  once you scroll (on a phone's home screen it sits on the band, see "Home screens"). The logo sits in a white
-  rounded tile (the mark alone on phones under 420px); Requests (a bell), Messages and, on phones, Saved (a heart)
-  are round white buttons with soft shadows, black while you're on that screen; your initial is a black circle;
-  badges are coral.
-- **Sign-up** (9 Nov, Kamal): a large light headline with the key words in bold; the three choices are pastel tiles
-  (I need a room lavender, Posting a flat or a room butter, side by side; Just Flatsplits & FlatMart mint across),
-  each with an ↗ corner that turns into a black check when picked. On phones the tiles show their titles and the
-  picked one's explanation shows under them; the number is a pill with +91 in front; the highlights are pastel chips
-  after the card, and the trust line stays above it.
+- **Logo** (Kamal's own drawing of 9 Nov, in light red since 16 Nov; the orange originals stay in `marketing/`): a
+  light red tile (#EE6468) with a white roof over "fm" (`icons/logo-icon.svg`), and the wordmark findme (#1E1A2B) +
+  flatmate (#EE6468) + .com (#5A5361) (`icons/wordmark.svg`; `wordmark-app.svg` without .com for small phones;
+  `wordmark-light.svg` on dark backgrounds). The tile is the logo itself: it never sits on another tile. All app
+  and home-screen icons are that tile: `icons/*.png`, the Android launcher icons and the browser tab's icon.
+- **Top bar:** no background or line of its own; it sits on the cream page and gets a soft shade only once you
+  scroll (on a phone it sits on the band, see "Two layers"). Requests (a bell), Messages and, on phones, Saved (a
+  heart) are round white buttons with soft shadows, dark while you're on that screen; your initial is a dark
+  circle; badges are light red with dark numbers.
+- **Sign-up:** a serif headline; the three choices are warm tiles (I need a room rose, Posting a flat or a room
+  apricot, side by side; Just Flatsplits & FlatMart peach across), each with an ↗ corner that turns into a dark
+  check when picked. On phones the tiles show their titles and the picked one's explanation shows under them; the
+  number is a pill with +91 in front; the trust line stays above the card. In the questions that follow, the back
+  arrow is a white disc with a dark arrow.
 - **Two layers on every main screen (phones)** (15 Nov, Kamal, from another app's home screen: "The double color
-  shade looks super amazing"). The top of each screen is a pastel band that fills the screen from its top edge,
+  shade looks super amazing"). The top of each screen is a tinted band that fills the screen from its top edge,
   top bar included; the rest of the page is a sheet with 30px round corners that comes up over the band
-  (`.home-band`, `bandSync`). Words on a band are near-black, like every pastel panel.
-  - Colours: Discover, Splits, Account and a seeker's Requests lavender; My flat, Post, Market, Parties and an
-    owner's Requests butter; Tribe, Escape and Messages mint; Saved blush (a quiet band: blush is close
-    to the page's beige).
+  (`.home-band`, `bandSync`). Words on a band are dark, like every tinted panel.
+  - Tints: Discover, Splits, Account and a seeker's Requests `--lav`; My flat, Post, Market, Parties and an
+    owner's Requests `--butter`; Tribe, Escape and Messages `--mint`; Saved `--blush`.
   - On the two home screens the band holds the greeting. On Splits, Market, Tribe, Escape and Account it
     is the panel that was already there, now edge to edge. On Saved, Requests, Post and Messages it holds the title.
   - While you scroll, the top bar keeps the band's colour until the sheet reaches it, then goes back to the
-    page's beige. Inside a Splits group and on a home's page there is no band.
+    page's cream. Inside a Splits group and on a home's page there is no band.
   - Computers keep the plain greeting and the rounded panels inside the page.
 - **Bottom bar (phones)** (15 Nov, Kamal: "the bottom bar looks cool"): a floating frosted pill above the bottom
   edge; what's behind it shows through softly. Every place keeps its icon and its name. The screen you're on is a
-  soft pill in that screen's own pastel (the band's colour), with dark icon and words. (It was a black button until
-  15 Nov.) With seven places (an owner without a pass) the names are a size smaller on small phones. The help
-  button sits just above the bar.
+  pink pill (`--red-soft`) with a red icon and dark words, the same on every screen. (Until 16 Nov the pill took
+  the screen's own pastel; until 15 Nov it was a black button.) With seven places (an owner without a pass) the
+  names are a size smaller on small phones. The help button sits just above the bar.
 - **A home's page (phones):** the photos run frameless, edge to edge from the top of the screen. Back and share float
   over them as round white buttons, the title and area sit on the photo over a soft shade, and the details start on a
-  rounded sheet. Larger screens keep the framed photo.
+  rounded sheet. A home with no photo yet has the dark card as its header, its name in the serif. Larger screens
+  keep the framed photo.
+- **Pictures people share** (a home, a FlatMart thing, a party, the Vibe Card) are drawn in the same look: a deep
+  aubergine card with white panels and the titles in the serif (`CARD`); the Vibe Card sits on a warm tint for each
+  rhythm (`VC_PALETTE`). `og-image.png`, the picture shown with a shared link, is redrawn by
+  `tests/demo/og-image.js` whenever the look changes.
+- **Charts and dots:** the compatibility chart's four areas have their own colours (indigo, sienna, rose, ochre);
+  each area's name is written in its colour, so each reads at 4.5:1 on white. The dots for the people in a home are
+  earth and plum tones that carry white initials at 4.5:1 (`AV_COLORS`). `p31` checks both.
 - **Four text sizes:** `--fs-xs` 12.5, `--fs-s` 14, `--fs-m` 16 (body), `--fs-l` 21, and the headline `clamp()`.
   Icon circles and badges smaller than 12 px keep their own sizes.
-- **Hints and small print** use `--text-3` #655F5A, which reads at 6.29:1 on white and 5.26:1 on the beige page.
+- **Hints and small print** use `--text-3` #675F6C, which reads at 6.1:1 on white, 5.8:1 on the cream page and
+  4.8:1 or better on every tint.
 - **The WhatsApp button** on the sign-in card stays `--wa` #178741, so its white text reads at 4.59:1; it is the only
   place WhatsApp green is used.
 - **Icons are thin line icons** in navigation, badges, notices and empty states. Emoji stay only where people pick
   them (FlatMart and Flatsplits categories, group emoji, party occasions), in onboarding answers, Vibe types and
   share images. Homes without photos say "No photos yet"; sample homes keep their drawn room and a "Sample" label.
-New screens use the tokens in `:root` rather than new colours. Every colour in the stylesheet is a token: the main
-palette first, then the colours single screens use, named by hue and lightness (`--amber-92`). Drawn illustrations,
-the logo and share images keep their own colours.
+- **The pages beside the app** wear the same look: the privacy policy (`privacy.html`) and Coming soon
+  (`hold.html`).
+New screens use the tokens in `:root` rather than new colours. Every colour in the stylesheet is a token (`p8`
+checks): the main palette first, then the colours single screens use, named by hue and lightness (`--amber-92`).
+The cool tints of the older looks (`--teal-95` and the like) are set to warm ones in the last layer. Drawn people
+and rooms keep their own colours; `p31` checks that nothing else still shows the old orange, lavender, butter, mint
+or teal.
 
 ## Files
 
@@ -988,7 +1016,7 @@ links, the iPhone question) is hidden inside the Android app, which loads the pa
 
 **What a visitor sees is kept short on purpose** (Kamal, 15 Nov: "Reduce the information on the login page of
 website and app as people might copy the same. Make it more clean"). It is the same page in the app before sign-in:
-1. the headline and one line under it, on a lavender band (near-black words; nothing orange on the pastel);
+1. the headline and one line under it, on a rose-tinted band (dark words);
 2. the sign-up card (see "How it flows"), on the sheet below. On a computer the card stands across the sheet's edge;
 3. a row of our cartoon people around a match ring. No photos, no pictures of the app's screens;
 4. one line of small print: the privacy policy, "Have a room? See who's looking near you" (the host page), and, on

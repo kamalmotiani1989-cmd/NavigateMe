@@ -16,14 +16,14 @@ const url = process.argv[2] || 'http://localhost:8765/', out = path.join(__dirna
           display:flex; flex-direction:column; align-items:center; text-align:center}
         #og i.blob{position:absolute; border-radius:50%}
         #og .b1{left:-150px; top:-170px; width:460px; height:460px; background:var(--lav)}
-        #og .b2{right:-170px; bottom:-190px; width:500px; height:500px; background:var(--butter)}
-        #og .b3{right:-90px; top:-120px; width:270px; height:270px; background:var(--mint)}
-        #og .b4{left:-70px; bottom:-110px; width:230px; height:230px; background:var(--blush)}
+        #og .b2{right:-170px; bottom:-190px; width:500px; height:500px; background:var(--red-tint)}
+        #og .b3{right:-90px; top:-120px; width:270px; height:270px; background:var(--butter)}
+        #og .b4{left:-70px; bottom:-110px; width:230px; height:230px; background:var(--red-soft)}
         #og .og-brand{position:relative; margin-top:50px; display:flex; align-items:center; gap:14px}
         #og .og-brand img.fm-mark{width:54px; height:54px}
         #og .og-brand img.wmk{height:25px; width:auto; display:block}
-        #og h1{position:relative; margin:34px 0 0; font-size:84px; line-height:1.02; font-weight:500; letter-spacing:-.035em; color:var(--ink)}
-        #og h1 em{display:block; font-style:normal; font-weight:800; color:var(--orange)}
+        #og h1{position:relative; margin:30px 0 0; font-size:88px; line-height:1.04; color:var(--ink)}   /* the serif comes from the page's own rule for h1 */
+        #og h1 em{display:block; font-style:normal; color:var(--red-text)}
         #og .og-row{position:relative; display:flex; align-items:center; margin-top:38px}
         #og .og-row > span{display:block; width:128px; height:128px; border-radius:50%; overflow:hidden; background:var(--surface); box-shadow:0 0 0 6px var(--surface), 0 14px 30px rgba(60,40,30,.16)}
         #og .og-row > span + span, #og .og-row > b + span{margin-left:-18px}

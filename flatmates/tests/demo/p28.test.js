@@ -120,7 +120,7 @@ const falling = a => a.every((x, i) => !i || (a[i - 1].score ?? -1) >= (x.score 
   ok(t.ok && /^"?Urbanist/.test(t.fam) && urls.some(u => /vendor\/fonts\/urbanist-latin-wght-normal\.woff2/.test(u)), 'Urbanist loads from the app\'s own files: ' + t.fam.slice(0, 30));
   ok(t.rupee >= 2, 'both parts of it are in use (the second holds the rupee sign): ' + t.rupee);
   const priv = await (await ctx.request.get(U + 'privacy.html')).text();
-  ok(!/fonts\.googleapis|Google Fonts/.test(priv) && /vendor\/fonts\/plus-jakarta-sans/.test(priv), 'the privacy page uses the bundled typeface too, and no longer lists Google Fonts');
+  ok(!/fonts\.googleapis|Google Fonts/.test(priv) && /vendor\/fonts\/urbanist/.test(priv) && /vendor\/fonts\/dm-serif-display/.test(priv), 'the privacy page uses the bundled typefaces too (Urbanist and the serif), and no longer lists Google Fonts');
 
   // =============================================================== Discover: every home, highest vibe score first
   const all = await p.evaluate(async () => (await api.search({ city:'Bengaluru' })).map(l => l.id));

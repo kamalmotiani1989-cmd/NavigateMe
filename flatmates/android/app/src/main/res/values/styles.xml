@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="brand">#1C7F72</color>
-    <color name="page">#EFE4DC</color>
-    <color name="teal">#141414</color>
-    <!-- White status bar with dark icons over the white app bar; white navigation bar with dark icons. -->
+    <color name="brand">#EE6468</color>
+    <color name="page">#FDF8F1</color>
+    <color name="teal">#1F1B2E</color>
+    <!-- The look of 16 Nov 2026: "brand" is the light red, "page" the cream page (window and navigation bar), and "teal"
+         (the name is from an older look) the deep aubergine strip behind the clock, which carries white icons. -->
     <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:colorPrimary">@color/teal</item>
         <item name="android:colorPrimaryDark">@color/page</item>

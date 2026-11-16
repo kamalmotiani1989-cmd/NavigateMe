@@ -38,8 +38,9 @@ const closeDlgs = p => p.evaluate(() => { document.querySelectorAll('dialog[open
   if(esc){ await p.evaluate(() => document.querySelector('.mine-esc').scrollIntoView({ block:'start' })); await p.evaluate(() => window.scrollBy(0, -90)); await p.waitForTimeout(300); }
   await p.screenshot({ path: O + '/p19-mine.png' });
   const rgb = s => (s.match(/\d+/g) || []).slice(0, 3).join();
-  ok(esc && [esc.title, esc.name, esc.link].every(c => rgb(c) === '28,25,23') && rgb(esc.link) !== '178,58,10',
-    'the Escape card: title, names and link in the dark text colour, nothing orange inside: ' + JSON.stringify(esc));
+  const inkRgb = esc ? [1, 3, 5].map(i => parseInt(esc.ink.slice(i, i + 2), 16)).join() : '';   // --text, as r,g,b
+  ok(esc && [esc.title, esc.name, esc.link].every(c => rgb(c) === inkRgb) && rgb(esc.link) !== '206,58,68',
+    'the Escape card: title, names and link in the dark text colour, nothing red inside: ' + JSON.stringify(esc));
   const low = [];
   for(const h of ['#mine', '#requests', '#escape', '#post', '#account']){ await p.goto('http://localhost:8765/' + h); await p.waitForTimeout(1500); await closeDlgs(p);
     low.push(...(await p.evaluate(audit)).map(x => h + ' ' + x)); }

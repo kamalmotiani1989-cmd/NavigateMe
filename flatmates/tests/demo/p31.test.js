@@ -1,0 +1,170 @@
+// The look of 16 Nov 2026 (Kamal: "copy style and colors of dwelo. Change the orange color to light red color",
+// then "Do it for the entire app and website"), and the city step of sign-up (Kamal, 16 Nov, "Fix this also": the
+// phone's own pop-up list opened over the chips, the keyboard and Continue). Demo mode, port 8765.
+const { chromium, devices } = require('playwright');
+const O = process.argv[2], U = 'http://localhost:8765/', ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [];
+const vibe = { sleep:2, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:1, noise:0, social:1, sharing:1, work:0, pets:1, gen:'z' };
+const now = Date.now(), iso = ms => new Date(ms).toISOString();
+const seeker = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name:'Neha', role:'seeker', gender:'female', occupation:{ type:'working', what:'Designer' } },
+  account:'9811111111', onboarded:{ seeker:true }, giftSeen:true, attrClaimed:true, vibeCardSeen:true, vibe, prefs:{ city:'Bengaluru', areas:[], look:'room' },
+  notified:{}, demoInvites:'done', demoTribeAt:'done', credits:5, giftGiven:true, profilePromoHidden: now + 9e9 };
+const listing = { id:'mine-p31', kind:'room', title:'Sunny room near the metro', city:'Bengaluru', locality:'HSR Layout', bhk:2, rent:15000, deposit:30000,
+  available_from:'2026-12-01', gender:'any', furnishing:'semi', bachelors:true, amenities:['Wi-Fi'], description:'Short.', photos:[],
+  household: Object.assign({ residents:1, flatmates:[{ type:'working', what:'Designer at an agency', age:'25–30' }] }, vibe), costs:{ wifi:300 }, owner_phone:'9822222222',
+  status:'active', created_at: iso(now - 5 * 864e5), unlock_count:0, private:{ contact_name:'Rohit', contact_phone:'9822222222', address:'B-304, Green Park, HSR Layout, Bengaluru' } };
+const owner = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9822222222', name:'Rohit', role:'owner', gender:'male' }, account:'9822222222', onboarded:{ owner:true }, attrClaimed:true, giftSeen:true, vibe,
+  homeDraft: Object.assign({ residents:1 }, vibe), myListings:[listing], requests:[], demoIncoming:{}, notified:{}, waitNudged: now };
+const open = async (b, state, opts, hash) => { const ctx = await b.newContext(Object.assign({ serviceWorkers:'block' }, opts));
+  if(state) await ctx.addInitScript(s => { try{ if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }catch(e){} }, state);
+  const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); await p.goto(U + (hash ? '#' + hash : '')); await p.waitForTimeout(1700);
+  await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close())); await p.waitForTimeout(250); return { ctx, p }; };
+const go = async (p, hash) => { await p.goto(U + '#' + hash); await p.waitForTimeout(1400); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close())); await p.waitForTimeout(250); };
+// every text on the page against what is behind it: 4.5:1, or 3:1 for big text (the same reading as p13's)
+const audit = () => {
+  const rgb = s => (s.match(/[\d.]+/g) || []).map(Number); const lum = c => { const a = c.slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
+  const bgOf = el => { for(let e = el; e; e = e.parentElement){ const cs = getComputedStyle(e); if(cs.backgroundImage !== 'none' && !/gradient/.test(cs.backgroundImage)) return null; const c = rgb(cs.backgroundColor); if(c.length >= 3 && (c[3] === undefined || c[3] > .5)) return c; } return [255, 255, 255]; };
+  const root = document.querySelector('dialog[open]') || document.body, out = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
+  while((n = walker.nextNode())){ const t = n.textContent.trim(); if(t.length < 2) continue; const el = n.parentElement; if(!el || !el.offsetParent) continue;
+    const r = el.getBoundingClientRect(); if(!r.width || r.bottom < 0) continue; const cs = getComputedStyle(el); if(+cs.opacity < .2 || el.closest('[aria-hidden="true"], .city, svg')) continue;
+    const fg = rgb(cs.color), bg = bgOf(el); if(!bg) continue; const a = fg[3] === undefined ? 1 : fg[3]; const mix = fg.slice(0, 3).map((v, i) => v * a + bg[i] * (1 - a));
+    const L1 = lum(mix), L2 = lum(bg), ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05); const big = parseFloat(cs.fontSize) >= 18.5 || (parseFloat(cs.fontSize) >= 14 && +cs.fontWeight >= 700);
+    if(ratio < (big ? 3 : 4.5)) out.push(`${ratio.toFixed(2)} ${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${t.slice(0, 40)}"`); }
+  return [...new Set(out)];
+};
+// colours of the older looks still showing: the logo's orange, the lavender, butter and mint panels, the teal
+const OLD = ['rgb(194, 65, 12)', 'rgb(178, 58, 10)', 'rgb(195, 201, 246)', 'rgb(235, 217, 129)', 'rgb(195, 224, 214)', 'rgb(28, 127, 114)', 'rgb(239, 228, 220)', 'rgb(27, 36, 64)'];
+const oldLeft = old => { const out = [];
+  document.querySelectorAll('body *').forEach(e => { if(!e.getClientRects().length || e.closest('.fm-av, .art, .w-people, svg, .av-tile, .leaflet-container, .hl-art, .st-art')) return; const cs = getComputedStyle(e);
+    for(const [k, v] of [['color', cs.color], ['background', cs.backgroundColor], ['border', cs.borderTopColor]]) if(old.includes(v) && (k !== 'border' || parseFloat(cs.borderTopWidth) > 0)) out.push(k + ' ' + v + ' ' + e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0]); });
+  return [...new Set(out)].slice(0, 6); };
+(async () => {
+  const b = await chromium.launch();
+  // ------------------------------------------------------------ a visitor: the first page, on a phone
+  let { ctx, p } = await open(b, null, { viewport:{ width:390, height:844 } });
+  await p.evaluate(() => document.fonts.ready);
+  const T = await p.evaluate(async () => { const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim().toUpperCase();
+    const h1 = document.querySelector('.w-copy h1'), cs = getComputedStyle(h1), go = document.querySelector('#loginForm .btn-primary, .w-card .btn-primary'), g = getComputedStyle(go);
+    const lum = rgb => { const c = rgb.match(/[\d.]+/g).slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+    const logo = await (await fetch('icons/logo-icon.svg')).text(), mark = await (await fetch('icons/wordmark.svg')).text();
+    const px = await new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = c.height = 192; const x = c.getContext('2d'); x.drawImage(i, 0, 0); r([...x.getImageData(96, 30, 1, 1).data].slice(0, 3).join()); }; i.onerror = () => r('none'); i.src = 'icons/icon-192.png'; });
+    return { red: tok('--red'), page: tok('--bg'), card: tok('--surface'), ink: tok('--ink'), redText: tok('--red-text'), orange: tok('--orange-text'), fam: cs.fontFamily, weight: cs.fontWeight, spacing: cs.letterSpacing,
+      serif: document.fonts.check('400 20px "DM Serif Display"'), usedSerif: [...document.fonts].some(f => /DM Serif/.test(f.family) && f.status === 'loaded'),
+      h2: getComputedStyle(document.querySelector('.w-card h2')).fontFamily, body: getComputedStyle(document.querySelector('.w-copy .lede, .w-trust')).fontFamily,
+      go: { bg: g.backgroundColor, color: g.color, ratio: Math.round((Math.max(lum(g.color), lum(g.backgroundColor)) + .05) / (Math.min(lum(g.color), lum(g.backgroundColor)) + .05) * 100) / 100 },
+      logo: /#EE6468/i.test(logo) && !/#C2410C/i.test(logo), mark: /#EE6468/i.test(mark) && !/#C2410C/i.test(mark), px,
+      theme: document.querySelector('meta[name=theme-color]').content, fav: /%23EE6468/.test(document.querySelector('link[rel=icon]').href),
+      bodyBg: getComputedStyle(document.body).backgroundColor }; });
+  ok(T.red === '#EE6468' && T.page === '#FDF8F1' && T.card === '#FFFFFF' && T.ink === '#1F1B2E' && T.bodyBg === 'rgb(253, 248, 241)', 'the palette: a cream page, white cards, the light red and a deep aubergine: ' + JSON.stringify({ red: T.red, page: T.page, ink: T.ink }));
+  ok(T.logo && T.mark && T.px === '238,100,104' && T.fav && T.theme.toUpperCase() === '#FDF8F1', 'the logo is light red where it was orange: the drawn logo, the wordmark, the app icon, the tab icon; the browser bar is the page\'s cream: ' + JSON.stringify({ logo: T.logo, mark: T.mark, px: T.px, fav: T.fav, theme: T.theme }));
+  ok(/^"?DM Serif Display/.test(T.fam) && T.weight === '400' && (T.spacing === 'normal' || T.spacing === '0px') && /^"?DM Serif Display/.test(T.h2) && T.serif && T.usedSerif && /^"?Urbanist/.test(T.body),
+    'headings are in the serif (its one weight, not tightened) and it has loaded; the rest stays Urbanist: ' + JSON.stringify({ h1: T.fam.slice(0, 22), weight: T.weight, spacing: T.spacing, body: T.body.slice(0, 12) }));
+  ok(T.go.bg === 'rgb(238, 100, 104)' && T.go.color === 'rgb(30, 26, 43)' && T.go.ratio >= 4.5, 'the main button is the light red with dark words that read at ' + T.go.ratio + ':1');
+  ok(!(await p.evaluate(oldLeft, OLD)).length && !(await p.evaluate(audit)).length, 'the first page: nothing in the old orange, lavender, butter, mint or teal, and every word reads: ' + (await p.evaluate(oldLeft, OLD)).concat(await p.evaluate(audit)).join(' | '));
+  await p.screenshot({ path: O + '/p31-first-page.png' });
+  // the page for people with a spare room and the moving-out sale page: their words were white on the band
+  await p.goto(U + '#host/Bengaluru/HSR%20Layout'); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
+  const host = await p.evaluate(() => ({ shown: !$('view-host').hidden, h1: getComputedStyle(document.querySelector('.h-copy h1')).color, em: getComputedStyle(document.querySelector('.h-copy h1 em')).color }));
+  ok(host.shown && host.h1 === 'rgb(30, 26, 43)' && host.em === 'rgb(185, 47, 58)' && !(await p.evaluate(audit)).length, 'the page for people with a spare room: dark words on the band, the words that matter in the red, all of it readable: ' + JSON.stringify(host) + ' ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
+  await p.screenshot({ path: O + '/p31-host.png' });
+  await ctx.close();
+  // ------------------------------------------------------------ the city step of sign-up, on a phone (touch)
+  const fresh = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name:'Neha', role:'seeker', gender:'female' }, account:'9811111111', onboarded:{}, giftSeen:true, attrClaimed:true };
+  ({ ctx, p } = await open(b, fresh, { ...devices['Pixel 7'] }));
+  const h1 = () => p.evaluate(() => (document.querySelector('#obStage h1') || {}).textContent || '');
+  for(let i = 0; i < 12 && !/Which city are you moving to/.test(await h1()); i++){
+    await p.evaluate(() => { const t = document.querySelector('#obWhat'), o = document.querySelector('#obStage .opt[data-i]'), g = document.querySelector('#obGo');
+      if(t){ t.value = 'Designer'; t.form.requestSubmit(); } else if(o) o.click(); else if(g) g.click(); }); await p.waitForTimeout(550); }
+  const back = await p.evaluate(() => { const bk = $('obBack'), cs = getComputedStyle(bk); return { shown: cs.visibility !== 'hidden', bg: cs.backgroundColor, color: cs.color }; });
+  ok(back.shown && back.bg === 'rgb(255, 255, 255)' && back.color === 'rgb(30, 26, 43)', 'sign-up: the back button is a white disc with a dark arrow (it was a white arrow on a faint disc): ' + JSON.stringify(back));
+  const big = await p.evaluate(() => [...document.querySelectorAll('#obStage .opt')].map(o => o.querySelector('b').textContent));
+  ok(/Which city are you moving to/.test(await h1()) && big.includes('Pune') && big[big.length - 1] === 'Other city', 'sign-up: the city question still offers the big cities and "Other city": ' + big.join(', '));
+  await p.evaluate(() => [...document.querySelectorAll('#obStage .opt')].find(o => /Other city/.test(o.textContent)).click()); await p.waitForTimeout(500);
+  const c0 = await p.evaluate(() => { const i = $('obCity'), go = document.querySelector('#obCityForm .btn-primary'), bk = $('obCityBack');
+    return { h1: document.querySelector('#obStage h1').textContent, why: document.querySelector('#obStage .why').textContent, list: i.getAttribute('list'), datalists: document.querySelectorAll('#obStage datalist').length,
+      chips: [...document.querySelectorAll('#obCityPick .chip')].map(c => c.textContent), focused: document.activeElement === i, goEnd: Math.round(go.getBoundingClientRect().bottom), backEnd: Math.round(bk.getBoundingClientRect().bottom), vh: innerHeight }; });
+  ok(c0.h1 === 'Which city?' && /Pick one or type your city/.test(c0.why) && c0.list === null && c0.datalists === 0, 'the city box has no pop-up list of its own any more (same question, same words): ' + JSON.stringify({ list: c0.list, datalists: c0.datalists }));
+  ok(c0.chips.length === 18 && c0.chips[0] === 'Agra' && !c0.focused && c0.goEnd < c0.vh && c0.backEnd < c0.vh, 'on a phone it opens with 18 cities to tap and both buttons on screen, the keyboard not yet open: ' + JSON.stringify({ chips: c0.chips.length, focused: c0.focused, goEnd: c0.goEnd, vh: c0.vh }));
+  await p.screenshot({ path: O + '/p31-city.png' });
+  const typed = async v => { await p.fill('#obCity', v); await p.waitForTimeout(150); return p.evaluate(() => ({ chips: [...document.querySelectorAll('#obCityPick .chip')].map(c => c.textContent), shown: getComputedStyle($('obCityPick')).display !== 'none',
+    go: Math.round(document.querySelector('#obCityForm .btn-primary').getBoundingClientRect().top), pick: Math.round($('obCityPick').getBoundingClientRect().bottom) })); };
+  const ag = await typed('Ag'), pur = await typed('pur'), mum = await typed('mum'), none = await typed('Zzz');
+  ok(ag.chips.join() === 'Agra' && ag.go >= ag.pick, 'typing "Ag" leaves Agra (names that start with it), and the chips never cover Continue: ' + ag.chips.join(', '));
+  ok(pur.chips.length >= 5 && pur.chips.every(c => /pur/i.test(c)) && pur.chips.includes('Nagpur') && pur.chips.includes('Jaipur'), 'three letters also find names that contain them, the big cities included: ' + pur.chips.join(', '));
+  ok(mum.chips.join() === 'Mumbai' && !none.chips.length && !none.shown, 'any case works; a name we don\'t list shows no chips: ' + JSON.stringify({ mum: mum.chips, none: none.chips.length }));
+  await p.fill('#obCity', 'Na'); await p.waitForTimeout(150); await p.screenshot({ path: O + '/p31-city-typed.png' });
+  await p.tap('#obCityPick .chip'); await p.waitForTimeout(600);
+  const picked = await p.evaluate(() => ({ city: ob.a.city, h1: (document.querySelector('#obStage h1') || {}).textContent }));
+  ok(picked.city === 'Nagpur' && !/city/i.test(picked.h1), 'tapping a chip picks that city and moves on: ' + JSON.stringify(picked));
+  await p.evaluate(() => $('obBack').click()); await p.waitForTimeout(400);
+  await p.evaluate(() => { const o = [...document.querySelectorAll('#obStage .opt')].find(x => /Other city/.test(x.textContent)); if(o) o.click(); }); await p.waitForTimeout(400);
+  await p.fill('#obCity', 'tezpur'); await p.evaluate(() => $('obCityForm').requestSubmit()); await p.waitForTimeout(600);
+  const own = await p.evaluate(() => ({ city: ob.a.city, h1: (document.querySelector('#obStage h1') || {}).textContent }));
+  ok(own.city === 'Tezpur' && !/city/i.test(own.h1), 'a city we don\'t list can still be typed and continued with: ' + JSON.stringify(own));
+  await ctx.close();
+  // on a computer the box is ready to type in
+  ({ ctx, p } = await open(b, fresh, { viewport:{ width:1280, height:800 } }));
+  for(let i = 0; i < 12 && !/Which city are you moving to/.test(await p.evaluate(() => (document.querySelector('#obStage h1') || {}).textContent || '')); i++){
+    await p.evaluate(() => { const t = document.querySelector('#obWhat'), o = document.querySelector('#obStage .opt[data-i]'), g = document.querySelector('#obGo');
+      if(t){ t.value = 'Designer'; t.form.requestSubmit(); } else if(o) o.click(); else if(g) g.click(); }); await p.waitForTimeout(550); }
+  await p.evaluate(() => [...document.querySelectorAll('#obStage .opt')].find(o => /Other city/.test(o.textContent)).click()); await p.waitForTimeout(500);
+  ok(await p.evaluate(() => document.activeElement === $('obCity')), 'on a computer the city box is ready to type in');
+  await ctx.close();
+  // ------------------------------------------------------------ someone looking for a room
+  ({ ctx, p } = await open(b, seeker, { viewport:{ width:390, height:844 } }, 'discover'));
+  const left = [], low = [];
+  for(const v of ['discover', 'saved', 'requests', 'tribe', 'parties', 'splits', 'market', 'account', 'messages']){ await go(p, v);
+    left.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); }
+  ok(!left.length, 'someone looking: no screen still shows the old orange, lavender, butter, mint, teal or beige: ' + left.slice(0, 5).join(' | '));
+  ok(!low.length, 'someone looking: every word reads on every screen: ' + low.slice(0, 5).join(' | '));
+  await go(p, 'account');
+  const acc = await p.evaluate(() => { const v = document.querySelector('.vt-line'), cs = getComputedStyle(v), out = document.querySelector('.acc-out b'), del = document.querySelector('.acc-del b');
+    return { card: cs.backgroundColor, grad: /gradient/.test(cs.backgroundImage), words: getComputedStyle(v.querySelector('b')).color, fam: getComputedStyle(v.querySelector('b')).fontFamily.slice(0, 18),
+      out: getComputedStyle(out).color, del: getComputedStyle(del).color, labelOneLine: v.querySelector('small').getClientRects().length === 1 }; });
+  ok(acc.card === 'rgb(31, 27, 46)' && acc.grad && acc.words === 'rgb(255, 255, 255)' && /DM Serif/.test(acc.fam) && acc.labelOneLine && acc.out === 'rgb(206, 58, 68)' && acc.del === acc.out,
+    'Profile: "Your flatmate type" is the one dark card, white serif words on it; Sign out and Delete are in the red: ' + JSON.stringify(acc));
+  await go(p, 'discover');
+  const d = await p.evaluate(async () => { const lab = document.querySelector('#dlgListing .section-h') || null; await openListing(document.querySelector('#cards .card').dataset.id); await new Promise(r => setTimeout(r, 700));
+    const l = document.querySelector('#dlgListing .section-h'), cs = getComputedStyle(l), dash = getComputedStyle(l, '::before'), np = document.querySelector('#dlgListing .hero-pic .nophoto'), t = document.querySelector('#dlgListing .hp-title b');
+    const ring = document.querySelector('#dlgListing .ring circle'), go = document.querySelector('#dlgListing .l-bar .btn-primary, #dlgListing .btn-primary');
+    return { label: cs.color, caps: cs.textTransform, size: cs.fontSize, dash: dash.backgroundColor, dashW: dash.width, hero: np ? getComputedStyle(np).backgroundColor : null, heroGrad: np ? /gradient/.test(getComputedStyle(np).backgroundImage) : null,
+      title: t ? getComputedStyle(t).fontFamily.slice(0, 18) : null, ring: ring && getComputedStyle(ring).fill, go: go && getComputedStyle(go).backgroundColor }; });
+  ok(d.label === 'rgb(206, 58, 68)' && d.caps === 'uppercase' && d.size === '12.5px' && d.dash === 'rgb(238, 100, 104)' && d.dashW === '18px', 'a home\'s page: the small labels are red capitals with a short red line in front: ' + JSON.stringify({ label: d.label, size: d.size, dash: d.dash }));
+  ok(d.hero === 'rgb(31, 27, 46)' && d.heroGrad && /DM Serif/.test(d.title || '') && d.ring === 'rgb(31, 27, 46)' && d.go === 'rgb(238, 100, 104)', 'a home with no photo: the dark card as its header, the name in the serif, the score on a dark disc, Send request in the light red: ' + JSON.stringify(d));
+  ok(!(await p.evaluate(audit)).length, 'a home\'s page: every word reads: ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
+  await p.screenshot({ path: O + '/p31-home.png' });
+  await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(x => x.close()));
+  // the pictures people share: the dark aubergine card, the title in the serif's colours, nothing navy or teal
+  const pics = await p.evaluate(async () => { const hex = d => '#' + [...d].slice(0, 3).map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+    const l = api.all().find(x => x.city === 'Bengaluru'), c1 = await drawListingCard(l, { pct: 87 }), x1 = c1.getContext('2d');
+    const t = vibeType(state.vibe), c2 = await drawVibeCard(t, 'Neha', '', null), x2 = c2.getContext('2d');
+    return { top: hex(x1.getImageData(4, 4, 1, 1).data), bottom: hex(x1.getImageData(c1.width - 4, c1.height - 4, 1, 1).data), card: CARD.top, vibeBg: hex(x2.getImageData(6, 900, 1, 1).data), want: VC_PALETTE.bg[t.rhythm] || VC_PALETTE.bg[''],
+      pal: JSON.stringify([CARD, VC_PALETTE]), fonts: document.fonts.check('400 54px "DM Serif Display"') && document.fonts.check('800 60px "Urbanist"') }; });
+  ok(pics.top === pics.card.toUpperCase() && pics.top !== pics.bottom && pics.vibeBg === pics.want.toUpperCase() && pics.fonts && !/#1B2440|#253360|#10264F|#0B7C82|#C2410C|#1C7F72|#C3C9F6|#EBD981|#C3E0D6/i.test(pics.pal),
+    'the pictures people share (a home, the Vibe Card) are drawn in the new colours and lettering: ' + JSON.stringify({ top: pics.top, bottom: pics.bottom, vibeBg: pics.vibeBg }));
+  // the compatibility chart's four areas: each name is written in its own colour, so each must read on white
+  const cg = await p.evaluate(() => { const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+    return COMPAT_GROUPS.map(g => [g.name, g.color, Math.round(1.05 / (lum(g.color) + .05) * 100) / 100]).concat(AV_COLORS.map(c => ['dot', c, Math.round(1.05 / (lum(c) + .05) * 100) / 100])); });
+  ok(cg.every(x => x[2] >= 4.5) && new Set(cg.slice(0, 4).map(x => x[1])).size === 4, 'the compatibility chart\'s four colours and the people dots read at 4.5:1 with white: ' + cg.filter(x => x[2] < 4.5).map(x => x.join(' ')).join(' | '));
+  await ctx.close();
+  // ------------------------------------------------------------ someone with a room
+  ({ ctx, p } = await open(b, owner, { viewport:{ width:390, height:844 } }, 'mine'));
+  const left2 = [], low2 = [];
+  for(const v of ['mine', 'requests', 'escape', 'post', 'account']){ await go(p, v);
+    left2.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low2.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); }
+  ok(!left2.length && !low2.length, 'someone with a room: no old colours left, every word reads: ' + left2.concat(low2).slice(0, 5).join(' | '));
+  await ctx.close();
+  // ------------------------------------------------------------ the pages beside the app
+  ({ ctx, p } = await open(b, null, { viewport:{ width:390, height:844 } }));
+  await p.goto(U + 'privacy.html'); await p.waitForTimeout(900); await p.evaluate(() => document.fonts.ready);
+  const pv = await p.evaluate(() => { const cs = e => getComputedStyle(document.querySelector(e)); return { h1: cs('h1').fontFamily.slice(0, 18), body: cs('body').fontFamily.slice(0, 12), bg: cs('body').backgroundColor, link: cs('main a, .wrap a:not(.logo):not(.back)').color,
+    logo: document.querySelector('.logo img').getAttribute('src'), src: document.documentElement.outerHTML }; });
+  ok(/DM Serif/.test(pv.h1) && /Urbanist/.test(pv.body) && pv.bg === 'rgb(253, 248, 241)' && pv.link === 'rgb(206, 58, 68)' && !/#1C7F72|#156358|#DCEFE9|Plus Jakarta/i.test(pv.src) && !(await p.evaluate(audit)).length,
+    'the privacy policy page wears the same look, and reads: ' + JSON.stringify({ h1: pv.h1, body: pv.body, bg: pv.bg, link: pv.link }) + ' ' + (await p.evaluate(audit)).slice(0, 3).join(' | '));
+  await p.screenshot({ path: O + '/p31-privacy.png' });
+  const man = await p.evaluate(async () => (await fetch('manifest.webmanifest')).json());
+  ok(man.theme_color.toUpperCase() === '#FDF8F1' && man.background_color.toUpperCase() === '#FDF8F1', 'the installed app opens on the cream page: ' + man.theme_color);
+  await ctx.close();
+  await b.close();
+  ok(!errs.length, 'no page errors: ' + errs.join(' | '));
+})();
