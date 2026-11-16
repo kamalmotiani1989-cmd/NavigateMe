@@ -1,5 +1,49 @@
 # Teche · reports
 
+## 2026-11-16, the new look is on every screen and page; sign-up's city step fixed (#110) live
+
+- **What Kamal asked (16 Nov):** after the five preview pages, "Ignore inspectai. Do it for the entire app and
+  website". Then, with two screenshots of sign-up's "Which city?" step, "Fix this also".
+- **This went against a standing rule, and Kamal wins:** my brief says to keep the look of 8 Nov with no new
+  colours. Kamal himself asked for the change. **King: the brief's sentence about the look needs your update**
+  (suggested words in my message to you).
+- **The look, everywhere:**
+  - a cream page with white cards;
+  - one light red (`#EE6468`) where the logo's orange was: the logo and every icon made from it, the main buttons,
+    small labels, counts, the screen you're on in the bottom bar;
+  - deep aubergine for text and the few dark pieces;
+  - the lavender, butter and mint panels are rose, apricot and peach tints;
+  - headings in a serif (DM Serif Display, open licence, bundled). The rest stays Urbanist.
+- **It also covers** the pictures people share (a home, a FlatMart thing, a party, the Vibe Card), the
+  compatibility chart, map pins, the privacy page, the Coming soon page, the picture shown with a shared link, the
+  installed app's colours, and the Android app's icon, bars and notification colour.
+- **A choice Kamal saw in the preview:** the red buttons carry dark words (5.4:1). White words, as the other app
+  has, would be 3.1:1, under the 4.5:1 our tests hold every screen to.
+- **Fixed on the way:**
+  - the moving-out sale page and the page for people with a spare room had white words on a light band;
+  - sign-up's back button was a white arrow on a faint disc;
+  - one amber label read at 4.4:1.
+- **The city step ("Other city"):** the box used the phone's own pop-up list, which opened over the chips, the
+  keyboard and Continue. Now the cities are chips under the box that follow what you type, any name can still be
+  typed, and on a phone the keyboard waits until you tap the box. Same question, same words, same answers.
+- **Not changed:** the login steps, the onboarding questions, what any screen says or does. No database change.
+- **Tests:** 29 demo suites, 696 checks (was 28 and 668). New `p31` (28 checks): the palette, the serif, the logo,
+  the buttons, no old colours left and every word readable on each screen, the share pictures, the privacy page,
+  the city step. `p8`, `p19`, `p26`, `p27` and `p28` now describe this look.
+- **Published:** e5f4176; Android build 216 (file checked: the light red icon, the new pages and the city step are
+  inside, and the checksum matches the copy on the website's release); the website repo's `main` and `gh-pages`
+  say "Publish the app from NavigateMe e5f4176", and the published copy passes a smoke test.
+- **One hiccup:** GitHub refused the website publish step's own push twice (403) with no branch rule or setting
+  behind it that I could find; the third try, five minutes later, went through. If it happens again, retry.
+- **For King to pass on:** Mark's creatives (PRs #93, #94) and the files in `marketing/` still show the orange
+  logo and the old colours. The light red logo files are `flatmates/icons/logo.svg`, `logo-icon.svg` and
+  `wordmark.svg`.
+- **Not done, on purpose:** the area boxes on the post form and FlatMart still use the phone's pop-up list (they
+  have no chips to cover, and Kamal's screenshots were of the city step). Dwelo's way of deleting an account was in
+  Kamal's recording; he did not ask for it, so it is untouched.
+- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
+  60 a day.
+
 ## 2026-11-16, Monday check: all green. A preview of a new look is with Kamal (nothing merged)
 
 - **Monday check:** the last runs on `main` are green (the website workflow, Pages, and Android build 215 on the
@@ -209,29 +253,4 @@
   [Tribe and Account](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/bands2.png).
 - **Not done, for Kamal to decide:** the band's colour behind the clock and battery (needs an Android shell change
   I can't try on a phone); the host page (`#host`) still lists who's looking near an area, which is also public.
-- **Still waiting on Kamal:** findmeflatmate PR #2 (one line), #86 privacy blanks, #95 merge or close.
-
-## 2026-11-15, two-layer home and frosted bottom bar on phones (#103) live
-
-- **What (Kamal, from a screenshot of Dwelo's home: "the double shade looks super amazing and the bottom bar looks
-  cool… do the same"):** phones only, in our colours.
-  - **Home screens:** the greeting sits on a pastel band that fills the top of the screen, top bar included
-    (lavender on Discover, butter on My flat). The page below is a sheet with round corners that comes up over it.
-    Words on the band are near-black. While scrolling, the top bar keeps the band's colour until the sheet reaches
-    it.
-  - **Bottom bar:** a frosted pill. The screen you're on is a soft pill in that screen's own pastel with dark words,
-    where it was a black button. Every place keeps its name under its icon.
-- **Two small fixes found on the way:** at 320 wide the account button was squeezed (round again; Tribe is its icon
-  alone under 350 px). On short phones the "N selected" bar on Escape sat partly under the bottom bar (it now rests
-  above it, and Help steps out of its way).
-- **Not changed:** colours (only our pastels), login, onboarding questions, computers, the Android shell. No
-  database change.
-- **Tests:** all 24 demo suites pass; new suite `p26` (27 checks), also run on the compacted page.
-- **Published:** 27fd447; Android build 210 (the app file was checked: it carries the new home, and its
-  checksum matches the release). The website repo's `main` and `gh-pages` say "Publish the app from NavigateMe 27fd447".
-- **Screenshots:** [before and after](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/04eec74cf3f57b303fdc08972045c132831ae057/home-before-after.png),
-  [scrolling and the bar](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/04eec74cf3f57b303fdc08972045c132831ae057/home-scroll-bar.png).
-- **Offered to Kamal, not built:** the same two-layer top on Splits, Market, Passes and Escape; the band's colour
-  behind the clock and battery (needs a change in the Android shell, which I can't try on a phone from here);
-  icons only in the bottom bar.
 - **Still waiting on Kamal:** findmeflatmate PR #2 (one line), #86 privacy blanks, #95 merge or close.
