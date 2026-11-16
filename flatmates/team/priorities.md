@@ -20,13 +20,13 @@ _Last update: 8 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
-0000000. **"Do you live in this flat?" Yes / No: Kamal, 16 Nov, in King's session: "Go and yes to all".** New posting-form
+0000000. DONE 16 Nov: live (#115, 0e76f69, Android 220). **"Do you live in this flat?" Yes / No: Kamal, 16 Nov, in King's session: "Go and yes to all".** New posting-form
    question, stored as household.lister_lives_here. On No: no vibe copy from the lister, and the women-only check
    (fm_home_gender), the "You" row under "who lives there" and "Listed by a flatmate who lives here" stop counting the
    lister. Older listings without an answer fall back to #113's rule (room, bed or flatmate with residents >= 1; beds count).
    Its own PR after #113, with tests for Yes, No and no answer. Deploy on Kamal's word, database first.
    Same message: Kamal said "Go" to #113 and yes to Teche's tech.md look sentence (Teche asked him the exact wording).
-000000. **Vibe fill-in only where the lister lives there: Kamal, 16 Nov, in King's session: "Fix the vibe fill-in when
+000000. DONE 16 Nov: live (#113, c72fdea, Android 219). **Vibe fill-in only where the lister lives there: Kamal, 16 Nov, in King's session: "Fix the vibe fill-in when
    the lister doesn't live in the flat".** Copy the lister's own answers only for a room, bed or flatmate listing with
    household.residents >= 1. Otherwise there's no score: show "Vibe score after the household answers", sort those homes
    after scored ones, and add a My flat prompt to answer for the household. Clear the copy on the one Pune room from 9 Nov
