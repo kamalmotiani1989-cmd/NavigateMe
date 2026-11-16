@@ -118,8 +118,22 @@ the room comes second.
      via the `fm_profiles_seeker_notify` trigger → fm-notify → `fm_seeker_audience`, at most once a day per seeker.
 
 8. **Build your tribe (seekers).** Two people looking in the same city and areas whose vibes
-   match **70%+** are suggested to each other, and both get a notification ("Riya could be your
-   flatmate · 82% vibe"). The Tribe tab is the build-up page: a live constellation of your matches
+   match **30% or more** are suggested to each other (Kamal, 16 Nov: "In tribe show the match upto 30%"; it was
+   70%).
+   - **Two groups on the page.** "Vibe matches near you · 70%+" first, in the order it always had (the same kind of
+     home as you, then best vibe). Under it, "More people looking near you · 30% to 69%", in the same order. The
+     people who showed before are where they were; the others are added below them. (Someone completing your
+     tribe of 3 stays in the first group whatever the score, and a person who has said yes to you is above both,
+     under "They want to team up with you".)
+   - **Only the strong matches are announced.** A new 70%+ match still brings both people a notification ("Riya
+     could be your flatmate · 82% vibe"), counts on the Tribe badge and shows in the card on Discover. Someone
+     between 30% and 69% shows on the Tribe page without any of that, so a newcomer in a city doesn't ping everyone
+     in it. A yes, a bond, someone leaving and "complete your tribe" are announced whatever the score.
+   - The rule is `fm_tribe_refresh` (30) and `fm_tribe_notify` (pushes a new match at 70 and up) in schema.sql, and
+     `TRIBE_MIN` / `TRIBE_STRONG` in index.html. One call of `fm_tribe_refresh` adds at most the best 60 new people;
+     `fm_tribe_list` shows the best 100.
+
+   The Tribe tab is the build-up page: a live constellation of your matches
    around you (lines light up as people say yes), a 4-step journey (Match → Team up → Bond → Hunt),
    what a tribe could save in your city, and a card per match with budget, areas, the habits you
    share, interests in common and the compatibility analysis. **Team up** is a yes; the other
@@ -167,7 +181,8 @@ the room comes second.
     with one member, the other two get a "complete your tribe" match and must say yes to each other
     before their numbers are shared. A tribe can never go above 3; full tribes are marked.
     **Tribe rules.** People looking for the same kind of home as you (private room, shared room, whole flat;
-    `search.kind` from `fm_set_search`, shown on each card) come first, best vibe first. Once bonded, the
+    `search.kind` from `fm_set_search`, shown on each card) come first, best vibe first (inside each of the two
+    groups on the page: the 70%+ matches, then the people between 30% and 69%). Once bonded, the
     tribe's homes follow what you're looking for: **shared room** tribes see twin-sharing rooms for the two of
     them, then private rooms they can share as twins; **private room / whole flat** tribes see whole flats with
     a bedroom each (a 2BHK for 2, a 3BHK for 3), then flats with exactly that many private rooms free, then
@@ -441,8 +456,8 @@ realistic rents, flatmates, interests and per-room expenses (addresses are made 
 (they accept a match of 60% or more), and a sample seeker asks to meet a flat about 8 seconds
 after you post it. Sample seekers (24 per city) answer an owner's invite after a few seconds: yes to a
 strong match, no to a weak one, and no reply in between. Build your tribe: up to 6 sample seekers who
-match your vibe 70%+ appear about 5 seconds after onboarding; a third of them say yes first, and the
-rest answer your yes within seconds (yes to a 74%+ match). Two sample owners also invite a new seeker about 12 seconds after onboarding. Flatsplits has a "try it with a sample
+match your vibe 70%+, and up to 4 between 30% and 69%, appear about 5 seconds after onboarding; a third of the
+strong ones say yes first, and the rest answer your yes within seconds (yes to a 74%+ match). Two sample owners also invite a new seeker about 12 seconds after onboarding. Flatsplits has a "try it with a sample
 flat" button (two flatmates and a month of expenses; one of them adds another expense 15 seconds later), and FlatMart has
 80 sample things for sale across the cities. Sample sellers accept an offer of 80% of the price or more after about
 6 seconds, and a sample buyer makes an offer about 8 seconds after you post something.
