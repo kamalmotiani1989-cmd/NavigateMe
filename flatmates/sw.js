@@ -1,6 +1,6 @@
 // Offline support for the installed app. Network first, so every change we
 // deploy shows up on the next open; the cache is only a fallback offline.
-const CACHE = "fm-v5";   // v5: the look of 16 Nov 2026 (a new icon colour and the headings' typeface)
+const CACHE = "fm-v6";   // v6: the logo and the icons in their own orange again (v5 was the look of 16 Nov 2026)
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./vendor/supabase-2.45.4.js",
   "./vendor/fonts/urbanist-latin-wght-normal.woff2", "./vendor/fonts/urbanist-latin-ext-wght-normal.woff2",
   "./vendor/fonts/dm-serif-display-latin-400-normal.woff2"];
