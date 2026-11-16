@@ -10,6 +10,7 @@
 //   say(thread, text)   the other person writes        fail(n, why)  the next n sends fail ("network" or "rate-limited")
 //   old = true          a server from before p_after and p_id (it doesn't know those arguments)
 //   threads             the chats themselves
+// Tribe (p30): __tribe in localStorage is the list fm_tribe_list answers with (JSON; default: nobody).
 (() => {
   const get = (k, d) => { try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } };
   const LAT = Number(get('__lat', 300)), AUTH = Number(get('__auth', 0)), role = get('__role', 'seeker'), signedIn = get('__session', '') !== 'none';
@@ -63,8 +64,10 @@
     fm_thread_list: () => chat.threads.filter(t => t.messages.length).map(t => { const last = t.messages[t.messages.length - 1];
       return { thread: t.id, kind: t.kind, title: t.title, ref: t.ref, last_at: last.at, last: { body: last.body.slice(0, 120), mine: last.mine },
         unread: t.messages.filter(m => !m.mine && Date.parse(m.at) > Date.parse(t.read_at)).length }; }).sort((x, y) => Date.parse(y.last_at) - Date.parse(x.last_at)) };
+  let tribe = []; try{ tribe = JSON.parse(get('__tribe', '[]')); }catch(e){}
   const data = Object.assign({ fm_on_hold: () => false, fm_me: () => signedIn ? [me] : [{}], fm_search: () => homes, fm_search_near: () => homes, fm_my_listings: () => homes.filter(h => h.is_owner),
-    fm_find_seekers: () => seekers, fm_listing_get: a => homes.filter(h => h.id === a.p_listing) }, chats);
+    fm_find_seekers: () => seekers, fm_listing_get: a => homes.filter(h => h.id === a.p_listing),
+    fm_tribe_list: () => tribe, fm_tribe_refresh: () => 0, fm_tribe_seen: () => { tribe.forEach(t => { t.unseen = false; }); return null; } }, chats);
   window.supabase = { createClient(){ return {
     rpc(fn, args){ const e = { fn, args: args || {}, at: Math.round(performance.now()), ms: null }; log.push(e);
       return wait(LAT).then(() => { e.ms = Math.round(performance.now() - e.at); const f = data[fn], r = f ? f(args || {}) : [];

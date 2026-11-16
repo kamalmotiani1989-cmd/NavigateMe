@@ -730,6 +730,7 @@ div.cx-area{cursor:default}
 .journey li span{display:block; line-height:1.3}
 .journey li.done i{background:var(--brand); color:#fff} .journey li.done::before, .journey li.now::before{background:var(--brand)}
 .journey li.now i{background:var(--accent); color:#fff; box-shadow:0 0 0 5px var(--accent-soft)} .journey li.now b{color:var(--text)}
+.tribe-more-hint{margin:-4px 0 12px}   /* under "More people looking near you" */
 .tribe-card{padding:16px; border-radius:18px; background:#fff; margin:10px 0; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(16,20,24,.06); animation:rise .4s ease both}
 .tribe-card.wants{box-shadow:0 0 0 2px var(--brand), 0 10px 30px rgba(27,36,64,.10); background:linear-gradient(180deg,var(--brand-soft),#fff 60%)}
 .tribe-card .wants-line{margin:0 0 10px; font-weight:800; color:var(--accent)}
@@ -2776,7 +2777,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
     <div id="tribeRules"></div>
     <div id="tribeMatches"></div>
     <div class="cards" id="tribeHunt"></div>
-    <p class="hint" style="margin:18px 0 28px">A tribe is up to 3 people. Only people looking in your city with a 70%+ vibe match see you here. Numbers are shared only when
+    <p class="hint" style="margin:18px 0 28px">A tribe is up to 3 people. Only people looking in your city with a 30%+ vibe match see you here. Numbers are shared only when
       both of you say yes. You can hide from tribe matches in Account.</p>
   </section>
 
@@ -2962,7 +2963,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
         and invite you to see their flat. Your number is only shared if you say yes.</p>
       <label class="switch"><input type="checkbox" id="discToggle"><span>Show me to owners in my areas</span></label>
       <label class="switch" style="margin-top:14px"><input type="checkbox" id="tribeToggle"><span>Show me in Build your tribe
-        <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 70%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label>
+        <small class="hint" style="display:block;margin:0;font-weight:500">People looking in your areas with a 30%+ vibe match can team up with you. Numbers only when you both say yes.</small></span></label>
       <div class="show-to" id="showTo"></div>
       <div class="ontime-box" id="onTimeBox"></div></div>
     <div class="panel" id="nearPanel"><h2>Parties nearby</h2>
@@ -3443,6 +3444,12 @@ function listingVibe(hh, own){
 // come later, in "Complete your profile". Six answers are enough to match (fm_vibe_count in schema.sql).
 const CORE_KEYS = ["sleep", "clean", "food", "cook", "smoke", "social"];
 const MIN_VIBE = 6;
+// Who shows in Build your tribe (Kamal, 16 Nov: "In tribe show the match upto 30%"): everyone looking in your areas
+// who matches your vibe 30% or more (it was 70%, the same number as fm_tribe_refresh). 70% and up are still the
+// "vibe matches": they come first, and only they bring a notification and count on the Tribe badge (fm_tribe_notify
+// pushes only for them too), so a newcomer in a city doesn't ping everyone in it. The people between 30% and 69% are
+// listed under them.
+const TRIBE_MIN = 30, TRIBE_STRONG = 70;
 
 /* ---- interests: shown as "you both like", never part of the vibe score. */
 const INTERESTS = {
@@ -4205,10 +4212,14 @@ const demoApi = {
     if(!state.user || state.user.role !== "seeker" || state.tribeOpen === false || !f.city || answered(state.vibe) < MIN_VIBE) return 0;
     state.tribe = state.tribe || [];
     const have = new Set(state.tribe.map(t => t.sid));
-    const fresh = demoSeekerPool().filter(x => x.city === f.city && !have.has(x.id) && showsTo(state.tribeShowTo, x.gender)
+    const near = demoSeekerPool().filter(x => x.city === f.city && !have.has(x.id) && showsTo(state.tribeShowTo, x.gender)
         && (!f.areas.length || !x.areas.length || x.areas.some(a => f.areas.includes(a))))
-      .map(x => ({ x, m: vibeMatch(state.vibe, x.vibe) })).filter(c => c.m && c.m.pct >= 70)
-      .sort((a, b) => b.m.pct - a.m.pct).slice(0, Math.max(0, 6 - state.tribe.length));
+      .map(x => ({ x, m: vibeMatch(state.vibe, x.vibe) })).filter(c => c.m && c.m.pct >= TRIBE_MIN)
+      .sort((a, b) => b.m.pct - a.m.pct);
+    // Sample people: up to 6 strong matches (as before) and up to 4 of those between 30% and 69%.
+    const strongHave = state.tribe.filter(t => t.match_pct >= TRIBE_STRONG).length, moreHave = state.tribe.length - strongHave;
+    const fresh = near.filter(c => c.m.pct >= TRIBE_STRONG).slice(0, Math.max(0, 6 - strongHave))
+      .concat(near.filter(c => c.m.pct < TRIBE_STRONG).slice(0, Math.max(0, 4 - moreHave)));
     for(const { x, m } of fresh) state.tribe.push({ id:"t-" + x.id, sid:x.id, match_pct:m.pct, my_yes:null, their_yes:null,
       status:"open", created_at:new Date().toISOString(), bonded_at:null, seen:false });
     save(); return fresh.length;
@@ -4293,7 +4304,7 @@ const demoApi = {
         .map(y => [y, (vibeMatch(y.vibe, l.household) || { pct: 0 }).pct]).filter(([, p]) => p >= 70).sort((a, b) => b[1] - a[1])[0];
       if(x) (state.demoBumped = state.demoBumped || {})[x[0].id] = new Date().toISOString();
     }
-    // Build your tribe: matches appear ~5 s after onboarding; a third of sample seekers say yes
+    // Build your tribe: matches appear ~5 s after onboarding; a third of the strong sample matches say yes
     // first, and the rest answer your yes after a few seconds (yes to a 74%+ match).
     if(state.user && state.user.role === "seeker" && state.onboarded.seeker && state.demoTribeAt !== "done"){
       if(!state.demoTribeAt) state.demoTribeAt = now + DEMO_TRIBE_MS;
@@ -4301,7 +4312,7 @@ const demoApi = {
     }
     for(const t of state.tribe || []){
       if(t.status !== "open") continue;
-      if(t.their_yes == null && t.my_yes == null && hue(t.id) % 3 === 0 && now - new Date(t.created_at) > DEMO_REPLY_MS + 3000){
+      if(t.their_yes == null && t.my_yes == null && t.match_pct >= TRIBE_STRONG && hue(t.id) % 3 === 0 && now - new Date(t.created_at) > DEMO_REPLY_MS + 3000){
         t.their_yes = true; t.seen = false;
       }else if(t.my_yes && t.their_yes == null && now - t.yesAt > DEMO_REPLY_MS){
         t.their_yes = t.match_pct >= 74; t.seen = false;
@@ -6243,10 +6254,10 @@ $("cmBody").addEventListener("click", async e => {
   }catch(err){ console.error(err); toast("Couldn't send it right now. Please try again."); e.target.disabled = false; }
 });
 /* ===================================================== Build your tribe */
-// Seekers looking in the same areas whose vibes match 70%+ can team up, hunt for a whole
+// Seekers looking in the same areas whose vibes match 30% or more (TRIBE_MIN) can team up, hunt for a whole
 // flat together and split the rent. Numbers are shared only when both say yes.
 let tribeRows = [];
-const TRIBE_STEPS = [["Match", "70%+ vibe, same areas"], ["Team up", "You both say yes"], ["Bond", "Numbers shared"], ["Hunt", "A whole flat, split"]];
+const TRIBE_STEPS = [["Match", TRIBE_MIN + "%+ vibe, same areas"], ["Team up", "You both say yes"], ["Bond", "Numbers shared"], ["Hunt", "A whole flat, split"]];
 const median = a => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : 0; };
 const sameAnswers = (a, b) => VIBE_QS.filter(x => Number.isInteger(a && a[x.k]) && a[x.k] === (b && b[x.k])).map(x => x.t[a[x.k]]);
 // "N things in common" (Kamal, 15 Nov, after the competitive teardown): the match % with its reasons, the ones that
@@ -6321,7 +6332,12 @@ async function renderTribe(){
   const bonded = tribeRows.filter(t => t.status === "bonded");
   const wants = tribeRows.filter(t => t.status === "open" && t.their_yes && !t.my_yes);
   const myLook = prefs().look || "", sameLook = t => myLook && t.looking === myLook ? 1 : 0;
-  const open = tribeRows.filter(t => t.status === "open" && !wants.includes(t)).sort((a, b) => sameLook(b) - sameLook(a) || b.match_pct - a.match_pct);
+  // The vibe matches (70%+) first, in the order they always had: the same kind of home as you, then best vibe.
+  // The people between 30% and 69% come under them, in the same order.
+  // (Someone completing your tribe of 3 stays in the first group whatever the score, where they always were.)
+  const strong = t => t.match_pct >= TRIBE_STRONG || t.kind === "complete" ? 1 : 0;
+  const open = tribeRows.filter(t => t.status === "open" && !wants.includes(t)).sort((a, b) => strong(b) - strong(a) || sameLook(b) - sameLook(a) || b.match_pct - a.match_pct);
+  const top = open.filter(strong), more = open.filter(t => !strong(t));
   const step = bonded.length ? 3 : tribeRows.some(t => t.my_yes) || wants.length ? 1 : tribeRows.length ? 0 : -1;
   $("tribeOrbit").innerHTML = orbitSvg(tribeRows);
   $("tribeSave").innerHTML = await tribeSavings();
@@ -6341,8 +6357,10 @@ async function renderTribe(){
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener" href="https://wa.me/${esc((t.phone || "").replace(/^\+/, ""))}?text=${encodeURIComponent(`Hi ${t.name}! It's ${state.user.name || ""} from FindMeFlatMate. Let's find our flat!`)}">WhatsApp</a>`}</span></div>`).join("")}
       <button class="tribe-leave-btn" type="button" data-tleave>Leave tribe</button>
     </div>` : "";
-  $("tribeMatches").innerHTML = open.length ? `<h2 class="section-h">Vibe matches near you · 70%+</h2>${open.map(tribeCardHtml).join("")}`
-    : tribeRows.length ? "" : `<div class="empty"><h3>No matches yet</h3><p>${f.city ? `As more people looking in ${esc(f.areas.length ? f.areas.join(", ") : f.city)} join, anyone who matches your vibe 70%+ shows up here, and we'll notify you both.`
+  $("tribeMatches").innerHTML = open.length ? (top.length ? `<h2 class="section-h">Vibe matches near you · ${TRIBE_STRONG}%+</h2>${top.map(tribeCardHtml).join("")}` : "")
+      + (more.length ? `<h2 class="section-h" id="tribeMoreH">More people looking near you · ${TRIBE_MIN}% to ${TRIBE_STRONG - 1}%</h2>
+        <p class="hint tribe-more-hint">Not as close a match, but looking in your areas. Tap a score to see why.</p>${more.map(tribeCardHtml).join("")}` : "")
+    : tribeRows.length ? "" : `<div class="empty"><h3>No matches yet</h3><p>${f.city ? `As more people looking in ${esc(f.areas.length ? f.areas.join(", ") : f.city)} join, anyone who matches your vibe ${TRIBE_MIN}% or more shows up here, and we'll tell you about the strong matches.`
       : "Pick your city and areas on Discover first."}</p></div>`;
   // Hunt together (only once bonded): whole flats that match the tribe, one bedroom each (a 2BHK for 2, a 3BHK
   // for 3), and for a tribe of 2, twin-sharing rooms the two of you can share.
@@ -6581,7 +6599,8 @@ async function checkInbox(atStart){
       state.reminded[r.id] = Date.now();
       Notify.show("Don't lose this room", `You haven't called about “${r.listing_title}” yet. The owner said yes, so call today before it's rented out.`, "requests");
     }
-    // Build your tribe: new 70%+ matches, someone saying yes, and bonds.
+    // Build your tribe: new 70%+ matches, someone saying yes, and bonds. (People between 30% and 69% show on the
+    // Tribe page without a notice or a count on the badge.)
     let trows = [];
     try{ trows = await api.tribeList(); }catch(err){}
     const tf = trows.filter(t => t.unseen), news = [];
@@ -6599,7 +6618,7 @@ async function checkInbox(atStart){
       else if(t.their_yes && !t.my_yes){
         Notify.show(`${t.name} wants to build a tribe with you`, "Say yes and you'll both get each other's numbers.", "tribe");
         toast(`✨ ${t.name} wants to build a tribe with you`);
-      }else if(t.my_yes == null && t.their_yes == null) news.push(t);
+      }else if(t.my_yes == null && t.their_yes == null && t.match_pct >= TRIBE_STRONG) news.push(t);
     }
     if(news.length){
       const top = news[0];
@@ -6607,7 +6626,7 @@ async function checkInbox(atStart){
         "Build a tribe: hunt for a whole flat together and split the rent.", "tribe");
       toast(news.length === 1 ? `${top.name} matches your vibe ${top.match_pct}%. Build a tribe?` : `${news.length} people near you match your vibe 70%+. Build your tribe!`);
     }
-    tribeUnseen = tf.length;
+    tribeUnseen = tf.filter(t => t.status !== "open" || t.their_yes || t.kind === "complete" || t.match_pct >= TRIBE_STRONG).length;
     // Tribe shortlist: someone in my tribe saved a home.
     if(trows.some(t => t.status === "bonded")){
       const rows = await syncSaves(), ms = x => new Date(x).getTime();
@@ -6651,7 +6670,7 @@ async function renderUrgent(){
       <b>${invites.length === 1 ? `${esc(invites[0].name || "An owner")} invited you to see their flat` : `${invites.length} owners invited you to see their flats`}</b>
       <small>See the photos and say yes or no in one tap&nbsp;→</small></span></a>` : "";
   const trows = await api.tribeList().catch(() => []);
-  const tw = trows.filter(t => t.status === "open" && t.their_yes && !t.my_yes), tn = trows.filter(t => t.status === "open" && t.my_yes == null);
+  const tw = trows.filter(t => t.status === "open" && t.their_yes && !t.my_yes), tn = trows.filter(t => t.status === "open" && t.my_yes == null && t.match_pct >= TRIBE_STRONG);
   const tribeCard = tw.length || tn.length ? `<a class="inv-banner tribe" href="#tribe"><span class="urgent-dot" aria-hidden="true"></span><span>
       <b>${tw.length ? `✨ ${esc(tw[0].name)} wants to build a tribe with you` : `${tn.length} ${tn.length === 1 ? "person" : "people"} looking in your areas ${tn.length === 1 ? "matches" : "match"} your vibe 70%+`}</b>
       <small>Team up, rent a whole flat together and split it&nbsp;→</small></span></a>` : "";
@@ -12078,7 +12097,7 @@ const HB_TOPICS = [
     acts: () => hbSeeker() ? [["Open Saved", "go:saved"]] : [] },
   { id: "tribe", t: "Tribes", role: "seeker", k: "tribe!, tribes!, team up!, teamup!, bond!, bonded!, find a flatmate!, find flatmate!, find flatmates!, find a roommate!, find roommate!, find people!, need a flatmate!, flatmate?, roommate?, together?, friends?, dost?, share a flat!, flat share!, share karna!, ke saath!, with a friend!, with my friend!, with friends!, two people!, 2 people!, two of us!, both of us!, me and my friend!, hunt together!, search together!, build my tribe!",
     say: () => isOwner() ? `Tribes are for people looking for a room: two or three who live alike team up, then hunt for a flat together. If your place is a whole flat, tribes that fit its size will find it.`
-      : `<b>Tribe</b> is for finding the people first, then the flat. You see people looking in your areas who match your vibe 70% or more. Tap <b>Team up</b>; when you both say yes you're a tribe (up to 3), numbers are shared, and <b>Hunt together</b> shows homes that fit all of you, with the rent per person.${CHARGES_ON && hbSeeker() ? " Sending a tribe request needs a Tribe Pass; saying yes to one is always free." : ""}`,
+      : `<b>Tribe</b> is for finding the people first, then the flat. You see people looking in your areas who match your vibe ${TRIBE_MIN}% or more, the strongest matches first. Tap <b>Team up</b>; when you both say yes you're a tribe (up to 3), numbers are shared, and <b>Hunt together</b> shows homes that fit all of you, with the rent per person.${CHARGES_ON && hbSeeker() ? " Sending a tribe request needs a Tribe Pass; saying yes to one is always free." : ""}`,
     acts: () => hbSeeker() ? [["Open Tribe", "go:tribe"]] : [] },
   { id: "leave", t: "Leaving a tribe", role: "seeker", k: "leave tribe!, leave my tribe!, leave the tribe!, exit tribe!, quit tribe!, remove from tribe!, leaving tribe!, leave a tribe!",
     say: () => `On the <b>Tribe</b> page, your tribe's card has <b>Leave tribe</b>. The others are told, and your shared shortlist stops being shared. People who've left a tribe aren't suggested to each other again.`,
@@ -12794,7 +12813,7 @@ function tribeRulesHtml(look, size){
     : "whole flats with a bedroom each first (a 2BHK for 2, a 3BHK for 3), then flats with as many rooms free as there are of you";
   return `<details class="tribe-rules"><summary>How your tribe finds a home</summary>
     <p class="hint" style="margin:6px 0 10px">You're looking for <b>${what}</b>. <a href="#discover">Change it on Discover</a>.</p>
-    <ol><li><b>Matches:</b> people looking for the same kind of home as you come first, best vibe first. Everyone has 70%+ vibe with you and looks in your areas.</li>
+    <ol><li><b>Matches:</b> people looking for the same kind of home as you come first, best vibe first. Everyone looks in your areas and has at least ${TRIBE_MIN}% vibe with you; the ${TRIBE_STRONG}%+ matches are at the top.</li>
       <li><b>Once you're a tribe:</b> we show ${homes}. Best vibe first, then the nearest, within your joint budget.</li>
       <li><b>New flats:</b> when an owner lists a flat that fits your tribe, it shows up here and you all get a notification.</li></ol></details>`;
 }

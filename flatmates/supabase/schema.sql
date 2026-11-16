@@ -1054,7 +1054,8 @@ begin
 end $$;
 
 -- ------------------------------------------------------- build your tribe --
--- Two seekers looking in the same area whose vibes match 70%+ are suggested to each other
+-- Two seekers looking in the same area whose vibes match 30% or more are suggested to each other
+-- (Kamal, 16 Nov 2026: "In tribe show the match upto 30%"; it was 70%)
 -- as a tribe: hunt together, rent a whole flat, split it. Each says yes or no; numbers are
 -- shared only when both say yes. One row per pair, a < b.
 create table if not exists public.fm_tribe_links (
@@ -1099,7 +1100,11 @@ language sql security definer set search_path = public as $$
   update fm_profiles set tribe_open = coalesce(p_open, tribe_open) where id = auth.uid();
 $$;
 
--- Find new 70%+ matches for the caller: same city, overlapping areas (or either open to any area).
+-- Find new matches for the caller: same city, overlapping areas (or either open to any area), and a vibe match of
+-- 30% or more (Kamal, 16 Nov: "In tribe show the match upto 30%"; it was 70%). The app lists the 70%+ ones first
+-- ("Vibe matches near you") and the rest under them ("More people looking near you"); see TRIBE_MIN in index.html.
+-- At most the best 60 new people a time, so a big city can't write thousands of rows in one call (fm_tribe_list
+-- shows the best 100 anyway); the next call brings the next ones.
 create or replace function public.fm_tribe_refresh() returns int
 language plpgsql security definer set search_path = public as $$
 declare v_me fm_profiles%rowtype; v_n int;
@@ -1110,16 +1115,20 @@ begin
     return 0;
   end if;
   insert into fm_tribe_links (a, b, match_pct)
-  select least(v_me.id, p.id), greatest(v_me.id, p.id), fm_match(v_me.vibe, p.vibe)
-  from fm_profiles p
-  where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open and not fm_blocked(v_me.id, p.id)
-    and fm_shows_to(p.tribe_show_to, v_me.gender) and fm_shows_to(v_me.tribe_show_to, p.gender)
-    and lower(p.search->>'city') = lower(v_me.search->>'city')
-    and fm_vibe_count(p.vibe) >= 6
-    and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0
-         or jsonb_array_length(coalesce(v_me.search->'areas', '[]'::jsonb)) = 0
-         or exists (select 1 from jsonb_array_elements_text(p.search->'areas') x where v_me.search->'areas' ? x))
-    and fm_match(v_me.vibe, p.vibe) >= 70
+  select least(v_me.id, x.id), greatest(v_me.id, x.id), x.pct
+  from (select p.id, fm_match(v_me.vibe, p.vibe) as pct
+        from fm_profiles p
+        where p.id <> v_me.id and p.role = 'seeker' and p.tribe_open and not fm_blocked(v_me.id, p.id)
+          and fm_shows_to(p.tribe_show_to, v_me.gender) and fm_shows_to(v_me.tribe_show_to, p.gender)
+          and lower(p.search->>'city') = lower(v_me.search->>'city')
+          and fm_vibe_count(p.vibe) >= 6
+          and (jsonb_array_length(coalesce(p.search->'areas', '[]'::jsonb)) = 0
+               or jsonb_array_length(coalesce(v_me.search->'areas', '[]'::jsonb)) = 0
+               or exists (select 1 from jsonb_array_elements_text(p.search->'areas') a where v_me.search->'areas' ? a))
+          and not exists (select 1 from fm_tribe_links k where k.a = least(v_me.id, p.id) and k.b = greatest(v_me.id, p.id))) x
+  where x.pct >= 30
+  order by x.pct desc
+  limit 60
   on conflict (a, b) do nothing;
   get diagnostics v_n = row_count;
   return v_n;
@@ -1449,6 +1458,10 @@ begin
   if tg_op = 'UPDATE' and new.status is not distinct from old.status and new.a_yes is not distinct from old.a_yes
      and new.b_yes is not distinct from old.b_yes then return new; end if;
   if new.status = 'closed' then return new; end if;
+  -- A new match is pushed to both people only when it is a strong one (70%+). The people between 30% and 69%
+  -- (shown on the Tribe page since 16 Nov) get no push each, or every newcomer in a city would ping everyone
+  -- in it. A yes, a bond, leaving and "complete your tribe" are pushed whatever the score.
+  if tg_op = 'INSERT' and new.kind = 'match' and coalesce(new.match_pct, 0) < 70 then return new; end if;
   select notify_url, notify_secret into v_url, v_secret from fm_settings;
   if v_url is null or v_secret is null then return new; end if;
   perform net.http_post(
