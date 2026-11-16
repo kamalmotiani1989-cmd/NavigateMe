@@ -101,6 +101,7 @@ const LINE = 'Vibe score after the household answers';
   ok(t.kind === 'room' && !t.quizHidden && t.note === null, 'back to a room with two people: the questions are there again');
   // save it with one person and nothing ticked: the lister lives there now, so their own answers stand in (the server's rule, in the demo's copy)
   await p.selectOption('#hCount', '1'); await p.waitForTimeout(250);
+  await p.evaluate(() => document.querySelector('[name=hLives][value=yes]').click()); await p.waitForTimeout(250);   // "Do you live in this flat?" (p33)
   await p.evaluate(() => $('postForm').requestSubmit()); await p.waitForTimeout(2300); await closeDlgs(p);
   t = await p.evaluate(() => { const l = state.myListings.find(x => x.id === 'mine-e1'); return { residents: l.household.residents, n: answered(l.household), gen: l.household.gen, ask: !!noScoreAsk(l) }; });
   ok(t.residents === 1 && t.n === 12 && t.gen === 'z' && !t.ask, 'saved saying the lister lives there, without answers: the listing takes the lister\'s own, and My flat stops asking: ' + JSON.stringify(t));
@@ -108,6 +109,7 @@ const LINE = 'Vibe score after the household answers';
   await p.evaluate(() => { location.hash = 'mine'; }); await p.waitForTimeout(1300);
   await p.evaluate(() => startEdit('mine-e4', 2)); await p.waitForTimeout(1500); t = await form();
   ok(t.count === '1' && !t.quizHidden && t.ticked >= 12, 'a room with its own answers opens with them ticked (' + t.ticked + ')');
+  await p.evaluate(() => document.querySelector('[name=hLives][value=no]').click()); await p.waitForTimeout(250);   // with a yes the count can't be nobody
   await p.selectOption('#hCount', '0'); await p.waitForTimeout(300);
   await p.evaluate(() => $('postForm').requestSubmit()); await p.waitForTimeout(2300); await closeDlgs(p);
   t = await p.evaluate(() => { const l = state.myListings.find(x => x.id === 'mine-e4'); return { residents: l.household.residents, n: answered(l.household), gen: l.household.gen ?? null, other: Array.isArray(l.household.flatmates) && !!l.household.interests, ask: (noScoreAsk(l) || {}).b }; });

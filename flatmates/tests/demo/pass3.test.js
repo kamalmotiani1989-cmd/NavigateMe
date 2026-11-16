@@ -69,7 +69,7 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     ok(await p.isVisible('fieldset[data-step="1"]') && (await p.inputValue('#pRent')) === '15000' && (await p.inputValue('#pLocality')) === 'HSR Layout', tag + ': back keeps what was typed');
     ok(await p.evaluate(() => $('pTitleAuto').textContent === 'Leave it empty to use: Private room with attached washroom in a 2BHK in HSR Layout'), tag + ': the title box shows the title that will be used');
     await p.click('#psSteps li:nth-child(1)'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(400);
-    await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(500);
+    await p.click('label.chip:has([name=hLives][value=yes])'); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(500);
     ok(await p.isVisible('fieldset[data-step="3"]'), tag + ': step 3');
     await p.fill('#aFlat', 'B-304'); await p.fill('#aBuilding', 'Green Park'); await p.fill('#aPin', '560102');
     if(tag === 'm') await p.screenshot({ path: `${O}/p3-m-post-step3.png`, fullPage: true });
@@ -77,7 +77,7 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     await p.evaluate(() => { $('pRent').value = ''; });
     await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(600);
     ok(await p.isVisible('fieldset[data-step="1"]') && await p.evaluate(() => !document.querySelector('fieldset[data-step="1"] .form-err').hidden), tag + ': publish with a gap goes back to step 1');
-    await p.fill('#pRent', '15000'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
+    await p.fill('#pRent', '15000'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('label.chip:has([name=hLives][value=yes])'); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
     await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(2000);
     const posted = await p.evaluate(() => ({ hash: location.hash, cards: document.querySelectorAll('.mine-card').length, stats: [...document.querySelectorAll('.mine-card .stats.six .stat span')].map(s => s.textContent) }));
     ok(posted.cards === 1 && posted.stats.length === 6, tag + ': published, My flat shows 6 numbers: ' + posted.stats.join(' | '));
@@ -95,7 +95,7 @@ const svgOf = c => `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="
     // editing: the answers come back prefilled; changing one and saving keeps the rest
     await p.evaluate(() => startEdit(state.myListings[0].id, 1)); await p.waitForTimeout(1000);
     const pre = await p.evaluate(() => roomFromForm());
-    await p.click('label.chip:has([name=rBalc][value=no])'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
+    await p.click('label.chip:has([name=rBalc][value=no])'); await p.click('fieldset[data-step="1"] [data-ps="next"]'); await p.waitForTimeout(300); await p.click('label.chip:has([name=hLives][value=yes])'); await p.click('fieldset[data-step="2"] [data-ps="next"]'); await p.waitForTimeout(300);
     await p.click('fieldset[data-step="3"] [type=submit]'); await p.waitForTimeout(1500);
     ok(JSON.stringify(pre) === '{"washroom":"attached","balcony":true,"master":false}' && await p.evaluate(() => JSON.stringify(state.myListings[0].room) === '{"washroom":"attached","balcony":false,"master":false}'), tag + ': edit prefills the answers and saves a change: ' + JSON.stringify(pre));
     await p.screenshot({ path: `${O}/p3-${tag}-mine.png`, fullPage: tag === 'm' });

@@ -45,4 +45,26 @@ select pg_temp.ok((select home_gender from fm_search(p_city => 'Wtest', p_gender
 reset role;
 select pg_temp.ok(fm_home_gender('room', 'female', '{"residents":"x"}', 'female') = 'female' and fm_home_gender('room', 'female', '{"residents":2,"flatmate_genders":"female"}', 'female') = 'female?',
   'odd household data never errors');
+-- "Do you live in this flat?" (household.lister_lives_here, Kamal, 16 Nov): a lister who doesn't live there doesn't count
+select pg_temp.ok(fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":false,"flatmate_genders":["female","female"]}', 'male') = 'female'
+  and fm_home_gender('shared', 'female', '{"residents":1,"lister_lives_here":false,"flatmate_genders":["female"]}', null) = 'female',
+  'the lister says they don''t live there: a man letting a room in a home of two women is a women-only home; his own gender, or none, doesn''t matter');
+select pg_temp.ok(fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":false,"flatmate_genders":["female","male"]}', 'female') is null
+  and fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":false,"flatmate_genders":["male","female"]}', 'female') is null,
+  'and then every person living there is checked: one man among them, and it is not a women-only home, whoever lists it');
+select pg_temp.ok(fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":false,"flatmate_genders":["female"]}', 'female') = 'female?'
+  and fm_home_gender('room', 'female', '{"residents":1,"lister_lives_here":false}', 'female') = 'female?',
+  'someone living there whose gender wasn''t given leaves it unconfirmed (the lister''s own gender does not fill the gap)');
+select pg_temp.ok(fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":true,"flatmate_genders":["female"]}', 'female') = 'female'
+  and fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":true,"flatmate_genders":["female"]}', 'male') is null
+  and fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":true,"flatmate_genders":["female"]}', null) = 'female?',
+  'the lister says they live there: counted by their own gender, with the others after them, as before');
+select pg_temp.ok(fm_home_gender('room', 'female', '{"residents":2,"flatmate_genders":["female"]}', 'male') is null
+  and fm_home_gender('room', 'female', '{"residents":2,"flatmate_genders":["female"]}', 'female') = 'female'
+  and fm_home_gender('room', 'female', '{"residents":1}', 'female') = 'female',
+  'a listing that doesn''t say (posted before the question) is read as before: the lister is one of the people living there');
+select pg_temp.ok(fm_home_gender('flat', 'female', '{"residents":2,"lister_lives_here":false,"flatmate_genders":["male","male"]}', 'male') = 'female'
+  and fm_home_gender('room', 'male', '{"residents":0,"lister_lives_here":false}', 'female') = 'male'
+  and fm_home_gender('room', 'female', '{"residents":2,"lister_lives_here":"no idea","flatmate_genders":["female"]}', 'female') = 'female',
+  'a whole flat, or a home nobody lives in, qualifies by what the listing says, as before; an odd answer is read as living there');
 select pg_temp.ok(not has_function_privilege('authenticated', 'public.fm_home_gender(text, text, jsonb, text)', 'execute'), 'the helper can''t be called from the app');
