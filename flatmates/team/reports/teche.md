@@ -1,6 +1,34 @@
 # Teche · reports
 
-## 2026-11-16, "Do you live in this flat?": built and tested, PR #115 waits for Kamal's go; my brief updated (#114)
+## 2026-11-16, "Do you live in this flat?" (#115) live, on Kamal's go
+
+- **The go:** Kamal, 16 Nov, in my session: "Go", after seeing the pictures and the summary of #115.
+- **Order, database first:**
+  1. applied `schema.sql` from the PR's commit to the live database (fetched inside the database, checksum checked
+     against my file, then run);
+  2. checked it read-only;
+  3. merged #115 (0e76f69), which built Android build 220;
+  4. published the website.
+- **Database, checked before and after:**
+  - 105 listings; every household is unchanged (same fingerprint), and so is every home's women-only result. No
+    listing has an answer to the question yet, so nothing was expected to change.
+  - The rule is in place: `fm_home_lived_in` is new, `fm_lister_lives`, `fm_listing_vibe` and `fm_home_gender`
+    follow the answer, and none of them can be called from the app.
+- **What changed for people:** as in the entry below. The form asks everyone posting a room, a bed or a flatmate
+  listing; on No the lister's own answers and gender are not used, nobody listed is "You", and the home says
+  "Owner-listed"; older listings are read as before and their editor asks on the next save.
+- **Published:** 0e76f69; Android build 220 (file checked: the question is inside, checksum matches the release);
+  the website repo's `main` and `gh-pages` say "Publish the app from NavigateMe 0e76f69". The published copy opens
+  with no page errors, and with its live backend switched off the question works end to end (asked, refused
+  without an answer, No saved with the two people's genders, "Owner-listed", women-only).
+- **Tests:** as built: database suite 266 checks, 31 demo suites 787 checks.
+- **The five real listings** have no answer yet. Each lister is asked the next time they edit. Until then they are
+  read as before.
+- **Priorities 000000 and 0000000 are both done.** Nothing of mine is waiting on a deploy.
+- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
+  announced; the message limit of 30 an hour and 60 a day.
+
+## 2026-11-16, "Do you live in this flat?": built and tested (it then waited for Kamal's go; live since, see above); my brief updated (#114)
 
 - **What was asked (priorities, Teche 0000000; Kamal, 16 Nov, in King's session: "Go and yes to all"; in mine:
   "Start now"):** one Yes / No on the posting form, to tell a landlord with tenants from a flatmate who lives there.
@@ -278,28 +306,3 @@
   Tribe matches under 70% should be announced, and the message limit of 30 an hour and 60 a day.
 - **Left to do after his yes:** every other screen in the same look, the app icon and share pictures in light red,
   the tests that check colours, the README's "Look and feel", then the usual PR, build and publish.
-
-## 2026-11-16, Tribe shows people down to a 30% vibe match (#109) live
-
-- **What Kamal asked (16 Nov):** "In tribe show the match upto 30%".
-- **What changed:** Tribe suggested only people at 70% or more. It now suggests everyone looking in your areas at 30%
-  or more.
-  - The page has two groups. "Vibe matches near you · 70%+" is first, in the order it always had (the same kind of
-    home as you, then best vibe). Under it, "More people looking near you · 30% to 69%", in the same order.
-  - The words follow: the first step of the journey, the rules, Account's "Show me in Build your tribe", the help
-    bot.
-- **A choice I made, for Kamal to overrule:** only the strong matches (70%+) are announced. A new person between 30%
-  and 69% shows on the Tribe page with no notification, no count on the Tribe badge and no card on Discover.
-  Otherwise every newcomer in a city would ping everyone in it. A yes from anyone is announced whatever the score.
-- **Database:** `fm_tribe_refresh` matches from 30 (it was 70) and adds at most the best 60 new people a call;
-  `fm_tribe_notify` pushes a new match only at 70 and up.
-- **On today's live data** (read-only count): 114 people can be matched. 293 pairs are at 70%+ and 243 pairs between
-  30% and 69%; no pair in the same city is under 30%. So in practice everyone looking in your areas now shows.
-  People see the new ones the next time they open Tribe.
-- **Not changed:** the login process, onboarding questions, colours. Passes, messages and the rest of #108.
-- **Tests:** 28 demo suites, 668 checks; new `p30` (19). Database: 235 checks, 13 new
-  (`parties-17-tribe-30.sql`).
-- **Published:** 00ecb55; Android build 215 (file checked, checksum matches); website repo `main` and
-  `gh-pages` say "Publish the app from NavigateMe 00ecb55". Live database: the merged `schema.sql` applied
-  (checksum checked first) and verified read-only.
-- **Still with Kamal from #108:** the message limit of 30 an hour and 60 a day.
