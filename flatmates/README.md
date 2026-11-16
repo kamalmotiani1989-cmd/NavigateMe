@@ -898,9 +898,9 @@ one style layer at the end of the stylesheet ("The look of 16 Nov 2026").
 - **Page and cards:** a cream page (`--bg` #FDF8F1) with white cards (`--surface`), beige for quiet fills
   (`--surface-2` #F8F0E7), warm hairlines and soft warm shadows. The browser's bar, the installed app and the Android
   window match the cream. On Android the strip behind the clock is the deep aubergine, with white icons.
-- **Light red** (`--red` #EE6468) is the one accent, where the logo's orange was: the logo, the main buttons, the
-  short line in front of small labels, count badges and "new" dots, the saved heart, the edge of the box you're
-  typing in, and the screen you're on in the bottom bar.
+- **Light red** (`--red` #EE6468) is the one accent, where orange used to be: the main buttons, the short line in
+  front of small labels, count badges and "new" dots, the saved heart, the edge of the box you're typing in, and the
+  screen you're on in the bottom bar. The logo is not part of this, see "Logo" below.
   - Main buttons are light red **pills** with dark words on them (5.4:1). White words on that red would be 3.1:1,
     so we don't use them. Quiet buttons are white with a thin outline.
   - Small red text uses deeper shades of the same red, so it reads at 4.5:1: `--red-text` #CE3A44 on white and
@@ -921,11 +921,18 @@ one style layer at the end of the stylesheet ("The look of 16 Nov 2026").
   over a section (`.section-h`) are spaced capitals in the red with a short red line in front. Both typefaces are
   part of the app (`vendor/fonts`, see "Speed"), not fetched from Google Fonts.
 - **Shapes:** cards and panels have 28px corners (`--r-card`), inputs 18px, buttons and chips are pills.
-- **Logo** (Kamal's own drawing of 9 Nov, in light red since 16 Nov; the orange originals stay in `marketing/`): a
-  light red tile (#EE6468) with a white roof over "fm" (`icons/logo-icon.svg`), and the wordmark findme (#1E1A2B) +
-  flatmate (#EE6468) + .com (#5A5361) (`icons/wordmark.svg`; `wordmark-app.svg` without .com for small phones;
-  `wordmark-light.svg` on dark backgrounds). The tile is the logo itself: it never sits on another tile. All app
-  and home-screen icons are that tile: `icons/*.png`, the Android launcher icons and the browser tab's icon.
+- **Logo** (Kamal's own files of 9 Nov, also kept in `marketing/`): an orange tile (#C2410C) with a white roof
+  over "fm" (`icons/logo-icon.svg`), and the wordmark findme (#1C1917) + flatmate (#C2410C) + .com (#57534E)
+  (`icons/wordmark.svg`; `wordmark-app.svg` without .com for small phones; `wordmark-light.svg` in white, light
+  orange and grey for dark backgrounds). The tile is the logo itself: it never sits on another tile. All app and
+  home-screen icons are that tile: `icons/*.png`, the Android launcher icons and the browser tab's icon.
+  - **The logo does not follow the look.** The look of 16 Nov recoloured it light red for a few hours; Kamal the
+    same day: "App and website logo to stay the same as earlier", "App and website logo color to stay same as
+    earlier". So the drawing and its colours stay as supplied, on every page, icon and share picture, whatever
+    the rest of the app looks like. Don't recolour, redraw or re-export these files; `p31` checks them against
+    the originals, byte for byte, and checks the icons' orange.
+  - The orange is the logo's alone: the tile, the word "flatmate", the tab icon and the soft glow under the tile.
+    Nothing else on a screen uses it (`p31` checks that too).
 - **Top bar:** no background or line of its own; it sits on the cream page and gets a soft shade only once you
   scroll (on a phone it sits on the band, see "Two layers"). Requests (a bell), Messages and, on phones, Saved (a
   heart) are round white buttons with soft shadows, dark while you're on that screen; your initial is a dark

@@ -1,7 +1,20 @@
 // The look of 16 Nov 2026 (Kamal: "copy style and colors of dwelo. Change the orange color to light red color",
 // then "Do it for the entire app and website"), and the city step of sign-up (Kamal, 16 Nov, "Fix this also": the
 // phone's own pop-up list opened over the chips, the keyboard and Continue). Demo mode, port 8765.
-const { chromium, devices } = require('playwright');
+// The logo is not part of the look (Kamal, 16 Nov: "App and website logo to stay the same as earlier", "App and website
+// logo color to stay same as earlier"): its files are his own of 9 Nov, and this suite holds them to that, byte for byte.
+const { chromium, devices } = require('playwright'), fs = require('fs'), path = require('path'), crypto = require('crypto');
+const APP = path.join(__dirname, '..', '..'), RES = 'android/app/src/main/res/mipmap-';
+// sha256 (first 16 characters) of every logo and icon file as Kamal's logo went in on 9 Nov (commit b6299bd)
+const LOGO_FILES = { 'icons/logo-icon.svg':'06f27c8de2b9591a', 'icons/logo.svg':'54edb8f296e9edca', 'icons/wordmark.svg':'c1b24b819a81d712', 'icons/wordmark-app.svg':'7610f6585ced4043',
+  'icons/wordmark-light.svg':'4daa1a4b03ba67c0', 'icons/icon-192.png':'1b8a3ae8fc48b5a9', 'icons/icon-512.png':'2ec0317154cd7e2d', 'icons/maskable-512.png':'944006fc39b1cca9',
+  'icons/apple-touch-icon.png':'56edbc9f6435bf7f', [RES + 'hdpi/ic_launcher.png']:'9f3b6ad4904f932b', [RES + 'hdpi/ic_launcher_round.png']:'adc78c70d55cbbc5',
+  [RES + 'mdpi/ic_launcher.png']:'d4213b7ef6cf1462', [RES + 'mdpi/ic_launcher_round.png']:'f37a7d57e9590b57', [RES + 'xhdpi/ic_launcher.png']:'226b919e25a4d3d9',
+  [RES + 'xhdpi/ic_launcher_round.png']:'b641762c1ef9285b', [RES + 'xxhdpi/ic_launcher.png']:'ad67924770c4d3dd', [RES + 'xxhdpi/ic_launcher_round.png']:'3277d863fbd0a754',
+  [RES + 'xxxhdpi/ic_launcher.png']:'1b8a3ae8fc48b5a9', [RES + 'xxxhdpi/ic_launcher_round.png']:'d6db3e86d71c3d73' };
+// the colour at a spot of a picture (fractions of its width and height), read in the page: "r,g,b"
+const pixelOf = (p, b64, fx, fy) => p.evaluate(([src, fx, fy]) => new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight;
+  const x = c.getContext('2d'); x.drawImage(i, 0, 0); r([...x.getImageData(Math.round(c.width * fx), Math.round(c.height * fy), 1, 1).data].slice(0, 3).join()); }; i.onerror = () => r('none'); i.src = src; }), ['data:image/png;base64,' + b64, fx, fy]);
 const O = process.argv[2], U = 'http://localhost:8765/', ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [];
 const vibe = { sleep:2, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:1, noise:0, social:1, sharing:1, work:0, pets:1, gen:'z' };
 const now = Date.now(), iso = ms => new Date(ms).toISOString();
@@ -32,7 +45,8 @@ const audit = () => {
     if(ratio < (big ? 3 : 4.5)) out.push(`${ratio.toFixed(2)} ${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${t.slice(0, 40)}"`); }
   return [...new Set(out)];
 };
-// colours of the older looks still showing: the logo's orange, the lavender, butter and mint panels, the teal
+// colours of the older looks still showing: orange (it is the logo's alone now, and the logo is a picture, so no text,
+// background or border may carry it), the lavender, butter and mint panels, the teal
 const OLD = ['rgb(194, 65, 12)', 'rgb(178, 58, 10)', 'rgb(195, 201, 246)', 'rgb(235, 217, 129)', 'rgb(195, 224, 214)', 'rgb(28, 127, 114)', 'rgb(239, 228, 220)', 'rgb(27, 36, 64)'];
 const oldLeft = old => { const out = [];
   document.querySelectorAll('body *').forEach(e => { if(!e.getClientRects().length || e.closest('.fm-av, .art, .w-people, svg, .av-tile, .leaflet-container, .hl-art, .st-art')) return; const cs = getComputedStyle(e);
@@ -47,16 +61,30 @@ const oldLeft = old => { const out = [];
     const h1 = document.querySelector('.w-copy h1'), cs = getComputedStyle(h1), go = document.querySelector('#loginForm .btn-primary, .w-card .btn-primary'), g = getComputedStyle(go);
     const lum = rgb => { const c = rgb.match(/[\d.]+/g).slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     const logo = await (await fetch('icons/logo-icon.svg')).text(), mark = await (await fetch('icons/wordmark.svg')).text();
+    const cols = (t, re) => [...new Set((t.match(re) || []).map(c => c.toUpperCase()))].sort().join();   // every colour named in a file, once each
     const px = await new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = c.height = 192; const x = c.getContext('2d'); x.drawImage(i, 0, 0); r([...x.getImageData(96, 30, 1, 1).data].slice(0, 3).join()); }; i.onerror = () => r('none'); i.src = 'icons/icon-192.png'; });
     return { red: tok('--red'), page: tok('--bg'), card: tok('--surface'), ink: tok('--ink'), redText: tok('--red-text'), orange: tok('--orange-text'), fam: cs.fontFamily, weight: cs.fontWeight, spacing: cs.letterSpacing,
       serif: document.fonts.check('400 20px "DM Serif Display"'), usedSerif: [...document.fonts].some(f => /DM Serif/.test(f.family) && f.status === 'loaded'),
       h2: getComputedStyle(document.querySelector('.w-card h2')).fontFamily, body: getComputedStyle(document.querySelector('.w-copy .lede, .w-trust')).fontFamily,
       go: { bg: g.backgroundColor, color: g.color, ratio: Math.round((Math.max(lum(g.color), lum(g.backgroundColor)) + .05) / (Math.min(lum(g.color), lum(g.backgroundColor)) + .05) * 100) / 100 },
-      logo: /#EE6468/i.test(logo) && !/#C2410C/i.test(logo), mark: /#EE6468/i.test(mark) && !/#C2410C/i.test(mark), px,
-      theme: document.querySelector('meta[name=theme-color]').content, fav: /%23EE6468/.test(document.querySelector('link[rel=icon]').href),
+      logo: cols(logo, /#[0-9A-F]{6}/gi), mark: cols(mark, /#[0-9A-F]{6}/gi), px,
+      theme: document.querySelector('meta[name=theme-color]').content, fav: cols(document.querySelector('link[rel=icon]').href, /%23[0-9A-F]{6}/gi),
+      top: [...document.querySelectorAll('.w-top .logo img')].filter(i => i.offsetParent).map(i => i.getAttribute('src')).join(), glow: getComputedStyle(document.querySelector('.w-top .logo img.fm-mark')).boxShadow,
       bodyBg: getComputedStyle(document.body).backgroundColor }; });
   ok(T.red === '#EE6468' && T.page === '#FDF8F1' && T.card === '#FFFFFF' && T.ink === '#1F1B2E' && T.bodyBg === 'rgb(253, 248, 241)', 'the palette: a cream page, white cards, the light red and a deep aubergine: ' + JSON.stringify({ red: T.red, page: T.page, ink: T.ink }));
-  ok(T.logo && T.mark && T.px === '238,100,104' && T.fav && T.theme.toUpperCase() === '#FDF8F1', 'the logo is light red where it was orange: the drawn logo, the wordmark, the app icon, the tab icon; the browser bar is the page\'s cream: ' + JSON.stringify({ logo: T.logo, mark: T.mark, px: T.px, fav: T.fav, theme: T.theme }));
+  // the logo: Kamal's own, as before the look of 16 Nov
+  ok(T.logo === '#C2410C,#FFFFFF' && T.mark === '#1C1917,#57534E,#C2410C' && T.px === '194,65,12' && T.fav === '%23C2410C,%23FFFFFF',
+    'the logo keeps its own colours: an orange tile with white "fm", the wordmark in near-black, orange and grey, the app icon and the tab icon in the same orange: ' + JSON.stringify({ logo: T.logo, mark: T.mark, px: T.px, fav: T.fav }));
+  ok(T.theme.toUpperCase() === '#FDF8F1', 'the browser bar is the page\'s cream: ' + T.theme);
+  const changed = Object.entries(LOGO_FILES).filter(([f, h]) => { try{ return crypto.createHash('sha256').update(fs.readFileSync(path.join(APP, f))).digest('hex').slice(0, 16) !== h; }catch(e){ return true; } }).map(([f]) => f);
+  ok(Object.keys(LOGO_FILES).length === 19 && !changed.length, 'the logo and icon files are the ones that went in with Kamal\'s logo on 9 Nov, byte for byte (5 drawings, 4 web icons, 10 Android launcher icons): ' + JSON.stringify(changed));
+  const icons = Object.keys(LOGO_FILES).filter(f => f.endsWith('.png')), tile = {};
+  for(const f of icons) tile[f] = await pixelOf(p, fs.readFileSync(path.join(APP, f)).toString('base64'), .2, .5);
+  ok(icons.length === 14 && Object.values(tile).every(v => v === '194,65,12'), 'every icon is the orange tile, on the web and on Android: ' + JSON.stringify(Object.entries(tile).filter(([, v]) => v !== '194,65,12')));
+  const seen = await pixelOf(p, (await p.locator('.w-top .logo img.fm-mark').screenshot()).toString('base64'), .5, .88);
+  ok(T.top === 'icons/logo-icon.svg,icons/wordmark-app.svg' && seen === '194,65,12' && /^rgba\(194, 65, 12, 0\.22\)/.test(T.glow),
+    'the first page shows that logo: the tile and the wordmark from the logo\'s files, orange on the screen, with its own soft orange glow: ' + JSON.stringify({ top: T.top, seen, glow: T.glow }));
+  ok(await pixelOf(p, fs.readFileSync(path.join(APP, 'og-image.png')).toString('base64'), 447 / 1200, 97 / 630) === '194,65,12', 'the picture shown with a shared link to the website carries the same orange logo');
   ok(/^"?DM Serif Display/.test(T.fam) && T.weight === '400' && (T.spacing === 'normal' || T.spacing === '0px') && /^"?DM Serif Display/.test(T.h2) && T.serif && T.usedSerif && /^"?Urbanist/.test(T.body),
     'headings are in the serif (its one weight, not tightened) and it has loaded; the rest stays Urbanist: ' + JSON.stringify({ h1: T.fam.slice(0, 22), weight: T.weight, spacing: T.spacing, body: T.body.slice(0, 12) }));
   ok(T.go.bg === 'rgb(238, 100, 104)' && T.go.color === 'rgb(30, 26, 43)' && T.go.ratio >= 4.5, 'the main button is the light red with dark words that read at ' + T.go.ratio + ':1');
@@ -112,6 +140,11 @@ const oldLeft = old => { const out = [];
   await ctx.close();
   // ------------------------------------------------------------ someone looking for a room
   ({ ctx, p } = await open(b, seeker, { viewport:{ width:390, height:844 } }, 'discover'));
+  const bar = await p.evaluate(() => { const i = [...document.querySelectorAll('.bar .logo img, .app-head .logo img')].find(x => x.offsetParent && /logo-icon|icon-192/.test(x.getAttribute('src')));
+    if(!i) return null; i.setAttribute('data-p31-logo', ''); const r = i.getBoundingClientRect(); return { src: i.getAttribute('src'), w: Math.round(r.width), h: Math.round(r.height), glow: getComputedStyle(i).boxShadow }; });
+  const barSeen = bar ? await pixelOf(p, (await p.locator('[data-p31-logo]').screenshot()).toString('base64'), .5, .88) : 'none';
+  ok(bar && bar.src === 'icons/logo-icon.svg' && bar.w === 42 && bar.h === 42 && barSeen === '194,65,12' && /^rgba\(194, 65, 12, 0\.22\)/.test(bar.glow),
+    'signed in: the top bar shows the same orange logo tile, at its size (42px), with its own glow: ' + JSON.stringify({ bar, barSeen }));
   const left = [], low = [];
   for(const v of ['discover', 'saved', 'requests', 'tribe', 'parties', 'splits', 'market', 'account', 'messages']){ await go(p, v);
     left.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); }
@@ -161,7 +194,15 @@ const oldLeft = old => { const out = [];
     logo: document.querySelector('.logo img').getAttribute('src'), src: document.documentElement.outerHTML }; });
   ok(/DM Serif/.test(pv.h1) && /Urbanist/.test(pv.body) && pv.bg === 'rgb(253, 248, 241)' && pv.link === 'rgb(206, 58, 68)' && !/#1C7F72|#156358|#DCEFE9|Plus Jakarta/i.test(pv.src) && !(await p.evaluate(audit)).length,
     'the privacy policy page wears the same look, and reads: ' + JSON.stringify({ h1: pv.h1, body: pv.body, bg: pv.bg, link: pv.link }) + ' ' + (await p.evaluate(audit)).slice(0, 3).join(' | '));
+  const pl = await p.evaluate(() => ({ srcs: [...document.querySelectorAll('.logo img')].map(i => i.getAttribute('src')).join(), glow: getComputedStyle(document.querySelector('.logo img')).boxShadow,
+    word: getComputedStyle(document.querySelectorAll('.logo img')[1]).boxShadow, tab: document.querySelector('link[rel=icon]').getAttribute('href') }));
+  const pvSeen = await pixelOf(p, (await p.locator('.logo img').first().screenshot()).toString('base64'), .5, .88);   // under the letters, where the tile is plain
+  ok(pl.srcs === 'icons/icon-192.png,icons/wordmark.svg' && /^rgba\(194, 65, 12, 0\.22\)/.test(pl.glow) && pl.word === 'none' && pl.tab === 'icons/icon-192.png'
+    && pvSeen === '194,65,12', 'the privacy policy page shows the same logo: the orange tile and the wordmark, and the tile as its tab icon: ' + JSON.stringify(Object.assign(pl, { seen: pvSeen })));
   await p.screenshot({ path: O + '/p31-privacy.png' });
+  const hold = fs.readFileSync(path.join(APP, 'hold.html'), 'utf8');
+  ok(/fill='%23C2410C'/.test(hold) && !/%23EE6468/i.test(hold) && /src="icons\/logo-icon\.svg"/.test(hold) && /src="icons\/wordmark\.svg"/.test(hold),
+    'the Coming soon page (kept for a hold) has the same logo and the same orange tab icon');
   const man = await p.evaluate(async () => (await fetch('manifest.webmanifest')).json());
   ok(man.theme_color.toUpperCase() === '#FDF8F1' && man.background_color.toUpperCase() === '#FDF8F1', 'the installed app opens on the cream page: ' + man.theme_color);
   await ctx.close();
