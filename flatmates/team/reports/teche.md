@@ -1,6 +1,39 @@
 # Teche · reports
 
-## 2026-11-16, vibe score only where the lister lives there: built and tested, PR #113 waits for Kamal's go
+## 2026-11-16, vibe score only where the lister lives there (#113) live, on Kamal's go
+
+- **The go:** Kamal, 16 Nov, in King's session: "Go and yes to all", recorded by King in `priorities.md` (d1a3d1e).
+  I acted on that written record. It covered three things: go on #113, yes to the "Do you live in this flat?"
+  follow-up, and yes to the look sentence for my brief.
+- **Order, database first:**
+  1. applied `schema.sql` from the PR's commit to the live database (fetched inside the database, checksum checked
+     against my file, then run);
+  2. checked it read-only;
+  3. merged #113 (c72fdea), which built Android build 219;
+  4. published the website.
+- **Database, checked before and after:**
+  - 105 listings. The room in Pune posted 9 Nov now has no living-style answers and no generation; it keeps who
+    lives there, interests and rooms free exactly as they were.
+  - The other 104 listings are unchanged (same fingerprint before and after).
+  - The rule is in place: `fm_lister_lives` and the three-argument `fm_listing_vibe` exist, the older form is gone,
+    the trigger now also runs when the kind changes, and none of them can be called from the app.
+  - 77 homes can show a score (the lister lives there and the answers are on the listing).
+- **What changed for people:** as in the entry below. Someone looking at a room nobody lives in sees "Vibe score
+  after the household answers"; its lister is told why in My flat and the Escape, with "Say who lives there"; the
+  posting form asks the living-style questions only while someone lives there.
+- **Published:** c72fdea; Android build 219 (file checked: the fix is inside, checksum matches the release); the
+  website repo's `main` and `gh-pages` say "Publish the app from NavigateMe c72fdea". The published copy opens
+  with no page errors, and with its live backend switched off it behaves as in the tests (the line on the card and
+  the page, unscored homes last, the lister's prompts, the form).
+- **Tests:** as built: database suite 249 checks, 30 demo suites 753 checks. A full demo run on the merged code is
+  under way as I write, for the brief change below.
+- **Next:**
+  - my brief's look sentence and the logo rule, on Kamal's yes: a small PR to `flatmates/team/tech.md`;
+  - priorities 0000000, "Do you live in this flat?": its own PR, deploy on Kamal's word, database first.
+- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
+  announced; the message limit of 30 an hour and 60 a day.
+
+## 2026-11-16, vibe score only where the lister lives there: built and tested (it then waited for Kamal's go; live since, see above)
 
 - **What was asked (priorities, Teche 000000; Kamal, 16 Nov, in King's session):** "Fix the vibe fill-in when the
   lister doesn't live in the flat".
@@ -278,44 +311,3 @@
 - **For later, not urgent:** the list of chats (`fm_thread_list`) looks at every conversation to find yours. Live
   has 6 conversations, so it is instant; it needs rewriting before there are thousands. The README's messages
   section said 120 an hour, 600 a day; the code has always been 30 and 60, and the README now says so.
-
-## 2026-11-15, faster app, every home in one list, the Escape's vibe score (#106, #107) live
-
-- **What Kamal asked (15 Nov):** "Can u check the app is slow.. use ur skills and make it better. Also whther the
-  vibe matches or not all properties should be shown. Starting with highest vibescore to lowest. Also in escape the
-  room vibe score should be visible".
-- **Speed.** Measured on a phone-sized browser slowed four times, against a stand-in server (250 ms a call):
-  - first thing on screen 1.1 s, now 0.4 s; first homes 1.4 s, now about 1 s (slow connection, 600 ms a call:
-    2.2 and 3.4 s, now 0.4 and 1.75 s);
-  - server calls at start 17, now 12; going back to a tab was 4 to 8 calls, now none within 20 seconds.
-  - Why it was slow: the screen stayed blank while the app asked the server three things one after another ("who
-    am I" three times); every tab change asked 4 to 8 things again, some twice; and the typeface came from Google
-    Fonts, which had to answer before anything could show. The server itself is quick (the homes list: about 50 ms).
-  - What changed: the first screen is drawn at once from what the phone remembers; answers are kept for 20 seconds
-    and emptied by any change; the typeface is in `vendor/fonts`. README, "Speed", has the rest, including what to
-    do when adding a server function.
-- **Discover:** one list of every home in the city, highest vibe score first, with a line saying so. The "Your vibe
-  matches" row (80%+ only) and the "Minimum match" filter are gone. Homes that filters or the kind of home picked
-  leave out show in a block under the list; only Women only / Men only takes a home off the page.
-- **Escape:** every person shows their score with "vibe match" under it, best first.
-  - Why it was missing: one live room (Pune, posted 9 Nov) had none of the home's living-style answers, so nobody
-    could be scored against it. The posting form took those answers from a copy kept on the phone the account was
-    set up on.
-  - Database: `fm_listing_vibe` and a trigger put the lister's own answers on a listing that has none, on every
-    post and edit; one statement filled that room. All 8 people looking there now have a score (40 to 60%).
-  - If nobody can be scored, the Escape says so, with "Add them now".
-- **Not changed:** the login process, onboarding questions, colours.
-- **Tests:** 26 demo suites, 587 checks; new `p28` (45) runs the real page against a stand-in server and counts the
-  calls. Database: 205 checks, 18 new. The runner used to count a suite that stopped on an error as a pass with fewer
-  checks; it now fails it.
-- **Published:** 90b01f8; Android build 213 (file checked, checksum matches); website repo `main` and `gh-pages` say
-  "Publish the app from NavigateMe 90b01f8", and the published copy was run against the stand-in. Live database:
-  the merged `schema.sql` applied (checksum checked first) and verified read-only. #107 corrected two lines in the
-  README (no build).
-- **Choices I made, for Kamal to overrule:** with "Private room" picked, private rooms still come first and the other
-  kinds go under "More homes"; a whole flat nobody has answered for has no score and comes last.
-- **Privacy page:** Google Fonts is off its list of services (no longer used), date 15 Nov. Noticed while there: the
-  page names OpenStreetMap for maps, but the app uses Google Maps when its key is set, which it is. For King and
-  Kamal, with #86.
-- **For Kamal:** nothing needed. Still open: #86 privacy blanks, #95 merge or close, the host page and the strip
-  behind the clock (both raised with #104).
