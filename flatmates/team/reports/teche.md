@@ -1,5 +1,47 @@
 # Teche · reports
 
+## 2026-11-16, the logo is back as it was: Kamal's own drawing and its orange (#111) live
+
+- **What Kamal asked (16 Nov, after seeing #110 live):** "App and website logo to stay the same as ealier" and
+  "App and website logo color to stay same as earlier".
+- **My mistake in #110:** I read "change the orange color to light red" as covering the logo too and recoloured
+  it. The logo is not part of the look.
+- **Now:** the logo is exactly as it was before #110, everywhere it shows: the top bar of the app and the website,
+  the tab icon, the home-screen and Android launcher icons, the pictures people share, the picture shown with a
+  shared link, the privacy page and the Coming soon page.
+  - All 19 logo and icon files are byte for byte the ones that went in with Kamal's logo on 9 Nov (`b6299bd`).
+  - The soft glow under the tile is its own orange again.
+  - Measured against the app before #110, the logo sits in the same place at the same size on the first page and
+    in the app, on a phone and on a computer.
+- **Kept:** the rest of the look of 16 Nov. The Android bars and the notification colour too (they were never the
+  logo's colour).
+- **A standing rule from now on. King, please add it to my brief:** the logo and its colours do not change with
+  the look. README ("Logo") says so, and `p31` holds the 19 files to their fingerprints, so a later change of look
+  cannot touch them by accident.
+- **Tests:** 29 demo suites, 704 checks (was 696). `p31` has 8 more: the logo's colours, the files' fingerprints,
+  every icon orange, the logo as drawn on the first page, signed in and on the privacy page, the website's share
+  picture, the Coming soon page. They fail on the app as it was this morning and pass now. No database change.
+- **Published:** 1fe5dfd; Android build 217 (file checked: every launcher icon inside is the orange tile, the logo
+  files inside match, and the checksum matches the copy on the website's release); the website repo's `main` and
+  `gh-pages` say "Publish the app from NavigateMe 1fe5dfd", and the published copy shows the logo with no page
+  errors. The publish step went through first time.
+- **For King to pass on to Mark:** ignore my note under #110 about light red logo files. The logo in `marketing/`
+  and in PRs #93 and #94 is the right one.
+- **Next, already started (Kamal, 16 Nov):** "Also take the app color as the color of logo which was earlier and
+  white. Plus check the font color accordingly. Do your best here. Audit once done. Spend some time on each page
+  and audit the gaps of colors font everything". So the light red goes too: the app's colour becomes the logo's
+  orange with white, then a page-by-page audit. Its own PR and report entry.
+- **Relayed by King, waiting for Kamal's word:** "Fix the vibe fill-in when the lister doesn't live in the flat".
+  Checked read-only, nothing changed:
+  - the flaw is real (#106 copies the lister's own answers onto a listing with none, whoever lives there);
+  - one live listing carries such a copy: a room in Pune posted 9 Nov, which says nobody lives there;
+  - the posting form already asks "People living there now (including you)", so no new question is needed to
+    tell the two cases apart;
+  - I asked Kamal for his go in my session, because the request reached me as another session's message and
+    `priorities.md` does not list it. Nothing is pushed or changed for it.
+- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
+  60 a day.
+
 ## 2026-11-16, the new look is on every screen and page; sign-up's city step fixed (#110) live
 
 - **What Kamal asked (16 Nov):** after the five preview pages, "Ignore inspectai. Do it for the entire app and
@@ -216,41 +258,3 @@
 - **For Kamal:** he asked for the steps to merge findmeflatmate PR #2; I gave them (open the PR, Merge pull request,
   Confirm merge). Still open: #86 privacy blanks, #95 merge or close, the host page and the strip behind the clock
   (both raised with #104).
-
-## 2026-11-15, clean login page, Parties as its own section, two layers on every screen (#104) live
-
-- **What Kamal asked (15 Nov):** "Make parties near by a seperate section all together and an amazing one. Also work
-  on the entire design and UI interface… make the app and website look amazing. The double color shade looks super
-  amazing and the bottow bar looks cool. Reduce the information on the login page of website and app as people might
-  copy the same. Make it more clean."
-- **Login page (website and app), short on purpose:** the headline, one line, the sign-up card, a row of our cartoon
-  people and one line of small print. On a phone it went from 8,767 px long to 1,303. The sections that explained
-  the app (how it works, try a search, safety, more than a room, the questions, the closing band, the FAQ data for
-  search engines) are off the page; what the app does is shown after sign-in. Two layers: the words on a lavender
-  band, the card on the sheet. **The sign-up card and its steps are untouched.** `p25` now fails if a feature is
-  named on this page outside the card.
-  - This undoes most of the morning's website refresh (#101). The title, the share picture, robots.txt and the
-    sitemap stay.
-- **Parties, its own section:** a Parties tab for everyone (butter). Before it's on: what it is in three lines and
-  the switch. Once on: your requests first, then the parties near you as cards, with Today / This weekend / Free
-  entry, the parties you're hosting, "Host a party", the rules, and a way to switch it off. Nearby parties no longer
-  show inside Splits; Account keeps the switch. The rules are unchanged (off by default, 21 and over, the address
-  only after a yes). No database change.
-- **Two layers on every main screen (phones):** each screen opens on its own pastel band with the sheet over it.
-  Account shows the name first, the passes under it. The old teal "N selected" bar on Escape is near-black now.
-- **Not changed:** the login process, onboarding questions, colours (our pastels only), the database, the Android
-  shell, the host page, the privacy page, computers' layout.
-- **Tests:** all 25 demo suites pass. `p25` rewritten (20 checks), new `p27` (32 checks: Parties and every band),
-  `p9` (35) now runs on the Parties screen. `p25` and `p27` also pass on the compacted page.
-- **Published:** c5320a0; Android build 211 (file checked: checksum matches, it carries Parties and the short login
-  page). The website repo's `main` and `gh-pages` say "Publish the app from NavigateMe c5320a0".
-- **For Mark and Salu:** the website no longer explains features, so posts shouldn't point people to it for "how it
-  works". Screenshots of the app need retaking (new tab, new tops on every screen).
-- **Screenshots:** [login, phone](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/login-phone.png),
-  [login, computer](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/login-computer.png),
-  [Parties](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/parties.png),
-  [Splits and Market](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/bands.png),
-  [Tribe and Account](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/9da057c0ecf43f2a15a0e27432a282c848838203/bands2.png).
-- **Not done, for Kamal to decide:** the band's colour behind the clock and battery (needs an Android shell change
-  I can't try on a phone); the host page (`#host`) still lists who's looking near an area, which is also public.
-- **Still waiting on Kamal:** findmeflatmate PR #2 (one line), #86 privacy blanks, #95 merge or close.
