@@ -603,11 +603,32 @@ $$;
 -- no match on it and The Empty Room Escape shows no vibe score for anyone (Kamal, 15 Nov: "in escape the room vibe
 -- score should be visible"). The posting form fills them in from the household answers given at sign-up, but that
 -- copy lives on the phone the account was set up on, so a room posted from another phone, or after a reinstall,
--- came without them. fm_listing_vibe: the listing's own answers when it has at least 4, else the lister's own
--- answers (the 12 questions and the generation, from their profile) with whatever the listing does say on top.
-create or replace function public.fm_listing_vibe(p_hh jsonb, p_owner_vibe jsonb) returns jsonb
+-- came without them. So a listing with fewer than 4 answers takes the lister's own.
+--
+-- Only where the lister lives there (Kamal, 16 Nov: "Fix the vibe fill-in when the lister doesn't live in the
+-- flat"). A vibe score says how well you'd get on with the people in a home. The lister's own answers can stand in
+-- for the household when the lister is one of them; when they aren't, the score would describe someone the seeker
+-- will never share the flat with. fm_lister_lives: a room, a bed or a flatmate listing whose "People living there
+-- now (including you)" is 1 or more. A whole flat, or a home nobody lives in yet, has no household: it carries no
+-- living-style answers at all, whichever version of the app sends them (older builds pre-fill the form with the
+-- lister's own), so it shows no score until someone is listed as living there and has answered.
+create or replace function public.fm_lister_lives(p_kind text, p_hh jsonb) returns boolean
+language sql immutable set search_path = public as $$
+  select coalesce(p_kind, '') <> 'flat'
+     and (case when coalesce(p_hh->>'residents', '') ~ '^\d{1,2}$' then (p_hh->>'residents')::int else 0 end) >= 1;
+$$;
+-- fm_listing_vibe: what a listing's household should say about living style.
+--   * the lister doesn't live there: no answers and no generation; everything else the listing says is kept;
+--   * the lister lives there and the listing has at least 4 answers of its own: exactly as sent;
+--   * the lister lives there and it has fewer: the lister's own answers (the 12 questions and the generation, from
+--     their profile) with whatever the listing does say on top; nothing if the lister has fewer than 4 too.
+drop function if exists public.fm_listing_vibe(jsonb, jsonb);
+create or replace function public.fm_listing_vibe(p_kind text, p_hh jsonb, p_owner_vibe jsonb) returns jsonb
 language sql immutable set search_path = public as $$
   select case
+    when not fm_lister_lives(p_kind, p_hh) then
+      case when jsonb_typeof(p_hh) = 'object'
+           then p_hh - array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen'] else p_hh end
     when fm_vibe_count(p_hh) >= 4 or fm_vibe_count(p_owner_vibe) < 4 then p_hh
     else (select coalesce(jsonb_object_agg(k, p_owner_vibe->k), '{}'::jsonb)
             from unnest(array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen']) k
@@ -619,18 +640,23 @@ $$;
 create or replace function public.fm_listing_vibe_fill() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  if fm_vibe_count(new.household) < 4 then
-    new.household := fm_listing_vibe(new.household, (select o.vibe from fm_profiles o where o.id = new.owner_id));
+  if not fm_lister_lives(new.kind, new.household) or fm_vibe_count(new.household) < 4 then
+    new.household := fm_listing_vibe(new.kind, new.household, (select o.vibe from fm_profiles o where o.id = new.owner_id));
   end if;
   return new;
 end $$;
 drop trigger if exists fm_listings_vibe_fill on public.fm_listings;
-create trigger fm_listings_vibe_fill before insert or update of household on public.fm_listings
+create trigger fm_listings_vibe_fill before insert or update of household, kind on public.fm_listings
   for each row execute function public.fm_listing_vibe_fill();
--- Once, for the rooms posted without answers before this (no-op afterwards: they then have them).
-update public.fm_listings l set household = fm_listing_vibe(l.household, o.vibe)
+-- Once, for the rooms posted without answers before 15 Nov (no-op afterwards: they then have them).
+update public.fm_listings l set household = fm_listing_vibe(l.kind, l.household, o.vibe)
   from public.fm_profiles o
- where o.id = l.owner_id and fm_vibe_count(l.household) < 4 and fm_vibe_count(o.vibe) >= 4;
+ where o.id = l.owner_id and fm_lister_lives(l.kind, l.household) and fm_vibe_count(l.household) < 4 and fm_vibe_count(o.vibe) >= 4;
+-- Once, for the homes that carry answers although the lister doesn't live there: the fill of 15 Nov copied the
+-- lister's own onto them, or the form pre-filled them (no-op afterwards: the trigger keeps them without).
+update public.fm_listings l set household = fm_listing_vibe(l.kind, l.household, null)
+ where not fm_lister_lives(l.kind, l.household) and jsonb_typeof(l.household) = 'object'
+   and l.household ?| array['sleep','clean','food','cook','smoke','drinks','guests','noise','social','sharing','work','pets','gen'];
 
 -- Listings, with whether the caller can see the contact and where their request stands.
 -- Signed-in only, and counted (fm_throttle): Discover calls it once per search.
@@ -4307,7 +4333,7 @@ begin
                      'fm_party_blocked', 'fm_party_thumbs_up', 'fm_party_ended', 'fm_party_review_list', 'fm_party_clear', 'fm_party_vibe_ok',
                      'fm_party_request_notify', 'fm_listing_fresh', 'fm_home_gender', 'fm_thread_people', 'fm_thread_title', 'fm_thread_audience', 'fm_thread_notify', 'fm_party_rules_ok',
                      'fm_blocked', 'fm_block_target', 'fm_avatar_valid', 'fm_user_restricted', 'fm_thread_people_all', 'fm_thread_why_not', 'fm_safety_review_list', 'fm_safety_clear',
-                     'fm_listing_vibe', 'fm_listing_vibe_fill') then
+                     'fm_listing_vibe', 'fm_listing_vibe_fill', 'fm_lister_lives') then
       execute format('revoke execute on function %s from authenticated', f.sig);
     else
       execute format('grant execute on function %s to authenticated', f.sig);

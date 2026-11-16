@@ -181,8 +181,9 @@ const falling = a => a.every((x, i) => !i || (a[i - 1].score ?? -1) >= (x.score 
   ok(falling(t) && !(await p.evaluate(() => !!document.querySelector('.esc-noscore'))), 'best vibe match first');
   await p.evaluate(() => document.querySelector('#escList .seek-card').scrollIntoView({ block:'start' })); await p.evaluate(() => scrollBy(0, -80)); await p.waitForTimeout(300); await p.screenshot({ path: O + '/p28-escape.png' });
   await ctx.close();
-  // a room posted without the home's answers (and a lister with none of their own): nobody can be scored, and the screen says so
-  ({ ctx, p } = await demo(b, owner(listing('mine-p28b', { residents:0, flatmates:[], interests:{ music:[], hobbies:[] } })), 'escape'));
+  // a room the lister lives in, posted without the home's answers (and a lister with none of their own): nobody can be scored, and the screen says so
+  // (a room nobody lives in is another matter: p32)
+  ({ ctx, p } = await demo(b, owner(listing('mine-p28b', { residents:1, flatmates:[], interests:{ music:[], hobbies:[] } })), 'escape'));
   t = await p.evaluate(() => ({ people: document.querySelectorAll('#escList .seek-card').length, rings: document.querySelectorAll('#escList .seek-ring').length, ask: (document.querySelector('.esc-noscore') || {}).textContent || '', btn: !!document.querySelector('[data-esc-answers]') }));
   ok(t.people > 0 && t.rings === 0 && /No vibe scores for this room yet/.test(t.ask) && t.btn, 'a room without the home\'s living-style answers: the screen says why there are no scores and offers "Add them now"');
   await p.screenshot({ path: O + '/p28-escape-no-answers.png' });
@@ -200,8 +201,8 @@ const falling = a => a.every((x, i) => !i || (a[i - 1].score ?? -1) >= (x.score 
   ({ ctx, p } = await demo(b, owner(null, { vibe }), 'post'));
   t = await p.evaluate(() => ({ ticked: document.querySelectorAll('#hQuiz input:checked').length, draft: answered(state.homeDraft) }));
   ok(t.draft === 0 && t.ticked >= 12, 'a new listing on a phone with no saved household: the living-style answers are filled in from your own (' + t.ticked + ' ticked)');
-  t = await p.evaluate(() => { const a = listingVibe({ residents:0 }, state.vibe), c = listingVibe({ residents:1, sleep:0, clean:0, food:0, cook:0 }, state.vibe), d = listingVibe({ residents:2 }, {}); return { a: answered(a), gen: a.gen, kept: c.sleep === 0 && answered(c) === 4, none: answered(d) }; });
-  ok(t.a === 12 && t.gen === 'z' && t.kept && t.none === 0, 'a listing saved without answers takes the lister\'s own; one that has its own keeps them; no answers anywhere stays empty: ' + JSON.stringify(t));
+  t = await p.evaluate(() => { const a = listingVibe('room', { residents:1 }, state.vibe), c = listingVibe('room', { residents:1, sleep:0, clean:0, food:0, cook:0 }, state.vibe), d = listingVibe('shared', { residents:2 }, {}); return { a: answered(a), gen: a.gen, kept: c.sleep === 0 && answered(c) === 4, none: answered(d) }; });
+  ok(t.a === 12 && t.gen === 'z' && t.kept && t.none === 0, 'a listing the lister lives in, saved without answers, takes the lister\'s own; one that has its own keeps them; no answers anywhere stays empty: ' + JSON.stringify(t));
   await ctx.close();
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));

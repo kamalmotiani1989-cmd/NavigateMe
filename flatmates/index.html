@@ -2648,6 +2648,12 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
 }
 /* a picked chip is dark: the small print inside it follows */
 .chip:has(input:checked) .hint, .chip[aria-pressed="true"] .hint{color:inherit; opacity:.82}
+/* A home with no vibe score says so (Kamal, 16 Nov): one quiet line on its card where the reasons would be, a short
+   note on its page, and in My flat the same panel the Escape uses, with the button that leads to a score. */
+.lc-noscore{font-weight:700}
+.l-noscore{margin:12px 0 0; padding:12px 14px; border-radius:16px; background:var(--surface-2); color:var(--text-2); font-size:var(--fs-s); line-height:1.45}
+.l-noscore b{display:block; margin:0 0 2px; color:var(--text); font-size:var(--fs-m)}
+.mine-card .esc-noscore{margin:12px 0 4px}
 </style>
 </head>
 <body>
@@ -3067,7 +3073,8 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
             <select id="hFree"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
             <p class="hint" style="margin:6px 0 0">Friends looking together (a tribe of 2 or 3) see flats with that many rooms free.</p></div>
           <div id="fmRows"></div>
-          <details><summary class="hint" style="cursor:pointer">Review living-style answers</summary><div class="quiz" id="hQuiz" style="margin-top:10px"></div></details>
+          <p class="hint" id="hNoVibe" hidden style="margin:0 0 10px"></p>
+          <details id="hQuizBox"><summary class="hint" style="cursor:pointer">Review living-style answers</summary><div class="quiz" id="hQuiz" style="margin-top:10px"></div></details>
           <details><summary class="hint" style="cursor:pointer">Music and hobbies</summary><div class="quiz" id="hInt" style="margin-top:10px"></div></details>
         </div>
         <div class="field"><label for="pDesc">About the flat and flatmates</label>
@@ -3597,10 +3604,19 @@ function readQuiz(root, prefix){
   return out;
 }
 const answered = v => VIBE_QS.filter(x => v && Number.isInteger(v[x.k])).length;
-// A listing's living-style answers: its own when it has at least 4; else the lister's own answers, with whatever the
-// listing does say on top. Same rule as fm_listing_vibe in schema.sql (the server applies it on every post and edit;
-// this is the demo's copy).
-function listingVibe(hh, own){
+// The lister lives in the home when it is a room, a bed or a flatmate listing and "People living there now (including
+// you)" is 1 or more. A whole flat, or a home nobody lives in yet, has no household (Kamal, 16 Nov: "Fix the vibe
+// fill-in when the lister doesn't live in the flat"). Same rule as fm_lister_lives in schema.sql.
+const listerLives = (kind, hh) => kind !== "flat" && (/^\d{1,2}$/.test(String((hh || {}).residents ?? "")) ? Number(hh.residents) : 0) >= 1;
+// A listing's living-style answers. Where the lister doesn't live there: none, whatever was sent, so there is no vibe
+// score for a household that isn't there. Where they do: the listing's own when it has at least 4; else the lister's
+// own answers, with whatever the listing does say on top. Same rule as fm_listing_vibe in schema.sql (the server
+// applies it on every post and edit; this is the demo's copy).
+function listingVibe(kind, hh, own){
+  if(!listerLives(kind, hh)){
+    if(!hh || typeof hh !== "object") return hh;
+    const out = Object.assign({}, hh); VIBE_QS.forEach(x => delete out[x.k]); delete out.gen; return out;
+  }
   if(answered(hh) >= 4 || answered(own) < 4) return hh;
   const mine = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger(own[x.k])).map(x => [x.k, own[x.k]]).concat(["z", "m", "g", "x"].includes(own.gen) ? [["gen", own.gen]] : []));
   return Object.assign(mine, hh || {});
@@ -4542,7 +4558,7 @@ const demoApi = {
     const id = "mine-" + Date.now().toString(36);
     const l = { ...p.listing, id, owner_phone: state.user.phone, status:"active",
       created_at: new Date().toISOString(), unlock_count:0, private: p.private };
-    l.household = listingVibe(l.household, state.vibe);
+    l.household = listingVibe(l.kind, l.household, state.vibe);
     state.myListings.push(l);
     state.demoIncoming[id] = Date.now() + DEMO_INCOMING_MS;
     (state.demoSeekerAt = state.demoSeekerAt || {})[id] = Date.now() + DEMO_INCOMING_MS + 7000;   // a sample seeker starts looking here
@@ -4562,7 +4578,7 @@ const demoApi = {
     if(!l || l.status === "delisted") throw new Error("not-found");
     const was = Object.assign({}, l);
     Object.assign(l, p.listing, { geo: p.listing.geo || l.geo });
-    l.household = listingVibe(l.household, state.vibe);
+    l.household = listingVibe(l.kind, l.household, state.vibe);
     if(p.pin && l.private) l.private.address_parts = Object.assign({}, l.private.address_parts, p.pin);
     let photos = "kept";
     if(!save() && (l.photos || []).length){
@@ -6235,13 +6251,27 @@ let escSel = new Set(), escSelecting = false;   // "Invite several": the people 
 // compares each person's answers with the home's, so a listing without the home's living-style answers can't be
 // scored: say so, with the way to add them, instead of showing people with nothing next to their names.
 const escNoScore = () => escSeekers.length > 0 && escSeekers.every(x => x.match_pct == null);
+// Why a room, a bed or a flatmate listing has no vibe score, in the lister's words, and the button that fixes it. Two
+// cases: the lister lives there and the answers are missing (12 questions), or the listing says nobody lives there
+// (then there is no household to score against: the way to a score is to say who lives there and answer for them).
+// A whole flat never has one, so it is asked nothing.
+function noScoreAsk(l){
+  if(!l || l.kind === "flat" || answered(l.household) >= 4) return null;
+  return listerLives(l.kind, l.household)
+    ? { h: "No vibe scores for this room yet", b: "Add them now",
+        p: "We score each person against how your home lives, and this listing doesn't have those answers yet: 12 quick questions, about a minute." }
+    : { h: "No vibe scores for this room", b: "Say who lives there",
+        p: "The listing says nobody lives there now, so there is no household to score people against. If people do live there, say how many and answer for them." };
+}
+const noScoreHtml = l => (why => why ? `<div class="esc-noscore" role="note"><b>${why.h}</b><p>${why.p}</p>
+    <button class="btn btn-primary btn-sm" type="button" data-edit="${esc(l.id)}" data-step="2">${why.b}</button></div>` : "")(noScoreAsk(l));
 function drawSeekers(){
   const l = escListing, f = state.escFilter || "all";
   const rows = escSeekers.filter(x => f === "fit" ? x.budget && x.budget >= l.rent : f === "vibe" ? x.match_pct >= 80 : f === "new" ? canInvite(x) : true)
     .sort((a, b) => (b.match_pct ?? -1) - (a.match_pct ?? -1));   // highest vibe score first, whatever the filter
-  const ask = escNoScore() ? `<div class="esc-noscore" role="note"><b>No vibe scores for this room yet</b>
-      <p>We score each person against how your home lives, and this listing doesn't have those answers yet: 12 quick questions, about a minute.</p>
-      <button class="btn btn-primary btn-sm" type="button" data-esc-answers="${esc(l.id)}">Add them now</button></div>` : "";
+  const why = escNoScore() ? noScoreAsk(l) : null;
+  const ask = why ? `<div class="esc-noscore" role="note"><b>${why.h}</b><p>${why.p}</p>
+      <button class="btn btn-primary btn-sm" type="button" data-esc-answers="${esc(l.id)}">${why.b}</button></div>` : "";
   setHtml($("escList"), ask + (rows.length ? rows.map((x, i) => seekerHtml(x, l, i)).join("")
     : `<div class="empty"><h3>No one here yet</h3><p>${escSeekers.length ? "Try another filter." : `Nobody is searching in ${esc(l.locality)} right now. New people sign up every day, so check back soon.`}</p></div>`));
   drawEscBar();
@@ -6431,6 +6461,12 @@ const REASON_KEYS = ["food", "smoke", "sleep", "clean", "pets", "guests", "noise
 function matchReasons(a, b){
   return REASON_KEYS.filter(k => Number.isInteger(a && a[k]) && a[k] === (b && b[k])).map(k => VIBE_QS.find(x => x.k === k).t[a[k]]);
 }
+// A room, a bed or a flatmate listing that can't be scored says so where the score would be: nobody is listed as
+// living there, or the household's answers are missing (Kamal, 16 Nov). A whole flat has no household, so it says
+// nothing; neither does any home while you haven't answered yourself (then the missing score is yours to fix). The
+// lister sees it on their own listing, since "See it as seekers do" should show what seekers see.
+const NO_SCORE = "Vibe score after the household answers";
+const noScore = l => l.kind !== "flat" && answered(l.household) < 4 && (Boolean(l.is_owner) || (isSeeker() && answered(state.vibe) >= 4));
 const reasonsLine = (a, b, cls = "lc-why") => { const r = matchReasons(a, b);
   return r.length ? `<div class="${cls}"><b>${r.length} ${r.length === 1 ? "thing" : "things"} in common</b> · ${esc(r.slice(0, 3).join(" · "))}</div>` : ""; };
 // You in the middle, matches around you; lines show where each one stands.
@@ -7570,7 +7606,7 @@ function listingScore(l){
     { pts: 20, got: (l.description || "").trim().length >= 80 ? 20 : 0, tip: "Describe the flat: house rules, the commute, what's included", step: 2 },
     { pts: 10, got: (l.amenities || []).length >= 3 ? 10 : 0, tip: "Tick the amenities", step: 1 },
     { pts: 15, got: whole || matesOf(hh).some(m => m.what || m.type) ? 15 : 0, tip: "Say who lives there and what they do", step: 2 },
-    { pts: 15, got: whole || answered(hh) >= MIN_VIBE ? 15 : 0, tip: "Answer the living-style questions for your home", step: 2 },
+    { pts: 15, got: !listerLives(l.kind, hh) || answered(hh) >= MIN_VIBE ? 15 : 0, tip: "Answer the living-style questions for your home", step: 2 },
     { pts: 10, got: l.geo && l.geo.lat ? 10 : 0, tip: "Pin the building on the map", step: 3 },
   ];
   const pct = Math.round(checks.reduce((a, c) => a + c.got, 0) / checks.reduce((a, c) => a + c.pts, 0) * 100);
@@ -7601,7 +7637,7 @@ function cardHtml(l, i){
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
       <div class="lc-chips">${[l.bhk ? `${l.bhk} BHK` : "", FURN_LABEL[l.furnishing] || ""].filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("")}</div>
-      ${m ? reasonsLine(state.vibe, hh) : ""}
+      ${m ? reasonsLine(state.vibe, hh) : noScore(l) ? `<div class="lc-why lc-noscore">${NO_SCORE}</div>` : ""}
       ${homeBadge(l)}
       ${nearNow && l._km != null ? `<div class="dist">${kmLabel(l._km)} from ${esc(nearNow.label)}</div>` : ""}
       ${mates.length ? `<div class="people">${avatars(mates.length, l.id)}<span>${esc(mates[0].what || OCC[mates[0].type] || "")}${mates.length > 1 ? ` + ${mates.length - 1} more` : ""}</span>${householdGen(hh) ? genBadge(householdGen(hh), "") : ""}</div>` : ""}
@@ -8187,6 +8223,8 @@ async function openListing(id){
     ${isSample(l) ? `<p class="smp-note">${SAMPLE_TAG}<span>A sample home for testing. Ask to meet and the owner accepts straight away, without using a contact.
       There's no real owner, number or address.</span></p>` : ""}
     <p class="hint" style="margin:0">${ph.length > 1 ? `${ph.length} photos · swipe to see more` : ph.length ? "" : isSample(l) ? "Illustration of a sample home." : l.is_owner ? "Homes with photos get more requests. Add them from Edit." : "Ask about the room when you send a request."}</p>
+    ${noScore(l) ? `<p class="l-noscore" role="note"><b>${NO_SCORE}</b>${l.is_owner ? "This is what people looking see: the listing has no living-style answers, so nobody can be scored against it."
+      : "This home has no living-style answers yet, so there is nothing to compare with yours. You can still ask to meet."}</p>` : ""}
     ${tribeNote}
     ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
     ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
@@ -9570,6 +9608,7 @@ async function renderMine(){
         <div class="stat"><b>${reqs.filter(r => r.status === "approved").length}</b><span>accepted</span></div>
         <div class="stat"><b>${vs.length}</b><span>visits booked</span></div></div>
       ${l.status === "delisted" ? "" : qualityHtml(l)}
+      ${l.status === "active" ? noScoreHtml(l) : ""}
       ${vs.map(v => `<div class="row"><div><div class="t">Visit ${fmtDateTime(v.visit_at)}</div>${v.note ? `<div class="s">“${esc(v.note)}”</div>` : ""}</div>
         <div><span class="status ${esc(v.status)}">${esc(v.status)}</span>
         ${v.status === "requested" ? `<button class="btn btn-ghost btn-sm" data-confirm="${esc(v.id)}">Confirm</button>` : ""}</div></div>`).join("")}
@@ -9673,7 +9712,7 @@ async function fillPostForm(l){
   $("hQuiz").innerHTML = genHtml("h", hh.gen, "Your household's generation") + quizHtml("h", hh);
   $("hQuiz").closest("details").open = answered(hh) < MIN_VIBE;   // no answers on this listing yet: shown, not tucked away
   $("hInt").innerHTML = interestChips("hi", hh.interests);
-  syncRoomsFree();
+  syncRoomsFree(); syncLiving();
   keepPhotos = photosOf(l); photoFiles.forEach(freePhoto); photoFiles = []; renderPhotos();
   // The private part, for reference and for the map pin: kept as posted.
   const c = (await api.contact(l.id).catch(() => null)) || {}, ap = c.address_parts || {};
@@ -9747,6 +9786,19 @@ function renderFmRows(){
   $("fmRows").innerHTML = fmRowsHtml(keep, n, "p", genders);
 }
 $("hCount").addEventListener("change", renderFmRows);
+// Living-style answers describe the people who live there, so they are asked only when someone does: a room, a bed or
+// a flatmate listing with 1 or more people living there (the first of them is you). For a whole flat, or a home nobody
+// lives in yet, the questions are put away and nothing is sent (Kamal, 16 Nov: "Fix the vibe fill-in when the lister
+// doesn't live in the flat"); the server keeps none for such a home either (fm_listing_vibe).
+const formKind = () => ($("postForm").querySelector("[name=kind]:checked") || {}).value;
+const formLives = () => listerLives(formKind(), { residents: Number($("hCount").value) });
+function syncLiving(){
+  const lives = formLives();
+  $("hQuizBox").hidden = !lives; $("hNoVibe").hidden = lives;
+  $("hNoVibe").textContent = formKind() === "flat" ? "A whole flat has no household to match with, so it shows no vibe score."
+    : "Nobody lives there now, so this home shows no vibe score. If people do live there, pick how many and answer for them.";
+}
+$("hCount").addEventListener("change", syncLiving);
 // Rooms free: shown for private rooms, guessed as bedrooms minus people living there until the owner picks.
 function syncRoomsFree(){
   const kind = ($("postForm").querySelector("[name=kind]:checked") || {}).value;
@@ -9794,7 +9846,7 @@ function fillRoomForm(room){
 }
 // What a listing's answers say, in short labels (unset answers say nothing).
 const ROOM_LABELS = l => { const r = l.room || {}; return [r.washroom === "attached" ? "Attached washroom" : r.washroom === "shared" ? "Shared washroom" : "", r.balcony ? "Balcony" : "", r.master ? "Master bedroom" : ""].filter(Boolean); };
-$("postForm").addEventListener("change", e => { if(e.target.name === "kind"){ syncRoomsFree(); syncRoomQs(); } if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
+$("postForm").addEventListener("change", e => { if(e.target.name === "kind"){ syncRoomsFree(); syncRoomQs(); syncLiving(); } if(e.target.id === "hFree") e.target.dataset.touched = "1"; });
 syncRoomQs();
 function fillAreaList(){ $("areaList").innerHTML = (CITY_AREAS[$("pCity").value] || []).map(a => `<option value="${esc(a)}">`).join(""); }
 $("pCity").addEventListener("change", () => { pickOtherCity($("pCity")); fillAreaList(); });
@@ -9803,8 +9855,9 @@ function renderPost(){
   if(editing) return fillPostForm(editing);
   showPostStep(1);
   // The home's living-style answers come from the ones given at sign-up, kept on this phone. On another phone, or
-  // after a reinstall, there are none: use your own answers, and then the ones on your newest listing, so a room is
-  // never posted without them (without them nobody can be scored against it, in Discover or in the Escape).
+  // after a reinstall, there are none: use your own answers, and then the ones on your newest listing, so a room you
+  // live in is never posted without them (without them nobody can be scored against it, in Discover or in the
+  // Escape). They are shown and sent only where someone lives there (syncLiving, below the form's count of people).
   const own = Object.fromEntries(VIBE_QS.filter(x => Number.isInteger((state.vibe || {})[x.k])).map(x => [x.k, state.vibe[x.k]]).concat(GEN_BADGE[(state.vibe || {}).gen] ? [["gen", state.vibe.gen]] : []));
   const d = answered(state.homeDraft) >= MIN_VIBE || answered(own) < MIN_VIBE ? state.homeDraft || {} : Object.assign({}, state.homeDraft, own);
   $("hQuiz").innerHTML = genHtml("h", d.gen, "Your household's generation") + quizHtml("h", d);
@@ -9823,7 +9876,7 @@ function renderPost(){
   if(!$("pName").value) $("pName").value = state.user.name || "";
   if(!$("pPhone").value) $("pPhone").value = state.user.phone || "";
   if(!$("expList").children.length) renderExpenseRows();
-  syncRoomsFree(); syncPostMore();
+  syncRoomsFree(); syncLiving(); syncPostMore();
 }
 // The form is three steps. Each checks its own fields before the next; Publish checks them all and brings a
 // step with a gap back into view.
@@ -9870,7 +9923,8 @@ $("postForm").addEventListener("submit", async e => {
       description: $("pDesc").value.trim(),
       household: Object.assign({ residents, flatmates: readFmRows($("fmRows"), residents, "p"), interests: readInterests($("hInt"), "hi") },
         residents > 1 ? { flatmate_genders: readFmGenders($("fmRows"), residents).others } : {},
-        PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {}, readQuiz($("hQuiz"), "h")),
+        PRIVATE_KINDS.includes(f.querySelector("[name=kind]:checked").value) ? { rooms_free: Number($("hFree").value) || 1 } : {},
+        formLives() ? readQuiz($("hQuiz"), "h") : {}),   // living-style answers only where someone lives there (syncLiving)
       costs: expensesFromForm(),
       // Public: rounded to about a kilometre. The exact pin stays in the private part below.
       geo: pinGeo ? { lat: Math.round(pinGeo.lat * 100) / 100, lng: Math.round(pinGeo.lng * 100) / 100 } : null
