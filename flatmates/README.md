@@ -55,7 +55,9 @@ the room comes second.
    homes and never hides one:
    - there is no separate "Your vibe matches" row any more (it showed only homes at 80%+), and Filters has no
      "Minimum match" (one saved by an older version is ignored);
-   - a home whose household hasn't answered the living-style questions has no score and comes after the ones that have;
+   - a home with no household's answers has no score and comes after the ones that have. A room, a bed or a
+     flatmate listing in that state says "Vibe score after the household answers" on its card and its page (a
+     whole flat has no household and says nothing). See "Only where the lister lives there" under the Escape;
    - homes that your filters, or the kind of home you picked, leave out are still on the page, in a second block
      under the list ("More homes in Pune", highest score first, with a line saying why they're there). Only Women
      only / Men only takes a home off the page;
@@ -111,6 +113,24 @@ the room comes second.
        newest listing;
      - when nobody can be scored (the listing has no answers and neither has the lister), the Escape says so
        ("No vibe scores for this room yet") with **Add them now**, which opens the listing on those questions.
+   - **Only where the lister lives there** (Kamal, 16 Nov: "Fix the vibe fill-in when the lister doesn't live in
+     the flat"). A vibe score says how well you'd get on with the people in a home. The lister's own answers can
+     stand in for the household only when the lister is one of them:
+     - **the lister lives there** when it is a room, a bed or a flatmate listing and the form's "People living
+       there now (including you)" is 1 or more (`fm_lister_lives`, `listerLives`). The form has no other way to
+       tell: a landlord who counts their tenants there is taken to live there too;
+     - **any other home** (a whole flat, or a room in a flat nobody lives in yet) carries no living-style answers
+       and no household generation, so it has no score: the server drops them on every post and edit, whichever
+       version of the app sends them (older builds pre-fill the form with the lister's own), and cleared once the
+       homes that had them;
+     - **someone looking** sees "Vibe score after the household answers" on such a room or bed, on the card and
+       on its page, and can still ask to meet. In Discover it comes after the homes with a score;
+     - **the lister** is told why in My flat and in the Escape: "No vibe scores for this room", with **Say who
+       lives there**, which opens the listing on "Your household". (Where the lister lives there and the answers
+       are simply missing, it is "No vibe scores for this room yet" with **Add them now**, as before.) A whole
+       flat is asked nothing;
+     - **the posting form** shows the living-style questions only while someone lives there. For a whole flat,
+       or with "Nobody" picked, they are put away, a line says why, and nothing is sent.
    - **My flat** shows the top 3 people looking in the listing's area with an Invite button each.
    - **New seekers in your area:** a seeker who sets or changes their city or areas (or whose answers become
      enough to match) brings owners with a fitting listing there (70%+ vibe, not yet in touch) a notification
@@ -423,7 +443,7 @@ the room comes second.
     listing opens it so the owner sees everything that is set.
 22. **Listing strength and editing.** My flat scores each listing out of 100 (3+ photos 30, a description of
     80+ letters 20, 3+ amenities 10, who lives there 15, the household's living-style answers 15, a map pin 10;
-    whole flats skip the household parts) and lists what's missing as buttons ("+ Add photos of the room,
+    whole flats skip the household parts, and a room nobody lives in skips the living-style answers) and lists what's missing as buttons ("+ Add photos of the room,
     kitchen and building") that open the **editor** at the right step. **Edit listing** is the Post form
     filled in: the room, the photos (kept ones can be removed, new ones added, 6 in all), the household
     and the description change; the name, number and address stay as posted (shown locked), and the map pin
