@@ -19,6 +19,13 @@ _Last update: 8 Nov 2026._
 **Kamal:** 6 to 10 in the morning and 10 at night to midnight. Anything for him is ready before 10 pm that day.
 
 ## Teche (tech)
+STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
+000000. **Vibe fill-in only where the lister lives there: Kamal, 16 Nov, in King's session: "Fix the vibe fill-in when
+   the lister doesn't live in the flat".** Copy the lister's own answers only for a room, bed or flatmate listing with
+   household.residents >= 1. Otherwise there's no score: show "Vibe score after the household answers", sort those homes
+   after scored ones, and add a My flat prompt to answer for the household. Clear the copy on the one Pune room from 9 Nov
+   with 0 residents, and fix the posting form's pre-fill the same way. Tests for both paths. After the colour work.
+   Deploy on Kamal's word, database first.
 00000. **ON HOLD (Kamal, 10 Nov: "Don't build now, let's discuss").** Do not build until Kamal says so. Was: **AI go-between before contacts are shared.**
    Six parts: Privacy Shield, Conflict Detector, Smart Questions, Truth Check, Compatibility Report, Mutual Consent.
    The AI relays and translates; it never answers for a person. Behind a feature switch, off until Kamal turns it on.
