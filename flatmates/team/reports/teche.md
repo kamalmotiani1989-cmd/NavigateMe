@@ -1,5 +1,36 @@
 # Teche · reports
 
+## 2026-11-16, "Do you live in this flat?": built and tested, PR #115 waits for Kamal's go; my brief updated (#114)
+
+- **What was asked (priorities, Teche 0000000; Kamal, 16 Nov, in King's session: "Go and yes to all"; in mine:
+  "Start now"):** one Yes / No on the posting form, to tell a landlord with tenants from a flatmate who lives there.
+- **State:** built, tested, PR #115 open. **Not merged and not deployed.** The priorities entry says deploy on
+  Kamal's word, database first; I have asked him.
+- **The form asks** for a room, a bed or a flatmate listing, right above "People living there now", with nothing
+  picked, and does not go on without an answer. A whole flat isn't asked. Stored as `household.lister_lives_here`.
+  - **Yes:** as before.
+  - **No:** the count is the people who do live there and none of them is "You"; the lister's own answers are never
+    copied (the questions start empty, to be answered for the household; a copy the listing carried is taken out);
+    the home says "Owner-listed"; the lister's gender no longer counts in the women-only check.
+  - **No answer** (older listings, older Android builds): read as before (#113's rule, beds included). The editor
+    asks on the next save.
+- **Database:** `fm_home_lived_in` (someone lives there) is split from `fm_lister_lives` (the lister is one of
+  them); `fm_listing_vibe` and `fm_home_gender` follow. On today's live data the two one-time statements touch
+  nothing.
+- **Why database first matters here:** the new form with the old database would still copy a landlord's answers
+  on a No.
+- **Two things I added that the entry did not spell out, small and listed in the PR:** the count's first option
+  reads "Nobody yet" for a room (it said "Nobody, it's a whole flat" there too); and a whole flat is not asked the
+  question, because nothing about it depends on the answer.
+- **Tests:** database suite on a fresh local Postgres: schema applied twice, 266 checks pass (17 new). App: 31 demo
+  suites, 787 checks (was 30 and 753); new suite `p33` with 33; `p5`, `p28`, `p32` and `pass3` now answer the
+  question where they save a listing.
+- **My brief (#114, merged c34f723, on Kamal's yes):** the look rule in `tech.md` now names the look of 16 Nov and
+  ends "The logo and its colours never change with the look." Nothing to build or publish for it.
+- **Needed from Kamal:** his go for #115. Then: apply `schema.sql`, check read-only, merge, publish, report.
+- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
+  announced; the message limit of 30 an hour and 60 a day.
+
 ## 2026-11-16, vibe score only where the lister lives there (#113) live, on Kamal's go
 
 - **The go:** Kamal, 16 Nov, in King's session: "Go and yes to all", recorded by King in `priorities.md` (d1a3d1e).
@@ -272,42 +303,3 @@
   `gh-pages` say "Publish the app from NavigateMe 00ecb55". Live database: the merged `schema.sql` applied
   (checksum checked first) and verified read-only.
 - **Still with Kamal from #108:** the message limit of 30 an hour and 60 a day.
-
-## 2026-11-15, help bot rebuilt, quicker messaging, the chat fills the screen, Passes by the name (#108) live
-
-- **What Kamal asked (15 Nov):** "Fix the chat bot.. make me more better and make the messaging quicker. Also remove
-  the passes from bottom bar and pop up whever the same is required. It should be in profile near the accout name".
-  And, on seeing the chat screen: "Why is it showing so much of clank space down".
-- **Help bot.** It counted any keyword it saw: "how do I message the owner" got the answer about listing a room,
-  and of 30 everyday questions about 5 got a real answer.
-  - Now about 60 topics written from the app as it is, with the app's own button names; words have weights (a
-    phrase 3, a word 2, a word half the app shares 1); answers are personal (your contacts, your pass, your role).
-  - Never a dead end: a close second is offered as "Or: …"; unsure, it gives its best guesses and a person.
-  - "room in Pune under 15k" is offered as a search. "It's not working" offers a ticket with the kind filled in.
-  - Tried on 265 questions written three ways (plain, messy, short with typos and Hinglish): all land right.
-  - Still no AI service (the AI go-between is on hold). It says nothing about how sign-in codes are made; while
-    sign-up is open to a few people at a time it says a code may not reach you yet.
-- **Messaging.** Measured against the stand-in server at 300 ms a call:
-  - opening a chat: blank for two answers (about 0.6 s), now on screen at once and filled after one;
-  - sending: the box was locked for two round trips, now the bubble shows at once and the box is free;
-  - the other person's message: up to 5 s, now about 2 s; the unread count: every 60 s, now every 20 s.
-  - A message that can't go is tried again by itself (1.5 s, then 4 s), then says "Not sent" with Try again and
-    Remove. Each message has its own id, so a retry can't send it twice.
-  - Database: `fm_thread_get(p_thread, p_after)` gives only what's new and writes the "read" mark only when there
-    is something new; `fm_thread_send(p_thread, p_body, p_id)` saves a message once per id and answers with its
-    time. Both new arguments have defaults, so the app from before keeps working.
-- **The chat screen** fills the screen: messages scroll, newest at the bottom, the box stays at the bottom above
-  the keyboard. A short chat sits at the bottom next to the box.
-- **Passes:** no tab and no screen. A Passes button by the name in Account (with a pass on: "Room Pass · 13 days
-  left"); a pop-up wherever a pass is needed; an old `#plans` link opens the pop-up over the home screen.
-- **Not changed:** the login process, onboarding questions, colours. The message limit (30 an hour, 60 a day).
-- **Tests:** 27 demo suites, 649 checks; new `p29` (66) for all three, the chat part against the
-  stand-in server. Database: 222 checks, 17 new (`parties-16-quick-messages.sql`).
-- **Published:** b6a6558; Android build 214 (file checked, checksum matches); website repo `main` and
-  `gh-pages` say "Publish the app from NavigateMe b6a6558". Live database: the merged `schema.sql` applied
-  (checksum checked first) and verified read-only.
-- **For Kamal to decide:** the message limit of 30 an hour and 60 a day may be low for people who chat a lot; say
-  the word and I'll raise it.
-- **For later, not urgent:** the list of chats (`fm_thread_list`) looks at every conversation to find yours. Live
-  has 6 conversations, so it is instant; it needs rewriting before there are thousands. The README's messages
-  section said 120 an hour, 600 a day; the code has always been 30 and 60, and the README now says so.
