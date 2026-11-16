@@ -1,5 +1,41 @@
 # Teche · reports
 
+## 2026-11-16, vibe score only where the lister lives there: built and tested, PR #113 waits for Kamal's go
+
+- **What was asked (priorities, Teche 000000; Kamal, 16 Nov, in King's session):** "Fix the vibe fill-in when the
+  lister doesn't live in the flat".
+- **State:** built, tested, PR #113 open. **Not merged and not deployed.** It goes live only on Kamal's word,
+  database first, as the priorities entry says.
+- **The rule:** the lister's own answers stand in for the household only where the lister lives there (a room, a
+  bed or a flatmate listing with 1 or more people living there). A whole flat, or a room in a flat nobody lives
+  in, carries no living-style answers and so has no vibe score.
+- **What people will see:**
+  - someone looking: "Vibe score after the household answers" on such a room or bed, on its card and its page;
+    it comes after the homes with a score; they can still ask to meet. A whole flat says nothing, as before;
+  - the lister: My flat and the Escape say why, with "Say who lives there", which opens the listing on "Your
+    household";
+  - the posting form asks the living-style questions only while someone lives there.
+- **Database:** `fm_listing_vibe` copies only where the lister lives there and drops the answers elsewhere, on
+  every post and edit, so it also holds for older Android builds (they keep pre-filling the form until updated).
+  A one-time clear removes answers from homes the lister doesn't live in.
+- **Live data, checked read-only:** 105 listings; the clear will touch exactly one, the room in Pune posted
+  9 Nov (it keeps everything else it says). No other listing changes.
+- **Different from what I told King earlier today:** I had planned to keep answers a lister gives by hand for a
+  home nobody lives in. I dropped that: such answers describe nobody, which is the fault being fixed. With
+  "Nobody" picked the questions are put away; the way to a score is to say who lives there, then answer.
+- **Judgment calls, for King and Kamal to overrule if they wish:**
+  - no new question in the form, so a landlord who counts tenants as living there is still taken to live there;
+  - a whole flat shows no "after the household answers" line: it has no household that could answer;
+  - a lister of such a room on an older Android build still sees the old prompt, and answers given there are not
+    kept. One lister is in that position today;
+  - the interests line on a card ("You both like...") is not touched.
+- **Tests:** database suite on a fresh local Postgres: schema applied twice, all 249 checks pass (16 new). App: 30
+  demo suites, 753 checks (was 29 and 719); new suite `p32` with 34.
+- **Needed from Kamal:** his go. Then: merge, apply `schema.sql`, check the Pune room and the rest read-only,
+  publish the website, report.
+- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
+  announced; the message limit of 30 an hour and 60 a day.
+
 ## 2026-11-16, the app in the logo's colours (orange and white), and a page-by-page audit (#112) live
 
 - **What Kamal asked (16 Nov, after #111):** "Also take the app color as the color of logo which was earlier and
@@ -283,22 +319,3 @@
   Kamal, with #86.
 - **For Kamal:** nothing needed. Still open: #86 privacy blanks, #95 merge or close, the host page and the strip
   behind the clock (both raised with #104).
-
-## 2026-11-15, website repo PR #2 merged (status message), on Kamal's yes
-
-- **What:** findmeflatmate PR #2 is merged (8679471). One line in the last step of its `publish.yml`: the step now
-  knows the site by how its title starts, so it stops printing "not this site yet" for a site that is fine.
-- **Who merged, and why me:** priorities says Kamal merges there. He tried on his phone and found no merge button:
-  his phone's browser is signed in to GitHub with a different account from `kamalmotiani1989-cmd` (in his screenshot
-  the picture at the top right is not the PR author's), and an account that can't write to the repo is shown no
-  merge button. I asked him; he chose "Yes, merge it". Merged on that yes, not on my own.
-- **Checked:** ran `publish.yml` once (run 141, passed). Its summary now reads "(FindMeFlatMate)" for all three
-  addresses. The site's files are unchanged; Android build 212 is unchanged (same checksum).
-- **Good to know:**
-  - The website repo's `main` and `gh-pages` are both 8679471, the merge, until the next app change is published;
-    after that they say "Publish the app from NavigateMe <sha>" again.
-  - "status: errored" in the job's summary is not a failure. Every publish starts two Pages builds (one from its
-    push, one it asks for); the first is replaced by the second and shows as cancelled, the second passes. The
-    build for 8679471 passed.
-- **For Kamal:** nothing. Still open: #86 privacy blanks, #95 merge or close, the host page and the strip behind
-  the clock (both raised with #104).
