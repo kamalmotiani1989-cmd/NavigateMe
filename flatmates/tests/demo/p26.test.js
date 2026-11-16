@@ -40,7 +40,7 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
     n: tabs.length, names: tabs.map(t => t.querySelector('span').textContent), icons: tabs.every(t => t.querySelector('svg') && t.querySelector('svg').getBoundingClientRect().width >= 20),
     cut: tabs.filter(t => { const s = t.querySelector('span'); return s.scrollWidth > s.clientWidth + 1 || !s.offsetWidth; }).map(t => t.dataset.view),
     cur: cur && { view: cur.dataset.view, bg: getComputedStyle(cur).backgroundColor, color: getComputedStyle(cur).color, icon: getComputedStyle(cur.querySelector('svg')).color, radius: parseFloat(getComputedStyle(cur).borderTopLeftRadius) },
-    idle: (t => t && getComputedStyle(t).color)(tabs.find(t => t !== cur)), tok: { lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), text: tok('--text'), text2: tok('--text-2'), ink: tok('--ink'), inkSoft: tok('--ink-soft'), pink: tok('--red-soft'), red: tok('--red') } }; });
+    idle: (t => t && getComputedStyle(t).color)(tabs.find(t => t !== cur)), tok: { lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), text: tok('--text'), text2: tok('--text-2'), ink: tok('--ink'), inkSoft: tok('--ink-soft'), soft: tok('--orange-soft'), orange: tok('--orange') } }; });
 (async () => {
   const b = await chromium.launch();
   // ------------------------------------------------------------ someone looking for a room, on a phone
@@ -57,7 +57,7 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   await p.evaluate(() => scrollTo(0, 80)); await p.waitForTimeout(350); L = await look(p);
   ok(L.onBand && L.headBg === L.lav, 'scrolled a little: the top bar still has the band\'s colour');
   await p.evaluate(() => scrollTo(0, 420)); await p.waitForTimeout(450); L = await look(p);
-  ok(!L.onBand && L.headBg !== L.lav && /^rgba?\(253, 248, 241/.test(L.headBg), 'scrolled past the band: the top bar is the page\'s cream again: ' + L.headBg);
+  ok(!L.onBand && L.headBg !== L.lav && /^rgba?\(255, 255, 255/.test(L.headBg), 'scrolled past the band: the top bar is the page\'s white again: ' + L.headBg);
   await p.screenshot({ path: O + '/p26-home-scrolled.png' });
   await p.evaluate(() => scrollTo(0, 0)); await p.waitForTimeout(450); L = await look(p);
   ok(L.onBand && L.headBg === L.lav, 'back at the top: the band again');
@@ -65,12 +65,12 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   let B = await bar(p);
   ok(B.radius >= 30 && B.alpha >= .7 && B.alpha < 1 && B.blur && B.left >= 12 && B.right >= 12 && B.bottom >= 10, 'bottom bar: a frosted pill floating above the edge: ' + JSON.stringify({ radius: B.radius, alpha: B.alpha, blur: B.blur, left: B.left, right: B.right, bottom: B.bottom }));
   ok(B.names.join() === 'Discover,Tribe,Parties,Splits,Market' && B.icons && !B.cut.length, 'every place keeps its icon and its name (Passes left the bar on 15 Nov: p29): ' + B.names.join(' · '));
-  ok(B.cur.view === 'discover' && B.cur.bg === B.tok.pink && B.cur.color === B.tok.text && B.cur.icon === B.tok.red && B.cur.radius >= 24 && B.idle === B.tok.inkSoft, 'the screen you\'re on is a soft pink pill with a red icon and dark words (not a black button): ' + JSON.stringify(B.cur));
-  // other screens: the same pink pill on the tab; the band at the top of the screen keeps the screen's own tint (p27 walks every band)
+  ok(B.cur.view === 'discover' && B.cur.bg === B.tok.soft && B.cur.color === B.tok.text && B.cur.icon === B.tok.orange && B.cur.radius >= 24 && B.idle === B.tok.inkSoft, 'the screen you\'re on is a pale orange pill with an orange icon and dark words (not a black button): ' + JSON.stringify(B.cur));
+  // other screens: the same pale orange pill on the tab; the band at the top of the screen keeps the screen's own tint (p27 walks every band)
   for(const [view, name, col] of [['tribe', 'Tribe', 'mint'], ['parties', 'Parties', 'butter'], ['splits', 'Splits', 'lav'], ['market', 'Market', 'butter']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250);
     B = await bar(p); L = await look(p);
-    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.pink && B.cur.icon === B.tok.red && B.cur.color === B.tok.text && L.band && L.bandBg === B.tok[col] && L.onBand && L.headBg === B.tok[col], name + ': the tab is the pink pill with a red icon; the band and the top bar are the screen\'s own tint (--' + col + ')');
+    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.soft && B.cur.icon === B.tok.orange && B.cur.color === B.tok.text && L.band && L.bandBg === B.tok[col] && L.onBand && L.headBg === B.tok[col], name + ': the tab is the pale orange pill with an orange icon; the band and the top bar are the screen\'s own tint (--' + col + ')');
     if(view === 'market') await p.screenshot({ path: O + '/p26-bar-market.png' }); }
   // Saved and Tribe changed places (Kamal, 15 Nov): Saved is the heart in the top bar, Tribe is in the bottom bar
   await p.goto(U + '#saved'); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); L = await look(p);
@@ -91,11 +91,11 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   L = await look(p); B = await bar(p);
   ok(L.band && L.bandBg === L.butter && L.onBand && L.headBg === L.butter && L.left === 0 && L.right === L.W && L.sheet.radius === '30px' && L.colours.every(c => c === L.text || c === L.ink) && L.minRatio >= 4.5,
     'My flat: a butter band with the top bar in it, the sheet over it, dark words (lowest contrast ' + L.minRatio.toFixed(2) + ':1)');
-  ok(B.n === 6 && B.names.join() === 'My flat,Escape,Post,Parties,Splits,Market' && !B.cut.length && B.cur.view === 'mine' && B.cur.bg === B.tok.pink && B.cur.icon === B.tok.red, 'owner: six places fit, My flat is the pink pill: ' + B.names.join(' · '));
+  ok(B.n === 6 && B.names.join() === 'My flat,Escape,Post,Parties,Splits,Market' && !B.cut.length && B.cur.view === 'mine' && B.cur.bg === B.tok.soft && B.cur.icon === B.tok.orange, 'owner: six places fit, My flat is the pale orange pill: ' + B.names.join(' · '));
   await p.screenshot({ path: O + '/p26-home-owner.png' });
   for(const [view, col] of [['escape', 'mint'], ['post', 'butter']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); B = await bar(p); L = await look(p);
-    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.pink && L.band && L.bandBg === B.tok[col] && L.onBand, view + ': the tab is the pink pill; the band is the screen\'s own tint (--' + col + ')'); }
+    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.soft && L.band && L.bandBg === B.tok[col] && L.onBand, view + ': the tab is the pale orange pill; the band is the screen\'s own tint (--' + col + ')'); }
   await ctx.close();
   // six places still fit on small phones, names whole
   for(const w of [320, 360]){ ({ ctx, p } = await open(b, owner, w, 700, 'mine')); B = await bar(p);

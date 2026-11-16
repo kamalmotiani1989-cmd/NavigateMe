@@ -10,7 +10,7 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate: find flatmates who match your vibe</title>
 <meta name="description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
-<meta name="theme-color" content="#FDF8F1">
+<meta name="theme-color" content="#FFFFFF">
 <meta property="og:title" content="FindMeFlatMate: find flatmates who match your vibe">
 <meta property="og:description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
 <meta property="og:locale" content="en_IN">
@@ -44,10 +44,12 @@
 <style>
 /* Urbanist for the app and DM Serif Display for its headings (16 Nov 2026); Plus Jakarta Sans is the older typeface,
    now only a stand-in if Urbanist can't load. Urbanist and Plus Jakarta Sans are one variable file each (every
-   weight); DM Serif Display has one weight. The second file of each holds the rupee sign and accented letters. */
-@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 900; font-display:swap; src:url(vendor/fonts/urbanist-latin-wght-normal.woff2) format("woff2");
+   weight); DM Serif Display has one weight. The second file of each holds the rupee sign and accented letters.
+   Urbanist is declared up to its 800 cut, the heaviest any rule here asks for: bold inside bold, which a browser
+   steps up to 900, then shows at 800 instead of a blacker cut that nothing asked for. */
+@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 800; font-display:swap; src:url(vendor/fonts/urbanist-latin-wght-normal.woff2) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 900; font-display:swap; src:url(vendor/fonts/urbanist-latin-ext-wght-normal.woff2) format("woff2");
+@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 800; font-display:swap; src:url(vendor/fonts/urbanist-latin-ext-wght-normal.woff2) format("woff2");
   unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:"DM Serif Display"; font-style:normal; font-weight:400; font-display:swap; src:url(vendor/fonts/dm-serif-display-latin-400-normal.woff2) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -89,7 +91,7 @@ body{margin:0; background:var(--bg); color:var(--text); font:var(--fs-m)/1.6 var
 h1,h2,h3{font-family:var(--display); font-weight:700; letter-spacing:-.022em; line-height:1.12; margin:0; text-wrap:balance}
 a{color:var(--brand); text-underline-offset:3px}
 button,input,select,textarea{font:inherit; color:inherit}
-:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
 .wrap{max-width:1120px; margin:0 auto; padding-left:max(20px, env(safe-area-inset-left,0px)); padding-right:max(20px, env(safe-area-inset-right,0px))}
 .eyebrow{font-weight:700; font-size:var(--fs-xs); letter-spacing:.08em; text-transform:uppercase; color:var(--text-3); margin:0 0 6px}
 
@@ -108,7 +110,7 @@ button,input,select,textarea{font:inherit; color:inherit}
 .btn[disabled]{opacity:.5; cursor:not-allowed}
 label{display:block; font-weight:600; font-size:var(--fs-s); color:var(--text-2); margin-bottom:6px}
 .field{margin-bottom:16px}
-input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],select,textarea{
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{
   width:100%; padding:12px 14px; border:0; border-radius:10px; background:var(--surface-2); transition:background .15s, box-shadow .15s}
 input:focus,select:focus,textarea:focus{outline:0; background:var(--surface); box-shadow:0 0 0 2px var(--brand)}
 textarea{min-height:96px; resize:vertical}
@@ -123,7 +125,7 @@ textarea{min-height:96px; resize:vertical}
   cursor:pointer; background:var(--surface-2); user-select:none; margin:0; color:var(--text); transition:background .15s, color .15s}
 .chip input{position:absolute; opacity:0; pointer-events:none}
 .chip:has(input:checked){background:var(--text); color:#fff}
-.chip:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px}
+.chip:has(input:focus-visible){outline:2px solid var(--mark); outline-offset:2px}
 
 /* ---------- app header + nav */
 .app-head{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:rgba(255,255,255,.92); backdrop-filter:saturate(1.6) blur(12px);
@@ -148,7 +150,7 @@ textarea{min-height:96px; resize:vertical}
 .hd-ic svg{width:22px; height:22px} .hd-ic:hover{background:var(--line)} .hd-ic:active{transform:scale(.92)}
 .hd-ic[aria-current="true"]{background:var(--ink); color:#fff}
 .hd-ic .badge{position:absolute; top:-3px; right:-3px; box-shadow:0 0 0 2px #fff}
-.hd-ic:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
+.hd-ic:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
 @media (max-width:720px){
   .app-head{backdrop-filter:none; background:var(--bg)}  /* a filter would trap the fixed nav inside the header */
   .nav{position:fixed; bottom:0; left:0; right:0; justify-content:space-around; background:var(--bg); box-shadow:0 -1px 0 var(--line);
@@ -189,7 +191,7 @@ textarea{min-height:96px; resize:vertical}
 .role span{font-size:var(--fs-s); color:var(--text-2); font-weight:400}
 .role:has(input:checked)::after{box-shadow:inset 0 0 0 6px var(--brand)}
 .role:has(input:checked) .ic{background:var(--brand-soft); color:var(--brand)}
-.role:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px; border-radius:8px}
+.role:has(input:focus-visible){outline:2px solid var(--mark); outline-offset:2px; border-radius:8px}
 .otpbox{letter-spacing:.5em; text-align:center; font-size:22px!important}
 .btn-wa{background:var(--wa); color:#fff; box-shadow:0 6px 16px rgba(23,135,65,.26)} .btn-wa:hover{background:var(--wa-2)}
 .btn-wa svg{flex:none}
@@ -238,8 +240,8 @@ textarea{min-height:96px; resize:vertical}
 .back-link{display:inline-flex; align-items:center; gap:6px}
 .back-link .ic{transition:transform .15s} .back-link:hover .ic{transform:translateX(-3px)}
 .x:active, .ob-back:active, .pp-x:active, .vp-x:active, .pn-x:active, .previews button:active{transform:scale(.92)}
-.x:focus-visible, .ob-back:focus-visible, .pp-x:focus-visible, .vp-x:focus-visible, .pn-x:focus-visible, .previews button:focus-visible{outline:2px solid var(--brand); outline-offset:2px}
-.mhead .x:focus-visible, .ob-back:focus-visible{outline-color:var(--brand)}
+.x:focus-visible, .ob-back:focus-visible, .pp-x:focus-visible, .vp-x:focus-visible, .pn-x:focus-visible, .previews button:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
+.mhead .x:focus-visible, .ob-back:focus-visible{outline-color:var(--mark)}
 .ob-progress{flex:1; height:4px; background:var(--surface-2); border-radius:999px; overflow:hidden}
 .ob-progress i{display:block; height:100%; width:0; background:var(--text); border-radius:inherit; transition:width .35s}
 .ob-count{font-weight:700; color:var(--text-3); font-size:var(--fs-s); font-variant-numeric:tabular-nums}
@@ -309,7 +311,7 @@ textarea{min-height:96px; resize:vertical}
 .heart.pop{animation:pop .35s ease}
 @keyframes pop{40%{transform:scale(1.3)}}
 .empty{text-align:center; padding:48px 16px; color:var(--text-2)}
-.empty h3{color:var(--text); margin-bottom:6px}
+.empty h3{color:var(--text); margin-bottom:6px; font-size:var(--fs-l); line-height:1.25}
 .art{position:absolute; inset:0; width:100%; height:100%}
 .nophoto{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:var(--brand-soft); color:var(--brand-2);
   font-size:var(--fs-s); font-weight:700; text-align:center}
@@ -359,12 +361,12 @@ textarea{min-height:96px; resize:vertical}
 .drop input{display:none}
 .previews{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; margin-top:10px}
 .previews:empty{display:none}
-.previews .ph-orig{position:absolute; left:6px; bottom:6px; padding:3px 8px; border:0; border-radius:999px; background:rgba(30,26,43,.72); color:#fff; font:700 11px var(--body); cursor:pointer}
+.previews .ph-orig{position:absolute; left:6px; bottom:6px; padding:3px 8px; border:0; border-radius:999px; background:rgba(28,25,23,.72); color:#fff; font:700 11px var(--body); cursor:pointer}
 .previews figure{margin:0; position:relative; aspect-ratio:4/3; max-width:100%; border-radius:10px; overflow:hidden; background:var(--surface-2)}
 .previews img{width:100%; height:100%; object-fit:cover; display:block}
 .previews figure:first-child::after{content:"Cover"; position:absolute; left:6px; bottom:6px; font-size:11px; font-weight:700; background:rgba(0,0,0,.55); color:#fff; padding:1px 6px; border-radius:4px}
 .previews button{position:absolute; top:5px; right:5px; display:grid; place-items:center; width:28px; height:28px; padding:0; border-radius:50%; border:0;
-  background:rgba(30,26,43,.72); color:#fff; cursor:pointer; box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+  background:rgba(28,25,23,.72); color:#fff; cursor:pointer; box-shadow:0 0 0 2px rgba(255,255,255,.85)}
 .previews button .ic{width:14px; height:14px}
 .previews button:hover{background:var(--red-40)}
 .private{padding:22px 0 4px; margin:8px 0 16px; box-shadow:0 -1px 0 var(--line)}
@@ -377,8 +379,8 @@ textarea{min-height:96px; resize:vertical}
 
 /* ---------- sheets (listing detail, filters, pay...): full screen on phones */
 dialog{border:0; padding:0; border-radius:20px; width:min(640px,calc(100vw - 32px)); max-height:calc(100dvh - 48px); background:var(--surface); color:var(--text);
-  box-shadow:0 30px 80px rgba(30,26,43,.25)}
-dialog::backdrop{background:rgba(30,26,43,.45)}
+  box-shadow:0 30px 80px rgba(28,25,23,.25)}
+dialog::backdrop{background:rgba(28,25,23,.45)}
 @media (max-width:640px){
   dialog{width:100vw; max-width:100vw; height:100dvh; max-height:100dvh; margin:0; border-radius:0; box-shadow:none;
     padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -498,7 +500,7 @@ dialog::backdrop{background:rgba(30,26,43,.45)}
 .exp-row label{margin:0; font-weight:600; color:var(--text); display:flex; gap:10px; align-items:center; font-size:var(--fs-m)}
 .exp-row .exp-use{font-weight:500; color:var(--text-2); font-size:var(--fs-s); white-space:nowrap}
 .exp-row input[type=number]{padding:9px 12px}
-.exp-row input[type=checkbox]{width:18px; height:18px; accent-color:var(--brand)}
+.exp-row input[type=checkbox]{width:18px; height:18px; accent-color:var(--mark)}
 .exp-row input:disabled{opacity:.45}
 @media (max-width:420px){ .exp-row{grid-template-columns:1fr 1fr} .exp-row .exp-use{grid-column:2} }
 
@@ -569,7 +571,7 @@ dialog::backdrop{background:rgba(30,26,43,.45)}
 .tagline{color:var(--brand)}
 .w-card{background:#fff; color:var(--text); border-radius:24px; padding:24px 20px 20px; box-shadow:0 1px 2px rgba(60,40,30,.04), 0 24px 60px rgba(60,40,30,.10)}
 .ob{color:var(--text)}
-.ob .ob-progress{background:rgba(60,40,30,.08)} .ob .ob-progress i{background:var(--brand)}
+.ob .ob-progress{background:rgba(60,40,30,.08)} .ob .ob-progress i{background:var(--mark)}
 .ob .ob-count, .ob .linkbtn{color:var(--text-2)}
 .ob .eyebrow{color:var(--brand)}
 .ob .why, .ob .hint, .ob .opt span{color:var(--text-2)}
@@ -660,7 +662,7 @@ div.cx-area{cursor:default}
 .esc-stats span{font-size:var(--fs-xs); color:rgba(255,255,255,.85); line-height:1.3; display:block}
 #escRule{margin:0 0 6px}
 .seekers{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; padding:8px 0 40px}
-.seek-card{padding:16px; border-radius:18px; background:#fff; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(30,26,43,.06); animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 30ms)}
+.seek-card{padding:16px; border-radius:18px; background:#fff; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(28,25,23,.06); animation:rise .4s ease both; animation-delay:calc(var(--i,0) * 30ms)}
 .seek-top{display:flex; gap:12px; align-items:center}
 .seek-top .av{width:48px; height:48px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:800; font-size:19px; flex:none}
 .seek-top h3{font-size:var(--fs-l)}
@@ -677,7 +679,7 @@ div.cx-area{cursor:default}
 .seek-card .req-pill{text-decoration:none}
 .inv-timer{margin:10px 0 0; padding:9px 12px; border-radius:12px; background:var(--accent-soft); color:var(--orange-27); font-size:var(--fs-s)}
 .invite{display:grid; grid-template-columns:200px 1fr; gap:16px; padding:16px; margin:10px 0 16px; border-radius:20px;
-  background:var(--brand-soft); box-shadow:inset 0 0 0 1px rgba(238,100,104,.15)}
+  background:var(--brand-soft); box-shadow:inset 0 0 0 1px rgba(194,65,12,.15)}
 .inv-pic{position:relative; border:0; padding:0; border-radius:14px; overflow:hidden; min-height:150px; cursor:pointer; background:var(--surface-2)}
 .inv-pic > img, .inv-pic > .art{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
 .inv-pic .ring-wrap{position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.35); border-radius:50%; padding:3px}
@@ -698,7 +700,7 @@ div.cx-area{cursor:default}
 .switch{display:flex; gap:12px; align-items:center; margin-top:8px; font-size:var(--fs-m); font-weight:700; color:var(--text); cursor:pointer}
 .switch input{appearance:none; -webkit-appearance:none; width:46px; height:28px; border-radius:999px; background:var(--line-2); position:relative; cursor:pointer; transition:background .2s; flex:none; margin:0}
 .switch input::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .2s}
-.switch input:checked{background:var(--brand)} .switch input:checked::after{transform:translateX(18px)}
+.switch input:checked{background:var(--mark)} .switch input:checked::after{transform:translateX(18px)}
 /* ---------- Build your tribe */
 .tribe-hero{margin:22px 0 4px; padding:20px 20px 22px; border-radius:24px; color:#fff; overflow:hidden; position:relative;
   background:var(--grad)}
@@ -710,13 +712,13 @@ div.cx-area{cursor:default}
 .orbit line{stroke-linecap:round; animation:draw 1s ease both; animation-delay:calc(var(--i) * 120ms + .2s); stroke-dasharray:200; stroke-dashoffset:0}
 .orbit line.faint{stroke:rgba(255,255,255,.35); stroke-width:1.5; stroke-dasharray:2 5}
 .orbit line.half{stroke:var(--hi); stroke-width:2.5; stroke-dasharray:6 6; animation:march 1.2s linear infinite}
-.orbit line.bond{stroke:var(--hi); stroke-width:4; filter:drop-shadow(0 0 6px rgba(238,100,104,.9))}
+.orbit line.bond{stroke:var(--hi); stroke-width:4; filter:drop-shadow(0 0 6px rgba(194,65,12,.9))}
 @keyframes draw{from{stroke-dashoffset:200; opacity:0}}
 @keyframes march{to{stroke-dashoffset:-24}}
 .orbit .node{animation:popin .5s cubic-bezier(.2,1.4,.4,1) both; animation-delay:calc(var(--i) * 120ms + .3s)}
 .orbit .node > circle{stroke:#fff; stroke-width:3}
 .orbit .node.wants > circle{stroke:var(--hi); stroke-width:4}
-.orbit .node.on > circle{stroke:var(--hi); stroke-width:4; filter:drop-shadow(0 0 8px rgba(238,100,104,.9))}
+.orbit .node.on > circle{stroke:var(--hi); stroke-width:4; filter:drop-shadow(0 0 8px rgba(194,65,12,.9))}
 @keyframes popin{from{opacity:0; transform:scale(.2)}}
 .orbit .node{transform-box:fill-box; transform-origin:center}
 .orbit .pulse{transform-box:fill-box; transform-origin:center; animation:halo 2.4s ease-out infinite}
@@ -734,11 +736,11 @@ div.cx-area{cursor:default}
 .journey li:first-child::before{display:none}
 .journey li b{display:block; color:var(--text-2); font-size:var(--fs-s)}
 .journey li span{display:block; line-height:1.3}
-.journey li.done i{background:var(--brand); color:#fff} .journey li.done::before, .journey li.now::before{background:var(--brand)}
-.journey li.now i{background:var(--accent); color:#fff; box-shadow:0 0 0 5px var(--accent-soft)} .journey li.now b{color:var(--text)}
+.journey li.done i{background:var(--mark); color:#fff} .journey li.done::before, .journey li.now::before{background:var(--mark)}
+.journey li.now i{background:var(--mark); color:#fff; box-shadow:0 0 0 5px var(--accent-soft)} .journey li.now b{color:var(--text)}
 .tribe-more-hint{margin:-4px 0 12px}   /* under "More people looking near you" */
-.tribe-card{padding:16px; border-radius:18px; background:#fff; margin:10px 0; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(30,26,43,.06); animation:rise .4s ease both}
-.tribe-card.wants{box-shadow:0 0 0 2px var(--brand), 0 10px 30px rgba(60,40,30,.10); background:linear-gradient(180deg,var(--brand-soft),#fff 60%)}
+.tribe-card{padding:16px; border-radius:18px; background:#fff; margin:10px 0; box-shadow:0 1px 0 var(--line), 0 6px 20px rgba(28,25,23,.06); animation:rise .4s ease both}
+.tribe-card.wants{box-shadow:0 0 0 2px var(--mark), 0 10px 30px rgba(60,40,30,.10); background:linear-gradient(180deg,var(--brand-soft),#fff 60%)}
 .tribe-card .wants-line{margin:0 0 10px; font-weight:800; color:var(--accent)}
 .tribe-card .acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px}
 .tribe-card .seek-facts strong, .seek-facts strong{color:var(--brand)} .tribe-card.wants .seek-facts strong{color:var(--brand-2)}
@@ -877,7 +879,7 @@ div.cx-area{cursor:default}
 .fs-member .grow{flex:1; min-width:0} .fs-member .s{font-size:var(--fs-s); color:var(--text-2)}
 .fs-bars{display:grid; gap:10px; margin:10px 0 0}
 .fs-bar{display:grid; grid-template-columns:120px 1fr auto; gap:10px; align-items:center; font-size:var(--fs-s)}
-.fs-bar i{display:block; height:10px; border-radius:999px; background:var(--brand); min-width:4px}
+.fs-bar i{display:block; height:10px; border-radius:999px; background:var(--mark); min-width:4px}
 .fs-bar span:last-child{font-weight:700; font-variant-numeric:tabular-nums}
 .fs-amt{display:flex; align-items:center; gap:4px; justify-content:center; margin:6px 0 14px}
 .fs-amt span{font-size:34px; font-weight:800; color:var(--text-3)}
@@ -893,7 +895,7 @@ div.cx-area{cursor:default}
 .fs-split .fs-member{padding:8px 0}
 .fs-split input[type=number]{width:110px; padding:8px 10px; text-align:right}
 .fs-split .share-v{font-weight:700; font-variant-numeric:tabular-nums; min-width:76px; text-align:right}
-.fs-split input[type=checkbox]{width:22px; height:22px; accent-color:var(--brand); margin:0}
+.fs-split input[type=checkbox]{width:22px; height:22px; accent-color:var(--mark); margin:0}
 .step{display:flex; align-items:center; gap:6px}
 .step button{width:30px; height:30px; border-radius:50%; border:0; background:var(--surface-2); font-weight:800; cursor:pointer}
 .step b{min-width:18px; text-align:center}
@@ -961,8 +963,8 @@ div.cx-area{cursor:default}
 /* ---------- place search (Discover, posting a room, party addresses) */
 .ps-anchor{position:relative}
 .d-controls > *{min-width:0}
-.d-search{display:flex; align-items:center; gap:0; background:var(--surface); border-radius:16px; padding:6px; box-shadow:0 0 0 1.5px var(--line-2), 0 6px 20px rgba(30,26,43,.06)}
-.d-search:focus-within{box-shadow:0 0 0 2px var(--brand), 0 6px 20px rgba(30,26,43,.08)}
+.d-search{display:flex; align-items:center; gap:0; background:var(--surface); border-radius:16px; padding:6px; box-shadow:0 0 0 1.5px var(--line-2), 0 6px 20px rgba(28,25,23,.06)}
+.d-search:focus-within{box-shadow:0 0 0 2px var(--brand), 0 6px 20px rgba(28,25,23,.08)}
 .ds-city{display:flex; align-items:center; gap:4px; flex:none; padding-left:10px; color:var(--brand); position:relative}
 .ds-city select{border:0; background:transparent; box-shadow:none!important; font-weight:800; padding:10px 22px 10px 2px; max-width:140px; color:var(--text); cursor:pointer}
 /* The phone's own dropdown arrow sat on top of the city name ("Bengalurı"): draw our own, inside the padding. */
@@ -985,10 +987,10 @@ div.cx-area{cursor:default}
 .ds-radius button[aria-pressed="true"]{background:var(--ink); color:#fff}
 .ds-view{flex:none; display:flex; background:var(--surface-2); border-radius:12px; padding:3px; height:46px}
 .ds-view button{border:0; background:none; border-radius:9px; padding:0 14px; font-weight:700; font-size:var(--fs-s); color:var(--text-2); cursor:pointer}
-.ds-view button[aria-pressed="true"]{background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(30,26,43,.12)}
+.ds-view button[aria-pressed="true"]{background:#fff; color:var(--text); box-shadow:0 1px 4px rgba(28,25,23,.12)}
 @media (max-width:560px){ .d-row .ds-view{flex:1 1 0; min-width:0} .ds-view button{flex:1; padding:0 6px} .d-row #fSort{font-size:var(--fs-s); padding-left:10px} }
 .ps-list{position:absolute; left:0; right:0; top:calc(100% + 6px); z-index:60; background:var(--surface); border-radius:16px; padding:6px;
-  box-shadow:0 16px 40px rgba(30,26,43,.16), 0 0 0 1px var(--line); max-height:min(60vh, 420px); overflow:auto}
+  box-shadow:0 16px 40px rgba(28,25,23,.16), 0 0 0 1px var(--line); max-height:min(60vh, 420px); overflow:auto}
 .ps-item{display:flex; gap:12px; align-items:center; width:100%; border:0; background:none; text-align:left; padding:10px; border-radius:12px; cursor:pointer; color:var(--text)}
 .ps-item:hover, .ps-item.on{background:var(--surface-2)}
 .ps-item i{flex:none; width:36px; height:36px; border-radius:50%; background:var(--surface-2); display:grid; place-items:center; font-style:normal; font-size:16px}
@@ -1008,7 +1010,7 @@ div.cx-area{cursor:default}
 .gpin{position:absolute; transform:translate(-50%, -100%); cursor:pointer}
 .lpin{background:none; border:0} .lpin .gpin{position:relative; left:0; top:0}
 .gp{display:inline-flex; align-items:center; gap:5px; white-space:nowrap; background:#fff; color:var(--text); font:800 var(--fs-s) var(--body); padding:6px 10px; border-radius:999px;
-  box-shadow:0 2px 8px rgba(30,26,43,.25); position:relative; transition:transform .12s}
+  box-shadow:0 2px 8px rgba(28,25,23,.25); position:relative; transition:transform .12s}
 .gp::after{content:""; position:absolute; left:50%; bottom:-5px; width:10px; height:10px; background:inherit; transform:translateX(-50%) rotate(45deg); border-radius:2px; z-index:-1}
 .gp i{font-style:normal; font-size:11px; background:var(--brand-soft); color:var(--brand-2); border-radius:999px; padding:1px 6px}
 .gp.hot{background:var(--brand); color:#fff} .gp.hot i{background:rgba(255,255,255,.25); color:#fff}
@@ -1066,7 +1068,7 @@ body.typing .help-fab{display:none}
 .hb-log{padding:16px 14px 6px; display:flex; flex-direction:column; gap:10px}
 .hb-msg{display:flex; gap:8px; max-width:90%; align-items:flex-start}
 .hb-msg > div{padding:10px 13px; border-radius:16px; font-size:var(--fs-m); line-height:1.5; min-width:0}
-.hb-msg.bot > div{background:#fff; border-top-left-radius:4px; box-shadow:0 1px 3px rgba(30,26,43,.06)}
+.hb-msg.bot > div{background:#fff; border-top-left-radius:4px; box-shadow:0 1px 3px rgba(28,25,23,.06)}
 .hb-msg.usr{align-self:flex-end; max-width:82%} .hb-msg.usr > div{background:var(--brand); color:#fff; border-top-right-radius:4px; overflow-wrap:anywhere}
 .hb-av{flex:none; width:28px; height:28px; border-radius:50%; background:var(--brand-soft); color:var(--brand); display:grid; place-items:center; margin-top:2px}
 .hb-chips{display:flex; flex-wrap:wrap; gap:6px; padding:2px 14px 16px 50px}
@@ -1101,13 +1103,13 @@ body.typing .help-fab{display:none}
 .pt-occ{display:grid; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); gap:8px; margin:6px 0 16px}
 .pt-occ button{border:0; border-radius:14px; background:var(--surface-2); padding:10px 6px; font-size:var(--fs-xs); font-weight:700; cursor:pointer; line-height:1.25; color:var(--text-2)}
 .pt-occ button i{display:block; font-style:normal; font-size:24px; margin-bottom:3px}
-.pt-occ button[aria-pressed="true"]{background:var(--brand-soft); color:var(--brand-2); box-shadow:inset 0 0 0 2px var(--brand)}
+.pt-occ button[aria-pressed="true"]{background:var(--brand-soft); color:var(--brand-2); box-shadow:inset 0 0 0 2px var(--mark)}
 .pt-where{display:grid; gap:8px; margin:6px 0 12px}
 .pt-wopt{display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border-radius:14px; background:var(--surface-2); cursor:pointer}
 .pt-wopt input{position:absolute; opacity:0; pointer-events:none}
 .pt-wopt .ic{font-size:22px; line-height:1.2} .pt-wopt b{display:block} .pt-wopt small{display:block; color:var(--text-2); font-size:var(--fs-s); line-height:1.4}
-.pt-wopt:has(input:checked){background:var(--brand-soft); box-shadow:inset 0 0 0 2px var(--brand)}
-.pt-wopt:has(input:focus-visible){outline:2px solid var(--brand); outline-offset:2px}
+.pt-wopt:has(input:checked){background:var(--brand-soft); box-shadow:inset 0 0 0 2px var(--mark)}
+.pt-wopt:has(input:focus-visible){outline:2px solid var(--mark); outline-offset:2px}
 .pt-tell{margin:4px 0 0}
 .pt-extra{margin:14px 0 0; border-radius:14px; background:var(--surface-2); padding:4px 14px 6px}
 .pt-extra summary{cursor:pointer; font-weight:700; padding:10px 0; color:var(--text-2)}
@@ -1115,11 +1117,11 @@ body.typing .help-fab{display:none}
 .pt-near .seg input{position:absolute; opacity:0; pointer-events:none}
 .pt-near .seg span{display:inline-block; padding:8px 14px; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px var(--hair); font-weight:600; font-size:var(--fs-s)}
 .pt-near .seg input:checked + span{background:var(--ink); color:#fff; box-shadow:none}
-.pt-near .seg input:focus-visible + span{outline:2px solid var(--brand); outline-offset:2px}
+.pt-near .seg input:focus-visible + span{outline:2px solid var(--mark); outline-offset:2px}
 .pt-near .lbl{display:block; font-weight:700; font-size:var(--fs-s); margin-bottom:6px}
 .pt-covers{display:flex; flex-wrap:wrap; gap:6px 14px} .pt-covers .chk{display:flex; gap:6px; align-items:center; font-size:var(--fs-s)}
 .pt-money{margin:0 0 14px; padding:10px 12px; border-radius:12px; background:var(--brand-soft); color:var(--brand-2); font-size:var(--fs-s); font-weight:600}
-.pt-near input[type=range]{width:100%; accent-color:var(--brand)}
+.pt-near input[type=range]{width:100%; accent-color:var(--mark)}
 .near-code{display:grid; gap:2px; margin:14px 0 0; padding:12px 14px; border-radius:14px; background:var(--brand-soft); color:var(--brand-2); text-align:center}
 .near-code span{display:flex; gap:6px; align-items:center; justify-content:center; font-weight:700; font-size:var(--fs-s)}
 .near-code b{font-size:28px; letter-spacing:.18em; color:var(--ink); font-family:ui-monospace,Menlo,monospace} .near-code small{font-size:var(--fs-xs)}
@@ -1131,7 +1133,7 @@ body.typing .help-fab{display:none}
 .pt-door{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:0 0 6px; padding:10px 12px; border-radius:14px; background:var(--surface-2)}
 .pt-door label{display:flex; gap:6px; align-items:center; font-weight:700; font-size:var(--fs-s)} .pt-door input{flex:1; min-width:110px; text-transform:uppercase; letter-spacing:.12em}
 .report-why{display:grid; gap:8px}
-.near-in{box-shadow:inset 0 0 0 2px var(--brand)} .near-in .pt-row{margin-top:10px} .near-call{display:flex; gap:8px; margin-top:12px}
+.near-in{box-shadow:inset 0 0 0 2px var(--mark)} .near-in .pt-row{margin-top:10px} .near-call{display:flex; gap:8px; margin-top:12px}
 .near-ask h2{font-size:var(--fs-l); margin:0 0 10px} .near-wait p{margin:6px 0 10px; color:var(--text-2)}
 .pt-plus small{display:block; font-size:var(--fs-xs); color:var(--text-2)}
 .pt-reqs .pr-count{float:right; font-size:var(--fs-s); font-weight:600; color:var(--text-2); letter-spacing:0; text-transform:none}
@@ -1178,7 +1180,7 @@ body.typing .help-fab{display:none}
 .pt-tag{margin:0 auto; max-width:30em; opacity:.92; position:relative}
 .pt-by{margin:14px 0 0; font-size:var(--fs-s); opacity:.85; position:relative}
 .pt-conf i{position:absolute; width:12px; height:6px; border-radius:3px; background:var(--c); opacity:.7; transform:rotate(var(--r))}
-.pt-card{background:var(--surface); border-radius:20px; padding:18px; margin-top:12px; box-shadow:0 2px 10px rgba(30,26,43,.05)}
+.pt-card{background:var(--surface); border-radius:20px; padding:18px; margin-top:12px; box-shadow:0 2px 10px rgba(28,25,23,.05)}
 .pt-card h2{font-size:var(--fs-l); margin:0 0 12px}
 .pt-row{display:flex; gap:14px; padding:10px 0} .pt-row + .pt-row{border-top:1px solid var(--line)}
 .pt-ic{flex:none; width:40px; height:40px; border-radius:12px; background:var(--surface-2); display:grid; place-items:center; font-size:20px}
@@ -1238,9 +1240,9 @@ body.typing .help-fab{display:none}
   --teal-95:#E9F9F1; --teal-96:#EFFAFA; --teal-97:#F7FAF9; --teal-99:#FBFDFC;
 }
 body.app{background:var(--app-bg)}
-input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],input[type=search],select,textarea{
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=time],input[type=datetime-local],input[type=search],select,textarea{
   background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
-input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--brand), 0 0 0 4px rgba(238,100,104,.12)}
+input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--brand), 0 0 0 4px rgba(194,65,12,.12)}
 .chip, .area-chips button{background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
 .chip:has(input:checked), .area-chips button[aria-pressed="true"]{box-shadow:none}
 .btn-ghost{background:#fff; box-shadow:inset 0 0 0 1px var(--hair)}
@@ -1307,12 +1309,12 @@ input:focus,select:focus,textarea:focus{box-shadow:inset 0 0 0 2px var(--brand),
 #appMain > section:not([hidden]){animation:screenIn .16s ease both}   /* a quick settle, not a wait: .28s made every tab feel slow */
 @keyframes screenIn{from{opacity:0; transform:translateY(6px)}}
 .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px)); max-width:min(92vw,460px); width:max-content; border-radius:16px; padding:12px 16px;
-  font-size:var(--fs-m); line-height:1.4; box-shadow:0 12px 32px rgba(30,26,43,.28); background:rgba(30,26,43,.94); animation:toastIn .3s cubic-bezier(.2,.8,.2,1)}
+  font-size:var(--fs-m); line-height:1.4; box-shadow:0 12px 32px rgba(28,25,23,.28); background:rgba(28,25,23,.94); animation:toastIn .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes toastIn{from{opacity:0; transform:translate(-50%, 14px)}}
 @media (min-width:721px){ .toast{bottom:28px} }
 
 /* account: a real avatar */
-.profile .me{display:grid; place-items:center; flex:none; background:var(--grad); color:#fff; box-shadow:0 6px 16px rgba(238,100,104,.3)}
+.profile .me{display:grid; place-items:center; flex:none; background:var(--grad); color:#fff; box-shadow:0 6px 16px rgba(194,65,12,.3)}
 
 /* listing dialog: details sit on soft panels */
 .kv div{box-shadow:none; background:var(--surface-2); border-radius:12px; padding:10px 12px; margin:4px 0}
@@ -1369,7 +1371,7 @@ a.w-link{text-decoration:none}
   linear-gradient(28deg, transparent 49%, var(--amber-83) 49% 52%, transparent 52%),
   var(--green-91)}
 .wm-area{position:absolute; left:50%; top:44%; width:130px; height:130px; transform:translate(-50%,-50%); border-radius:50%;
-  background:rgba(238,100,104,.16); box-shadow:inset 0 0 0 2px rgba(238,100,104,.6)}
+  background:rgba(194,65,12,.16); box-shadow:inset 0 0 0 2px rgba(194,65,12,.6)}
 .wm-pin{position:absolute; left:50%; top:44%; transform:translate(-50%,-100%); filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
 .wm-cities{position:absolute; left:12px; right:12px; bottom:12px; display:flex; flex-wrap:wrap; gap:6px}
 .wm-cities span{background:#fff; border-radius:999px; padding:4px 10px; font-size:var(--fs-xs); font-weight:700; box-shadow:0 1px 3px rgba(60,40,30,.12)}
@@ -1423,7 +1425,7 @@ a.w-link{text-decoration:none}
 .h-facts li{display:grid; grid-template-columns:44px 1fr; align-items:center; gap:10px; font-size:var(--fs-s); color:var(--text)}
 .h-facts b{font-size:var(--fs-m); color:var(--teal)}
 .h-facts i{grid-column:2; height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden; margin-top:-4px}
-.h-facts i::after{content:""; display:block; height:100%; width:var(--w); background:var(--brand); border-radius:3px}
+.h-facts i::after{content:""; display:block; height:100%; width:var(--w); background:var(--mark); border-radius:3px}
 .h-note{font-size:var(--fs-xs); color:var(--text-3); margin:14px 0 16px}
 .h-share{margin-top:10px}
 .h-sec{padding-block:64px 8px}
@@ -1515,7 +1517,7 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 .fs-kindopt{display:flex; gap:10px; align-items:flex-start; padding:12px; border-radius:14px; cursor:pointer; box-shadow:inset 0 0 0 1.5px var(--line-2)}
 .fs-kindopt input{position:absolute; opacity:0; pointer-events:none}
 .fs-kindopt .ic{font-size:24px} .fs-kindopt b{display:block} .fs-kindopt small{display:block; color:var(--text-2); font-size:var(--fs-xs)}
-.fs-kindopt:has(input:checked){box-shadow:inset 0 0 0 2px var(--brand); background:var(--brand-soft)}
+.fs-kindopt:has(input:checked){box-shadow:inset 0 0 0 2px var(--mark); background:var(--brand-soft)}
 .chip[aria-pressed="true"]{background:var(--ink); color:#fff; box-shadow:none}
 /* Pays on time */
 .ontime{display:inline-flex; align-items:center; gap:3px; margin-left:4px; font-size:11.5px; font-weight:800; padding:2px 8px; border-radius:999px; background:var(--green-93); color:var(--teal-29);
@@ -1539,10 +1541,10 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 #gdTitle:focus, #agTitle:focus{outline:none}
 #dlgGender .gd-opts .btn{margin:0}
 .age-tick{display:flex; align-items:center; gap:10px; margin:4px 0 14px; font-weight:700; cursor:pointer}
-.age-tick input{width:20px; height:20px; accent-color:var(--brand); flex:none}
+.age-tick input{width:20px; height:20px; accent-color:var(--mark); flex:none}
 .age-tick.bad, .age-tick:has(input.bad){color:var(--danger, var(--red-46))}
 #dlgAge .age-tick{justify-content:center; margin:6px 0 16px}
-.gd-opts .btn[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--brand); color:var(--brand)}
+.gd-opts .btn[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--mark); color:var(--brand)}
 .show-to{margin-top:16px; padding-top:14px; border-top:1px solid var(--hair); display:grid; gap:14px}
 .st-row > span{display:block; font-weight:700; font-size:var(--fs-s); margin-bottom:6px}
 .seg{display:flex; flex-wrap:wrap; gap:6px}
@@ -1581,7 +1583,7 @@ html:has(> body.app){background:var(--app-bg)}
   background:var(--grad); box-shadow:0 14px 34px rgba(60,40,30,.22);
   transition:transform .15s}
 .w-quiz:hover{transform:translateY(-2px)}
-.w-quiz:focus-visible{outline:3px solid var(--brand); outline-offset:3px}
+.w-quiz:focus-visible{outline:3px solid var(--mark); outline-offset:3px}
 .wq-faces{display:flex; flex:none}
 .wq-faces i{display:grid; place-items:center; width:38px; height:38px; margin-right:-10px; border-radius:50%; background:#fff; font-style:normal; font-size:20px;
   box-shadow:0 2px 6px rgba(0,0,0,.15)}
@@ -1611,7 +1613,7 @@ html:has(> body.app){background:var(--app-bg)}
 .wi-emoji{font-size:30px; flex:none}
 .w-invite .linkbtn{color:var(--brand); padding:0 4px}
 .qz-bar{height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden; margin:2px 0 18px}
-.qz-bar i{display:block; height:100%; background:var(--brand); border-radius:inherit; transition:width .3s}
+.qz-bar i{display:block; height:100%; background:var(--mark); border-radius:inherit; transition:width .3s}
 .qz-intro{background:var(--brand-soft); color:var(--brand-2); font-weight:700; border-radius:12px; padding:10px 14px; margin:0 0 14px; font-size:var(--fs-m)}
 .qz-q{font-size:22px; margin:0 0 6px}
 .vibe-dlg .mbody{display:flex; flex-direction:column; align-items:center}
@@ -1628,12 +1630,12 @@ html:has(> body.app){background:var(--app-bg)}
 .vt-line span{flex:1} .vt-line small{display:block; font-size:var(--fs-xs); font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em}
 .vt-line b{font-size:var(--fs-m)} .vt-line em{font-style:normal; font-weight:800; color:var(--brand-2)}
 .pp-card{position:relative; margin:16px 0 4px; padding:14px 40px 14px 14px; border-radius:18px; background:var(--brand-soft);
-  box-shadow:inset 0 0 0 1px rgba(238,100,104,.18)}
+  box-shadow:inset 0 0 0 1px rgba(194,65,12,.18)}
 .pp-main{display:flex; gap:14px; align-items:center; border:0; background:none; padding:0; text-align:left; cursor:pointer; font:inherit; color:var(--text); width:100%}
 .pp-main b{display:block; font-size:var(--fs-m)} .pp-main small{display:block; font-size:var(--fs-s); color:var(--text-2); margin-top:2px}
 .pp-main em{display:block; font-style:normal; font-weight:800; color:var(--brand-2); font-size:var(--fs-s); margin-top:6px}
 .pp-ring{flex:none; width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
-  background:conic-gradient(var(--teal) calc(var(--p) * 1%), rgba(238,100,104,.15) 0)}
+  background:conic-gradient(var(--teal) calc(var(--p) * 1%), rgba(194,65,12,.15) 0)}
 .pp-ring b{display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:#fff; font-size:13px; color:var(--teal)}
 
 .acc-complete{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; padding-top:12px; border-top:1px solid var(--hair); font-size:var(--fs-s); color:var(--text-2)}
@@ -1672,7 +1674,7 @@ html:has(> body.app){background:var(--app-bg)}
 .plans-free{display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:14px; background:var(--brand-soft); color:var(--brand-2); font-size:var(--fs-m)}
 .pass-nudge{position:relative; margin:16px 0 4px}
 .pn-main{display:flex; gap:12px; align-items:flex-start; width:100%; padding:14px 40px 14px 14px; border:0; border-radius:18px; cursor:pointer; text-align:left; font:inherit;
-  color:var(--text); background:var(--brand-soft); box-shadow:inset 0 0 0 1px rgba(238,100,104,.22)}
+  color:var(--text); background:var(--brand-soft); box-shadow:inset 0 0 0 1px rgba(194,65,12,.22)}
 .pn-ic{font-size:28px; flex:none}
 .pn-main b{display:block; font-size:var(--fs-m)} .pn-main small{display:block; font-size:var(--fs-s); color:var(--text-2); margin-top:2px}
 .pn-main em{display:inline-block; margin-top:6px; font-style:normal; font-weight:800; color:var(--accent); font-size:var(--fs-s)}
@@ -1735,7 +1737,7 @@ html.on-hold, html.on-hold body{overflow:hidden}
 @media (max-width:370px){ .d-row .btn span{display:none} .d-row .btn{width:46px; padding:0; justify-content:center} }
 /* The listing's bottom bar: rent and the main action, in reach however long the listing is. */
 .l-bar{position:sticky; bottom:0; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; margin:18px -20px -28px;
-  padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); background:var(--surface); box-shadow:0 -1px 0 var(--line), 0 -8px 24px rgba(30,26,43,.06)}
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); background:var(--surface); box-shadow:0 -1px 0 var(--line), 0 -8px 24px rgba(28,25,23,.06)}
 .l-bar-price{min-width:0} .l-bar-price b{font-size:var(--fs-l); font-family:var(--display); letter-spacing:-.02em} .l-bar-price small{color:var(--text-2); font-size:var(--fs-s); margin-left:3px}
 /* Phones: "/month + expenses" broke mid-phrase with "expenses" alone on a second line. Keep it whole, under the price. */
 @media (max-width:440px){ .l-bar-price small{display:block; margin:0; white-space:nowrap} }
@@ -1774,7 +1776,7 @@ html.on-hold, html.on-hold body{overflow:hidden}
 .ps-steps li{display:flex; align-items:center; gap:8px; min-width:0; padding:8px 10px; border-radius:12px; background:var(--surface-2); color:var(--text-2); font-size:var(--fs-s); font-weight:700}
 .ps-steps li span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis} .ps-steps li em{font-style:normal} .ps-steps li b{display:none; font-weight:inherit}
 .ps-steps li i{display:grid; place-items:center; width:24px; height:24px; border-radius:50%; background:var(--line-2); color:var(--text-2); font-style:normal; font-size:12.5px; flex:none}
-.ps-steps li.now{background:var(--brand-soft); color:var(--brand-2)} .ps-steps li.now i{background:var(--brand); color:#fff}
+.ps-steps li.now{background:var(--brand-soft); color:var(--brand-2)} .ps-steps li.now i{background:var(--mark); color:#fff}
 .ps-steps li.done{cursor:pointer; color:var(--text)} .ps-steps li.done i{background:var(--ok); color:#fff}
 @media (max-width:480px){ .ps-steps li{padding:8px; gap:6px; font-size:var(--fs-s)} .ps-steps li em{display:none} .ps-steps li b{display:inline} }
 /* 360-wide phones: "3 Private" was cut to "Priva…". Smaller number circles and padding give the word room. */
@@ -1801,7 +1803,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .ob-prog{flex:1; display:flex; flex-direction:column; gap:7px; min-width:0}
 .ob-segs{display:flex; gap:6px}
 .ob-segs i{flex:1; height:5px; border-radius:999px; background:rgba(60,40,30,.08); overflow:hidden}
-.ob-segs i b{display:block; height:100%; width:0; background:var(--brand); border-radius:inherit; transition:width .35s}
+.ob-segs i b{display:block; height:100%; width:0; background:var(--mark); border-radius:inherit; transition:width .35s}
 .ob-segs i.done b{width:100%!important}
 .ob .ob-count{font-size:var(--fs-s); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .ob-intro h1{font-size:clamp(28px, 7vw, 40px)}
@@ -1847,7 +1849,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .qm{margin:10px 0 12px; padding:12px 14px; border-radius:14px; background:var(--surface-2)}
 .qm-head{display:flex; justify-content:space-between; gap:10px; align-items:baseline; font-size:var(--fs-m)} .qm-head span{color:var(--text-2); font-size:var(--fs-s); text-align:right}
 .qm-bar{height:8px; border-radius:999px; background:var(--line-2); margin:8px 0 10px; overflow:hidden} .qm-bar i{display:block; height:100%; border-radius:999px; background:var(--ok); transition:width .4s}
-.qm-bar.lo i{background:var(--accent)} .qm-bar.mid i{background:var(--mid)}
+.qm-bar.lo i{background:var(--mark)} .qm-bar.mid i{background:var(--mid)}
 .qm-tips{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
 .qm-tips button{border:0; background:var(--surface); color:var(--text); border-radius:999px; padding:7px 11px; font:inherit; font-size:var(--fs-s); font-weight:700; cursor:pointer; box-shadow:0 0 0 1px var(--line-2) inset}
 .qm-tips button::before{content:"+ "; color:var(--brand)}
@@ -1861,7 +1863,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .cmp th, .cmp td{padding:10px 12px; text-align:left; vertical-align:top; box-shadow:0 -1px 0 var(--line); min-width:150px}
 .cmp th:first-child, .cmp td:first-child{position:sticky; left:0; z-index:1; background:var(--bg); font-weight:700; color:var(--text-2); width:112px; font-size:var(--fs-s)}
 .cmp thead th{box-shadow:none; font-weight:800; cursor:pointer; line-height:1.3}
-.cmp thead th:focus-visible{outline:3px solid var(--brand); outline-offset:-3px; border-radius:12px}
+.cmp thead th:focus-visible{outline:3px solid var(--mark); outline-offset:-3px; border-radius:12px}
 .cmp thead th img, .cmp thead th .art{display:block; width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; margin-bottom:8px; background:var(--surface-2); overflow:hidden; position:relative}
 .cmp thead th small{display:block; font-weight:500; color:var(--text-3); font-size:var(--fs-xs)}
 .cmp td.best{color:var(--teal-29); font-weight:800} .cmp td.best::after{content:" ✓"}
@@ -1874,8 +1876,8 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .seek-card .meta2{display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:8px; font-size:var(--fs-xs); color:var(--text-3)} .seek-card .meta2 b{color:var(--text-2); font-weight:700}
 .esc-inv{display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin:12px 0 0; font-size:var(--fs-s); color:var(--text-2)}
 .esc-inv b{color:var(--text)} .esc-inv .tip{flex-basis:100%; font-size:var(--fs-s); color:var(--text-3)}
-.seek-card .sel{position:absolute; top:12px; right:12px; width:26px; height:26px; accent-color:var(--brand); cursor:pointer}
-.seek-card{position:relative} .seek-card.picked{box-shadow:0 0 0 2px var(--brand), var(--card-shadow, 0 6px 20px rgba(30,26,43,.06))}
+.seek-card .sel{position:absolute; top:12px; right:12px; width:26px; height:26px; accent-color:var(--mark); cursor:pointer}
+.seek-card{position:relative} .seek-card.picked{box-shadow:0 0 0 2px var(--mark), var(--card-shadow, 0 6px 20px rgba(28,25,23,.06))}
 .esc-bar{position:sticky; bottom:calc(70px + env(safe-area-inset-bottom,0px)); z-index:5; display:flex; justify-content:space-between; align-items:center; gap:10px; margin:0 0 14px; padding:10px 12px 10px 16px; border-radius:16px; background:var(--teal); color:#fff; box-shadow:0 10px 30px rgba(60,40,30,.25)}
 @media (min-width:721px){ .esc-bar{bottom:16px} }
 .esc-bar b{font-size:var(--fs-m)} .esc-bar .btn-ghost{background:rgba(255,255,255,.18); color:#fff}
@@ -1904,7 +1906,7 @@ fieldset.ps{border:0; margin:0; padding:0; min-width:0} fieldset.ps[hidden]{disp
 .pk-box.done{background:var(--ok-soft); color:var(--ok)}
 .mk-nudge{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0 0; padding:10px 12px; border-radius:12px; background:var(--accent-soft); font-size:var(--fs-s)}
 .mk-nudge b{color:var(--text)} .mk-nudge .btn{margin-left:auto}
-.sale-bundle{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:#fff; color:var(--text); box-shadow:0 6px 20px rgba(30,26,43,.08)}
+.sale-bundle{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:14px 0 4px; padding:14px 16px; border-radius:16px; background:#fff; color:var(--text); box-shadow:0 6px 20px rgba(28,25,23,.08)}
 .sale-bundle b{font-size:var(--fs-l)} .sale-bundle small{display:block; color:var(--text-2); font-size:var(--fs-s)} .sale-bundle .btn{margin-left:auto}
 .mk-bundle-tag{display:inline-block; padding:3px 9px; border-radius:999px; font-size:var(--fs-xs); font-weight:800; background:var(--surface-2); color:var(--ink); margin-right:6px}
 /* Flatsplits: edited marks, undo, history, export, the invite page */
@@ -1957,9 +1959,9 @@ a{color:var(--text)}
 .btn-primary:hover, .btn-accent:hover{background:var(--ink-2); filter:none}
 .btn-ghost{background:#fff; color:var(--text); box-shadow:inset 0 0 0 1.5px var(--line)}
 .btn-ghost:hover{background:var(--surface-2)}
-input[type=text],input[type=tel],input[type=number],input[type=date],input[type=datetime-local],select,textarea{border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=time],input[type=datetime-local],select,textarea{border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
 input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
-:focus-visible{outline-color:var(--ink)}
+:focus-visible{outline-color:var(--mark)}
 .chip{background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
 .chip:has(input:checked), .chip[aria-pressed="true"], .area-chips button[aria-pressed="true"], .ds-look button[aria-pressed="true"], .seg button[aria-pressed="true"],
 .ds-radius button[aria-pressed="true"], .fs-cats button[aria-pressed="true"]{background:var(--ink); color:#fff; box-shadow:none}
@@ -1972,7 +1974,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 .price-pill, .tag{border-radius:999px}
 
 /* header and the floating bottom bar */
-.app-head{background:rgba(253,248,241,.92); box-shadow:none}
+.app-head{background:rgba(255,255,255,.92); box-shadow:none}
 .me, .hd-ic[aria-current="true"]{background:var(--ink); color:#fff}
 .hd-ic{background:#fff}
 @media (max-width:720px){
@@ -2047,7 +2049,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 .ds-q input, .ds-q input:focus{background:transparent!important}
 /* Top bar: sits on the page with no line under it; round white buttons; a soft shade only once you scroll. */
 .app-head{background:transparent; box-shadow:none; transition:background .2s, box-shadow .2s}
-.app-head.scrolled{background:rgba(253,248,241,.94); box-shadow:0 8px 24px rgba(60,40,30,.08)}
+.app-head.scrolled{background:rgba(255,255,255,.94); box-shadow:0 8px 24px rgba(60,40,30,.08)}
 .app-head .bar{height:68px; gap:10px}
 .app-head .logo i{width:44px; height:44px; border-radius:14px; background:#fff; box-shadow:0 6px 16px rgba(60,40,30,.10)}
 .app-head .logo i svg{width:32px; height:32px}
@@ -2059,7 +2061,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 .hd-ic .badge{background:var(--coral); color:var(--text); box-shadow:0 0 0 2px var(--bg)}
 .app-head .me{width:44px; height:44px; background:var(--ink); color:#fff; font-size:var(--fs-m); box-shadow:0 6px 16px rgba(20,20,20,.18)}
 @media (max-width:420px){ .app-head .wordmark{display:none} }
-@media (max-width:720px){ .app-head{background:var(--bg)} .app-head.scrolled{background:rgba(253,248,241,.96)} }
+@media (max-width:720px){ .app-head{background:var(--bg)} .app-head.scrolled{background:rgba(255,255,255,.96)} }
 
 /* Sign-in page */
 .w-top{padding-block:16px}
@@ -2083,7 +2085,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
 .role:nth-of-type(3){grid-column:1 / -1; background:var(--mint); min-height:0; display:grid; grid-template-columns:44px 1fr; align-items:center}
 .role .ic{width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,.7); color:var(--text)}
 .role b{font-size:var(--fs-m); font-weight:700; color:var(--text); line-height:1.2}
-.role span{color:var(--text-2); font-size:13px; line-height:1.35}
+.role span{color:var(--text-2); font-size:var(--fs-xs); line-height:1.35}
 .role > span:last-of-type{padding-right:26px}
 .role::after{position:absolute; right:12px; bottom:12px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.75)
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23161514' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17L17 7M9 7h8v8'/%3E%3C/svg%3E") no-repeat center/14px;
@@ -2095,7 +2097,7 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") no-repeat center/14px;
   box-shadow:none}
 .role:has(input:checked) .ic{background:#fff; color:var(--text)}
-.role:has(input:focus-visible){outline:2px solid var(--ink); outline-offset:3px; border-radius:24px}
+.role:has(input:focus-visible){outline:2px solid var(--mark); outline-offset:3px; border-radius:24px}
 /* number with +91, the 18+ tick, the buttons */
 .ph-in{display:flex; align-items:center; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1.5px var(--line)}
 .ph-in:focus-within{box-shadow:0 0 0 2px var(--ink)}
@@ -2126,7 +2128,6 @@ input:focus,select:focus,textarea:focus{box-shadow:0 0 0 2px var(--ink)}
   .roles{margin:14px 0 8px}
   .role{min-height:118px; justify-content:space-between}
   .role:nth-of-type(3){min-height:0}
-  .role b{font-size:17px}
   .role > span:last-of-type > span{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
   .role-hint{display:block; margin:0 4px 14px; min-height:20px; font-size:var(--fs-s); color:var(--text-2); line-height:1.4}
   .role-hint:empty::before{content:"Pick one. You can switch any time from your account."; color:var(--text-3)}
@@ -2194,7 +2195,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .my-passes :is(b, em, small){color:inherit} .my-passes small{color:var(--text-2)}
 .mp-more{background:#fff; color:var(--text)}
 .upd-bar{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(96px + env(safe-area-inset-bottom,0px)); z-index:60; width:min(92vw,460px);
-  display:flex; align-items:center; gap:12px; padding:12px 12px 12px 16px; border-radius:18px; background:var(--ink); color:#fff; box-shadow:0 12px 32px rgba(30,26,43,.28)}
+  display:flex; align-items:center; gap:12px; padding:12px 12px 12px 16px; border-radius:18px; background:var(--ink); color:#fff; box-shadow:0 12px 32px rgba(28,25,23,.28)}
 .upd-bar > span{flex:1; min-width:0} .upd-bar b{display:block; font-size:var(--fs-m)} .upd-bar small{display:block; font-size:var(--fs-xs); color:rgba(255,255,255,.85)}
 .upd-bar .upd-go{background:#fff; color:var(--text); flex:none}
 .upd-bar .upd-x{flex:none; width:32px; height:32px; display:grid; place-items:center; border:0; border-radius:50%; background:rgba(255,255,255,.14); color:#fff; cursor:pointer}
@@ -2205,7 +2206,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 #loginForm .lg-step[hidden]{display:none}
 .lg-top{display:flex; align-items:center; gap:12px; margin:0 0 14px}
 .lg-back{flex:none; width:38px; height:38px; border-radius:50%; border:0; background:var(--surface-2); color:var(--text); display:grid; place-items:center; cursor:pointer}
-.lg-prog{flex:1; height:6px; border-radius:999px; background:rgba(28,25,23,.10); overflow:hidden} .lg-prog i{display:block; height:100%; width:25%; border-radius:999px; background:var(--ink); transition:width .3s ease}
+.lg-prog{flex:1; height:6px; border-radius:999px; background:rgba(28,25,23,.10); overflow:hidden} .lg-prog i{display:block; height:100%; width:25%; border-radius:999px; background:var(--mark); transition:width .3s ease}
 .lg-count{flex:none; font-size:var(--fs-xs); font-weight:700; color:var(--text-2)}
 .lg-eb{margin:0 0 4px}
 #loginForm .lg-step h2{margin-top:0; margin-bottom:12px}
@@ -2214,7 +2215,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .lg-sx{position:relative; display:grid; place-items:center; min-height:84px; border-radius:18px; background:#fff; box-shadow:inset 0 0 0 1px var(--line); cursor:pointer; font-weight:700; font-size:var(--fs-l)}
 .lg-sx input{position:absolute; opacity:0; pointer-events:none}
 .lg-sx:has(input:checked){background:var(--ink); color:#fff; box-shadow:none}
-.lg-sx:has(input:focus-visible){outline:3px solid var(--brand); outline-offset:2px}
+.lg-sx:has(input:focus-visible){outline:3px solid var(--mark); outline-offset:2px}
 .lg-have{display:block; margin:12px auto 0; font-weight:700; color:var(--text)}
 .lg-live{margin-top:8px}
 /* The opening story and the welcome (Kamal, 15 Nov): full screen, the page beige, our type and colours, our avatars. */
@@ -2223,7 +2224,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .story-dlg[open], .hello-dlg[open]{display:flex}
 .story-dlg::backdrop, .hello-dlg::backdrop{background:var(--bg)}
 .st-top{display:flex; align-items:center; gap:14px}
-.st-dots{flex:1; display:flex; gap:6px} .st-dots i{flex:1; height:4px; border-radius:999px; background:rgba(28,25,23,.12)} .st-dots i.on, .st-dots i.done{background:var(--ink)}
+.st-dots{flex:1; display:flex; gap:6px} .st-dots i{flex:1; height:4px; border-radius:999px; background:rgba(28,25,23,.12)} .st-dots i.on, .st-dots i.done{background:var(--mark)}
 .st-skip{font-weight:700; color:var(--text)}
 .st-stage{flex:1; display:flex; align-items:center}
 .st-slide{width:100%; animation:screenIn .35s ease both}
@@ -2248,13 +2249,13 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 #dlgFilters .mbody{background:var(--bg)}
 #filterForm .f-card{background:var(--surface); border-radius:20px; padding:14px 16px 16px; margin:0 0 12px; box-shadow:0 2px 10px rgba(60,40,30,.05)}
 #filterForm .f-card > .section-h:first-child, #filterForm .f-card > h3:first-child{margin-top:0}
-#filterForm .f-card .section-h{font-size:var(--fs-xs); letter-spacing:.1em}
+#filterForm .f-card .section-h{font-size:var(--fs-xs)}
 .f-range{margin:2px 0 12px} .f-range-val{font-weight:800; font-size:var(--fs-l); margin:0 0 10px}
 .f-range-in{position:relative; height:28px} .f-range-in::before{content:""; position:absolute; left:0; right:0; top:12px; height:4px; border-radius:999px; background:rgba(28,25,23,.12)}
-.f-range-fill{position:absolute; top:12px; height:4px; border-radius:999px; background:var(--ink)}
+.f-range-fill{position:absolute; top:12px; height:4px; border-radius:999px; background:var(--mark)}
 .f-range-in input{position:absolute; inset:0; width:100%; margin:0; background:none; pointer-events:none; -webkit-appearance:none; appearance:none; height:28px}
-.f-range-in input::-webkit-slider-thumb{-webkit-appearance:none; pointer-events:auto; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid var(--ink); box-shadow:0 2px 6px rgba(0,0,0,.18); cursor:pointer}
-.f-range-in input::-moz-range-thumb{pointer-events:auto; width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--ink); cursor:pointer}
+.f-range-in input::-webkit-slider-thumb{-webkit-appearance:none; pointer-events:auto; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid var(--mark); box-shadow:0 2px 6px rgba(0,0,0,.18); cursor:pointer}
+.f-range-in input::-moz-range-thumb{pointer-events:auto; width:20px; height:20px; border-radius:50%; background:#fff; border:3px solid var(--mark); cursor:pointer}
 .f-range-in input::-webkit-slider-runnable-track{background:none} .f-range-in input::-moz-range-track{background:none}
 .f-range-ends{display:flex; justify-content:space-between; font-size:var(--fs-xs); color:var(--text-2)}
 #dlgFilters .f-actions{background:var(--bg); box-shadow:none; bottom:-28px} #dlgFilters .f-actions #fApply{flex:1}
@@ -2381,7 +2382,7 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .pn-card{display:flex; flex-direction:column; width:100%; padding:0; border:0; border-radius:var(--r-card); overflow:hidden; background:var(--surface); box-shadow:var(--card-shadow);
   text-align:left; font:inherit; color:var(--text); cursor:pointer; transition:transform .15s, box-shadow .15s}
 .pn-card:hover{transform:translateY(-2px); box-shadow:0 18px 40px rgba(60,40,30,.14)} .pn-card:active{transform:scale(.99)}
-.pn-card:focus-visible{outline:3px solid var(--ink); outline-offset:3px}
+.pn-card:focus-visible{outline:3px solid var(--mark); outline-offset:3px}
 .pn-art{position:relative; display:flex; align-items:center; gap:14px; padding:16px 18px; overflow:hidden; background:var(--lav)}
 .pn-list .pn-card:nth-child(3n+2) .pn-art{background:var(--butter)} .pn-list .pn-card:nth-child(3n) .pn-art{background:var(--mint)}
 .pn-art::before{content:""; position:absolute; right:-34px; top:-54px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.34)}
@@ -2491,79 +2492,109 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .bl-list small{display:block; color:var(--text-3); font-size:var(--fs-xs)}
 
 /* =====================================================================================================
-   The look of 16 Nov 2026 (Kamal: "copy style and colors of dwelo. Change the orange color to light red color",
-   and after seeing five pages of it: "Do it for the entire app and website"). Another app's palette and
-   lettering on our own screens and words:
-   - a cream page, white cards, warm hairlines and shadows;
-   - one light red (--red) where orange was the accent: the main buttons (dark words on them, 5.4:1; white words
-     would be 3.1:1), the dash in front of the small labels, counts, and the screen you're on in the bottom bar.
-     Small red text uses deeper shades of the same red: --red-text on white and cream, --red-deep on the tints;
-   - the logo is not part of this: it keeps its own drawing and colours (Kamal, 16 Nov: "App and website logo to
-     stay the same as earlier", "logo color to stay same as earlier"), so the orange lives only in the logo's
-     files (icons/), the tab icon and the soft glow under the tile;
-   - a deep aubergine (--ink) for text and the few dark pieces: what is selected, the score discs, the help
-     button, the flatmate-type card, a home's header while it has no photo;
-   - the bands that were lavender, butter and mint are rose, apricot and peach tints of one family;
+   The look of 16 Nov 2026. Kamal that day, in three steps:
+   1. "copy style and colors of dwelo. Change the orange color to light red color", and after five pages of it,
+      "Do it for the entire app and website": another app's lettering and shapes on our own screens and words;
+   2. "App and website logo to stay the same as earlier", "logo color to stay same as earlier";
+   3. "Also take the app color as the color of logo which was earlier and white. Plus check the font color
+      accordingly."
+   So the style is that of step 1 and the colours are the logo's own:
+   - white: the page and the cards (told apart by warm hairlines and soft shadows), and the words on anything
+     orange;
+   - the logo's orange (--orange): the main buttons (white words, 5.2:1), the dash and the words of the
+     small labels, counts, links, the edge of the box you're typing in, and the screen you're on in the bottom
+     bar. On white and near-white, small orange text is that same orange (--orange-text); on the tinted bands and
+     panels it is a deeper shade of it (--orange-deep), which is what reads there;
+   - the wordmark's near-black (--ink, --text) for text and the few dark pieces: what is selected, the score
+     discs, the help button, a home's header while it has no photo; the wordmark's grey (--text-2) for
+     secondary text;
+   - bands and panels are pale tints of that orange, one family;
    - headings (h1, h2) in a serif, DM Serif Display (vendor/fonts), in its one weight. The rest stays Urbanist;
-   - green still means a match or a check passed, amber still means look twice, the strong red still means
-     danger, and the WhatsApp button keeps WhatsApp's green.
+   - green still means a match or a check passed and amber still means look twice. Danger is a crimson, a clear
+     step away from the orange, so an error never looks like the brand. WhatsApp keeps its green.
+   The logo itself is never recoloured or redrawn (README, "Logo").
    Every colour here is a token (p8 checks that), and sizes stay on the scale: 12.5, 14, 16, 21.
    ===================================================================================================== */
 :root{
-  --bg:#FDF8F1; --surface:#FFFFFF; --surface-2:#F8F0E7; --line:#F1E7DC; --line-2:#E4D7CA; --hair:#F1E7DC;
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F7F3EF; --line:#EEE8E2; --line-2:#DDD4CC; --hair:#EEE8E2;
   --app-bg:var(--bg); --card:var(--surface);
-  --text:#1E1A2B; --text-2:#5A5361; --text-3:#675F6C;
-  --ink:#1F1B2E; --ink-2:#0F0C18; --ink-soft:#3C3644;
-  --brand:#1F1B2E; --brand-2:#0F0C18; --brand-soft:#FDECEA; --on-brand:#FFFFFF;
-  --accent:#1F1B2E; --accent-soft:#FDECEA; --on-accent:#FFFFFF;
-  --red:#EE6468; --red-2:#E9585D; --red-text:#CE3A44; --red-deep:#B92F3A; --red-soft:#FDECEA; --red-tint:#FBDDDA; --red-line:#F5C6C2;
-  --red-pale:#F7A8AA; --red-glow:rgba(238,100,104,.3);
-  --orange:#E2535A; --orange-text:var(--red-text); --orange-40:var(--red-text);
-  --hi:#FBDDDA; --dot:#EE6468; --coral:#EE6468; --olive:#EE6468; --teal:var(--red-text); --red-51:#EE6468;
-  --lav:#FBE3DA; --lav-2:#F4CDC4; --butter:#FBE9D6; --mint:#F9E6DC; --blush:#FBEDE5;
-  --band:#F8F0E7; --band-2:#EFE2D4; --on-band:#1E1A2B; --on-band-2:#5A5361; --lit:#FFFFFF; --unlit:#FBF4EC;
-  --grad:var(--lav); --wash:#FDF8F1;
-  --dark-card:linear-gradient(120deg, #1F1B2E 0%, #2B2236 55%, #4B303B 100%);
-  --dark-hero:linear-gradient(160deg, #241E2F 0%, #33283A 55%, #4B303B 100%);
+  --text:#1C1917; --text-2:#57534E; --text-3:#6B635D;
+  --ink:#1C1917; --ink-2:#0C0A09; --ink-soft:#44403C;
+  --brand:#1C1917; --brand-2:#0C0A09; --brand-soft:#FFF1E8; --on-brand:#FFFFFF;
+  --accent:#1C1917; --accent-soft:#FFF1E8; --on-accent:#FFFFFF;
+  --orange:#C2410C; --orange-2:#A8370A; --orange-text:#C2410C; --orange-deep:#9A3412; --orange-soft:#FFF1E8; --orange-tint:#FFE4D3; --orange-line:#F9CDB3;
+  --orange-pale:#F59E6C; --orange-glow:rgba(194,65,12,.26);
+  --orange-40:var(--orange-text);
+  --mark:var(--orange);   /* what shows progress, or that something is on or in focus: bars, switches, tick boxes, the edge of a picked box, focus rings */
+  --hi:#FFE4D3; --dot:#C2410C; --coral:#C2410C; --olive:#C2410C; --teal:var(--orange-text); --red-51:#C2410C;
+  --lav:#FFEBDD; --lav-2:#F9D3BD; --butter:#FFF1DC; --mint:#FDEEE2; --blush:#FFF5EE;
+  --band:#FFF3EA; --band-2:#F6E3D5; --on-band:#1C1917; --on-band-2:#57534E; --lit:#FFFFFF; --unlit:#FBF6F2;
+  --grad:var(--lav); --wash:#FFFFFF;
+  --dark-card:linear-gradient(120deg, #1C1917 0%, #2A1F1A 55%, #4A2413 100%);
+  --dark-hero:linear-gradient(160deg, #1F1A17 0%, #2E221C 55%, #4A2413 100%);
   /* what the cool tints of the older looks become (single screens use these) */
   --teal-29:var(--ok); --green-35:var(--ok); --green-93:var(--ok-soft);
-  --teal-99:#FEFAF6; --teal-97:#FCF5EE; --teal-96:#FCF5EE; --teal-94:#F8F0E7; --teal-95:#FDECEA; --teal-91:#FBDDDA; --teal-83:#F5C6C2;
-  --teal-69:#F7A8AA; --teal-84:#F7A8AA; --teal-89:#FBDDDA; --blue-87:#FFFFFF; --blue-98:#FCF5EE; --blue-93:#F1E7DC;
-  --grey-96:#F6EFE8; --grey-97:#FCF5EE; --grey-63:#9A9099;
-  --purple-97:#FDECEA; --purple-89:#F5C6C2; --pink-35:#B92F3A;
+  --teal-99:#FFFDFB; --teal-97:#FBF6F2; --teal-96:#FBF6F2; --teal-94:#F7F3EF; --teal-95:#FFF1E8; --teal-91:#FFE4D3; --teal-83:#F9CDB3;
+  --teal-69:#F59E6C; --teal-84:#F59E6C; --teal-89:#FFE4D3; --blue-87:#FFFFFF; --blue-98:#FBF6F2; --blue-93:#EEE8E2;
+  --grey-96:#F5F1ED; --grey-97:#FBF6F2; --grey-63:#9C948E;
+  --purple-97:#FFF1E8; --purple-89:#F9CDB3; --pink-35:#9A3412;
   --warn:#8F5A00;
-  --shadow:0 14px 36px rgba(70,35,30,.10); --card-shadow:0 8px 26px rgba(80,45,30,.07);
-  --card-shadow-hi:0 2px 4px rgba(80,45,30,.06), 0 16px 34px rgba(80,45,30,.12);
+  /* danger: a crimson, so it never reads as the logo's orange (the old reds were a few degrees from it) */
+  --danger:#BE123C; --red-40:#BE123C; --red-42:#B4173A; --red-46:#BE123C;
+  --shadow:0 14px 36px rgba(60,40,30,.10); --card-shadow:0 8px 26px rgba(60,40,30,.07);
+  --card-shadow-hi:0 2px 4px rgba(60,40,30,.06), 0 16px 34px rgba(60,40,30,.12);
   --serif:"DM Serif Display", Georgia, "Times New Roman", serif;
 }
 /* headings: the serif in its one weight, never tightened or thickened by the older rules */
 :is(h1, h2):not(.section-h){font-family:var(--serif); font-weight:400 !important; letter-spacing:0 !important; font-synthesis:none}
-:is(h1, h2) :is(em, b, strong){font-weight:400}
+:is(h1, h2):not(.section-h) :is(em, b, strong){font-weight:400 !important}
 h1{line-height:1.1}
-/* the small labels over a section: spaced capitals in the red, a short line in front */
-.section-h{font-family:var(--body); font-weight:700; font-size:var(--fs-xs); letter-spacing:.12em; text-transform:uppercase; color:var(--red-text)}
-.section-h::before{content:""; display:inline-block; width:18px; height:2px; border-radius:2px; background:var(--red); vertical-align:middle; margin:-2px 10px 0 0}
+/* the small labels over a section: spaced capitals in the orange, a short line in front */
+.section-h{font-family:var(--body); font-weight:700; font-size:var(--fs-xs); letter-spacing:.12em; text-transform:uppercase; color:var(--orange-text)}
+.section-h::before{content:""; display:inline-block; width:18px; height:2px; border-radius:2px; background:var(--orange); vertical-align:middle; margin:-2px 10px 0 0}
+.section-h{padding-left:28px; text-indent:-28px}   /* a label that runs to a second line starts it under its words, not under the line */
 .kit-card .section-h::before{content:none}   /* a label with something at its other end: no line */
-/* the main buttons: the light red, dark words */
-.btn-primary, .btn-accent{background:var(--red); color:var(--text); box-shadow:0 8px 20px var(--red-glow)}
-.btn-primary:hover, .btn-accent:hover{background:var(--red-2)}
-/* the box you are typing in: a red edge, as the buttons */
-input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--red), 0 0 0 4px rgba(238,100,104,.14)}
-.d-search:focus-within{box-shadow:0 0 0 2px var(--red), 0 6px 20px rgba(80,45,30,.08)}
-.p-where .ps-box:focus-within, .ph-in:focus-within{box-shadow:0 0 0 2px var(--red)}
+.kit-card .section-h{padding-left:0; text-indent:0}
+/* small capitals come in two kinds only: the label over a section (.section-h above: orange, a line in front) and the
+   quiet caption, set here. They were four sizes, two weights and seven spacings. (.eyebrow is not one of them: the
+   line over a headline is in ordinary letters, not spaced.) */
+.count, .private h3, .cx-eye, .cx-title, .esc-promo small, .fs-month, .pt-mini-top small, .pt-eyebrow, .acc-h,
+.fs-split-sum p, .wq-text small, .vt-line small, .vp-main small, .mp-h, .mine-esc small, .msg-kind{font-size:var(--fs-xs); font-weight:700; letter-spacing:.08em}
+/* small print that had no size of its own and took the browser's */
+.bond-row small{font-size:var(--fs-xs)}
+/* the main buttons: the logo's orange, white words (as the logo's own letters) */
+.btn-primary, .btn-accent{background:var(--orange); color:#fff; box-shadow:0 8px 20px var(--orange-glow)}
+.btn-primary:hover, .btn-accent:hover{background:var(--orange-2)}
+/* the box you are typing in: an orange edge, as the buttons */
+input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orange), 0 0 0 4px rgba(194,65,12,.14)}
+.d-search:focus-within{box-shadow:0 0 0 2px var(--orange), 0 6px 20px rgba(60,40,30,.08)}
+.p-where .ps-box:focus-within, .ph-in:focus-within{box-shadow:0 0 0 2px var(--orange)}
+/* the letter in front of each answer (sign-up, the quiz): one quiet orange disc. They were eight different colours,
+   none of them the app's. On the answer you picked it turns solid */
+.opt .dot, .ob .opt .dot{background:var(--orange-soft); color:var(--orange-deep)}
+.opt[aria-pressed="true"] .dot{background:var(--orange); color:#fff}
+.ob .opt[aria-pressed="true"] .dot{background:rgba(255,255,255,.16); color:#fff}
 /* your flatmate type, where sign-up reveals it: the serif, like on the card and on Profile */
 .ob-type b, .ob-intro .ob-type b{font-family:var(--serif); font-weight:400; letter-spacing:0}
-/* counts and dots: dark on the light red */
-.badge{background:var(--red); color:var(--text)}
-/* the bands: one soft warm glow instead of the white circles; the bottom bar's place is a pink pill with a red icon */
+/* counts and dots: white on the orange */
+.badge{background:var(--orange); color:#fff}
+/* the main button on the FlatMart and Flatsplits bands: the same orange as every other main button (it was the last dark one) */
+:is(.mk-hero, .fs-hero) .btn:not(.btn-ghost){background:var(--orange); color:#fff; box-shadow:0 8px 20px var(--orange-glow)}
+:is(.mk-hero, .fs-hero) .btn:not(.btn-ghost):hover{background:var(--orange-2)}
+/* what you wrote, in the help chat and in the opening story's little chat: the same pale orange bubble with dark words as in
+   a real chat (they were dark bubbles there and pale ones here) */
+.hb-msg.usr > div, .st-chat p.me{background:var(--orange-soft); color:var(--text)}
+/* the "live" dot on the banners that invite you somewhere: orange (it was a pale tint on a pale tint, as good as invisible) */
+.inv-banner .urgent-dot{background:var(--orange); box-shadow:0 0 0 0 var(--orange)}
+/* the bands: one soft warm glow instead of the white circles; the bottom bar's place is a pale orange pill with an orange icon */
 @media (max-width:720px){
   .home-band{background:radial-gradient(120% 90% at 100% 0%, rgba(255,255,255,.55) 0, transparent 55%) var(--band)}
   .home-band::before{display:none}
-  .nav{background:rgba(255,255,255,.9); box-shadow:0 16px 40px rgba(80,45,30,.16), inset 0 0 0 1px rgba(255,255,255,.9)}
+  .nav{background:rgba(255,255,255,.9); box-shadow:0 16px 40px rgba(60,40,30,.16), inset 0 0 0 1px rgba(255,255,255,.9)}
   .tab{color:var(--ink-soft)}
   .tab[aria-current="true"], .tab[aria-current="true"]:is([data-view="mine"], [data-view="post"], [data-view="market"], [data-view="parties"]),
-  .tab[aria-current="true"]:is([data-view="escape"], [data-view="tribe"]), .tab[aria-current="true"][data-view="saved"]{background:var(--red-soft); color:var(--text)}
-  .tab[aria-current="true"] svg{color:var(--red)}
+  .tab[aria-current="true"]:is([data-view="escape"], [data-view="tribe"]), .tab[aria-current="true"][data-view="saved"]{background:var(--orange-soft); color:var(--text)}
+  .tab[aria-current="true"] svg{color:var(--orange)}
 }
 /* a home with no photo yet: a quiet warm tile; on the home's own page, where its name sits on the picture, the dark card */
 .nophoto{background:var(--surface-2); color:var(--text-2)}
@@ -2574,41 +2605,47 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--red),
 }
 /* the vibe score: a clear dark disc everywhere */
 .ring circle:first-child{fill:var(--ink)}
-.thumb .ring-wrap, .hero-pic .ring-wrap, .inv-pic .ring-wrap{background:rgba(31,27,46,.78)}
+.thumb .ring-wrap, .hero-pic .ring-wrap, .inv-pic .ring-wrap{background:rgba(28,25,23,.78)}
 /* the "profile done" ring */
-.pp-ring{background:conic-gradient(var(--red) calc(var(--p) * 1%), rgba(238,100,104,.2) 0)} .pp-ring b{color:var(--text)}
+.pp-ring{background:conic-gradient(var(--orange) calc(var(--p) * 1%), rgba(194,65,12,.2) 0)} .pp-ring b{color:var(--text)}
 /* "Your flatmate type": the one dark card on the page, like a membership card. The label and Share on one line, the
    picture and the name under them */
 .vt-line{display:grid; grid-template-columns:auto 1fr auto; gap:10px 12px; align-items:center; padding:16px; border-radius:20px;
-  background:var(--dark-card) var(--ink); color:#fff; box-shadow:0 10px 26px rgba(31,27,46,.22)}
+  background:var(--dark-card) var(--ink); color:#fff; box-shadow:0 10px 26px rgba(28,25,23,.22)}
 .vt-line > span:nth-child(2){display:contents}
 .vt-line small{grid-column:1 / 3; grid-row:1; color:rgba(255,255,255,.78); font-size:var(--fs-xs); letter-spacing:.08em}
-.vt-line em{grid-column:3; grid-row:1; justify-self:end; font-size:var(--fs-xs); font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#fff;
+.vt-line em{grid-column:3; grid-row:1; justify-self:end; font-size:var(--fs-xs); font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#fff;
   padding:5px 11px; border-radius:999px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
 .vt-line > span:first-child{grid-column:1; grid-row:2; display:grid; place-items:center; min-width:46px; height:46px; padding:0 8px; border-radius:15px;
   background:rgba(255,255,255,.1); font-size:var(--fs-l); white-space:nowrap}
 .vt-line b{grid-column:2 / 4; grid-row:2; font-family:var(--serif); font-weight:400; font-size:var(--fs-l); line-height:1.15; color:#fff}
-/* the tribe constellation: the lines in the light red */
-.orbit line.faint{stroke:rgba(30,26,43,.2)} .orbit line.half, .orbit line.bond{stroke:var(--red)} .orbit line.bond{filter:drop-shadow(0 0 6px rgba(238,100,104,.55))}
-.orbit .node.wants > circle, .orbit .node.on > circle{stroke:var(--red)} .orbit .node.on > circle{filter:drop-shadow(0 0 8px rgba(238,100,104,.55))}
-/* sign out and delete, in the red */
-.acc-out b, .acc-del b{color:var(--red-text)} .acc-out .acc-ic, .acc-del .acc-ic{background:var(--red-soft); color:var(--red-text)}
-.look-tag.same{background:var(--red-soft); color:var(--text)}
+/* the tribe constellation: the lines in the orange */
+.orbit line.faint{stroke:rgba(28,25,23,.2)} .orbit line.half, .orbit line.bond{stroke:var(--orange)} .orbit line.bond{filter:drop-shadow(0 0 6px rgba(194,65,12,.55))}
+.orbit .node.wants > circle, .orbit .node.on > circle{stroke:var(--orange)} .orbit .node.on > circle{filter:drop-shadow(0 0 8px rgba(194,65,12,.55))}
+.look-tag.same{background:var(--orange-soft); color:var(--text)}
 /* the moving-out sale page and the page for people with a spare room: dark words on the band (they were white, from the
    days the band was dark) */
 .sale-hero, .sale-hero h1, .h-copy h1, .h-end, .h-end h2{color:var(--text)}
-.sale-hero .eyebrow{color:var(--red-deep)} .sale-chips span{background:rgba(255,255,255,.72); color:var(--text)}
-.h-copy h1 em{color:var(--red-deep)} .h-copy .lede{color:var(--text)} .h-end p{color:var(--text-2)}
-.h-end .btn{background:var(--red); color:var(--text)}
+.sale-hero .eyebrow{color:var(--orange-deep)} .sale-chips span{background:rgba(255,255,255,.72); color:var(--text)}
+.h-copy h1 em{color:var(--orange-deep)} .h-copy .lede{color:var(--text)} .h-end p{color:var(--text-2)}
+.h-end .btn{background:var(--orange); color:#fff}
 /* the back button in the sign-up questions: a white disc with a dark arrow (it was a white arrow on a faint white disc,
    from the days that page was dark, and could hardly be seen) */
-.ob-back{background:var(--surface); color:var(--text); box-shadow:inset 0 0 0 1px var(--hair), 0 4px 12px rgba(80,45,30,.06)}
+.ob-back{background:var(--surface); color:var(--text); box-shadow:inset 0 0 0 1px var(--hair), 0 4px 12px rgba(60,40,30,.06)}
 .ob-back:hover{background:var(--surface-2)}
 .ob-other:empty{display:none}
-/* on the map: the strong matches and the pin you drop are light red; the one you tapped stays dark */
-.gp.hot{background:var(--red); color:var(--text)} .gp.hot i{background:rgba(255,255,255,.55); color:var(--text)}
+/* on the map: the strong matches and the pin you drop are orange; the one you tapped stays dark */
+.gp.hot{background:var(--orange); color:#fff} .gp.hot i{background:rgba(255,255,255,.24); color:#fff}
 .gp.hot.on, .gp.hot:hover{background:var(--text); color:#fff}
-.pin-ic span, .pin-center span{background:var(--red)}
+.pin-ic span, .pin-center span{background:var(--orange)}
+/* Passes on a computer: the three passes stand side by side, so the pop-up is wide enough for them, and "Most popular" sits
+   on the card's top edge. (Since Passes became a pop-up the three stood in a 640px box: titles broke in two, the tag
+   covered the name, and "2 months + 2 weeks of Tribe" ran one word to a line.) */
+@media (min-width:900px){
+  #dlgPay{width:min(960px, calc(100vw - 48px))}
+  #dlgPay .plans{margin-top:14px} #dlgPay .plan{position:relative}
+  #dlgPay .plan-tag{position:absolute; top:-12px; right:18px; background:var(--orange-soft); color:var(--text); box-shadow:0 0 0 1px var(--orange-line)}
+}
 /* a picked chip is dark: the small print inside it follows */
 .chip:has(input:checked) .hint, .chip[aria-pressed="true"] .hint{color:inherit; opacity:.82}
 </style>
@@ -2986,7 +3023,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--red),
           <p class="hint" id="pWhereHint" style="margin:6px 0 0">Fills in the city, area and PIN, and drops a pin you can fine-tune in the last step.</p></div>
         <div class="grid2">
           <div class="field"><label for="pCity">City</label><select id="pCity" required></select></div>
-          <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. HSR Layout" list="areaList" autocomplete="off"><datalist id="areaList"></datalist></div>
+          <div class="field"><label for="pLocality">Area / locality</label><input type="text" id="pLocality" required placeholder="e.g. Baner" list="areaList" autocomplete="off"><datalist id="areaList"></datalist></div>
         </div>
         <div class="grid3">
           <div class="field"><label for="pRent">Rent / month (₹)</label><input type="number" id="pRent" required min="500" step="1" inputmode="numeric"></div>
@@ -3621,13 +3658,13 @@ const matchClass = p => p >= 80 ? "hi" : p >= 60 ? "mid" : "lo";
    Each of the 12 answers becomes one bar of a radial chart, grouped and coloured
    by area; a bar's length is how close the two answers are (same, close, different). */
 const COMPAT_GROUPS = [
-  {k:"rhythm",  name:"Daily rhythm",      color:"#5A5490", qs:["sleep","work","noise"],
+  {k:"rhythm",  name:"Daily rhythm",      color:"#4F5D7A", qs:["sleep","work","noise"],
    about:"Bedtimes, when you're home and how loud home gets. Friction here shows up every single day."},
-  {k:"home",    name:"Home & chores",     color:"#A0522D", qs:["clean","cook","sharing"],
+  {k:"home",    name:"Home & chores",     color:"#8A6500", qs:["clean","cook","sharing"],
    about:"How tidy the kitchen stays, who cooks, and how groceries and chores are split."},
-  {k:"choices", name:"Lifestyle choices", color:"#B5475A", qs:["food","smoke","drinks","pets"],
+  {k:"choices", name:"Lifestyle choices", color:"#C2410C", qs:["food","smoke","drinks","pets"],
    about:"Food, smoking, drinks and pets. Food, smoking and pets count double: they're dealbreakers for many people."},
-  {k:"social",  name:"Social life",       color:"#8A6500", qs:["guests","social"],
+  {k:"social",  name:"Social life",       color:"#8C4A5A", qs:["guests","social"],
    about:"Guests, overnight stays and how much time you like to spend together at home."},
 ];
 const VIBE_BY_KEY = Object.fromEntries(VIBE_QS.map(x => [x.k, x]));
@@ -4864,7 +4901,7 @@ function makeLiveApi(sb){
           key: order.key_id, order_id: order.order_id, amount: order.amount, currency: "INR",
           name: "FindMeFlatMate", description: order.plan + " (incl. 18% GST)",
           prefill: { contact: "+91" + (state.user?.phone || ""), name: state.user?.name || "" },
-          theme: { color: "#1F1B2E" },
+          theme: { color: "#C2410C" },
           handler: resolve,
           modal: { ondismiss: () => reject(new Error("cancelled")) }
         });
@@ -5898,7 +5935,7 @@ function ringSvg(pct, size, cls){
       stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - pct/100)).toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})"/>
     <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${Math.round(size*.3)}">${pct}</text></svg>`;
 }
-const AV_COLORS = ["#8A5A44","#4B3F63","#7A6A9C","#A0522D","#94607A","#5F4B6E","#B0564E","#7B5E57"];   // white initials read at 4.5:1 on each
+const AV_COLORS = ["#8A5A44","#4F5D7A","#6B7355","#A0522D","#8C4A5A","#57534E","#B0564E","#7B5E57"];   // white initials read at 4.5:1 on each
 const colorFor = (seed, i) => { let h = 0; for(const c of String(seed)) h = (h * 31 + c.charCodeAt(0)) | 0; return AV_COLORS[Math.abs(h + (i || 0) * 3) % AV_COLORS.length]; };
 function avatars(n, seed){
   return `<span class="avs" aria-hidden="true">${Array.from({length: Math.min(n, 4)}, (_, i) => `<i style="background:${colorFor(seed, i)}"></i>`).join("")}</span>`;
@@ -6410,13 +6447,13 @@ function orbitSvg(rows){
   };
   const node = ({ t, x, y }, i) => `<g class="node${t.status === "bonded" ? " on" : t.their_yes ? " wants" : ""}" style="--i:${i}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">
       <foreignObject x="-21" y="-21" width="42" height="42">${avSpan("profile", t.other_id, "tn-av")}</foreignObject>
-      <rect x="-24" y="25" width="48" height="17" rx="8.5" fill="rgba(255,255,255,.95)"/><text y="37.5" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--red-text)">${t.match_pct}%</text></g>`;
+      <rect x="-24" y="25" width="48" height="17" rx="8.5" fill="rgba(255,255,255,.95)"/><text y="37.5" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--orange-text)">${t.match_pct}%</text></g>`;
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
-    <ellipse cx="${cx}" cy="${cy}" rx="128" ry="78" fill="none" stroke="rgba(30,26,43,.14)" stroke-dasharray="3 6"/>
+    <ellipse cx="${cx}" cy="${cy}" rx="128" ry="78" fill="none" stroke="rgba(28,25,23,.14)" stroke-dasharray="3 6"/>
     ${nodes.map(line).join("")}
     <g class="me"><circle cx="${cx}" cy="${cy}" r="30" fill="#fff"/><circle cx="${cx}" cy="${cy}" r="30" fill="none" stroke="var(--hi)" stroke-width="3" class="pulse"/>
       ${state.avatar && state.avatar.s ? `<foreignObject x="${cx - 28}" y="${cy - 28}" width="56" height="56">${avMine("tn-av")}</foreignObject>`
-        : `<text x="${cx}" y="${cy + 7}" text-anchor="middle" font-size="20" font-weight="800" fill="var(--red-text)">${esc(me)}</text>`}</g>
+        : `<text x="${cx}" y="${cy + 7}" text-anchor="middle" font-size="20" font-weight="800" fill="var(--orange-text)">${esc(me)}</text>`}</g>
     ${nodes.map(node).join("")}
     ${n ? "" : `<text x="${cx}" y="${cy + 58}" text-anchor="middle" font-size="12.5" fill="var(--text-2)">Your matches will appear around you</text>`}</svg>`;
 }
@@ -7237,7 +7274,7 @@ function renderOb(){
     <form id="obFmForm" novalidate>${fmRowsHtml(ob.a.flatmates || [], ob.a.residents, "o")}<button class="btn btn-primary" type="submit">Continue</button></form>`;
   else inner = `<h1>${esc(st.q)}</h1><p class="why">${esc(st.why || "")}</p>
     <div class="opts${st.cols ? " cols" : ""}">${st.opts.map((o, i) => `<button class="opt" type="button" data-i="${i}" aria-pressed="${ob.a[st.k] === o.v}">
-      ${st.cols ? "" : `<span class="dot" style="background:${AV_COLORS[(i * 2 + ob.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>`}
+      ${st.cols ? "" : `<span class="dot">${LETTERS[i]}</span>`}
       <span><b>${esc(o.t)}</b>${o.s && o.s !== o.t ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div>
     ${VIBE_BY_KEY[st.k] && ob.role === "seeker" ? `<p class="ob-live" id="obLive" aria-live="polite" hidden></p>` : ""}`;
   $("obStage").innerHTML = `<div class="ob-q">${intro}${inner}</div>`;
@@ -8884,9 +8921,9 @@ setInterval(() => { if(!state.user || document.hidden || $("dlgMsg").open) retur
       <g class="spark"><path d="M222 128 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 Z" fill="#FFFFFF"/></g></g>`,
     "chef": `<g class="prop"><g class="steam"><path d="M168 128 c-7 -9 7 -14 0 -23 M186 124 c-7 -9 7 -14 0 -23" stroke="#FBF8F6" stroke-width="5" fill="none" stroke-linecap="round"/></g>
       <circle cx="168" cy="160" r="7" fill="#EBD981"/><circle cx="182" cy="157" r="8" fill="#8D9B62"/><circle cx="196" cy="161" r="6" fill="#EBD981"/>
-      <path d="M150 164 h66 c-2 24 -15 36 -33 36 c-18 0 -31 -12 -33 -36 Z" fill="#E2535A"/><path d="M150 164 h66" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>
+      <path d="M150 164 h66 c-2 24 -15 36 -33 36 c-18 0 -31 -12 -33 -36 Z" fill="#C2410C"/><path d="M150 164 h66" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>
       <path d="M216 168 c11 0 11 13 0 13" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/></g>`,
-    "bookworm": `<g class="prop"><path d="M142 176 Q160 166 178 176 Q196 166 214 176 L210 210 Q194 202 178 212 Q162 202 146 210 Z" fill="#E2535A"/>
+    "bookworm": `<g class="prop"><path d="M142 176 Q160 166 178 176 Q196 166 214 176 L210 210 Q194 202 178 212 Q162 202 146 210 Z" fill="#C2410C"/>
       <path d="M148 174 Q162 164 178 174 L178 206 Q162 198 150 204 Z" fill="#FBF8F6"/><path d="M208 174 Q194 164 178 174 L178 206 Q194 198 206 204 Z" fill="#FFFFFF"/>
       <path d="M155 180 q10 -5 19 0 M156 188 q9 -5 18 0 M201 180 q-10 -5 -19 0 M200 188 q-9 -5 -18 0" stroke="#D6CBC3" stroke-width="3" fill="none" stroke-linecap="round"/>
       <path d="M196 166 v16 l4 -3 4 3 v-16" fill="#86A6E0"/></g>`,
@@ -8895,18 +8932,18 @@ setInterval(() => { if(!state.user || document.hidden || $("dlgMsg").open) retur
       <rect x="170" y="170" width="13" height="38" rx="6.5" fill="#FBF8F6"/><ellipse cx="174" cy="206" rx="9" ry="5" fill="#FBF8F6"/><ellipse cx="200" cy="206" rx="10" ry="5" fill="#FFFFFF"/>
       <path d="M176 190 v14" stroke="#D6CBC3" stroke-width="2.5" stroke-linecap="round"/>
       <circle cx="178" cy="152" r="17" fill="#FBF8F6"/><ellipse cx="162" cy="159" rx="11" ry="8" fill="#FFFFFF"/>
-      <path d="M170 170 Q180 175 192 168" stroke="#E2535A" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="180" cy="177" r="3.5" fill="#EBD981"/>
-      <ellipse cx="190" cy="154" rx="7" ry="13" transform="rotate(-18 190 154)" fill="#E2535A"/>
+      <path d="M170 170 Q180 175 192 168" stroke="#C2410C" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="180" cy="177" r="3.5" fill="#EBD981"/>
+      <ellipse cx="190" cy="154" rx="7" ry="13" transform="rotate(-18 190 154)" fill="#C2410C"/>
       <circle cx="172" cy="149" r="3" fill="${INK}"/><ellipse cx="152" cy="156" rx="4.5" ry="3.8" fill="${INK}"/>
       <path d="M154 163 q5 3 9 -1" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/></g></g>`,
     "host": `<g class="prop"><g class="steam"><path d="M170 144 c-6 -8 6 -12 0 -20 M192 144 c-6 -8 6 -12 0 -20" stroke="#FBF8F6" stroke-width="4.5" fill="none" stroke-linecap="round"/></g>
       ${[[156,152],[177,156],[198,152]].map(([x, y]) => `<path d="M${x - 10} ${y} h20 l-3 ${182 - y} h-14 Z" fill="#FFFFFF"/>
-      <path d="M${x - 9} ${y + 7} h18 l-2.3 ${175 - y} h-13.4 Z" fill="#E2535A"/><rect x="${x - 9}" y="${y + 6}" width="18" height="5" rx="2.5" fill="#E79078"/>
+      <path d="M${x - 9} ${y + 7} h18 l-2.3 ${175 - y} h-13.4 Z" fill="#C2410C"/><rect x="${x - 9}" y="${y + 6}" width="18" height="5" rx="2.5" fill="#E79078"/>
       <path d="M${x - 3.5} ${y + 13} v${166 - y} M${x + 3.5} ${y + 13} v${166 - y}" stroke="#E79078" stroke-width="1.8" stroke-linecap="round"/>`).join("")}
       <rect x="138" y="180" width="76" height="11" rx="5.5" fill="#D6CBC3"/><path d="M144 191 h64" stroke="#A89C93" stroke-width="3.5" stroke-linecap="round"/></g>`,
     "social-butterfly": `<g class="prop"><rect x="164" y="148" width="34" height="58" rx="8" fill="${INK}"/><rect x="168" y="155" width="26" height="42" rx="4" fill="#C3C9F6"/>
-      ${heart(181, 175, 7, "#E2535A")}<rect x="176" y="150" width="10" height="2.5" rx="1.25" fill="#3A3431"/>
-      <g class="spark">${heart(208, 138, 8, "#E79078")}</g><g class="spark" style="animation-delay:.5s">${heart(188, 122, 6, "#E2535A")}</g>
+      ${heart(181, 175, 7, "#C2410C")}<rect x="176" y="150" width="10" height="2.5" rx="1.25" fill="#3A3431"/>
+      <g class="spark">${heart(208, 138, 8, "#E79078")}</g><g class="spark" style="animation-delay:.5s">${heart(188, 122, 6, "#C2410C")}</g>
       <g class="spark" style="animation-delay:1s">${heart(216, 110, 5.5, "#FFFFFF")}</g></g>`,
     "homebody": `<g class="prop"><g transform="translate(-3 -1)"><rect x="144" y="178" width="60" height="26" rx="9" fill="#8D9B62"/><path d="M144 191 h60" stroke="#6F7C4A" stroke-width="3"/>
       <path d="M156 180 v22 M190 180 v22" stroke="#EBD981" stroke-width="4"/><path d="M200 180 c6 2 6 22 0 24" stroke="#6F7C4A" stroke-width="3" fill="none"/>
@@ -8921,25 +8958,25 @@ setInterval(() => { if(!state.user || document.hidden || $("dlgMsg").open) retur
       <circle cx="203" cy="194" r="5.5" fill="#8D9B62"/><circle cx="201.5" cy="192.5" r="1.8" fill="#C3E0D6"/></g>`,
     "introvert": `<g class="prop"><path d="M159 170 C154 124 206 124 201 170" stroke="${INK}" stroke-width="8" fill="none" stroke-linecap="round"/>
       <path d="M163 160 C161 134 199 134 197 160" stroke="#C3C9F6" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <rect x="148" y="160" width="21" height="32" rx="9" fill="#E2535A"/><rect x="191" y="160" width="21" height="32" rx="9" fill="#E2535A"/>
+      <rect x="148" y="160" width="21" height="32" rx="9" fill="#C2410C"/><rect x="191" y="160" width="21" height="32" rx="9" fill="#C2410C"/>
       <rect x="164" y="164" width="7" height="24" rx="3.5" fill="${INK}"/><rect x="189" y="164" width="7" height="24" rx="3.5" fill="${INK}"/>
       <circle cx="201" cy="176" r="5" fill="#E79078"/>
       <g class="spark">${note(214, 132, INK)}</g><g class="spark" style="animation-delay:.8s">${note(198, 110, INK, .8)}</g></g>`,
     "free-spirit": `<g class="prop"><g transform="translate(178 192) rotate(27)">
       <rect x="-4" y="-80" width="8" height="46" rx="3" fill="#3A3431"/><rect x="-6.5" y="-95" width="13" height="18" rx="4" fill="${INK}"/>
       <circle cx="-8" cy="-90" r="2.4" fill="#D6CBC3"/><circle cx="8" cy="-90" r="2.4" fill="#D6CBC3"/><circle cx="-8" cy="-82" r="2.4" fill="#D6CBC3"/><circle cx="8" cy="-82" r="2.4" fill="#D6CBC3"/>
-      <circle cx="0" cy="-26" r="17" fill="#E2535A"/><circle cx="0" cy="0" r="23" fill="#E2535A"/><rect x="-13" y="-24" width="26" height="18" fill="#E2535A"/>
+      <circle cx="0" cy="-26" r="17" fill="#C2410C"/><circle cx="0" cy="0" r="23" fill="#C2410C"/><rect x="-13" y="-24" width="26" height="18" fill="#C2410C"/>
       <circle cx="0" cy="-15" r="7" fill="${INK}"/><rect x="-9" y="7" width="18" height="5" rx="2.5" fill="${INK}"/>
       <path d="M-2 9 V-86 M2 9 V-86" stroke="#FBF8F6" stroke-width="1.2"/></g></g>`,
     "go-getter": `<g class="prop"><path d="M152 168 C148 124 204 124 198 168" stroke="#3A3431" stroke-width="6" fill="none" stroke-linecap="round"/>
       <rect x="190" y="138" width="12" height="8" rx="2.5" fill="none" stroke="#EBD981" stroke-width="3" transform="rotate(62 196 142)"/>
-      <rect x="142" y="160" width="64" height="38" rx="9" fill="#B92F3A"/><path d="M146 166 v26 M202 166 v26" stroke="#8E2430" stroke-width="3" stroke-linecap="round"/>
-      <path d="M142 168 a8 8 0 0 1 8 -8 h48 a8 8 0 0 1 8 8 v10 q-32 12 -64 0 Z" fill="#E2535A"/>
+      <rect x="142" y="160" width="64" height="38" rx="9" fill="#9E3409"/><path d="M146 166 v26 M202 166 v26" stroke="#7E2A07" stroke-width="3" stroke-linecap="round"/>
+      <path d="M142 168 a8 8 0 0 1 8 -8 h48 a8 8 0 0 1 8 8 v10 q-32 12 -64 0 Z" fill="#C2410C"/>
       <path d="M148 177 q26 9 52 0" stroke="#E79078" stroke-width="2" fill="none" stroke-linecap="round"/>
       <path d="M174 178 v14" stroke="#3A3431" stroke-width="4" stroke-linecap="round"/><rect x="167" y="180" width="14" height="10" rx="2.5" fill="none" stroke="#EBD981" stroke-width="3"/></g>`,
     "all-rounder": `<g class="prop"><path d="M174 176 L166 200 L173 197 L177 204 L186 180 Z" fill="#C9705A"/><path d="M194 176 L202 200 L195 197 L191 204 L182 180 Z" fill="#E79078"/>
-      <g fill="#E2535A">${Array.from({ length: 14 }, (_, i) => `<circle cx="${(184 + 22 * Math.cos(i * Math.PI / 7)).toFixed(1)}" cy="${(164 + 22 * Math.sin(i * Math.PI / 7)).toFixed(1)}" r="6"/>`).join("")}</g>
-      <circle cx="184" cy="164" r="22" fill="#E2535A"/><circle cx="184" cy="164" r="17" fill="#EBD981"/>${star(184, 164.5, 11, 4.6, "#FFFFFF")}
+      <g fill="#C2410C">${Array.from({ length: 14 }, (_, i) => `<circle cx="${(184 + 22 * Math.cos(i * Math.PI / 7)).toFixed(1)}" cy="${(164 + 22 * Math.sin(i * Math.PI / 7)).toFixed(1)}" r="6"/>`).join("")}</g>
+      <circle cx="184" cy="164" r="22" fill="#C2410C"/><circle cx="184" cy="164" r="17" fill="#EBD981"/>${star(184, 164.5, 11, 4.6, "#FFFFFF")}
       <g class="spark"><path d="M212 130 l2.5 6 6 2.5 -6 2.5 -2.5 6 -2.5 -6 -6 -2.5 6 -2.5 Z" fill="#FFFFFF"/></g></g>`
   };
   // where the holding hand sits on each prop
@@ -10514,7 +10551,7 @@ const mkPrice = i => i.price ? inr(i.price) : `<span class="free">Free</span>`;
 const mkSaved = id => (state.mkSaved || []).includes(id);
 const mkCityPref = () => state.mkCity != null ? state.mkCity : (prefs().city || "");
 function mkArt(i, small){
-  const h = (338 + (MK_HUE[i.category] ?? 170) * 72 / 360) % 360;   // each kind of thing keeps its own tint, all of them warm: rose round to apricot
+  const h = 12 + (MK_HUE[i.category] ?? 170) * 34 / 360;   // each kind of thing keeps its own tint, all of them in the orange family: peach round to apricot
   return `<div class="mk-art${small ? " sm" : ""}" style="background:linear-gradient(135deg,hsl(${h.toFixed(0)} 78% 95%),hsl(${((h + 12) % 360).toFixed(0)} 72% 87%))" aria-hidden="true">${(MK_CAT[i.category] || MK_CAT.other)[1]}</div>`;
 }
 const mkPhotos = i => (i.photos || []).map(safeImg).filter(Boolean);
@@ -10955,7 +10992,7 @@ function openSell(cat){
     <p class="mk-guide none" id="mkGuide"></p>
     <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="mkNeg" checked><span>Open to offers</span></label>
     <div class="grid2"><div class="field"><label for="mkSCity">City</label><select id="mkSCity" required>${cityOptions(city || CITIES[0])}</select></div>
-      <div class="field"><label for="mkArea">Area</label><input type="text" id="mkArea" required maxlength="60" list="mkAreaList" autocomplete="off" placeholder="e.g. HSR Layout"
+      <div class="field"><label for="mkArea">Area</label><input type="text" id="mkArea" required maxlength="60" list="mkAreaList" autocomplete="off" placeholder="e.g. Baner"
         value="${esc((prefs().areas || [])[0] || "")}"><datalist id="mkAreaList"></datalist></div></div>
     <div class="field"><label for="mkDesc">Details</label><textarea id="mkDesc" maxlength="1000" placeholder="How old it is, any marks, size, why you're selling…"></textarea></div>
     <div class="field"><label for="mkMove">Moving out? Sell by (optional)</label><input type="date" id="mkMove" min="${new Date().toISOString().slice(0, 10)}"></div>
@@ -11385,7 +11422,7 @@ async function drawPartyCard(p){
   if(logo){ roundRect(x, 80, 86, 104, 104, 28, "#fff"); x.drawImage(logo, 88, 94, 88, 88); }
   x.fillStyle = "#fff"; x.font = `800 46px ${F}`; x.textAlign = "left"; x.fillText("FindMeFlatMate", 212, 140);
   x.textAlign = "center";
-  x.font = `800 32px ${F}`; x.fillStyle = CARD.pink; x.letterSpacing = "6px";
+  x.font = `800 32px ${F}`; x.fillStyle = CARD.pale; x.letterSpacing = "6px";
   x.fillText(p.cancelled ? "CALLED OFF" : "YOU'RE INVITED", W / 2, 330); x.letterSpacing = "0px";
   x.font = `180px ${E}`; x.fillText(k[0], W / 2, 500);
   let y = 690;
@@ -12723,7 +12760,7 @@ const Geo = {
         setView: (p, z) => { m.setCenter(p); if(z) m.setZoom(z); },
         center: () => { const c = m.getCenter(); return { lat: c.lat(), lng: c.lng() }; },
         onMove: cb => m.addListener("idle", () => { const c = m.getCenter(); cb({ lat: c.lat(), lng: c.lng() }); }),
-        circle: (p, r) => { const c = new Circle({ map: m, center: p, radius: r, strokeColor: "#EE6468", strokeWeight: 2, fillColor: "#EE6468", fillOpacity: .12, clickable: false }); return { remove: () => c.setMap(null) }; },
+        circle: (p, r) => { const c = new Circle({ map: m, center: p, radius: r, strokeColor: "#C2410C", strokeWeight: 2, fillColor: "#C2410C", fillOpacity: .12, clickable: false }); return { remove: () => c.setMap(null) }; },
         pins: (list, onClick) => { overlays.forEach(o => o.setMap(null)); overlays = list.map(x => { const o = new HtmlPin(x, x.html, () => onClick(x)); o.setMap(m); return o; }); },
         fit: (pts, maxZoom) => { if(!pts.length) return; const b = new google.maps.LatLngBounds(); pts.forEach(p => b.extend(p)); m.fitBounds(b, 40);
           google.maps.event.addListenerOnce(m, "idle", () => { if(m.getZoom() > maxZoom) m.setZoom(maxZoom); }); },
@@ -13371,16 +13408,16 @@ function wrapLines(x, text, max){
   return line ? out.concat(line) : out;
 }
 function roundRect(x, l, t, w, h, r, fill){ x.beginPath(); x.roundRect(l, t, w, h, r); x.fillStyle = fill; x.fill(); }
-// The share pictures' lettering and colours (the look of 16 Nov 2026): Urbanist with the serif for titles, a deep
-// aubergine card with white panels, and the light red.
+// The share pictures' lettering and colours (the look of 16 Nov 2026, in the logo's colours): Urbanist with the serif
+// for titles, a card in the logo's orange with white words and white panels.
 const CARD_F = '"Urbanist", "Plus Jakarta Sans", system-ui, sans-serif', CARD_SERIF = '"DM Serif Display", Georgia, "Times New Roman", serif';
-const CARD = { top: "#1F1B2E", bottom: "#4B303B", ink: "#1E1A2B", ink2: "#5A5361", red: "#EE6468", redText: "#CE3A44", pink: "#F7A8AA",
-  tints: ["#FDECEA", "#FBE9D6", "#F8F0E7", "#F6DEE6", "#FDF0DC"], confetti: ["#F7A8AA", "#EE6468", "#FBE9D6", "#FFFFFF", "#F4C7A0"] };
+const CARD = { top: "#C2410C", bottom: "#9A3412", ink: "#1C1917", ink2: "#57534E", orange: "#C2410C", pale: "#FFE4D3",
+  tints: ["#FFF1E8", "#FFF1DC", "#F7F3EF", "#FFE4D3", "#FDEEE2"], confetti: ["#FFE4D3", "#FFFFFF", "#FFF1DC", "#F59E6C", "#FFD08A"] };
 const cardFonts = () => Promise.race([Promise.all(['800 60px "Urbanist"', '700 32px "Urbanist"', '500 32px "Urbanist"', '400 92px "DM Serif Display"'].map(f => document.fonts.load(f))).catch(() => {}),
   new Promise(r => setTimeout(r, 2500))]);
 // The Vibe Card's colours (the contrast audit in p13 checks every text colour on every background here).
-const VC_PALETTE = { bg: { "Early Bird": "#FBE9D6", "Midnight": "#F6DEE6", "Night Owl": "#F9E0D6", "": "#FBEDE5" }, ink: "#1E1A2B", ink2: "#5A5361", panel: "#FFFFFF",
-  tints: ["#FBDDDA", "#FBE9D6", "#F8F0E7", "#F6DEE6", "#FDF0DC", "#F3D8CE"] };
+const VC_PALETTE = { bg: { "Early Bird": "#FFF1DC", "Midnight": "#FFE4D3", "Night Owl": "#FFEBDD", "": "#FFF5EE" }, ink: "#1C1917", ink2: "#57534E", panel: "#FFFFFF",
+  tints: ["#FFE4D3", "#FFF1DC", "#F7F3EF", "#FDEEE2", "#FFF1E8", "#F9E3D2"] };
 async function drawVibeCard(t, name, stat, av){
   // A warm tint for each rhythm (apricot, rose, peach), dark ink text, the type's name in the serif, the logo and
   // wordmark, and your avatar large where the type's emoji was. Same words as before.
@@ -13480,7 +13517,7 @@ async function drawListingCard(l, m){
   const tag = KIND_LABEL[l.kind] + " · " + l.bhk + " BHK", tw = x.measureText(tag).width + 44;
   roundRect(x, PX + 24, PY + 24, tw, 56, 28, "rgba(255,255,255,.94)"); x.fillStyle = CARD.ink; x.fillText(tag, PX + 46, PY + 53);
   if(m){ const mt = m.pct + "% vibe match with me", mw = x.measureText(mt).width + 44;
-    roundRect(x, PX + PW - 24 - mw, PY + 24, mw, 56, 28, CARD.red); x.fillStyle = CARD.ink; x.fillText(mt, PX + PW - 24 - mw + 22, PY + 53); }
+    roundRect(x, PX + PW - 24 - mw, PY + 24, mw, 56, 28, "#fff"); x.fillStyle = CARD.orange; x.fillText(mt, PX + PW - 24 - mw + 22, PY + 53); }   // the match: orange words on a white pill
   // White panel: title, area, rent, the details as chips. Sized to its contents.
   const top = PY + PH + 30, L = 100;
   x.font = `400 54px ${CARD_SERIF}`;
@@ -13499,7 +13536,7 @@ async function drawListingCard(l, m){
   x.fillStyle = CARD.ink; x.font = `400 54px ${CARD_SERIF}`;
   for(const line of titleLines){ x.fillText(line, L, y); y += 60; }
   x.font = `500 30px ${F}`; x.fillStyle = CARD.ink2; x.fillText(`${l.locality}, ${l.city}`, L, y); y += 50;
-  x.font = `800 60px ${F}`; x.fillStyle = CARD.redText; const rent = inr(l.rent); x.fillText(rent, L, y + 6);
+  x.font = `800 60px ${F}`; x.fillStyle = CARD.orange; const rent = inr(l.rent); x.fillText(rent, L, y + 6);
   const rw = x.measureText(rent).width;
   x.font = `500 28px ${F}`; x.fillStyle = CARD.ink2;
   x.fillText("/month" + (billsTotal(l) ? ` + ${inr(billsTotal(l))} expenses` : "") + ` · deposit ${inr(l.deposit)}`, L + rw + 14, y + 12);
@@ -13591,7 +13628,7 @@ async function drawSimpleCard(c){
   x.fillStyle = CARD.ink; x.font = `400 54px ${CARD_SERIF}`;
   for(const line of titleLines){ x.fillText(line, L, y); y += 60; }
   x.font = `500 30px ${F}`; x.fillStyle = CARD.ink2; x.fillText(c.sub, L, y); y += 50;
-  x.font = `800 60px ${F}`; x.fillStyle = CARD.redText; x.fillText(c.big, L, y + 6); y += 84;
+  x.font = `800 60px ${F}`; x.fillStyle = CARD.orange; x.fillText(c.big, L, y + 6); y += 84;
   const tints = CARD.tints;
   let n = 0;
   for(const row of rows){
@@ -13751,7 +13788,7 @@ function renderQuiz(){
     ${quiz.i === 0 && inv && !isSeeker() ? `<p class="qz-intro">See how well you'd live with ${esc(inv.name)}. Answer honestly: it only takes a minute.</p>` : ""}
     <h3 class="qz-q">${esc(st.q)}</h3>${st.why ? `<p class="hint" style="margin:0 0 12px">${esc(st.why)}</p>` : ""}
     <div class="opts">${st.opts.map((o, i) => `<button class="opt" type="button" data-qo="${i}" aria-pressed="${quiz.a[st.k] === o.v}">
-      <span class="dot" style="background:${AV_COLORS[(i * 2 + quiz.i) % AV_COLORS.length]};color:#fff">${LETTERS[i]}</span>
+      <span class="dot">${LETTERS[i]}</span>
       <span><b>${esc(o.t)}</b>${o.s ? `<span>${esc(o.s)}</span>` : ""}</span></button>`).join("")}</div>
     ${quiz.i ? `<button class="linkbtn back-link" type="button" data-qback style="margin-top:12px">${LEFT_SVG}Previous question</button>` : ""}`;
 }

@@ -297,7 +297,7 @@ public class MainActivity extends Activity {
 
     /**
      * Android 15 draws apps edge to edge: keep the page clear of the bars, paint a dark
-     * strip behind the status bar (R.color.teal, the app's deep aubergine) and leave the
+     * strip behind the status bar (R.color.teal, the app's near-black) and leave the
      * navigation bar light.
      */
     private void keepClearOfSystemBars(FrameLayout root) {
