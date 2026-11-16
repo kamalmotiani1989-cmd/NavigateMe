@@ -23,7 +23,7 @@ const open = async (b, st, w, h, hash) => { const ctx = await b.newContext({ vie
 // the band of the screen that's showing: its colour, that it joins the top bar, the sheet under it, how dark its words are
 const band = p => p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const el = [...document.querySelectorAll('#appMain > section:not([hidden]) .home-band')].find(e => e.offsetParent), head = $('appHead'), r = e => e.getBoundingClientRect();
-  const T = { lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), page: tok('--bg') };
+  const T = { lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), page: tok('--bg'), pink: tok('--red-soft') };
   if(!el) return { band: false, onBand: head.classList.contains('on-band'), headBg: getComputedStyle(head).backgroundColor, T };
   const cs = getComputedStyle(el), after = getComputedStyle(el, '::after'), rgb = s => (s.match(/[\d.]+/g) || []).map(Number);
   const lum = c => { const a = c.slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
@@ -40,7 +40,7 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   let { ctx, p } = await open(b, person('9822200011', 'Asha', 'female'), 390, 844, 'parties');
   let B = await band(p), t = await tab(p);
   const tabs = await p.evaluate(() => [...document.querySelectorAll('#nav .tab')].filter(x => x.offsetParent).map(x => x.textContent.trim()));
-  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market' && t.view === 'parties' && t.bg === B.T.butter, 'Parties has its own place in the bottom bar, butter when you\'re on it: ' + tabs.join(' · '));
+  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market' && t.view === 'parties' && t.bg === B.T.pink, 'Parties has its own place in the bottom bar, the pink pill when you\'re on it: ' + tabs.join(' · '));
   ok(B.band && B.colour === 'butter' && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, 'the Parties screen opens on a butter band with the sheet over it, words dark: ' + JSON.stringify({ colour: B.colour, gap: B.gap }));
   // off until you switch it on: what it is, in three lines, and the switch; nothing listed
   const off = await p.evaluate(() => ({ intro: !!document.querySelector('#pnBody .pn-intro'), points: document.querySelectorAll('#pnBody .pn-points li').length, btn: (document.querySelector('#pnBody [data-near-on]') || {}).textContent,

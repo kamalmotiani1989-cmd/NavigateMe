@@ -2,7 +2,7 @@
 
 `demo/` holds the browser suites that run against the app in demo mode (no backend: the demo data in `index.html`).
 They cover the welcome page and sign-in card (`welcome`), onboarding (`ob`), the post form and the photo gallery (`pass3`), listing strength, reply speed, compare and
-share (`p5`), Escape and FlatMart (`p6`), Flatsplits (`p7`), the short login page (`p25`), the phone's two-layer home and bottom bar (`p26`), the Parties section and the bands on every screen (`p27`), and speed, the one list of every home and the Escape's vibe score (`p28`). Run them all with `tests/demo/run.sh`, or one with
+share (`p5`), Escape and FlatMart (`p6`), Flatsplits (`p7`), the short login page (`p25`), the phone's two-layer home and bottom bar (`p26`), the Parties section and the bands on every screen (`p27`), speed, the one list of every home and the Escape's vibe score (`p28`), and the look of 16 Nov 2026 with the city step of sign-up (`p31`: the palette, the serif headings, the light red logo and buttons, no old colours left on any screen, every word readable, the share pictures, the privacy page). Run them all with `tests/demo/run.sh`, or one with
 `tests/demo/run.sh p7`; screenshots land in `/tmp/fm-demo-tests/shots`. Every check should pass; a `FAIL` line names
 the check, and a suite that stops before its end (an error, or the time limit) counts as a failure too, with its
 last words shown.

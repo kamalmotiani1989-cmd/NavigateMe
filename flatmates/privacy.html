@@ -8,35 +8,44 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>Privacy policy · FindMeFlatMate</title>
 <meta name="description" content="What FindMeFlatMate collects, who sees it, which services we use, and how to see, change or delete your data.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#FDF8F1">
 <link rel="canonical" href="https://findmeflatmate.com/privacy.html">
 <link rel="icon" href="icons/icon-192.png">
 <style>
-/* The typeface travels with the page (vendor/fonts, SIL Open Font License), so nothing waits on another site. */
-@font-face{font-family:"Plus Jakarta Sans"; font-style:normal; font-weight:200 800; font-display:swap; src:url(vendor/fonts/plus-jakarta-sans-latin-wght-normal.woff2) format("woff2");
+/* The typefaces travel with the page (vendor/fonts, SIL Open Font License), so nothing waits on another site. The look
+   is the app's (16 Nov 2026): a cream page, white cards, headings in the serif, links in the red. */
+@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 900; font-display:swap; src:url(vendor/fonts/urbanist-latin-wght-normal.woff2) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Plus Jakarta Sans"; font-style:normal; font-weight:200 800; font-display:swap; src:url(vendor/fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2) format("woff2");
+@font-face{font-family:"Urbanist"; font-style:normal; font-weight:100 900; font-display:swap; src:url(vendor/fonts/urbanist-latin-ext-wght-normal.woff2) format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"DM Serif Display"; font-style:normal; font-weight:400; font-display:swap; src:url(vendor/fonts/dm-serif-display-latin-400-normal.woff2) format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"DM Serif Display"; font-style:normal; font-weight:400; font-display:swap; src:url(vendor/fonts/dm-serif-display-latin-ext-400-normal.woff2) format("woff2");
   unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 :root{
-  --teal:#1C7F72; --ink:#1B2440; --wash:linear-gradient(180deg,#DCEFE9 0%,#EAF6F2 55%,#F8FBFA 100%);
-  --text:#18213A; --text-2:#4B566B; --text-3:#5E6679; --line:#E6EBEE; --soft:#F2F6F5; --brand-soft:#E5F3EF;
+  --bg:#FDF8F1; --band:#FBE3DA; --ink:#1F1B2E; --text:#1E1A2B; --text-2:#5A5361; --text-3:#675F6C; --line:#F1E7DC; --soft:#F8F0E7;
+  --brand-soft:#FDECEA; --red-text:#CE3A44; --red-deep:#B92F3A;
+  --serif:"DM Serif Display", Georgia, "Times New Roman", serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0; background:#fff; color:var(--text); font:16px/1.65 "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif}
-a{color:#156358; font-weight:600}
+body{margin:0; background:var(--bg); color:var(--text); font:500 16px/1.65 "Urbanist", system-ui, -apple-system, "Segoe UI", sans-serif}
+a{color:var(--red-text); font-weight:700}
 .wrap{max-width:780px; margin:0 auto; padding-left:max(20px, env(safe-area-inset-left,0px)); padding-right:max(20px, env(safe-area-inset-right,0px))}
-.band{background:var(--wash); color:var(--ink); padding-bottom:36px}
+.band{background:var(--band); color:var(--ink); padding-bottom:36px}
 .top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-block:16px}
 .logo{display:flex; align-items:center; gap:10px; color:var(--ink); text-decoration:none; font-weight:800; font-size:18px; letter-spacing:-.02em}
-.logo img{width:38px; height:38px; border-radius:11px; background:#fff; box-shadow:0 1px 3px rgba(27,36,64,.10), 0 0 0 1px var(--line)}
-.back{color:var(--ink); font-size:14.5px; font-weight:700; text-decoration:none; padding:8px 12px; border-radius:10px; background:#fff; box-shadow:inset 0 0 0 1px var(--line)}
-.back:hover{background:var(--soft)}
-h1{font-size:clamp(32px,6vw,46px); font-weight:700; line-height:1.08; letter-spacing:-.035em; margin:22px 0 8px}
+.logo img{width:38px; height:38px; border-radius:11px; box-shadow:0 6px 16px rgba(238,100,104,.28)}
+.logo img + img{width:auto; border-radius:0; box-shadow:none}
+.back{color:var(--ink); font-size:14.5px; font-weight:700; text-decoration:none; padding:8px 14px; border-radius:999px; background:#fff; box-shadow:0 4px 12px rgba(80,45,30,.08)}
+.back{white-space:nowrap} .back:hover{background:var(--soft)}
+@media (max-width:430px){ .back span{display:none} }   /* on a phone the logo and the whole label don't fit on one line */
+h1, h2{font-family:var(--serif); font-weight:400; letter-spacing:0}
+h1{font-size:clamp(34px,6vw,48px); line-height:1.08; margin:22px 0 8px}
 .updated{color:var(--text-2); margin:0}
-.short{margin:-22px auto 0; background:#fff; border-radius:20px; box-shadow:0 1px 2px rgba(27,36,64,.04), 0 18px 44px rgba(27,36,64,.10); padding:22px 22px 8px}
+.short{margin:-22px auto 0; background:#fff; border-radius:24px; box-shadow:0 8px 26px rgba(80,45,30,.07); padding:22px 22px 8px}
 .short h2{margin-top:0}
-h2{font-size:22px; letter-spacing:-.02em; line-height:1.25; margin:40px 0 10px}
+h2{font-size:24px; line-height:1.2; margin:40px 0 10px}
 h3{font-size:16.5px; margin:22px 0 4px}
 p, li{color:var(--text-2)}
 p{margin:0 0 12px}
@@ -44,15 +53,16 @@ ul{padding-left:20px; margin:0 0 14px} li{margin:6px 0}
 b, strong{color:var(--text)}
 .toc{columns:2; column-gap:28px; padding-left:20px; margin:18px 0 0}
 .toc li{margin:4px 0; break-inside:avoid}
-.box{background:var(--soft); border-radius:14px; padding:16px 18px; margin:12px 0 16px}
+.box{background:var(--soft); border-radius:16px; padding:16px 18px; margin:12px 0 16px}
 .box p:last-child, .box ul:last-child{margin-bottom:0}
+.box a, .contact a{color:var(--red-deep)}
 table{width:100%; border-collapse:collapse; margin:8px 0 16px; font-size:15px}
 th, td{text-align:left; vertical-align:top; padding:10px 8px; border-bottom:1px solid var(--line)}
 th{color:var(--text); font-size:13px; letter-spacing:.04em; text-transform:uppercase}
-td{color:var(--text-2)} td:first-child{color:var(--text); font-weight:600; width:34%}
-.contact{background:var(--brand-soft); border-radius:16px; padding:18px 20px; margin:12px 0}
+td{color:var(--text-2)} td:first-child{color:var(--text); font-weight:700; width:34%}
+.contact{background:var(--brand-soft); border-radius:18px; padding:18px 20px; margin:12px 0}
 .contact p{margin:0 0 4px; color:var(--text)}
-footer{margin-top:56px; background:var(--ink); color:rgba(255,255,255,.65); font-size:13.5px; padding:22px 0 calc(22px + env(safe-area-inset-bottom,0px))}
+footer{margin-top:56px; background:var(--ink); color:rgba(255,255,255,.72); font-size:13.5px; padding:22px 0 calc(22px + env(safe-area-inset-bottom,0px))}
 footer a{color:#fff}
 @media (max-width:560px){ .toc{columns:1} .short{padding:18px 16px 4px} td:first-child{width:40%} }
 </style>
@@ -61,7 +71,7 @@ footer a{color:#fff}
 <div class="band">
   <div class="wrap top">
     <a class="logo" href="index.html"><img src="icons/icon-192.png" alt="" width="38" height="38" style="border-radius:22%"><img src="icons/wordmark.svg" alt="findmeflatmate.com" height="16" style="height:16px;width:auto"></a>
-    <a class="back" href="index.html">← Back to the app</a>
+    <a class="back" href="index.html">← Back<span> to the app</span></a>
   </div>
   <div class="wrap">
     <h1>Privacy policy</h1>
