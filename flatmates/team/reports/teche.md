@@ -1,5 +1,30 @@
 # Teche · reports
 
+## 2026-11-16, Tribe shows people down to a 30% vibe match (#109) live
+
+- **What Kamal asked (16 Nov):** "In tribe show the match upto 30%".
+- **What changed:** Tribe suggested only people at 70% or more. It now suggests everyone looking in your areas at 30%
+  or more.
+  - The page has two groups. "Vibe matches near you · 70%+" is first, in the order it always had (the same kind of
+    home as you, then best vibe). Under it, "More people looking near you · 30% to 69%", in the same order.
+  - The words follow: the first step of the journey, the rules, Account's "Show me in Build your tribe", the help
+    bot.
+- **A choice I made, for Kamal to overrule:** only the strong matches (70%+) are announced. A new person between 30%
+  and 69% shows on the Tribe page with no notification, no count on the Tribe badge and no card on Discover.
+  Otherwise every newcomer in a city would ping everyone in it. A yes from anyone is announced whatever the score.
+- **Database:** `fm_tribe_refresh` matches from 30 (it was 70) and adds at most the best 60 new people a call;
+  `fm_tribe_notify` pushes a new match only at 70 and up.
+- **On today's live data** (read-only count): 114 people can be matched. 293 pairs are at 70%+ and 243 pairs between
+  30% and 69%; no pair in the same city is under 30%. So in practice everyone looking in your areas now shows.
+  People see the new ones the next time they open Tribe.
+- **Not changed:** the login process, onboarding questions, colours. Passes, messages and the rest of #108.
+- **Tests:** 28 demo suites, 668 checks; new `p30` (19). Database: 235 checks, 13 new
+  (`parties-17-tribe-30.sql`).
+- **Published:** 00ecb55; Android build 215 (file checked, checksum matches); website repo `main` and
+  `gh-pages` say "Publish the app from NavigateMe 00ecb55". Live database: the merged `schema.sql` applied
+  (checksum checked first) and verified read-only.
+- **Still with Kamal from #108:** the message limit of 30 an hour and 60 a day.
+
 ## 2026-11-15, help bot rebuilt, quicker messaging, the chat fills the screen, Passes by the name (#108) live
 
 - **What Kamal asked (15 Nov):** "Fix the chat bot.. make me more better and make the messaging quicker. Also remove
@@ -208,27 +233,3 @@
   [share picture](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/64c962ff475d2cc6ce054d9ff2972dd50aff4df0/website-share-picture.png).
 - **Next (Kamal, 15 Nov, from a Dwelo screenshot):** a two-layer home (colour on top, a rounded sheet over it) and a
   lighter floating bottom bar, in our colours.
-
-## 2026-11-15, number-last sign-up, clean UI, match reasons, scam warnings, Move-in kit (#98, #99, #100) live
-
-- **Sign-up, number last (#98; Kamal approved):** what brings you, then name, then Woman/Man, then the number and
-  18+. Each step has "x of 4", a back arrow and a line using the name. Name and gender are saved on verify, so
-  onboarding skips them. "I already have an account" goes straight to the number. Our colours are kept.
-- **Clean UI (#99, after Kamal's look at Dwelo):**
-  - search like you'd talk (sentences become filters, on the phone);
-  - a 4-screen opening story drawn with our avatars;
-  - a welcome screen after sign-up;
-  - cleaner home cards, with rent first and a row of chips;
-  - filters as cards with a two-thumb rent slider;
-  - a friendlier notifications ask, with "Not now".
-  As Kamal asked: no required photos, no religion.
-- **From Kamal's competitive teardown (#100):** "N things in common" on cards; scam warnings on messages and listings
-  that ask for money up front; a Move-in kit after a yes (an editable flatmate agreement, a 10-item checklist,
-  Flatsplits).
-- **Tests:** all 24 demo suites pass. No database change in any of these.
-- **Published:** 6cca460 (#99, which included #98); #100 published (2dc96be).
-- **Screenshots:** [sign-up](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/42be35711526470cb4da890a9e99da56d22ec160/signup-before-after.png),
-  [clean UI](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/c655911da69c29ec39ed28441790e36f42fedbaa/clean-ui.png),
-  [reasons/scam/kit](https://raw.githubusercontent.com/kamalmotiani1989-cmd/NavigateMe/4bd89ee19de7ae720c6786f136a122e2b329c49c/reasons-scam-kit.png).
-- **Open for Kamal (from the teardown):** the name risk (findmyflatmate.in is a live Bangalore site), city focus,
-  and the #86 privacy blanks (including a named grievance officer).
