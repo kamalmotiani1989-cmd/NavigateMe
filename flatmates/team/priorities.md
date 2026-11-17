@@ -114,6 +114,13 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
 2. On resume: the Wednesday pack from groups at `rules read` or better; the college outreach drafts are with Kamal.
 
 ## Decisions waiting for Kamal
+- **Parties, privacy (found by Teche, 17 Nov):** a party's distance is measured from the flat's exact pin and shown to
+  100 m, and the place you measure from can be changed as often as you like, so someone patient could work out roughly
+  where a flat is. Fix: measure from the rounded spot the map already uses, and limit how often the place can change.
+  Distances get a little less exact. King recommends yes. A database change: on Kamal's word, database first.
+- **The reel look:** yes or no to the before-and-after pictures when Teche has them, and yes to his new look rule.
+- Should Tribe matches under 70% be announced? King recommends no: show them, don't notify.
+- The message limit of 30 an hour and 60 a day. King recommends keeping it until sign-up opens.
 - When sign-up opens (needs the WhatsApp or SMS keys).
 - Launch city and month: Pune first recommended.
 - Meta Pixel and Google Ads IDs.
