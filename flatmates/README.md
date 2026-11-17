@@ -296,13 +296,16 @@ the room comes second.
     the **Parties** screen or in Account. Parties then lists what's **near you**: open, coming up, not full, not
     their own, matching who can come, within the host's radius of their place. Before acceptance: what, when, the area and distance ("Baner,
     2.3 km"), the chip-in and what it covers, spots left, the host's first name and vibe type, the house rules;
-    never the address, the pin or a number. **Request to join** takes a one-line note (no numbers or links) and
+    never the address, the pin or a number. For the map (17 Nov) they also get a `zone`: the pin rounded to two
+    decimals, the rule a home's public pin follows, so the party can be drawn as a circle about a kilometre across;
+    nothing finer. **Request to join** takes a one-line note (no numbers or links) and
     plus-ones, who count towards the limit. The host sees first name, age group, gender, vibe match, parties
     attended and thumbs-up count, and accepts or declines. **On accept** both get each other's number and the guest
     gets the address and pin, as on a yes for rooms; accepts stop at the limit and a full party leaves the list.
     Guests can withdraw; if the host calls the party off, everyone who asked or was accepted is told.
     **Safety:** 18+ and signed in only; each accepted guest gets a **check-in code** the host types at the door;
-    **Report** on the party and on each person; a **thumbs up or down** after the party. Two reports from different
+    **Report** on the party and on each person; a **thumbs up or down** after the party (a party you went to stays
+    in your list for three days after it ends, under "How was it?"). Two reports from different
     people, or three thumbs down, block that person from asking to join or hosting until Kamal reviews them.
     Rate limits through `fm_throttle`. **Notifications** (fm-notify): a new request to the host; accept, decline
     and a call-off to the guest; never an address or number in them.
@@ -335,15 +338,64 @@ the room comes second.
     - **Before it's switched on:** what it is in three lines (what, when and how far, never the address; ask to
       join and the host decides; once in, the address, the host's number and a check-in code), the switch, and
       "Off until you switch it on. 21 and over. You pick a place once; we don't follow your location."
-    - **Once on:** "Near Baner · Change" on the band. **Your parties** first (asked to join, or in). Then **Near
-      you** as cards: the day on a white tile, what it is, when and how far, the entry, who it's for, the spots
-      left, the host's first name and type. Filters: All, Today, This weekend, Free entry. A card opens the same
-      party page as before (`dlgNear`).
-    - **You're hosting:** your own coming parties, with how many asked to join; each opens its group in Splits,
-      where the invite card, the requests and the door list are. **Host a party** starts a new house party.
+    - **Once on:** "Near Baner · Change" and **Host a party** on the band. **Your parties** first (asked to join,
+      or in), then **You're hosting** (your own coming parties, with how many asked to join; each opens its group
+      in Splits, where the invite card, the requests and the door list are), then **Near you**.
     - The party rules, and "Stop showing me parties".
     - A Flatsplits-only account sees it locked until the 12 questions, like Discover.
-    Nothing in the database changed. Demo suite `p27`.
+    Demo suite `p27`.
+
+    **The Parties feed, a party's page, hosting in one screen and the map (Kamal, 17 Nov,** with four recordings of
+    a hangouts app: "Take the idea for parties nearby dont copy but make it awesome", "Also check how the party is
+    created", "Check how the search happens on parties own discover page through maps. Can we build this also").
+    The ideas are taken; the look, the words and the rules are ours. No photo is asked for anywhere.
+    - **A party is a card with a cover.** The cover is drawn: a pale orange panel, a string of lights and the kind's
+      emoji (`pnCoverHtml`; the same party always gets the same cover). On it: **when, the way people say it**
+      ("Tonight · 8 pm", "Tomorrow · 7:30 pm", "Saturday · 8 pm", from a week out "Sat, 28 Nov · 8 pm";
+      `nearWhenChip`) and a **heart** that keeps the party on this phone (`state.partySaved`; nothing about it
+      reaches the host or the server). Under it: the kind in small capitals (unless the title already says it), the
+      title in the serif, the area and distance, how long it runs, the entry and who it's for, **how full it is**
+      (a bar, "4 going", "2 spots left"; "going" is the guests from nearby the host has accepted, with their
+      plus-ones), and the host. The title is the card's button and reaches over the whole card; the heart is a
+      button of its own on top of it.
+    - **Finding one:** a **search** over what, where and who; one row of **lenses** (All, Today, This weekend, Free
+      entry, then each kind of party that is on near you, then Saved once you've kept one); and an **order**
+      (Soonest first, Nearest first, Filling up).
+    - **How was it?** A party you went to (the host accepted you) stays in your list for three days after it ends,
+      with the thumbs up or down for the host (`fm_party_nearby` keeps it, marked `ended`). Before this it left the
+      list the moment it ended, and the thumbs could only be reached from an old link.
+    - **A party's page** (`dlgNear`) opens on its cover, then what to expect (the kind's line), how full it is, the
+      host, the facts (when and how long, the area, the entry, who it's for and 21+, the house rules) and **how
+      joining works in three steps** (ask; the host says yes; you get the address and a door code), then the
+      request form as before. A bar at the foot ("Ask to join", with the entry and the spots) leads to the form
+      until the form is in view. Once you've asked, where you stand (waiting; or in, with the address, the host's
+      number and your check-in code) moves up to right under the cover.
+    - **Host a party** (on the band, in the panel at the foot, in the empty list) opens **one sheet**
+      (`openHostParty`): at its top **the card people nearby will see**, drawn again as you fill it in; then the
+      kind (15, a tap each) and the title, the day (Today, Tomorrow, the week ahead, or another day), the start and
+      how long (2 to 5 hours, or an open end), guests from nearby (2 to 50), who it's for, plus-ones, how far away
+      guests can be (1 to 5 km), Free or a chip-in and what it covers, the private address (searched, so the pin
+      is set), the area people see, house rules, and the party rules with the 21+ tick. What is missing is said in
+      words, one thing at a time. Saving makes the party's group in Splits, saves the party and opens it to people
+      nearby, in that order (`splitCreate`, `partySave`, `partyRulesAccept`, `partyOpenSave`; the server's checks
+      are the ones it had), and the party shows under "You're hosting". A party for friends and flatmates only is
+      still made from Splits ("New house party"; the sheet links to it), and a party made here is edited there.
+    - **List or Map.** By "Near you": the same parties on a map (`drawPnMap`; Google Maps with the key, otherwise
+      the bundled OpenStreetMap map, as everywhere in the app). Each party is a mark with its kind's emoji **in the
+      middle of a circle about a kilometre across: the flat is somewhere in the circle, and the mark is never on
+      it.** The server sends only that rounded spot (`zone` in `fm_party_near_json`: the pin to two decimals) and
+      the app draws an 800 m circle round it; parties in the same square share one mark with a count. "You" is the
+      place you measure from. Tap a mark: its parties on a card over the map; tap one for its page. The lenses and
+      the search work on the map as on the list, and List or Map is remembered on the phone (`state.pnView`). The
+      map shows the parties in reach of your place (hosts choose 1 to 5 km), not the whole city. If the map can't
+      load it says so and the List still works; a party from a server that sends no zone stays off the map, and
+      the line under the map says so.
+    - What people nearby see is said where a host opens a party, in the help chat and on the privacy page: the
+      area, how far it is and, on the map, a circle about a kilometre wide; never the address or a number until the
+      host accepts.
+    Database: `zone` in `fm_party_near_json`, and `fm_party_nearby` keeps a party you went to for three days after
+    it ends. Checks: demo suites `p34` (the feed, the page, the host's sheet, the map), `p27`, `p9` and `p17`;
+    `tests/db/parties-18-map-zone.sql`.
 16. **FlatMart (everyone).** An OLX for flatmates: buy and sell furniture, beds, appliances, kitchen
     things, electronics, bikes and books with people nearby, so nobody pays full price to furnish a room
     and nobody dumps a fridge when they move out. Post in a minute: up to 4 photos, category, condition,

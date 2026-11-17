@@ -2444,6 +2444,9 @@ end $$;
 -- A nearby party as someone who isn't accepted yet sees it: what, when, the area and how far, the chip-in and what it
 -- covers, places left, the host's first name and living style (for the vibe type), the house rules. Never the
 -- address, the pin or a number. Accepted guests also get those (fm_party_nearby_get, part 3).
+-- 'zone' is for the map in Parties (17 Nov 2026): the pin rounded to two decimals, the same rule as a home's public
+-- pin (fm_listing_save), so the party can be drawn as a circle about a kilometre across with the flat somewhere in
+-- it. Every party in the same square of that grid gets the same zone.
 create or replace function public.fm_party_near_json(p_party uuid, p_user uuid) returns jsonb
 language sql stable security definer set search_path = public as $$
   select jsonb_build_object('code', v.code, 'occasion', v.occasion, 'title', v.title, 'starts_at', v.starts_at, 'ends_at', v.ends_at,
@@ -2452,6 +2455,8 @@ language sql stable security definer set search_path = public as $$
     'entry', v.entry, 'entry_chip', v.entry_chip, 'covers', to_jsonb(v.covers), 'covers_other', v.covers_other,
     'guest_limit', v.guest_limit, 'spots_left', greatest(0, v.guest_limit - fm_party_taken(v.id)), 'plus_ones', v.plus_ones,
     'who', v.who, 'house_rules', v.house_rules, 'cancelled', v.cancelled, 'ended', fm_party_ended(v.id),
+    'zone', case when fm_india_pin(v.near_geo) is not null
+                 then jsonb_build_object('lat', round((v.near_geo->>'lat')::numeric, 2), 'lng', round((v.near_geo->>'lng')::numeric, 2)) end,
     'my_rating', (select up from fm_party_ratings where party_id = v.id and rater = p_user and ratee = v.host_id),
     'host', split_part(coalesce(h.full_name, ''), ' ', 1), 'host_vibe', coalesce(h.vibe, '{}'::jsonb),
     'my_request', (select jsonb_build_object('id', r.id, 'status', r.status, 'plus', r.plus, 'note', r.note) from fm_party_requests r
@@ -2483,6 +2488,9 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- Parties near me, soonest first; also the ones I've asked to join (whatever their state), so I can follow them.
+-- A party I went to (the host accepted me) stays for three days after it ends, marked 'ended', so I can say how it
+-- was: the app lists it under "How was it?" with the thumbs (17 Nov 2026; until then it left the list the moment it
+-- ended and the thumbs could only be reached from an old link).
 create or replace function public.fm_party_nearby() returns setof jsonb
 language plpgsql security definer set search_path = public as $$
 begin
@@ -2492,7 +2500,9 @@ begin
     select fm_party_near_json(v.id, auth.uid()) from fm_parties v
      where v.open and (fm_party_cant_see(v.id, auth.uid()) is null
            or exists (select 1 from fm_party_requests r where r.party_id = v.id and r.user_id = auth.uid() and r.status in ('pending', 'accepted')
-                      and coalesce(v.ends_at, v.starts_at + interval '12 hours') > now()))
+                      and coalesce(v.ends_at, v.starts_at + interval '12 hours') > now())
+           or (not v.cancelled and coalesce(v.ends_at, v.starts_at + interval '4 hours') between now() - interval '3 days' and now()
+               and exists (select 1 from fm_party_requests r where r.party_id = v.id and r.user_id = auth.uid() and r.status = 'accepted')))
      order by v.starts_at
      limit 50;
 end $$;

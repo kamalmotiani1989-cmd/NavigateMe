@@ -44,7 +44,7 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   ok(B.band && B.colour === 'butter' && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, 'the Parties screen opens on a butter band with the sheet over it, words dark: ' + JSON.stringify({ colour: B.colour, gap: B.gap }));
   // off until you switch it on: what it is, in three lines, and the switch; nothing listed
   const off = await p.evaluate(() => ({ intro: !!document.querySelector('#pnBody .pn-intro'), points: document.querySelectorAll('#pnBody .pn-points li').length, btn: (document.querySelector('#pnBody [data-near-on]') || {}).textContent,
-    cards: document.querySelectorAll('#pnBody .pn-card').length, hint: (document.querySelector('#pnBody .pn-intro .hint') || {}).textContent, where: $('pnWhere').textContent, host: !!document.querySelector('#pnBody [data-fs-event=party]'), rules: !!document.querySelector('#pnBody .party-rules') }));
+    cards: document.querySelectorAll('#pnBody .pn-card').length, hint: (document.querySelector('#pnBody .pn-intro .hint') || {}).textContent, where: $('pnWhere').textContent, host: !!document.querySelector('#pnBody [data-host-party]'), rules: !!document.querySelector('#pnBody .party-rules') }));
   ok(off.intro && off.points === 3 && off.btn === 'Show me parties near me' && !off.cards && /Off until you switch it on\. 21 and over\./.test(off.hint) && !off.where && off.host && off.rules,
     'off by default: three lines on what it is, the switch, "21 and over", the rules and "Host a party"; no parties listed');
   await p.screenshot({ path: O + '/p27-parties-off.png' });
@@ -54,12 +54,14 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   await p.goto(U + '#parties'); await p.waitForTimeout(1200); await closeDlgs(p);
   await p.evaluate(async () => { await api.partyNearbySet(true, { lat: 18.559, lng: 73.7868 }, 'Baner'); await renderParties(); }); await p.waitForTimeout(600);
   const on = await p.evaluate(() => { const all = demoNearParties(), cards = [...document.querySelectorAll('#pnBody .pn-card')];
-    return { where: $('pnWhere').textContent.trim(), count: (document.querySelector('#pnBody .pn-h span') || {}).textContent, filters: [...document.querySelectorAll('#pnBody [data-pn-filter]')].map(x => x.textContent).join(),
-      cards: cards.map(c => ({ day: c.querySelector('.pn-date b').textContent, title: c.querySelector('.pn-kind b').textContent, kind: c.querySelector('.pn-kind small').textContent.replace('Sample', '').trim(), text: c.textContent.replace(/\s+/g, ' ').trim(),
+    return { where: $('pnWhere').textContent.replace(/\s+/g, ' ').trim(), count: (document.querySelector('#pnBody .pn-h span') || {}).textContent, filters: [...document.querySelectorAll('#pnBody [data-pn-filter]')].map(x => x.textContent).join(),
+      cards: cards.map(c => ({ when: c.querySelector('.pn-when').textContent.trim(), title: c.querySelector('.pn-title').textContent, kind: (c.querySelector('.pn-kind') || { textContent: '' }).textContent.replace('Sample', '').trim(), text: c.textContent.replace(/\s+/g, ' ').trim(),
         leak: all.some(x => c.textContent.includes(x.near_address.split(',')[0]) || c.textContent.includes(x.host_phone)) })) }; });
-  ok(on.where === 'Near Baner · Change' && on.count === '3 parties' && on.filters === 'All,Today,This weekend,Free entry' && on.cards.length === 3, 'switched on: "' + on.where + '", ' + on.count + ', with Today / This weekend / Free entry');
-  ok(on.cards.every(c => /^\d{1,2}$/.test(c.day) && /\d\.\d km/.test(c.text) && /\d{1,2}:\d\d [ap]m/.test(c.text) && /(Free entry|Chip in ₹)/.test(c.text) && /(spots? left|Full)/.test(c.text) && /Hosted by \w+/.test(c.text) && !c.leak),
-    'each card shows the day, what it is, when and how far, what it costs, the spots and the host; never an address or a number: ' + on.cards.map(c => c.title).join(' / '));
+  ok(on.where === 'Near Baner · Change Host a party' && on.count === '3 parties' && on.filters === 'All,Today,This weekend,Free entry,🎲 Game night,🏏 Match screening,🍲 Potluck' && on.cards.length === 3,
+    'switched on: "' + on.where + '", ' + on.count + ', with Today / This weekend / Free entry and the kinds that are on: ' + on.filters);
+  ok(on.cards.every(c => /^(Tonight|Today|Tomorrow|[A-Z]\w+day|\w{3},? \d{1,2} \w{3}) · \d{1,2}(:\d\d)? [ap]m$/.test(c.when) && /\d\.\d km/.test(c.text) && /4 hours/.test(c.text) && /(Free entry|Chip in ₹)/.test(c.text) && /(spots? left|Full)/.test(c.text)
+      && /(\d+ going|Be the first to ask)/.test(c.text) && /Hosted by \w+/.test(c.text) && !c.leak),
+    'each card shows when (the way people say it), what it is, how far and how long, what it costs, who\'s going, the spots and the host; never an address or a number: ' + on.cards.map(c => c.when + ' ' + c.title).join(' / '));
   ok(on.cards.every(c => c.kind.toLowerCase() !== c.title.toLowerCase()) && on.cards.some(c => c.kind === 'Game night'), 'the kind of party is named when the title doesn\'t already say it');
   const type = await p.evaluate(() => { const odd = new Set(); document.querySelectorAll('#view-parties *').forEach(e => { if(!e.offsetParent || e.closest('svg') || ![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return;
     const s = parseFloat(getComputedStyle(e).fontSize); if(s >= 12 && s <= 21 && ![12.5, 14, 16, 21].includes(s)) odd.add(s + ' ' + e.className); }); return [...odd]; });
@@ -78,12 +80,12 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   await p.fill('#nearNote', 'Board games fan!'); await p.click('#nearAsk [type=submit]'); await p.waitForTimeout(700);
   await p.evaluate(() => $('dlgNear').close()); await p.waitForTimeout(900);
   const mine = await p.evaluate(() => { const hs = [...document.querySelectorAll('#pnBody .pn-h h2')].map(x => x.textContent), first = document.querySelector('#pnBody .pn-list .pn-card');
-    return { hs, title: first.querySelector('.pn-kind b').textContent, st: (first.querySelector('.nc-st') || {}).textContent, rest: (document.querySelectorAll('#pnBody .pn-h span')[0] || {}).textContent }; });
+    return { hs, title: first.querySelector('.pn-title').textContent, st: (first.querySelector('.nc-st') || {}).textContent, rest: (document.querySelectorAll('#pnBody .pn-h span')[0] || {}).textContent }; });
   ok(dlg.open && mine.hs[0] === 'Your parties' && mine.hs[1] === 'Near you' && mine.title === dlg.title && /Asked to join|You're in/.test(mine.st) && mine.rest === '2 parties',
     'ask to join "' + dlg.title + '": back on the list it is first, under "Your parties", marked "' + mine.st + '"');
-  // host one: the button starts a house party; a party you're hosting shows with how many asked
-  await p.click('#pnBody [data-fs-event=party]'); await p.waitForTimeout(600);
-  ok(await p.evaluate(() => $('dlgFs').open && $('fsdTitle').textContent === 'New house party'), '"Host a party" starts a new house party');
+  // host one: the button opens the one-screen form (p34 walks it); a party you're hosting shows with how many asked
+  await p.click('#pnBody .pn-hostcta [data-host-party]'); await p.waitForTimeout(600);
+  ok(await p.evaluate(() => $('dlgFs').open && $('fsdTitle').textContent === 'Host a party' && !!$('hpForm')), '"Host a party" opens the host\'s form');
   await closeDlgs(p);
   await p.evaluate(async () => { const gid = await api.splitCreate('Game night at mine', '🎲', [], 'party'), d = new Date(Date.now() + 3 * 864e5); d.setHours(19, 0, 0, 0);
     await api.partySave(gid, { occasion:'games', title:'Game night at mine', starts_at: d.toISOString(), ends_at: new Date(d.getTime() + 4 * 36e5).toISOString() });
