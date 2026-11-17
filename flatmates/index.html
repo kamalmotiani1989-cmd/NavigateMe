@@ -2379,27 +2379,135 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 .pn-filters{margin:0 0 14px}
 .pn-list{display:grid; gap:14px}
 @media (min-width:721px){ .pn-list{grid-template-columns:1fr 1fr; gap:18px} }
-.pn-card{display:flex; flex-direction:column; width:100%; padding:0; border:0; border-radius:var(--r-card); overflow:hidden; background:var(--surface); box-shadow:var(--card-shadow);
-  text-align:left; font:inherit; color:var(--text); cursor:pointer; transition:transform .15s, box-shadow .15s}
-.pn-card:hover{transform:translateY(-2px); box-shadow:0 18px 40px rgba(60,40,30,.14)} .pn-card:active{transform:scale(.99)}
-.pn-card:focus-visible{outline:3px solid var(--mark); outline-offset:3px}
-.pn-art{position:relative; display:flex; align-items:center; gap:14px; padding:16px 18px; overflow:hidden; background:var(--lav)}
-.pn-list .pn-card:nth-child(3n+2) .pn-art{background:var(--butter)} .pn-list .pn-card:nth-child(3n) .pn-art{background:var(--mint)}
-.pn-art::before{content:""; position:absolute; right:-34px; top:-54px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.34)}
-.pn-art > *{position:relative}
-.pn-date{flex:none; display:grid; justify-items:center; min-width:60px; padding:9px 10px 8px; border-radius:18px; background:#fff; line-height:1.1; box-shadow:0 8px 18px rgba(60,40,30,.10)}
-.pn-date b{font-size:var(--fs-l); font-weight:800; letter-spacing:-.02em} .pn-date small{font-size:var(--fs-xs); font-weight:700; color:var(--text-2); white-space:nowrap}
-.pn-kind{flex:1; min-width:0} .pn-kind b{display:block; font-size:var(--fs-l); line-height:1.15; letter-spacing:-.01em} .pn-kind small{display:block; margin-top:3px; font-size:var(--fs-xs); font-weight:700; color:var(--text)}
-.pn-emoji{flex:none; font-style:normal; font-size:40px; line-height:1}
-.pn-body{display:grid; gap:11px; padding:14px 18px 16px}
-.pn-meta{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:var(--fs-s); color:var(--text-2)} .pn-meta span{display:inline-flex; align-items:center; gap:6px}
-.pn-chips{display:flex; flex-wrap:wrap; gap:6px} .pn-chips i{font-style:normal; font-size:var(--fs-xs); font-weight:700; padding:5px 11px; border-radius:999px; background:var(--surface-2); color:var(--text)}
-.pn-chips i.few{background:var(--coral)}
+/* The feed of 17 Nov (Kamal: "Take the idea for parties nearby dont copy but make it awesome"). A party is a card
+   with a cover: a pale orange panel, a string of lights and the kind's emoji, drawn (no photo is needed). On the
+   cover: when it is, the way people say it, and a heart to keep it. Under it: what it is, where and how far, what
+   it costs, how full it is, who's hosting. */
+.pn-card{position:relative; display:flex; flex-direction:column; width:100%; padding:0; border:0; border-radius:var(--r-card); overflow:hidden; background:var(--surface); box-shadow:var(--card-shadow);
+  text-align:left; color:var(--text); cursor:pointer; transition:transform .15s, box-shadow .15s}
+@media (hover:hover){ .pn-card:hover{transform:translateY(-2px); box-shadow:var(--card-shadow-hi)} }
+.pn-card:active{transform:scale(.99)}
+/* the title is the button: it reaches over the whole card (and over a "How was it?" row), so a tap anywhere opens the
+   party; the heart and the thumbs are buttons of their own on top of it */
+.pn-open{padding:0; border:0; background:none; font:inherit; color:inherit; text-align:left; cursor:pointer}
+.pn-open::after{content:""; position:absolute; inset:0; z-index:1; border-radius:inherit}
+.pn-open:focus-visible{outline:0} .pn-open:focus-visible::after{outline:3px solid var(--mark); outline-offset:-3px}
+.pn-card.over .pc{filter:grayscale(.9)} .pn-card.over .pn-title{color:var(--text-2)}
+.pn-cover{position:relative; flex:none; height:136px}
+.pc{position:absolute; inset:0; display:grid; place-items:center; overflow:hidden; background:radial-gradient(120% 90% at 100% 0%, rgba(255,255,255,.62) 0, transparent 55%) var(--lav)}
+.pc.t1{background-color:var(--butter)} .pc.t2{background-color:var(--hi)} .pc.t3{background-color:var(--band-2)}
+.pc-lights{position:absolute; left:0; top:0; width:100%; height:auto}
+.pc-lights .w{stroke:var(--orange-pale); stroke-width:1.5; stroke-linecap:round}
+.pc-lights .b0{fill:var(--orange)} .pc-lights .b1{fill:var(--orange-pale)} .pc-lights .b2{fill:#fff; stroke:var(--orange-pale); stroke-width:1.5} .pc-lights .b3{fill:var(--orange-deep)}
+@media (prefers-reduced-motion:no-preference){ .pc-lights circle{animation:pcglow 3s ease-in-out infinite} }
+@keyframes pcglow{0%, 100%{opacity:1} 50%{opacity:.4}}
+.pc-ring{position:absolute; left:50%; top:50%; width:150px; height:150px; margin:-58px 0 0 -75px; border-radius:50%; background:rgba(255,255,255,.4)}
+.pc-emoji{position:relative; display:grid; place-items:center; width:76px; height:76px; margin-top:26px; border-radius:50%; background:#fff; font-style:normal; font-size:40px; line-height:1;
+  box-shadow:0 10px 24px rgba(60,40,30,.14)}
+.pc.big .pc-ring{width:190px; height:190px; margin:-76px 0 0 -95px} .pc.big .pc-emoji{width:92px; height:92px; font-size:48px; margin-top:30px}
+.pn-when{position:absolute; left:12px; bottom:12px; display:inline-flex; align-items:center; gap:6px; padding:6px 12px 6px 9px; border-radius:999px; background:#fff; color:var(--text);
+  font-size:var(--fs-xs); font-weight:800; box-shadow:0 6px 16px rgba(60,40,30,.12)}
+.pn-when svg{flex:none; color:var(--orange)}
+.pn-save{position:absolute; top:10px; right:10px; display:grid; place-items:center; width:40px; height:40px; padding:0; border:0; border-radius:50%; background:#fff; color:var(--text); cursor:pointer;
+  box-shadow:0 6px 16px rgba(60,40,30,.12); transition:transform .12s}
+.pn-save{z-index:2} .pn-save::after{content:""; position:absolute; inset:-4px; border-radius:50%}
+.pn-save:active{transform:scale(.9)} .pn-save:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
+.pn-save[aria-pressed="true"]{color:var(--orange)} .pn-save[aria-pressed="true"] svg{fill:currentColor}
+.pn-st{position:absolute; left:12px; top:12px; padding:5px 11px; background:#fff; color:var(--text); box-shadow:0 6px 16px rgba(60,40,30,.12)}
+.pn-st.accepted{background:var(--orange); color:#fff}
+.pn-body{display:grid; gap:10px; padding:14px 18px 16px}
+.pn-kind{margin:0; font-size:var(--fs-xs); font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2)}
+.pn-kind .smp{letter-spacing:0; text-transform:none}
+.pn-title{margin:-6px 0 0; font-family:var(--serif); font-weight:400; font-size:var(--fs-l); line-height:1.15; color:var(--text)}
+.pn-meta{display:flex; flex-wrap:wrap; gap:6px 18px; margin:0; font-size:var(--fs-s); color:var(--text-2)} .pn-meta span{display:inline-flex; align-items:center; gap:6px}
+.pn-chips{display:flex; flex-wrap:wrap; gap:6px; margin:0} .pn-chips i{font-style:normal; font-size:var(--fs-xs); font-weight:700; padding:5px 11px; border-radius:999px; background:var(--surface-2); color:var(--text)}
+.pn-going{display:flex; align-items:center; gap:10px; margin:0; font-size:var(--fs-s); color:var(--text-2)}
+.pn-going b{color:var(--text)} .pn-going > span:last-child{margin-left:auto}
+.pn-going.few > span:last-child{color:var(--orange-text); font-weight:700}
+.pn-bar{flex:none; width:76px; height:6px; border-radius:999px; background:var(--surface-2); overflow:hidden} .pn-bar i{display:block; height:100%; border-radius:999px; background:var(--orange)}
 .pn-foot{display:flex; align-items:center; gap:10px; padding-top:12px; box-shadow:inset 0 1px 0 var(--hair)}
 .pn-av{flex:none; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:var(--ink); color:#fff; font-weight:800; font-size:var(--fs-s)}
 .pn-host{flex:1; min-width:0} .pn-host b{display:block; font-size:var(--fs-s)} .pn-host small{display:block; font-size:var(--fs-xs); color:var(--text-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .pn-go{flex:none; padding:7px 16px; border-radius:999px; background:var(--ink); color:#fff; font-weight:700; font-size:var(--fs-s)}
-/* before it's switched on: what it is, in three lines, and the switch */
+/* the tools over the cards: a search, the lenses, and the order */
+.pn-tools{display:grid; gap:10px; margin:0 0 12px} .pn-tools .pn-filters{margin:0}
+.pn-search{display:flex; align-items:center; gap:8px; margin:0; padding:0 14px; border-radius:16px; background:var(--surface); box-shadow:inset 0 0 0 1.5px var(--line-2); color:var(--text-2); cursor:text}
+.pn-search:focus-within{box-shadow:inset 0 0 0 2px var(--orange), 0 0 0 4px rgba(194,65,12,.14)}
+.pn-search svg{flex:none}
+.pn-search input[type=search]{flex:1; min-width:0; width:auto; padding:12px 0; border:0; border-radius:0; background:none; box-shadow:none; font-size:var(--fs-m); font-weight:500; color:var(--text)}
+.pn-search input[type=search]:focus{background:none; box-shadow:none}
+.pn-sortline{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 10px; font-size:var(--fs-s); color:var(--text-2)}
+.pn-sortline label{display:inline-flex; align-items:center; gap:6px; margin:0 0 0 auto; font-size:var(--fs-s); font-weight:600; color:var(--text-2)}
+.pn-sortline select{width:auto; padding:6px 4px 6px 6px; border-radius:10px; background:none; box-shadow:none; font-size:var(--fs-s); font-weight:700; color:var(--text); cursor:pointer}
+@media (max-width:720px){ .pn-tools .pn-filters{margin-right:-20px; padding-right:20px} }
+@media (min-width:721px){ .pn-search{max-width:460px} }
+/* the two pills on the band: where, and "Host a party" */
+#pnWhere{display:flex; flex-wrap:wrap; gap:8px} #pnWhere:empty{display:none}
+#pnWhere .pn-hostbtn{background:var(--orange); color:#fff}
+#pnWhere .pn-hostbtn:hover{background:var(--orange-2)}
+/* a party you went to: the thumbs sit at the end of its row */
+.pn-past{position:relative; cursor:pointer} .pn-past .pn-open{display:block; font-weight:700; border-radius:16px} .pn-past .thumbs{position:relative; z-index:2; flex:none}
+/* a party's own page: the cover, what to expect, how full it is, the facts, and how joining works in three steps.
+   On a phone a bar at the foot leads to the request form until the form is in view. */
+.near-hero{position:relative; height:172px; margin:0 0 14px; border-radius:var(--r-card); overflow:hidden}
+.near-kind{margin:0 0 4px}
+.near-line{margin:0 0 14px; color:var(--text-2)}
+.near-meter{margin:0 0 16px; padding:14px 16px; border-radius:18px; background:var(--surface-2)}
+.near-meter .pn-bar{display:block; width:100%; height:8px; background:#fff}
+.near-meter p{display:flex; justify-content:space-between; gap:10px; margin:10px 0 0; font-size:var(--fs-s); color:var(--text-2)}
+.near-meter b{color:var(--text)} .near-meter.few p span{color:var(--orange-deep); font-weight:700}
+#nearBody .near-host{margin:0 0 4px}
+#nearBody .near-line + #nearAct{margin:0 0 16px} #nearBody .near-line + #nearAct > .pt-card:first-child{margin-top:0}
+.near-steps{list-style:none; margin:18px 0 4px; padding:0}
+.near-steps li{position:relative; display:flex; gap:12px; padding:0 0 16px} .near-steps li:last-child{padding-bottom:0}
+.near-steps li::before{content:""; position:absolute; left:15px; top:34px; bottom:2px; width:2px; border-radius:2px; background:var(--orange-line)}
+.near-steps li:last-child::before{display:none}
+.near-steps i{flex:none; display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:var(--orange-soft); color:var(--orange-deep); font-style:normal; font-weight:800; font-size:var(--fs-s)}
+.near-steps b{display:block} .near-steps p{margin:2px 0 0; font-size:var(--fs-s); color:var(--text-2)}
+.near-bar{position:sticky; bottom:0; z-index:2; display:flex; align-items:center; gap:12px; margin:18px -20px -28px; padding:12px 20px; background:var(--surface);
+  box-shadow:0 -1px 0 var(--hair), 0 -10px 24px rgba(60,40,30,.06)}
+.near-bar[hidden]{display:none}
+.near-bar span{flex:1; min-width:0} .near-bar b{display:block} .near-bar small{display:block; font-size:var(--fs-s); color:var(--text-2)}
+.near-bar .btn{flex:none}
+/* "Host a party" in one screen: the card people nearby will see at the top, then what, when, who, entry, where */
+.hp-cap{margin:0 0 8px; font-size:var(--fs-xs); font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--text-2)}
+.hp-prev{margin:0 0 6px; pointer-events:none} .hp-prev .pn-card{box-shadow:0 0 0 1px var(--hair), var(--card-shadow)} .hp-prev .pc-lights circle{animation:none}
+.hp-form .section-h{margin:22px 0 12px}
+.hp-chips{margin:0 0 14px} .hp-form .field .hp-chips{margin:0}
+@media (max-width:640px){ .hp-chips{margin-right:-20px; padding-right:20px} }
+.hp-row{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 16px; font-weight:700}
+.hp-row small{display:block; font-size:var(--fs-s); font-weight:500; color:var(--text-2)}
+.hp-row .stepper{flex:none} .stepper input{width:44px; padding:6px 0; border-radius:8px; background:none; box-shadow:none; text-align:center; font-weight:800}
+.hp-form .form-err{margin:12px 0 0}
+.hp-bar b, .hp-bar small{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* a party you're hosting is a link to its group: a card, so no underline */
+a.near-card{text-decoration:none}
+/* Parties on a map: List | Map by the heading; each mark is the kind's emoji on a white disc in the middle of its circle,
+   with a count when several parties share the square; "You" is where you measure from. The card of the mark you
+   tapped sits over the foot of the map, above the map's own credit line. */
+.pn-h-near{align-items:center} .pn-h-near #pnCount{margin-right:auto}
+.pn-view{height:40px} .pn-view button{padding:0 16px}
+.pn-map{position:relative; margin:0 0 4px}
+.pn-map-el{height:440px; height:clamp(320px, calc(100dvh - 310px), 520px); border-radius:var(--r-card); overflow:hidden; background:var(--surface-2); box-shadow:0 0 0 1px var(--line)}
+@media (min-width:721px){ .pn-map-el{height:520px} }
+.pn-maphint{margin:10px 2px 0}
+.pn-pin{position:relative; display:grid; place-items:center; width:44px; height:44px; border-radius:50%; background:#fff; font-size:24px; line-height:1; transform:translateY(50%);
+  box-shadow:0 0 0 2px var(--orange), 0 8px 18px rgba(60,40,30,.22); transition:transform .12s}
+.pn-pin.on{box-shadow:0 0 0 3px var(--ink), 0 10px 22px rgba(60,40,30,.3); transform:translateY(50%) scale(1.12)}
+.pn-pin i{position:absolute; top:-6px; right:-6px; display:grid; place-items:center; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:var(--orange); color:#fff;
+  font:800 var(--fs-xs) var(--body); font-style:normal; box-shadow:0 0 0 2px #fff}
+.pn-me{display:grid; justify-items:center; gap:3px; transform:translateY(8px); pointer-events:none}
+.pn-me b{padding:2px 8px; border-radius:999px; background:var(--ink); color:#fff; font:800 var(--fs-xs) var(--body); white-space:nowrap; box-shadow:0 0 0 2px #fff}
+.pn-me i{display:block; width:14px; height:14px; border-radius:50%; background:var(--ink); box-shadow:0 0 0 3px #fff, 0 4px 10px rgba(28,25,23,.35)}
+/* the card sits at the top of the map, clear of the zoom buttons: the map's credit line, the help button and the bar at the foot of the screen stay free */
+.pn-map-card{position:absolute; left:56px; right:10px; top:10px; z-index:1000; display:grid; gap:8px; max-height:62%; overflow:auto; padding:2px 2px 6px}
+.pn-map-card[hidden]{display:none}
+@media (max-width:720px){ .pn-map-card{left:10px} .pn-map .leaflet-control-zoom{display:none} }
+.pn-mapc{box-shadow:0 0 0 1px var(--hair), 0 12px 28px rgba(60,40,30,.22)} .pn-mapc .pt-mini-ic{background:var(--orange-soft)}
+.pn-mapc:focus-visible{outline:3px solid var(--mark); outline-offset:2px}
+.pn-map-x{position:absolute; top:-4px; right:-4px; z-index:2; display:grid; place-items:center; width:28px; height:28px; padding:0; border:0; border-radius:50%; background:var(--ink); color:#fff;
+  font-size:var(--fs-m); line-height:1; cursor:pointer; box-shadow:0 0 0 2px #fff}
+.pn-map-x::after{content:""; position:absolute; inset:-8px; border-radius:50%}
 .pn-intro{margin:8px 0 0; padding:24px 22px 22px; border-radius:var(--r-card); background:var(--surface); box-shadow:var(--card-shadow)}
 .pn-intro h2{font-size:clamp(21px, 3.4vw, 26px); font-weight:400; letter-spacing:-.03em} .pn-intro > p{color:var(--text-2); margin:8px 0 16px}
 .pn-intro-art{display:flex; align-items:center; justify-content:center; margin:2px 0 18px}
@@ -3448,7 +3556,7 @@ const CLOSE_SVG = svgIcon("M6 6l12 12M18 6L6 18", 18, 2.4);
 const LEFT_SVG = svgIcon("M19 12H5M11 6l-6 6 6 6", 18, 2.4);
 // Line icons that replace emoji in the app's own words (badges, notices, empty states), in the same style as the
 // navigation icons. Categories people pick (FlatMart, Flatsplits, party occasions) and share images keep their emoji.
-const ICON = { bolt:"M13 2L4 14h7l-1 8 9-12h-7l1-8z", gift:"M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 000 5h4zM12 8s1.5-5 4-5a2.5 2.5 0 010 5h-4z", sofa:"M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2zM5 18v2M19 18v2", box:"M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8", party:"M4 20l5-14 9 9-14 5zM14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0", moon:"M21 13A9 9 0 1111 3a7 7 0 0010 10z", cook:"M4 3v7a2 2 0 002 2 2 2 0 002-2V3M6 12v9M18 21V3c-2 0-4 2-4 6v4h4", users:"M16 20v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 11a4 4 0 100-8 4 4 0 000 8zM22 20v-1a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8", pin:"M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12zM12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z", heart:"M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z", bell:"M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0", receipt:"M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5", chat:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", leaf:"M11 20A7 7 0 014 13c0-5 4-9 16-10-1 12-5 16-10 16zM4 21c3-5 6-8 10-10", radio:"M4 9h16v11H4zM8 9l9-5M7 14.5h4M14 13h3M14 16h3", plane:"M2 16l20-8-8 14-2-6-10 0zM12 16l10-8", home:"M3 11l9-8 9 8M5 9.5V21h14V9.5", up:"M7 10v11H3V10zM7 10l4-8a2.5 2.5 0 012.5 2.5V9h5.6a2 2 0 012 2.3l-1.4 8A2 2 0 0117.7 21H7", down:"M17 14V3h4v11zM17 14l-4 8a2.5 2.5 0 01-2.5-2.5V15H4.9a2 2 0 01-2-2.3l1.4-8A2 2 0 016.3 3H17",
+const ICON = { clock:"M12 7v5l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z", search:"M21 21l-4.3-4.3M11 18a7 7 0 100-14 7 7 0 000 14z", bolt:"M13 2L4 14h7l-1 8 9-12h-7l1-8z", gift:"M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 000 5h4zM12 8s1.5-5 4-5a2.5 2.5 0 010 5h-4z", sofa:"M4 11V8a2 2 0 012-2h12a2 2 0 012 2v3M2 13a2 2 0 014 0v2h12v-2a2 2 0 014 0v5H2zM5 18v2M19 18v2", box:"M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8", party:"M4 20l5-14 9 9-14 5zM14 4l1-2M18 8l2-1M15 9l4-4M10 3c1 1 1 2 0 3M21 14c-1-1-2-1-3 0", moon:"M21 13A9 9 0 1111 3a7 7 0 0010 10z", cook:"M4 3v7a2 2 0 002 2 2 2 0 002-2V3M6 12v9M18 21V3c-2 0-4 2-4 6v4h4", users:"M16 20v-1a4 4 0 00-4-4H6a4 4 0 00-4 4v1M9 11a4 4 0 100-8 4 4 0 000 8zM22 20v-1a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8", pin:"M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12zM12 11.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z", heart:"M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 000-7.8z", bell:"M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0", receipt:"M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2zM8 8h8M8 12h8M8 16h5", chat:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z", leaf:"M11 20A7 7 0 014 13c0-5 4-9 16-10-1 12-5 16-10 16zM4 21c3-5 6-8 10-10", radio:"M4 9h16v11H4zM8 9l9-5M7 14.5h4M14 13h3M14 16h3", plane:"M2 16l20-8-8 14-2-6-10 0zM12 16l10-8", home:"M3 11l9-8 9 8M5 9.5V21h14V9.5", up:"M7 10v11H3V10zM7 10l4-8a2.5 2.5 0 012.5 2.5V9h5.6a2 2 0 012 2.3l-1.4 8A2 2 0 0117.7 21H7", down:"M17 14V3h4v11zM17 14l-4 8a2.5 2.5 0 01-2.5-2.5V15H4.9a2 2 0 01-2-2.3l1.4-8A2 2 0 016.3 3H17",
   flag:"M4 22V4M4 4h13l-2 4 2 4H4", door:"M4 21h16M6 21V4a1 1 0 011-1h10a1 1 0 011 1v17M14 12h.01", phone:"M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1.9.4 1.8.7 2.7a2 2 0 01-.5 2.1L8 9.8a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.7.7a2 2 0 011.7 2z" };
 const ic = (name, size = 16, w = 2) => svgIcon(ICON[name], size, w);
 /* ==================================================================== */
@@ -5445,6 +5553,8 @@ Object.assign(demoApi, {
       km: n.pin && n.pin.lat ? Math.round(kmBetween(n.pin, p.near_geo) * 10) / 10 : null, entry:p.entry, entry_chip:p.entry_chip, covers:p.covers, covers_other:p.covers_other,
       guest_limit:p.guest_limit, spots_left: Math.max(0, p.guest_limit - this.partyTaken(p)), plus_ones:p.plus_ones, who:p.who, house_rules:p.house_rules, cancelled:p.cancelled,
       ended: this.partyEnded(p), my_rating: ((this.ratings().find(y => y.key === p.id + ":host") || {}).up ?? null),
+      // for the map: the pin rounded to two decimals, as the server does (a circle about a kilometre across, never the flat)
+      zone: p.near_geo && p.near_geo.lat ? { lat: Math.round(p.near_geo.lat * 100) / 100, lng: Math.round(p.near_geo.lng * 100) / 100 } : null,
       host:p.host_name, host_vibe:p.host_vibe, sample: !!p.sample, my_request: r ? { id:r.id, status:r.status, plus:r.plus, note:r.note } : null };
   },
   // Your own parties count as nearby parties for other people; samples are the demo's other hosts.
@@ -5538,7 +5648,10 @@ Object.assign(demoApi, {
   async partyNearby(){
     if(!this.me_()) throw new Error("not-signed-in");
     const mine = id => this.partyReqs().some(r => r.party_id === id && r.user_phone === this.me_() && ["pending", "accepted"].includes(r.status));
-    return this.nearAll().filter(p => p.open && (!this.partyCantSee(p) || (mine(p.id) && new Date(p.ends_at || p.starts_at) > new Date())))
+    // a party I went to stays for three days after it ends, so I can say how it was (as fm_party_nearby)
+    const went = p => !p.cancelled && this.partyEnded(p) && Date.now() - new Date(p.ends_at || new Date(p.starts_at).getTime() + 4 * 36e5) < 3 * 864e5
+      && this.partyReqs().some(r => r.party_id === p.id && r.user_phone === this.me_() && r.status === "accepted");
+    return this.nearAll().filter(p => p.open && (!this.partyCantSee(p) || (mine(p.id) && new Date(p.ends_at || p.starts_at) > new Date()) || went(p)))
       .sort((a, b) => a.starts_at.localeCompare(b.starts_at)).map(p => this.partyNearJson(p));
   },
   // Nearby parties, host side: same rules as fm_party_open_save / fm_party_open_for_group.
@@ -11674,7 +11787,7 @@ function ptNearHtml(o){
   const on = !!o.open, chip = o.entry === "chip", r = o.radius_km || 3;
   return `<details class="pt-extra pt-near" id="ptNear"${on ? " open" : ""}><summary>Open to people nearby <span class="opt-l">${on ? "on" : "off"}</span></summary>
     <label class="switch" style="margin:4px 0 6px"><input type="checkbox" id="ptOpen"${on ? " checked" : ""}><span>Let people nearby ask to join</span></label>
-    <p class="hint" style="margin:0 0 12px">Only signed-in people 21 or older who've switched on “Show me parties nearby” see it. They see the area and the distance, never your address or number, until you accept them.</p>
+    <p class="hint" style="margin:0 0 12px">Only signed-in people 21 or older who've switched on “Show me parties nearby” see it. They see the area, how far it is and, on the map, a circle about a kilometre wide. Never your address or number, until you accept them.</p>
     <div id="ptOpenBox"${on ? "" : " hidden"}>
       <div class="field"><label for="ptLimit">How many guests from nearby</label><input type="text" id="ptLimit" inputmode="numeric" maxlength="2" value="${o.guest_limit || ""}" placeholder="e.g. 6"></div>
       <div class="field"><span class="lbl">Entry</span><div class="seg" role="radiogroup" aria-label="Entry">
@@ -11966,35 +12079,95 @@ const nearWhen = p => new Date(p.starts_at).toLocaleDateString("en-IN", { weekda
 const nearPlace = p => `${p.area}${p.km != null ? ", " + p.km.toFixed(1) + " km" : ""}`;
 const nearSpots = p => p.spots_left > 0 ? `${p.spots_left} ${p.spots_left === 1 ? "spot" : "spots"} left` : "Full";
 const NEAR_STATUS = { pending:"Asked to join", accepted:"You're in", declined:"Not this time", withdrawn:"", cancelled:"Called off" };
-// ---- Parties: its own place (Kamal, 15 Nov). The same nearby parties, requests and rules as before; they used to
-// sit inside Splits (the list) and Account (the switch). Account keeps the switch as a setting.
-let pnFilter = "all";
+// ---- Parties: its own place (Kamal, 15 Nov), and a feed since 17 Nov ("Take the idea for parties nearby dont copy but
+// make it awesome", with recordings of a hangouts app). The same nearby parties, requests and rules as before; they
+// used to sit inside Splits (the list) and Account (the switch). Account keeps the switch as a setting.
+// What the feed adds, all from what the server already sends:
+//   * a cover on every party, with when it is the way people say it ("Tonight · 8 pm") and a heart to keep it;
+//   * how full it is: a bar, "4 going", "2 spots left";
+//   * one row of lenses (All, Today, This weekend, Free entry, then each kind of party that is on near you, then
+//     Saved), a search over what, where and who, and three orders;
+//   * "How was it?" for the parties you went to.
+// No photo is needed for a cover (Kamal, 15 Nov: no photos required): it is drawn. Never an address.
+let pnFilter = "all", pnQuery = "", pnSort = "soon", pnData = null;
 const PN_FILTERS = [["all", "All"], ["today", "Today"], ["weekend", "This weekend"], ["free", "Free entry"]];
+const PN_SORTS = [["soon", "Soonest first"], ["near", "Nearest first"], ["fill", "Filling up"]];
+// Kept for later: on this phone only (nothing about it reaches the host or the server).
+const partySaved = () => Array.isArray(state.partySaved) ? state.partySaved : (state.partySaved = []);
+const isPartySaved = code => partySaved().includes(code);
 function pnMatch(p, f){
   const d = new Date(p.starts_at), now = new Date();
   if(f === "today") return d.toDateString() === now.toDateString();
   if(f === "weekend") return (d - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5 < 7 && (d.getDay() === 6 || d.getDay() === 0 || (d.getDay() === 5 && d.getHours() >= 17));
   if(f === "free") return p.entry !== "chip";
+  if(f === "saved") return isPartySaved(p.code);
+  if(String(f).startsWith("k:")) return (PARTY_KINDS[p.occasion] ? p.occasion : "party") === f.slice(2);
   return true;
 }
-// One party as a card: the day, what it is, when and how far, what it costs, who's hosting. Never an address.
-function nearCardHtml(p){
-  const st = p.my_request && NEAR_STATUS[p.my_request.status], d = new Date(p.starts_at), vt = vibeType(p.host_vibe), few = p.spots_left > 0 && p.spots_left <= 3;
-  return `<button class="pn-card" type="button" data-near="${esc(p.code)}">
-    <span class="pn-art"><span class="pn-date"><b>${d.getDate()}</b><small>${esc(d.toLocaleDateString("en-IN", { weekday:"short" }))} · ${esc(d.toLocaleDateString("en-IN", { month:"short" }))}</small></span>
-      <span class="pn-kind"><b>${esc(p.title)}</b><small>${String(p.title).trim().toLowerCase() === ptKind(p.occasion)[1].toLowerCase() ? "" : esc(ptKind(p.occasion)[1])}${p.sample ? " " + SAMPLE_TAG : ""}</small></span>
-      <i class="pn-emoji" aria-hidden="true">${ptKind(p.occasion)[0]}</i></span>
-    <span class="pn-body">
-      <span class="pn-meta"><span>${ic("pin", 16)}${esc(nearPlace(p))}</span><span>${ic("bell", 16)}${esc(ptTimes(p))}</span></span>
-      <span class="pn-chips"><i>${esc(ptEntryText(p))}</i>${p.who !== "all" ? `<i>${esc(PT_WHO[p.who])}</i>` : ""}<i${few ? ' class="few"' : ""}>${esc(nearSpots(p))}</i></span>
-      <span class="pn-foot"><span class="pn-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span>
+const pnFound = (p, q) => !q || [p.title, ptKind(p.occasion)[1], p.area, p.host].some(t => String(t || "").toLowerCase().includes(q));
+const pnGoing = p => Math.max(0, (Number(p.guest_limit) || 0) - (Number(p.spots_left) || 0));
+const pnOrder = { soon: (x, y) => String(x.starts_at).localeCompare(String(y.starts_at)), near: (x, y) => (x.km ?? 99) - (y.km ?? 99) || String(x.starts_at).localeCompare(String(y.starts_at)),
+  fill: (x, y) => (x.spots_left || 0) / (x.guest_limit || 1) - (y.spots_left || 0) / (y.guest_limit || 1) || String(x.starts_at).localeCompare(String(y.starts_at)) };
+// When, the way people say it: "Tonight · 8 pm", "Tomorrow · 7:30 pm", "Saturday · 8 pm", and from a week out the date.
+const ptClock = d => ptTime(d).replace(":00", "");
+function nearWhenChip(p){
+  const d = new Date(p.starts_at), now = new Date(), mid = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()), days = Math.round((mid(d) - mid(now)) / 864e5), t = ptClock(p.starts_at);
+  if(p.cancelled) return "Called off";
+  if(p.ended) return "Ended " + d.toLocaleDateString("en-IN", { day:"numeric", month:"short" });
+  if(d <= now) return "On now";
+  if(days === 0) return (d.getHours() >= 17 ? "Tonight" : "Today") + " · " + t;
+  if(days === 1) return "Tomorrow · " + t;
+  if(days < 7) return d.toLocaleDateString("en-IN", { weekday:"long" }) + " · " + t;
+  return d.toLocaleDateString("en-IN", { weekday:"short", day:"numeric", month:"short" }) + " · " + t;
+}
+// How long it runs, when the host said when it ends: "4 hours".
+function nearLong(p){
+  if(!p.ends_at) return "";
+  const h = Math.round((new Date(p.ends_at) - new Date(p.starts_at)) / 36e5 * 2) / 2;
+  return h > 0 && h <= 24 ? `${h} ${h === 1 ? "hour" : "hours"}` : "";
+}
+// A party's cover, drawn: a warm tint, a string of lights and the kind's emoji. The same party gets the same cover
+// every time (the tint comes from its code). Decoration only: everything it says is said again in words on the card.
+function pnCoverHtml(p, big){
+  const k = ptKind(p.occasion), h = hue("pc" + (p.code || p.title || "")), n = 9;
+  const bulbs = Array.from({ length: n }, (_, i) => { const t = (i + .5) / n, x = Math.round(360 * t), y = Math.round(4 + 96 * t * (1 - t));
+    return `<path class="w" d="M${x} ${y}v7"/><circle class="b${(i + h) % 4}" cx="${x}" cy="${y + 11}" r="5" style="animation-delay:-${((i * 7 + h) % 30) / 10}s"/>`; }).join("");
+  return `<span class="pc t${h % 4}${big ? " big" : ""}" aria-hidden="true">
+    <svg class="pc-lights" viewBox="0 0 360 46" preserveAspectRatio="xMidYMin slice"><path class="w" d="M0 4 Q180 52 360 4" fill="none"/>${bulbs}</svg>
+    <i class="pc-ring"></i><i class="pc-emoji">${k[0]}</i></span>`;
+}
+// The kind of party in small capitals over its title, unless the title already says it ("Karaoke night").
+function pnKindHtml(p, cls){
+  const k = ptKind(p.occasion)[1], same = k.toLowerCase() === String(p.title || "").trim().toLowerCase();
+  return same && !p.sample ? "" : `<p class="pn-kind${cls ? " " + cls : ""}">${same ? "" : esc(k)}${p.sample ? " " + SAMPLE_TAG : ""}</p>`;
+}
+// One party as a card: its cover (when, kept or not, where I stand with it), then what it is, where and how far, what
+// it costs, how full it is and who's hosting. Never an address.
+// The title is the button and reaches over the whole card, so a tap anywhere opens the party; the heart is a button
+// of its own on top of it (a button inside a button would be lost to a screen reader).
+// preview: the same card on the host's form, as people nearby will see it (nothing on it to tap or keep).
+function nearCardHtml(p, preview){
+  const st = !p.cancelled && p.my_request && NEAR_STATUS[p.my_request.status], vt = vibeType(p.host_vibe), k = ptKind(p.occasion), going = pnGoing(p), long = nearLong(p);
+  const few = p.spots_left > 0 && p.spots_left <= 3, pct = p.guest_limit ? Math.min(100, Math.round(going / p.guest_limit * 100)) : 0;
+  return `<article class="pn-card${p.ended || p.cancelled ? " over" : ""}">
+    <div class="pn-cover">${pnCoverHtml(p)}
+      ${st ? `<span class="nc-st pn-st ${esc(p.my_request.status)}">${esc(st)}</span>` : ""}
+      <span class="pn-when">${ic("clock", 14)}${esc(nearWhenChip(p))}</span>
+      ${preview ? "" : `<button class="pn-save" type="button" data-pn-save="${esc(p.code)}" aria-pressed="${isPartySaved(p.code)}" aria-label="Keep this party for later">${ic("heart", 18)}</button>`}</div>
+    <div class="pn-body">
+      ${pnKindHtml(p)}
+      <h3 class="pn-title">${preview ? esc(p.title) : `<button type="button" class="pn-open" data-near="${esc(p.code)}">${esc(p.title)}</button>`}</h3>
+      <p class="pn-meta"><span>${ic("pin", 16)}${esc(nearPlace(p))}</span>${long ? ` <span>${ic("clock", 16)}${esc(long)}</span>` : ""}</p>
+      <p class="pn-chips"><i>${esc(ptEntryText(p))}</i>${p.who !== "all" ? `<i>${esc(PT_WHO[p.who])}</i>` : ""}</p>
+      <p class="pn-going${few ? " few" : ""}"><span class="pn-bar"><i style="width:${pct}%"></i></span><b>${going ? going + " going" : "Be the first to ask"}</b> <span>${esc(nearSpots(p))}</span></p>
+      <div class="pn-foot"><span class="pn-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span>
         <span class="pn-host"><b>Hosted by ${esc(p.host || "someone nearby")}</b><small>${vt ? esc(vt.emoji + " " + vt.title) : "Living style not shared yet"}</small></span>
-        ${st ? `<span class="nc-st ${esc(p.my_request.status)}">${esc(st)}</span>` : `<span class="pn-go">See</span>`}</span>
-    </span></button>`;
+        <span class="pn-go">See</span></div>
+    </div></article>`;
 }
 const pnHostCta = () => `<div class="pn-hostcta"><span class="pn-cta-ic" aria-hidden="true">${ic("party", 26, 1.8)}</span>
     <div><h2>Having people over?</h2><p>Open your game night or potluck to people nearby. You set how many can come, who it's for and who gets in.</p></div>
-    <button class="btn btn-primary" type="button" data-fs-event="party">Host a party</button></div>`;
+    <button class="btn btn-primary" type="button" data-host-party>Host a party</button></div>`;
 // The parties I'm hosting that haven't ended: each opens its group, where the invite card, the requests and the door list are.
 async function pnHosting(groups){
   const out = [];
@@ -12014,10 +12187,14 @@ const pnHostingHtml = list => list.length ? `<div class="pn-h"><h2>You're hostin
       <span class="nc-main"><b>${esc(p.title)}</b><small>${esc(nearWhen(p))}</small>
         <small>${open ? "Open to people nearby" : "Friends and flatmates only"}${asked ? ` · ${asked} asked to join` : ""}</small></span>
       ${asked ? `<span class="nc-st pending">${asked} to answer</span>` : `<span class="pt-go">Open</span>`}</a>`).join("")}</div>` : "";
+// The parties you went to: a thumbs up or down for the host, the same one as on the party's page.
+const pnPastHtml = list => list.length ? `<div class="pn-h"><h2>How was it?</h2></div><div class="near-list">${list.map(p =>
+    `<div class="near-card pn-past"><span class="pt-mini-ic" aria-hidden="true">${ptKind(p.occasion)[0]}</span>
+      <span class="nc-main"><button type="button" class="pn-open" data-near="${esc(p.code)}">${esc(p.title)}</button><small>${esc(nearWhen(p))} · hosted by ${esc(p.host || "someone nearby")}</small></span>${thumbsHtml(p.my_rating, `data-pn-rate="${esc(p.code)}"`)}</div>`).join("")}</div>` : "";
 async function renderParties(){
   const body = $("pnBody");
   if(isSplits()){
-    $("pnWhere").innerHTML = "";
+    $("pnWhere").innerHTML = ""; pnData = null; pnMapDrop();
     body.innerHTML = `<div class="pn-intro"><h2>Answer 12 quick questions first.</h2>
       <p>Parties nearby are for people who've told us how they live, so hosts know who's asking. It takes about two minutes.</p>
       <button class="btn btn-primary" type="button" data-go-rooms>Answer them</button></div>`;
@@ -12027,13 +12204,24 @@ async function renderParties(){
   try{ [near, feed, groups] = await Promise.all([loadNear(), api.partyFeed().catch(() => []), api.splitGroups().catch(() => [])]); }catch(err){ console.error(err); }
   const hosting = await pnHosting(groups || []);
   if(currentView !== "parties") return;
-  const me = near.me || {}, on = !!me.on, list = near.list || [];
-  $("pnWhere").innerHTML = on ? `<button class="gift-pill pn-where" type="button" data-near-pin>${ic("pin", 16)}Near ${esc(me.label || "your place")} · Change</button>` : "";
-  const rules = partyRulesHtml(false);
+  pnData = { me: near.me || {}, list: near.list || [], feed: feed || [], hosting };
+  drawParties();
+}
+// The lenses there are right now: the four that are always there, each kind of party that is on near you, and Saved.
+function pnLenses(rest){
+  const kinds = [...new Set(rest.map(p => PARTY_KINDS[p.occasion] ? p.occasion : "party"))].sort((x, y) => ptKind(x)[1].localeCompare(ptKind(y)[1]));
+  return PN_FILTERS.concat(kinds.length > 1 ? kinds.map(k => ["k:" + k, ptKind(k)[0] + " " + ptKind(k)[1]]) : [], rest.some(p => isPartySaved(p.code)) ? [["saved", "♥ Saved"]] : []);
+}
+function drawParties(){
+  if(!pnData) return;
+  const body = $("pnBody"), { me, list, feed, hosting } = pnData, on = !!me.on, rules = partyRulesHtml(false);
+  $("pnWhere").innerHTML = on ? `<button class="gift-pill pn-where" type="button" data-near-pin>${ic("pin", 16)}Near ${esc(me.label || "your place")} · Change</button>
+    <button class="gift-pill pn-where pn-hostbtn" type="button" data-host-party>${ic("party", 16)}Host a party</button>` : "";
   if(!on){
+    pnMapDrop();
     body.innerHTML = `<div class="pn-intro"><div class="pn-intro-art" aria-hidden="true"><i>🎲</i><span>${avCast(1)}</span><span>${avCast(0)}</span><span>${avCast(2)}</span><i>🍲</i></div>
         <h2>See who's having people over near you.</h2>
-        <ul class="pn-points"><li>${ic("pin", 18)}<span><b>What, when and how far.</b> You see the area, never the address.</span></li>
+        <ul class="pn-points"><li>${ic("pin", 18)}<span><b>What, when and how far,</b> on a list or a map. You see the area, never the address.</span></li>
           <li>${ic("users", 18)}<span><b>Ask to join.</b> The host sees your first name and how you live, and decides.</span></li>
           <li>${ic("door", 18)}<span><b>Once you're in,</b> you get the address, the host's number and a check-in code for the door.</span></li></ul>
         <button class="btn btn-primary btn-block" type="button" data-near-on>Show me parties near me</button>
@@ -12041,23 +12229,266 @@ async function renderParties(){
       ${ptFeedHtml(feed)}${pnHostingHtml(hosting)}${pnHostCta()}${rules}`;
     return;
   }
-  const mine = list.filter(p => p.my_request && ["pending", "accepted"].includes(p.my_request.status)), rest = list.filter(p => !mine.includes(p));
-  if(!PN_FILTERS.some(([k]) => k === pnFilter)) pnFilter = "all";
-  const shown = rest.filter(p => pnMatch(p, pnFilter));
-  body.innerHTML = `${mine.length ? `<div class="pn-h"><h2>Your parties</h2></div><div class="pn-list">${mine.map(nearCardHtml).join("")}</div>` : ""}
-    <div class="pn-h"><h2>Near you</h2><span>${rest.length} ${rest.length === 1 ? "party" : "parties"}</span></div>
-    ${rest.length ? `<div class="area-chips pn-filters" role="group" aria-label="Which parties">${PN_FILTERS.map(([k, t]) => `<button type="button" data-pn-filter="${k}" aria-pressed="${pnFilter === k}">${t}</button>`).join("")}</div>` : ""}
-    ${shown.length ? `<div class="pn-list">${shown.map(nearCardHtml).join("")}</div>`
-      : `<div class="empty pn-empty"><div class="empty-ic" aria-hidden="true">${ic("party", 30, 1.8)}</div><h3>${rest.length ? "Nothing for that" : "No parties near you right now"}</h3>
-          <p>${rest.length ? "Try another day, or see them all." : "Hosts open them a few days ahead, so check back. Or start one."}</p>
-          ${rest.length ? `<button class="btn btn-ghost" type="button" data-pn-filter="all">See all</button>` : ""}</div>`}
-    ${ptFeedHtml(feed)}${pnHostingHtml(hosting)}${pnHostCta()}${rules}
+  const live = list.filter(p => !p.ended), past = list.filter(p => p.ended && p.my_request && p.my_request.status === "accepted" && !p.cancelled);
+  const mine = live.filter(p => p.my_request && ["pending", "accepted"].includes(p.my_request.status)), rest = live.filter(p => !mine.includes(p));
+  pnMapDrop();
+  body.innerHTML = `${mine.length ? `<div class="pn-h"><h2>Your parties</h2></div><div class="pn-list">${mine.map(p => nearCardHtml(p)).join("")}</div>` : ""}
+    ${pnHostingHtml(hosting)}
+    <div class="pn-h pn-h-near"><h2>Near you</h2><span id="pnCount"></span>
+      ${rest.length ? `<div class="ds-view pn-view" id="pnView" role="group" aria-label="Show as"><button type="button" data-pn-view="list">List</button><button type="button" data-pn-view="map">Map</button></div>` : ""}</div>
+    ${rest.length ? `<div class="pn-tools"><label class="pn-search">${ic("search", 18)}<input type="search" id="pnSearch" value="${esc(pnQuery)}" placeholder="Search game night, potluck, an area" aria-label="Search parties near you" autocomplete="off" enterkeyhint="search"></label>
+      <div class="area-chips pn-filters" id="pnLenses" role="group" aria-label="Which parties"></div></div>` : ""}
+    <div id="pnResults"></div>
+    ${pnPastHtml(past)}${ptFeedHtml(feed)}${pnHostCta()}${rules}
     <p class="hint pn-off">Showing parties near ${esc(me.label || "your place")}. <button class="linkbtn" type="button" data-near-off>Stop showing me parties</button></p>`;
+  drawPnResults();
 }
-document.addEventListener("click", e => {
-  const f = e.target.closest("[data-pn-filter]"); if(f){ pnFilter = f.dataset.pnFilter; renderParties(); return; }
+// The lenses and what is under them (the cards, or the map): redrawn on their own, so the search box keeps what is
+// being typed and the map stays where it was dragged to.
+function drawPnResults(){
+  if(!pnData || !$("pnResults")) return;
+  const live = pnData.list.filter(p => !p.ended), rest = live.filter(p => !(p.my_request && ["pending", "accepted"].includes(p.my_request.status)));
+  const lenses = pnLenses(rest); if(!lenses.some(([k]) => k === pnFilter)) pnFilter = "all";
+  if($("pnLenses")) $("pnLenses").innerHTML = lenses.map(([k, t]) => `<button type="button" data-pn-filter="${esc(k)}" aria-pressed="${pnFilter === k}">${esc(t)}</button>`).join("");
+  const q = pnQuery.trim().toLowerCase(), shown = rest.filter(p => pnMatch(p, pnFilter) && pnFound(p, q)).sort(pnOrder[pnSort] || pnOrder.soon);
+  const map = state.pnView === "map" && rest.length > 0;
+  $("pnCount").textContent = `${rest.length} ${rest.length === 1 ? "party" : "parties"}`;
+  if($("pnView")) $("pnView").querySelectorAll("[data-pn-view]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.pnView === "map") === map)));
+  if(map){
+    // the map is made once and kept while the lenses and the search change what is on it
+    if(!$("pnMapEl")){ pnMapDrop(); $("pnResults").innerHTML = `<div class="pn-map"><div class="pn-map-el" id="pnMapEl" role="region" aria-label="Map of parties near you"></div>
+        <div class="pn-map-card" id="pnMapCard" hidden></div></div><p class="hint pn-maphint" id="pnMapHint"></p>`; }
+    drawPnMap(shown, rest.length);
+    return;
+  }
+  pnMapDrop();
+  $("pnResults").innerHTML = shown.length
+    ? `${rest.length > 1 ? `<p class="pn-sortline"><span>${shown.length === rest.length ? "" : `${shown.length} of ${rest.length}`}</span><label>Order <select id="pnSort" aria-label="Order of the parties">${PN_SORTS.map(([k, t]) => `<option value="${k}"${pnSort === k ? " selected" : ""}>${t}</option>`).join("")}</select></label></p>` : ""}
+      <div class="pn-list">${shown.map(p => nearCardHtml(p)).join("")}</div>`
+    : `<div class="empty pn-empty"><div class="empty-ic" aria-hidden="true">${ic("party", 30, 1.8)}</div><h3>${rest.length ? "Nothing for that" : "No parties near you right now"}</h3>
+        <p>${rest.length ? (q ? "Try another word, or see them all." : "Try another day, or see them all.") : "Hosts open them a few days ahead, so check back. Or start one."}</p>
+        ${rest.length ? `<button class="btn btn-ghost" type="button" data-pn-filter="all">See all</button>` : `<button class="btn btn-primary" type="button" data-host-party>Host a party</button>`}</div>`;
+}
+// ---- Parties on a map (Kamal, 17 Nov, with a recording of a hangouts app's map: "Check how the search happens on
+// parties own discover page through maps. Can we build this also"). The parties in reach of your place, each drawn
+// where it roughly is: a circle about a kilometre across with the flat somewhere in it, never a pin on the flat.
+// The server sends that rounded spot ('zone': two decimals, the rule a home's public pin follows) and nothing finer,
+// so the rule that the address comes only when the host says yes holds here too. Parties in the same square share
+// one mark with a count. Tap a mark: its parties show on a card over the map; tap one for its page.
+// The lenses and the search work on the map as they do on the list. A party from a server that sends no zone yet
+// stays off the map and the line under it says so.
+let pnMap = null, pnMapMaking = null, pnMapSel = "", pnMapShown = [], pnMapRings = [], pnMapFit = "", pnMapSeq = 0;
+const PN_ZONE_M = 800;   // reaches every corner of a square of the two-decimal grid anywhere in India
+const pnZoneKey = p => p.zone && p.zone.lat ? (+p.zone.lat).toFixed(2) + "," + (+p.zone.lng).toFixed(2) : "";
+function pnMapDrop(){ pnMapSeq++; pnMapMaking = null; pnMapRings = []; pnMapFit = ""; if(pnMap){ try{ pnMap.remove(); }catch(e){} pnMap = null; } }
+async function drawPnMap(shown, total){
+  const box = $("pnMapEl"); if(!box) return;
+  const me = pnData.me || {}, at = me.pin && me.pin.lat ? { lat: +me.pin.lat, lng: +me.pin.lng } : null;
+  const on = shown.filter(pnZoneKey), groups = new Map(), off = shown.length - on.length;
+  on.forEach(p => { const k = pnZoneKey(p); if(!groups.has(k)) groups.set(k, []); groups.get(k).push(p); });
+  pnMapShown = on; if(!groups.has(pnMapSel)) pnMapSel = "";
+  $("pnMapHint").textContent = (!shown.length ? (total ? "Nothing for that on the map. Try another day or word, or see them all." : "")
+      : on.length ? "Each circle is an area about a kilometre across, not the flat. The address comes when the host says yes." : "These parties aren't on the map yet.")
+    + (off > 0 ? ` ${off} ${off === 1 ? "party isn't" : "parties aren't"} on the map yet: switch to List to see ${off === 1 ? "it" : "them"}.` : "");
+  const seq = pnMapSeq, first = on[0] && { lat: +on[0].zone.lat, lng: +on[0].zone.lng };
+  if(!pnMap){
+    // made once: a lens tapped while it loads waits for the same map instead of starting a second one in the same box
+    if(!pnMapMaking){ const mine = pnMapMaking = Geo.map(box, at || first || { lat: 22.5, lng: 79 }, at || first ? 13 : 5, true).then(m => {
+        if(seq !== pnMapSeq || !$("pnMapEl")){ try{ m.remove(); }catch(e){} return; } pnMap = m; }).finally(() => { if(pnMapMaking === mine) pnMapMaking = null; }); }
+    try{ await pnMapMaking; }
+    catch(err){ console.error(err); if(seq === pnMapSeq && $("pnMapHint")) $("pnMapHint").textContent = "Couldn't load the map. Check your connection and try again, or switch to List."; return; }
+    if(!pnMap || seq !== pnMapSeq || !$("pnMapEl")) return;   // the screen was redrawn meanwhile
+  }
+  const marks = [...groups.entries()].map(([key, ps]) => ({ lat: +ps[0].zone.lat, lng: +ps[0].zone.lng, key,
+    html: `<span class="pn-pin${key === pnMapSel ? " on" : ""}" data-pn-pin="${esc(key)}" title="${esc(ps.length === 1 ? ps[0].title : ps.length + " parties here")}">${ptKind(ps[0].occasion)[0]}${ps.length > 1 ? `<i>${ps.length}</i>` : ""}</span>` }));
+  if(at) marks.push({ lat: at.lat, lng: at.lng, me: true, html: `<span class="pn-me"><b>You</b><i></i></span>` });
+  pnMap.pins(marks, m => { if(m.me) return; pnMapSel = m.key;
+    document.querySelectorAll(".pn-pin.on").forEach(x => x.classList.remove("on"));
+    const el = document.querySelector(`.pn-pin[data-pn-pin="${m.key}"]`); if(el) el.classList.add("on");
+    drawPnMapCard(); });
+  pnMapRings.forEach(r => r.remove()); pnMapRings = marks.filter(m => !m.me).map(m => pnMap.circle({ lat: m.lat, lng: m.lng }, PN_ZONE_M));
+  const fit = marks.map(m => m.lat + "," + m.lng).join(";");
+  if(fit !== pnMapFit){ pnMapFit = fit; if(marks.length > 1) pnMap.fit(marks.map(m => ({ lat: m.lat, lng: m.lng })), 14); else if(marks.length) pnMap.setView({ lat: marks[0].lat, lng: marks[0].lng }, 13); }
+  drawPnMapCard();
+}
+// The parties of the mark you tapped, on a card over the foot of the map.
+function drawPnMapCard(){
+  const box = $("pnMapCard"); if(!box) return;
+  const ps = pnMapSel ? pnMapShown.filter(p => pnZoneKey(p) === pnMapSel) : [];
+  box.hidden = !ps.length;
+  box.innerHTML = ps.length ? `<button class="pn-map-x" type="button" data-pn-unpin aria-label="Close">×</button>` + ps.map(p =>
+    `<button type="button" class="near-card pn-mapc" data-near="${esc(p.code)}"><span class="pt-mini-ic" aria-hidden="true">${ptKind(p.occasion)[0]}</span>
+      <span class="nc-main"><b>${esc(p.title)}</b><small>${esc(nearWhenChip(p))} · ${esc(nearPlace(p))}</small><small>${esc(ptEntryText(p))} · ${esc(nearSpots(p))}</small></span>
+      <span class="pn-go">See</span></button>`).join("") : "";
+}
+document.addEventListener("click", async e => {
+  const f = e.target.closest("[data-pn-filter]");
+  if(f){ pnFilter = f.dataset.pnFilter; if(pnFilter === "all" && pnQuery){ pnQuery = ""; if($("pnSearch")) $("pnSearch").value = ""; } drawPnResults(); return; }
+  const vw = e.target.closest("[data-pn-view]");
+  if(vw){ state.pnView = vw.dataset.pnView; save(); drawPnResults();
+    // on a phone the map gets the screen: the "Near you" line goes to the top, under the app's bar
+    if(state.pnView === "map" && innerWidth <= 720){ const h = document.querySelector("#pnBody .pn-h-near");
+      if(h) scrollTo({ top: h.getBoundingClientRect().top + scrollY - 84, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+    return; }
+  if(e.target.closest("[data-pn-unpin]")){ pnMapSel = ""; document.querySelectorAll(".pn-pin.on").forEach(x => x.classList.remove("on")); drawPnMapCard(); return; }
+  const sv = e.target.closest("[data-pn-save]");
+  if(sv){ e.stopPropagation(); const c = sv.dataset.pnSave, l = partySaved(), i = l.indexOf(c); if(i >= 0) l.splice(i, 1); else l.push(c); save();
+    toast(i >= 0 ? "Taken off your saved parties." : "Kept. It's under Saved, on this phone."); if(pnData) drawPnResults(); if($("dlgNear").open) drawNear(); return; }
+  const th = e.target.closest("[data-pn-rate]");
+  if(th){ e.stopPropagation(); try{ await api.partyRate(th.dataset.pnRate, null, th.dataset.up === "1"); toast("Thanks for saying."); await renderParties(); }catch(err){ console.error(err); toast("Couldn't save that. Please try again."); } return; }
   if(e.target.closest("[data-near-off]")) nearSwitch(false);
 });
+document.addEventListener("input", e => { if(e.target.id === "pnSearch"){ pnQuery = e.target.value; drawPnResults(); } });
+document.addEventListener("change", e => { if(e.target.id === "pnSort"){ pnSort = e.target.value; drawPnResults(); } });
+// ---- Host a party, in one screen (Kamal, 17 Nov: "Also check how the party is created", with a recording of a
+// hangouts app's form). From the Parties tab: what, when, who and where on one sheet, and at its top the card people
+// nearby will see, drawn again as you fill it in. Saving makes the party's group in Splits (where the requests, the
+// door list and the invite card for friends live), saves the party and opens it to people nearby, in that order.
+// The checks are the editor's (ptNearRead) and the server's. A party for friends and flatmates only is still made
+// from Splits ("New house party"), and a party made here is edited there.
+let hpx = null;
+const HP_LENGTHS = [[2, "2 hours"], [3, "3 hours"], [4, "4 hours"], [5, "5 hours"], [0, "Open end"]];
+const hpIso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+// today and the six days after it, the way people say them
+function hpDays(){
+  const d = new Date(); d.setHours(12, 0, 0, 0);
+  return Array.from({ length: 7 }, (_, i) => { const x = new Date(d.getTime() + i * 864e5);
+    return [hpIso(x), i === 0 ? "Today" : i === 1 ? "Tomorrow" : x.toLocaleDateString("en-IN", { weekday:"short" }) + " " + x.getDate(), x.getDay()]; });
+}
+async function openHostParty(){
+  if(!partyRulesOk) await loadPartyRulesOk();
+  const host = firstName() || "me", days = hpDays(), late = new Date().getHours() >= 17;
+  const sat = days.find(([, , wd], i) => wd === 6 && (i > 0 || !late)) || days[1];   // the coming Saturday; tonight only if there's still time
+  hpx = { occ: "party", auto: true, day: sat[0], hours: 4, nearGeo: null, gid: null };
+  const seg = (name, list, cur) => `<div class="seg" role="radiogroup">${list.map(([k, t]) => `<label><input type="radio" name="${name}" value="${k}"${k === cur ? " checked" : ""}><span>${t}</span></label>`).join("")}</div>`;
+  openFs("Host a party", "People nearby ask. You say who's in.", `<form id="hpForm" class="pt-near hp-form" novalidate>
+    <p class="hp-cap">How people nearby will see it</p>
+    <div class="hp-prev" id="hpPrev" aria-hidden="true"></div>
+    <h3 class="section-h">What's the plan?</h3>
+    <div class="area-chips hp-chips" role="group" aria-label="Kind of get-together">${Object.entries(PARTY_KINDS).map(([key, [emo, label]]) =>
+      `<button type="button" data-hp-occ="${key}" aria-pressed="${key === hpx.occ}">${emo} ${esc(label)}</button>`).join("")}</div>
+    <div class="field"><label for="hpTitle">Title</label><input type="text" id="hpTitle" maxlength="80" value="${esc(ptKind(hpx.occ)[2].replace("{h}", host))}" required></div>
+    <h3 class="section-h">When</h3>
+    <div class="area-chips hp-chips" role="group" aria-label="Day">${days.map(([iso, t]) => `<button type="button" data-hp-day="${iso}" aria-pressed="${iso === hpx.day}">${t}</button>`).join("")}
+      <button type="button" data-hp-day="other" aria-pressed="false">Another day</button></div>
+    <div class="field" id="hpDateF" hidden><label for="hpDate">Day</label><input type="date" id="hpDate" min="${days[0][0]}"></div>
+    <div class="field"><label for="hpStart">Starts at</label><input type="time" id="hpStart" value="20:00" required></div>
+    <div class="field"><span class="lbl">How long</span><div class="area-chips hp-chips" role="group" aria-label="How long">${HP_LENGTHS.map(([h, t]) =>
+      `<button type="button" data-hp-len="${h}" aria-pressed="${h === hpx.hours}">${t}</button>`).join("")}</div></div>
+    <h3 class="section-h">Who can come</h3>
+    <div class="hp-row"><span>Guests from nearby<small>You accept each one. A plus-one takes a spot.</small></span>
+      <div class="stepper"><button type="button" data-hp-limit="-1" aria-label="One fewer">−</button><input type="text" id="hpLimit" inputmode="numeric" maxlength="2" value="6" aria-label="How many guests from nearby">
+        <button type="button" data-hp-limit="1" aria-label="One more">+</button></div></div>
+    <div class="field"><span class="lbl">It's for</span>${seg("hpWho", Object.entries(PT_WHO), "all")}</div>
+    <label class="switch" style="margin:0 0 16px"><input type="checkbox" id="hpPlus" checked><span>Guests can bring a plus-one</span></label>
+    <div class="field"><label for="hpRadius">Who sees it: people within <b id="hpRadiusN">3 km</b></label>
+      <input type="range" id="hpRadius" min="1" max="5" step="1" value="3" aria-describedby="hpRadiusN"></div>
+    <h3 class="section-h">Entry</h3>
+    <div class="field">${seg("hpEntry", [["free", "Free"], ["chip", "Chip-in"]], "free")}</div>
+    <div id="hpChipBox" hidden>
+      <div class="field"><label for="hpChip">Chip-in, each (₹)</label><input type="text" id="hpChip" inputmode="numeric" maxlength="4" placeholder="e.g. 300"></div>
+      <div class="field"><span class="lbl">What it covers</span><div class="pt-covers">${Object.entries(PT_COVERS).map(([k, t]) =>
+        `<label class="chk"><input type="checkbox" name="hpCover" value="${k}"><span>${t}</span></label>`).join("")}</div>
+        <input type="text" id="hpCoverOther" maxlength="60" placeholder="Anything else (optional)" style="margin-top:8px"></div>
+    </div>
+    <p class="pt-money">${esc(PT_MONEY_LINE)}</p>
+    <h3 class="section-h">Where</h3>
+    <div class="field ps-anchor"><label for="hpAddr">Your address <span class="opt-l">(private: only guests you accept see it)</span></label>
+      <input type="text" id="hpAddr" maxlength="200" autocomplete="off" placeholder="Search your building or street, then pick it">
+      <p class="hint" id="hpPinNote" style="margin:4px 0 0">Pick it from the list to set the map pin.</p></div>
+    <div class="field"><label for="hpArea">Area people see</label><input type="text" id="hpArea" maxlength="60" placeholder="e.g. Baner"></div>
+    <p class="hint" style="margin:-6px 0 16px">People nearby see the area, how far it is and, on the map, a circle about a kilometre wide. Never your address or number, until you accept them.</p>
+    <div class="field"><label for="hpRules">House rules <span class="opt-l">(optional)</span></label><textarea id="hpRules" rows="2" maxlength="300" placeholder="No smoking indoors. Shoes off. Wraps up by 11."></textarea></div>
+    ${partyRulesHtml(false)}${partyRulesTick("hpRulesOk")}
+    <p class="hint" style="margin:10px 0 0">Only signed-in people 21 or older who've switched on “Show me parties nearby” see it.
+      Only inviting friends and flatmates? <button class="linkbtn" type="button" data-fs-event="party" style="padding:0">Make an invite card instead</button></p>
+    <p class="form-err" role="alert" hidden></p>
+    <div class="near-bar hp-bar"><span><b id="hpSumT"></b><small id="hpSumS"></small></span><button class="btn btn-accent" type="submit">Open the party</button></div></form>`);
+  if(window.attachPlaceSearch) attachPlaceSearch($("hpAddr"), pl => { hpx.nearGeo = { lat: pl.lat, lng: pl.lng }; $("hpAddr").value = pl.address || pl.label;
+    if(!$("hpArea").value.trim()) $("hpArea").value = pl.area || String(pl.label || "").split(",")[0]; hpPinNote(); hpDraw(); });
+  hpDraw();
+}
+const hpPinNote = () => { if($("hpPinNote")) $("hpPinNote").textContent = hpx && hpx.nearGeo ? "Pin set." : "Pick it from the list to set the map pin."; };
+// What the sheet says, as the two things the server takes (the party, and how it is open to people nearby).
+// soft: for the preview, nothing is checked. Otherwise {error} when something is missing, in the editor's words.
+function hpRead(soft){
+  const f = $("hpForm"), q = n => (f.querySelector(`[name=${n}]:checked`) || {}).value;
+  const title = $("hpTitle").value.trim(), day = hpx.day === "other" ? $("hpDate").value : hpx.day, start = $("hpStart").value;
+  const starts = day && start ? new Date(`${day}T${start}`) : null, ok = !!starts && !isNaN(starts);
+  const ends = ok && hpx.hours ? new Date(starts.getTime() + hpx.hours * 36e5) : null, limit = Number($("hpLimit").value), entry = q("hpEntry") === "chip" ? "chip" : "free";
+  const near = { open: true, guest_limit: limit, entry, entry_chip: Number($("hpChip").value) || null, covers: [...f.querySelectorAll("[name=hpCover]:checked")].map(x => x.value),
+    covers_other: $("hpCoverOther").value.trim(), who: q("hpWho") || "all", radius_km: Number($("hpRadius").value) || 3, near_address: $("hpAddr").value.trim(), near_geo: hpx.nearGeo,
+    area: $("hpArea").value.trim(), house_rules: $("hpRules").value.trim() };
+  const party = { occasion: hpx.occ, title, starts_at: ok ? starts.toISOString() : null, ends_at: ends ? ends.toISOString() : null, place: "home", address: "", directions: "", geo: null,
+    bring: "", chip_in: 0, plus_ones: $("hpPlus").checked, note: "", flat_group: null };
+  if(soft) return { party, near };
+  if(title.length < 2) return { error: "Give the party a title." };
+  if(!ok) return { error: "Pick the day and the time it starts." };
+  if(starts < new Date()) return { error: "That time has already gone. Pick a time that's coming up." };
+  if(!(limit >= 2 && limit <= 50)) return { error: "Say how many guests from nearby can come (2 to 50)." };
+  if(entry === "chip" && !(near.entry_chip >= 1 && near.entry_chip <= 5000)) return { error: "Add the chip-in amount, or pick Free." };
+  if(entry === "chip" && PT_ALCOHOL.test(near.covers_other)) return { error: "Alcohol can't be part of the chip-in. Guests bring their own." };
+  if(near.near_address.length < 5 || !near.near_geo) return { error: "Search your address and pick it from the list, so the map pin is set." };
+  if(near.area.length < 2) return { error: "Add the area people nearby will see." };
+  if($("hpRulesOk") && !$("hpRulesOk").checked) return { error: "Parties nearby are 21+. Tick that you're 21 or older and agree to the party rules, for you and your guests." };
+  return { party, near };
+}
+// The card at the top and the line by the button, from what the sheet says now.
+function hpDraw(){
+  if(!hpx || !$("hpPrev")) return;
+  const { party, near } = hpRead(true);
+  const p = Object.assign({}, party, near, { code: "preview", title: party.title || "Your party's title", starts_at: party.starts_at || new Date(Date.now() + 864e5).toISOString(), area: near.area || "Your area", km: null,
+    guest_limit: near.guest_limit || 0, spots_left: near.guest_limit || 0, host: firstName() || "you", host_vibe: state.vibe || {}, my_request: null });
+  $("hpPrev").innerHTML = nearCardHtml(p, true);
+  const when = party.starts_at ? nearWhenChip(p) : "Pick the day", chip = $("hpPrev").querySelector(".pn-when");
+  if(!party.starts_at && chip) chip.lastChild.textContent = when;   // "Another day" with no date yet: say so instead of guessing one
+  $("hpSumT").textContent = p.title; $("hpSumS").textContent = [when, `${p.guest_limit} ${p.guest_limit === 1 ? "spot" : "spots"}`].join(" · ");
+}
+document.addEventListener("click", e => { if(e.target.closest("[data-host-party]")) openHostParty(); });
+$("dlgFs").addEventListener("click", e => {
+  if(!hpx || !e.target.closest("#hpForm")) return;
+  const pick = (b, attr) => b.parentNode.querySelectorAll(`[${attr}]`).forEach(x => x.setAttribute("aria-pressed", x === b));
+  const occ = e.target.closest("[data-hp-occ]"), day = e.target.closest("[data-hp-day]"), len = e.target.closest("[data-hp-len]"), lim = e.target.closest("[data-hp-limit]");
+  if(occ){ const prev = hpx.occ, host = firstName() || "me", t = $("hpTitle"); hpx.occ = occ.dataset.hpOcc; pick(occ, "data-hp-occ");
+    if(hpx.auto || t.value === ptKind(prev)[2].replace("{h}", host)) t.value = ptKind(hpx.occ)[2].replace("{h}", host); }
+  else if(day){ hpx.day = day.dataset.hpDay; pick(day, "data-hp-day"); $("hpDateF").hidden = hpx.day !== "other"; if(hpx.day === "other") $("hpDate").focus(); }
+  else if(len){ hpx.hours = Number(len.dataset.hpLen); pick(len, "data-hp-len"); }
+  else if(lim){ $("hpLimit").value = Math.max(2, Math.min(50, (Number($("hpLimit").value) || 2) + Number(lim.dataset.hpLimit))); }
+  else return;
+  hpDraw();
+});
+$("dlgFs").addEventListener("input", e => {
+  if(!hpx || !e.target.closest("#hpForm")) return;
+  if(e.target.id === "hpTitle") hpx.auto = false;
+  if(["hpLimit", "hpChip"].includes(e.target.id)) e.target.value = e.target.value.replace(/\D/g, "");
+  if(e.target.id === "hpAddr"){ hpx.nearGeo = null; hpPinNote(); }
+  if(e.target.id === "hpRadius") $("hpRadiusN").textContent = e.target.value + " km";
+  hpDraw();
+});
+$("dlgFs").addEventListener("change", e => {
+  if(!hpx || !e.target.closest("#hpForm")) return;
+  if(e.target.name === "hpEntry") $("hpChipBox").hidden = e.target.value !== "chip";
+  hpDraw();
+});
+$("dlgFs").addEventListener("submit", async e => {
+  if(e.target.id !== "hpForm") return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  const f = e.target, btn = f.querySelector("[type=submit]"), bad = msg => { showFormError(f, msg); toast(msg); };
+  const r = hpRead(); if(r.error) return bad(r.error);
+  showFormError(f, ""); btn.disabled = true;
+  try{
+    // the group first (once: a second try after a refusal uses the same one), then the party, then open it
+    if(!hpx.gid) hpx.gid = await api.splitCreate(r.party.title, ptKind(r.party.occasion)[0], [], "party");
+    await api.partySave(hpx.gid, r.party);
+    if($("hpRulesOk")) try{ await api.partyRulesAccept(); partyRulesOk = true; }catch(err){ console.error(err); }
+    try{ await api.partyOpenSave(hpx.gid, r.near); }
+    catch(err){ console.error(err); return bad(ptNearError(String(err.message || ""))); }
+    hpx = null; $("dlgFs").close();
+    toast("Your party is open to people nearby. Who asks to join shows under “You're hosting”.");
+    if(currentView === "parties") await renderParties();
+  }catch(err){ console.error(err); bad(String(err.message || "").includes("bad-time") ? "That time has already gone. Pick a time that's coming up." : "Couldn't save that. Please try again."); }
+  finally{ btn.disabled = false; }
+}, true);
 function renderNearPanel(){
   $("nearToggle").disabled = isSplits();
   if(isSplits()){ $("nearToggle").checked = false; $("nearWhere").innerHTML = `Answer the vibe questions first. <button class="linkbtn" type="button" data-go-rooms>Answer them</button>`; return; }
@@ -12115,24 +12546,45 @@ $("nearToggle").addEventListener("change", e => {
 document.addEventListener("click", e => {
   if(e.target.closest("[data-near-on]")) return nearMe && nearMe.pin && nearMe.pin.lat ? nearSwitch(true) : askNearPin(pl => nearSwitch(true, pl, pl.label));
   if(e.target.closest("[data-near-pin]")) return askNearPin(pl => nearSwitch(true, pl, pl.label));
-  const c = e.target.closest("[data-near]"); if(c) openNear(c.dataset.near);
+  const c = e.target.closest("[data-near]"); if(c && !e.target.closest("[data-pn-save], [data-pn-rate]")) openNear(c.dataset.near);
 });
 // One party, as someone nearby sees it before the host accepts them: never the address, the pin or a number.
-let nearParty = null;
+// Since 17 Nov the page opens on the party's cover (when it is, kept or not), then what to expect, how full it is,
+// who's hosting, the facts, and how joining works in three steps. The request form is where it was, at the end; a
+// bar at the foot of the page ("Ask to join") leads to it until it is in view. Once you've asked, where you stand
+// (waiting, or in: the address, the host's number, your door code) moves up to right under the cover.
+let nearParty = null, nearSeen = null;
 function nearDetailHtml(p){
-  const vt = vibeType(p.host_vibe), covers = ptCoversText(p);
+  const vt = vibeType(p.host_vibe), covers = ptCoversText(p), k = ptKind(p.occasion), r = p.my_request, st = !p.cancelled && r && NEAR_STATUS[r.status], going = pnGoing(p), long = nearLong(p);
+  const few = p.spots_left > 0 && p.spots_left <= 3, pct = p.guest_limit ? Math.min(100, Math.round(going / p.guest_limit * 100)) : 0, host = esc(p.host || "The host");
+  const canAsk = !p.cancelled && !(r && ["pending", "accepted", "declined"].includes(r.status)) && p.spots_left > 0;
   const rows = [
-    [ic("bell", 18), ptDay(p.starts_at), ptTimes(p)],
+    [ic("clock", 18), ptDay(p.starts_at), ptTimes(p) + (long ? " · " + long : "")],
     [ic("pin", 18), nearPlace(p), "The address is shared when the host accepts you."],
     [ic("gift", 18), ptEntryText(p), (covers ? "Covers " + covers + ". " : "") + (p.entry === "chip" ? PT_MONEY_LINE : "Alcohol: bring your own.")],
-    [ic("users", 18), nearSpots(p) + ` of ${p.guest_limit}`, PT_WHO[p.who] + " · 21+ only" + (p.plus_ones ? " · plus-ones count towards the spots" : "")],
+    [ic("users", 18), p.who === "all" ? "Open to everyone" : PT_WHO[p.who], "21+ only" + (p.plus_ones ? " · plus-ones count towards the spots" : " · no plus-ones")],
   ];
   if(p.house_rules) rows.push([ic("chat", 18), "House rules", p.house_rules]);
-  return `<div class="near-host"><span class="nh-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span><div><b>Hosted by ${esc(p.host || "someone nearby")}</b>
-      <small>${vt ? esc(vt.emoji + " " + vt.title) : "Living style not shared yet"}</small></div>${p.sample ? SAMPLE_TAG : ""}</div>
+  return `<div class="near-hero">${pnCoverHtml(p, true)}
+      ${st ? `<span class="nc-st pn-st ${esc(r.status)}">${esc(st)}</span>` : ""}
+      <span class="pn-when">${ic("clock", 14)}${esc(nearWhenChip(p))}</span>
+      <button class="pn-save" type="button" data-pn-save="${esc(p.code)}" aria-pressed="${isPartySaved(p.code)}" aria-label="Keep this party for later">${ic("heart", 18)}</button></div>
+    ${pnKindHtml(p, "near-kind")}
+    <p class="near-line">${esc(k[3])}</p>
+    ${canAsk ? "" : `<div id="nearAct"></div>`}
+    <div class="near-meter${few ? " few" : ""}"><span class="pn-bar"><i style="width:${pct}%"></i></span>
+      <p><b>${going ? going + " going" : "Be the first to ask"}</b><span>${p.spots_left > 0 ? esc(nearSpots(p)) + " of " + p.guest_limit : `All ${p.guest_limit} spots taken`}</span></p></div>
+    <div class="near-host"><span class="nh-av" aria-hidden="true">${esc((p.host || "?")[0].toUpperCase())}</span><div><b>Hosted by ${esc(p.host || "someone nearby")}</b>
+      <small>${vt ? esc(vt.emoji + " " + vt.title) : "Living style not shared yet"}</small></div></div>
     <div class="pt-card pt-details">${rows.map(([icn, t, sub]) => `<div class="pt-row"><span class="pt-ic" aria-hidden="true">${icn}</span><div><b>${esc(t)}</b>${sub ? `<p>${esc(sub)}</p>` : ""}</div></div>`).join("")}</div>
-    <div id="nearAct"></div>
-    ${partyRulesHtml(false)}`;
+    ${canAsk ? `<ol class="near-steps" aria-label="How joining works">
+      <li><i aria-hidden="true">1</i><div><b>Ask to join</b><p>${host} sees your first name, age group, gender and vibe match.</p></div></li>
+      <li><i aria-hidden="true">2</i><div><b>${host} says yes</b><p>You'll see it here as soon as they answer.</p></div></li>
+      <li><i aria-hidden="true">3</i><div><b>You get the address</b><p>With ${host}'s number and a check-in code for the door.</p></div></li></ol>
+    <div id="nearAct"></div>` : ""}
+    ${partyRulesHtml(false)}
+    ${canAsk ? `<div class="near-bar" id="nearBar"><span><b>${esc(ptEntryText(p))}</b><small>${esc(nearSpots(p))}</small></span>
+      <button class="btn btn-accent" type="button" data-near-jump>Ask to join</button></div>` : ""}`;
 }
 async function openNear(code){
   try{ [nearParty] = await Promise.all([api.partyNearbyGet(code), partyRulesOk ? null : loadPartyRulesOk()]); }catch(err){ console.error(err); nearParty = null; }
@@ -12144,6 +12596,14 @@ function drawNear(){
   const p = nearParty; $("nearTitle").textContent = p.title; $("nearSub").textContent = nearWhen(p) + " · " + nearPlace(p);
   $("nearBody").innerHTML = nearDetailHtml(p);
   $("nearAct").innerHTML = nearActHtml(p);
+  // where you stand is under the cover; "Report this party" stays at the end of the page
+  const rep = $("nearAct").querySelector(".near-report"); if(rep && !$("nearAsk")) $("nearBody").appendChild(rep);
+  // the bar at the foot leads to the request form, and steps aside once the form is in view
+  if(nearSeen){ nearSeen.disconnect(); nearSeen = null; }
+  const bar = $("nearBar"), form = $("nearAsk");
+  if(bar && !form) bar.remove();
+  else if(bar && window.IntersectionObserver){ nearSeen = new IntersectionObserver(es => { bar.hidden = es[es.length - 1].isIntersecting; }, { root: $("dlgNear"), rootMargin: "0px 0px -76px 0px" }); nearSeen.observe(form); }
+  else if(bar) bar.remove();
   clearTimeout(nearTimer);
   // demo: sample hosts answer within seconds
   if(p.my_request && p.my_request.status === "pending" && api.sampleDecide)
@@ -12201,6 +12661,9 @@ const NEAR_ERR = { "party-full":"This party is full now.", "not-enough-spots":"N
   "rate-limited":"That's a lot of requests. Try again in a while.", "blocked":"Party requests are paused on your account while we review a report.", "age-required":"Parties nearby are for adults only.", "rules-required":"Parties nearby are 21+. Tick that you're 21 or older and agree to the party rules first." };
 const nearErr = m => (Object.entries(NEAR_ERR).find(([k]) => m.includes(k)) || [0, "Couldn't do that. Please try again."])[1];
 $("dlgNear").addEventListener("click", async e => {
+  if(e.target.closest("[data-near-jump]")){ const f = $("nearAsk"); if(!f) return;
+    f.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    const n = $("nearNote"); if(n) n.focus({ preventScroll: true }); return; }
   if(e.target.closest("[data-report-party]")) return openPartyReport(nearParty.code);
   const th = e.target.closest("[data-near-rate]");
   if(th){ try{ await api.partyRate(nearParty.code, null, th.dataset.up === "1"); await openNear(nearParty.code); toast("Thanks for saying."); }catch(err){ console.error(err); toast("Couldn't save that. Please try again."); } return; }
@@ -12486,7 +12949,7 @@ const HB_TOPICS = [
     say: () => `In <b>Splits</b>, tap <b>New house party</b>, then make an invite card: pick the occasion, the day and time, and “at my home” or the full address. Share it on WhatsApp; friends answer I'm in, Maybe or Can't make it without signing in, and your flatmates get a heads-up. What everyone chips in is split on Flatsplits after.`,
     acts: () => state.user ? [["Plan a party", "party"]] : [["Get started", "go:discover"]] },
   { id: "near", t: "Parties nearby", k: "parties nearby!, party nearby!, nearby parties!, nearby party!, parties near!, party near!, parties!, party$?, join a party!, join party!, check in code!, check-in code!, checkin code!, party rules!, request to join!",
-    say: () => `<b>Parties</b> has its own tab. Switch on <b>Show me parties nearby</b> and pick a place once (we don't follow your location). You see what's on near you: what, when, how far and the entry, never the address. Tap <b>Request to join</b>; the host decides, and on a yes you get the address, the host's number and a check-in code for the door. It's for people 21 and over, and the party rules apply.`,
+    say: () => `<b>Parties</b> has its own tab. Switch on <b>Show me parties nearby</b> and pick a place once (we don't follow your location). You see what's on near you, as a <b>list</b> or on a <b>map</b>: what, when, how far and the entry, never the address (on the map a party is a circle about a kilometre wide, not a pin on the flat). Tap a party, then <b>Request to join</b>; the host decides, and on a yes you get the address, the host's number and a check-in code for the door. It's for people 21 and over, and the party rules apply.`,
     acts: () => state.user ? [["Open Parties", "go:parties"]] : [["Get started", "go:discover"]] },
   { id: "market", t: "FlatMart", k: "flatmart!, flat mart!, sell!, selling!, sold!, buy$?, buying!, furniture!, fridge!, bed$!, beds!, mattress!, sofa!, table!, chair!, cycle!, bike!, washing machine!, cooler!, appliance!, second hand!, secondhand!, used$!, moving out!, moving-out!, market!, olx!, give away!, wanted!, offer$?, offers?, boost!, pick up!, pickup!",
     say: () => `<b>FlatMart</b> is for buying and selling with people nearby: beds, fridges, furniture, cycles, books. Post in a minute with up to 4 photos, or give it away free. A buyer makes an offer; numbers are shared only when the seller accepts, and then you fix a pick-up time. Looking for something? Post it under <b>Wanted</b> and you're told the moment one is listed.`,
@@ -12892,7 +13355,7 @@ const Geo = {
       setView: (p, z) => m.setView([p.lat, p.lng], z || m.getZoom()),
       center: () => { const c = m.getCenter(); return { lat: c.lat, lng: c.lng }; },
       onMove: cb => m.on("moveend", () => { const c = m.getCenter(); cb({ lat: c.lat, lng: c.lng }); }),
-      circle: (p, r) => { const c = L.circle([p.lat, p.lng], { radius: r, color: "#1C7F72", weight: 2, fillOpacity: .12, interactive: false }).addTo(m); return { remove: () => c.remove() }; },
+      circle: (p, r) => { const c = L.circle([p.lat, p.lng], { radius: r, color: "#C2410C", weight: 2, fillOpacity: .12, interactive: false }).addTo(m); return { remove: () => c.remove() }; },
       pins: (list, onClick) => { layer.clearLayers(); list.forEach(x => L.marker([x.lat, x.lng], { icon: L.divIcon({ className: "lpin", html: `<div class="gpin">${x.html}</div>`, iconSize: [0, 0] }) })
         .on("click", () => onClick(x)).addTo(layer)); },
       fit: (pts, maxZoom) => { if(pts.length) m.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])), { padding: [40, 40], maxZoom }); },
