@@ -20,7 +20,11 @@ _Last update: 17 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
-00000000. **The reel look, for the whole app and the website: Kamal, 17 Nov, in King's session: "The colors are so amazing of
+00000000. **ON HOLD until Kamal answers. Do not build.** After this entry was written, Kamal said in Teche's session (17 Nov),
+   when Teche mentioned the reel colours: "Dont change the colors use our colors". It may be about the Parties screens only,
+   or about this whole item. Teche has asked him which; King has asked too. King writes his answer here. Until then the look
+   of 16 Nov stays exactly as it is. What was asked for, kept for when he answers:
+   **The reel look, for the whole app and the website: Kamal, 17 Nov, in King's session: "The colors are so amazing of
    the reels wht dont we use these for our app. Put your best efforts to pull these colors and font size and font colors and
    make the app and website awesome".** His own change to the look of 16 Nov. "The reels" are the ten feature reels King made
    on 17 Nov; the values below are the ones they were built with, so they are the source. King's message of 17 Nov has the
