@@ -2,7 +2,7 @@
 
 _Updated by King after each weekly review and whenever Kamal changes direction. Employees read this at the start of
 every routine and task._
-_Last update: 8 Nov 2026._
+_Last update: 17 Nov 2026._
 
 ## State of play (8 Nov)
 - **All work is paused by Kamal (6 Nov), and so are the daily shifts and weekly routines.** Work only on a task Kamal
@@ -20,6 +20,46 @@ _Last update: 8 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
+00000000. **The reel look, for the whole app and the website: Kamal, 17 Nov, in King's session: "The colors are so amazing of
+   the reels wht dont we use these for our app. Put your best efforts to pull these colors and font size and font colors and
+   make the app and website awesome".** His own change to the look of 16 Nov. "The reels" are the ten feature reels King made
+   on 17 Nov; the values below are the ones they were built with, so they are the source. King's message of 17 Nov has the
+   reel's CSS and a description of each scene.
+   - **Stays:** the logo and its colours; every layout and every word; the login; the onboarding questions; the two fonts
+     (DM Serif Display and Urbanist, already in `vendor/fonts`; no new font); green for accepted, verified and "owes you",
+     amber for look twice, crimson for danger, WhatsApp's own green. Colours are tokens (p8), body sizes stay on the scale,
+     the contrast and speed suites pass.
+   - **Cream `#FFF4E8`:** the page, everywhere (it was white). The top band and the bar behind the clock are the same
+     cream, flat (no pink wash). This answers "white or pale orange for the top band".
+   - **White `#FFFFFF`:** cards, sheets, inputs and the bottom bar, lifted off the cream by a soft warm shadow
+     (about `0 10px 28px rgba(60,30,10,.12)`) and the hairline `#EEE8E2`. One rule: on cream a panel is white; inside a
+     white card a panel is cream.
+   - **Orange `#C2410C`** (the logo's): main buttons with white words, small labels, links, and one key word in a headline.
+   - **Ink `#1C1917`:** text, what is selected, score discs, and dark sheets. On ink: titles white, small text `#D6D3D1`,
+     chips `#2B2928` with white words, and light orange `#FDBA74` for ticks, the score ring and the key word.
+   - **Grey `#57534E`:** secondary text. No words lighter than `#6B635D`.
+   - **Deep warm brown** (base `#5C2408`, soft glows `#7A3410`, `#9A5B00`, `#B45309`) inside a thin orange frame: only a
+     home's header with no photo, the pictures people share and `og-image`. White serif words, key word `#FDBA74`.
+   - **Type, on a phone:** welcome, story and hold-page headline in the serif at `clamp(40px, 11.5vw, 48px)`, line-height
+     1.04; the headline on each tab's top band `clamp(30px, 8.6vw, 36px)`; headings inside cards and sheets 24px; rent and
+     prices in the serif, 28px on cards and 32px on a home's page ("/month" stays small and grey); names and card titles
+     Urbanist 800, buttons 800, chips 700. Body 16, small 14, captions 12.5 as now.
+   - **The reel's three signatures:** (1) one key word in each main headline in orange (light orange on dark); the words
+     are listed in King's message, other headlines get none. (2) A hand-drawn orange underline under that word, on the
+     welcome page and the four story screens only; it draws once in about half a second and is simply there under
+     "reduce motion". No other new motion. (3) On a home's page, "Who you'd live with" and the household's answers sit on
+     one ink sheet (corners 20px, white serif title, dark chips, a light-orange tick on the answers you share). At most
+     one ink sheet on a screen.
+   - **How it ships:** one PR, the look only, no database change. Pictures before and after at 390 wide: welcome, story,
+     Discover, a home's page (top and the ink sheet), Tribe, Flatsplits, FlatMart, Parties, Account, a chat, a dialog,
+     My flat, Escape, the posting form; and the welcome page at 1280 wide. King checks them against the reels, then
+     Kamal sees them. README "Look and feel" and the contrast suites follow the new look. Merge, the Android build and
+     the website publish on Kamal's word.
+   - **Your brief:** the look rule in `tech.md` changes only on Kamal's yes to these words: "Keep the look Kamal chose on
+     17 Nov 2026 (README, 'Look and feel'), taken from the feature reels: cream pages, white cards, the logo's orange for
+     main buttons, small labels and one key word in a headline, near-black text, dark sheets with light-orange accents,
+     big serif headings. No other new colours; new screens use the tokens in `:root`. The logo and its colours never
+     change with the look."
 0000000. DONE 16 Nov: live (#115, 0e76f69, Android 220). **"Do you live in this flat?" Yes / No: Kamal, 16 Nov, in King's session: "Go and yes to all".** New posting-form
    question, stored as household.lister_lives_here. On No: no vibe copy from the lister, and the women-only check
    (fm_home_gender), the "You" row under "who lives there" and "Listed by a flatmate who lives here" stop counting the
