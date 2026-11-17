@@ -1,5 +1,50 @@
 # Teche · reports
 
+## 2026-11-17, Parties: a feed with covers, a party's page, hosting in one screen, and a map (#116) live
+
+- **What was asked (Kamal, 17 Nov, in my session, with four recordings of a hangouts app):** "Take the idea for
+  parties nearby dont copy but make it awesome", "Also check how the party is created", "Check how the search
+  happens on parties own discover page through maps. Can we build this also". The ideas are taken; the look, the
+  words and the rules are ours, and no photo is asked for. He also said "Dont change the colors use our colors":
+  these screens are in the app's own orange and white.
+- **The feed:** a party is a card with a drawn cover (a string of lights and the kind's emoji), when it is the way
+  people say it ("Tonight · 8 pm"), a heart that keeps it on this phone, how long it runs and how full it is (a bar,
+  "4 going", "2 spots left"). A search, a lens for each kind of party that is on near you, Saved, three orders.
+- **"How was it?":** a party you went to stays in your list for three days after it ends, with the thumbs. Until now
+  it left the list the moment it ended, so the thumbs after a party could only be reached from an old link.
+- **A party's page:** its cover, what to expect, how full it is, how joining works in three steps, and a bar at the
+  foot that leads to the request form. Once you've asked, where you stand moves up under the cover.
+- **Host a party:** one sheet, with the card people nearby will see drawn again as it is filled in. It makes the
+  party's group, saves the party and opens it; the server's checks are the ones it had. A party for friends only is
+  still made from Splits.
+- **List or Map:** each party is a mark in the middle of a circle about a kilometre across, never a pin on the
+  flat. The server sends only that rounded spot (the pin to two decimals, the rule a home's public pin follows).
+  It shows the parties in reach of your place (hosts choose 1 to 5 km), not the whole city as in the recording: a
+  host's party is for people nearby, and that stays. Kamal has been told both.
+- **Database, applied before the merge** (from the PR's commit: fetched inside the database, checksum checked
+  against my file, then run). Checked read-only before and after: `fm_party_near_json` and `fm_party_nearby`
+  changed and nothing else did (195 functions; 5 parties, 2 of them open; 2 requests; 105 listings; 224 profiles,
+  all as before). Both open parties give a rounded zone and no pin, address or number. `fm_party_near_json` cannot
+  be called from the app; `fm_party_nearby` only by someone signed in.
+- **Published:** ab235ec (#116). Android build 221 (file checked: the new screens are inside, checksum matches the
+  release). The website repo's `main` and `gh-pages` say "Publish the app from NavigateMe ab235ec". The published
+  copy opens with no page errors, and with its live backend switched off the new screens work end to end (three
+  cards, a party's page, a party hosted from the sheet, the map with its marks and a card).
+- **Tests:** database suite 279 checks (13 new), 32 demo suites 840 checks (new suite p34, 53 checks), all pass.
+- **Not checked by me: the map's own pictures.** My machine cannot reach a map server, and Google's key works only
+  on the live site and in the Android app. The marks, circles and cards were checked on the bundled map, and the
+  calls to Google's library against a strict stand-in for it. I have asked Kamal to open Map on his phone and say
+  if anything looks off.
+- **Found on the way, not changed, needs Kamal's yes:** a party's distance is measured from the flat's exact pin
+  and shown to 100 m, and a person can change the place they measure from as often as they like. Someone patient
+  could use that to work out roughly where a flat is. Homes don't have this: their distance is from the rounded
+  pin. The fix is to measure parties from the same rounded spot the map uses and to limit how often the place can
+  be changed. Distances would be a little less exact. I have put it to Kamal.
+- **Next: the reel look** (priorities 00000000, now GO: on its own branch, pictures first, nothing merged or
+  published without Kamal's yes to the pictures). Not started. King's notes of 17 Nov are with my working files.
+- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
+  60 a day. (White or pale orange for the top band is answered by the reel look, if it goes live: cream.)
+
 ## 2026-11-16, "Do you live in this flat?" (#115) live, on Kamal's go
 
 - **The go:** Kamal, 16 Nov, in my session: "Go", after seeing the pictures and the summary of #115.
@@ -273,36 +318,3 @@
   Kamal's recording; he did not ask for it, so it is untouched.
 - **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
   60 a day.
-
-## 2026-11-16, Monday check: all green. A preview of a new look is with Kamal (nothing merged)
-
-- **Monday check:** the last runs on `main` are green (the website workflow, Pages, and Android build 215 on the
-  #109 merge). The demo suites last ran on exactly this app code when #109 was merged (28 suites, 668 checks;
-  database 235); I did not run them a second time today. Open PRs: seven, none new (#62, #73, #84, #86, #93, #94,
-  #95), all waiting on Kamal or King. Supabase advisors: nothing new. The warnings are the known ones: the app's
-  functions run as "security definer" (that is how the app talks to the database; the eight a signed-out visitor
-  can call are exactly the ones `schema.sql` grants), `pg_net` sits in the public schema, the leaked-password check
-  is off (we have no passwords), and there are info notes on indexes.
-- **What Kamal asked (16 Nov):** two recordings and "Fix this. Also copy syle and colors of dwelo. Change the orange
-  color to light red color show me 2 -3 pages before finalising".
-- **This goes against a standing rule, and Kamal wins:** my brief says to keep the look Kamal chose on 8 Nov with no
-  new colours. Kamal himself now asks for the change and asks to see it first. So nothing is merged, pushed or
-  published. The preview is only on my machine (branch `claude/dwelo-look`, not pushed: the demo suites check
-  today's colours, so they would not pass, and nothing goes up untested).
-- **What I showed him:** before and after pictures of the first page, the home screen and a home's page, plus
-  Profile and Tribe in the new look.
-  - A cream page with white cards and warm shadows.
-  - One light red (`#EE6468`) where the orange was: the logo, the small labels, links, the place you are on in the
-    bottom bar and the main buttons.
-  - A deep aubergine for text and the few dark pieces (the flatmate-type card, a home's header with no photo).
-  - Headings in a serif (DM Serif Display, open licence, bundled like our other fonts). The rest stays Urbanist.
-  - The login steps and the onboarding questions are untouched.
-- **A choice I made, for Kamal to overrule:** the main buttons carry dark words on the light red (5.4:1). White
-  words, as Dwelo has, would be 3.1:1, under the 4.5:1 our tests hold every screen to. Our light red is also a
-  touch redder than Dwelo's coral, because he asked for light red.
-- **"Fix this" is not understood yet:** one recording is of Dwelo (its home, profile and delete-account steps). The
-  other is of a different, unrelated app from March 2025. I asked Kamal what he wants fixed.
-- **Waiting on Kamal:** a yes or changes to the look, and what "fix this" means. Still open from before: whether
-  Tribe matches under 70% should be announced, and the message limit of 30 an hour and 60 a day.
-- **Left to do after his yes:** every other screen in the same look, the app icon and share pictures in light red,
-  the tests that check colours, the README's "Look and feel", then the usual PR, build and publish.
