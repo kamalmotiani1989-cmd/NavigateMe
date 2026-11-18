@@ -1,5 +1,70 @@
 # Teche · reports
 
+## 2026-11-18, 15 sample parties for testing Parties and its map (#119) live in the database
+
+- **What was asked (Kamal, 18 Nov, in my session):** "Can you create some samples for parties so that i can chceck
+  the map and test the same . Create some 15 parties."
+- **Done:** 15 sample parties are in the live database, around where Kamal tests. His account sees all 15 on the
+  list and on the map. The app did not change: no Android build (222 stays) and nothing to publish on the website.
+- **What was built (#119, merged `d6e61d1`; database only):**
+  - `fm_sample_parties(lat, lng, areas)` makes 15 open parties hosted by 15 of the 200 sample people, at fixed
+    spots 0.4 to 3.5 km from the point given: 15 kinds (game night to house party), from tonight to three
+    Saturdays on in India time, eight free and seven with a chip-in (₹150 to ₹400, never alcohol), some part full,
+    one with nobody in yet, two without plus-ones, open to everyone, reach 3 to 5 km. Two of them fall in the same
+    map square, so one mark carries a "2". Running it again replaces all 15 with dates from that day;
+    `fm_sample_parties_clear()` removes them. It is not `samples.sql`, which is not run on live again (it would
+    replace all 200 sample people).
+  - What a nearby person is sent for a party now says whether the host is a sample, so the app's "Sample" tag
+    shows on the card, on the map's card and on the party's page (the app already drew the tag when told).
+  - A request to a sample host is accepted straight away, with a door code. The address that then shows ends
+    "(a sample address)"; there is no Call or WhatsApp button because a sample has no number; no push goes out.
+    Places left are still counted, and a request to a real host waits for the host as before.
+  - The app's own roles cannot call the generator, the clear or the list of spots.
+- **Tests:** database 310 checks (29 new, `parties-19-samples.sql`), demo 32 suites and 864 checks, all pass.
+- **Live, step by step:** the merged `schema.sql` fetched into the database, md5 `067caf20…` matched, executed.
+  Functions 195 to 199, triggers 32 to 33, every function's body equal to a fresh local build, no row changed.
+  Then the generator: parties 6 to 21, party groups up by 15, 82 accepted requests from sample guests. Nothing
+  else moved: 224 profiles (200 sample), 105 homes, the 2 requests on real parties.
+- **Checked afterwards (read-only):** Kamal's account is sent exactly these 15, each marked sample, none with an
+  address, a pin or a number; 14 marks; the nearest 1.0 km away, the furthest 3.9 km. Three other testers who live
+  close see all 15 too, tagged the same; the two testers a hundred kilometres away see none. No sample party is
+  tied to a flat, so no "party at your flat" push went to anyone.
+- **Where they are:** the point and the area names are deliberately not written here, because this repo is public
+  and the point is close to where Kamal tests. The area names are the real ones for each spot (OpenStreetMap).
+  No pictures in `shots/` for the same reason: a map picture shows the neighbourhood.
+- **To make the same 15 again from today** (the point and the names are read back from the rows; the point was a
+  two-decimal grid point, so it is the first party's map square):
+  ```sql
+  select public.fm_sample_parties(z.lat, z.lng, a.areas)
+  from (select round((p.near_geo->>'lat')::numeric, 2)::float8 as lat, round((p.near_geo->>'lng')::numeric, 2)::float8 as lng
+          from fm_parties p join fm_profiles h on h.id = p.host_id where h.sample and p.occasion = 'games') z,
+       (select array_agg(p.area order by array_position(array['games','movie','chai','karaoke','match','brunch','terrace',
+                 'birthday','potluck','jam','housewarming','festival','welcome','farewell','party'], p.occasion)) as areas
+          from fm_parties p join fm_profiles h on h.id = p.host_id where h.sample) a;
+  ```
+  To remove them: `select public.fm_sample_parties_clear();` (after that the point has to be given again).
+- **They drop off as their time comes:** tonight's two start at 8 and 9 pm (they are the pair behind the "2"), so
+  by Kamal's late-evening hours 13 are left; 5 are left after Sunday; the last is on 5 Dec. A refresh takes one
+  statement, on his word.
+- **What the map does with 15 parties this close (drawn on a test copy from the live data; not changed, it is
+  outside this task):** on a phone the map opens far enough out to hold them all, and at that distance two
+  neighbouring squares are about 30px apart while a mark is 44px wide. 16 pairs of marks overlap, the "You" label
+  sits on one, and a tapped mark's card (at the top of the map) can cover the mark that was tapped. Pinching in
+  separates them. With a few parties spread out it does not show, as in #116's pictures. I have told
+  Kamal and offered to fix it.
+- **Small things in the sample flow (not changed):** after asking, the short message still says "Asked! <host> will
+  let you know." though the page already says "You're in!", and the page says "<host> has your number too" (nobody
+  does: a sample). The limit of 10 requests an hour holds for samples as well.
+- **A mistake of mine, no harm to the app:** to look up the area names I sent 15 look-ups to Photon, the free
+  place search, from the database in one statement. 4 answered, 11 were refused, and Photon stopped answering the
+  database for a while. People's searches go from their own phones, not from the database, so nobody using the app
+  was affected. I finished with one look-up at a time from OpenStreetMap's own service. I won't send a burst to an
+  outside service from the database again.
+- **Still with Kamal:** his look at the map; whether I fix the crowding; yes or no to the Parties distance privacy
+  fix (a database change; asked again on 18 Nov, not answered); whether Tribe matches under 70% are announced; the
+  message limit of 30 an hour and 60 a day.
+- **Need from King:** nothing.
+
 ## 2026-11-18, the reel look on every screen (#117) live, on Kamal's yes
 
 - **What was asked (Kamal, 17 Nov, in King's session):** "The colors are so amazing of the reels wht dont we use
@@ -302,45 +367,3 @@
   am correcting that with him).
 - **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and 60
   a day.
-
-## 2026-11-16, the logo is back as it was: Kamal's own drawing and its orange (#111) live
-
-- **What Kamal asked (16 Nov, after seeing #110 live):** "App and website logo to stay the same as ealier" and
-  "App and website logo color to stay same as earlier".
-- **My mistake in #110:** I read "change the orange color to light red" as covering the logo too and recoloured
-  it. The logo is not part of the look.
-- **Now:** the logo is exactly as it was before #110, everywhere it shows: the top bar of the app and the website,
-  the tab icon, the home-screen and Android launcher icons, the pictures people share, the picture shown with a
-  shared link, the privacy page and the Coming soon page.
-  - All 19 logo and icon files are byte for byte the ones that went in with Kamal's logo on 9 Nov (`b6299bd`).
-  - The soft glow under the tile is its own orange again.
-  - Measured against the app before #110, the logo sits in the same place at the same size on the first page and
-    in the app, on a phone and on a computer.
-- **Kept:** the rest of the look of 16 Nov. The Android bars and the notification colour too (they were never the
-  logo's colour).
-- **A standing rule from now on. King, please add it to my brief:** the logo and its colours do not change with
-  the look. README ("Logo") says so, and `p31` holds the 19 files to their fingerprints, so a later change of look
-  cannot touch them by accident.
-- **Tests:** 29 demo suites, 704 checks (was 696). `p31` has 8 more: the logo's colours, the files' fingerprints,
-  every icon orange, the logo as drawn on the first page, signed in and on the privacy page, the website's share
-  picture, the Coming soon page. They fail on the app as it was this morning and pass now. No database change.
-- **Published:** 1fe5dfd; Android build 217 (file checked: every launcher icon inside is the orange tile, the logo
-  files inside match, and the checksum matches the copy on the website's release); the website repo's `main` and
-  `gh-pages` say "Publish the app from NavigateMe 1fe5dfd", and the published copy shows the logo with no page
-  errors. The publish step went through first time.
-- **For King to pass on to Mark:** ignore my note under #110 about light red logo files. The logo in `marketing/`
-  and in PRs #93 and #94 is the right one.
-- **Next, already started (Kamal, 16 Nov):** "Also take the app color as the color of logo which was earlier and
-  white. Plus check the font color accordingly. Do your best here. Audit once done. Spend some time on each page
-  and audit the gaps of colors font everything". So the light red goes too: the app's colour becomes the logo's
-  orange with white, then a page-by-page audit. Its own PR and report entry.
-- **Relayed by King, waiting for Kamal's word:** "Fix the vibe fill-in when the lister doesn't live in the flat".
-  Checked read-only, nothing changed:
-  - the flaw is real (#106 copies the lister's own answers onto a listing with none, whoever lives there);
-  - one live listing carries such a copy: a room in Pune posted 9 Nov, which says nobody lives there;
-  - the posting form already asks "People living there now (including you)", so no new question is needed to
-    tell the two cases apart;
-  - I asked Kamal for his go in my session, because the request reached me as another session's message and
-    `priorities.md` does not list it. Nothing is pushed or changed for it.
-- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
-  60 a day.
