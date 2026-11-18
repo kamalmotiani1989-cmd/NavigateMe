@@ -19,7 +19,7 @@ python3 for the static server on port 8765.
 `db/` holds the database checks: `tests/db/run.sh` applies `supabase/schema.sql` twice to a fresh local Postgres (it
 must be safe to run again) and then runs the `parties-*.sql` files, which call the functions as different people and
 print `PASS` / `FAIL` lines (nearby parties, women-only homes, messages, block and report, avatars, and
-`parties-15-listing-vibe.sql` for the living-style answers a listing carries where its lister lives there, and none where nobody does; both also cover the answer to "Do you live in this flat?"; and `parties-18-map-zone.sql` for what the Parties map gets, a spot rounded to two decimals and never the pin or the address before the host accepts, and for a party you went to staying in your list for three days after it ends). How to point it at a local
+`parties-15-listing-vibe.sql` for the living-style answers a listing carries where its lister lives there, and none where nobody does; both also cover the answer to "Do you live in this flat?"; and `parties-18-map-zone.sql` for what the Parties map gets, a spot rounded to two decimals and never the pin or the address before the host accepts, and for a party you went to staying in your list for three days after it ends; and `parties-19-samples.sql` for the 15 sample parties `fm_sample_parties` puts around a point: one of each kind, marked as samples, accepted straight away when you ask to join, notifying nobody, replaced when it is run again, and not callable from the app). How to point it at a local
 Postgres is at the top of the script.
 
 The browser-to-database suites (a bridge from the browser to a local Postgres) are not in the repository; the

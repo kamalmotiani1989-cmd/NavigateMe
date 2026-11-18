@@ -314,6 +314,8 @@ the room comes second.
     `fm_party_nearby_me`, `fm_party_nearby`, `fm_party_nearby_get`, `fm_party_request`, `fm_party_withdraw`,
     `fm_party_host_requests`, `fm_party_decide`, `fm_party_checkin`, `fm_party_report`, `fm_party_rate`; triggers
     `fm_party_requests_notify` and `fm_parties_notify`. Demo mode has six sample parties in Pune and Bengaluru.
+    On the live database, sample parties are put near a tester on request (`fm_sample_parties`, see "Sample data for
+    testing"): the app tags them **Sample**, and a sample host says yes straight away.
     **Party rules (Kamal, 10 Nov).** FindMeFlatMate's own ten rules (`PARTY_RULES` in index.html): **21 and over only** (Kamal, 10 Nov), no
     drugs, bring your own and drink responsibly (no alcohol for anyone under the state's drinking age; hosts may ask
     for ID), respect everyone, respect the home, stay on the app until accepted (check-in code at the door), money
@@ -1483,6 +1485,29 @@ confirmed, and a sample person says yes to a tribe match (two of each tester's b
 have). There's no real number or address to share, and the app says so. Running the file again
 replaces them. Before real users, remove them all:
 `delete from auth.users where id in (select id from public.fm_profiles where sample);`
+
+**Sample parties** (Kamal, 18 Nov 2026: "create some samples for parties so that i can check the map and test the
+same"). A party shows only to people within its host's 1 to 5 km, so sample parties can't be loaded once for a
+whole city: they are put where the tester is. In the SQL editor:
+- `select public.fm_sample_parties(18.5204, 73.8567, array['Shivajinagar']);` hosts **15 open parties** around that
+  point (latitude, longitude), one of each kind of party, from 15 of the sample people above. Give one area name
+  for all of them, or 15 names in the order of `select * from public.fm_sample_party_spots(18.5204, 73.8567);`,
+  which lists the 15 spots and how far each is from the point.
+- They are spread over about seven kilometres (the nearest 360 m out, the furthest 3.5 km) and over the next three
+  weeks, starting tonight: 8 free and 7 with a chip-in (which never covers alcohol), some nearly full with other
+  sample people as the guests already in, one with nobody yet, two that take no plus-ones. All are open to
+  everyone and each host's reach leaves 1.2 km to spare, so every tester whose place is within about a kilometre
+  of the point sees all 15. The first two are about 100 m apart, so the map usually shows them as one mark with a
+  "2".
+- The app tags them **Sample** in the list and on the party's page (the server says which parties have a sample
+  host). Asking to join one is **accepted straight away**, with a door code and no notification; the address the
+  guest then sees ends "(a sample address)" and there is no number, because sample people have none. Everything
+  else is the real thing: the places left are counted, you can drop out and ask again, the request limit applies.
+- A party's time passes: one that has started leaves the list like any other. Run the command again to get a
+  fresh 15 (it replaces the old ones, wherever they were put, with whatever was asked of them).
+- `select public.fm_sample_parties_clear();` removes them. Run it before removing the sample people: a party
+  goes with its host, but its empty group would stay.
+None of the three functions can be called from the app. Checks: `tests/db/parties-19-samples.sql`.
 
 **Testing login (no messages):** until real codes are set up (below), you sign in with your mobile number
 and a private test code, through the `fm-login` function (`supabase/functions/fm-login`). The code is
