@@ -13,10 +13,10 @@ spec: read it before touching anything, and keep it true when you change behavio
 
 ## Standing rules (Kamal's, do not relax them)
 - Never change the login process or remove onboarding questions.
-- Keep the look Kamal chose on 16 Nov 2026 (README, "Look and feel"): the logo's own colours. White pages and cards,
-  the logo's orange for main buttons, small labels and what is selected, near-black text, pale orange panels, serif
-  headings. No new bright colours or gradients; new screens use the tokens in `:root`. The logo and its colours never
-  change with the look.
+- Keep the look Kamal chose on 17 Nov 2026 (README, "Look and feel"), taken from the feature reels: cream pages, white
+  cards, the logo's orange for main buttons, small labels and one key word in a headline, near-black text, dark
+  sheets with light-orange accents, big serif headings. No other new colours; new screens use the tokens in `:root`.
+  The logo and its colours never change with the look.
 - Kamal lifted the hold (Coming soon) on 8 Nov 2026. Don't put it back on unless he asks; the switches are in the
   README's "On hold" section.
 - Secrets never go in the repo, the app, commits or chat: the test sign-in code stays hashed in `fm_secrets`, keys
