@@ -1,13 +1,27 @@
 # Teche · reports
 
-## 2026-11-18, the reel look on every screen: built, tested, King's three fixes made, pictures ready (PR #117 open; nothing live, it waits for Kamal's yes)
+## 2026-11-18, the reel look on every screen (#117) live, on Kamal's yes
 
 - **What was asked (Kamal, 17 Nov, in King's session):** "The colors are so amazing of the reels wht dont we use
   these for our app. Put your best efforts to pull these colors and font size and font colors and make the app and
   website awesome". In my session he then said "Dont change the colors use our colors"; I asked which of two he
   meant (leave the colours and drop this, or still do it after Parties); he answered "Go ahead do it", and later
-  "Now continue". So it is built on its own branch (`claude/reel-look`), and **nothing is merged or published until
-  he has seen the pictures and said yes.**
+  "Now continue". So it was built on its own branch (`claude/reel-look`) and nothing was merged or published until
+  he had seen the pictures.
+- **Kamal's yes (18 Nov, in my session):** he was sent the before and after pictures of 19 screens (five of them
+  again after King's fixes), asked "Shall I put this live on the website and in the Android app?" and shown the
+  new look sentence for my brief, and answered "Yez pleaze". King had recommended yes in priorities.md.
+- **Published:** a25fdcd (#117). The app files on main are the ones the tests ran on. Android build 222: the
+  file's checksum matches the release's, the app inside it is byte for byte the published website's, and the
+  cream page colour is in it (it is not in build 221). The website repo's `main` and `gh-pages` say "Publish the
+  app from NavigateMe a25fdcd". The published copy opens with no page errors and wears the look: cream first page
+  with "vibe" in orange and its line, headline on two lines at 390 wide, cream privacy and Coming soon pages, cream
+  manifest; with its live backend switched off, Discover (rings green and amber, rent in the serif), the cream
+  bar when scrolled, a home's page (the ink sheet, the brown header in its frame), the tabs' key words and the
+  story all work.
+- **My brief:** the look sentence in `tech.md` is the 17 Nov one, in King's words (#118, e4a310f), on the same yes.
+- **Not checked by me:** the look on a real phone. My machine cannot reach the live site or run the Android app;
+  everything above was checked on the published files themselves. Kamal has build 222 to open.
 - **What changes** (README "Look and feel" has all of it): the page is cream and the cards are white (it was a
   white page with peach bands and panels); one key word of each main headline is in the logo's orange, with a line
   drawn under it by hand on the first page and the story; headlines on a phone are bigger; rent is in the serif; on
@@ -52,8 +66,9 @@
   the rings' colours, the rent and its rupee sign, the ink sheet, the brown header and pictures, no melted panels,
   the Android bars. `p26`, `p27` and `p25`'s layout checks are rewritten for the flat band and the closer card.
   The database suite was not run: nothing in the database changes.
-- **To put it live, on Kamal's yes:** merge #117 (that builds the Android app), publish the website, check both,
-  then change the look sentence in my brief to King's wording (priorities.md) in a small PR of its own.
+- **Still with Kamal:** yes or no to the Parties distance privacy fix (a database change; his "Yez pleaze" answered
+  the two questions about the look, and I have not read it as a yes to this); his look at the Parties map on his
+  phone; whether Tribe matches under 70% are announced; the message limit of 30 an hour and 60 a day.
 
 ## 2026-11-17, Parties: a feed with covers, a party's page, hosting in one screen, and a map (#116) live
 
