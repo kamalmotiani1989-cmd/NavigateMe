@@ -2,7 +2,8 @@
 // first screen, the type scale, the sign-in card on the first phone screen, the "No photos yet" state, the hint
 // grey, the WhatsApp green and "every colour is a named token". Since the look of 16 Nov 2026 (the logo's orange
 // and white) the low-contrast check reads every piece of small orange text against what is behind it (it looked for
-// green text on pale green, then for red text on pink).
+// green text on pale green, then for red text on pink). Since the look of 17 Nov 2026 the pale tints are all one cream,
+// on which the logo's orange reads at 4.8:1.
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [];
 (async () => {
@@ -26,7 +27,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   const city = await p.evaluate(() => { const c = $('city').getBoundingClientRect(), q = document.querySelector('.w-card').getBoundingClientRect(); return { w: Math.round(c.width), quiz: Math.round(q.width) }; });
   ok(city.w > 300 && city.w >= city.quiz, 'visitor: the picture is full width on a phone, not squashed: ' + JSON.stringify(city));
   await p.screenshot({ path: O + '/p8-welcome.png' });
-  // hints and small print: the grey reads at 4.5:1 or better on white, the page, the off-white and the pale orange tints
+  // hints and small print: the grey reads at 4.5:1 or better on white, the page, the off-white and the old tint tokens (all the cream since 17 Nov)
   const grey = await p.evaluate(() => { const v = getComputedStyle(document.documentElement).getPropertyValue('--text-3').trim();
     const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return Math.round((x + .05) / (y + .05) * 100) / 100; };
@@ -58,9 +59,9 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
   await ctx.addInitScript(s => { if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message)); p.on('dialog', d => d.accept().catch(() => {}));
-  // every visible text in the logo's orange (--orange-text) against what is behind it: on white and the off-white it reads at
-  // 4.7:1 or better, on the tinted bands and panels at 4.3 to 4.5:1, which is too little for small text. On those surfaces
-  // orange text uses --orange-deep. (Before 16 Nov this looked for the old green on pale green.)
+  // every visible text in the logo's orange (--orange-text) against what is behind it: on white, the cream and the off-white it
+  // reads at 4.7:1 or better. (On 16 Nov's peach bands it read at 4.3 to 4.5:1, too little for small text, so orange text there
+  // took --orange-deep; a few places still use that shade. Before 16 Nov this looked for the old green on pale green.)
   // text sizes in use on each screen (avatars and icon circles aside)
   const sizes = new Set(), odd = new Set();
   const scale = async () => (await p.evaluate(() => { const r = [];

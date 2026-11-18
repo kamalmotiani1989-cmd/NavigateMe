@@ -10,7 +10,7 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate: find flatmates who match your vibe</title>
 <meta name="description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#FFF4E8">
 <meta property="og:title" content="FindMeFlatMate: find flatmates who match your vibe">
 <meta property="og:description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
 <meta property="og:locale" content="en_IN">
@@ -2762,6 +2762,113 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
 .l-noscore{margin:12px 0 0; padding:12px 14px; border-radius:16px; background:var(--surface-2); color:var(--text-2); font-size:var(--fs-s); line-height:1.45}
 .l-noscore b{display:block; margin:0 0 2px; color:var(--text); font-size:var(--fs-m)}
 .mine-card .esc-noscore{margin:12px 0 4px}
+/* =====================================================================================================
+   The look of 17 Nov 2026: the reels'. Kamal that day, of the ten feature reels King made: "The colors are so
+   amazing of the reels wht dont we use these for our app. Put your best efforts to pull these colors and font
+   size and font colors and make the app and website awesome". The layouts, the words, the login and the logo
+   stay; this layer changes colour and type only (priorities, Teche 00000000, has the values).
+   - cream (--bg): the page, everywhere, and the top band and the bar behind the clock, flat;
+   - white: cards, sheets, inputs and the bottom bar, lifted off the cream by a soft warm shadow and a hairline.
+     One rule: on cream a panel is white; inside a white card a panel is cream (or the quiet off-white);
+   - the logo's orange: the main buttons, the small labels, links, and one key word in a main headline (.kw);
+   - ink: text, what is selected, the score discs, and dark sheets. On ink: titles white, small text --on-ink-2,
+     chips --ink-chip with white words, and light orange (--orange-lt) for ticks and the key word;
+   - a deep warm brown inside a thin orange frame: only a home's header with no photo and the pictures people share;
+   - bigger serif headlines on a phone; rent and prices in the serif; names, titles and buttons at 800.
+   Green still means accepted, verified or "owes you", amber look twice, crimson danger; WhatsApp keeps its green.
+   ===================================================================================================== */
+:root{
+  --cream:#FFF4E8; --orange-lt:#FDBA74; --on-ink-2:#D6D3D1; --ink-chip:#2B2928;
+  --bg:#FFF4E8; --app-bg:var(--bg); --wash:#FFF4E8; --surface:#FFFFFF; --card:var(--surface);
+  --band:#FFF4E8; --lav:#FFF4E8; --butter:#FFF4E8; --mint:#FFF4E8; --blush:#FFF4E8;
+  --orange-soft:#FFF4E8; --accent-soft:#FFF4E8; --brand-soft:#FFF4E8; --hi:#FFF4E8; --orange-tint:#FFF4E8;
+  --teal-95:#FFF4E8; --teal-91:#FFF4E8; --teal-89:#FFF4E8; --purple-97:#FFF4E8;
+  --orange-94:#FFF4E8; --orange-95b:#FFF4E8; --orange-95c:#FFF4E8; --orange-95d:#FFF4E8;
+  --card-shadow:0 10px 28px rgba(60,30,10,.12); --card-shadow-hi:0 2px 4px rgba(60,30,10,.06), 0 18px 38px rgba(60,30,10,.18);
+  --dark-card:linear-gradient(#1C1917, #1C1917); --brown:#5C2408;
+  --dark-hero:radial-gradient(62% 56% at 14% 18%, #9A5B00 0, transparent 72%), radial-gradient(58% 60% at 92% 30%, #7A3410 0, transparent 72%), radial-gradient(80% 62% at 55% 108%, #B45309 0, transparent 70%);
+}
+/* the top band: the page's own cream, flat (it was a peach wash over a white sheet). With no sheet coming up over
+   its foot, the room kept for the sheet's rounded top goes too, so the first thing on the page sits higher */
+@media (max-width:720px){ .home-band{background:var(--band); padding-bottom:26px} .home-band::after{display:none} }
+/* the top bar once you have scrolled: the page's cream at the strength it had (it was a white strip across the cream
+   page, and the round white buttons on it lost their edge) */
+.app-head.scrolled{background:rgba(255,244,232,.94)}
+@media (max-width:720px){ .app-head.scrolled{background:rgba(255,244,232,.96)} }
+/* the first page on a phone: the same goes for the room kept above the sign-up card for the sheet that came up behind it */
+@media (max-width:900px){ .w-card{margin-top:22px} }
+/* type on a phone: the headline of the story and the Coming soon screen; the first page's, a step smaller so that it
+   keeps to two lines from 390 wide and the sign-up card stays up the screen; and the headline on each tab's band */
+@media (max-width:720px){
+  .st-slide h2, .hold-screen h2{font-size:clamp(40px, 11.5vw, 48px); line-height:1.04}
+  .w-copy h1{font-size:clamp(38px, 10.2vw, 48px); line-height:1.04}
+  .home-band h1, .greet h1, .page-h h1{font-size:clamp(30px, 8.6vw, 36px); line-height:1.08}
+}
+/* headings inside cards and sheets */
+.mhead h2, .pt-card h2, .near-ask h2{font-size:24px; line-height:1.15}
+/* rent and prices: the serif, large; "/month" stays small and grey */
+.lcard .price-pill{font-family:var(--serif); font-weight:400; font-size:28px; line-height:1.05; letter-spacing:0}
+.lcard .price-pill small{font-family:var(--body); font-size:var(--fs-xs); font-weight:600; color:var(--text-2)}
+.l-bar-price b{font-family:var(--serif); font-weight:400; font-size:32px; line-height:1; letter-spacing:0}
+/* the rupee sign beside those figures: small, in the body face, raised a little (neither font has the sign: see inrBig) */
+.rs{font-family:var(--body); font-weight:700; font-size:var(--fs-m); vertical-align:.42em; margin-right:1px; letter-spacing:0}
+.l-bar-price .rs{vertical-align:.56em}
+/* names and card titles, buttons, chips */
+.card h3, .lcard h3, .mate b, .near-card b, .pn-host b{font-weight:800}
+.btn{font-weight:800}
+.chip, .area-chips button, .traits span, .lc-chips span{font-weight:700}
+/* one key word in a main headline: the orange (light orange on a dark sheet) */
+:is(h1, h2) .kw.kw{color:var(--orange)} .ink-sheet :is(h1, h2, h3) .kw.kw{color:var(--orange-lt)}
+/* under it, on the welcome page and the four story screens only, a line drawn by hand: it draws once in about
+   half a second, and is simply there for anyone who asked for less motion */
+.kw-keep{white-space:nowrap}
+.kw.ul{position:relative; display:inline-block; white-space:nowrap}
+.kw-ul{position:absolute; left:-4%; bottom:-.16em; width:108%; height:.34em; overflow:visible; pointer-events:none}
+.kw-ul path{fill:none; stroke:var(--orange); stroke-width:9; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0}
+@media (prefers-reduced-motion:no-preference){ .kw-ul path{animation:kwdraw .55s ease-out .25s both} }
+@keyframes kwdraw{from{stroke-dashoffset:1} to{stroke-dashoffset:0}}
+/* the vibe score's ring keeps the colour that says how strong the match is (ringColor: green from 80, amber from 60,
+   grey under): it is not part of the look. For a few hours on 17 Nov every ring was the light orange, and a strong
+   match and a fair one looked the same (King's review, 18 Nov) */
+/* the story's little chat: your line is an ink bubble as wide as its words (it took the width of the round initial that
+   shares its class name, and broke one word to a line) */
+.st-chat p.me{width:auto; height:auto; display:block; background:var(--ink); color:#fff}
+/* a home's page: "Who you'd live with" and the household's answers on one ink sheet. White serif title, one small
+   grey line, dark chips, and a light-orange tick on the answers you share */
+.ink-sheet{margin:10px 0 6px; padding:20px 18px 18px; border-radius:20px; background:var(--ink); color:#fff}
+.ink-sheet .ink-h{margin:0 0 6px; font-family:var(--serif); font-weight:400; font-size:24px; line-height:1.15; letter-spacing:0; color:#fff}
+.ink-sheet .gen-intro{margin:0 0 12px; font-weight:500; font-size:var(--fs-s); color:var(--on-ink-2)}
+.ink-sheet .mate b{color:#fff} .ink-sheet .mate span{color:var(--on-ink-2)}
+.ink-sheet .traits span, .ink-sheet .traits span.tr-same, .ink-sheet .traits span.tr-diff, .ink-sheet .tr-key span, .ink-sheet .traits.likes span.g{background:var(--ink-chip); color:#fff; font-weight:700}
+.ink-sheet .traits span{padding:6px 12px}
+.ink-sheet .tk{font-style:normal; color:var(--orange-lt); margin-right:2px}
+.ink-sheet .traits span.tr-diff, .ink-sheet .tr-key .tr-diff{box-shadow:inset 0 0 0 1.5px var(--on-ink-2)}
+.ink-sheet .tr-key{color:var(--on-ink-2)}
+.ink-sheet .ink-p{margin:14px 0 0; font-weight:800; color:#fff} .ink-sheet .ink-p span{color:var(--orange-lt)}
+.ink-sheet .traits.likes span.g{color:var(--orange-lt)}
+.ink-sheet .compat-mini{background:#fff; color:var(--text)} .ink-sheet .compat-mini .cx-area{background:var(--cream)}
+.ink-sheet .gen, .ink-sheet .mate span.gen, .ink-sheet .gen em{color:var(--text)}
+/* panels that sat on the page as a tint: on cream a panel is white, with the card's shadow and a hairline */
+.notice, .pn-hostcta, .mine-esc, .pp-card, .tribe-save div, .tribe-save .win{background:var(--surface); color:var(--text); box-shadow:0 0 0 1px var(--hair), var(--card-shadow)}
+.tribe-save span{color:var(--text-2)}
+.mine-esc .row .btn{box-shadow:inset 0 0 0 1px var(--line-2)}
+.gift-pill{background:var(--surface); box-shadow:0 0 0 1px var(--hair)}
+/* a party's drawn cover: three of its four tints are the cream now; the fourth was a beige, and is the quiet off-white */
+.pc.t3{background-color:var(--surface-2)}
+/* the number tiles on FlatMart and the Escape, and the "Looking for a room" label on Profile, were a see-through white
+   on the old band and melted into the cream: white, with the hairline. The List | Map switch gets the hairline too */
+.esc-stats div, .acc-role{background:var(--surface); box-shadow:0 0 0 1px var(--hair)}
+.ds-view{box-shadow:inset 0 0 0 1px var(--hair)}
+/* on a computer the bands are rounded panels inside the page: white cards on the cream (and what sits in them, cream) */
+@media (min-width:721px){
+  .tribe-hero, .fs-hero, .mk-hero, .acc-hero, .esc-hero{background:var(--surface); box-shadow:var(--card-shadow)}
+  .esc-stats div, .acc-role{background:var(--cream); box-shadow:none}
+}
+/* a home's header while it has no photo: the deep warm brown, inside a thin orange frame */
+@media (max-width:640px){
+  #dlgListing .hero-pic .nophoto{background:var(--dark-hero) var(--brown); color:#fff}
+  #dlgListing .hero-pic .nophoto::after{content:""; position:absolute; inset:10px 10px 40px; border:3px solid var(--orange); border-radius:18px; pointer-events:none}
+}
 </style>
 </head>
 <body>
@@ -2785,7 +2892,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
     <div class="wrap w-grid">
       <div class="w-copy">
         <p class="eyebrow tagline">Find your vibe. Find your flatmate.</p>
-        <h1>Find flatmates who <em>match your vibe.</em></h1>
+        <h1>Find flatmates who <em>match your <span class="kw-keep"><span class="kw ul">vibe<svg class="kw-ul" viewBox="0 0 500 40" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M8 26 C120 10 260 34 492 14"/></svg></span>.</span></em></h1>
         <div class="w-invite" id="wInvite" hidden></div>
         <p class="lede">Tell us how you live, and we'll match you with flatmates who live the same way.</p>
         <p class="w-trust"><b>✓ Listed by owners and the flatmates who live there</b> · your number is shared only if you both say yes</p>
@@ -3044,7 +3151,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
     <div class="tribe-hero home-band" data-band="mint">
       <div class="orbit" id="tribeOrbit" aria-hidden="true"></div>
       <p class="eyebrow">Build your tribe</p>
-      <h1>Find your people first. Then the flat.</h1>
+      <h1>Find your <span class="kw">people</span> first. Then the flat.</h1>
       <p class="lede">Team up with someone looking in your areas who lives like you. Hunt for a whole flat together,
         split the rent, and move in with a friend instead of a stranger.</p>
       <div class="tribe-save" id="tribeSave"></div>
@@ -3071,7 +3178,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
        start your own. The rules are the ones it had inside Splits and Account: off until you switch it on, 21 and
        over, and the address only after the host says yes. -->
   <section id="view-parties" hidden>
-    <div class="greet home-band" data-band="butter"><p class="eyebrow">Parties nearby</p><h1>House parties, round the corner.</h1>
+    <div class="greet home-band" data-band="butter"><p class="eyebrow">Parties nearby</p><h1>House parties, <span class="kw">round the corner.</span></h1>
       <p id="pnSub">Game nights, potlucks and match screenings in flats near you.</p><div id="pnWhere"></div></div>
     <div id="pnBody"></div>
   </section>
@@ -3088,7 +3195,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
   <section id="view-escape" hidden>
     <div class="esc-hero home-band" data-band="mint">
       <p class="eyebrow">Don't wait for them to find you</p>
-      <h1>The Empty Room Escape</h1>
+      <h1>The Empty Room <span class="kw">Escape</span></h1>
       <p id="escLead">People already looking for a room in your area, with their budget and how well they'd fit your home.
         Invite the ones you like: they see your photos and can say yes in one tap.</p>
       <div class="esc-stats" id="escStats"></div>
@@ -3289,7 +3396,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
     <div id="fsHome">
       <div class="fs-hero home-band" data-band="lav">
         <p class="eyebrow">Flatsplits</p>
-        <h1>Split rent, bills and groceries. Stay friends.</h1>
+        <h1>Split rent, bills and groceries. <span class="kw">Stay friends.</span></h1>
         <p>Add an expense in seconds and see who owes whom. Pay back over UPI in one tap. Rent, Wi-Fi and the maid can be added automatically every month.</p>
         <div class="fs-tot" id="fsTot"></div>
       </div>
@@ -3302,7 +3409,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
   <section id="view-market" hidden>
     <div class="mk-hero home-band" data-band="butter">
       <p class="eyebrow">FlatMart</p>
-      <h1>Buy and sell with people who live nearby.</h1>
+      <h1>Buy and sell with people who live <span class="kw">nearby.</span></h1>
       <p>Moving in? Pick up a bed, a fridge or a study table for a fraction of the price. Moving out? Sell it to someone down the road.
         No brokers, no delivery fees.</p>
       <div class="esc-stats" id="mkStats"></div>
@@ -3663,6 +3770,10 @@ function openHoldDoor(){
 }
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+// A rent set large in the serif (a home's card, the bar at the foot of a home's page): neither of our fonts has a rupee
+// sign, so a phone borrows it from a font of its own. Beside big serif figures that shows, so there the sign is set
+// small in the body face, where it looks meant whichever font draws it. The words read aloud are the same.
+const inrBig = n => inr(n).replace(/^₹/, '<span class="rs">₹</span>');
 const fmtDate = d => new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short"});
 const fmtDateTime = d => new Date(d).toLocaleString("en-IN", {day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
 function toast(msg){
@@ -6068,6 +6179,15 @@ const isSeeker = () => Boolean(state.user && state.user.role !== "owner" && stat
 const isSplits = () => Boolean(state.user && state.user.role === "splits");
 const roleKey = () => isOwner() ? "owner" : isSplits() ? "splits" : "seeker";
 const ringColor = p => p >= 80 ? "var(--ok)" : p >= 60 ? "var(--mid)" : "var(--text-3)";
+// One key word in a main headline is orange (the look of 17 Nov 2026). kwHtml("A spare room is easy.", "easy") wraps
+// the word; with line it also gets the hand-drawn underline (the welcome page and the story only).
+const KW_LINE = `<svg class="kw-ul" viewBox="0 0 500 40" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M8 26 C120 10 260 34 492 14"/></svg>`;
+function kwHtml(text, word, line){
+  const t = String(text), i = word ? t.indexOf(word) : -1;
+  if(i < 0) return esc(t);
+  const rest = t.slice(i + word.length), tail = (/^[.,!?;:]+/.exec(rest) || [""])[0];   // the full stop after the word stays on its line
+  return esc(t.slice(0, i)) + `<span class="kw-keep"><span class="kw${line ? " ul" : ""}">${esc(word)}${line ? KW_LINE : ""}</span>${esc(tail)}</span>` + esc(rest.slice(tail.length));
+}
 function ringSvg(pct, size, cls){
   const sw = Math.max(3, Math.round(size / 11)), r = size/2 - sw/2 - 1, c = 2 * Math.PI * r;
   return `<svg class="ring ${cls || ""}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${pct}% match">
@@ -7765,7 +7885,7 @@ function cardHtml(l, i){
       <button class="heart" type="button" data-save="${esc(l.id)}" aria-pressed="${isSaved(l.id)}" aria-label="Save this flat">♥</button>
     </div>
     <div class="body">
-      <div class="lc-price"><span class="price-pill">${inr(l.rent)}<small> /month</small></span><span class="lc-exp">${esc(expensesLine(l))}</span></div>
+      <div class="lc-price"><span class="price-pill">${inrBig(l.rent)}<small> /month</small></span><span class="lc-exp">${esc(expensesLine(l))}</span></div>
       <h3>${esc(l.title)}</h3>
       <div class="loc">${esc(l.locality)}, ${esc(l.city)}${isSample(l) ? " " + SAMPLE_TAG : ""}</div>
       <div class="lc-chips">${[l.bhk ? `${l.bhk} BHK` : "", FURN_LABEL[l.furnishing] || ""].filter(Boolean).map(t => `<span>${esc(t)}</span>`).join("")}</div>
@@ -7864,7 +7984,7 @@ async function renderDiscover(){
   const strong = list.filter(l => score(l) >= 75).length;
   const where = near ? `${near.km} km of ${near.label}` : f.areas.length === 1 ? f.areas[0] : f.areas.length ? `${f.areas.length} areas of ${f.city}` : f.city || "all cities";
   $("greetTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
-  $("greetName").textContent = "Here's who you'd get along with";
+  $("greetName").innerHTML = kwHtml("Here's who you'd get along with", "get along");
   $("greetSub").textContent = `${list.length} ${list.length === 1 ? "home" : "homes"} ${near ? "within" : "in"} ${where} · ${strong} strong ${strong === 1 ? "match" : "matches"}`;
   $("giftPill").innerHTML = giftPillHtml();
   $("dMap").hidden = !mapView;
@@ -8322,8 +8442,8 @@ async function openListing(id){
   const mineV = isSeeker() && !l.is_owner ? state.vibe || {} : {};
   const traits = VIBE_QS.filter(x => Number.isInteger(hh[x.k])).map(x => {
     const d = Number.isInteger(mineV[x.k]) ? Math.abs(mineV[x.k] - hh[x.k]) : null;
-    return `<span class="${d === 0 ? "tr-same" : d === 2 ? "tr-diff" : ""}">${d === 0 ? "✓ " : d === 2 ? "! " : ""}${esc(x.t[hh[x.k]])}</span>`; }).join("");
-  const traitKey = Object.keys(mineV).length ? `<p class="tr-key"><span class="tr-same">✓ same as you</span><span class="tr-diff">! very different</span></p>` : "";
+    return `<span class="${d === 0 ? "tr-same" : d === 2 ? "tr-diff" : ""}">${d === 0 ? `<i class="tk">✓</i> ` : d === 2 ? "! " : ""}${esc(x.t[hh[x.k]])}</span>`; }).join("");
+  const traitKey = Object.keys(mineV).length ? `<p class="tr-key"><span class="tr-same"><i class="tk">✓</i> same as you</span><span class="tr-diff">! very different</span></p>` : "";
   const mates = matesOf(hh);
   const cp = isSeeker() && !l.is_owner ? compatOf(state.vibe, hh) : null;
   const cpBest = cp && cp.groups.filter(g => g.pct != null).sort((a, b) => b.pct - a.pct);
@@ -8358,12 +8478,13 @@ async function openListing(id){
     ${noScore(l) ? `<p class="l-noscore" role="note"><b>${NO_SCORE}</b>${l.is_owner ? "This is what people looking see: the listing has no living-style answers, so nobody can be scored against it."
       : "This home has no living-style answers yet, so there is nothing to compare with yours. You can still ask to meet."}</p>` : ""}
     ${tribeNote}
-    ${l.kind !== "flat" && (mates.length || traits) ? `<h3 class="section-h">Who you'd live with</h3>
-    ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
-    <div class="household">${mates.length ? matesHtml(hh, l.id) : ""}
+    ${l.kind !== "flat" && (mates.length || traits) ? `<div class="household ink-sheet">
+      <h3 class="ink-h">Who you'd live with</h3>
+      ${householdGen(hh) ? `<p class="gen-intro">A ${genBadge(householdGen(hh))} household${state.vibe.gen && state.vibe.gen === householdGen(hh) ? ", like you" : ""}</p>` : ""}
+      ${mates.length ? matesHtml(hh, l.id) : ""}
       ${traits ? `<div class="traits">${traits}</div>${traitKey}` : ""}${matchBlock}
-      ${allInterests(hh.interests).length ? `<p style="margin:12px 0 0;font-weight:800">What they're into${sharedInterests(state.interests, hh.interests).length
-        ? ` · <span style="color:var(--accent)">you both like ${esc(sharedInterests(state.interests, hh.interests).join(", "))}</span>` : ""}</p>
+      ${allInterests(hh.interests).length ? `<p class="ink-p">What they're into${sharedInterests(state.interests, hh.interests).length
+        ? ` · <span>you both like ${esc(sharedInterests(state.interests, hh.interests).join(", "))}</span>` : ""}</p>
         ${interestsHtml(hh.interests, state.interests)}` : ""}</div>` : ""}
     <h3 class="section-h">Rent</h3>
     <div class="bill">
@@ -8434,7 +8555,7 @@ function wireGallery(pic){
 // The bar that stays at the bottom of the listing: the rent, and the one thing to do next.
 function listingBar(l, contact, cta){
   if(!cta) return "";
-  return `<div class="l-bar"><div class="l-bar-price"><b>${inr(l.rent)}</b><small>/month${billsTotal(l) ? " + expenses" : ""}</small></div>${cta}</div>`;
+  return `<div class="l-bar"><div class="l-bar-price"><b>${inrBig(l.rent)}</b><small>/month${billsTotal(l) ? " + expenses" : ""}</small></div>${cta}</div>`;
 }
 $("lShare").addEventListener("click", () => { if(currentListing) shareListing(currentListing); });
 $("lBody").addEventListener("click", async e => {
@@ -8501,7 +8622,7 @@ async function renderRequests(){
   const list = rows.filter(r => r.direction === (owner ? "incoming" : "outgoing"));
   const waiting = list.filter(r => r.status === "pending" && r.by !== "owner").length;
   const invites = owner ? [] : list.filter(r => r.by === "owner" && r.status === "pending");
-  $("reqTitle").textContent = owner ? "People who'd like to meet you" : "Your requests";
+  $("reqTitle").innerHTML = owner ? kwHtml("People who'd like to meet you", "meet you") : "Your requests";
   $("reqBand").dataset.band = owner ? "butter" : "lav"; bandSync();   // the band takes the side's colour: butter for owners, lavender for people looking
   $("notifReq").innerHTML = notifyCard(owner ? "Get a notification the moment someone asks to meet you, even when the app is closed."
     : "Get a notification the moment an owner says yes, so you can call before anyone else.");
@@ -9365,15 +9486,15 @@ const avCast = (i, live) => avSvg(Object.assign({ v:1 }, AV_CAST[i % AV_CAST.len
 // moving on by themselves (or with Next), Skip always there, then straight to sign-up. Shown once per phone.
 // (Automated browsers skip it unless the address has ?story, so the tests can still reach the sign-in card.)
 const STORY = [
-  { h: "A spare room is easy.", b: "Finding people you'd actually like living with is the hard part.", art: () => `<div class="st-trio">${[0, 1, 2].map(() => AV_DEFAULT_SVG).join("")}</div>` },
-  { h: "Tell us how you live.", b: "Twelve quick questions: sleep, food, guests, noise, pets.", art: () => `<div class="st-chips">${["🌙 Night owl", "🥗 Veg kitchen", "🎧 Quiet home", "🐾 Pet-friendly", "🧹 Tidy most days"].map(t => `<span>${t}</span>`).join("")}</div>` },
-  { h: "Meet people who live like you.", b: "Every home and every person shows how well you'd fit.", art: () => `<div class="st-pair"><span class="st-av">${avCast(0, true)}</span>${ringSvg(92, 76)}<span class="st-av">${avCast(2, true)}</span></div>` },
-  { h: "Both say yes. Then talk.", b: "Your number stays private until you both say yes. Then chat, visit, move in.", art: () => `<div class="st-chat"><span class="st-av sm">${avCast(1)}</span><p>Saturday at 11 for a visit?</p><p class="me">Perfect, see you then!</p></div>` }
+  { h: "A spare room is easy.", kw: "easy", b: "Finding people you'd actually like living with is the hard part.", art: () => `<div class="st-trio">${[0, 1, 2].map(() => AV_DEFAULT_SVG).join("")}</div>` },
+  { h: "Tell us how you live.", kw: "live", b: "Twelve quick questions: sleep, food, guests, noise, pets.", art: () => `<div class="st-chips">${["🌙 Night owl", "🥗 Veg kitchen", "🎧 Quiet home", "🐾 Pet-friendly", "🧹 Tidy most days"].map(t => `<span>${t}</span>`).join("")}</div>` },
+  { h: "Meet people who live like you.", kw: "like you", b: "Every home and every person shows how well you'd fit.", art: () => `<div class="st-pair"><span class="st-av">${avCast(0, true)}</span>${ringSvg(92, 76)}<span class="st-av">${avCast(2, true)}</span></div>` },
+  { h: "Both say yes. Then talk.", kw: "yes", b: "Your number stays private until you both say yes. Then chat, visit, move in.", art: () => `<div class="st-chat"><span class="st-av sm">${avCast(1)}</span><p>Saturday at 11 for a visit?</p><p class="me">Perfect, see you then!</p></div>` }
 ];
 let stI = 0, stTimer = null;
 function storyShow(i){
   stI = i; const x = STORY[i];
-  $("stStage").innerHTML = `<div class="st-slide"><div class="st-art">${x.art()}</div><h2>${esc(x.h)}</h2><p>${esc(x.b)}</p></div>`;
+  $("stStage").innerHTML = `<div class="st-slide"><div class="st-art">${x.art()}</div><h2>${kwHtml(x.h, x.kw, true)}</h2><p>${esc(x.b)}</p></div>`;
   $("stDots").innerHTML = STORY.map((_, k) => `<i class="${k === i ? "on" : k < i ? "done" : ""}"></i>`).join("");
   $("stNext").textContent = i === STORY.length - 1 ? "Find my flatmates" : "Next";
   clearTimeout(stTimer);
@@ -9706,7 +9827,7 @@ async function renderMine(){
   const incoming = inbox.filter(r => r.direction === "incoming");
   const waiting = incoming.filter(r => r.status === "pending").length;
   $("mineTime").textContent = partOfDay() + (firstName() ? ", " + firstName() : "");
-  $("mineName").textContent = mine.length ? (mine.length === 1 ? "Your flat is live" : "Your flats are live") : "Let's find your flatmate";
+  $("mineName").innerHTML = mine.length ? kwHtml(mine.length === 1 ? "Your flat is live" : "Your flats are live", "live") : "Let's find your flatmate";
   $("mineSub").innerHTML = mine.length
     ? (waiting ? `<a href="#requests">${waiting} ${waiting === 1 ? "person wants" : "people want"} to meet you&nbsp;→</a>` : "No new requests right now. We'll notify you as soon as someone asks.")
     : "Describe the room and add a few photos. People who fit your home will ask to meet you.";
@@ -11634,11 +11755,7 @@ async function drawPartyCard(p){
   const x = c.getContext("2d");
   await cardFonts();
   const logo = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = "icons/icon-192.png"; });
-  const g = x.createLinearGradient(0, 0, W * .45, H);
-  g.addColorStop(0, CARD.top); g.addColorStop(1, CARD.bottom);
-  x.fillStyle = g; x.fillRect(0, 0, W, H);
-  x.fillStyle = "rgba(255,255,255,.07)";
-  for(const [cx, cy, rr] of [[980, 120, 330], [60, 1560, 280], [1040, 1180, 150]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  cardBackdrop(x, W, H);
   // Confetti, the same every time for the same party.
   let seed = [...(p.code || "FMF")].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) >>> 0;
   const rnd = () => (seed = (seed * 1103515245 + 12345) >>> 0) / 4294967296;
@@ -13987,19 +14104,27 @@ function wrapLines(x, text, max){
   return line ? out.concat(line) : out;
 }
 function roundRect(x, l, t, w, h, r, fill){ x.beginPath(); x.roundRect(l, t, w, h, r); x.fillStyle = fill; x.fill(); }
-// The share pictures' lettering and colours (the look of 16 Nov 2026, in the logo's colours): Urbanist with the serif
-// for titles, a card in the logo's orange with white words and white panels.
+// The share pictures' lettering and colours: Urbanist with the serif for titles (the look of 16 Nov 2026), on the
+// deep warm brown inside a thin orange frame, with white words and white panels (the look of 17 Nov; cardBackdrop).
 const CARD_F = '"Urbanist", "Plus Jakarta Sans", system-ui, sans-serif', CARD_SERIF = '"DM Serif Display", Georgia, "Times New Roman", serif';
-const CARD = { top: "#C2410C", bottom: "#9A3412", ink: "#1C1917", ink2: "#57534E", orange: "#C2410C", pale: "#FFE4D3",
-  tints: ["#FFF1E8", "#FFF1DC", "#F7F3EF", "#FFE4D3", "#FDEEE2"], confetti: ["#FFE4D3", "#FFFFFF", "#FFF1DC", "#F59E6C", "#FFD08A"] };
+const CARD = { brown: "#5C2408", glow: ["#9A5B00", "#7A3410", "#B45309"], ink: "#1C1917", ink2: "#57534E", orange: "#C2410C", lt: "#FDBA74", pale: "#FFF4E8",
+  tints: ["#FFF4E8", "#F7F3EF", "#FFF4E8", "#F7F3EF", "#FFF4E8"], confetti: ["#FDBA74", "#FFFFFF", "#FFF4E8", "#F59E6C", "#FFD08A"] };
+// The backdrop of a picture people share (the look of 17 Nov 2026): a deep warm brown with soft glows, inside a thin
+// orange frame, as on the reels' last scene. White words read on it at 5:1 or better everywhere.
+function cardBackdrop(x, W, H){
+  x.fillStyle = CARD.brown; x.fillRect(0, 0, W, H);
+  for(const [cx, cy, r, col] of [[W * .1, H * .12, W * .7, CARD.glow[0]], [W * .96, H * .3, W * .62, CARD.glow[1]], [W * .55, H * 1.04, W * .85, CARD.glow[2]]]){
+    const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col); g.addColorStop(1, "rgba(92,36,8,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H); }
+  x.save(); x.lineWidth = 12; x.strokeStyle = CARD.orange; x.beginPath(); x.roundRect(20, 20, W - 40, H - 40, 30); x.stroke(); x.restore();
+}
 const cardFonts = () => Promise.race([Promise.all(['800 60px "Urbanist"', '700 32px "Urbanist"', '500 32px "Urbanist"', '400 92px "DM Serif Display"'].map(f => document.fonts.load(f))).catch(() => {}),
   new Promise(r => setTimeout(r, 2500))]);
 // The Vibe Card's colours (the contrast audit in p13 checks every text colour on every background here).
-const VC_PALETTE = { bg: { "Early Bird": "#FFF1DC", "Midnight": "#FFE4D3", "Night Owl": "#FFEBDD", "": "#FFF5EE" }, ink: "#1C1917", ink2: "#57534E", panel: "#FFFFFF",
-  tints: ["#FFE4D3", "#FFF1DC", "#F7F3EF", "#FDEEE2", "#FFF1E8", "#F9E3D2"] };
+const VC_PALETTE = { bg: { "Early Bird": "#FFF4E8", "Midnight": "#FFF4E8", "Night Owl": "#FFF4E8", "": "#FFF4E8" }, ink: "#1C1917", ink2: "#57534E", panel: "#FFFFFF",
+  tints: ["#FFF4E8", "#F7F3EF", "#FFF4E8", "#F7F3EF", "#FFF4E8", "#F7F3EF"] };
 async function drawVibeCard(t, name, stat, av){
-  // A warm tint for each rhythm (apricot, rose, peach), dark ink text, the type's name in the serif, the logo and
-  // wordmark, and your avatar large where the type's emoji was. Same words as before.
+  // On the cream, whatever the rhythm (each had its own warm tint until 17 Nov), dark ink text, the type's name in
+  // the serif, the logo and wordmark, and your avatar large where the type's emoji was. Same words as before.
   const W = 1080, H = 1920, c = document.createElement("canvas"), F = CARD_F,
     E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
   c.width = W; c.height = H;
@@ -14072,11 +14197,7 @@ async function drawListingCard(l, m){
   await cardFonts();
   const ph = photosOf(l)[0];
   const [logo, pic] = await Promise.all([loadImg("icons/icon-192.png"), ph ? loadImg(ph, !ph.startsWith("data:")) : null]);
-  const g = x.createLinearGradient(0, 0, W * .45, H);
-  g.addColorStop(0, CARD.top); g.addColorStop(1, CARD.bottom);
-  x.fillStyle = g; x.fillRect(0, 0, W, H);
-  x.fillStyle = "rgba(255,255,255,.07)";
-  for(const [cx, cy, rr] of [[1000, 60, 300], [40, 1320, 240]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  cardBackdrop(x, W, H);
   x.textBaseline = "middle"; x.textAlign = "left";
   if(logo){ roundRect(x, 60, 54, 84, 84, 22, "#fff"); x.drawImage(logo, 66, 60, 72, 72); }
   x.fillStyle = "#fff"; x.font = `800 40px ${F}`; x.fillText("FindMeFlatMate", 164, 96);
@@ -14174,11 +14295,7 @@ async function drawSimpleCard(c){
   const x = cv.getContext("2d");
   await cardFonts();
   const [logo, pic] = await Promise.all([loadImg("icons/icon-192.png"), c.photo ? loadImg(c.photo, !c.photo.startsWith("data:")) : null]);
-  const g = x.createLinearGradient(0, 0, W * .4, H);
-  g.addColorStop(0, CARD.top); g.addColorStop(1, CARD.bottom);
-  x.fillStyle = g; x.fillRect(0, 0, W, H);
-  x.fillStyle = "rgba(255,255,255,.08)";
-  for(const [cx, cy, rr] of [[1000, 60, 300], [40, 1320, 240]]){ x.beginPath(); x.arc(cx, cy, rr, 0, Math.PI * 2); x.fill(); }
+  cardBackdrop(x, W, H);
   x.textBaseline = "middle"; x.textAlign = "left";
   if(logo){ roundRect(x, 60, 54, 84, 84, 22, "#fff"); x.drawImage(logo, 66, 60, 72, 72); }
   x.fillStyle = "#fff"; x.font = `800 40px ${F}`; x.fillText("FindMeFlatMate", 164, 96);

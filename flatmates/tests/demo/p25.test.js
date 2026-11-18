@@ -2,6 +2,8 @@
 // website and app as people might copy the same. Make it more clean". The page a visitor sees is the headline, the
 // sign-up card (untouched) and a picture of our cartoon people, in two layers like the home screens; what the app
 // does is shown after sign-in, not here. Also what search engines and link previews read.
+// Since the look of 17 Nov 2026 the page is one cream: the band under the headline and the sheet that came up over it
+// are both the page's own colour, so no edge shows; the card is white, and the headline's key word is orange.
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [], U = 'http://localhost:8765/';
 const SITE = 'https://findmeflatmate.com/';
@@ -38,16 +40,18 @@ const FEATURES = /Flatsplits|FlatMart|Move-in kit|agreement|scam|Tribe|Escape|Vi
       words: clone.textContent.replace(/\s+/g, ' ').trim(), H: document.documentElement.scrollHeight, links: [...w.querySelectorAll('.w-foot-slim a, .w-foot-slim button')].map(x => x.textContent.trim()) }; });
   ok(page.kids.join() === 'div.w-band,footer.w-foot-slim' && !page.gone.length && page.H <= 1000, 'the page is two parts, the sign-up band and one line of small print (' + page.H + 'px tall on a computer); the feature sections are gone');
   ok(!FEATURES.test(page.words) && page.words.split(' ').length < 110, 'outside the sign-up card the page names no feature of the app (' + page.words.split(' ').length + ' words in all): "' + page.words.slice(0, 150) + '…"');
-  // two layers: the words on a lavender band, near-black; the card across the edge of the sheet
+  // the words on the cream page, near-black but for the key word; the card, white, beside them (two layers until 17 Nov: a tinted band and a sheet)
   const look = await p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
     const r = s => document.querySelector(s).getBoundingClientRect(), sheet = getComputedStyle(document.querySelector('.w-grid'), '::after'), city = r('#city'), card = r('.w-card'), copy = r('.w-copy');
-    return { band: getComputedStyle(document.querySelector('.w-band')).backgroundColor, lav: tok('--lav'), page: tok('--bg'), ink: tok('--ink'), text: tok('--text'),
+    return { band: getComputedStyle(document.querySelector('.w-band')).backgroundColor, lav: tok('--lav'), page: tok('--bg'), ink: tok('--ink'), text: tok('--text'), orange: tok('--orange'),
+      kw: [...document.querySelectorAll('.w-copy h1 .kw')].map(e => e.textContent + ' ' + getComputedStyle(e).color).join(), cardBg: getComputedStyle(document.querySelector('.w-card')).backgroundColor,
       h1: getComputedStyle(document.querySelector('.w-copy h1')).color, em: getComputedStyle(document.querySelector('.w-copy h1 em')).color, lede: getComputedStyle(document.querySelector('.w-copy .lede')).color,
       trust: getComputedStyle(document.querySelector('.w-trust')).color, tag: getComputedStyle(document.querySelector('.tagline')).color,
       sheet: { bg: sheet.backgroundColor, radius: sheet.borderTopLeftRadius }, cardTop: Math.round(card.top), copyBottom: Math.round(copy.bottom), cityTop: Math.round(city.top), cardBottom: Math.round(card.bottom), copyRight: Math.round(copy.right), cardLeft: Math.round(card.left) }; });
-  ok(look.band === look.lav && [look.h1, look.em].every(c => c === look.ink) && [look.lede, look.trust, look.tag].every(c => c === look.text), 'the headline sits on a lavender band, all of it near-black (nothing orange on the pastel)');
-  ok(look.sheet.bg === look.page && look.sheet.radius === '32px' && look.cardTop < look.copyBottom && look.cardBottom > look.cityTop && look.copyRight <= look.cardLeft,
-    'the sheet starts under the words with round corners, and the sign-up card stands across its edge: ' + JSON.stringify({ cardTop: look.cardTop, copyBottom: look.copyBottom, cityTop: look.cityTop, cardBottom: look.cardBottom }));
+  ok(look.band === look.page && look.page === 'rgb(255, 244, 232)' && [look.h1, look.em].every(c => c === look.ink) && look.kw === 'vibe ' + look.orange && [look.lede, look.trust, look.tag].every(c => c === look.text),
+    'the headline sits on the cream page, near-black, with its one key word in the logo\'s orange (a tinted band with nothing orange on it until 17 Nov): ' + look.kw);
+  ok(look.sheet.bg === look.band && look.cardBg === 'rgb(255, 255, 255)' && look.cardTop < look.copyBottom && look.cardBottom > look.cityTop && look.copyRight <= look.cardLeft,
+    'the sign-up card is a white card beside the words, reaching down past them to the picture (the sheet it stood across is the page\'s own cream now, so no edge shows): ' + JSON.stringify({ cardTop: look.cardTop, copyBottom: look.copyBottom, cityTop: look.cityTop, cardBottom: look.cardBottom }));
   // the picture: our cartoon people around a match ring, no photos, no screens of the app
   const art = await p.evaluate(() => { const c = $('city'); return { hidden: c.getAttribute('aria-hidden'), people: c.querySelectorAll('.w-people > span svg').length, ring: (c.querySelector('.w-people > b text') || {}).textContent, imgs: c.querySelectorAll('img').length,
     words: c.textContent.replace(/\d+/g, '').trim(), solid: /^rgb\(/.test(getComputedStyle(c.querySelector('.ring circle')).fill) }; });
@@ -70,18 +74,18 @@ const FEATURES = /Flatsplits|FlatMart|Move-in kit|agreement|scam|Tribe|Escape|Vi
   ok(apk === 0, 'inside the Android app the download link and the iPhone line are hidden');
   await ctx.close();
 
-  // ---- on a phone: the same two layers, the card's choices on the first screen, nothing sideways
+  // ---- on a phone: the headline, then the white card close under it; the card's choices on the first screen, nothing sideways
   for(const [w, h] of [[320, 640], [360, 740], [390, 844]]){
     ctx = await b.newContext({ viewport:{ width:w, height:h } }); p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message));
     await p.goto(U); await p.waitForTimeout(1100);
     const ph = await p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
       const r = s => document.querySelector(s).getBoundingClientRect(), sheet = getComputedStyle(document.querySelector('.w-card'), '::before');
-      return { side: document.documentElement.scrollWidth - innerWidth, band: getComputedStyle(document.querySelector('.w-band')).backgroundColor === tok('--lav'), sheet: sheet.backgroundColor === tok('--bg') && sheet.borderTopLeftRadius === '30px',
+      return { side: document.documentElement.scrollWidth - innerWidth, band: getComputedStyle(document.querySelector('.w-band')).backgroundColor === tok('--bg'), sheet: sheet.backgroundColor === getComputedStyle(document.querySelector('.w-band')).backgroundColor,
         trustBottom: Math.round(r('.w-trust').bottom), cardTop: Math.round(r('.w-card').top), roles: [...document.querySelectorAll('.w-card .role')].map(e => Math.round(e.getBoundingClientRect().bottom)),
         ledeAfter: r('.w-copy .lede').top > r('.w-card').bottom, people: Math.round(r('.w-people').width), H: document.documentElement.scrollHeight }; });
     // (on the smallest phone, 320 x 640, the first two choices are on the first screen and the third just below)
-    ok(ph.side <= 0 && ph.band && ph.sheet && ph.cardTop - ph.trustBottom >= 30 && (w === 320 ? ph.roles[0] < h : ph.roles.every(y => y < h)) && ph.ledeAfter && ph.people <= w - 30,
-      w + ' wide: the band, then the sheet with the card; the choices on the first screen; nothing scrolls sideways: ' + JSON.stringify({ trustBottom: ph.trustBottom, cardTop: ph.cardTop, roles: ph.roles, H: ph.H }));
+    ok(ph.side <= 0 && ph.band && ph.sheet && ph.cardTop - ph.trustBottom >= 20 && ph.cardTop - ph.trustBottom <= 36 && (w === 320 ? ph.roles[0] < h : ph.roles.every(y => y < h)) && ph.ledeAfter && ph.people <= w - 30,
+      w + ' wide: the headline on the cream, then the card close under it (the room kept for the old sheet\'s edge went on 17 Nov); the choices on the first screen; nothing scrolls sideways: ' + JSON.stringify({ trustBottom: ph.trustBottom, cardTop: ph.cardTop, roles: ph.roles, H: ph.H }));
     if(w === 390) await p.screenshot({ path: O + '/p25-login-phone.png', fullPage: true });
     await ctx.close(); }
 

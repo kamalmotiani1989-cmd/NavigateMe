@@ -8,7 +8,7 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate</title>
 <meta name="description" content="FindMeFlatMate is coming soon: find a room, and the people worth sharing it with.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#FFF4E8">
 <meta property="og:title" content="FindMeFlatMate · Coming soon">
 <meta property="og:description" content="Find your vibe. Find your flatmate. Coming soon.">
 <meta property="og:type" content="website">
@@ -25,13 +25,13 @@
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 @font-face{font-family:"DM Serif Display"; font-style:normal; font-weight:400; font-display:swap; src:url(vendor/fonts/dm-serif-display-latin-400-normal.woff2) format("woff2");
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-:root{color-scheme:light; --bg:#FFFFFF; --band:#FFEBDD; --ink:#1C1917; --text:#1C1917; --text-2:#57534E; --orange:#C2410C; --orange-soft:#FFF1E8; --line:#EEE8E2;
+:root{color-scheme:light; --bg:#FFF4E8; --band:#FFF4E8; --ink:#1C1917; --text:#1C1917; --text-2:#57534E; --orange:#C2410C; --orange-soft:#FFF1E8; --line:#EEE8E2;
   --font:"Urbanist",system-ui,-apple-system,"Segoe UI",sans-serif; --serif:"DM Serif Display",Georgia,"Times New Roman",serif}
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0; min-height:100%}
 body{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
-  background:radial-gradient(90% 60% at 100% 0%, var(--band) 0, transparent 60%), radial-gradient(80% 55% at 0% 100%, var(--orange-soft) 0, transparent 60%), var(--bg); color:var(--text);
+  background:var(--bg); color:var(--text);
   font:500 16px/1.6 var(--font); -webkit-font-smoothing:antialiased; text-align:center; overflow-x:hidden; position:relative}
 .hold{position:relative; z-index:1; width:100%; max-width:520px}
 .mark{display:inline-grid; place-items:center; width:120px; height:120px; border-radius:28px; background:none}
@@ -43,7 +43,7 @@ body{min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; a
 .banner i{width:9px; height:9px; border-radius:50%; background:var(--orange); animation:pulse 1.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.35; transform:scale(.7)}}
 @media (prefers-reduced-motion:reduce){.banner i{animation:none}}
-h1{margin:22px 0 0; font-family:var(--serif); font-size:clamp(32px, 8.4vw, 46px); font-weight:400; line-height:1.1; text-wrap:balance}
+h1{margin:22px 0 0; font-family:var(--serif); font-size:clamp(40px, 11.5vw, 48px); font-weight:400; line-height:1.04; text-wrap:balance}
 .lead{margin:14px auto 0; max-width:440px; color:var(--text-2); font-size:17px; text-wrap:pretty}
 .perks{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:24px 0 0; padding:0; list-style:none}
 .perks li{padding:7px 14px; border-radius:999px; background:#fff; box-shadow:inset 0 0 0 1px var(--line);
