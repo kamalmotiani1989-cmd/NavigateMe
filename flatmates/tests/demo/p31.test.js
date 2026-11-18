@@ -11,6 +11,8 @@
 // (underlined by hand on the first page and the story), bigger serif headlines on a phone, rent in the serif, one ink
 // sheet on a home's page with light-orange ticks, and a deep warm brown inside a thin orange frame for a home's header
 // with no photo and for the pictures people share. The checks below hold both: what 16 Nov fixed, in 17 Nov's colours.
+// King's review of 18 Nov is held here too: the score rings keep the colours that say how strong a match is, the top
+// bar is cream once you scroll (p26), and the first page's headline keeps to two lines at 390 wide.
 // The logo is not part of the look (Kamal, 16 Nov: "App and website logo to stay the same as earlier", "App and website
 // logo color to stay same as earlier"): its files are his own of 9 Nov, and this suite holds them to that, byte for byte.
 const { chromium, devices } = require('playwright'), fs = require('fs'), path = require('path'), crypto = require('crypto');
@@ -136,7 +138,11 @@ const oldLeft = old => { const out = [];
       under: !!sr && sr.top > kr.top + kr.height * .6 && sr.width >= kr.width, hidden: svg && svg.getAttribute('aria-hidden'), size: parseFloat(getComputedStyle(h1).fontSize), lines: Math.round(h1.getBoundingClientRect().height / parseFloat(getComputedStyle(h1).lineHeight)) }; });
   ok(K.words === 'Find flatmates who match your vibe.' && K.kw === 'vibe' && K.n === 1 && K.colour === 'rgb(194, 65, 12)' && K.line === 'rgb(194, 65, 12)' && K.under && K.hidden === 'true' && K.draws === 'kwdraw',
     'the first page\'s headline says what it said, with one key word ("vibe") in the logo\'s orange and a line under it that draws itself once (a picture to a screen reader, not a word): ' + JSON.stringify(K));
-  ok(K.size >= 40 && K.size <= 48 && K.lines <= 3, 'on a phone that headline is the serif at ' + K.size + 'px (between 40 and 48), on ' + K.lines + ' lines');
+  ok(K.size >= 38 && K.size <= 48 && K.lines === 2, 'on a phone that headline is the serif at ' + K.size + 'px (between 38 and 48: a step under the story\'s), on two lines at 390 wide: ' + K.lines);
+  const first = await p.evaluate(() => { const r = e => e.getBoundingClientRect(), go = r(document.querySelector('.w-card .btn-primary')), have = r([...document.querySelectorAll('.w-card button, .w-card a')].find(e => /already have an account/i.test(e.textContent))), fab = r($('helpFab'));
+    return { card: Math.round(r(document.querySelector('.w-card')).top), goEnd: Math.round(go.bottom), haveEnd: Math.round(have.bottom), vh: innerHeight, helpOnGo: fab.left < go.right && fab.right > go.left && fab.top < go.bottom && fab.bottom > go.top }; });
+  ok(first.card <= 276 && first.goEnd <= 749 && first.haveEnd <= 799 && first.haveEnd < first.vh && !first.helpOnGo,
+    'so on a 390 x 844 phone the sign-up card, Continue and "I already have an account" sit no lower than they did on 16 Nov (276, 749, 799), and the help button is clear of Continue: ' + JSON.stringify(first));
   ok(!(await p.evaluate(oldLeft, OLD)).length && !(await p.evaluate(audit)).length, 'the first page: nothing in the light red, the aubergine, the cream or the older pastels, and every word reads: ' + (await p.evaluate(oldLeft, OLD)).concat(await p.evaluate(audit)).join(' | '));
   await p.screenshot({ path: O + '/p31-first-page.png' });
   // the page for people with a spare room and the moving-out sale page: their words were white on the band
@@ -263,7 +269,12 @@ const oldLeft = old => { const out = [];
       name: cs(c.querySelector('h3')).fontWeight, ring: (v => v && cs(v).stroke)(c.querySelector('.ring .val')), disc: (v => v && cs(v).fill)(c.querySelector('.ring circle')), btn: cs(document.querySelector('.btn')).fontWeight }; });
   ok(hc.card === 'rgb(255, 255, 255)' && hc.lifted && hc.price === '"DM Serif Display" 28px' && hc.per === 'Urbanist 12.5px rgb(87, 83, 78)' && hc.rupee === '₹' && hc.name === '800' && hc.btn === '800',
     'a home\'s card on Discover: white, lifted off the cream by a warm shadow; the rent in the serif at 28px with a small grey "/month"; the name and the buttons at 800: ' + JSON.stringify(hc));
-  ok(hc.ring === 'rgb(253, 186, 116)' && hc.disc === 'rgb(28, 25, 23)', 'the vibe score: a light-orange ring on its ink disc: ' + hc.ring);
+  const rings = await p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
+    const want = n => n >= 80 ? tok('--ok') : n >= 60 ? tok('--mid') : tok('--text-3');
+    const all = [...document.querySelectorAll('#cards .card .ring')].map(r => { const n = parseInt(r.getAttribute('aria-label'), 10), got = getComputedStyle(r.querySelector('.val')).stroke; return { n, got, right: got === want(n) }; });
+    return { n: all.length, wrong: all.filter(x => !x.right).map(x => x.n + ' ' + x.got), kinds: [...new Set(all.map(x => x.got))], lt: tok('--orange-lt'), strong: all.filter(x => x.n >= 80).length, fair: all.filter(x => x.n >= 60 && x.n < 80).length }; });
+  ok(rings.n >= 5 && !rings.wrong.length && rings.strong >= 1 && rings.fair >= 1 && rings.kinds.length >= 2 && !rings.kinds.includes(rings.lt) && hc.disc === 'rgb(28, 25, 23)',
+    'the vibe score\'s ring keeps its meaning on its ink disc: green from 80, amber from 60, grey under (' + rings.strong + ' strong and ' + rings.fair + ' fair on Discover); never the look\'s light orange, which made a strong match and a fair one look the same: ' + JSON.stringify(rings.kinds) + ' ' + rings.wrong.join(' | '));
   // neither of our fonts has a rupee sign (a phone borrows it from a font of its own): beside the big serif figures it is set small, in the body face
   const rs = await p.evaluate(() => { const pp = document.querySelector('#cards .card .price-pill'), r = pp.querySelector('.rs'), cs = r && getComputedStyle(r);
     return { text: pp.textContent.replace(/\s+/g, ' ').trim(), sign: r && r.textContent, fam: cs && cs.fontFamily.slice(0, 8), weight: cs && cs.fontWeight, size: cs && parseFloat(cs.fontSize), of: parseFloat(getComputedStyle(pp).fontSize), firstInPill: r && pp.firstChild === r }; });

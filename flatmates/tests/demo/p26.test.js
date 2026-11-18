@@ -4,7 +4,8 @@
 // round corners; the bottom bar is a frosted pill and the screen you're on is a soft pastel pill. Our colours.
 // Since the look of 17 Nov 2026 (the reels') the band is flat: the page's own cream, on every screen, with no sheet
 // coming up over it; its headline is bigger and carries one key word in the logo's orange. The top bar is still part
-// of it while the greeting is under it, and the frosted white bar once you scroll past.
+// of it while the greeting is under it; once you scroll past, it is the same cream, frosted, with a soft shade (it was
+// a white strip across the cream page until King's review of 18 Nov).
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [], U = 'http://localhost:8765/';
 const vibe = { sleep:2, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:1, noise:0, social:1, sharing:1, work:0, pets:1, gen:'z' };
@@ -65,7 +66,7 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
   await p.evaluate(() => scrollTo(0, 80)); await p.waitForTimeout(350); L = await look(p);
   ok(L.onBand && L.headBg === L.page, 'scrolled a little: the top bar still has the band\'s colour');
   await p.evaluate(() => scrollTo(0, 420)); await p.waitForTimeout(450); L = await look(p);
-  ok(!L.onBand && L.headBg !== L.page && /^rgba?\(255, 255, 255/.test(L.headBg), 'scrolled past the band: the top bar is the frosted white bar: ' + L.headBg);
+  ok(!L.onBand && L.headBg === 'rgba(255, 244, 232, 0.96)', 'scrolled past the band: the top bar is the page\'s cream, a little see-through (not a white strip across the cream page): ' + L.headBg);
   await p.screenshot({ path: O + '/p26-home-scrolled.png' });
   await p.evaluate(() => scrollTo(0, 0)); await p.waitForTimeout(450); L = await look(p);
   ok(L.onBand && L.headBg === L.page, 'back at the top: the band again');

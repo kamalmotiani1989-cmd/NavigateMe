@@ -999,12 +999,15 @@ the end of the stylesheet; the layouts, the words, the login, the questions and 
   "Who you'd live with" and the household's answers sit on one ink sheet (`.ink-sheet`: a white serif title, one
   small grey line, dark chips `--ink-chip`, and a light-orange tick `--orange-lt` #FDBA74 on the answers you
   share), with the compatibility card white inside it; "Your flatmate type" on Profile is the other. At most one
-  on a screen. The vibe score's ring is that light orange on its ink disc.
+  on a screen. **The vibe score's ring is not part of the look:** it keeps the colour that says how strong the
+  match is (`ringColor`: green from 80, amber from 60, grey under), on its ink disc. For a few hours on 17 Nov
+  every ring was the light orange, and a strong match and a fair one looked the same (King's review, 18 Nov).
 - **A deep warm brown** (`--brown` #5C2408 with soft glows, `--dark-hero`) inside a thin orange frame is only for a
   home's header while it has no photo, the pictures people share (`cardBackdrop`) and `og-image.png`. The words on
   it are white, in the serif; on `og-image.png` the key word is light orange with the hand-drawn line.
-- **Type, on a phone:** the headline of the welcome page, the story and the Coming soon page is the serif at
-  `clamp(40px, 11.5vw, 48px)`, line-height 1.04; the headline on each tab's band `clamp(30px, 8.6vw, 36px)`;
+- **Type, on a phone:** the headline of the story and the Coming soon page is the serif at
+  `clamp(40px, 11.5vw, 48px)`, line-height 1.04; the first page's is a step smaller, `clamp(38px, 10.2vw, 48px)`,
+  so that it keeps to two lines from 390 wide; the headline on each tab's band `clamp(30px, 8.6vw, 36px)`;
   headings inside sheets 24px. Rent is in the serif: 28px on a home's card, 32px in the bar at the foot of a home's
   page ("/month" stays small and grey). Neither of our fonts has a rupee sign, so a phone borrows it from a font
   of its own; beside those big serif figures the sign is set small (16px) in the body face, where it looks meant
@@ -1012,12 +1015,13 @@ the end of the stylesheet; the layouts, the words, the login, the questions and 
   is 16, small 14, captions 12.5, as before.
 - **Room:** with no sheet coming up over the band, the space kept for its round top went: the first thing on a
   screen starts 17px higher on a 360 x 640 phone than it did, bigger headline included. No headline runs past
-  three lines at 320 wide. On the first page the same space above the sign-up card went; its headline takes three
-  lines at 390 wide where it took two, so the card starts 38px lower there, and Continue and "I already have an
-  account" still show on a 390 x 844 screen.
+  three lines at 320 wide. On the first page the same space above the sign-up card went, so the card, Continue
+  and "I already have an account" sit a little higher than they did at every phone size (19px at 390 wide), and
+  the help button is clear of Continue.
 - Green still means accepted, verified or "owes you", amber look twice, crimson danger; WhatsApp keeps its green.
 Checks: `p31` (the palette on every screen, the key words, the underline, the ink sheet, the brown header and
-pictures, no panel melted into what it sits on, small phones, the Android bars), `p8`, `p26`, `p27`.
+pictures, no panel melted into what it sits on, small phones, the Android bars, the rings' colours), `p8`, `p26`,
+`p27`.
 
 Under it is the look of 16 Nov 2026, the logo's own colours, set by Kamal in three steps:
 1. after looking at another app, "copy style and colors of dwelo. Change the orange color to light red color", and
@@ -1089,8 +1093,10 @@ as it stands today, with 17 Nov's cream where 16 Nov had a white page and peach 
     the originals, byte for byte, and checks the icons' orange.
   - Since later that day the app's accent is this same orange (see above), taken from the logo. The logo's files
     still never change: if the look changes again, the logo stays.
-- **Top bar:** no background or line of its own; it sits on the cream page and turns a frosted white with a soft
-  shade once you scroll (on a phone it is part of the band until then, see "The band"). Requests (a bell), Messages and, on phones, Saved (a
+- **Top bar:** no background or line of its own; it sits on the cream page, and once you scroll it is that cream,
+  a little see-through, with a soft shade (on a phone it is part of the band until then, see "The band"). It was
+  white once scrolled until 18 Nov: a white strip across a cream page, on which the round white buttons lost
+  their edge. Requests (a bell), Messages and, on phones, Saved (a
   heart) are round white buttons with soft shadows, dark while you're on that screen; your initial is a dark
   circle; badges are orange with white numbers.
 - **Sign-up:** a serif headline; the three choices are cream tiles in the white card (I need a room and Posting a
@@ -1107,8 +1113,8 @@ as it stands today, with 17 Nov's cream where 16 Nov had a white page and peach 
   - Each screen's band still names its old tint (`data-band`: lav, butter, mint or blush); all four are the cream.
   - On the two home screens the band holds the greeting. On Splits, Market, Tribe, Escape and Account it
     is the panel that was already there, now edge to edge. On Saved, Requests, Post and Messages it holds the title.
-  - While you scroll, the top bar is part of the band until the band has gone under it, then it is the frosted
-    white bar. Inside a Splits group and on a home's page there is no band.
+  - While you scroll, the top bar is part of the band until the band has gone under it, then it is the cream bar
+    with its soft shade. Inside a Splits group and on a home's page there is no band.
   - Computers keep the plain greeting and the rounded panels inside the page.
 - **Bottom bar (phones)** (15 Nov, Kamal: "the bottom bar looks cool"): a floating frosted pill above the bottom
   edge; what's behind it shows through softly. Every place keeps its icon and its name. The screen you're on is a

@@ -2772,7 +2772,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
      One rule: on cream a panel is white; inside a white card a panel is cream (or the quiet off-white);
    - the logo's orange: the main buttons, the small labels, links, and one key word in a main headline (.kw);
    - ink: text, what is selected, the score discs, and dark sheets. On ink: titles white, small text --on-ink-2,
-     chips --ink-chip with white words, and light orange (--orange-lt) for ticks, the score ring and the key word;
+     chips --ink-chip with white words, and light orange (--orange-lt) for ticks and the key word;
    - a deep warm brown inside a thin orange frame: only a home's header with no photo and the pictures people share;
    - bigger serif headlines on a phone; rent and prices in the serif; names, titles and buttons at 800.
    Green still means accepted, verified or "owes you", amber look twice, crimson danger; WhatsApp keeps its green.
@@ -2791,11 +2791,17 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
 /* the top band: the page's own cream, flat (it was a peach wash over a white sheet). With no sheet coming up over
    its foot, the room kept for the sheet's rounded top goes too, so the first thing on the page sits higher */
 @media (max-width:720px){ .home-band{background:var(--band); padding-bottom:26px} .home-band::after{display:none} }
+/* the top bar once you have scrolled: the page's cream at the strength it had (it was a white strip across the cream
+   page, and the round white buttons on it lost their edge) */
+.app-head.scrolled{background:rgba(255,244,232,.94)}
+@media (max-width:720px){ .app-head.scrolled{background:rgba(255,244,232,.96)} }
 /* the first page on a phone: the same goes for the room kept above the sign-up card for the sheet that came up behind it */
 @media (max-width:900px){ .w-card{margin-top:22px} }
-/* type on a phone: the headline of the welcome page and the story, and the headline on each tab's band */
+/* type on a phone: the headline of the story and the Coming soon screen; the first page's, a step smaller so that it
+   keeps to two lines from 390 wide and the sign-up card stays up the screen; and the headline on each tab's band */
 @media (max-width:720px){
-  .w-copy h1, .st-slide h2, .hold-screen h2{font-size:clamp(40px, 11.5vw, 48px); line-height:1.04}
+  .st-slide h2, .hold-screen h2{font-size:clamp(40px, 11.5vw, 48px); line-height:1.04}
+  .w-copy h1{font-size:clamp(38px, 10.2vw, 48px); line-height:1.04}
   .home-band h1, .greet h1, .page-h h1{font-size:clamp(30px, 8.6vw, 36px); line-height:1.08}
 }
 /* headings inside cards and sheets */
@@ -2821,8 +2827,9 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
 .kw-ul path{fill:none; stroke:var(--orange); stroke-width:9; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:0}
 @media (prefers-reduced-motion:no-preference){ .kw-ul path{animation:kwdraw .55s ease-out .25s both} }
 @keyframes kwdraw{from{stroke-dashoffset:1} to{stroke-dashoffset:0}}
-/* the vibe score: the ring is light orange on its ink disc */
-.ring .val{stroke:var(--orange-lt)}
+/* the vibe score's ring keeps the colour that says how strong the match is (ringColor: green from 80, amber from 60,
+   grey under): it is not part of the look. For a few hours on 17 Nov every ring was the light orange, and a strong
+   match and a fair one looked the same (King's review, 18 Nov) */
 /* the story's little chat: your line is an ink bubble as wide as its words (it took the width of the round initial that
    shares its class name, and broke one word to a line) */
 .st-chat p.me{width:auto; height:auto; display:block; background:var(--ink); color:#fff}
