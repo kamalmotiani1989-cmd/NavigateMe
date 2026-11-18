@@ -296,17 +296,17 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Android 15 draws apps edge to edge: keep the page clear of the bars, paint a dark
-     * strip behind the status bar (R.color.teal, the app's near-black) and leave the
-     * navigation bar light.
+     * Android 15 draws apps edge to edge: keep the page clear of the bars and paint the
+     * strip behind the status bar in the page's own cream (R.color.page, the look of
+     * 17 Nov 2026), with dark icons on it, like the navigation bar.
      */
     private void keepClearOfSystemBars(FrameLayout root) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
-        int lightNav = WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
-        getWindow().getInsetsController().setSystemBarsAppearance(lightNav,
-                lightNav | WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS);
+        int light = WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                | WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+        getWindow().getInsetsController().setSystemBarsAppearance(light, light);
         View statusStrip = new View(this);
-        statusStrip.setBackgroundColor(getColor(R.color.teal));
+        statusStrip.setBackgroundColor(getColor(R.color.page));
         root.addView(statusStrip, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 0));
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             Insets bars = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());

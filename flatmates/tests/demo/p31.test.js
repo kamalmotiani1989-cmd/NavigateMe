@@ -5,6 +5,12 @@
 // color of logo which was earlier and white. Plus check the font color accordingly", and "Audit once done. Spend some
 // time on each page and audit the gaps of colors font everything". So: white, the logo's orange, the wordmark's
 // near-black, and the checks at the end here hold what that audit found and fixed.
+// The look of 17 Nov 2026, over it (Kamal, of the feature reels King made that day: "The colors are so amazing of the reels
+// wht dont we use these for our app. Put your best efforts to pull these colors and font size and font colors and make
+// the app and website awesome"): a cream page with white cards, one key word of a main headline in the logo's orange
+// (underlined by hand on the first page and the story), bigger serif headlines on a phone, rent in the serif, one ink
+// sheet on a home's page with light-orange ticks, and a deep warm brown inside a thin orange frame for a home's header
+// with no photo and for the pictures people share. The checks below hold both: what 16 Nov fixed, in 17 Nov's colours.
 // The logo is not part of the look (Kamal, 16 Nov: "App and website logo to stay the same as earlier", "App and website
 // logo color to stay same as earlier"): its files are his own of 9 Nov, and this suite holds them to that, byte for byte.
 const { chromium, devices } = require('playwright'), fs = require('fs'), path = require('path'), crypto = require('crypto');
@@ -51,9 +57,28 @@ const audit = () => {
 };
 // colours of the older looks still showing: the light red and its shades, the deep aubergine, the cream page and beige,
 // the pink and rose tints (all of the first step on 16 Nov), and before them the deeper orange for text, the lavender,
-// butter and mint panels, the teal, the beige page and the navy
+// butter and mint panels, the teal, the beige page and the navy; and the seven peach tints of 16 Nov's last step
+// (panels, bands, the bottom bar's pill), which are all the one cream since 17 Nov
 const OLD = ['rgb(238, 100, 104)', 'rgb(206, 58, 68)', 'rgb(185, 47, 58)', 'rgb(226, 83, 90)', 'rgb(31, 27, 46)', 'rgb(30, 26, 43)', 'rgb(253, 248, 241)', 'rgb(248, 240, 231)', 'rgb(251, 221, 218)', 'rgb(251, 227, 218)',
-  'rgb(178, 58, 10)', 'rgb(195, 201, 246)', 'rgb(235, 217, 129)', 'rgb(195, 224, 214)', 'rgb(28, 127, 114)', 'rgb(239, 228, 220)', 'rgb(27, 36, 64)'];
+  'rgb(178, 58, 10)', 'rgb(195, 201, 246)', 'rgb(235, 217, 129)', 'rgb(195, 224, 214)', 'rgb(28, 127, 114)', 'rgb(239, 228, 220)', 'rgb(27, 36, 64)',
+  'rgb(255, 241, 232)', 'rgb(255, 228, 211)', 'rgb(255, 235, 221)', 'rgb(255, 241, 220)', 'rgb(253, 238, 226)', 'rgb(255, 245, 238)', 'rgb(255, 243, 234)', 'rgb(255, 239, 228)', 'rgb(255, 241, 230)'];
+// a panel that has melted into what it sits on: it has a shape (padding, round corners) but its colour is, to the eye,
+// the colour behind it, and it has no outline or shadow. The rule since 17 Nov: on cream a panel is white; inside a
+// white card a panel is cream or the quiet off-white. See-through layers are blended down before comparing.
+const melted = () => { const rgb = s => (s.match(/[\d.]+/g) || []).map(Number);
+  const lum = c => { const a = c.slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
+  const raw = e => { const c = rgb(getComputedStyle(e).backgroundColor); return c.length >= 3 && (c[3] === undefined || c[3] > .02) ? c : null; };
+  const behind = e => { const layers = []; for(let x = e.parentElement; x; x = x.parentElement){ const c = raw(x); if(c){ layers.push(c); if(c[3] === undefined || c[3] >= .999) break; } }
+    let base = [255, 244, 232]; if(layers.length && (layers[layers.length - 1][3] === undefined || layers[layers.length - 1][3] >= .999)) base = layers.pop().slice(0, 3);
+    for(let i = layers.length - 1; i >= 0; i--){ const a = layers[i][3]; base = base.map((v, k) => Math.round(layers[i][k] * a + v * (1 - a))); } return base; };
+  const own = e => { const c = raw(e); if(!c) return null; const a = c[3] === undefined ? 1 : c[3]; if(a >= .999) return c.slice(0, 3); const b = behind(e); return b.map((v, k) => Math.round(c[k] * a + v * (1 - a))); };
+  const root = document.querySelector('dialog[open]') || document.querySelector('#appMain > section:not([hidden])') || document.body, out = new Set();
+  root.querySelectorAll('*').forEach(e => { if(!e.offsetParent || e.closest('svg, .leaflet-container, .fm-av, [aria-hidden="true"]') || /^(INPUT|SELECT|TEXTAREA)$/.test(e.tagName) || e.classList.contains('empty')) return;
+    const cs = getComputedStyle(e), r = e.getBoundingClientRect(), c = own(e); if(!c || r.width <= 60 || r.height <= 28 || parseFloat(cs.borderTopLeftRadius) < 8 || cs.boxShadow !== 'none' || (cs.borderTopStyle !== 'none' && parseFloat(cs.borderTopWidth) > 0)) return;
+    const la = lum(c), lb = lum(behind(e)); if((Math.max(la, lb) + .05) / (Math.min(la, lb) + .05) < 1.035) out.add(e.tagName.toLowerCase() + '.' + String(e.className).trim().split(/\s+/).slice(0, 2).join('.')); });
+  return [...out]; };
+// the key word of the headline on the band of the screen that is showing, with its colour ("" when the headline has none)
+const keyWord = () => [...document.querySelectorAll('#appMain > section:not([hidden]) .home-band h1 .kw')].filter(e => e.offsetParent).map(e => e.textContent + ' ' + getComputedStyle(e).color).join(' + ');
 const oldLeft = old => { const out = [];
   document.querySelectorAll('body *').forEach(e => { if(!e.getClientRects().length || e.closest('.fm-av, .art, .w-people, svg, .av-tile, .leaflet-container, .hl-art, .st-art')) return; const cs = getComputedStyle(e);
     for(const [k, v] of [['color', cs.color], ['background', cs.backgroundColor], ['border', cs.borderTopColor]]) if(old.includes(v) && (k !== 'border' || parseFloat(cs.borderTopWidth) > 0)) out.push(k + ' ' + v + ' ' + e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0]); });
@@ -69,7 +94,8 @@ const oldLeft = old => { const out = [];
     const logo = await (await fetch('icons/logo-icon.svg')).text(), mark = await (await fetch('icons/wordmark.svg')).text();
     const cols = (t, re) => [...new Set((t.match(re) || []).map(c => c.toUpperCase()))].sort().join();   // every colour named in a file, once each
     const px = await new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = c.height = 192; const x = c.getContext('2d'); x.drawImage(i, 0, 0); r([...x.getImageData(96, 30, 1, 1).data].slice(0, 3).join()); }; i.onerror = () => r('none'); i.src = 'icons/icon-192.png'; });
-    return { orange: tok('--orange'), page: tok('--bg'), card: tok('--surface'), ink: tok('--ink'), text: tok('--text'), text2: tok('--text-2'), orangeText: tok('--orange-text'), deep: tok('--orange-deep'), danger: tok('--danger'), fam: cs.fontFamily, weight: cs.fontWeight, spacing: cs.letterSpacing,
+    return { tints: ['--cream', '--band', '--lav', '--butter', '--mint', '--blush', '--orange-soft', '--accent-soft', '--brand-soft', '--hi', '--orange-tint', '--wash', '--teal-95', '--purple-97'].map(tok), lt: tok('--orange-lt'), brown: tok('--brown'), chip: tok('--ink-chip'),
+      orange: tok('--orange'), page: tok('--bg'), card: tok('--surface'), ink: tok('--ink'), text: tok('--text'), text2: tok('--text-2'), orangeText: tok('--orange-text'), deep: tok('--orange-deep'), danger: tok('--danger'), fam: cs.fontFamily, weight: cs.fontWeight, spacing: cs.letterSpacing,
       serif: document.fonts.check('400 20px "DM Serif Display"'), usedSerif: [...document.fonts].some(f => /DM Serif/.test(f.family) && f.status === 'loaded'),
       h2: getComputedStyle(document.querySelector('.w-card h2')).fontFamily, body: getComputedStyle(document.querySelector('.w-copy .lede, .w-trust')).fontFamily,
       go: { bg: g.backgroundColor, color: g.color, ratio: Math.round((Math.max(lum(g.color), lum(g.backgroundColor)) + .05) / (Math.min(lum(g.color), lum(g.backgroundColor)) + .05) * 100) / 100 },
@@ -78,15 +104,17 @@ const oldLeft = old => { const out = [];
       top: [...document.querySelectorAll('.w-top .logo img')].filter(i => i.offsetParent).map(i => i.getAttribute('src')).join(), glow: getComputedStyle(document.querySelector('.w-top .logo img.fm-mark')).boxShadow,
       bodyBg: getComputedStyle(document.body).backgroundColor, prog: (e => e && getComputedStyle(e).backgroundColor)(document.querySelector('.lg-prog i')),
       emW: getComputedStyle(document.querySelector('.w-copy h1 em') || h1).fontWeight }; });
-  ok(T.orange === '#C2410C' && T.page === '#FFFFFF' && T.card === '#FFFFFF' && T.ink === '#1C1917' && T.text === '#1C1917' && T.text2 === '#57534E' && T.bodyBg === 'rgb(255, 255, 255)',
-    'the palette: a white page and white cards, the orange, near-black text and grey for secondary text: ' + JSON.stringify({ orange: T.orange, page: T.page, ink: T.ink, text2: T.text2 }));
+  ok(T.orange === '#C2410C' && T.page === '#FFF4E8' && T.card === '#FFFFFF' && T.ink === '#1C1917' && T.text === '#1C1917' && T.text2 === '#57534E' && T.bodyBg === 'rgb(255, 244, 232)',
+    'the palette: a cream page (white until 17 Nov) and white cards, the orange, near-black text and grey for secondary text: ' + JSON.stringify({ orange: T.orange, page: T.page, card: T.card, ink: T.ink, text2: T.text2 }));
+  ok(T.tints.length === 14 && T.tints.every(v => v === '#FFF4E8') && T.lt === '#FDBA74' && T.brown === '#5C2408' && T.chip === '#2B2928',
+    'one cream: the old tint tokens (bands, pale panels, the bottom bar\'s pill) are all #FFF4E8 now; light orange #FDBA74 is for ticks and rings on ink, and the brown #5C2408 for pictures: ' + JSON.stringify([...new Set(T.tints)]));
   ok(T.logo.split(',').includes(T.orange) && T.mark.split(',').includes(T.text) && T.mark.split(',').includes(T.text2) && T.orangeText === T.orange,
     'those are the logo\'s own colours: the tile\'s orange is the app\'s orange, and the wordmark\'s near-black and grey are the text colours');
   ok(T.danger === '#BE123C' && T.danger !== T.orange && T.deep === '#9A3412', 'danger is a crimson, a clear step from the orange; small orange text on tints has a deeper shade: ' + JSON.stringify({ danger: T.danger, deep: T.deep }));
   // the logo: Kamal's own, as before the look of 16 Nov
   ok(T.logo === '#C2410C,#FFFFFF' && T.mark === '#1C1917,#57534E,#C2410C' && T.px === '194,65,12' && T.fav === '%23C2410C,%23FFFFFF',
     'the logo keeps its own colours: an orange tile with white "fm", the wordmark in near-black, orange and grey, the app icon and the tab icon in the same orange: ' + JSON.stringify({ logo: T.logo, mark: T.mark, px: T.px, fav: T.fav }));
-  ok(T.theme.toUpperCase() === '#FFFFFF', 'the browser bar is white, as the page: ' + T.theme);
+  ok(T.theme.toUpperCase() === '#FFF4E8', 'the browser bar is the page\'s cream: ' + T.theme);
   const changed = Object.entries(LOGO_FILES).filter(([f, h]) => { try{ return crypto.createHash('sha256').update(fs.readFileSync(path.join(APP, f))).digest('hex').slice(0, 16) !== h; }catch(e){ return true; } }).map(([f]) => f);
   ok(Object.keys(LOGO_FILES).length === 19 && !changed.length, 'the logo and icon files are the ones that went in with Kamal\'s logo on 9 Nov, byte for byte (5 drawings, 4 web icons, 10 Android launcher icons): ' + JSON.stringify(changed));
   const icons = Object.keys(LOGO_FILES).filter(f => f.endsWith('.png')), tile = {};
@@ -103,6 +131,12 @@ const oldLeft = old => { const out = [];
   ok(T.prog === 'rgb(194, 65, 12)' && /rgb\(194, 65, 12\)/.test(ring), 'what shows progress or focus is orange: the "1 of 4" bar and the ring round what the keyboard is on: ' + JSON.stringify({ bar: T.prog, ring }));
   ok(T.emW === '400', 'the words picked out inside a heading keep the serif\'s one weight: ' + T.emW);
   ok(T.go.bg === 'rgb(194, 65, 12)' && T.go.color === 'rgb(255, 255, 255)' && T.go.ratio >= 4.5, 'the main button is the logo\'s orange with white words that read at ' + T.go.ratio + ':1');
+  const K = await p.evaluate(() => { const h1 = document.querySelector('.w-copy h1'), k = h1.querySelector('.kw.ul'), svg = k && k.querySelector('svg.kw-ul'), path = svg && svg.querySelector('path'), kr = k && k.getBoundingClientRect(), sr = svg && svg.getBoundingClientRect();
+    return { words: h1.textContent.replace(/\s+/g, ' ').trim(), kw: k && k.textContent, n: h1.querySelectorAll('.kw').length, colour: k && getComputedStyle(k).color, line: path && getComputedStyle(path).stroke, draws: path && getComputedStyle(path).animationName,
+      under: !!sr && sr.top > kr.top + kr.height * .6 && sr.width >= kr.width, hidden: svg && svg.getAttribute('aria-hidden'), size: parseFloat(getComputedStyle(h1).fontSize), lines: Math.round(h1.getBoundingClientRect().height / parseFloat(getComputedStyle(h1).lineHeight)) }; });
+  ok(K.words === 'Find flatmates who match your vibe.' && K.kw === 'vibe' && K.n === 1 && K.colour === 'rgb(194, 65, 12)' && K.line === 'rgb(194, 65, 12)' && K.under && K.hidden === 'true' && K.draws === 'kwdraw',
+    'the first page\'s headline says what it said, with one key word ("vibe") in the logo\'s orange and a line under it that draws itself once (a picture to a screen reader, not a word): ' + JSON.stringify(K));
+  ok(K.size >= 40 && K.size <= 48 && K.lines <= 3, 'on a phone that headline is the serif at ' + K.size + 'px (between 40 and 48), on ' + K.lines + ' lines');
   ok(!(await p.evaluate(oldLeft, OLD)).length && !(await p.evaluate(audit)).length, 'the first page: nothing in the light red, the aubergine, the cream or the older pastels, and every word reads: ' + (await p.evaluate(oldLeft, OLD)).concat(await p.evaluate(audit)).join(' | '));
   await p.screenshot({ path: O + '/p31-first-page.png' });
   // the page for people with a spare room and the moving-out sale page: their words were white on the band
@@ -110,6 +144,23 @@ const oldLeft = old => { const out = [];
   const host = await p.evaluate(() => ({ shown: !$('view-host').hidden, h1: getComputedStyle(document.querySelector('.h-copy h1')).color, em: getComputedStyle(document.querySelector('.h-copy h1 em')).color }));
   ok(host.shown && host.h1 === 'rgb(28, 25, 23)' && host.em === 'rgb(154, 52, 18)' && !(await p.evaluate(audit)).length, 'the page for people with a spare room: dark words on the band, the words that matter in the deeper orange, all of it readable: ' + JSON.stringify(host) + ' ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
   await p.screenshot({ path: O + '/p31-host.png' });
+  // the story a first visit opens with: four screens, one key word each, the line under it; your line in its little chat is an ink bubble
+  await p.goto(U + '?story'); await p.waitForTimeout(1300);
+  const st = [];
+  for(let i = 0; i < 4; i++){ st.push(await p.evaluate(() => { const h = document.querySelector('#stStage .st-slide h2'), k = h && h.querySelector('.kw.ul');
+      return h ? { h: h.textContent.replace(/\s+/g, ' ').trim(), kw: k && k.textContent, n: h.querySelectorAll('.kw').length, colour: k && getComputedStyle(k).color, line: !!(k && k.querySelector('svg.kw-ul path')),
+        size: parseFloat(getComputedStyle(h).fontSize), lines: Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight)) } : {}; }));
+    if(i < 3){ await p.click('#stNext'); await p.waitForTimeout(550); } }
+  ok(st.map(x => x.kw).join() === 'easy,live,like you,yes' && st.every(x => x.n === 1 && x.colour === 'rgb(194, 65, 12)' && x.line && x.size >= 40 && x.size <= 48 && x.lines <= 3),
+    'the story: each of its four headlines has one key word in the orange with the hand-drawn line (easy, live, like you, yes), 40 to 48px, on at most three lines: ' + JSON.stringify(st.map(x => [x.h, x.lines])));
+  const mine = await p.evaluate(() => (e => e ? { bg: getComputedStyle(e).backgroundColor, color: getComputedStyle(e).color, w: Math.round(e.getBoundingClientRect().width), h: Math.round(e.getBoundingClientRect().height) } : null)(document.querySelector('.st-chat p.me')));
+  ok(mine && mine.bg === 'rgb(28, 25, 23)' && mine.color === 'rgb(255, 255, 255)' && mine.w > 120 && mine.h < 60, 'the story\'s last screen: your line in the little chat is an ink bubble as wide as its words, on one line (it was 38px wide and broke one word to a line): ' + JSON.stringify(mine));
+  await p.screenshot({ path: O + '/p31-story-4.png' });
+  await ctx.close();
+  // someone who asked their phone for less motion: the line is simply there, it does not draw
+  ({ ctx, p } = await open(b, null, { viewport:{ width:390, height:844 }, reducedMotion:'reduce' }));
+  const calm = await p.evaluate(() => { const path = document.querySelector('.w-copy h1 .kw-ul path'), cs = getComputedStyle(path); return { anim: cs.animationName, offset: cs.strokeDashoffset, shown: path.getBoundingClientRect().width > 40 }; });
+  ok(calm.anim === 'none' && parseFloat(calm.offset) === 0 && calm.shown, 'less motion asked for: the line under the key word is there, whole, and does not draw: ' + JSON.stringify(calm));
   await ctx.close();
   // ------------------------------------------------------------ the city step of sign-up, on a phone (touch)
   const fresh = { user:{ adultAt:'2026-11-01T00:00:00.000Z', phone:'9811111111', name:'Neha', role:'seeker', gender:'female' }, account:'9811111111', onboarded:{}, giftSeen:true, attrClaimed:true };
@@ -117,7 +168,9 @@ const oldLeft = old => { const out = [];
   const h1 = () => p.evaluate(() => (document.querySelector('#obStage h1') || {}).textContent || '');
   await p.evaluate(() => { const g = document.querySelector('#obGo'); if(g) g.click(); }); await p.waitForTimeout(600);
   const discs = await p.evaluate(() => [...document.querySelectorAll('#obStage .opt .dot')].map(d => getComputedStyle(d).backgroundColor + ' ' + getComputedStyle(d).color));
-  ok(discs.length >= 3 && new Set(discs).size === 1 && discs[0] === 'rgb(255, 241, 232) rgb(154, 52, 18)', 'sign-up: the letter in front of each answer sits on one quiet orange disc (they were eight different colours): ' + [...new Set(discs)].join(' | '));
+  const obBg = await p.evaluate(() => { const o = document.querySelector('#obStage .opt'); return { page: getComputedStyle(document.body).backgroundColor, card: getComputedStyle(o).backgroundColor }; });
+  ok(discs.length >= 3 && new Set(discs).size === 1 && discs[0] === 'rgb(255, 244, 232) rgb(154, 52, 18)' && obBg.card === 'rgb(255, 255, 255)',
+    'sign-up: each answer is a white card, and the letter in front of it sits on one quiet cream disc in the deeper orange (they were eight different colours): ' + [...new Set(discs)].join(' | ') + ' ' + JSON.stringify(obBg));
   for(let i = 0; i < 12 && !/Which city are you moving to/.test(await h1()); i++){
     await p.evaluate(() => { const t = document.querySelector('#obWhat'), o = document.querySelector('#obStage .opt[data-i]'), g = document.querySelector('#obGo');
       if(t){ t.value = 'Designer'; t.form.requestSubmit(); } else if(o) o.click(); else if(g) g.click(); }); await p.waitForTimeout(550); }
@@ -163,11 +216,18 @@ const oldLeft = old => { const out = [];
   const barSeen = bar ? await pixelOf(p, (await p.locator('[data-p31-logo]').screenshot()).toString('base64'), .5, .88) : 'none';
   ok(bar && bar.src === 'icons/logo-icon.svg' && bar.w === 42 && bar.h === 42 && barSeen === '194,65,12' && /^rgba\(194, 65, 12, 0\.22\)/.test(bar.glow),
     'signed in: the top bar shows the same orange logo tile, at its size (42px), with its own glow: ' + JSON.stringify({ bar, barSeen }));
-  const left = [], low = [];
+  const left = [], low = [], gone = [], kws = {};
   for(const v of ['discover', 'saved', 'requests', 'tribe', 'parties', 'splits', 'market', 'account', 'messages']){ await go(p, v);
-    left.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); }
-  ok(!left.length, 'someone looking: no screen still shows the light red, the aubergine, the cream or the older pastels: ' + left.slice(0, 5).join(' | '));
+    left.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); gone.push(...(await p.evaluate(melted)).map(x => v + ': ' + x)); kws[v] = await p.evaluate(keyWord); }
+  ok(!left.length, 'someone looking: no screen still shows the light red, the aubergine, the older cream, the pastels or the peach tints of 16 Nov: ' + left.slice(0, 5).join(' | '));
   ok(!low.length, 'someone looking: every word reads on every screen: ' + low.slice(0, 5).join(' | '));
+  ok(!gone.length, 'someone looking: no panel has melted into what it sits on (on cream a panel is white; in a white card, cream or off-white): ' + gone.slice(0, 5).join(' | '));
+  const O1 = ' rgb(194, 65, 12)';
+  ok(JSON.stringify(kws) === JSON.stringify({ discover: 'get along' + O1, saved: '', requests: '', tribe: 'people' + O1, parties: 'round the corner.' + O1, splits: 'Stay friends.' + O1, market: 'nearby.' + O1, account: '', messages: '' }),
+    'one key word in the orange in the headline of Discover, Tribe, Parties, Flatsplits and FlatMart, and none on Saved, Requests, Profile and Messages: ' + JSON.stringify(kws));
+  await go(p, 'market');
+  const tiles = await p.evaluate(() => { const t = document.querySelector('#mkStats div'); return t ? getComputedStyle(t).backgroundColor + ' / ' + getComputedStyle(t).boxShadow : 'no tiles'; });
+  ok(/^rgb\(255, 255, 255\) \/ rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(tiles), 'FlatMart: the three number tiles on the band are white with a hairline (they were a see-through white and melted into the cream): ' + tiles);
   await go(p, 'account');
   const acc = await p.evaluate(() => { const v = document.querySelector('.vt-line'), cs = getComputedStyle(v), out = document.querySelector('.acc-out b'), del = document.querySelector('.acc-del b');
     return { card: cs.backgroundColor, grad: /gradient/.test(cs.backgroundImage), words: getComputedStyle(v.querySelector('b')).color, fam: getComputedStyle(v.querySelector('b')).fontFamily.slice(0, 18),
@@ -185,7 +245,7 @@ const oldLeft = old => { const out = [];
   ok(aud.sw === 'rgb(194, 65, 12)', 'a switch that is on is orange: ' + aud.sw);
   ok(aud.cap.length === 3 && new Set(aud.cap).size === 1 && aud.cap[0] === '12.5px 700 1px uppercase', 'the quiet captions in small capitals (and the card\'s Share) share one size, weight and spacing: ' + JSON.stringify(aud.cap));
   ok(!aud.time.length, 'a time box looks like every other box (it had the browser\'s own grey edge and small type): ' + aud.time.join());
-  ok(aud.mine === 'rgb(255, 241, 232) rgb(28, 25, 23)', 'what you wrote in the help chat is the same pale orange bubble with dark words as in a real chat: ' + aud.mine);
+  ok(aud.mine === 'rgb(255, 244, 232) rgb(28, 25, 23)', 'what you wrote in the help chat is the same cream bubble with dark words as in a real chat: ' + aud.mine);
   ok(aud.label === '28px -28px', 'a section label that runs to a second line starts it under its words: ' + aud.label);
   await go(p, 'saved');
   const empty = await p.evaluate(() => (e => e && getComputedStyle(e).fontSize)(document.querySelector('#view-saved .empty h3')));
@@ -198,25 +258,54 @@ const oldLeft = old => { const out = [];
   ok(hello === '14px 700 normal none', 'the line over a headline ("Good morning, Neha") is in ordinary letters, not spaced like a capital label: ' + hello);
   const dot = await p.evaluate(() => (e => e ? getComputedStyle(e).backgroundColor : 'no banner')(document.querySelector('.inv-banner .urgent-dot')));
   ok(dot === 'rgb(194, 65, 12)', 'the "live" dot on a banner that invites you somewhere can be seen: orange on the pale panel (it was a pale tint on a pale tint): ' + dot);
+  const hc = await p.evaluate(() => { const c = document.querySelector('#cards .card'), cs = e => getComputedStyle(e), pp = c.querySelector('.price-pill'), sm = pp.querySelector('small');
+    return { card: cs(c).backgroundColor, lifted: /rgba\(60, 30, 10/.test(cs(c).boxShadow), price: cs(pp).fontFamily.slice(0, 18) + ' ' + cs(pp).fontSize, per: cs(sm).fontFamily.slice(0, 8) + ' ' + cs(sm).fontSize + ' ' + cs(sm).color, rupee: pp.textContent.trim()[0],
+      name: cs(c.querySelector('h3')).fontWeight, ring: (v => v && cs(v).stroke)(c.querySelector('.ring .val')), disc: (v => v && cs(v).fill)(c.querySelector('.ring circle')), btn: cs(document.querySelector('.btn')).fontWeight }; });
+  ok(hc.card === 'rgb(255, 255, 255)' && hc.lifted && hc.price === '"DM Serif Display" 28px' && hc.per === 'Urbanist 12.5px rgb(87, 83, 78)' && hc.rupee === '₹' && hc.name === '800' && hc.btn === '800',
+    'a home\'s card on Discover: white, lifted off the cream by a warm shadow; the rent in the serif at 28px with a small grey "/month"; the name and the buttons at 800: ' + JSON.stringify(hc));
+  ok(hc.ring === 'rgb(253, 186, 116)' && hc.disc === 'rgb(28, 25, 23)', 'the vibe score: a light-orange ring on its ink disc: ' + hc.ring);
+  // neither of our fonts has a rupee sign (a phone borrows it from a font of its own): beside the big serif figures it is set small, in the body face
+  const rs = await p.evaluate(() => { const pp = document.querySelector('#cards .card .price-pill'), r = pp.querySelector('.rs'), cs = r && getComputedStyle(r);
+    return { text: pp.textContent.replace(/\s+/g, ' ').trim(), sign: r && r.textContent, fam: cs && cs.fontFamily.slice(0, 8), weight: cs && cs.fontWeight, size: cs && parseFloat(cs.fontSize), of: parseFloat(getComputedStyle(pp).fontSize), firstInPill: r && pp.firstChild === r }; });
+  ok(/^₹[\d,]+ \/month$/.test(rs.text) && rs.sign === '₹' && rs.firstInPill && rs.fam === 'Urbanist' && rs.weight === '700' && rs.size > rs.of * .5 && rs.size < rs.of * .7,
+    'the rent reads as it did ("' + rs.text + '"); the rupee sign beside the serif figures is set small in the body face, so it looks meant whichever font a phone draws it with: ' + JSON.stringify({ size: rs.size, of: rs.of }));
   const d = await p.evaluate(async () => { const lab = document.querySelector('#dlgListing .section-h') || null; await openListing(document.querySelector('#cards .card').dataset.id); await new Promise(r => setTimeout(r, 700));
     const l = document.querySelector('#dlgListing .section-h'), cs = getComputedStyle(l), dash = getComputedStyle(l, '::before'), np = document.querySelector('#dlgListing .hero-pic .nophoto'), t = document.querySelector('#dlgListing .hp-title b');
     const ring = document.querySelector('#dlgListing .ring circle'), go = document.querySelector('#dlgListing .l-bar .btn-primary, #dlgListing .btn-primary');
     return { label: cs.color, caps: cs.textTransform, size: cs.fontSize, dash: dash.backgroundColor, dashW: dash.width, hero: np ? getComputedStyle(np).backgroundColor : null, heroGrad: np ? /gradient/.test(getComputedStyle(np).backgroundImage) : null,
-      title: t ? getComputedStyle(t).fontFamily.slice(0, 18) : null, ring: ring && getComputedStyle(ring).fill, go: go && getComputedStyle(go).backgroundColor }; });
+      title: t ? getComputedStyle(t).fontFamily.slice(0, 18) : null, ring: ring && getComputedStyle(ring).fill, go: go && getComputedStyle(go).backgroundColor,
+      frame: np ? (a => a.content !== 'none' ? a.borderTopWidth + ' ' + a.borderTopColor : 'none')(getComputedStyle(np, '::after')) : null, white: np ? getComputedStyle(np).color : null }; });
   ok(d.label === 'rgb(194, 65, 12)' && d.caps === 'uppercase' && d.size === '12.5px' && d.dash === 'rgb(194, 65, 12)' && d.dashW === '18px', 'a home\'s page: the small labels are orange capitals with a short orange line in front: ' + JSON.stringify({ label: d.label, size: d.size, dash: d.dash }));
-  ok(d.hero === 'rgb(28, 25, 23)' && d.heroGrad && /DM Serif/.test(d.title || '') && d.ring === 'rgb(28, 25, 23)' && d.go === 'rgb(194, 65, 12)', 'a home with no photo: the dark card as its header, the name in the serif, the score on a dark disc, Send request in the orange: ' + JSON.stringify(d));
+  ok(d.hero === 'rgb(92, 36, 8)' && d.heroGrad && d.frame === '3px rgb(194, 65, 12)' && d.white === 'rgb(255, 255, 255)' && /DM Serif/.test(d.title || '') && d.ring === 'rgb(28, 25, 23)' && d.go === 'rgb(194, 65, 12)',
+    'a home with no photo: the deep warm brown inside a thin orange frame as its header (the dark card until 17 Nov), white words, the name in the serif, the score on an ink disc, Send request in the orange: ' + JSON.stringify(d));
+  const ink = await p.evaluate(() => { const cs = e => getComputedStyle(e), D = $('dlgListing'), sh = D.querySelector('.ink-sheet'); if(!sh) return { n: 0 }; const h = sh.querySelector('.ink-h'), pr = D.querySelector('.l-bar-price b');
+    return { n: D.querySelectorAll('.ink-sheet').length, bg: cs(sh).backgroundColor, h: h.textContent, tag: h.tagName, hLook: cs(h).fontFamily.slice(0, 18) + ' ' + cs(h).fontSize + ' ' + cs(h).color, intro: cs(sh.querySelector('.gen-intro')).color,
+      chips: [...new Set([...sh.querySelectorAll('.traits span')].map(x => cs(x).backgroundColor + ' ' + cs(x).color))].join(' | '), ticks: sh.querySelectorAll('.traits .tk').length, tick: (t => t && cs(t).color)(sh.querySelector('.tk')),
+      same: [...sh.querySelectorAll('.traits span.tr-same')].length, compat: (c => c && cs(c).backgroundColor + ' ' + cs(c).color)(sh.querySelector('.compat-mini')), cell: (c => c && cs(c).backgroundColor)(sh.querySelector('.compat-mini .cx-area')),
+      bar: pr && cs(pr).fontFamily.slice(0, 18) + ' ' + cs(pr).fontSize + ' ' + pr.textContent.trim()[0] + ' ' + !!pr.querySelector('.rs'), labelGone: ![...D.querySelectorAll('.section-h')].some(x => /who you'd live with/i.test(x.textContent)) }; });
+  ok(ink.n === 1 && ink.bg === 'rgb(28, 25, 23)' && ink.h === 'Who you\'d live with' && ink.tag === 'H3' && ink.hLook === '"DM Serif Display" 24px rgb(255, 255, 255)' && ink.intro === 'rgb(214, 211, 209)' && ink.labelGone,
+    'a home\'s page: "Who you\'d live with" and the household\'s answers sit on one ink sheet, the title in the white serif at 24px with a small grey line under it: ' + JSON.stringify({ n: ink.n, bg: ink.bg, h: ink.h, look: ink.hLook }));
+  ok(ink.chips === 'rgb(43, 41, 40) rgb(255, 255, 255)' && ink.ticks >= 1 && ink.ticks === ink.same && ink.tick === 'rgb(253, 186, 116)' && ink.compat === 'rgb(255, 255, 255) rgb(28, 25, 23)' && ink.cell === 'rgb(255, 244, 232)',
+    'on the ink sheet: dark chips with white words, a light-orange tick on each answer you share (' + ink.ticks + '), and the compatibility card white inside it with cream cells: ' + JSON.stringify({ chips: ink.chips, tick: ink.tick, compat: ink.compat, cell: ink.cell }));
+  ok(ink.bar === '"DM Serif Display" 32px ₹ true', 'the bar at the foot of a home\'s page: the rent in the serif at 32px, with the same small rupee sign: ' + ink.bar);
+  ok(!(await p.evaluate(melted)).length, 'a home\'s page: no panel has melted into what it sits on: ' + (await p.evaluate(melted)).slice(0, 4).join(' | '));
   ok(!(await p.evaluate(audit)).length, 'a home\'s page: every word reads: ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
   await p.screenshot({ path: O + '/p31-home.png' });
   await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(x => x.close()));
-  // the pictures people share: a card in the logo's orange with white panels, nothing aubergine, light red, navy or teal
+  // the pictures people share: the deep warm brown with soft glows inside a thin orange frame (a card in the logo's orange
+  // until 17 Nov); the Vibe Card on the cream; nothing aubergine, light red, navy or teal
   const pics = await p.evaluate(async () => { const hex = d => '#' + [...d].slice(0, 3).map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
     const l = api.all().find(x => x.city === 'Bengaluru'), c1 = await drawListingCard(l, { pct: 87 }), x1 = c1.getContext('2d');
     const t = vibeType(state.vibe), c2 = await drawVibeCard(t, 'Neha', '', null), x2 = c2.getContext('2d');
-    return { top: hex(x1.getImageData(4, 4, 1, 1).data), bottom: hex(x1.getImageData(c1.width - 4, c1.height - 4, 1, 1).data), card: CARD.top, vibeBg: hex(x2.getImageData(6, 900, 1, 1).data), want: VC_PALETTE.bg[t.rhythm] || VC_PALETTE.bg[''],
+    return { top: hex(x1.getImageData(4, 4, 1, 1).data), bottom: hex(x1.getImageData(c1.width - 4, c1.height - 4, 1, 1).data), card: CARD.brown, frame: hex(x1.getImageData(20, Math.round(c1.height / 2), 1, 1).data), inside: hex(x1.getImageData(60, Math.round(c1.height / 2), 1, 1).data),
+      vibeBg: hex(x2.getImageData(6, 900, 1, 1).data), want: VC_PALETTE.bg[t.rhythm] || VC_PALETTE.bg[''],
       pal: JSON.stringify([CARD, VC_PALETTE]), fonts: document.fonts.check('400 54px "DM Serif Display"') && document.fonts.check('800 60px "Urbanist"') }; });
-  const near = (a, b) => [1, 3, 5].every(i => Math.abs(parseInt(a.slice(i, i + 2), 16) - parseInt(b.slice(i, i + 2), 16)) <= 3);   // a corner of a gradient is a shade off its first colour
-  ok(near(pics.top, pics.card) && near(pics.top, '#C2410C') && pics.top !== pics.bottom && pics.vibeBg === pics.want.toUpperCase() && pics.fonts && !/#1F1B2E|#4B303B|#EE6468|#CE3A44|#1B2440|#253360|#10264F|#0B7C82|#1C7F72|#C3C9F6|#EBD981|#C3E0D6/i.test(pics.pal),
-    'the pictures people share (a home, the Vibe Card) are drawn in the new colours and lettering: ' + JSON.stringify({ top: pics.top, bottom: pics.bottom, vibeBg: pics.vibeBg }));
+  // a deep warm brown: red over green over blue, and dark enough for white words at 5:1 or better (the lightest glow is #B45309)
+  const lumOf = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+  const brown = h => { const [r, g, bl] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); return r > g && g > bl && 1.05 / (lumOf(h) + .05) >= 5; };
+  ok(pics.card === '#5C2408' && brown(pics.top) && brown(pics.bottom) && brown(pics.inside) && pics.frame === '#C2410C' && pics.vibeBg === '#FFF4E8' && pics.vibeBg === pics.want.toUpperCase() && pics.fonts
+    && !/#1F1B2E|#4B303B|#EE6468|#CE3A44|#1B2440|#253360|#10264F|#0B7C82|#1C7F72|#C3C9F6|#EBD981|#C3E0D6/i.test(pics.pal),
+    'the pictures people share: a home\'s is the deep warm brown inside a thin orange frame, dark enough everywhere for its white words; the Vibe Card sits on the cream: ' + JSON.stringify({ top: pics.top, bottom: pics.bottom, inside: pics.inside, frame: pics.frame, vibeBg: pics.vibeBg }));
   // the compatibility chart's four areas: each name is written in its own colour, so each must read on white
   const cg = await p.evaluate(() => { const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     return COMPAT_GROUPS.map(g => [g.name, g.color, Math.round(1.05 / (lum(g.color) + .05) * 100) / 100]).concat(AV_COLORS.map(c => ['dot', c, Math.round(1.05 / (lum(c) + .05) * 100) / 100])); });
@@ -224,11 +313,24 @@ const oldLeft = old => { const out = [];
   await ctx.close();
   // ------------------------------------------------------------ someone with a room
   ({ ctx, p } = await open(b, owner, { viewport:{ width:390, height:844 } }, 'mine'));
-  const left2 = [], low2 = [];
+  const left2 = [], low2 = [], gone2 = [], kws2 = {};
   for(const v of ['mine', 'requests', 'escape', 'post', 'account']){ await go(p, v);
-    left2.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low2.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); }
+    left2.push(...(await p.evaluate(oldLeft, OLD)).map(x => v + ': ' + x)); low2.push(...(await p.evaluate(audit)).map(x => v + ': ' + x)); gone2.push(...(await p.evaluate(melted)).map(x => v + ': ' + x)); kws2[v] = await p.evaluate(keyWord); }
   ok(!left2.length && !low2.length, 'someone with a room: no old colours left, every word reads: ' + left2.concat(low2).slice(0, 5).join(' | '));
+  ok(!gone2.length, 'someone with a room: no panel has melted into what it sits on: ' + gone2.slice(0, 5).join(' | '));
+  ok(JSON.stringify(kws2) === JSON.stringify({ mine: 'live' + O1, requests: 'meet you' + O1, escape: 'Escape' + O1, post: '', account: '' }), 'someone with a room: the key word is "live" on My flat, "meet you" on Requests and "Escape" on the Escape; none on Post and Profile: ' + JSON.stringify(kws2));
   await ctx.close();
+  // ------------------------------------------------------------ small phones: the bigger headlines still fit
+  for(const [w, h, views] of [[360, 640, ['discover', 'saved', 'requests', 'tribe', 'parties', 'splits', 'market', 'account', 'messages']], [320, 568, ['discover', 'tribe', 'splits', 'market']]]){
+    ({ ctx, p } = await open(b, seeker, { viewport:{ width: w, height: h } }, 'discover')); const tall = [], wide = [], sizes = new Set();
+    for(const v of views){ await go(p, v); const m = await p.evaluate(() => { const h1 = document.querySelector('#appMain > section:not([hidden]) .home-band h1'), cs = getComputedStyle(h1);
+        return { lines: Math.round(h1.getBoundingClientRect().height / parseFloat(cs.lineHeight)), size: parseFloat(cs.fontSize), side: document.documentElement.scrollWidth - innerWidth }; });
+      sizes.add(m.size); if(m.lines > 3) tall.push(v + ' ' + m.lines); if(m.side > 0) wide.push(v + ' ' + m.side); }
+    ok(!tall.length && !wide.length && [...sizes].every(x => x >= 30 && x <= 36), w + ' x ' + h + ': every screen\'s headline is the serif at ' + [...sizes].join('/') + 'px on at most three lines, and nothing runs off the side: ' + tall.concat(wide).join(' | '));
+    if(w === 360){ await go(p, 'discover'); const fold = await p.evaluate(() => { const c = document.querySelector('#cards .card'), s = document.querySelector('.d-search, #dSearch, .ds-q'); return { card: c ? Math.round(c.getBoundingClientRect().top) : null, search: s ? Math.round(s.getBoundingClientRect().top) : null }; });
+      ok(fold.card !== null && fold.search !== null && fold.search <= 296, '360 x 640: with the bigger headline the search still starts no lower than it did (296px on 16 Nov; the room kept for the old sheet\'s edge went), so the homes under it do not either: ' + JSON.stringify(fold));
+      await p.screenshot({ path: O + '/p31-discover-360.png' }); }
+    await ctx.close(); }
   // ------------------------------------------------------------ Passes on a computer
   ({ ctx, p } = await open(b, seeker, { viewport:{ width:1280, height:800 } }, 'discover'));
   const pass = await p.evaluate(async () => { await openPay(null); await new Promise(r => setTimeout(r, 800)); const d = $('dlgPay'), cards = [...d.querySelectorAll('.plan')];
@@ -243,10 +345,10 @@ const oldLeft = old => { const out = [];
   // ------------------------------------------------------------ the pages beside the app
   ({ ctx, p } = await open(b, null, { viewport:{ width:390, height:844 } }));
   await p.goto(U + 'privacy.html'); await p.waitForTimeout(900); await p.evaluate(() => document.fonts.ready);
-  const pv = await p.evaluate(() => { const cs = e => getComputedStyle(document.querySelector(e)); return { h1: cs('h1').fontFamily.slice(0, 18), body: cs('body').fontFamily.slice(0, 12), bg: cs('body').backgroundColor, link: cs('main a, .wrap a:not(.logo):not(.back)').color,
+  const pv = await p.evaluate(() => { const cs = e => getComputedStyle(document.querySelector(e)); return { h1: cs('h1').fontFamily.slice(0, 18), body: cs('body').fontFamily.slice(0, 12), bg: cs('body').backgroundColor, box: cs('.short').backgroundColor, link: cs('main a, .wrap a:not(.logo):not(.back)').color,
     logo: document.querySelector('.logo img').getAttribute('src'), src: document.documentElement.outerHTML }; });
-  ok(/DM Serif/.test(pv.h1) && /Urbanist/.test(pv.body) && pv.bg === 'rgb(255, 255, 255)' && pv.link === 'rgb(194, 65, 12)' && !/#1C7F72|#156358|#DCEFE9|#EE6468|#CE3A44|#1F1B2E|Plus Jakarta/i.test(pv.src) && !(await p.evaluate(audit)).length,
-    'the privacy policy page wears the same look, and reads: ' + JSON.stringify({ h1: pv.h1, body: pv.body, bg: pv.bg, link: pv.link }) + ' ' + (await p.evaluate(audit)).slice(0, 3).join(' | '));
+  ok(/DM Serif/.test(pv.h1) && /Urbanist/.test(pv.body) && pv.bg === 'rgb(255, 244, 232)' && pv.box === 'rgb(255, 255, 255)' && pv.link === 'rgb(194, 65, 12)' && !/#1C7F72|#156358|#DCEFE9|#EE6468|#CE3A44|#1F1B2E|Plus Jakarta/i.test(pv.src) && !(await p.evaluate(audit)).length,
+    'the privacy policy page wears the same look (a cream page, its summary a white panel), and reads: ' + JSON.stringify({ h1: pv.h1, body: pv.body, bg: pv.bg, link: pv.link }) + ' ' + (await p.evaluate(audit)).slice(0, 3).join(' | '));
   const pl = await p.evaluate(() => ({ srcs: [...document.querySelectorAll('.logo img')].map(i => i.getAttribute('src')).join(), glow: getComputedStyle(document.querySelector('.logo img')).boxShadow,
     word: getComputedStyle(document.querySelectorAll('.logo img')[1]).boxShadow, tab: document.querySelector('link[rel=icon]').getAttribute('href') }));
   const pvSeen = await pixelOf(p, (await p.locator('.logo img').first().screenshot()).toString('base64'), .5, .88);   // under the letters, where the tile is plain
@@ -254,10 +356,14 @@ const oldLeft = old => { const out = [];
     && pvSeen === '194,65,12', 'the privacy policy page shows the same logo: the orange tile and the wordmark, and the tile as its tab icon: ' + JSON.stringify(Object.assign(pl, { seen: pvSeen })));
   await p.screenshot({ path: O + '/p31-privacy.png' });
   const hold = fs.readFileSync(path.join(APP, 'hold.html'), 'utf8');
-  ok(/fill='%23C2410C'/.test(hold) && !/%23EE6468|#EE6468|#1F1B2E|#FDF8F1/i.test(hold) && /--orange:#C2410C/.test(hold) && /src="icons\/logo-icon\.svg"/.test(hold) && /src="icons\/wordmark\.svg"/.test(hold),
-    'the Coming soon page (kept for a hold) has the same logo, the same orange tab icon and the app\'s colours');
+  ok(/fill='%23C2410C'/.test(hold) && !/%23EE6468|#EE6468|#1F1B2E|#FDF8F1/i.test(hold) && /--orange:#C2410C/.test(hold) && /--bg:#FFF4E8/.test(hold) && /name="theme-color" content="#FFF4E8"/.test(hold) && /src="icons\/logo-icon\.svg"/.test(hold) && /src="icons\/wordmark\.svg"/.test(hold),
+    'the Coming soon page (kept for a hold) has the same logo, the same orange tab icon and the app\'s colours, on the cream');
   const man = await p.evaluate(async () => (await fetch('manifest.webmanifest')).json());
-  ok(man.theme_color.toUpperCase() === '#FFFFFF' && man.background_color.toUpperCase() === '#FFFFFF', 'the installed app opens on the white page: ' + man.theme_color);
+  ok(man.theme_color.toUpperCase() === '#FFF4E8' && man.background_color.toUpperCase() === '#FFF4E8', 'the installed app opens on the cream page: ' + man.theme_color);
+  // the Android app: the window, the navigation bar and the strip behind the clock are the same cream, with dark icons
+  const sty = fs.readFileSync(path.join(APP, 'android/app/src/main/res/values/styles.xml'), 'utf8'), act = fs.readFileSync(path.join(APP, 'android/app/src/main/java/com/findmeflatmate/app/MainActivity.java'), 'utf8');
+  ok(/<color name="page">#FFF4E8<\/color>/.test(sty) && /<color name="brand">#C2410C<\/color>/.test(sty) && /statusStrip\.setBackgroundColor\(getColor\(R\.color\.page\)\)/.test(act) && /APPEARANCE_LIGHT_NAVIGATION_BARS\s*\|\s*WindowInsetsController\.APPEARANCE_LIGHT_STATUS_BARS/.test(act)
+    && /setSystemBarsAppearance\(light, light\)/.test(act), 'the Android app: the page colour is the cream, the strip behind the clock is painted in it, and both bars carry dark icons');
   await ctx.close();
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));

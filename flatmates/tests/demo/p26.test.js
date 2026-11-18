@@ -2,6 +2,9 @@
 // double shade looks super amazing and the bottom bar looks cool"; demo mode, port 8765). On a phone the greeting
 // sits on a pastel band that fills the top of the screen, top bar included, and the page below is a sheet with
 // round corners; the bottom bar is a frosted pill and the screen you're on is a soft pastel pill. Our colours.
+// Since the look of 17 Nov 2026 (the reels') the band is flat: the page's own cream, on every screen, with no sheet
+// coming up over it; its headline is bigger and carries one key word in the logo's orange. The top bar is still part
+// of it while the greeting is under it, and the frosted white bar once you scroll past.
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [], U = 'http://localhost:8765/';
 const vibe = { sleep:2, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:1, noise:0, social:1, sharing:1, work:0, pets:1, gen:'z' };
@@ -25,14 +28,16 @@ const open = async (b, st, w, h, hash) => { const ctx = await b.newContext({ vie
 const look = p => p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const band = [...document.querySelectorAll('#appMain > section:not([hidden]) .home-band')].find(e => e.offsetParent), head = $('appHead'), r = e => e.getBoundingClientRect();
   if(!band || !band.offsetParent) return { band: false, onBand: head.classList.contains('on-band'), headBg: getComputedStyle(head).backgroundColor, page: tok('--bg') };
-  const cs = getComputedStyle(band), after = getComputedStyle(band, '::after'), next = band.nextElementSibling;
+  const cs = getComputedStyle(band), after = getComputedStyle(band, '::after'); let next = band.nextElementSibling; while(next && !next.getBoundingClientRect().height) next = next.nextElementSibling;
   const rgb = s => (s.match(/[\d.]+/g) || []).map(Number), lum = c => { const a = c.slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
   const texts = [...band.querySelectorAll('*')].filter(e => e.offsetParent && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length > 1));
+  const kws = [...band.querySelectorAll('h1 .kw')].filter(e => e.offsetParent), plain = texts.filter(e => !e.closest('.kw')), h1 = band.querySelector('h1'), last = [...band.children].filter(e => e.getBoundingClientRect().height).pop();
   const bg = e => { for(let x = e; x && x !== band; x = x.parentElement){ const c = rgb(getComputedStyle(x).backgroundColor); if(c.length >= 3 && (c[3] === undefined || c[3] > .5)) return c; } return rgb(cs.backgroundColor); };
   return { band: true, bandBg: cs.backgroundColor, left: Math.round(r(band).left), right: Math.round(r(band).right), W: innerWidth, gap: Math.round(r(band).top - r(head).bottom),
-    onBand: head.classList.contains('on-band'), headBg: getComputedStyle(head).backgroundColor, lav: tok('--lav'), butter: tok('--butter'), page: tok('--bg'), text: tok('--text'), ink: tok('--ink'),
-    sheet: { radius: after.borderTopLeftRadius, bg: after.backgroundColor, h: after.height }, toFirst: next ? Math.round(r(next).top - (r(band).bottom - 30)) : -1,
-    colours: [...new Set(texts.map(e => getComputedStyle(e).color))], minRatio: Math.min(...texts.map(e => { const a = lum(rgb(getComputedStyle(e).color)), c = lum(bg(e)); return (Math.max(a, c) + .05) / (Math.min(a, c) + .05); })),
+    onBand: head.classList.contains('on-band'), headBg: getComputedStyle(head).backgroundColor, lav: tok('--lav'), butter: tok('--butter'), page: tok('--bg'), text: tok('--text'), ink: tok('--ink'), orange: tok('--orange'),
+    img: cs.backgroundImage, sheet: after.display !== 'none' && after.content !== 'none', toFirst: next && last ? Math.round(r(next).top - r(last).bottom) : -1,
+    colours: [...new Set(plain.map(e => getComputedStyle(e).color))], kw: kws.map(e => e.textContent), kwColours: [...new Set(kws.map(e => getComputedStyle(e).color))],
+    h1: h1 ? { size: parseFloat(getComputedStyle(h1).fontSize), lines: Math.round(r(h1).height / parseFloat(getComputedStyle(h1).lineHeight)), fam: getComputedStyle(h1).fontFamily.slice(0, 18) } : null, minRatio: Math.min(...texts.map(e => { const a = lum(rgb(getComputedStyle(e).color)), c = lum(bg(e)); return (Math.max(a, c) + .05) / (Math.min(a, c) + .05); })),
     pill: (g => g ? getComputedStyle(g).backgroundColor : null)(band.querySelector('.gift-pill')) }; });
 const bar = p => p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const nav = $('nav'), cs = getComputedStyle(nav), r = nav.getBoundingClientRect(), tabs = [...nav.querySelectorAll('.tab')].filter(t => t.offsetParent), cur = nav.querySelector('.tab[aria-current=true]');
@@ -40,37 +45,41 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
     n: tabs.length, names: tabs.map(t => t.querySelector('span').textContent), icons: tabs.every(t => t.querySelector('svg') && t.querySelector('svg').getBoundingClientRect().width >= 20),
     cut: tabs.filter(t => { const s = t.querySelector('span'); return s.scrollWidth > s.clientWidth + 1 || !s.offsetWidth; }).map(t => t.dataset.view),
     cur: cur && { view: cur.dataset.view, bg: getComputedStyle(cur).backgroundColor, color: getComputedStyle(cur).color, icon: getComputedStyle(cur.querySelector('svg')).color, radius: parseFloat(getComputedStyle(cur).borderTopLeftRadius) },
-    idle: (t => t && getComputedStyle(t).color)(tabs.find(t => t !== cur)), tok: { lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), text: tok('--text'), text2: tok('--text-2'), ink: tok('--ink'), inkSoft: tok('--ink-soft'), soft: tok('--orange-soft'), orange: tok('--orange') } }; });
+    idle: (t => t && getComputedStyle(t).color)(tabs.find(t => t !== cur)), tok: { cream: tok('--cream'), page: tok('--bg'), lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), text: tok('--text'), text2: tok('--text-2'), ink: tok('--ink'), inkSoft: tok('--ink-soft'), soft: tok('--orange-soft'), orange: tok('--orange') } }; });
 (async () => {
   const b = await chromium.launch();
   // ------------------------------------------------------------ someone looking for a room, on a phone
   let { ctx, p } = await open(b, seeker, 390, 844, 'discover');
   let L = await look(p);
-  ok(L.band && L.bandBg === L.lav && L.left === 0 && L.right === L.W && Math.abs(L.gap) <= 1, 'Discover: the greeting sits on its band (--lav, a rose tint since 16 Nov), edge to edge, straight under the top bar: ' + JSON.stringify({ bg: L.bandBg, left: L.left, right: L.right, gap: L.gap }));
-  ok(L.onBand && L.headBg === L.lav, 'the top bar is part of the band (same colour): ' + L.headBg);
-  ok(L.sheet.radius === '30px' && L.sheet.bg === L.page && L.sheet.h === '30px' && L.toFirst >= 20 && L.toFirst <= 44, 'the page comes up over the band as a sheet with round corners; the search starts ' + L.toFirst + 'px below its edge');
-  ok(L.colours.every(c => c === L.text || c === L.ink) && L.minRatio >= 4.5 && L.pill === 'rgb(255, 255, 255)', 'words on the band are near-black (lowest contrast ' + L.minRatio.toFixed(2) + ':1), nothing orange; the contacts pill is white');
+  ok(L.band && L.bandBg === L.page && L.page === 'rgb(255, 244, 232)' && L.img === 'none' && L.left === 0 && L.right === L.W && Math.abs(L.gap) <= 1,
+    'Discover: the greeting sits on its band, which is the page\'s own cream, flat (a rose tint until 17 Nov), edge to edge, straight under the top bar: ' + JSON.stringify({ bg: L.bandBg, left: L.left, right: L.right, gap: L.gap }));
+  ok(L.onBand && L.headBg === L.page, 'the top bar is part of the band (same colour): ' + L.headBg);
+  ok(!L.sheet && L.toFirst >= 12 && L.toFirst <= 36, 'no sheet comes up over the band any more, and the room kept for its round top is gone: the search starts ' + L.toFirst + 'px under the greeting\'s last line');
+  ok(L.colours.every(c => c === L.text || c === L.ink) && L.kw.join() === 'get along' && L.kwColours.join() === L.orange && L.minRatio >= 4.5 && L.pill === 'rgb(255, 255, 255)',
+    'words on the band are near-black, but for the one key word of the headline ("' + L.kw.join() + '") in the logo\'s orange (lowest contrast ' + L.minRatio.toFixed(2) + ':1); the contacts pill is white');
+  ok(L.h1 && /DM Serif/.test(L.h1.fam) && L.h1.size >= 30 && L.h1.size <= 36 && L.h1.lines <= 3, 'the headline on the band is the serif at ' + (L.h1 && L.h1.size) + 'px on a phone (26px until 17 Nov), on ' + (L.h1 && L.h1.lines) + ' lines');
   const first = await p.evaluate(() => { const v = $('vibeRow'), c = document.querySelector('#cards .card'); return { row: v && !v.hidden ? Math.round(v.getBoundingClientRect().top) : null, card: c ? Math.round(c.getBoundingClientRect().top) : null }; });
   ok((first.row !== null ? first.row : first.card) < 844 - 120, 'homes still start on the first screen: ' + JSON.stringify(first));
   await p.screenshot({ path: O + '/p26-home-seeker.png' });
-  // scrolling: the bar keeps the band's colour until the sheet reaches it
+  // scrolling: the bar keeps the band's colour until the greeting has gone under it
   await p.evaluate(() => scrollTo(0, 80)); await p.waitForTimeout(350); L = await look(p);
-  ok(L.onBand && L.headBg === L.lav, 'scrolled a little: the top bar still has the band\'s colour');
+  ok(L.onBand && L.headBg === L.page, 'scrolled a little: the top bar still has the band\'s colour');
   await p.evaluate(() => scrollTo(0, 420)); await p.waitForTimeout(450); L = await look(p);
-  ok(!L.onBand && L.headBg !== L.lav && /^rgba?\(255, 255, 255/.test(L.headBg), 'scrolled past the band: the top bar is the page\'s white again: ' + L.headBg);
+  ok(!L.onBand && L.headBg !== L.page && /^rgba?\(255, 255, 255/.test(L.headBg), 'scrolled past the band: the top bar is the frosted white bar: ' + L.headBg);
   await p.screenshot({ path: O + '/p26-home-scrolled.png' });
   await p.evaluate(() => scrollTo(0, 0)); await p.waitForTimeout(450); L = await look(p);
-  ok(L.onBand && L.headBg === L.lav, 'back at the top: the band again');
+  ok(L.onBand && L.headBg === L.page, 'back at the top: the band again');
   // the bottom bar
   let B = await bar(p);
   ok(B.radius >= 30 && B.alpha >= .7 && B.alpha < 1 && B.blur && B.left >= 12 && B.right >= 12 && B.bottom >= 10, 'bottom bar: a frosted pill floating above the edge: ' + JSON.stringify({ radius: B.radius, alpha: B.alpha, blur: B.blur, left: B.left, right: B.right, bottom: B.bottom }));
   ok(B.names.join() === 'Discover,Tribe,Parties,Splits,Market' && B.icons && !B.cut.length, 'every place keeps its icon and its name (Passes left the bar on 15 Nov: p29): ' + B.names.join(' · '));
-  ok(B.cur.view === 'discover' && B.cur.bg === B.tok.soft && B.cur.color === B.tok.text && B.cur.icon === B.tok.orange && B.cur.radius >= 24 && B.idle === B.tok.inkSoft, 'the screen you\'re on is a pale orange pill with an orange icon and dark words (not a black button): ' + JSON.stringify(B.cur));
-  // other screens: the same pale orange pill on the tab; the band at the top of the screen keeps the screen's own tint (p27 walks every band)
+  ok(B.cur.view === 'discover' && B.cur.bg === B.tok.cream && B.tok.soft === B.tok.cream && B.cur.color === B.tok.text && B.cur.icon === B.tok.orange && B.cur.radius >= 24 && B.idle === B.tok.inkSoft, 'the screen you\'re on is a cream pill in the white bar, with an orange icon and dark words (not a black button): ' + JSON.stringify(B.cur));
+  // other screens: the same cream pill on the tab; the band at the top of every screen is the page's cream (each had its own tint until 17 Nov; p27 walks every band)
   for(const [view, name, col] of [['tribe', 'Tribe', 'mint'], ['parties', 'Parties', 'butter'], ['splits', 'Splits', 'lav'], ['market', 'Market', 'butter']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250);
     B = await bar(p); L = await look(p);
-    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.soft && B.cur.icon === B.tok.orange && B.cur.color === B.tok.text && L.band && L.bandBg === B.tok[col] && L.onBand && L.headBg === B.tok[col], name + ': the tab is the pale orange pill with an orange icon; the band and the top bar are the screen\'s own tint (--' + col + ')');
+    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.cream && B.cur.icon === B.tok.orange && B.cur.color === B.tok.text && L.band && L.bandBg === B.tok.page && B.tok[col] === B.tok.page && L.onBand && L.headBg === B.tok.page && L.kw.length === 1 && L.kwColours.join() === B.tok.orange,
+      name + ': the tab is the cream pill with an orange icon; the band and the top bar are the page\'s cream (--' + col + ' is that cream now), one key word in the orange: "' + L.kw.join() + '"');
     if(view === 'market') await p.screenshot({ path: O + '/p26-bar-market.png' }); }
   // Saved and Tribe changed places (Kamal, 15 Nov): Saved is the heart in the top bar, Tribe is in the bottom bar
   await p.goto(U + '#saved'); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); L = await look(p);
@@ -78,24 +87,24 @@ const bar = p => p.evaluate(() => { const tok = n => { const d = document.create
     return { heart: !!h && !!h.offsetParent && !!h.querySelector('svg'), name: h && h.getAttribute('aria-label'), on: h && h.getAttribute('aria-current') === 'true' && getComputedStyle(h).backgroundColor === ink,
       tabShown: !!(document.querySelector('#nav .tab[data-view=saved]') || {}).offsetParent, tribeTab: !!(document.querySelector('#nav .tab[data-view=tribe]') || {}).offsetParent, tribeTop: !!document.querySelector('#topActs [data-view=tribe]'),
       lit: [...document.querySelectorAll('#nav .tab[aria-current=true]')].filter(x => x.offsetParent).length }; });
-  ok(sv.heart && sv.name === 'Saved' && sv.on && !sv.tabShown && sv.tribeTab && !sv.tribeTop && !sv.lit && L.band && L.bandBg === B.tok.blush, 'Saved is the heart in the top bar (black while you\'re on it), Tribe is in the bottom bar: ' + JSON.stringify(sv));
+  ok(sv.heart && sv.name === 'Saved' && sv.on && !sv.tabShown && sv.tribeTab && !sv.tribeTop && !sv.lit && L.band && L.bandBg === B.tok.page && !L.kw.length, 'Saved is the heart in the top bar (black while you\'re on it), Tribe is in the bottom bar: ' + JSON.stringify(sv));
   await p.click('#topActs .hd-saved'); await p.goto(U + '#discover'); await p.waitForTimeout(900); await closeDlgs(p);
   await p.click('#topActs .hd-saved'); await p.waitForTimeout(900);
   ok(await p.evaluate(() => location.hash === '#saved' && !$('view-saved').hidden), 'tapping the heart opens Saved');
   await p.goto(U + '#discover'); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); L = await look(p);
-  ok(L.onBand && L.headBg === L.lav, 'back on Discover: the band and the bar\'s colour return');
+  ok(L.onBand && L.headBg === L.page, 'back on Discover: the band and the bar\'s colour return');
   await ctx.close();
 
   // ------------------------------------------------------------ an owner, on a phone
   ({ ctx, p } = await open(b, owner, 390, 844, 'mine'));
   L = await look(p); B = await bar(p);
-  ok(L.band && L.bandBg === L.butter && L.onBand && L.headBg === L.butter && L.left === 0 && L.right === L.W && L.sheet.radius === '30px' && L.colours.every(c => c === L.text || c === L.ink) && L.minRatio >= 4.5,
-    'My flat: a butter band with the top bar in it, the sheet over it, dark words (lowest contrast ' + L.minRatio.toFixed(2) + ':1)');
-  ok(B.n === 6 && B.names.join() === 'My flat,Escape,Post,Parties,Splits,Market' && !B.cut.length && B.cur.view === 'mine' && B.cur.bg === B.tok.soft && B.cur.icon === B.tok.orange, 'owner: six places fit, My flat is the pale orange pill: ' + B.names.join(' · '));
+  ok(L.band && L.bandBg === L.page && L.onBand && L.headBg === L.page && L.left === 0 && L.right === L.W && !L.sheet && L.colours.every(c => c === L.text || c === L.ink) && L.kw.join() === 'live' && L.kwColours.join() === L.orange && L.minRatio >= 4.5,
+    'My flat: the same flat cream band with the top bar in it, dark words and the key word ("' + L.kw.join() + '") in the orange (lowest contrast ' + L.minRatio.toFixed(2) + ':1)');
+  ok(B.n === 6 && B.names.join() === 'My flat,Escape,Post,Parties,Splits,Market' && !B.cut.length && B.cur.view === 'mine' && B.cur.bg === B.tok.cream && B.cur.icon === B.tok.orange, 'owner: six places fit, My flat is the cream pill: ' + B.names.join(' · '));
   await p.screenshot({ path: O + '/p26-home-owner.png' });
   for(const [view, col] of [['escape', 'mint'], ['post', 'butter']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1100); await closeDlgs(p); await p.waitForTimeout(250); B = await bar(p); L = await look(p);
-    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.soft && L.band && L.bandBg === B.tok[col] && L.onBand, view + ': the tab is the pale orange pill; the band is the screen\'s own tint (--' + col + ')'); }
+    ok(B.cur && B.cur.view === view && B.cur.bg === B.tok.cream && L.band && L.bandBg === B.tok.page && B.tok[col] === B.tok.page && L.onBand, view + ': the tab is the cream pill; the band is the page\'s cream'); }
   await ctx.close();
   // six places still fit on small phones, names whole
   for(const w of [320, 360]){ ({ ctx, p } = await open(b, owner, w, 700, 'mine')); B = await bar(p);

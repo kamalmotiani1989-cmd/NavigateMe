@@ -2,6 +2,8 @@
 // "Make parties near by a seperate section all together and an amazing one. Also work on the entire design and UI…
 // The double color shade looks super amazing and the bottow bar looks cool". The rules for parties are the ones they
 // had: off until you switch it on, 21 and over, the address and number only after the host says yes (p9 walks those).
+// Since the look of 17 Nov 2026 (the reels') the band at the top of every screen is the page's own cream, flat, with no
+// sheet coming up over it (each screen had its own tint until then); the top bar is still part of it.
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [], U = 'http://localhost:8765/';
 const vibe = { sleep:1, clean:1, food:1, cook:1, smoke:0, drinks:1, guests:1, noise:1, social:1, sharing:1, work:0, pets:1, gen:'z' };
@@ -20,7 +22,7 @@ const closeDlgs = p => p.evaluate(() => document.querySelectorAll('dialog[open]'
 const open = async (b, st, w, h, hash) => { const ctx = await b.newContext({ viewport:{ width:w, height:h } });
   await ctx.addInitScript(s => { try{ if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }catch(e){} }, st);
   const p = await ctx.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('dialog', d => d.accept().catch(() => {})); await p.goto(U + '#' + hash); await p.waitForTimeout(1700); await closeDlgs(p); await p.waitForTimeout(250); return { ctx, p }; };
-// the band of the screen that's showing: its colour, that it joins the top bar, the sheet under it, how dark its words are
+// the band of the screen that's showing: its colour, that it joins the top bar, that it is flat with no sheet over it, how dark its words are
 const band = p => p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const el = [...document.querySelectorAll('#appMain > section:not([hidden]) .home-band')].find(e => e.offsetParent), head = $('appHead'), r = e => e.getBoundingClientRect();
   const T = { lav: tok('--lav'), butter: tok('--butter'), mint: tok('--mint'), blush: tok('--blush'), page: tok('--bg'), soft: tok('--orange-soft') };
@@ -31,8 +33,8 @@ const band = p => p.evaluate(() => { const tok = n => { const d = document.creat
   const texts = [...el.querySelectorAll('*')].filter(e => e.offsetParent && !e.closest('svg, [aria-hidden="true"]') && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim().length > 1));
   const low = texts.map(e => { const a = lum(rgb(getComputedStyle(e).color)), c = lum(bgOf(e)), big = parseFloat(getComputedStyle(e).fontSize) >= 18.5 || (parseFloat(getComputedStyle(e).fontSize) >= 14 && +getComputedStyle(e).fontWeight >= 700);
     return { ratio: (Math.max(a, c) + .05) / (Math.min(a, c) + .05), need: big ? 3 : 4.5, t: e.textContent.trim().slice(0, 24) }; }).filter(x => x.ratio < x.need);
-  return { band: true, colour: Object.keys(T).find(k => T[k] === cs.backgroundColor) || cs.backgroundColor, left: Math.round(r(el).left), right: Math.round(innerWidth - r(el).right), gap: Math.round(r(el).top - r(head).bottom),
-    onBand: head.classList.contains('on-band'), headSame: getComputedStyle(head).backgroundColor === cs.backgroundColor, sheet: after.borderTopLeftRadius === '30px' && after.backgroundColor === T.page && after.height === '30px', low, T }; });
+  return { band: true, colour: cs.backgroundColor === T.page ? 'page' : cs.backgroundColor, flat: cs.backgroundImage === 'none', tints: ['lav', 'butter', 'mint', 'blush', 'soft'].every(k => T[k] === T.page), left: Math.round(r(el).left), right: Math.round(innerWidth - r(el).right), gap: Math.round(r(el).top - r(head).bottom),
+    onBand: head.classList.contains('on-band'), headSame: getComputedStyle(head).backgroundColor === cs.backgroundColor, sheet: after.display !== 'none' && after.content !== 'none', low, T }; });
 const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[aria-current=true]'); return c && { view: c.dataset.view, bg: getComputedStyle(c).backgroundColor }; });
 (async () => {
   const b = await chromium.launch();
@@ -40,8 +42,8 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   let { ctx, p } = await open(b, person('9822200011', 'Asha', 'female'), 390, 844, 'parties');
   let B = await band(p), t = await tab(p);
   const tabs = await p.evaluate(() => [...document.querySelectorAll('#nav .tab')].filter(x => x.offsetParent).map(x => x.textContent.trim()));
-  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market' && t.view === 'parties' && t.bg === B.T.soft, 'Parties has its own place in the bottom bar, the pale orange pill when you\'re on it: ' + tabs.join(' · '));
-  ok(B.band && B.colour === 'butter' && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, 'the Parties screen opens on a butter band with the sheet over it, words dark: ' + JSON.stringify({ colour: B.colour, gap: B.gap }));
+  ok(tabs.join() === 'Discover,Tribe,Parties,Splits,Market' && t.view === 'parties' && t.bg === B.T.soft && B.T.soft === 'rgb(255, 244, 232)', 'Parties has its own place in the bottom bar, the cream pill when you\'re on it: ' + tabs.join(' · '));
+  ok(B.band && B.colour === 'page' && B.flat && B.tints && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && !B.sheet && !B.low.length, 'the Parties screen opens on the page\'s cream band, flat (butter until 17 Nov), the top bar part of it, no sheet over it, words dark: ' + JSON.stringify({ colour: B.colour, gap: B.gap }));
   // off until you switch it on: what it is, in three lines, and the switch; nothing listed
   const off = await p.evaluate(() => ({ intro: !!document.querySelector('#pnBody .pn-intro'), points: document.querySelectorAll('#pnBody .pn-points li').length, btn: (document.querySelector('#pnBody [data-near-on]') || {}).textContent,
     cards: document.querySelectorAll('#pnBody .pn-card').length, hint: (document.querySelector('#pnBody .pn-intro .hint') || {}).textContent, where: $('pnWhere').textContent, host: !!document.querySelector('#pnBody [data-host-party]'), rules: !!document.querySelector('#pnBody .party-rules') }));
@@ -116,22 +118,22 @@ const tab = p => p.evaluate(() => { const c = document.querySelector('#nav .tab[
   ({ ctx, p } = await open(b, person('9822200014', 'Neha', 'female'), 390, 844, 'discover'));
   for(const [view, colour] of [['discover', 'lav'], ['saved', 'blush'], ['requests', 'lav'], ['tribe', 'mint'], ['splits', 'lav'], ['market', 'butter'], ['messages', 'mint'], ['account', 'lav']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1250); await closeDlgs(p); await p.waitForTimeout(250); B = await band(p);
-    ok(B.band && B.colour === colour && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, view + ': a ' + colour + ' band from the top of the screen, the sheet over it, words dark' + (B.low && B.low.length ? ' ' + JSON.stringify(B.low) : ''));
+    ok(B.band && B.colour === 'page' && B.flat && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && !B.sheet && !B.low.length, view + ': the band is the page\'s cream from the top of the screen (its own ' + colour + ' tint until 17 Nov), flat, no sheet over it, words dark' + (B.low && B.low.length ? ' ' + JSON.stringify(B.low) : ''));
     if(view === 'market' || view === 'tribe') await p.screenshot({ path: O + '/p27-band-' + view + '.png' }); }
   // inside a Splits group there is no band: the top bar is back on the page
   await p.goto(U + '#splits'); await p.waitForTimeout(1000); await closeDlgs(p);
   const gid = await p.evaluate(() => api.splitCreate('Our flat', '🏠', [], 'flat')); await p.goto(U + '#splits/' + gid); await p.waitForTimeout(1300); B = await band(p);
-  ok(!B.band && !B.onBand && B.headBg !== B.T.lav, 'inside a Splits group there is no band, and the top bar is back on the page');
+  ok(!B.band && !B.onBand && B.headBg === B.T.page, 'inside a Splits group there is no band: the top bar is not part of one, and sits on the page in the page\'s cream: ' + B.headBg);
   await ctx.close();
   ({ ctx, p } = await open(b, owner, 390, 844, 'mine'));
   for(const [view, colour] of [['mine', 'butter'], ['escape', 'mint'], ['post', 'butter'], ['requests', 'butter'], ['parties', 'butter']]){
     await p.goto(U + '#' + view); await p.waitForTimeout(1250); await closeDlgs(p); await p.waitForTimeout(250); B = await band(p);
-    ok(B.band && B.colour === colour && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && B.sheet && !B.low.length, 'owner, ' + view + ': a ' + colour + ' band, the sheet over it, words dark' + (B.low && B.low.length ? ' ' + JSON.stringify(B.low) : '')); }
+    ok(B.band && B.colour === 'page' && B.flat && !B.left && !B.right && Math.abs(B.gap) <= 1 && B.onBand && B.headSame && !B.sheet && !B.low.length, 'owner, ' + view + ': the band is the page\'s cream (' + colour + ' until 17 Nov), flat, no sheet over it, words dark' + (B.low && B.low.length ? ' ' + JSON.stringify(B.low) : '')); }
   await ctx.close();
   // a computer keeps the rounded panels inside the page
   ({ ctx, p } = await open(b, person('9822200015', 'Tara', 'female'), 1280, 860, 'splits'));
-  const panel = await p.evaluate(() => { const h = document.querySelector('.fs-hero'), r = h.getBoundingClientRect(), cs = getComputedStyle(h); return { radius: parseFloat(cs.borderTopLeftRadius), left: Math.round(r.left), onBand: $('appHead').classList.contains('on-band') }; });
-  ok(panel.radius >= 20 && panel.left > 40 && !panel.onBand, 'on a computer the panels stay rounded and inside the page: ' + JSON.stringify(panel));
+  const panel = await p.evaluate(() => { const h = document.querySelector('.fs-hero'), r = h.getBoundingClientRect(), cs = getComputedStyle(h); return { radius: parseFloat(cs.borderTopLeftRadius), left: Math.round(r.left), onBand: $('appHead').classList.contains('on-band'), bg: cs.backgroundColor, page: getComputedStyle(document.body).backgroundColor }; });
+  ok(panel.radius >= 20 && panel.left > 40 && !panel.onBand && panel.bg === 'rgb(255, 255, 255)' && panel.page === 'rgb(255, 244, 232)', 'on a computer the panels stay rounded and inside the page, white on the cream: ' + JSON.stringify(panel));
   await ctx.close();
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));
