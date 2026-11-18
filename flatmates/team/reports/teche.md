@@ -1,5 +1,54 @@
 # Teche · reports
 
+## 2026-11-17, the reel look on every screen: built and tested, pictures ready (PR #117 open; nothing live, it waits for Kamal's yes)
+
+- **What was asked (Kamal, 17 Nov, in King's session):** "The colors are so amazing of the reels wht dont we use
+  these for our app. Put your best efforts to pull these colors and font size and font colors and make the app and
+  website awesome". In my session he then said "Dont change the colors use our colors"; I asked which of two he
+  meant (leave the colours and drop this, or still do it after Parties); he answered "Go ahead do it", and later
+  "Now continue". So it is built on its own branch (`claude/reel-look`), and **nothing is merged or published until
+  he has seen the pictures and said yes.**
+- **What changes** (README "Look and feel" has all of it): the page is cream and the cards are white (it was a
+  white page with peach bands and panels); one key word of each main headline is in the logo's orange, with a line
+  drawn under it by hand on the first page and the story; headlines on a phone are bigger; rent is in the serif; on
+  a home's page "Who you'd live with" and the household's answers sit on one ink sheet with light-orange ticks; a
+  home with no photo, the pictures people share and the link-preview picture are a deep warm brown inside a thin
+  orange frame; the bar behind the clock, the installed app and the Android window are the cream.
+- **What does not change:** the logo and its colours (its 19 files still match Kamal's originals byte for byte),
+  the login, the sign-up questions, every word and every layout. No database change.
+- **Where the pictures are:** `flatmates/team/reports/shots/reel-look/`, today's look beside the new one at 390
+  wide: the first page, the story, Discover, a home's page (top, and the ink sheet), Tribe, Flatsplits, FlatMart,
+  Parties, Profile, a chat, Filters, My flat, the Escape, the posting form and a picture people share; and the
+  first page at 1280 wide. Kamal has the same pairs in my session.
+- **King's watch-list, one by one:**
+  - the peach tints are all the one cream. A sweep of every screen, phone and computer, finds no panel melted into
+    what it sits on and no peach left. Four had melted at first (the number tiles on FlatMart and the Escape, the
+    label on Profile, the List | Map switch); they are white with a hairline now;
+  - the rupee sign is in neither of our fonts: a phone borrows it from a font of its own, and always has. Beside
+    the big serif rent it is set small in the body face, as the note said to do if it fell back;
+  - no headline runs past three lines at 360 wide, or at 320. On a 360 x 640 phone the first home on Discover
+    starts at 554px where it started at 571px. The bottom bar begins at 558px, so the home did not show before
+    and shows by 4px now. Bringing it properly into view means moving things on Discover, which is more than a
+    colour change; say if it is wanted;
+  - Android: the page colour, the strip behind the clock (dark icons) and the manifest's two colours are the cream;
+  - the frame and the brown are only on a home's header with no photo, shared pictures and the link picture.
+- **Done differently from the entry, and why:**
+  - the room kept for the old sheet's round top went (26px under each band, 24px above the sign-up card): with a
+    flat band it was a hole. So the bigger headlines cost no height on the tabs;
+  - on the first page the headline takes three lines at 390 wide where it took two, so the sign-up card starts
+    38px lower; Continue and "I already have an account" still show on a 390 x 844 screen;
+  - small orange words on cream read at 4.77:1, so they keep the logo's orange; the deeper orange stays only
+    where 16 Nov put it;
+  - the link-preview picture is reduced to 256 colours (114 KB). The brown's soft glows made a 329 KB file, and
+    `p25` holds it under 300 KB so that WhatsApp shows it;
+  - one of the four tints of a party's drawn cover was a beige; it is the quiet off-white now.
+- **Tests:** 32 demo suites, 863 checks, all pass (840 before). `p31` went from 51 to 73 checks: the
+  palette, the key words, the line and "less motion", small phones, the rent and its rupee sign, the ink sheet, the
+  brown header and pictures, no melted panels, the Android bars. `p26` and `p27` are rewritten for the flat band.
+  The database suite was not run: nothing in the database changes.
+- **To put it live, on Kamal's yes:** merge #117 (that builds the Android app), publish the website, check both,
+  then change the look sentence in my brief to King's wording (priorities.md) in a small PR of its own.
+
 ## 2026-11-17, Parties: a feed with covers, a party's page, hosting in one screen, and a map (#116) live
 
 - **What was asked (Kamal, 17 Nov, in my session, with four recordings of a hangouts app):** "Take the idea for
@@ -272,49 +321,5 @@
     tell the two cases apart;
   - I asked Kamal for his go in my session, because the request reached me as another session's message and
     `priorities.md` does not list it. Nothing is pushed or changed for it.
-- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
-  60 a day.
-
-## 2026-11-16, the new look is on every screen and page; sign-up's city step fixed (#110) live
-
-- **What Kamal asked (16 Nov):** after the five preview pages, "Ignore inspectai. Do it for the entire app and
-  website". Then, with two screenshots of sign-up's "Which city?" step, "Fix this also".
-- **This went against a standing rule, and Kamal wins:** my brief says to keep the look of 8 Nov with no new
-  colours. Kamal himself asked for the change. **King: the brief's sentence about the look needs your update**
-  (suggested words in my message to you).
-- **The look, everywhere:**
-  - a cream page with white cards;
-  - one light red (`#EE6468`) where the logo's orange was: the logo and every icon made from it, the main buttons,
-    small labels, counts, the screen you're on in the bottom bar;
-  - deep aubergine for text and the few dark pieces;
-  - the lavender, butter and mint panels are rose, apricot and peach tints;
-  - headings in a serif (DM Serif Display, open licence, bundled). The rest stays Urbanist.
-- **It also covers** the pictures people share (a home, a FlatMart thing, a party, the Vibe Card), the
-  compatibility chart, map pins, the privacy page, the Coming soon page, the picture shown with a shared link, the
-  installed app's colours, and the Android app's icon, bars and notification colour.
-- **A choice Kamal saw in the preview:** the red buttons carry dark words (5.4:1). White words, as the other app
-  has, would be 3.1:1, under the 4.5:1 our tests hold every screen to.
-- **Fixed on the way:**
-  - the moving-out sale page and the page for people with a spare room had white words on a light band;
-  - sign-up's back button was a white arrow on a faint disc;
-  - one amber label read at 4.4:1.
-- **The city step ("Other city"):** the box used the phone's own pop-up list, which opened over the chips, the
-  keyboard and Continue. Now the cities are chips under the box that follow what you type, any name can still be
-  typed, and on a phone the keyboard waits until you tap the box. Same question, same words, same answers.
-- **Not changed:** the login steps, the onboarding questions, what any screen says or does. No database change.
-- **Tests:** 29 demo suites, 696 checks (was 28 and 668). New `p31` (28 checks): the palette, the serif, the logo,
-  the buttons, no old colours left and every word readable on each screen, the share pictures, the privacy page,
-  the city step. `p8`, `p19`, `p26`, `p27` and `p28` now describe this look.
-- **Published:** e5f4176; Android build 216 (file checked: the light red icon, the new pages and the city step are
-  inside, and the checksum matches the copy on the website's release); the website repo's `main` and `gh-pages`
-  say "Publish the app from NavigateMe e5f4176", and the published copy passes a smoke test.
-- **One hiccup:** GitHub refused the website publish step's own push twice (403) with no branch rule or setting
-  behind it that I could find; the third try, five minutes later, went through. If it happens again, retry.
-- **For King to pass on:** Mark's creatives (PRs #93, #94) and the files in `marketing/` still show the orange
-  logo and the old colours. The light red logo files are `flatmates/icons/logo.svg`, `logo-icon.svg` and
-  `wordmark.svg`.
-- **Not done, on purpose:** the area boxes on the post form and FlatMart still use the phone's pop-up list (they
-  have no chips to cover, and Kamal's screenshots were of the city step). Dwelo's way of deleting an account was in
-  Kamal's recording; he did not ask for it, so it is untouched.
 - **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
   60 a day.
