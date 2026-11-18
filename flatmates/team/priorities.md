@@ -20,7 +20,10 @@ _Last update: 17 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
-00000000. **BUILT (PR #117, not merged). King's review of 18 Nov: yes, after three small fixes, then Kamal's yes.** King opened
+00000000. **BUILT AND REVIEWED (PR #117 at 5047019, not merged). Waits only for Kamal's yes in Teche's session.** The three
+   fixes below are made; King measured them on the branch on 18 Nov (rings green and amber as today; the scrolled top bar
+   cream; first page headline on two lines at 390 wide, Continue 18px higher than today and clear of the help button).
+   King recommends yes. The review as written: King opened
    the branch on a phone-size screen and checked it against the reels: sign-up, the questions, Discover, a home's page,
    Tribe, Flatsplits, FlatMart, Parties, Profile, the two website pages. It is faithful. Three fixes, two of them King's
    own mistakes in this entry:
