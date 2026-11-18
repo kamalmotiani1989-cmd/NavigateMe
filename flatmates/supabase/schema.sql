@@ -2447,6 +2447,9 @@ end $$;
 -- 'zone' is for the map in Parties (17 Nov 2026): the pin rounded to two decimals, the same rule as a home's public
 -- pin (fm_listing_save), so the party can be drawn as a circle about a kilometre across with the flat somewhere in
 -- it. Every party in the same square of that grid gets the same zone.
+-- 'sample' is true when the host is a sample account (fm_sample_parties, with the sample people below): the app tags
+-- the party Sample. The column is declared here because this function reads it; the sample people declare it again.
+alter table public.fm_profiles add column if not exists sample boolean not null default false;
 create or replace function public.fm_party_near_json(p_party uuid, p_user uuid) returns jsonb
 language sql stable security definer set search_path = public as $$
   select jsonb_build_object('code', v.code, 'occasion', v.occasion, 'title', v.title, 'starts_at', v.starts_at, 'ends_at', v.ends_at,
@@ -2458,7 +2461,7 @@ language sql stable security definer set search_path = public as $$
     'zone', case when fm_india_pin(v.near_geo) is not null
                  then jsonb_build_object('lat', round((v.near_geo->>'lat')::numeric, 2), 'lng', round((v.near_geo->>'lng')::numeric, 2)) end,
     'my_rating', (select up from fm_party_ratings where party_id = v.id and rater = p_user and ratee = v.host_id),
-    'host', split_part(coalesce(h.full_name, ''), ' ', 1), 'host_vibe', coalesce(h.vibe, '{}'::jsonb),
+    'host', split_part(coalesce(h.full_name, ''), ' ', 1), 'host_vibe', coalesce(h.vibe, '{}'::jsonb), 'sample', coalesce(h.sample, false),
     'my_request', (select jsonb_build_object('id', r.id, 'status', r.status, 'plus', r.plus, 'note', r.note) from fm_party_requests r
                    where r.party_id = v.id and r.user_id = p_user))
   from fm_parties v left join fm_profiles h on h.id = v.host_id left join fm_profiles me on me.id = p_user
@@ -3417,6 +3420,124 @@ drop trigger if exists fm_visits_sample on public.fm_visits;
 create trigger fm_visits_sample before insert on public.fm_visits
   for each row execute function public.fm_sample_visit();
 
+-- Sample parties (18 Nov 2026, Kamal: "create some samples for parties so that i can check the map and test the same").
+-- A party shows only to people within its host's 1 to 5 km, so samples have to be put where the tester is:
+--   select * from public.fm_sample_party_spots(18.5204, 73.8567);              -- the 15 spots, to name their areas
+--   select public.fm_sample_parties(18.5204, 73.8567, array['Shivajinagar']);  -- one name for all, or 15 in order
+-- hosts 15 open parties around that point, one of each kind, from sample accounts. So the app tags them Sample
+-- (fm_party_near_json), nobody can sign in as a host, and asking to join one is accepted straight away, with its
+-- door code and no notification (the trigger below). They are spread over about seven kilometres and the next three
+-- weeks: some free, some with a chip-in (never for alcohol), some nearly full, with other sample people as the guests
+-- already in. All are open to everyone, so every tester sees all 15; the furthest is 3.5 km out with a 5 km reach.
+-- The addresses are made up and say so. Running it again replaces them, wherever they were put before;
+-- fm_sample_parties_clear() only removes them (run it before removing the sample people: a party goes with its host,
+-- but its empty group would stay). None of these can be called from the app.
+create or replace function public.fm_sample_party_request() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.status = 'pending' and fm_is_sample((select host_id from fm_parties where id = new.party_id)) then
+    -- the same as fm_party_decide accepting (fm_party_request has already checked the places left)
+    new.status := 'accepted';
+    new.decided_at := now();
+    new.checkin_code := coalesce(new.checkin_code, upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6)));
+  end if;
+  return new;
+end $$;
+drop trigger if exists fm_party_requests_sample on public.fm_party_requests;
+create trigger fm_party_requests_sample before insert or update of status on public.fm_party_requests
+  for each row execute function public.fm_sample_party_request();
+
+-- Where the 15 go: east and north of the point in kilometres, nearest first, and how far each is from it. The first
+-- two are about 110 m apart, so that they usually share a square of the map's grid and show as one mark with a "2".
+create or replace function public.fm_sample_party_spots(p_lat double precision, p_lng double precision)
+returns table (n int, lat numeric, lng numeric, km numeric)
+language sql immutable as $$
+  select s.n, round((p_lat + s.dy / 111.32)::numeric, 6), round((p_lng + s.dx / (111.32 * cos(radians(p_lat))))::numeric, 6),
+         round(sqrt(s.dx * s.dx + s.dy * s.dy)::numeric, 2)
+  from (values (1, 0.3, 0.2), (2, 0.38, 0.28), (3, 0.9, -0.3), (4, -0.2, -1.1), (5, 1.2, 0.9), (6, -1.5, 0.3), (7, 0.4, 1.8), (8, 1.9, -0.8),
+               (9, -1.3, -1.7), (10, 2.4, 0.5), (11, -2.2, 1.6), (12, 0.8, -2.9), (13, 2.9, 1.3), (14, -3.1, -0.9), (15, 1.2, 3.3)) as s(n, dx, dy)
+  order by s.n;
+$$;
+
+create or replace function public.fm_sample_parties_clear() returns int
+language plpgsql security definer set search_path = public as $$
+declare v_n int;
+begin
+  with gone as (delete from fm_split_groups g using fm_parties p where p.group_id = g.id and fm_is_sample(p.host_id) returning 1)
+  select count(*) into v_n from gone;
+  return v_n;
+end $$;
+
+create or replace function public.fm_sample_parties(p_lat double precision, p_lng double precision, p_areas text[]) returns int
+language plpgsql security definer set search_path = public as $$
+declare
+  v_today date := (now() at time zone 'Asia/Kolkata')::date;
+  v_dow int := extract(dow from (now() at time zone 'Asia/Kolkata')::date)::int;   -- 0 Sunday to 6 Saturday
+  v_fri date; v_sat date; v_sun date; v_day date; v_start timestamptz;
+  v_areas text[]; v_hosts uuid[]; v_host fm_profiles%rowtype; v_first text; v_area text; v_title text; v_code text;
+  v_group uuid; v_party uuid; v_n int := 0; s record;
+begin
+  if fm_india_pin(jsonb_build_object('lat', p_lat, 'lng', p_lng)) is null then raise exception 'need-pin'; end if;
+  select array_agg(left(trim(x.a), 60) order by x.i) into v_areas
+    from unnest(coalesce(p_areas, '{}'::text[])) with ordinality as x(a, i) where char_length(trim(coalesce(x.a, ''))) >= 2;
+  if v_areas is null then raise exception 'bad-area'; end if;
+  -- the hosts: 15 sample people who have said how they live (samples.sql makes them)
+  select array_agg(h.id order by h.k) into v_hosts
+    from (select id, md5(id::text) as k from fm_profiles where sample and role = 'seeker' and fm_vibe_count(vibe) >= 6 order by 2 limit 15) h;
+  if coalesce(cardinality(v_hosts), 0) < 15 then raise exception 'no-samples'; end if;
+  perform fm_sample_parties_clear();
+  v_fri := v_today + ((5 - v_dow + 7) % 7); v_sat := v_today + ((6 - v_dow + 7) % 7); v_sun := v_today + ((7 - v_dow) % 7);
+  for s in
+    select * from (values
+      ( 1, 'games'::text,   'Board games and chai'::text,               '🎲'::text, 'today'::text,    20,  0, 240, 3,  8,  3, true,  200::int, array['snacks','games']::text[],       null::text,                'Shoes off at the door. No smoking indoors. We wrap up by midnight.'::text),
+      ( 2, 'movie',         'Movie night: 90s Bollywood',               '🎬',       'today',          21,  0, 180, 3,  6,  4, true,  null,     '{}',                                  null,                      'Snacks on us. No smoking. Phones on silent once it starts.'),
+      ( 3, 'chai',          'Chai and conversations',                   '☕',       'tomorrow',       18, 30, 150, 3, 10,  2, true,  null,     '{}',                                  null,                      'Come as you are. We wind down by nine.'),
+      ( 4, 'karaoke',       'Karaoke night',                            '🎤',       'tomorrow',       20, 30, 240, 3, 12,  7, true,  300,      array['snacks','music'],               null,                      'Wraps up at midnight. Be kind to the mic.'),
+      ( 5, 'match',         'Cricket on the big screen',                '🏏',       'fri',            19,  0, 240, 4, 14,  9, true,  null,     '{}',                                  null,                      'Bring your own drinks if you like. Quiet after 11 for the neighbours.'),
+      ( 6, 'brunch',        'Slow Saturday brunch',                     '🥞',       'sat',            11,  0, 180, 4,  8,  6, false, 350,      array['food','soft_drinks'],           'plates and cutlery',      'Vegetarian kitchen. Kids and pets welcome.'),
+      ( 7, 'terrace',       'Terrace sundowner',                        '🌇',       'sat',            17, 30, 240, 4, 15,  5, true,  250,      array['snacks','soft_drinks','music'], null,                      'The terrace closes at ten. Carry a light jacket.'),
+      ( 8, 'birthday',      'Birthday at {host}''s',                    '🎂',       'sat',            20, 30, 240, 4, 20, 11, true,  null,     '{}',                                  null,                      'No gifts, just come. Cake at ten.'),
+      ( 9, 'potluck',       'Sunday potluck lunch',                     '🍲',       'sun',            13,  0, 180, 4, 10,  0, true,  null,     '{}',                                  null,                      'Bring one dish to share. Vegetarian kitchen.'),
+      (10, 'jam',           'Acoustic jam session',                     '🎸',       'sun',            18,  0, 180, 5,  8,  3, true,  150,      array['snacks','music'],               null,                      'Bring an instrument if you play. Unplugged after nine.'),
+      (11, 'housewarming',  'Housewarming at {host}''s',                '🏡',       'wed',            19, 30, 180, 5, 16,  4, true,  null,     '{}',                                  null,                      'Shoes off, please. The floor is new.'),
+      (12, 'festival',      'Festive lights and sweets evening',        '🪔',       'thu',            19,  0, 240, 5, 18,  8, true,  200,      array['food','decor'],                 null,                      'Traditional wear if you like. No firecrackers.'),
+      (13, 'welcome',       'Welcome evening for new neighbours',       '👋',       'fri2',           19, 30, 180, 5, 12,  1, false, null,     '{}',                                  null,                      'New to the area? This one is for you.'),
+      (14, 'farewell',      'Farewell dinner for a flatmate',           '🧳',       'sat2',           20,  0, 240, 5, 10,  7, true,  400,      array['food','soft_drinks'],           null,                      'Dinner at half past eight. A few words at ten.'),
+      (15, 'party',         'House party at {host}''s',                 '🎉',       'sat3',           20, 30, 300, 5, 25, 12, true,  null,     '{}',                                  null,                      'Bring your own drinks if you like. Music off by one.')
+    ) as t(n, occasion, title, emoji, day, hh, mm, mins, radius_km, guest_limit, taken, plus_ones, chip, covers, covers_other, rules) order by n
+  loop
+    select * into v_host from fm_profiles where id = v_hosts[s.n];
+    v_first := coalesce(nullif(split_part(coalesce(v_host.full_name, ''), ' ', 1), ''), 'Sam');
+    v_title := left(replace(s.title, '{host}', v_first), 60);
+    v_area := v_areas[1 + (s.n - 1) % cardinality(v_areas)];
+    v_day := case s.day when 'today' then v_today when 'tomorrow' then v_today + 1 when 'fri' then v_fri when 'sat' then v_sat when 'sun' then v_sun
+                        when 'wed' then v_sun + 3 when 'thu' then v_sun + 4 when 'fri2' then v_fri + 7 when 'sat2' then v_sat + 7 else v_sat + 14 end;
+    v_start := (v_day + make_time(s.hh, s.mm, 0)) at time zone 'Asia/Kolkata';
+    -- a time that has gone, or comes within the hour, moves on: tonight to tomorrow night, a weekday to its next one
+    if v_start < now() + interval '1 hour' then v_start := v_start + case when s.day in ('today', 'tomorrow') then interval '1 day' else interval '7 days' end; end if;
+    loop
+      v_code := 'SMP' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 4));
+      exit when not exists (select 1 from fm_parties where code = v_code);
+    end loop;
+    insert into fm_split_groups (name, emoji, kind, created_by) values (v_title, s.emoji, 'party', v_host.id) returning id into v_group;
+    insert into fm_parties (group_id, host_id, code, occasion, title, starts_at, ends_at, place, plus_ones, open, guest_limit, entry, entry_chip, covers,
+                            covers_other, who, radius_km, area, house_rules, near_address, near_geo)
+    select v_group, v_host.id, v_code, s.occasion, v_title, v_start, v_start + make_interval(mins => s.mins), 'home', s.plus_ones, true, s.guest_limit,
+           case when s.chip is null then 'free' else 'chip' end, s.chip, case when s.chip is null then '{}'::text[] else s.covers end,
+           case when s.chip is null then null else s.covers_other end, 'all', s.radius_km, v_area, s.rules,
+           'Flat ' || (100 + s.n * 7) || ', ' || (array['Orchid', 'Maple', 'Lotus', 'Palm', 'Cedar'])[1 + s.n % 5] || ' Residency, ' || v_area || ' (a sample address)',
+           jsonb_build_object('lat', sp.lat, 'lng', sp.lng)
+      from fm_sample_party_spots(p_lat, p_lng) sp where sp.n = s.n
+    returning id into v_party;
+    -- the guests already in: other sample people, accepted, each with a door code
+    insert into fm_party_requests (party_id, user_id, plus, status, checkin_code, decided_at)
+    select v_party, g.id, 0, 'accepted', upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6)), now()
+      from (select id from fm_profiles where sample and id <> v_host.id order by md5(id::text || s.n::text) limit s.taken) g;
+    v_n := v_n + 1;
+  end loop;
+  return v_n;
+end $$;
+
 -- ------------------------------------------------------ plans and referrals --
 -- The plans on sale, with GST worked out the same way fm-pay charges it.
 drop function if exists public.fm_plan_list();
@@ -4343,8 +4464,9 @@ $$;
 -- Every fm_ function checks auth.uid() itself; on top of that only signed-in users may
 -- call them (fm_me, fm_area_demand, fm_otp_request and the party and sale pages also answer signed-out callers,
 -- with nothing private; listings need an account).
--- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample, the
--- team's fm_source_report and fm-login's fm_test_code_ok can't be called at all.
+-- Trigger functions, the payment webhook's fm_credit_order, the Flatsplits helpers, fm_is_sample, the maker of
+-- sample parties (fm_sample_parties and its two helpers), the team's fm_source_report and fm-login's
+-- fm_test_code_ok can't be called at all.
 do $$
 declare f record;
 begin
@@ -4354,6 +4476,7 @@ begin
     if f.proname in ('fm_handle_new_user','fm_request_notify','fm_tribe_notify','fm_credit_order',
                      'fm_my_phone','fm_split_me','fm_split_check','fm_split_net',
                      'fm_is_sample','fm_sample_request','fm_sample_tribe','fm_sample_visit',
+                     'fm_sample_party_request','fm_sample_party_spots','fm_sample_parties','fm_sample_parties_clear',
                      'fm_pass_until','fm_grant_pass','fm_room_guarantee','fm_referral_reward','fm_source_report',
                      'fm_test_code_ok', 'fm_on_time_months', 'fm_split_cap', 'fm_party_notify', 'fm_ticket_touch', 'fm_ticket_notify', 'fm_listing_fits', 'fm_listing_audience', 'fm_listing_notify',
                      'fm_tribe_members', 'fm_throttle', 'fm_client_ip', 'fm_clean_json', 'fm_clean_row', 'fm_name_lock', 'fm_party_json', 'fm_reply_hours',
