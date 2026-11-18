@@ -9,6 +9,10 @@ _Last update: 17 Nov 2026._
   main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
   (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
   Parties: the short message after asking to join says what the answer was (#120, 18 Nov). Android build 223.
+- **The website has a blog (#121, 18 Nov, Kamal's ask):** seven articles at `/blog/`, on the website only. The app does
+  not carry it; Android build 224 holds the same app as 223. King read the two legal and money articles in full and
+  checked five of their news and government figures by search: all held. Nobody on the team can open the source pages
+  themselves (network limits).
 - **Sample parties in the live database (#119, 18 Nov, Kamal's ask for testing):** 15, each tagged "Sample", the last
   one ends on 5 Dec. None may be live when sign-up opens.
 - **All work is paused by Kamal (6 Nov), and so are the daily shifts and weekly routines.** Work only on a task Kamal
@@ -134,6 +138,10 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
 1. No "download now" and no paid spend until Kamal opens sign-up. Copy says "launching soon".
 2. On resume: the Tuesday content pack; Pune is the recommended first city (Mumbai plan on main for comparison).
 
+3. The blog takes articles as plain text files in `flatmates/marketing/blog/posts/`; the guide is
+   `flatmates/marketing/blog/README.md`. Mark writes, Teche runs the script and ships. No schedule is set: that waits
+   for Kamal. Same rules as all public copy: "launching soon", facts with a source, nothing about how the app works.
+
 ## Salu (community)
 1. No group post that sends people to sign up until Kamal opens sign-up; admin requests and value-first drafts only.
 2. On resume: the Wednesday pack from groups at `rules read` or better; the college outreach drafts are with Kamal.
@@ -145,6 +153,8 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   Distances get a little less exact. King recommends yes. A database change: on Kamal's word, database first.
 - **Parties map, marks on top of each other (found by Teche, 18 Nov):** with many parties close together the map opens
   far out and the marks overlap until you pinch in. Teche has offered to fix it. King recommends yes.
+- **The blog:** Kamal's read of the seven articles, and whether the word "Blog" stays in the first page's small print
+  (website only). King recommends it stays: it is the only way in from the first page.
 - **The repository:** two housekeeping questions King put to Kamal on 18 Nov in his session. On his yes they become
   Teche's tasks here.
 - **On Kamal's phone (Android build 222 and the website):** a look at the new look on a real phone, and at Parties,
