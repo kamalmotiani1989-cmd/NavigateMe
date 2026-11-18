@@ -1164,6 +1164,8 @@ butter, mint or teal, or the peach tints of 16 Nov.
 - `vendor/`: what the app would otherwise fetch from other sites: supabase-js, the map (Leaflet) and the typefaces
   (`vendor/fonts`). The Android app and the website both carry it.
 - `og-image.png`, `robots.txt`, `sitemap.xml`: for shared links and search engines (see "Website").
+- `blog/`: the website's blog as it is published (see "Blog"). Made by `marketing/blog/build.js` from the articles
+  in `marketing/blog/posts/`: never edited by hand, and never in the Android app.
 - `tests/demo/`: the browser suites that run against the app in demo mode (`tests/demo/run.sh`, see `tests/README.md`).
 - `marketing/`: the brand voice, audiences and the campaign packs; `team/`: the standing briefs for the AI employees
   (Teche `tech.md`, Mark `marketing.md`, Salu `community.md`, and their manager King `king.md`, who sets
@@ -1194,8 +1196,8 @@ website and app as people might copy the same. Make it more clean"). It is the s
    under it);
 2. the sign-up card (see "How it flows"), a white card under the headline; on a computer, beside it;
 3. a row of our cartoon people around a match ring. No photos, no pictures of the app's screens;
-4. one line of small print: the privacy policy, "Have a room? See who's looking near you" (the host page), and, on
-   the web only, the Android download and the iPhone hint.
+4. one line of small print: "Blog" (on the web only, since 18 Nov; see "Blog"), the privacy policy, "Have a room?
+   See who's looking near you" (the host page), and, on the web only, the Android download and the iPhone hint.
 
 What the app does (Flatsplits, FlatMart, the Move-in kit, how the matching works, safety) is **not** described on
 this page: people see it after they sign in. The sections added on the morning of 15 Nov (how it works, try a
@@ -1208,7 +1210,8 @@ The login process itself is unchanged. On a computer the opening story is a card
 - `og-image.png` (1200 x 630) is the picture WhatsApp, Instagram, LinkedIn and X show with a shared link. It's drawn
   from the page's own logo, colours and cartoon people by `tests/demo/og-image.js`; run that again if the look
   changes.
-- `robots.txt` lets search engines in and names `sitemap.xml` (the home page and the privacy policy).
+- `robots.txt` lets search engines in and names `sitemap.xml` (the home page, the privacy policy, then the blog
+  and each of its articles; the blog's lines are written by `marketing/blog/build.js`).
 - The data search engines read (`#ldSite`, schema.org) says who we are (the organisation and the website) and
   nothing about how the app works.
 - These three files go to the website only. The Android app doesn't carry them.
@@ -1244,6 +1247,119 @@ answered the living-style questions. These are the same people an owner there co
 Escape tab. Budgets and the lifestyle mix only show for 5 or more people, describing the whole city
 when the area has fewer, and an area is only listed once 2 or more people picked it. Nobody can be
 picked out. In demo mode the demo's sample seekers stand in.
+
+## Blog
+
+**https://findmeflatmate.com/blog/** · Kamal, 18 Nov 2026: "Build the blogs section in website. Only. Make it super
+cool. Give your best. Research and then build".
+
+Articles for people who share rented flats in India: finding a place and a flatmate, money, living together,
+safety, paperwork. **It is on the website only.** The Android app does not carry it (`copyWeb` packs the app's
+page, its icons and vendor files, nothing else), a change to the blog alone starts no Android build, and the one way
+in from the app's page, the word "Blog" in the first page's small print, is `web-only`, so the app hides it.
+
+**Where it lives.**
+- `marketing/blog/posts/*.md`: the articles. A few lines of facts about the article, then the words.
+  `marketing/blog/README.md` says how to write one (it is the guide Mark works from).
+- `marketing/blog/build.js` turns them into pages; `src/blog.css` and `src/blog.js` are the look and the extras;
+  `pictures.js` draws the share pictures.
+- `blog/` is what is published: `index.html`, a folder for each article, `blog.css`, `blog.js`, `feed.xml` and
+  `og/<address>.png`. It is committed, so the publish job copies plain files as it always has. Don't edit there:
+  `p35` fails when `blog/` is not exactly what the articles say.
+
+The app's "no build step" holds: nothing is built on a server. The script is run by hand before a PR, uses only
+Node's own modules, and refuses an article it can't read (a missing title, a mark with no source, a link to an
+article that doesn't exist) with the file and the reason.
+
+**Why it is built this way.** Each article needs a page of its own that says everything before any script runs: a
+title, a description and a picture for search engines and for WhatsApp previews. Seven pages kept by hand would
+drift apart, so one script makes them all from the words.
+
+**What the research said (18 Nov), and what the blog does about it.** Three passes: what other flat-sharing and
+rental blogs do, rental paperwork in India, and rental scams. Other blogs are weak in five places: a worked answer
+to "who pays what" when rooms differ; facts that are dated, sourced and consistent; paperwork written for people
+sharing a flat in India; a comparison of PG, flat-share and co-living that isn't written by a co-living company;
+and words to actually send when something is awkward. So every article here has something to use the same day:
+
+| Article (address under /blog/) | Topic | What you can use |
+|---|---|---|
+| `split-rent-fairly` (leads the page) | Money | **Rent split calculator**; a table for the bills; a message for the flat's group; a list to agree before move-in |
+| `pg-flat-or-coliving` | Finding a place | A side-by-side table; five questions; a list for adding up the real monthly cost |
+| `what-to-ask-a-flatmate` | Finding a place | The questions, by subject; answers that should make you pause; a list to tick |
+| `flat-visit-checklist` | Finding a place | **A 32-point checklist** to tick on the phone, print or send |
+| `rental-scams-red-flags` | Safety | Five scripts scammers use; the red flags; checks before paying; what to do, in order, if you paid |
+| `rent-agreement-basics` | Paperwork | Why 11 months; deposits; whose name goes on it; a list to tick before signing |
+| `house-rules-that-hold` | Living together | **A one-page flat agreement to copy**; "instead of / try" pairs; a message for late rent |
+
+**The first page:** the headline "Sharing a flat, minus the drama." (key word *drama*, with the line drawn under it
+by hand); on a computer the topics sit beside it as small stickers; the leading article as a wide card; "Things you
+can use" (the calculator, the visit checklist, the house rules); then every article as a card, with topic chips and
+a search that work on the page itself and remember the choice in the address (`?topic=money`, `?q=deposit`); one
+dark sheet at the foot. With scripts off, every article is still listed.
+
+**An article:** the trail back (Blog › topic), the headline with its key word, a by-line ("The FindMeFlatMate
+team": no invented authors), the date and the minutes it takes; a drawn cover; "The short version"; the words on a
+white sheet, with "In this article" beside them on a computer (it marks the part you are reading) and as a card on
+a phone; a bar across the top that fills as you read; "Where the facts come from"; WhatsApp, copy-link and share
+buttons; three next reads; the dark sheet. The pieces an article can use: a line set large, notes (good to know,
+worth doing, watch out), numbered steps, "instead of / try" pairs, a table that becomes cards on a phone, lists to
+tick (kept on that phone, printable, sendable), words to copy or send on WhatsApp, and the calculator.
+
+**The rent split calculator** (`split-rent-fairly/#split`): the share of the rent that pays for shared space is
+split by head, the rest by room; a room a size up or down counts for a fifth more or less, a bathroom of its own
+15% more, a balcony 5% more; two people in a room each pay a head's share of the shared space. Every one of those
+numbers can be changed by the reader, the amounts are whole tens of rupees that always add up to the rent, and the
+result can be copied or sent on WhatsApp. The percentages are ours, said to be ours, and offered as a start.
+
+**The look** is the app's (see "Look and feel"): the cream page, white cards, the logo's orange for the main
+buttons, the small labels and one key word in a headline, near-black text, one dark sheet with light-orange accents,
+the serif for headings, the app's four text sizes, and the rule that a panel on cream is white and a panel inside a
+white card is cream. No colour the app doesn't have. **Covers are drawn, never photos:** our cartoon people round a
+dark disc, with two or three small words. They are drawn by the app's own avatar module, which the script reads out
+of `index.html`, so the blog cannot show a different drawing from the app. Movement is small (the line under the key
+word, cards coming up as they come into view, the cartoon people moving when you point at their card, the cover
+travelling from the list to the article in browsers that can) and is absent for anyone who asked for less.
+
+**What it may say.**
+- "Launching soon", never "download now", until Kamal says sign-up is open.
+- **Not how the app works.** Kamal, 15 Nov: that is shown after sign-in. The blog says FindMeFlatMate is for finding
+  a room and people who live like you, with no brokers, and that numbers stay private until both say yes: what the
+  home page already says. No feature is named or described.
+- **Facts carry their source.** A number, a law or a reported case has a numbered mark that leads to "Where the
+  facts come from". Habits of the market are called habits. The article on agreements says it is general
+  information, not legal or tax advice.
+- No photos and nothing about religion.
+
+**How the facts of 18 Nov were gathered, and their limit.** Through web search, by three research passes. The
+pages themselves could not be opened from the machine this was built on (its network allows package sites only), so
+quotations were matched from search results, not read on the page. Statements were kept to what both the search
+results and the law as generally known support, and anything unsettled was left out or hedged (which states follow
+the Model Tenancy Act, police orders that are renewed, tax limits). **Someone should open each source link once.**
+The articles on agreements and on scams name their dates ("in mid-2022", "as of late 2026"); look at them again
+when a law changes.
+
+**For search engines and shared links:** each page has its own title, description and address; the data search
+engines read (schema.org) names the blog and, for an article, its headline, dates, publisher and breadcrumb;
+`sitemap.xml` lists every article with the day it last changed; `blog/feed.xml` is a feed; and each article has a
+share picture (`blog/og/<address>.png`, 1200 x 630, drawn like `og-image.png`: the brown, the orange frame, the
+title with its key word in light orange, the cartoon people) held under 300 KB so WhatsApp shows it. The old
+GitHub Pages address forwards each blog page to findmeflatmate.com.
+
+**Counting what the blog brings.** Links from the blog to the home page carry `utm_source=blog`,
+`utm_medium=article` and `utm_campaign=<the article's address>` (`blog-home` from the first page), so
+`fm_source_report` (see "Ads and tracking") shows sign-ups that began on the blog, by article.
+
+**Nothing is collected.** The blog loads nothing from any other site and sets no cookies. Ticks and the
+calculator's numbers are kept in that browser only (`localStorage`, keys starting `fmb:`).
+
+**Adding or changing an article:** `marketing/blog/README.md`. In short: write or edit the file in `posts/`, run
+`node flatmates/marketing/blog/build.js --pictures`, run `tests/demo/run.sh`, and ship it through a PR. The
+website's publish job does the rest; there is no Android build to wait for.
+
+Checks: `p35` (the files and that they are website only; the way in; the first page on a phone, a small phone and
+a computer; topics and search; every article's head data, links, sizes and contrast; the reading bar and "In this
+article"; the calculator's sums; ticks that stay; copying and WhatsApp; print; movement and less of it), and `p25`
+for the first page's small print and the sitemap.
 
 ## Ads and tracking
 
@@ -1333,8 +1449,9 @@ The whole app can be put on hold behind a **Coming soon** page. Three switches, 
 (the hold was lifted; sign-in uses the shared test code until WhatsApp or SMS codes have keys):
 
 1. **Website.** While `flatmates/ON_HOLD` exists, the website's publish job puts `hold.html` (Coming
-   soon) up as the home page instead of the app; the privacy policy stays up. The hold page also clears
-   the copy of the app that browsers keep for offline use.
+   soon) up as the home page instead of the app; the privacy policy and the blog stay up (the blog's links to
+   the home page then lead to Coming soon). The hold page also clears the copy of the app that browsers keep
+   for offline use.
 2. **Database.** `fm_settings.on_hold`: while it's on, every request from the app (website or Android,
    signed in or not) is refused with `on-hold` before it reaches any function (`fm_pre_request`, run by
    PostgREST before each request), and the app shows only its own Coming soon screen. Payments and

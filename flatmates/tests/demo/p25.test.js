@@ -28,8 +28,8 @@ const FEATURES = /Flatsplits|FlatMart|Move-in kit|agreement|scam|Tribe|Escape|Vi
     && pic.ok && pic.png && pic.w === 1200 && pic.h === 630 && pic.kb < 300, 'shared links get a picture: 1200 x 630, ' + pic.kb + ' KB');
   const files = await p.evaluate(async () => ({ robots: await (await fetch('robots.txt')).text(), map: await (await fetch('sitemap.xml')).text() }));
   const locs = (files.map.match(/<loc>[^<]+<\/loc>/g) || []).map(x => x.replace(/<\/?loc>/g, ''));
-  ok(/^User-agent: \*\nAllow: \/\n/.test(files.robots) && files.robots.includes('Sitemap: ' + SITE + 'sitemap.xml') && locs.length === 2 && locs[0] === SITE && locs[1] === SITE + 'privacy.html',
-    'robots.txt lets search engines in; sitemap.xml lists the home page and the privacy policy');
+  ok(/^User-agent: \*\nAllow: \/\n/.test(files.robots) && files.robots.includes('Sitemap: ' + SITE + 'sitemap.xml') && locs.length >= 2 && locs[0] === SITE && locs[1] === SITE + 'privacy.html' && locs.slice(2).every(u => u.startsWith(SITE + 'blog/')),
+    'robots.txt lets search engines in; sitemap.xml lists the home page and the privacy policy, then only the blog\'s pages (p35 checks those)');
   const ld = await p.evaluate(() => { const g = JSON.parse($('ldSite').textContent)['@graph']; return { types: g.map(x => x['@type']).join(), text: $('ldSite').textContent }; });
   ok(ld.types === 'Organization,WebSite' && !FEATURES.test(ld.text) && !/FAQ|Question/.test(ld.text), 'the data for search engines says who we are and nothing about how the app works: ' + ld.types);
 
@@ -63,7 +63,7 @@ const FEATURES = /Flatsplits|FlatMart|Move-in kit|agreement|scam|Tribe|Escape|Vi
   ok(card.steps.join(' | ') === 'role:Welcome! What brings you here? | name:What should we call you? | sex:A little about you | phone:Verify your number' && card.roles.join() === 'seeker,owner,splits'
     && card.have === 'I already have an account' && card.shown === 'role', 'the sign-up card is unchanged: ' + card.steps.map(x => x.split(':')[1]).join(' → '));
   // the small print
-  ok(page.links.join(' | ') === 'Privacy policy | Have a room? See who\'s looking near you | Get the Android app' && await p.evaluate(() => document.querySelector('.w-foot-slim a[href="privacy.html"]') && /Add to Home Screen/.test(document.querySelector('.wfs-ios').textContent)),
+  ok(page.links.join(' | ') === 'Blog | Privacy policy | Have a room? See who\'s looking near you | Get the Android app' && await p.evaluate(() => document.querySelector('.w-foot-slim a[href="blog/"]').classList.contains('web-only')) && await p.evaluate(() => document.querySelector('.w-foot-slim a[href="privacy.html"]') && /Add to Home Screen/.test(document.querySelector('.wfs-ios').textContent)),
     'the small print: ' + page.links.join(' · '));
   await p.click('.w-foot-slim [data-host-open]'); await p.waitForTimeout(700);
   ok(await p.evaluate(() => location.hash === '#host' && !$('view-host').hidden), 'the link for people with a room still opens its page');
