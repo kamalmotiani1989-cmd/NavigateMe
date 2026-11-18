@@ -1501,8 +1501,12 @@ whole city: they are put where the tester is. In the SQL editor:
   "2".
 - The app tags them **Sample** in the list and on the party's page (the server says which parties have a sample
   host). Asking to join one is **accepted straight away**, with a door code and no notification; the address the
-  guest then sees ends "(a sample address)" and there is no number, because sample people have none. Everything
-  else is the real thing: the places left are counted, you can drop out and ask again, the request limit applies.
+  guest then sees ends "(a sample address)" and there is no number, because sample people have none. The app says
+  what happened: the short message after asking is "Asked! <host> will let you know." while a host hasn't
+  answered and "<host> accepted you. The address is below." when the yes came back with the request, as a sample
+  host's does; and where there is no number to call, the line under the door code says "A sample host, so no
+  numbers are shared." in place of "<host> has your number too." Everything else is the real thing: the places
+  left are counted, you can drop out and ask again, the request limit applies.
 - A party's time passes: one that has started leaves the list like any other. Run the command again to get a
   fresh 15 (it replaces the old ones, wherever they were put, with whatever was asked of them).
 - `select public.fm_sample_parties_clear();` removes them. Run it before removing the sample people: a party

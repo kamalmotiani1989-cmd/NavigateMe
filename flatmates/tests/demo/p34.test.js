@@ -122,15 +122,19 @@ const fine = a => a.n > 5 && !a.odd.length && !a.low.length;
   await p.click('#nearBar [data-near-jump]'); await p.waitForTimeout(1100);
   const jump = await p.evaluate(() => ({ focus: document.activeElement.id, hidden: $('nearBar').hidden, seen: (r => r.top >= 0 && r.bottom <= innerHeight)($('nearNote').getBoundingClientRect()) }));
   ok(jump.focus === 'nearNote' && jump.hidden && jump.seen, 'the bar takes you to the form with the cursor in the note, and steps aside once the form is in view');
+  await p.evaluate(() => { window.__said = []; const say = window.toast; window.toast = m => { window.__said.push(m); say(m); }; });   // every short message from here on
   await p.fill('#nearNote', 'Board games fan!'); await p.click('#nearAsk [type=submit]'); await p.waitForTimeout(800);
-  const wait = await p.evaluate(() => ({ tag: (document.querySelector('.near-hero .pn-st') || {}).textContent, top: $('nearAct').previousElementSibling.classList.contains('near-line'), steps: document.querySelectorAll('#nearBody .near-steps li').length, bar: !!$('nearBar'),
+  const wait = await p.evaluate(() => ({ said: window.__said.join(' | '), tag: (document.querySelector('.near-hero .pn-st') || {}).textContent, top: $('nearAct').previousElementSibling.classList.contains('near-line'), steps: document.querySelectorAll('#nearBody .near-steps li').length, bar: !!$('nearBar'),
     last: $('nearBody').lastElementChild.className, text: $('nearAct').textContent.replace(/\s+/g, ' ').trim() }));
   ok(wait.tag === 'Asked to join' && wait.top && !wait.steps && !wait.bar && wait.last === 'near-report' && /^Asked to join/.test(wait.text) && /Withdraw my request/.test(wait.text),
     'once you\'ve asked, where you stand moves up under the cover ("' + wait.tag + '"); the steps and the bar go, and "Report this party" stays at the end');
+  ok(wait.said === 'Asked! Ananya will let you know.', 'while the host has not answered, the short message says so: "' + wait.said + '"');
   await p.waitForTimeout(5600);
-  const inn = await p.evaluate(() => { const pp = demoNearParties()[0]; return { tag: (document.querySelector('.near-hero .pn-st.accepted') || {}).textContent, top: $('nearAct').previousElementSibling.classList.contains('near-line'), addr: $('nearAct').textContent.includes(pp.near_address),
+  const inn = await p.evaluate(() => { const pp = demoNearParties()[0]; return { said: window.__said.slice(1).join(' | '), hint: ($('nearAct').querySelector('.hint') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(), tag: (document.querySelector('.near-hero .pn-st.accepted') || {}).textContent, top: $('nearAct').previousElementSibling.classList.contains('near-line'), addr: $('nearAct').textContent.includes(pp.near_address),
     code: ($('nearAct').querySelector('.near-code b') || {}).textContent, going: document.querySelector('.near-meter b').textContent, spots: document.querySelector('.near-meter p span').textContent }; });
   ok(inn.tag === "You're in" && inn.top && inn.addr && /^[0-9A-F]{6}$/.test(inn.code) && inn.going === '2 going' && inn.spots === '4 spots left of 6', 'when the host says yes: "You\'re in", the address and your door code right under the cover, and the count moves to ' + inn.going);
+  ok(inn.said === 'Ananya accepted you. The address is below.' && /^Ananya has your number too\. Can't make it after all\? Let them know\.$/.test(inn.hint),
+    'and the short message then says "' + inn.said + '"; under the door code: "' + inn.hint + '"');
 
   // ------------------------------------------------------------ 3. "How was it?"
   await p.evaluate(() => { const pp = demoNearParties()[0]; pp.starts_at = new Date(Date.now() - 6 * 36e5).toISOString(); pp.ends_at = new Date(Date.now() - 36e5).toISOString(); $('dlgNear').close(); });
@@ -148,6 +152,30 @@ const fine = a => a.n > 5 && !a.odd.length && !a.low.length;
   ok(rated.n === 1 && rated.up === true && rated.pressed === 'true' && !rated.page && pastPage.open && pastPage.rate && /^Ended /.test(pastPage.when) && gone,
     'a thumbs up there is saved without opening the party; the row opens its page ("' + pastPage.when + '"); three days on it leaves the list');
   await ctx.close();
+
+  // ------------------------------------------------------------ 3b. a sample host whose yes comes back at once
+  // On the live site the database answers for a sample host (Kamal's 15 sample parties, 18 Nov): the request comes
+  // back accepted, with a door code and no number. The short message used to say "Asked! ... will let you know."
+  // over a page that already said "You're in!" (Kamal, 18 Nov: "F8x wrong short message"). The demo's own sample
+  // hosts take a few seconds, so this stands the live answer in for one of them.
+  ({ ctx, p } = await open(b, person('9822200035', 'Lata', 'female'), 390, 844));
+  await p.evaluate(() => { window.__said = []; const say = window.toast; window.toast = m => { window.__said.push(m); say(m); };
+    const ask = api.partyRequest; api.partyRequest = async function(...a){ await ask.apply(this, a);
+      this.partyReqs().forEach(r => { if(r.sampleDecideAt) r.sampleDecideAt = 1; }); this.sampleDecide();   // due already
+      const pp = this.nearFind(a[0]); pp.host_phone = null; return this.partyNearJson(pp); }; });
+  await p.evaluate(() => openNear('NBPUN2')); await p.waitForTimeout(900);
+  await p.fill('#nearNote', 'See you there'); await p.click('[data-near-plus="1"]'); await p.click('#nearAsk [type=submit]'); await p.waitForTimeout(800);
+  const once = await p.evaluate(() => ({ said: window.__said.join(' | '), onScreen: (document.querySelector('.toast') || {}).textContent, tag: (document.querySelector('.near-hero .pn-st.accepted') || {}).textContent,
+    text: $('nearAct').textContent.replace(/\s+/g, ' ').trim(), hint: ($('nearAct').querySelector('.hint') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(),
+    code: ($('nearAct').querySelector('.near-code b') || {}).textContent, call: !!$('nearAct').querySelector('.near-call'), sample: !!$('dlgNear').querySelector('.smp'), form: !!$('nearAsk') }));
+  ok(once.said === 'Kabir accepted you. The address is below.' && once.onScreen === once.said && once.tag === "You're in" && /^You're in! Kabir accepted you\./.test(once.text) && /^[0-9A-F]{6}$/.test(once.code) && !once.form,
+    'a sample host that says yes at once: the short message is "' + once.said + '", never "will let you know", over the page that says "' + once.tag + '"');
+  ok(once.sample && !once.call && once.hint === "A sample host, so no numbers are shared. You're bringing 1 more. Can't make it after all? Let them know." && !/has your number/.test(once.text),
+    'and with no number to call, the line under the door code no longer says the host has yours: "' + once.hint + '"');
+  await p.waitForTimeout(5200);
+  const later = await p.evaluate(() => ({ said: window.__said.length, tag: (document.querySelector('.near-hero .pn-st.accepted') || {}).textContent }));
+  ok(later.said === 1 && later.tag === "You're in", 'nothing more is said afterwards: one short message for one answer');
+  await closeDlgs(p); await ctx.close();
 
   // ------------------------------------------------------------ 4. host a party, in one screen
   ({ ctx, p } = await open(b, person('9822200032', 'Isha', 'female', { partyRulesAt: undefined, partyRulesV: undefined }), 390, 844));

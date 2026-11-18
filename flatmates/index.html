@@ -12724,8 +12724,10 @@ function drawNear(){
   clearTimeout(nearTimer);
   // demo: sample hosts answer within seconds
   if(p.my_request && p.my_request.status === "pending" && api.sampleDecide)
-    nearTimer = setTimeout(async () => { if(api.sampleDecide() && $("dlgNear").open && nearParty && nearParty.code === p.code){ await openNear(p.code); toast(nearParty.my_request.status === "accepted" ? `${p.host} accepted you. The address is below.` : "Not this time."); } }, 4500);
+    nearTimer = setTimeout(async () => { if(api.sampleDecide() && $("dlgNear").open && nearParty && nearParty.code === p.code){ await openNear(p.code); toast(nearParty.my_request.status === "accepted" ? nearInToast(nearParty) : "Not this time."); } }, 4500);
 }
+// What the short message says when the host has said yes.
+const nearInToast = p => `${p.host || "The host"} accepted you. The address is below.`;
 // What I can do: ask to join (a one-line note, plus-ones), wait, or, once accepted, the address, the pin and the host's number.
 function nearActHtml(p){
   const r = p.my_request, host = esc(p.host || "The host");
@@ -12736,7 +12738,7 @@ function nearActHtml(p){
       ${p.host_phone ? `<div class="near-call"><a class="btn btn-accent btn-sm" href="tel:+91${esc(p.host_phone)}">Call ${host}</a>
         <a class="btn btn-ghost btn-sm" href="https://wa.me/91${esc(p.host_phone)}" target="_blank" rel="noopener">WhatsApp</a></div>` : ""}
       ${p.checkin_code ? `<div class="near-code"><span>${ic("door", 18)} Your check-in code</span><b>${esc(p.checkin_code)}</b><small>${p.checked_in ? "You're checked in." : `Show it to ${host} at the door.`}</small></div>` : ""}
-      ${p.ended ? nearRateHtml(p) : `<p class="hint" style="margin:10px 0 0">${host} has your number too. ${r.plus ? `You're bringing ${r.plus} more. ` : ""}Can't make it after all? Let them know.</p>
+      ${p.ended ? nearRateHtml(p) : `<p class="hint" style="margin:10px 0 0">${p.sample && !p.host_phone ? "A sample host, so no numbers are shared." : `${host} has your number too.`} ${r.plus ? `You're bringing ${r.plus} more. ` : ""}Can't make it after all? Let them know.</p>
       <button class="linkbtn danger-link" type="button" data-near-withdraw>I can't make it</button>`}</div>${nearReportHtml()}`;
   if(r && r.status === "pending") return `<div class="pt-card near-wait"><b>Asked to join</b><p>${host} sees your first name, age group, gender and vibe match, and decides. Your number and the address are shared only if they accept.</p>
       <button class="linkbtn danger-link" type="button" data-near-withdraw>Withdraw my request</button></div>${nearReportHtml()}`;
@@ -12803,7 +12805,11 @@ $("dlgNear").addEventListener("submit", async e => {
   try{
     if($("nearRulesOk")){ await api.partyRulesAccept(); partyRulesOk = true; }
     await api.partyRequest(nearParty.code, $("nearNote").value.trim(), $("nearPlusN") ? Number($("nearPlusN").textContent) : 0);
-    await openNear(nearParty.code); toast(`Asked! ${nearParty.host || "The host"} will let you know.`); loadNear();
+    await openNear(nearParty.code);
+    // The short message says where you stand. A sample host's yes comes back with the request itself (the database
+    // answers for it), so "will let you know" would be wrong there (Kamal, 18 Nov: "F8x wrong short message").
+    if(nearParty) toast((nearParty.my_request || {}).status === "accepted" ? nearInToast(nearParty) : `Asked! ${nearParty.host || "The host"} will let you know.`);
+    loadNear();
   }catch(err){ console.error(err); showFormError(f, nearErr(String(err.message || ""))); }
   finally{ btn.disabled = false; }
 });
