@@ -1,5 +1,62 @@
 # Teche · reports
 
+## 2026-11-18, a blog for the website (#121) live
+
+- **What was asked (Kamal, 18 Nov, in my session):** "Build the blogs section in website. Only. Make it super
+  cool. Give your best. Research and then build". Read as: a blog on the website, not in the Android app, and
+  nothing else touched.
+- **Done:** https://findmeflatmate.com/blog/ is live with seven articles. #121 merged `576f405`; the website's copy
+  is `bc63b6d` "Publish the app from NavigateMe 576f405" on its main and gh-pages, the Pages deployment for it
+  succeeded, and the published blog is the tested one byte for byte (18 files).
+- **Research first (three passes, by web search):** what other flat-sharing and rental blogs do; rental paperwork
+  in India; rental scams. Other blogs are weak in five places: a worked answer to "who pays what" when rooms
+  differ; facts that are dated, sourced and consistent; paperwork written for people sharing a flat in India; a PG
+  vs flat-share vs co-living comparison not written by a co-living company; words to actually send when something
+  is awkward. The blog is built on those five.
+- **The seven articles, each with something to use the same day:** splitting the rent (**a calculator**: shared
+  space by head, rooms by size, own bathroom and balcony; every number can be changed; the amounts always add up);
+  PG, flat-share or co-living (a table, five questions, a real-monthly-cost list); what to ask a flatmate; a
+  **32-point flat-visit checklist** (ticks stay on the phone; print or send it); rental scams (five scripts, the
+  red flags, what to do in order if you paid: 1930, cybercrime.gov.in, the bank); rent agreement basics (why 11
+  months, deposits, whose name goes on it); house rules (**a one-page flat agreement to copy** or send on WhatsApp).
+- **The pages:** a first page ("Sharing a flat, minus the drama.", the leading article, "Things you can use", cards
+  with topic chips and a search); an article page with a drawn cover, "The short version", "In this article" that
+  marks where you are, a bar that fills as you read, numbered sources, WhatsApp and copy-link buttons, three next
+  reads, and one dark sheet that says "Launching soon". The look is the app's own, no new colour; the covers are
+  our cartoon people, drawn by the app's avatar module (the script reads it out of `index.html`), never photos.
+- **How it is made:** articles are text files in `marketing/blog/posts/` (the guide for Mark is
+  `marketing/blog/README.md`); `marketing/blog/build.js` makes the pages, the feed, the sitemap's lines and a share
+  picture per article (1200 x 630, about 108 KB each). The pages are committed, so the publish job copies plain
+  files as before. `p35` fails if the pages are not what the articles say.
+- **Website only, as asked:** the Android app packs none of it. The one change to the app's page is the word
+  "Blog" in the first page's small print, marked web-only, which the app hides. That change is why there is an
+  Android build (224): **the app in it is the same as build 223**, so its update card is a false alarm. I judged a
+  blog nobody can reach from the home page to be worse than one needless update; Kamal has been told and can have
+  the word taken off.
+- **Kept out, on purpose:** how the app works (Kamal, 15 Nov: that is shown after sign-in). The blog says only what
+  the home page says. No "download now": every page says "Launching soon". `p35` holds both.
+- **The limit on the facts, plainly:** I could not open any source page from my machine (its network allows
+  package sites only) and the search allowance ran out before every question was covered. So the facts are what
+  search results returned, checked against the law as generally known; statements were kept to what both support,
+  and unsettled points were hedged or left out (which states follow the Model Tenancy Act, police orders that are
+  renewed, tax limits, deposits by city). The articles on agreements and scams carry 14 sources each and name
+  their dates. **Someone should open each source link once**, or allow me those sites and I will. Until then the
+  agreements article carries "general information, not legal or tax advice".
+- **Tests:** demo 33 suites, 919 checks, all pass (32 and 869 before); `p35` is the blog's suite, 50 checks. The
+  database suite was not run: nothing in the database changes. After publishing, the published files were opened
+  from a local copy: the first page shows the word "Blog", the blog's first page and all seven articles open with
+  their share pictures, the calculator's amounts add up to the rent, the feed has seven entries, the sitemap ten
+  addresses, no request leaves the site from the blog, and no page errors.
+- **Not checked on a real phone:** I cannot open findmeflatmate.com from here. The checks are the test copy, the
+  published files and the Pages deployment.
+- **Pictures:** `flatmates/team/reports/shots/blog/` (four sheets: phone and computer). Kamal was sent six of the
+  same screens in my session.
+- **For King:** Mark now has a place to publish and a guide for writing to it; nothing is needed from King for
+  what is live. If Mark's Tuesday pack should feed the blog, that is a request for the priorities file.
+- **Still with Kamal:** a read of the seven articles (every word is easy to change); the source links; whether the
+  word "Blog" stays on the first page; whether the map's overlapping marks get fixed; the Parties distance privacy
+  fix; Tribe under 70%; the message limits.
+
 ## 2026-11-18, Parties: the short message after asking says what the answer was (#120) live
 
 - **What was asked (Kamal, 18 Nov, in my session):** "F8x wrong short message". It answers one of two things I had
@@ -303,41 +360,5 @@
 - **Next:**
   - my brief's look sentence and the logo rule, on Kamal's yes: a small PR to `flatmates/team/tech.md`;
   - priorities 0000000, "Do you live in this flat?": its own PR, deploy on Kamal's word, database first.
-- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
-  announced; the message limit of 30 an hour and 60 a day.
-
-## 2026-11-16, vibe score only where the lister lives there: built and tested (it then waited for Kamal's go; live since, see above)
-
-- **What was asked (priorities, Teche 000000; Kamal, 16 Nov, in King's session):** "Fix the vibe fill-in when the
-  lister doesn't live in the flat".
-- **State:** built, tested, PR #113 open. **Not merged and not deployed.** It goes live only on Kamal's word,
-  database first, as the priorities entry says.
-- **The rule:** the lister's own answers stand in for the household only where the lister lives there (a room, a
-  bed or a flatmate listing with 1 or more people living there). A whole flat, or a room in a flat nobody lives
-  in, carries no living-style answers and so has no vibe score.
-- **What people will see:**
-  - someone looking: "Vibe score after the household answers" on such a room or bed, on its card and its page;
-    it comes after the homes with a score; they can still ask to meet. A whole flat says nothing, as before;
-  - the lister: My flat and the Escape say why, with "Say who lives there", which opens the listing on "Your
-    household";
-  - the posting form asks the living-style questions only while someone lives there.
-- **Database:** `fm_listing_vibe` copies only where the lister lives there and drops the answers elsewhere, on
-  every post and edit, so it also holds for older Android builds (they keep pre-filling the form until updated).
-  A one-time clear removes answers from homes the lister doesn't live in.
-- **Live data, checked read-only:** 105 listings; the clear will touch exactly one, the room in Pune posted
-  9 Nov (it keeps everything else it says). No other listing changes.
-- **Different from what I told King earlier today:** I had planned to keep answers a lister gives by hand for a
-  home nobody lives in. I dropped that: such answers describe nobody, which is the fault being fixed. With
-  "Nobody" picked the questions are put away; the way to a score is to say who lives there, then answer.
-- **Judgment calls, for King and Kamal to overrule if they wish:**
-  - no new question in the form, so a landlord who counts tenants as living there is still taken to live there;
-  - a whole flat shows no "after the household answers" line: it has no household that could answer;
-  - a lister of such a room on an older Android build still sees the old prompt, and answers given there are not
-    kept. One lister is in that position today;
-  - the interests line on a card ("You both like...") is not touched.
-- **Tests:** database suite on a fresh local Postgres: schema applied twice, all 249 checks pass (16 new). App: 30
-  demo suites, 753 checks (was 29 and 719); new suite `p32` with 34.
-- **Needed from Kamal:** his go. Then: merge, apply `schema.sql`, check the Pune room and the rest read-only,
-  publish the website, report.
 - **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
   announced; the message limit of 30 an hour and 60 a day.
