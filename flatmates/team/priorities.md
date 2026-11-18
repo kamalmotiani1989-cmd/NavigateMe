@@ -20,7 +20,20 @@ _Last update: 17 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
-00000000. **GO, on a branch, after Parties; pictures before anything goes live.** The story, so it is read the same way by
+00000000. **BUILT (PR #117, not merged). King's review of 18 Nov: yes, after three small fixes, then Kamal's yes.** King opened
+   the branch on a phone-size screen and checked it against the reels: sign-up, the questions, Discover, a home's page,
+   Tribe, Flatsplits, FlatMart, Parties, Profile, the two website pages. It is faithful. Three fixes, two of them King's
+   own mistakes in this entry:
+   (1) **Score rings keep their meaning.** Today an 80 or more has a green ring and 60 to 79 an amber one; on the branch
+   every ring is light orange, so a strong match and a fair one look the same. Give the rings their colours back. Light
+   orange stays for ticks and the key word. (The entry said "the score ring"; that was wrong.)
+   (2) **The top bar once you scroll is cream, not white** (`.app-head.scrolled` is `rgba(255,255,255,.96)` on a cream page).
+   (3) **First page headline: two lines from 390 wide,** `clamp(38px, 10.2vw, 48px)`. At 390 x 844 it now takes three
+   lines, the Continue button sits 38px lower (732 to 788) and the help button covers its corner. At 360 wide nothing
+   gets worse than today. (The entry's clamp was wrong for this one page; the story and the hold page keep theirs.)
+   Not asked for: the ink sheet on a home's page is 1,028px tall, more than one phone screen, because the compatibility
+   card and "What they're into" sit inside it. King leaves it; Kamal has been told to look at it.
+   **GO, on a branch, after Parties; pictures before anything goes live.** The story, so it is read the same way by
    everyone: after this entry was written Kamal said in Teche's session (17 Nov) "Dont change the colors use our colors".
    Teche asked him to choose: 1, leave the app's colours as they are and drop the reel colours; 2, still do the reel
    colours after Parties. Kamal's answer there: "Go ahead do it" (King read it in the session's record). Read as 2. If he
@@ -42,7 +55,7 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
      white card a panel is cream.
    - **Orange `#C2410C`** (the logo's): main buttons with white words, small labels, links, and one key word in a headline.
    - **Ink `#1C1917`:** text, what is selected, score discs, and dark sheets. On ink: titles white, small text `#D6D3D1`,
-     chips `#2B2928` with white words, and light orange `#FDBA74` for ticks, the score ring and the key word.
+     chips `#2B2928` with white words, and light orange `#FDBA74` for ticks and the key word (score rings: see fix 1).
    - **Grey `#57534E`:** secondary text. No words lighter than `#6B635D`.
    - **Deep warm brown** (base `#5C2408`, soft glows `#7A3410`, `#9A5B00`, `#B45309`) inside a thin orange frame: only a
      home's header with no photo, the pictures people share and `og-image`. White serif words, key word `#FDBA74`.
