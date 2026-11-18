@@ -4,7 +4,11 @@ _Updated by King after each weekly review and whenever Kamal changes direction. 
 every routine and task._
 _Last update: 17 Nov 2026._
 
-## State of play (8 Nov)
+## State of play (18 Nov)
+- **Live now:** the reel look on every screen (#117, 18 Nov: cream pages, white cards, one orange key word in each
+  main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
+  (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
+  Android build 222.
 - **All work is paused by Kamal (6 Nov), and so are the daily shifts and weekly routines.** Work only on a task Kamal
   or King gives you directly, and stop when it is done.
 - **The hold is lifted (Kamal, 8 Nov).** findmeflatmate.com serves the app, the database hold is off, the Android app
@@ -20,7 +24,10 @@ _Last update: 17 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
-00000000. **BUILT AND REVIEWED (PR #117 at 5047019, not merged). Waits only for Kamal's yes in Teche's session.** The three
+00000000. DONE 18 Nov: live (#117, a25fdcd, Android 222, website published; brief #118). Kamal's yes, 18 Nov, in Teche's
+   session, to "Shall I put this live on the website and in the Android app?" and to the look sentence: "Yez pleaze"
+   (King read it in the session's record). What follows is the record of how it got there.
+   **BUILT AND REVIEWED (PR #117 at 5047019). Waited only for Kamal's yes in Teche's session.** The three
    fixes below are made; King measured them on the branch on 18 Nov (rings green and amber as today; the scrolled top bar
    cream; first page headline on two lines at 390 wide, Continue 18px higher than today and clear of the help button).
    King recommends yes. The review as written: King opened
@@ -134,7 +141,8 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   100 m, and the place you measure from can be changed as often as you like, so someone patient could work out roughly
   where a flat is. Fix: measure from the rounded spot the map already uses, and limit how often the place can change.
   Distances get a little less exact. King recommends yes. A database change: on Kamal's word, database first.
-- **The reel look:** yes or no to the before-and-after pictures when Teche has them, and yes to his new look rule.
+- **On Kamal's phone (Android build 222 and the website):** a look at the new look on a real phone, and at Parties,
+  Map. Teche cannot open either from his machine.
 - Should Tribe matches under 70% be announced? King recommends no: show them, don't notify.
 - The message limit of 30 an hour and 60 a day. King recommends keeping it until sign-up opens.
 - When sign-up opens (needs the WhatsApp or SMS keys).
