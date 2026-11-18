@@ -8,7 +8,7 @@ _Last update: 17 Nov 2026._
 - **Live now:** the reel look on every screen (#117, 18 Nov: cream pages, white cards, one orange key word in each
   main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
   (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
-  Android build 222.
+  Parties: the short message after asking to join says what the answer was (#120, 18 Nov). Android build 223.
 - **Sample parties in the live database (#119, 18 Nov, Kamal's ask for testing):** 15, each tagged "Sample", the last
   one ends on 5 Dec. None may be live when sign-up opens.
 - **All work is paused by Kamal (6 Nov), and so are the daily shifts and weekly routines.** Work only on a task Kamal
