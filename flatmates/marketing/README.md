@@ -33,4 +33,6 @@ still uses a shared test code until WhatsApp or SMS codes have keys, so stranger
 - `lister-campaign-pack.md`: Instagram, Meta ads and Google Ads for the three lister personas (copy, keywords,
   targeting, budgets, UTM scheme, landing page).
 - `lister-reels-captions.md`: ten lister reels (hooks, captions, hashtags, voice scripts).
+- `blog/`: the website's blog (https://findmeflatmate.com/blog/): the articles in `blog/posts/`, and `blog/README.md`
+  on how to write one. Facts carry their sources, "launching soon" holds, and the app's features stay out of it.
 The finished videos, creatives and the logo files are with Kamal; the packs describe them.
