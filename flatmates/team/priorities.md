@@ -9,6 +9,8 @@ _Last update: 17 Nov 2026._
   main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
   (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
   Android build 222.
+- **Sample parties in the live database (#119, 18 Nov, Kamal's ask for testing):** 15, each tagged "Sample", the last
+  one ends on 5 Dec. None may be live when sign-up opens.
 - **All work is paused by Kamal (6 Nov), and so are the daily shifts and weekly routines.** Work only on a task Kamal
   or King gives you directly, and stop when it is done.
 - **The hold is lifted (Kamal, 8 Nov).** findmeflatmate.com serves the app, the database hold is off, the Android app
@@ -141,6 +143,10 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   100 m, and the place you measure from can be changed as often as you like, so someone patient could work out roughly
   where a flat is. Fix: measure from the rounded spot the map already uses, and limit how often the place can change.
   Distances get a little less exact. King recommends yes. A database change: on Kamal's word, database first.
+- **Parties map, marks on top of each other (found by Teche, 18 Nov):** with many parties close together the map opens
+  far out and the marks overlap until you pinch in. Teche has offered to fix it. King recommends yes.
+- **The repository:** two housekeeping questions King put to Kamal on 18 Nov in his session. On his yes they become
+  Teche's tasks here.
 - **On Kamal's phone (Android build 222 and the website):** a look at the new look on a real phone, and at Parties,
   Map. Teche cannot open either from his machine.
 - Should Tribe matches under 70% be announced? King recommends no: show them, don't notify.
