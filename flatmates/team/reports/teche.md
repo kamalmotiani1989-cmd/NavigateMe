@@ -1,6 +1,6 @@
 # Teche · reports
 
-## 2026-11-17, the reel look on every screen: built and tested, pictures ready (PR #117 open; nothing live, it waits for Kamal's yes)
+## 2026-11-18, the reel look on every screen: built, tested, King's three fixes made, pictures ready (PR #117 open; nothing live, it waits for Kamal's yes)
 
 - **What was asked (Kamal, 17 Nov, in King's session):** "The colors are so amazing of the reels wht dont we use
   these for our app. Put your best efforts to pull these colors and font size and font colors and make the app and
@@ -14,12 +14,19 @@
   a home's page "Who you'd live with" and the household's answers sit on one ink sheet with light-orange ticks; a
   home with no photo, the pictures people share and the link-preview picture are a deep warm brown inside a thin
   orange frame; the bar behind the clock, the installed app and the Android window are the cream.
+- **King's review (18 Nov, priorities.md): faithful to the reels; three fixes, all made.** (1) The score rings keep
+  the colours that say how strong a match is (green from 80, amber from 60); I had painted every ring light orange,
+  as the entry first said, and a strong match and a fair one looked the same. (2) The top bar is cream once you
+  scroll; it was turning white. (3) The first page's headline is a step smaller (`clamp(38px, 10.2vw, 48px)`), so it
+  keeps to two lines from 390 wide: the sign-up card, Continue and "I already have an account" now sit higher than
+  they do today at every phone size, and the help button is clear of Continue. The story and the Coming soon page
+  keep the bigger size. The pictures in the folder are of the fixed build.
 - **What does not change:** the logo and its colours (its 19 files still match Kamal's originals byte for byte),
   the login, the sign-up questions, every word and every layout. No database change.
 - **Where the pictures are:** `flatmates/team/reports/shots/reel-look/`, today's look beside the new one at 390
   wide: the first page, the story, Discover, a home's page (top, and the ink sheet), Tribe, Flatsplits, FlatMart,
-  Parties, Profile, a chat, Filters, My flat, the Escape, the posting form and a picture people share; and the
-  first page at 1280 wide. Kamal has the same pairs in my session.
+  Parties, Profile, a chat, Filters, My flat, the Escape, the posting form, a picture people share and Discover
+  scrolled down (the top bar); and the first page at 1280 wide. Kamal has the same pairs in my session.
 - **King's watch-list, one by one:**
   - the peach tints are all the one cream. A sweep of every screen, phone and computer, finds no panel melted into
     what it sits on and no peach left. Four had melted at first (the number tiles on FlatMart and the Escape, the
@@ -35,16 +42,15 @@
 - **Done differently from the entry, and why:**
   - the room kept for the old sheet's round top went (26px under each band, 24px above the sign-up card): with a
     flat band it was a hole. So the bigger headlines cost no height on the tabs;
-  - on the first page the headline takes three lines at 390 wide where it took two, so the sign-up card starts
-    38px lower; Continue and "I already have an account" still show on a 390 x 844 screen;
   - small orange words on cream read at 4.77:1, so they keep the logo's orange; the deeper orange stays only
     where 16 Nov put it;
   - the link-preview picture is reduced to 256 colours (114 KB). The brown's soft glows made a 329 KB file, and
     `p25` holds it under 300 KB so that WhatsApp shows it;
   - one of the four tints of a party's drawn cover was a beige; it is the quiet off-white now.
-- **Tests:** 32 demo suites, 863 checks, all pass (840 before). `p31` went from 51 to 73 checks: the
-  palette, the key words, the line and "less motion", small phones, the rent and its rupee sign, the ink sheet, the
-  brown header and pictures, no melted panels, the Android bars. `p26` and `p27` are rewritten for the flat band.
+- **Tests:** 32 demo suites, 864 checks, all pass (840 before). `p31` went from 51 to 74 checks: the
+  palette, the key words, the line and "less motion", small phones, the first page's card no lower than before,
+  the rings' colours, the rent and its rupee sign, the ink sheet, the brown header and pictures, no melted panels,
+  the Android bars. `p26`, `p27` and `p25`'s layout checks are rewritten for the flat band and the closer card.
   The database suite was not run: nothing in the database changes.
 - **To put it live, on Kamal's yes:** merge #117 (that builds the Android app), publish the website, check both,
   then change the look sentence in my brief to King's wording (priorities.md) in a small PR of its own.
