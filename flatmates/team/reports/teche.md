@@ -1,5 +1,39 @@
 # Teche · reports
 
+## 2026-11-18, Parties: the short message after asking says what the answer was (#120) live
+
+- **What was asked (Kamal, 18 Nov, in my session):** "F8x wrong short message". It answers one of two things I had
+  told him I saw while drawing his map from the live sample parties: after you ask to join a sample party the
+  pop-up still said the host "will let you know", though the page already said "You're in!". He did not answer the
+  other (the marks that overlap on the map), so that is not touched.
+- **What changed (#120, merged `33fc6ff`; the app only, no database change):**
+  - After asking to join, the short message is "<host> accepted you. The address is below." when the request came
+    back accepted, as a sample host's does (the database answers for it, #119), and stays "Asked! <host> will let
+    you know." while a host has not answered. It is the sentence the app already used when a host says yes later.
+  - The line under the door code said "<host> has your number too." for a sample host as well, which has no number
+    and gets none. Where there is no number to call it now reads "A sample host, so no numbers are shared." This
+    second line is mine to own: Kamal named the pop-up, and I took the same wrong claim on the same card with it.
+  - If the party is no longer open when its page is read again, the app's own "That party isn't open to you any
+    more." is the only message (an error used to show in the form too).
+- **Tests:** demo 32 suites, 869 checks, all pass (864 before). `p34` gains five: the message while the host has
+  not answered, the message and the line once a host says yes, and, with the live answer stood in for one of the
+  demo's sample hosts, the new message, the new line, no Call button and nothing said twice. The database suite
+  was not run: nothing in the database changes.
+- **Live:** Android build 223 (release `flatmates-apk`, from `33fc6ff`) and the website ("Publish the app from NavigateMe
+  33fc6ff" on its main and gh-pages, `b2fbcbb`; the Pages deployment finished). Checked on the published copy with
+  its backend off: a host who has not answered gives "Asked! Ananya will let you know."; a yes that comes back at
+  once gives "Kabir accepted you. The address is below.", the new line under the door code, no Call button and
+  nothing said twice; no page errors. The page inside build 223 is the published page, byte for byte. On the
+  website the fix shows after a refresh; in the Android app after the update to build 223.
+- **A slip of mine:** after starting the publish I waited ten minutes on a stale copy of the website repo's
+  gh-pages branch; the publish had landed within half a minute. Nothing was wrong on the site.
+- **Not checked on a real phone:** I cannot sign in to the live app from here. The checks are the test copy and
+  the published files.
+- **Still with Kamal:** whether I fix the map's overlapping marks (King recommends yes); yes or no to the Parties
+  distance privacy fix; whether Tribe matches under 70% are announced; the message limit of 30 an hour and 60 a
+  day. The 15 sample parties are still live and drop off as their time comes (none may be live when sign-up opens).
+- **Need from King:** nothing.
+
 ## 2026-11-18, 15 sample parties for testing Parties and its map (#119) live in the database
 
 - **What was asked (Kamal, 18 Nov, in my session):** "Can you create some samples for parties so that i can chceck
@@ -307,63 +341,3 @@
   publish the website, report.
 - **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
   announced; the message limit of 30 an hour and 60 a day.
-
-## 2026-11-16, the app in the logo's colours (orange and white), and a page-by-page audit (#112) live
-
-- **What Kamal asked (16 Nov, after #111):** "Also take the app color as the color of logo which was earlier and
-  white. Plus check the font color accordingly. Do your best here. Audit once done. Spend some time on each page and
-  audit the gaps of colors font everything".
-- **Standing rule and Kamal:** my brief still says to keep the look of 8 Nov with no new colours. Kamal asked for
-  this himself, as he did for #110. **King: the look sentence in my brief needs your update** (wording in my
-  message to you).
-- **The colours now:**
-  - white for the page and the cards, and for words on anything orange;
-  - the logo's orange (`#C2410C`) for main buttons, small labels, links, badges, the bottom bar's current screen,
-    progress bars, switches, tick boxes and focus rings;
-  - the wordmark's near-black and grey for text and the few dark pieces;
-  - bands and panels in pale tints of the orange;
-  - the light red and the deep aubergine of #110 are gone. Its style stays (serif headings, pill buttons, white
-    cards, spaced capital labels).
-- **Danger moved to a crimson.** The old red sat a few degrees from the logo's orange, so an error edge and the
-  focus edge of a box looked alike. Green and amber keep their meanings.
-- **It also covers** the pictures people share (now an orange card with white words), the Vibe Card, the chart and
-  people-dot colours, map pins, the payment sheet, the picture shown with a shared link, the privacy and Coming soon
-  pages, the installed app's colours, and the Android window, strip and notification colour.
-- **How the audit was done:**
-  - 60 full-page pictures (phone and computer) plus the suites' own 129 screenshots, read one by one;
-  - a census inside every page the 29 suites open: every colour, every text style, every text under 4.5:1;
-  - result after the fixes: no colour outside the palette, no text under the floor.
-- **What the audit found and fixed:**
-  - a "live" dot on invitation banners was a pale tint on a pale panel, invisible;
-  - "Sell something" in FlatMart was the last dark main button;
-  - Sign out and Delete my account had taken the accent colour in #110;
-  - the letters in front of sign-up and quiz answers sat on eight unrelated colours;
-  - "what you wrote" was a dark bubble in the help chat and a pale one in a real chat;
-  - the party form's two time boxes had the browser's own look;
-  - on a computer the Passes pop-up was too narrow for three passes: titles broke in two and a tag covered a name;
-  - small capital captions came in four sizes, two weights and seven spacings (now one style), and a section label
-    that ran to a second line started it under the dash;
-  - words picked out inside a serif heading computed as bold; bold inside bold was drawn at the blackest cut; four
-    text sizes were off the scale;
-  - a hint in the area box was cut off on phones ("e.g. HSR Layou");
-  - one leftover aubergine line in the tribe drawing.
-- **Looked at and left alone:** badge text under 12px (the spec allows it); the amber family; the cartoon people;
-  the score ring's colours; the very wide "Show me parties near me" button on a computer; the strip behind the
-  clock on Android stays near-black because I cannot try another colour on a phone.
-- **Not changed:** the login process, the onboarding questions, any screen's layout or words (one hint aside), the
-  logo's files, the database.
-- **Tests:** 29 demo suites, 719 checks (was 704). `p31` has 15 more checks: the palette is the logo's own
-  colours, and one for each audit fix. `p8`, `p26` and `p27` describe the new colours; `p8` now reads every piece
-  of orange text against what is behind it.
-- **Published:** 456cc10; Android build 218 (file checked: the app inside has the new colours and none of the old,
-  the launcher icons are the orange tile, the checksum matches the release); the website repo's `main` and
-  `gh-pages` say "Publish the app from NavigateMe 456cc10"; the published copy opens with no page errors, with the
-  orange button, white page, the logo, and the privacy and Coming soon pages in the same colours.
-- **For King to pass on to Mark:** the app's accent is the logo's orange again, so creatives made before 16 Nov
-  match it. Screens shown in them have changed (white pages, serif headings).
-- **Next (priorities, 000000):** the vibe fill-in only where the lister lives there. I start it now, as one PR, and
-  deploy only on Kamal's word, database first. No new question goes into the form: its "People living there now
-  (including you)" already tells the two cases apart (in chat I had first told Kamal a question would be added; I
-  am correcting that with him).
-- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and 60
-  a day.
