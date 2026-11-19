@@ -1,0 +1,1773 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Sign in, describe what you manufacture, and get the industries worth calling first plus the people who sign off. Built for Indian manufacturers and industrial suppliers. First 5 contacts free.">
+<meta name="theme-color" content="#0D6E73">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23FFFFFF'/%3E%3Ccircle cx='12' cy='12' r='9.4' fill='none' stroke='%230D6E73' stroke-width='1.6'/%3E%3Cpath d='M15.7 8.3l-2.3 5.4-5.4 2.3 2.3-5.4z' fill='%230D6E73'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23FFFFFF'/%3E%3Ccircle cx='12' cy='12' r='9.4' fill='none' stroke='%230D6E73' stroke-width='1.6'/%3E%3Cpath d='M15.7 8.3l-2.3 5.4-5.4 2.3 2.3-5.4z' fill='%230D6E73'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Navigate Me AI">
+<meta property="og:title" content="Navigate Me AI — you know what you make, we tell you who buys it">
+<meta property="og:description" content="Ranked target industries, the right person to call at each company, and their contact details. First 5 free, then Rs 999 for 10.">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Navigate Me AI — you know what you make, we tell you who buys it">
+<meta name="twitter:description" content="Ranked target industries and the people to call, for Indian manufacturers and industrial suppliers.">
+<style>
+:root{color-scheme:light dark; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+img{max-width:100%; height:auto}
+[hidden]{display:none!important}
+</style>
+<title>Navigate Me AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:ital,opsz,wght@0,8..60,400..700;1,8..60,400&display=swap">
+
+<style>
+/* ========================================================== tokens ====== */
+:root{
+  --ink:#16161A; --ink-2:#22222A; --ink-3:#2E2E38;
+  --band:#0A4F57; --band-2:#08434A; --band-line:rgba(255,255,255,.14);
+  --paper:#FFFFFF; --surface:#FFFFFF; --surface-2:#FAFAFA; --surface-3:#F4F4F6;
+  --line:#E6E6EA; --line-2:#CECED5; --rule:rgba(22,22,26,.10);
+  --text:#17171B; --text-2:#55555C; --text-3:#8A8A93;
+  --on-ink:#F5F5F7; --on-ink-2:#ACACB6; --on-ink-3:#7C7C86;
+  --brass:#0D6E73; --brass-2:#12878D; --brass-3:#5FC6CB; --brass-soft:#E3F2F2; --brass-ink:#052A2D;
+  --steel:#5B5B66;
+  --good:#276B2C; --good-soft:#E8F3E6; --mid:#9A6B0C; --weak:#B3261E;
+  --sh-1:0 1px 2px rgba(22,22,26,.05);
+  --sh-2:0 1px 2px rgba(22,22,26,.05), 0 10px 22px -14px rgba(22,22,26,.20);
+  --sh-3:0 2px 4px rgba(22,22,26,.06), 0 28px 56px -28px rgba(22,22,26,.28);
+  --r:12px; --r-sm:8px; --maxw:1160px;
+  --grid:rgba(13,110,115,.09);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#0B0B0E; --ink-2:#15151B; --ink-3:#1F1F27;
+    --band:#093E45; --band-2:#07343A; --band-line:rgba(255,255,255,.13);
+    --paper:#0D0D11; --surface:#16161C; --surface-2:#1C1C23; --surface-3:#23232C;
+    --line:#2A2A33; --line-2:#3A3A46; --rule:rgba(255,255,255,.10);
+    --text:#EDEDF0; --text-2:#A6A6B0; --text-3:#7A7A85;
+    --on-ink:#EFEFF2; --on-ink-2:#A6A6B0; --on-ink-3:#76767F;
+    --brass:#4FC3C9; --brass-2:#6FD4D9; --brass-3:#9BE4E7; --brass-soft:#0C2A2C; --brass-ink:#DFF5F6;
+    --steel:#8E8E9A;
+    --good:#6FBF73; --good-soft:#152A16; --mid:#D0A63C; --weak:#F2887C;
+    --sh-1:0 1px 2px rgba(0,0,0,.5);
+    --sh-2:0 1px 2px rgba(0,0,0,.5), 0 10px 22px -14px rgba(0,0,0,.8);
+    --sh-3:0 2px 4px rgba(0,0,0,.6), 0 28px 56px -28px rgba(0,0,0,.95);
+    --grid:rgba(79,195,201,.10);
+}
+}
+:root[data-theme="dark"]{
+  --ink:#0B0B0E; --ink-2:#15151B; --ink-3:#1F1F27;
+  --band:#093E45; --band-2:#07343A; --band-line:rgba(255,255,255,.13);
+  --paper:#0D0D11; --surface:#16161C; --surface-2:#1C1C23; --surface-3:#23232C;
+  --line:#2A2A33; --line-2:#3A3A46; --rule:rgba(255,255,255,.10);
+  --text:#EDEDF0; --text-2:#A6A6B0; --text-3:#7A7A85;
+  --on-ink:#EFEFF2; --on-ink-2:#A6A6B0; --on-ink-3:#76767F;
+  --brass:#4FC3C9; --brass-2:#6FD4D9; --brass-3:#9BE4E7; --brass-soft:#0C2A2C; --brass-ink:#DFF5F6;
+  --steel:#8E8E9A;
+  --good:#6FBF73; --good-soft:#152A16; --mid:#D0A63C; --weak:#F2887C;
+  --sh-1:0 1px 2px rgba(0,0,0,.5);
+  --sh-2:0 1px 2px rgba(0,0,0,.5), 0 10px 22px -14px rgba(0,0,0,.8);
+  --sh-3:0 2px 4px rgba(0,0,0,.6), 0 28px 56px -28px rgba(0,0,0,.95);
+  --grid:rgba(79,195,201,.10);
+}
+
+/* ========================================================== base ======== */
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--text);
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+  font-size:16.5px; line-height:1.62; -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{margin:0; text-wrap:balance;
+  font-family:Archivo, ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings:"wdth" 112; letter-spacing:-.022em; line-height:1.1}
+p{margin:0}
+a{color:var(--brass); text-underline-offset:3px}
+.mono{font-family:"IBM Plex Mono", ui-monospace, monospace}
+[hidden]{display:none!important}
+::selection{background:var(--brass-3); color:var(--brass-ink)}
+:focus-visible{outline:2px solid var(--brass-2); outline-offset:3px; border-radius:3px}
+
+.shell{max-width:var(--maxw); margin:0 auto; padding-inline:22px}
+.narrow{max-width:500px; margin:0 auto; padding-inline:22px}
+
+/* eyebrow with a technical tick, like a drawing callout */
+.eyebrow{display:inline-flex; align-items:center; gap:9px;
+  font-family:"IBM Plex Mono"; font-size:10.5px; font-weight:600; letter-spacing:.17em;
+  text-transform:uppercase; color:var(--brass)}
+.eyebrow::before{content:""; width:22px; height:1px; background:currentColor; opacity:.55}
+.inkband .eyebrow, .hero .eyebrow{color:var(--brass-2)}
+
+/* ========================================================== nav ========= */
+.nav{position:sticky; top:env(safe-area-inset-top,0px); z-index:60;
+  background:color-mix(in srgb, var(--ink) 92%, transparent);
+  -webkit-backdrop-filter:saturate(1.5) blur(12px); backdrop-filter:saturate(1.5) blur(12px);
+  color:var(--on-ink); border-bottom:1px solid rgba(255,255,255,.07)}
+.nav-in{max-width:var(--maxw); margin:0 auto; padding:12px 22px; display:flex; align-items:center; gap:20px}
+.brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit;
+  margin-right:auto; background:none; border:0; cursor:pointer; padding:0; font:inherit}
+.brand b{font-family:Archivo; font-variation-settings:"wdth" 118; font-weight:800;
+  font-size:18px; letter-spacing:-.03em}
+.brand svg{flex:none}
+.nav-links{display:flex; gap:22px}
+.nav-links a{font-size:14.5px; color:var(--on-ink-2); text-decoration:none; position:relative; padding-block:4px}
+.nav-links a::after{content:""; position:absolute; left:0; right:0; bottom:0; height:1px;
+  background:var(--brass-2); transform:scaleX(0); transform-origin:left; transition:transform .22s ease}
+.nav-links a:hover{color:#fff}
+.nav-links a:hover::after{transform:scaleX(1)}
+@media (max-width:880px){ .nav-links{display:none} }
+.credpill{display:flex; align-items:center; gap:8px; font-family:"IBM Plex Mono"; font-size:11.5px;
+  color:var(--brass-3); background:rgba(212,145,63,.12); border:1px solid rgba(212,145,63,.3);
+  padding:5px 12px; border-radius:99px; white-space:nowrap}
+.credpill em{font-style:normal; color:#fff; font-weight:600}
+
+/* ========================================================== buttons ===== */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  font-family:Archivo; font-variation-settings:"wdth" 108; font-weight:650; font-size:15px;
+  letter-spacing:-.008em; padding:12px 22px; border-radius:var(--r-sm); cursor:pointer;
+  text-decoration:none; background:var(--brass); color:#fff; border:1px solid var(--brass);
+  transition:transform .16s cubic-bezier(.2,.8,.3,1), box-shadow .16s ease, background .16s ease;
+  box-shadow:0 1px 2px rgba(14,25,34,.14)}
+.btn:hover{background:var(--brass-2); border-color:var(--brass-2);
+  transform:translateY(-1px); box-shadow:0 6px 18px -8px rgba(168,100,28,.7)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none; box-shadow:none}
+.btn.sm{padding:9px 16px; font-size:14px}
+.btn.lg{padding:15px 30px; font-size:16.5px}
+.btn.full{width:100%}
+.btn.dark{background:var(--ink); border-color:var(--ink); color:var(--on-ink)}
+.btn.dark:hover{background:var(--ink-2); border-color:var(--ink-2); box-shadow:0 6px 18px -8px rgba(14,25,34,.6)}
+.btn.ghost{background:transparent; color:var(--text-2); border-color:var(--line-2); box-shadow:none}
+.btn.ghost:hover{background:transparent; color:var(--brass); border-color:var(--brass); box-shadow:none}
+.btn.onink{background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.22); color:#fff; box-shadow:none}
+.btn.onink:hover{background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.34)}
+.linkbtn{background:none; border:0; padding:0; font:inherit; color:var(--brass); cursor:pointer;
+  text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px}
+.linkbtn:hover{color:var(--brass-2)}
+
+/* ========================================================== hero ======== */
+.hero{position:relative; overflow:hidden; background:var(--ink); color:var(--on-ink);
+  padding-block:84px 76px}
+/* blueprint grid — the subject's own drawing language */
+.hero::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),
+                   linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:52px 52px; background-position:center top;
+  mask-image:radial-gradient(120% 90% at 50% 0%, #000 35%, transparent 78%);
+  -webkit-mask-image:radial-gradient(120% 90% at 50% 0%, #000 35%, transparent 78%)}
+.hero::after{content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(760px 320px at 86% -6%, rgba(212,145,63,.20), transparent 64%)}
+.hero .shell{position:relative; z-index:2}
+.hero-grid{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:56px; align-items:center}
+@media (max-width:940px){ .hero-grid{grid-template-columns:1fr; gap:40px} }
+.hero h1{font-size:clamp(34px,5.4vw,62px); font-weight:820; font-variation-settings:"wdth" 118;
+  line-height:1.02; letter-spacing:-.034em; max-width:15ch; margin-top:20px}
+.hero h1 em{font-style:normal; color:var(--brass-2); position:relative; white-space:nowrap}
+.hero h1 em::after{content:""; position:absolute; left:0; right:0; bottom:.06em; height:.055em;
+  background:var(--brass); opacity:.28; border-radius:2px}
+.hero .lede{margin-top:22px; font-size:clamp(16.5px,1.65vw,20px); color:var(--on-ink-2); max-width:50ch}
+.hero .cta{margin-top:32px; display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+.hero .fine{font-size:13.5px; color:var(--on-ink-3)}
+
+/* registration marks, corner of a technical drawing */
+.regmark{position:absolute; width:17px; height:17px; border:1px solid rgba(212,145,63,.42); z-index:1}
+.regmark.tl{top:22px; left:22px; border-right:0; border-bottom:0}
+.regmark.tr{top:22px; right:22px; border-left:0; border-bottom:0}
+
+/* the instrument: what the product does, as an object */
+.instrument{background:linear-gradient(170deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.12); border-radius:var(--r);
+  padding:20px 22px 18px; box-shadow:var(--sh-3); position:relative; overflow:hidden}
+.instrument::before{content:""; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(212,145,63,.75), transparent)}
+.inst-head{display:flex; align-items:baseline; gap:10px; padding-bottom:13px;
+  border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:4px}
+.inst-head b{font-family:"IBM Plex Mono"; font-size:10.5px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--brass-2); font-weight:600}
+.inst-head span{font-family:"IBM Plex Mono"; font-size:10.5px; color:var(--on-ink-3); margin-left:auto}
+.inst-row{display:grid; grid-template-columns:20px minmax(0,1fr) 34px; gap:12px; align-items:center;
+  padding:9px 0; border-bottom:1px solid rgba(255,255,255,.055)}
+.inst-row:last-child{border-bottom:0}
+.inst-row .r{font-family:"IBM Plex Mono"; font-size:10.5px; color:var(--on-ink-3)}
+.inst-row .nm{font-size:13.5px; color:var(--on-ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.inst-row .sc{font-family:"IBM Plex Mono"; font-size:12.5px; font-weight:600; text-align:right; color:var(--brass-3)}
+.inst-track{height:3px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden; margin-top:5px}
+.inst-track i{display:block; height:100%; border-radius:99px; width:0;
+  background:linear-gradient(90deg, var(--brass), var(--brass-3))}
+.inst-foot{margin-top:13px; padding-top:12px; border-top:1px solid rgba(255,255,255,.1);
+  font-size:12.5px; color:var(--on-ink-3); display:flex; gap:8px; align-items:center}
+.dot-live{width:6px; height:6px; border-radius:99px; background:var(--brass-2); flex:none}
+
+.trust{margin-top:56px; padding-top:28px; border-top:1px solid rgba(255,255,255,.1);
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:30px}
+@media (max-width:660px){ .trust{grid-template-columns:1fr; gap:20px} }
+.trust b{display:block; font-family:"IBM Plex Mono"; font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--brass-2); margin-bottom:5px}
+.trust span{font-size:14px; color:var(--on-ink-2); line-height:1.5}
+
+/* ========================================================== sections ==== */
+section{padding-block:80px}
+.sec-head{max-width:58ch; margin-bottom:34px}
+.sec-head h2{font-size:clamp(25px,3.3vw,38px); font-weight:780; margin-top:14px; letter-spacing:-.028em}
+.sec-head p{margin-top:14px; font-size:17.5px; color:var(--text-2)}
+.alt{background:var(--surface-3)}
+.inkband{position:relative; overflow:hidden; background:var(--ink); color:var(--on-ink)}
+.inkband::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),
+                   linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(110% 100% at 0% 0%, #000 20%, transparent 72%);
+  -webkit-mask-image:radial-gradient(110% 100% at 0% 0%, #000 20%, transparent 72%)}
+.inkband .shell{position:relative; z-index:1}
+.inkband .sec-head p{color:var(--on-ink-2)}
+
+/* the grind — a measured sequence, so the numbering is real */
+.grind{display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; margin-bottom:30px}
+.grind-step{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:16px 17px; position:relative}
+.grind-step b{display:block; font-family:"IBM Plex Mono"; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--text-3); margin-bottom:7px}
+.grind-step span{font-size:14.5px; color:var(--text); font-weight:600; font-family:Archivo;
+  font-variation-settings:"wdth" 105}
+.grind-step small{display:block; font-size:13px; color:var(--text-3); margin-top:5px; line-height:1.45}
+.grind-step.last{background:var(--brass-soft); border-color:var(--brass)}
+.grind-step.last b,.grind-step.last span,.grind-step.last small{color:var(--brass)}
+.punch{font-size:21px; font-weight:700; font-family:Archivo; font-variation-settings:"wdth" 108;
+  max-width:54ch; letter-spacing:-.024em; line-height:1.34}
+
+.diff{display:grid; grid-template-columns:repeat(auto-fit,minmax(262px,1fr)); gap:1px;
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r); overflow:hidden}
+.diff-cell{background:var(--ink-2); padding:26px; transition:background .2s ease}
+.diff-cell:hover{background:var(--ink-3)}
+.diff-cell h3{font-size:17.5px; font-weight:740; margin-bottom:10px; color:var(--brass-2)}
+.diff-cell p{font-size:15px; color:var(--on-ink-2); line-height:1.6}
+.layerline{display:flex; gap:14px; align-items:flex-start; padding:16px 0;
+  border-bottom:1px solid rgba(255,255,255,.09)}
+.layerline:last-child{border-bottom:0}
+.pill{flex:none; font-family:"IBM Plex Mono"; font-size:9.5px; letter-spacing:.11em;
+  text-transform:uppercase; padding:5px 10px; border-radius:99px; margin-top:3px; font-weight:600}
+.pill.on{background:rgba(99,176,134,.16); color:#8BD1AB; border:1px solid rgba(99,176,134,.3)}
+.pill.soon{background:rgba(255,255,255,.06); color:var(--on-ink-3); border:1px solid rgba(255,255,255,.14)}
+.layerline b{display:block; font-family:Archivo; font-variation-settings:"wdth" 108;
+  font-size:15.5px; font-weight:700; margin-bottom:2px}
+.layerline span{font-size:14.5px; color:var(--on-ink-2); line-height:1.55}
+
+.srcgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(224px,1fr)); gap:1px;
+  background:var(--line); border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+.src{background:var(--surface); padding:19px; transition:background .18s ease}
+.src:hover{background:var(--surface-2)}
+.src b{display:block; font-size:15px; font-family:Archivo; font-variation-settings:"wdth" 106;
+  font-weight:700; margin-bottom:5px}
+.src span{font-size:14px; color:var(--text-2); line-height:1.5}
+.src .ok{font-family:"IBM Plex Mono"; font-size:9.5px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--good); display:flex; align-items:center; gap:6px; margin-bottom:9px; font-weight:600}
+.src.no .ok{color:var(--weak)}
+
+.steps{display:grid; grid-template-columns:repeat(auto-fit,minmax(242px,1fr)); gap:20px}
+.step{background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  padding:26px 24px; position:relative; overflow:hidden; transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease}
+.step:hover{transform:translateY(-3px); box-shadow:var(--sh-2)}
+.step::before{content:""; position:absolute; top:0; left:0; width:100%; height:2px;
+  background:linear-gradient(90deg, var(--brass), transparent)}
+.step .n{font-family:"IBM Plex Mono"; font-size:10.5px; font-weight:600; letter-spacing:.15em; color:var(--brass)}
+.step h3{font-size:19px; font-weight:760; margin:11px 0 9px}
+.step p{font-size:15px; color:var(--text-2); line-height:1.6}
+
+.prices{display:grid; grid-template-columns:repeat(auto-fit,minmax(238px,1fr)); gap:18px}
+.price{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:26px 24px;
+  display:flex; flex-direction:column; gap:14px; transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease}
+.price:hover{transform:translateY(-3px); box-shadow:var(--sh-2)}
+.price.feature{border-color:var(--brass); box-shadow:0 0 0 1px var(--brass), var(--sh-2); position:relative}
+.price .badge{font-family:"IBM Plex Mono"; font-size:9.5px; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--brass); min-height:14px; font-weight:600}
+.price h3{font-size:19px; font-weight:760}
+.price .amt{font-family:Archivo; font-variation-settings:"wdth" 116; font-size:34px; font-weight:820;
+  letter-spacing:-.04em; line-height:1}
+.price .amt small{font-family:"Source Sans 3"; font-size:14px; font-weight:400; color:var(--text-3); letter-spacing:0}
+.price ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px}
+.price li{font-size:14.5px; color:var(--text-2); display:flex; gap:10px; align-items:flex-start; line-height:1.45}
+.price li::before{content:""; flex:none; width:5px; height:5px; border-radius:99px;
+  background:var(--brass); margin-top:8px}
+.price .btn{margin-top:auto}
+.price-note{margin-top:22px; font-size:14.5px; color:var(--text-3); max-width:66ch; line-height:1.6}
+
+details{background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm); margin-bottom:10px;
+  transition:border-color .18s ease}
+details[open]{border-color:var(--line-2); box-shadow:var(--sh-1)}
+summary{cursor:pointer; padding:16px 18px; font-family:Archivo; font-variation-settings:"wdth" 106;
+  font-weight:680; font-size:16px; list-style:none; display:flex; gap:14px; align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:""; margin-left:auto; flex:none; width:10px; height:10px;
+  border-right:1.6px solid var(--brass); border-bottom:1.6px solid var(--brass);
+  transform:rotate(45deg) translate(-2px,-2px); transition:transform .22s ease}
+details[open] summary::after{transform:rotate(225deg) translate(-2px,-2px)}
+details p{padding:0 18px 18px; font-size:15.5px; color:var(--text-2); max-width:72ch; line-height:1.65}
+
+.finalcta{position:relative; overflow:hidden; background:linear-gradient(135deg, var(--brass), #8C5215);
+  color:#fff; border-radius:var(--r); padding:42px; display:flex; gap:28px; align-items:center; flex-wrap:wrap}
+.finalcta::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+                   linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size:40px 40px}
+.finalcta > *{position:relative; z-index:1}
+.finalcta h2{font-size:clamp(23px,2.9vw,33px); font-weight:800; color:#fff; letter-spacing:-.03em}
+.finalcta p{color:rgba(255,255,255,.86); font-size:16px; margin-top:10px; max-width:44ch}
+.finalcta .btn{background:#fff; color:var(--brass); border-color:#fff}
+.finalcta .btn:hover{background:rgba(255,255,255,.9); border-color:rgba(255,255,255,.9);
+  box-shadow:0 6px 18px -8px rgba(0,0,0,.5)}
+
+footer{background:var(--ink); color:var(--on-ink-2); padding-block:44px 30px;
+  border-top:1px solid rgba(255,255,255,.07)}
+.foot-grid{display:flex; gap:40px; flex-wrap:wrap; align-items:flex-start}
+.foot-grid > div{min-width:172px}
+footer h4{font-family:"IBM Plex Mono"; font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--brass-2); margin-bottom:12px}
+footer a,footer .linkbtn{display:block; color:var(--on-ink-2); text-decoration:none; font-size:14.5px; padding:4px 0}
+footer a:hover,footer .linkbtn:hover{color:#fff}
+.foot-bottom{margin-top:32px; padding-top:20px; border-top:1px solid rgba(255,255,255,.08);
+  font-size:13px; color:var(--on-ink-3); display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+.demo-flag{background:rgba(212,145,63,.13); border:1px solid rgba(212,145,63,.34); color:var(--brass-2);
+  font-size:12px; padding:5px 12px; border-radius:99px;
+  font-family:"IBM Plex Mono", ui-monospace, monospace}
+
+/* ========================================================== app ========= */
+.appwrap{padding-block:56px 92px; min-height:64vh}
+.card-panel{background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  box-shadow:var(--sh-2); padding:34px 32px; position:relative; overflow:hidden}
+.card-panel::before{content:""; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--brass), var(--brass-3), transparent)}
+.card-panel h1{font-size:28px; font-weight:800; margin-bottom:10px; letter-spacing:-.03em}
+.card-panel .sub{font-size:15.5px; color:var(--text-2); margin-bottom:26px; line-height:1.55}
+label.fl{display:block; font-family:"IBM Plex Mono"; font-weight:600; font-size:10.5px;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--text-3); margin-bottom:9px}
+.inputrow{display:flex; align-items:stretch}
+.prefix{display:flex; align-items:center; padding:0 15px; background:var(--surface-3);
+  border:1px solid var(--line); border-right:0; border-radius:var(--r-sm) 0 0 var(--r-sm);
+  font-family:"IBM Plex Mono"; font-size:15px; color:var(--text-2)}
+input[type=tel],input[type=text],textarea{width:100%; font-family:inherit; font-size:16px; line-height:1.5;
+  color:var(--text); background:var(--surface-2); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:13px 14px; transition:border-color .16s ease, background .16s ease}
+.inputrow input{border-radius:0 var(--r-sm) var(--r-sm) 0}
+input:focus-visible,textarea:focus-visible{outline:2px solid var(--brass); outline-offset:1px;
+  border-color:var(--brass); background:var(--surface)}
+textarea{min-height:128px; resize:vertical}
+.err{color:var(--weak); font-size:13.5px; margin-top:9px; min-height:20px}
+.otpboxes{display:flex; gap:10px; justify-content:space-between}
+.otpboxes input{text-align:center; font-family:"IBM Plex Mono"; font-size:24px; font-weight:600;
+  padding:14px 4px; width:100%; letter-spacing:0}
+.otpboxes input:not(:placeholder-shown){border-color:var(--brass); background:var(--brass-soft)}
+.demohint{margin-top:20px; background:var(--brass-soft); border:1px dashed var(--brass);
+  color:var(--brass); border-radius:var(--r-sm); padding:14px 16px; font-size:13.5px; line-height:1.5}
+.demohint b{font-family:"IBM Plex Mono"; font-size:19px; letter-spacing:.16em; display:inline-block;
+  margin-top:4px}
+.chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:13px}
+.chipbtn{font-family:inherit; font-size:13px; color:var(--text-2); background:var(--surface-2);
+  border:1px solid var(--line); border-radius:99px; padding:6px 14px; cursor:pointer;
+  transition:border-color .16s ease, color .16s ease, background .16s ease}
+.chipbtn:hover{border-color:var(--brass); color:var(--brass); background:var(--brass-soft)}
+
+.crumb{display:flex; align-items:center; gap:10px; margin-bottom:20px; font-size:14.5px; color:var(--text-3)}
+.crumb .linkbtn{font-size:14.5px; text-decoration:none}
+.crumb .linkbtn:hover{text-decoration:underline}
+
+.icp{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:26px}
+.chip{display:flex; align-items:center; gap:9px; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:8px 13px; font-size:13.5px; box-shadow:var(--sh-1)}
+.chip .k{font-family:"IBM Plex Mono"; font-size:9.5px; text-transform:uppercase; letter-spacing:.12em;
+  color:var(--text-3); font-weight:600}
+.chip select{font-family:inherit; font-size:14px; font-weight:600; color:var(--text); background:transparent;
+  border:0; padding:0; cursor:pointer; max-width:200px}
+
+/* ranked list — the product's signature object */
+.ranklist{background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+  overflow:hidden; box-shadow:var(--sh-2)}
+.rank{display:grid; grid-template-columns:52px minmax(0,1fr) auto; gap:18px; align-items:center;
+  padding:20px 22px; border:0; border-bottom:1px solid var(--line); cursor:pointer;
+  text-align:left; width:100%; font-family:inherit; color:inherit; background:transparent;
+  position:relative; transition:background .16s ease}
+.rank:last-child{border-bottom:0}
+.rank::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--brass); transform:scaleY(0); transition:transform .2s ease}
+.rank:hover{background:var(--surface-2)}
+.rank:hover::before{transform:scaleY(1)}
+.rank-n{font-family:"IBM Plex Mono"; font-size:26px; font-weight:500; color:var(--line-2);
+  line-height:1; letter-spacing:-.04em}
+.rank:hover .rank-n{color:var(--brass-2)}
+.rank h4{font-size:17.5px; font-weight:760; margin-bottom:5px; letter-spacing:-.022em}
+.rank p{font-size:14.5px; color:var(--text-2); line-height:1.52}
+.rank .who{display:inline-flex; align-items:center; gap:7px; margin-top:10px;
+  font-family:"IBM Plex Mono"; font-size:10.5px; color:var(--text-3);
+  background:var(--surface-3); border-radius:99px; padding:4px 11px}
+.rank-right{display:flex; align-items:center; gap:18px}
+.score{display:flex; flex-direction:column; align-items:flex-end; gap:7px}
+.score b{font-family:"IBM Plex Mono"; font-size:19px; font-weight:600; line-height:1; letter-spacing:-.03em}
+.bar{width:62px; height:4px; border-radius:99px; background:var(--line); overflow:hidden}
+.bar i{display:block; height:100%; border-radius:99px}
+.chev{color:var(--line-2); font-size:20px; font-family:"IBM Plex Mono"; transition:color .16s ease, transform .16s ease}
+.rank:hover .chev{color:var(--brass); transform:translateX(3px)}
+@media (max-width:600px){ .rank{grid-template-columns:38px minmax(0,1fr) auto; gap:12px; padding:17px 15px}
+  .rank .who{display:none} .bar{display:none} .rank-n{font-size:20px} }
+
+.banner{display:flex; gap:13px; align-items:flex-start; border-radius:var(--r-sm); padding:16px 18px;
+  margin-bottom:22px; font-size:15px; line-height:1.55}
+.banner.good{background:var(--good-soft); color:var(--good); border:1px solid var(--good)}
+.banner.warn{background:var(--brass-soft); color:var(--brass); border:1px solid var(--brass)}
+.banner b{font-family:Archivo; font-variation-settings:"wdth" 106; font-weight:700}
+
+/* contact cards */
+.cards{display:grid; grid-template-columns:1fr; gap:1px; background:var(--line);
+  border:1px solid var(--line); border-radius:var(--r); overflow:hidden; box-shadow:var(--sh-2)}
+@media (min-width:640px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cards > .card:last-child:nth-child(odd){grid-column:1 / -1} }
+@media (min-width:1020px){ .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cards > .card:last-child:nth-child(odd){grid-column:auto} }
+.card{background:var(--surface); padding:19px 20px; display:flex; flex-direction:column; gap:11px;
+  transition:background .16s ease}
+.card:hover{background:var(--surface-2)}
+/* locked reads as deliberately withheld, not merely greyed */
+.card.locked{background:var(--surface-2);
+  background-image:repeating-linear-gradient(45deg, transparent 0 7px,
+    color-mix(in srgb, var(--text-3) 6%, transparent) 7px 14px)}
+.card.locked:hover{background-color:var(--surface-3)}
+.card.locked h4{color:var(--text-2)}
+.card-top{display:flex; align-items:flex-start; gap:10px}
+.card h4{font-size:16px; font-weight:760; line-height:1.28; letter-spacing:-.02em}
+.card .role{font-size:13.5px; color:var(--text-2); margin-top:2px}
+.card .co{font-family:"IBM Plex Mono"; font-size:11px; color:var(--text-3); overflow-wrap:anywhere;
+  line-height:1.45}
+.tag{flex:none; font-family:"IBM Plex Mono"; font-size:9px; letter-spacing:.11em; text-transform:uppercase;
+  padding:4px 8px; border-radius:4px; margin-left:auto; font-weight:600}
+.tag.free{background:var(--good-soft); color:var(--good)}
+.tag.paid{background:var(--brass-soft); color:var(--brass)}
+.tag.lock{background:var(--surface-3); color:var(--text-3); border:1px solid var(--line)}
+.why{font-size:13.5px; color:var(--text-2); line-height:1.55; border-left:2px solid var(--brass);
+  padding-left:13px; font-style:italic}
+.reach{display:flex; flex-direction:column; gap:5px; font-family:"IBM Plex Mono"; font-size:12px}
+.reach div{display:flex; gap:9px; align-items:baseline; overflow-wrap:anywhere}
+.reach .lb{color:var(--text-3); font-size:9px; text-transform:uppercase; letter-spacing:.12em;
+  flex:none; width:32px; font-weight:600}
+.masked{color:var(--text-3); letter-spacing:.08em; background:var(--surface-3);
+  border:1px dashed var(--line-2); border-radius:4px; padding:1px 8px}
+.card-foot{margin-top:auto; padding-top:4px}
+.wrongbtn{font-family:inherit; font-size:11.5px; color:var(--text-3); background:none; border:0;
+  padding:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+.wrongbtn:hover{color:var(--weak)}
+.card.credited{opacity:.5}
+.card.credited .why,.card.credited .reach{text-decoration:line-through}
+.credited-note{font-size:11.5px; color:var(--good); font-family:"IBM Plex Mono", ui-monospace, monospace}
+
+.paybar{display:flex; align-items:center; gap:22px; flex-wrap:wrap; padding:24px 26px;
+  background:var(--ink); color:var(--on-ink); border-radius:var(--r); margin-top:22px;
+  position:relative; overflow:hidden}
+.paybar::before{content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(420px 160px at 88% 0%, rgba(212,145,63,.2), transparent 66%)}
+.paybar > *{position:relative; z-index:1}
+.paybar .t{flex:1 1 260px; min-width:0}
+.paybar strong{display:block; font-family:Archivo; font-variation-settings:"wdth" 110;
+  font-size:19px; font-weight:760; letter-spacing:-.024em}
+.paybar span{font-size:14.5px; color:var(--on-ink-2)}
+
+.orderbox{border:1px solid var(--line); border-radius:var(--r-sm); overflow:hidden; margin-bottom:24px}
+.orderrow{display:flex; justify-content:space-between; gap:16px; padding:14px 17px;
+  border-bottom:1px solid var(--line); font-size:15.5px}
+.orderrow:last-child{border-bottom:0; background:var(--surface-3); font-weight:700;
+  font-family:Archivo; font-variation-settings:"wdth" 106}
+.paymethods{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px}
+.pm{border:1px solid var(--line); background:var(--surface-2); border-radius:var(--r-sm); padding:16px;
+  cursor:pointer; font-family:inherit; text-align:left; transition:border-color .16s ease, background .16s ease}
+.pm:hover{border-color:var(--line-2)}
+.pm[aria-pressed="true"]{border-color:var(--brass); background:var(--brass-soft);
+  box-shadow:0 0 0 1px var(--brass)}
+.pm b{display:block; font-family:Archivo; font-variation-settings:"wdth" 106; font-size:15px; font-weight:700}
+.pm span{font-size:12.5px; color:var(--text-3)}
+
+.spinner{width:17px; height:17px; border:2px solid rgba(255,255,255,.34); border-top-color:#fff;
+  border-radius:50%; display:inline-block; animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ========================================================== motion ====== */
+@keyframes rise{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+.rise{animation:rise .6s cubic-bezier(.2,.8,.3,1) both}
+.d1{animation-delay:.05s} .d2{animation-delay:.13s} .d3{animation-delay:.21s} .d4{animation-delay:.3s}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important; animation-iteration-count:1!important;
+    transition-duration:.001ms!important; scroll-behavior:auto!important}
+  .rise{opacity:1; transform:none}
+}
+
+/* ===================================================== red & white ====== */
+/* the chrome goes white; red carries the emphasis; one solid red band */
+.nav{background:color-mix(in srgb, var(--surface) 97%, transparent); color:var(--text);
+  border-bottom:1px solid var(--line)}
+.nav-links a{color:var(--text-2)}
+.nav-links a:hover{color:var(--text)}
+.credpill{color:var(--brass); background:var(--brass-soft); border-color:color-mix(in srgb, var(--brass) 34%, transparent)}
+.credpill em{color:var(--brass)}
+.credpill span{color:var(--text-3)}
+
+.btn{box-shadow:0 1px 2px rgba(13,110,115,.22)}
+.btn:hover{box-shadow:0 6px 18px -8px rgba(13,110,115,.55)}
+.btn.dark:hover{box-shadow:0 6px 18px -8px rgba(22,22,26,.5)}
+
+.hero{background:var(--surface); color:var(--text)}
+.hero::after{background:radial-gradient(760px 340px at 88% -8%, color-mix(in srgb, var(--brass) 13%, transparent), transparent 66%)}
+.hero .lede{color:var(--text-2)}
+.hero .fine{color:var(--text-3)}
+.hero .eyebrow{color:var(--brass)}
+.regmark{border-color:color-mix(in srgb, var(--brass) 45%, transparent)}
+
+.instrument{background:var(--surface); border:1px solid var(--line); box-shadow:var(--sh-3)}
+.instrument::before{background:linear-gradient(90deg, var(--brass), var(--brass-3), transparent)}
+.inst-head{border-bottom:1px solid var(--line)}
+.inst-head b{color:var(--brass)}
+.inst-head span{color:var(--text-3)}
+.inst-row{border-bottom:1px solid var(--line)}
+.inst-row .r{color:var(--text-3)}
+.inst-row .nm{color:var(--text)}
+.inst-row .sc{color:var(--brass)}
+.inst-track{background:var(--surface-3)}
+.inst-track i{background:linear-gradient(90deg, var(--brass), var(--brass-2))}
+.inst-foot{border-top:1px solid var(--line); color:var(--text-3)}
+.dot-live{background:var(--brass)}
+
+.trust{border-top:1px solid var(--line)}
+.trust b{color:var(--brass)}
+.trust span{color:var(--text-2)}
+
+/* the one bold moment: a solid red band */
+.inkband{background:var(--band); color:#fff}
+.inkband::before{background-image:
+  linear-gradient(rgba(255,255,255,.055) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255,255,255,.055) 1px, transparent 1px);
+  mask-image:radial-gradient(150% 120% at 50% 0%, #000 10%, transparent 70%);
+  -webkit-mask-image:radial-gradient(150% 120% at 50% 0%, #000 10%, transparent 70%)}
+.inkband .eyebrow{color:rgba(255,255,255,.9)}
+.inkband .sec-head h2{color:#fff}
+.inkband .sec-head p{color:rgba(255,255,255,.82)}
+.diff{background:var(--band-line); border-color:var(--band-line)}
+.diff-cell{background:var(--band-2)}
+.diff-cell:hover{background:color-mix(in srgb, var(--band-2) 86%, #000)}
+.diff-cell h3{color:#fff}
+.diff-cell p{color:rgba(255,255,255,.84)}
+.layerline{border-bottom-color:var(--band-line)}
+.layerline b{color:#fff}
+.layerline span{color:rgba(255,255,255,.84)}
+.pill.on{background:rgba(255,255,255,.16); color:#fff; border-color:rgba(255,255,255,.34)}
+.pill.soon{background:rgba(255,255,255,.07); color:rgba(255,255,255,.72); border-color:rgba(255,255,255,.2)}
+
+.paybar{background:var(--band); color:#fff}
+.paybar::before{background:radial-gradient(420px 170px at 88% 0%, rgba(255,255,255,.16), transparent 66%)}
+.paybar span{color:rgba(255,255,255,.84)}
+.paybar .btn{background:#fff; color:var(--brass); border-color:#fff; box-shadow:none}
+.paybar .btn:hover{background:rgba(255,255,255,.9); border-color:rgba(255,255,255,.9);
+  box-shadow:0 6px 18px -8px rgba(0,0,0,.45)}
+
+.finalcta{background:linear-gradient(135deg, var(--brass), var(--band-2))}
+.demo-flag{background:rgba(95,198,203,.14); border-color:rgba(95,198,203,.36); color:var(--brass-3)}
+footer h4{color:var(--brass-3)}
+.card-panel::before{background:linear-gradient(90deg, var(--brass), var(--brass-3), transparent)}
+
+/* ===================================================== white ground ===== */
+/* every content section is white; hairlines carry the structure the tints used to */
+body{background:var(--surface)}
+.alt{background:var(--surface)}
+/* exactly one hairline between any two sections — scoped by id so nothing doubles it */
+#screen-landing > section{border-top:1px solid var(--line)}
+#screen-landing > .inkband{border-top:0}
+#screen-landing > .inkband + section{border-top:0}
+/* cards sit on white, so their edge has to do the work */
+.grind-step, .step, .price, details{background:var(--surface)}
+.grind-step{border-color:var(--line)}
+/* keep inputs readable against a white page */
+input[type=tel], input[type=text], textarea{background:var(--surface-2)}
+input:focus-visible, textarea:focus-visible{background:var(--surface)}
+</style>
+</head>
+<body>
+<!-- ============================================================ NAV -->
+<nav class="nav">
+  <div class="nav-in">
+    <button class="brand" id="brandBtn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="9.4" stroke="#0D6E73" stroke-width="1.6"/>
+        <circle cx="12" cy="12" r="5.6" stroke="#0D6E73" stroke-width=".8" opacity=".45"/>
+        <path d="M15.7 8.3l-2.3 5.4-5.4 2.3 2.3-5.4z" fill="#0D6E73"/>
+        <circle cx="12" cy="12" r="1.1" fill="#FFFFFF"/>
+        <path d="M12 1.3v2M12 20.7v2M22.7 12h-2M3.3 12h-2" stroke="#0D6E73" stroke-width="1.2" opacity=".6"/>
+      </svg>
+      <b>Navigate&nbsp;Me&nbsp;AI</b>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#/why">Why us</a>
+      <a href="#/data">Our data</a>
+      <a href="#/pricing">Pricing</a>
+      <a href="#/faq">FAQ</a>
+    </div>
+    <span class="credpill" id="credPill" hidden><span>Credits</span><em id="credVal">—</em></span>
+    <button class="btn sm" id="navCta">Sign in</button>
+  </div>
+</nav>
+
+<!-- ============================================================ LANDING -->
+<main id="screen-landing">
+  <header class="hero">
+    <span class="regmark tl" aria-hidden="true"></span>
+    <span class="regmark tr" aria-hidden="true"></span>
+    <div class="shell">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow rise d1">For Indian manufacturers &amp; industrial suppliers</span>
+          <h1 class="rise d2">You know what you make. We tell you <em>who buys it</em>.</h1>
+          <p class="lede rise d3">
+            Sign in, describe your product in one line, and get the industries worth calling first,
+            the people who actually sign off, and how to reach them.
+          </p>
+          <div class="cta rise d4">
+            <a class="btn lg" href="#/login">Start with 5 free contacts</a>
+            <span class="fine">No card. A mobile number and an OTP.</span>
+          </div>
+        </div>
+
+        <div class="instrument rise d3" aria-hidden="true">
+          <div class="inst-head">
+            <b>Ranked targets</b>
+            <span id="instProduct">industrial air compressors</span>
+          </div>
+          <div id="instRows"></div>
+          <div class="inst-foot">
+            <span class="dot-live"></span>
+            <span>Scored on fit, then sharpened by what actually got replies</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="trust">
+        <div><b>First 5 free</b><span>No card. A verified mobile number is all we ask.</span></div>
+        <div><b>Built for India</b><span>SMEs and mid-market plants the global databases miss.</span></div>
+        <div><b>Never bought lists</b><span>MCA, GST, association directories, company websites.</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="alt">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow">The problem</span>
+        <h2>Finding ten good contacts takes most of a day</h2>
+      </div>
+      <div class="grind">
+        <div class="grind-step"><b>Step 1</b><span>Search Google</span><small>Guess which industries might buy</small></div>
+        <div class="grind-step"><b>Step 2</b><span>Dig through LinkedIn</span><small>Work out who the right person is</small></div>
+        <div class="grind-step"><b>Step 3</b><span>Buy Apollo</span><small>To get an email address</small></div>
+        <div class="grind-step"><b>Step 4</b><span>Buy Lusha too</span><small>Because the number was missing</small></div>
+        <div class="grind-step last"><b>And then</b><span>Start calling</span><small>Still unsure if the industry was right</small></div>
+      </div>
+      <p class="punch">
+        The hard part was never getting an email address. It was knowing which ten people
+        were worth the call in the first place. That is the part we do.
+      </p>
+    </div>
+  </section>
+
+  <section class="inkband" id="why">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow">Why us</span>
+        <h2>Anyone can sell you rows. We tell you which rows matter.</h2>
+        <p>Our ranking gets sharper every month because of what customers tell us afterwards. A database cannot do that.</p>
+      </div>
+      <div class="diff">
+        <div class="diff-cell">
+          <h3>Depth where it counts</h3>
+          <p>The ₹20-crore component maker in Chakan. The regional hospital group in Indore.
+          The distributor in Rajkot. Global databases thin out badly below the listed-company tier —
+          exactly the tier most Indian suppliers sell to.</p>
+        </div>
+        <div class="diff-cell">
+          <h3>A reason on every name</h3>
+          <p>Not just "Purchase Head". Which plants they run, what they commissioned last quarter,
+          why this month is the right month. That one line is the difference between a cold call
+          and a conversation.</p>
+        </div>
+        <div class="diff-cell">
+          <h3>The right person, not the senior one</h3>
+          <p>Under ₹50 crore, the promoter decides. Between ₹50 and ₹500 crore, the functional head does
+          and the promoter signs. Above that, procurement gatekeeps. We name the one to call first.</p>
+        </div>
+      </div>
+      <div style="margin-top:44px; max-width:72ch">
+        <span class="eyebrow">How the ranking is built</span>
+        <div style="margin-top:16px">
+          <div class="layerline"><span class="pill on">Live</span>
+            <span><b>Judgement</b><span>A fit matrix built from fifteen years of selling into these industries — scored by hand, not guessed by a model.</span></span></div>
+          <div class="layerline"><span class="pill soon">Next</span>
+            <span><b>Signals</b><span>Plant expansions, relevant hiring, tenders won, dormant status.</span></span></div>
+          <div class="layerline"><span class="pill soon">Next</span>
+            <span><b>Outcomes</b><span>Which industries actually replied, for which kind of product. Every list makes the next one better.</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow">Where our data comes from</span>
+        <h2>Every contact has a source we can name</h2>
+        <p>India's data protection law takes full effect in May 2027. We built for it from day one, because
+        the sources that are legally sound are also the ones that are actually accurate.</p>
+      </div>
+      <div class="srcgrid">
+        <div class="src"><span class="ok">✓ We use this</span><b>MCA filings</b><span>Company master data, published under statutory obligation.</span></div>
+        <div class="src"><span class="ok">✓ We use this</span><b>GST registry</b><span>Confirms a business is live and filing.</span></div>
+        <div class="src"><span class="ok">✓ We use this</span><b>Association directories</b><span>ACMA, IDMA, MCCIA and regional bodies. Members chose to be listed.</span></div>
+        <div class="src"><span class="ok">✓ We use this</span><b>Trade fair exhibitor lists</b><span>Published openly by the organisers, refreshed every year.</span></div>
+        <div class="src"><span class="ok">✓ We use this</span><b>Company websites</b><span>Leadership and contact pages the company published itself.</span></div>
+        <div class="src"><span class="ok">✓ We use this</span><b>Tenders and public filings</b><span>Who buys what, in what volume, on the public record.</span></div>
+        <div class="src no"><span class="ok">✗ Never</span><b>Bought or bartered lists</b><span>No legal footing, and the quality is always worse than it looks.</span></div>
+        <div class="src no"><span class="ok">✗ Never</span><b>Anything behind a login</b><span>Scraping past a restriction is outside the law, whatever it looks like.</span></div>
+      </div>
+      <p class="price-note">
+        Every record carries its source and the date it was last checked. If you are on one of our lists
+        and would rather not be, <a href="#/optout">ask us to remove you</a> — one form, and we keep it removed.
+      </p>
+    </div>
+  </section>
+
+  <section class="alt" id="how">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow">How it works</span>
+        <h2>Sign in, search, call</h2>
+      </div>
+      <div class="steps">
+        <div class="step"><span class="n">STEP 01</span><h3>Sign in with your mobile</h3>
+          <p>A six-digit OTP, no password. It keeps one free trial to one business, and gives us a way to reach you if a contact turns out wrong.</p></div>
+        <div class="step"><span class="n">STEP 02</span><h3>Search what you sell</h3>
+          <p>One or two sentences in plain language. We rank the industries and name the job title that signs off at each company size.</p></div>
+        <div class="step"><span class="n">STEP 03</span><h3>Open the contacts</h3>
+          <p>Five free to start. ₹999 unlocks the next ten. Every wrong contact is credited straight back.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow">Pricing</span>
+        <h2>Start free. Pay when it works.</h2>
+        <p>Every wrong contact is credited back, no questions. You should not pay for a number that does not ring.</p>
+      </div>
+      <div class="prices">
+        <div class="price"><span class="badge">&nbsp;</span><h3>Free</h3><div class="amt">₹0</div>
+          <ul><li>Full ranked industry list</li><li>5 contacts, unlocked</li><li>Mobile OTP to sign up</li></ul>
+          <a class="btn ghost" href="#/login">Start here</a></div>
+        <div class="price"><span class="badge">Most popular first buy</span><h3>Starter pack</h3><div class="amt">₹999</div>
+          <ul><li>10 more contacts</li><li>One-time, no subscription</li><li>Wrong contacts credited back</li><li>CSV export</li></ul>
+          <a class="btn dark" href="#/login">Buy a pack</a></div>
+        <div class="price feature"><span class="badge">Best value</span><h3>Growth</h3><div class="amt">₹2,999 <small>/month</small></div>
+          <ul><li>50 contacts every month</li><li>Target list refreshed monthly</li><li>Alerts on new companies</li><li>Wrong contacts credited back</li></ul>
+          <a class="btn" href="#/login">Start Growth</a></div>
+        <div class="price"><span class="badge">&nbsp;</span><h3>Pro</h3><div class="amt">₹7,999 <small>/month</small></div>
+          <ul><li>200 contacts every month</li><li>Multiple products and profiles</li><li>Priority research on request</li><li>A quarterly call with our team</li></ul>
+          <a class="btn ghost" href="#/login">Talk to us</a></div>
+      </div>
+      <p class="price-note">
+        A junior lead-generation executive costs about ₹25,000 a month. An agency retainer starts
+        near ₹40,000. Growth is the same job, done faster, for a tenth of it.
+      </p>
+    </div>
+  </section>
+
+  <section class="alt" id="faq">
+    <div class="shell">
+      <div class="sec-head"><span class="eyebrow">Questions</span><h2>The things people ask first</h2></div>
+      <details open><summary>How is this different from Apollo or Lusha?</summary>
+        <p>They sell you contact details once you already know who to search for. The searching is the hard part,
+        and it is the part we do. We are also far deeper on Indian SMEs and mid-market plants, where the global
+        databases get thin. If you already know exactly which 500 companies to call, Apollo is cheaper and you
+        should use it.</p></details>
+      <details><summary>Why is a contact ₹100 when Apollo works out to ₹17?</summary>
+        <p>Because you are not buying the same thing. Apollo gives you a row. We give you a ranked industry, the
+        right job title for that company's size, and a line on why this person is worth calling this month. If all
+        you want is rows, we are the wrong product and we will say so.</p></details>
+      <details><summary>Why do I need to sign in before I see contacts?</summary>
+        <p>Two reasons. It keeps one free trial to one business, which is what lets us give five away. And if a
+        contact turns out to be wrong, we need a way to credit you back and re-check the record.</p></details>
+      <details><summary>What if a contact is wrong?</summary>
+        <p>Press the button next to it and the credit goes straight back to your account. No form, no email, no
+        argument. It also tells us to re-check that record, so it helps us as much as you.</p></details>
+      <details><summary>Do you cover my industry?</summary>
+        <p>We are deepest in auto components, engineering, pharma and medical supply, chemicals, food processing,
+        textiles and building materials. Other industries work, but with less depth for now. Run the free five and
+        judge for yourself.</p></details>
+      <details><summary>Is this legal?</summary>
+        <p>Yes, and we would rather over-explain it than under. We use business contact information published under
+        a legal obligation (MCA, GST, tenders) or published by the company itself. We do not buy lists and we do not
+        scrape past logins. Every record carries a source and a date, and anyone can ask to be removed.</p></details>
+      <details><summary>Can I export to my CRM?</summary>
+        <p>CSV export comes with any paid pack. Direct CRM integrations are not built yet — we would rather get the
+        targeting right first than add plumbing nobody uses.</p></details>
+    </div>
+  </section>
+
+  <section style="padding-block:0 80px">
+    <div class="shell">
+      <div class="finalcta">
+        <div style="flex:1 1 320px">
+          <h2>Five contacts, free, in about a minute</h2>
+          <p>No card, no sales call, no trial that expires. Sign in with your mobile and see whether the list is any good.</p>
+        </div>
+        <a class="btn lg" href="#/login">Get started</a>
+      </div>
+    </div>
+  </section>
+
+  <footer id="optout">
+    <div class="shell">
+      <div class="foot-grid">
+        <div style="flex:1 1 250px">
+          <div class="brand" style="color:var(--on-ink); margin-bottom:12px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.4" stroke="#0D6E73" stroke-width="1.6"/>
+              <path d="M15.7 8.3l-2.3 5.4-5.4 2.3 2.3-5.4z" fill="#0D6E73"/>
+            </svg>
+            <b>Navigate&nbsp;Me&nbsp;AI</b>
+          </div>
+          <p style="font-size:14.5px; max-width:32ch; line-height:1.55">Targeting and contacts for Indian manufacturers and industrial suppliers. Mumbai.</p>
+        </div>
+        <div><h4>Product</h4><a href="#/login">Sign in</a><a href="#/how">How it works</a><a href="#/pricing">Pricing</a></div>
+        <div><h4>Data</h4><a href="#/data">Where our data comes from</a><a href="#/optout">Remove my details</a><a href="#/optout">Privacy notice</a></div>
+        <div><h4>Contact</h4><a href="#/optout">WhatsApp us</a><a href="#/optout">hello@navigateme.in</a><a href="#/optout">Data queries</a></div>
+      </div>
+      <div class="foot-bottom">
+        <span class="demo-flag">Prototype · invented sample data · OTP and payment simulated</span>
+        <span>© 2026 Navigate Me AI</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- ============================================================ LOGIN -->
+<main id="screen-login" class="appwrap" hidden>
+  <div class="narrow">
+    <div class="card-panel rise d1">
+      <span class="eyebrow">Step 01 of 03</span>
+      <h1 style="margin-top:14px">Sign in</h1>
+      <p class="sub">We send a six-digit code to your mobile. No password to remember.</p>
+      <form id="loginForm" novalidate>
+        <label class="fl" for="mobile">Mobile number</label>
+        <div class="inputrow">
+          <span class="prefix">+91</span>
+          <input type="tel" id="mobile" inputmode="numeric" autocomplete="tel-national"
+                 maxlength="10" placeholder="98765 43210">
+        </div>
+        <p class="err" id="mobileErr"></p>
+        <label class="fl" for="company">Company name</label>
+        <input type="text" id="company" autocomplete="organization" placeholder="Sunrise Auto Components">
+        <p class="err" id="companyErr"></p>
+        <button class="btn full lg" type="submit" id="sendOtpBtn" style="margin-top:8px">Send code</button>
+      </form>
+      <p class="sub" style="margin:20px 0 0; font-size:13.5px">
+        By signing in you agree we may contact you about your searches. We never sell your details on.
+      </p>
+    </div>
+    <p style="text-align:center; margin-top:22px">
+      <button class="linkbtn" id="backHome">← Back to the site</button>
+    </p>
+  </div>
+</main>
+
+<!-- ============================================================ OTP -->
+<main id="screen-otp" class="appwrap" hidden>
+  <div class="narrow">
+    <div class="card-panel rise d1">
+      <span class="eyebrow">Step 02 of 03</span>
+      <h1 style="margin-top:14px">Enter the code</h1>
+      <p class="sub">Sent to <span class="mono" id="otpTo"></span> · <button class="linkbtn" id="changeNum">change</button></p>
+      <form id="otpForm" novalidate>
+        <div class="otpboxes">
+          <input type="text" inputmode="numeric" maxlength="1" id="o1" placeholder=" " aria-label="Digit 1">
+          <input type="text" inputmode="numeric" maxlength="1" id="o2" placeholder=" " aria-label="Digit 2">
+          <input type="text" inputmode="numeric" maxlength="1" id="o3" placeholder=" " aria-label="Digit 3">
+          <input type="text" inputmode="numeric" maxlength="1" id="o4" placeholder=" " aria-label="Digit 4">
+          <input type="text" inputmode="numeric" maxlength="1" id="o5" placeholder=" " aria-label="Digit 5">
+          <input type="text" inputmode="numeric" maxlength="1" id="o6" placeholder=" " aria-label="Digit 6">
+        </div>
+        <p class="err" id="otpErr"></p>
+        <button class="btn full lg" type="submit" id="verifyBtn">Verify and continue</button>
+      </form>
+      <div class="demohint">
+        This is a prototype — no SMS is sent. Your code is<br><b id="demoCode">000000</b>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================ SEARCH -->
+<main id="screen-search" class="appwrap" hidden>
+  <div class="narrow" style="max-width:660px">
+    <div class="card-panel rise d1">
+      <span class="eyebrow">Step 03 of 03</span>
+      <h1 style="margin-top:14px">What do you sell?</h1>
+      <p class="sub">One or two sentences. Your product, roughly what it costs, and where you can service.</p>
+      <label class="fl" for="desc">Describe it in your own words</label>
+      <textarea id="desc" placeholder="e.g. We manufacture industrial air compressors, 5 to 50 HP, ticket size ₹2–15 lakh. We sell to factories across west India."></textarea>
+      <div class="chips" id="examples"></div>
+      <p class="err" id="descErr"></p>
+      <button class="btn full lg" id="searchBtn" style="margin-top:14px">Find my buyers</button>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================ RESULTS -->
+<main id="screen-results" class="appwrap" hidden>
+  <div class="shell">
+    <div class="crumb"><button class="linkbtn" id="backSearch">← New search</button></div>
+    <div class="sec-head" style="margin-bottom:24px">
+      <span class="eyebrow">Your targets</span>
+      <h2>Six industries, in priority order</h2>
+      <p>Pick one to see the people worth calling there.</p>
+    </div>
+    <div class="icp" id="icp"></div>
+    <div class="ranklist" id="ranks" role="list"></div>
+    <p class="price-note">
+      Ranked on the hand-built fit matrix. Company signals and reply-rate data sharpen this as we collect them.
+    </p>
+  </div>
+</main>
+
+<!-- ============================================================ CONTACTS -->
+<main id="screen-contacts" class="appwrap" hidden>
+  <div class="shell">
+    <div class="crumb"><button class="linkbtn" id="backResults">← All industries</button></div>
+    <div class="sec-head" style="margin-bottom:24px">
+      <span class="eyebrow" id="cIndustryEyebrow">Contacts</span>
+      <h2 id="cTitle">&nbsp;</h2>
+      <p id="cSub">&nbsp;</p>
+    </div>
+    <div id="cBanner"></div>
+    <div class="cards" id="cards"></div>
+    <div id="payArea"></div>
+  </div>
+</main>
+
+<!-- ============================================================ PAYMENT -->
+<main id="screen-pay" class="appwrap" hidden>
+  <div class="narrow">
+    <div class="card-panel rise d1">
+      <span class="eyebrow">Checkout</span>
+      <h1 style="margin-top:14px">Unlock 10 more</h1>
+      <p class="sub">One-time payment. No subscription, no auto-renew.</p>
+      <div class="orderbox">
+        <div class="orderrow"><span>10 contacts</span><span class="mono">₹999</span></div>
+        <div class="orderrow"><span>GST</span><span class="mono">included</span></div>
+        <div class="orderrow"><span>Total</span><span class="mono">₹999</span></div>
+      </div>
+      <label class="fl">Payment method</label>
+      <div class="paymethods">
+        <button class="pm" id="pmUpi" aria-pressed="true"><b>UPI</b><span>GPay, PhonePe, Paytm</span></button>
+        <button class="pm" id="pmCard" aria-pressed="false"><b>Card</b><span>Debit or credit</span></button>
+      </div>
+      <button class="btn full lg" id="payBtn">Pay ₹999</button>
+      <div class="demohint" style="margin-top:20px">
+        Prototype — no real payment is taken and no card details are collected.
+      </div>
+    </div>
+    <p style="text-align:center; margin-top:22px">
+      <button class="linkbtn" id="cancelPay">← Back to contacts</button>
+    </p>
+  </div>
+</main>
+<script>
+(function(){
+"use strict";
+
+/* ================================================== data ================= */
+const IND = [
+  ["auto_components","Auto Components"],["automotive_oem","Automotive OEM"],
+  ["pharma_mfg","Pharma Manufacturing"],["hospitals","Hospitals & Diagnostics"],
+  ["food_processing","Food Processing"],["textiles","Textiles & Apparel"],
+  ["chemicals","Chemicals & Petrochem"],["engineering","Engineering & Capital Goods"],
+  ["construction","Construction & Real Estate"],["fmcg","FMCG Manufacturing"],
+  ["plastics","Plastics & Polymers"],["electronics","Electronics Manufacturing"],
+  ["logistics","Logistics & Warehousing"],["hospitality","Hospitality"],
+  ["education","Education Institutions"]
+];
+const PRODUCTS = [
+  {id:"machinery", label:"Industrial machinery & equipment", kw:["compressor","machinery","machine","equipment","pump","motor","cnc","lathe","boiler","turbine","gearbox","press"], s:[9,9,7,2,8,8,7,9,4,7,8,7,3,1,2]},
+  {id:"fasteners", label:"Industrial fasteners", kw:["fastener","bolt","nut","screw","rivet","washer","stud"], s:[10,9,3,2,4,4,4,9,8,3,5,6,3,2,1]},
+  {id:"packaging", label:"Packaging materials", kw:["packaging","carton","corrugat","label","pouch","bottle","shrink","crate"], s:[5,4,9,4,10,5,7,3,2,10,4,6,5,4,1]},
+  {id:"chemicals", label:"Industrial chemicals", kw:["chemical","solvent","adhesive","coating","resin","paint","dye","additive"], s:[7,5,8,3,6,8,9,5,6,6,8,5,2,2,1]},
+  {id:"safety", label:"Safety equipment & PPE", kw:["safety","ppe","glove","helmet","boot","respirator","harness"], s:[8,7,8,8,7,6,9,8,9,6,7,5,6,4,3]},
+  {id:"handling", label:"Material handling equipment", kw:["forklift","conveyor","crane","hoist","pallet","racking","trolley","handling","stacker"], s:[8,8,6,3,7,6,6,8,7,7,6,5,10,2,1]},
+  {id:"it", label:"IT services & software", kw:["software","saas","erp","platform","crm","digital","it services"], s:[6,7,7,7,6,5,6,6,6,7,5,6,7,6,7]},
+  {id:"medical", label:"Medical devices & consumables", kw:["medical","surgical","diagnostic","implant","catheter","syringe"], s:[1,1,7,10,2,1,2,1,1,2,1,1,1,2,4]},
+  {id:"hvac", label:"HVAC & refrigeration", kw:["hvac","chiller","cooling","refrigerat","air condition","cleanroom","ducting"], s:[5,5,9,9,9,6,7,5,7,7,5,8,6,8,6]},
+  {id:"staffing", label:"Staffing & manpower services", kw:["staffing","manpower","recruit","hiring","contract labour","payroll"], s:[8,8,6,6,7,7,6,7,8,7,6,7,8,7,5]},
+  {id:"logisticsvc", label:"Logistics & freight services", kw:["logistics","freight","transport","courier","3pl","warehous","shipping"], s:[8,8,7,4,8,8,7,7,6,9,7,7,3,3,2]},
+  {id:"solar", label:"Solar & energy solutions", kw:["solar","rooftop","energy","genset","ups","battery","power"], s:[7,7,6,7,7,8,7,8,8,7,7,6,6,7,7]}
+];
+const REASON = {
+  machinery:{auto_components:"Tier-1 and Tier-2 suppliers add and replace capacity constantly to hold OEM delivery schedules.",automotive_oem:"Line expansions and model changeovers drive scheduled capital equipment purchases.",engineering:"Job-shop and capital-goods makers buy machine tools as a matter of course.",food_processing:"Capacity additions run ahead of the season; equipment decisions are made months out.",plastics:"Moulding and extrusion capacity is added in small increments, often two or three times a year.",textiles:"Modernisation subsidies keep replacement cycles shorter than the machines' actual life."},
+  fasteners:{auto_components:"Fasteners are a recurring consumable at every machining and assembly stage.",automotive_oem:"Approved-vendor lists are reviewed annually and volumes are large and predictable.",engineering:"Fabrication and assembly units consume across dozens of specifications at once.",construction:"Structural and anchor fasteners move with project starts, not with the calendar.",electronics:"Precision fasteners for enclosures and mounts, in steady repeat volumes.",plastics:"Mould and machine maintenance consumes standard specifications continuously."},
+  packaging:{fmcg:"Packaging is a top-three input cost, so the buyer is senior and actively reviewing.",food_processing:"Shelf-life and regulatory labelling force packaging changes on a regular cycle.",pharma_mfg:"Serialisation and compliance rules make packaging a technical, high-scrutiny purchase.",chemicals:"Hazard-compliant drums, liners and labelling, bought against regulation not price.",electronics:"Anti-static and transit packaging, specified by the quality team rather than purchase.",logistics:"Repack and fulfilment operations buy secondary packaging in steady volume."},
+  chemicals:{chemicals:"Formulators buy intermediates continuously and switch on specification and supply reliability.",textiles:"Dyes and processing chemicals are consumed daily; qualification is slow but volumes are large.",plastics:"Masterbatch and additives are bought against each product run.",pharma_mfg:"Excipients and solvents, with long qualification but very sticky supply once approved.",auto_components:"Surface treatment, plating and coating chemicals across the machining line.",food_processing:"Processing aids and cleaning chemicals under food-grade certification."},
+  safety:{chemicals:"Statutory PPE requirements and regular factory inspections keep this budget protected.",construction:"Site safety obligations and client audits drive continuous PPE replacement.",pharma_mfg:"Cleanroom-grade consumables are replaced continuously and cannot be deferred.",hospitals:"Clinical PPE is a recurring consumable with a professional purchase function.",auto_components:"Hand and eye protection consumed steadily across machining and press shops.",engineering:"Welding and fabrication PPE, replaced on a fixed cycle."},
+  handling:{logistics:"Warehouse fit-outs and fleet expansions are the core capital spend of the business.",auto_components:"In-plant movement equipment and bins scale directly with line capacity.",automotive_oem:"Line-side material handling is specified during every layout change.",engineering:"Cranes and hoists are standard for heavy fabrication and assembly bays.",fmcg:"High-throughput distribution centres replace handling equipment on a hard cycle.",construction:"Site handling equipment moves project to project and is often bought outright."},
+  it:{pharma_mfg:"Compliance, traceability and quality systems carry real software budgets.",hospitals:"HIS, billing and diagnostics integration; procurement is structured and budgeted.",logistics:"Visibility and TMS spend is the most defensible line item in the sector.",automotive_oem:"Supplier portals and quality systems are mandated down the chain.",education:"ERP, admissions and LMS spend on a predictable annual budget cycle.",fmcg:"Distributor management and trade-promotion tools, owned by sales rather than IT."},
+  medical:{hospitals:"The core buyer. Consumables are reordered continuously and devices on a capex cycle.",pharma_mfg:"Device makers and formulators buy components and testing consumables.",education:"Medical and nursing colleges equip labs against an annual grant cycle.",hospitality:"Occupational health rooms, at low volume but easy access.",food_processing:"On-site clinics and first-aid compliance at larger plants.",chemicals:"Plant medical rooms under factory-act obligations."},
+  hvac:{pharma_mfg:"Cleanroom HVAC is validated, regulated and never deferred.",hospitals:"Operating theatre and ward air handling carries regulatory and accreditation weight.",food_processing:"Cold chain and process cooling are core to the product, not overhead.",hospitality:"Guest comfort drives replacement well before equipment end of life.",electronics:"Controlled environments for assembly and test.",fmcg:"Process and warehouse cooling across multiple sites."},
+  staffing:{construction:"Project-linked manpower demand spikes sharply and is outsourced by default.",auto_components:"Contract manpower absorbs shift and volume variability.",logistics:"Seasonal peaks are handled almost entirely through contract staffing.",automotive_oem:"Large contract workforces managed through approved vendors.",hospitality:"High attrition makes this a permanent, recurring requirement.",electronics:"Assembly-line staffing scales with order book."},
+  logisticsvc:{fmcg:"Distribution reach is the competitive advantage, so freight spend is large and reviewed often.",auto_components:"Inbound and outbound milk runs on fixed schedules against OEM windows.",textiles:"Export consignments and domestic distribution, both high volume.",food_processing:"Cold chain and time-bound movement carry a premium.",automotive_oem:"Inbound logistics contracts are large, structured and competitively bid.",chemicals:"Hazardous goods movement, where compliance beats price."},
+  solar:{textiles:"Process heat and high daytime load make payback periods unusually short.",engineering:"Large shed roofs and steady daytime consumption.",construction:"Developers specify rooftop solar at design stage for green certification.",auto_components:"Rising power tariffs and open-access rules push captive generation.",hospitals:"Continuous load with backup requirements and a clear sustainability mandate.",education:"Large campus roofs, budgeted capital, and reputational value in the investment."}
+};
+const ROLES_BY_SIZE = {
+  auto_components:{s:"Promoter / MD",m:"Purchase Head · Plant Head",l:"GM Procurement · VP Operations"},
+  automotive_oem:{s:"Purchase Manager",m:"Sourcing Head · SQA Head",l:"VP Sourcing · Category Head"},
+  pharma_mfg:{s:"Promoter / Director",m:"Plant Head · QA Head",l:"VP Manufacturing · Head of Procurement"},
+  hospitals:{s:"Owner / Medical Director",m:"Purchase Head · Biomedical Head",l:"CFO · Group Procurement Head"},
+  food_processing:{s:"Promoter",m:"Plant Head · Purchase Manager",l:"VP Operations · Category Buyer"},
+  textiles:{s:"Promoter / Partner",m:"Works Manager · Purchase Head",l:"VP Manufacturing"},
+  chemicals:{s:"Promoter / Director",m:"Plant Head · EHS Head",l:"VP Operations · Procurement Head"},
+  engineering:{s:"Promoter / MD",m:"Purchase Head · Design Head",l:"VP Supply Chain"},
+  construction:{s:"Promoter / Partner",m:"Project Head · Purchase Manager",l:"VP Projects · Contracts Head"},
+  fmcg:{s:"Promoter",m:"Plant Head · Packaging Head",l:"Category Head · VP Supply Chain"},
+  plastics:{s:"Promoter",m:"Works Manager · Purchase Head",l:"VP Operations"},
+  electronics:{s:"Promoter / Director",m:"Sourcing Head · NPI Head",l:"VP Supply Chain · Commodity Manager"},
+  logistics:{s:"Owner / Branch Head",m:"Operations Head · Fleet Head",l:"VP Operations · Network Head"},
+  hospitality:{s:"Owner / GM",m:"F&B Manager · Chief Engineer",l:"Area GM · Corporate Purchase Head"},
+  education:{s:"Trustee / Director",m:"Administrator · Estate Head",l:"Registrar · CFO"}
+};
+const CO_PRE = {auto_components:["Sunrise","Vertex","Konark","Shreeji","Pinnacle","Aaradhya","Nandan","Kalyan"],automotive_oem:["Bharat","Meridian","Sanchit","Orion","Prakash","Trilok"],pharma_mfg:["Zenlife","Arogya","Vedant","Crestomed","Suvidha","Neelkanth"],hospitals:["Sanjeevani","Aashray","Chirayu","Nirmal","Sushrut","Anand"],food_processing:["Annapurna","Harvest Valley","Swad","Gokul","Tarang","Suphal"],textiles:["Rangoli","Vastra","Chandrika","Nirmal","Ashirwad","Suryodaya"],chemicals:["Tejas","Poly Shakti","Amrut","Sagar","Vinayak","Shivam"],engineering:["Vertex","Akshar","Pragati","Rudra","Samarth","Dhanraj"],construction:["Skyline","Rachana","Purvanchal","Adhunik","Kshitij","Marvel"],fmcg:["Daily Fresh","Utsav","Panchamrut","Nivaan","Gulmohar","Saathi"],plastics:["Polyworth","Trimurti","Ecoform","Vishwas","Sanskar","Nutech"],electronics:["Circuitron","Nabhtek","Elevate","Sanket","Vidyut","Kyros"],logistics:["Sarathi","Gatiman","Blue Arrow","Pathway","Vahak","Setu"],hospitality:["Rivanta","Heritage Court","Kalpataru","Samudra","Anantara Vista","Meghdoot"],education:["Vidya Bharti","Saraswati","New Horizon","Gyanpeeth","Chaitanya","Abhinav"]};
+const CO_SUF = {auto_components:["Auto Components Pvt Ltd","Precision Engineering Pvt Ltd","Industries Pvt Ltd","Auto Parts Pvt Ltd"],automotive_oem:["Motors Ltd","Vehicles Ltd","Automotive Ltd"],pharma_mfg:["Pharmaceuticals Pvt Ltd","Labs Pvt Ltd","Healthcare Pvt Ltd"],hospitals:["Multispeciality Hospital","Healthcare Pvt Ltd","Diagnostics Pvt Ltd"],food_processing:["Foods Pvt Ltd","Agro Processing Pvt Ltd","Food Industries Pvt Ltd"],textiles:["Textiles Pvt Ltd","Mills Ltd","Apparel Pvt Ltd"],chemicals:["Chemicals Pvt Ltd","Speciality Chemicals Ltd","Industries Pvt Ltd"],engineering:["Engineering Works Pvt Ltd","Fabricators Pvt Ltd","Industries Pvt Ltd"],construction:["Infrastructure Pvt Ltd","Builders Pvt Ltd","Constructions Pvt Ltd"],fmcg:["Consumer Products Pvt Ltd","Brands Pvt Ltd","Foods Pvt Ltd"],plastics:["Polymers Pvt Ltd","Plastics Pvt Ltd","Moulders Pvt Ltd"],electronics:["Electronics Pvt Ltd","Technologies Pvt Ltd","Systems Pvt Ltd"],logistics:["Logistics Pvt Ltd","Supply Chain Pvt Ltd","Roadlines Pvt Ltd"],hospitality:["Hotels Pvt Ltd","Resorts Pvt Ltd","Hospitality Pvt Ltd"],education:["Institute of Technology","Group of Institutions","Education Trust"]};
+const CITY = {auto_components:["Chakan, Pune","Ranjangaon, Pune","Hosur","Rajkot","Ludhiana","Aurangabad"],automotive_oem:["Chakan, Pune","Oragadam, Chennai","Manesar","Sanand"],pharma_mfg:["Ankleshwar","Baddi","Hyderabad","Tarapur","Vadodara"],hospitals:["Indore","Nashik","Coimbatore","Nagpur","Surat"],food_processing:["Sangli","Ludhiana","Krishnagiri","Rajkot","Indore"],textiles:["Tiruppur","Surat","Bhilwara","Ichalkaranji","Panipat"],chemicals:["Ankleshwar","Dahej","Taloja","Vapi","Visakhapatnam"],engineering:["Kolhapur","Coimbatore","Rajkot","Faridabad","Vadodara"],construction:["Pune","Thane","Bengaluru","Hyderabad","Ahmedabad"],fmcg:["Baddi","Guwahati","Rudrapur","Hosur","Nashik"],plastics:["Daman","Vapi","Noida","Rajkot","Hyderabad"],electronics:["Sriperumbudur","Noida","Bengaluru","Hyderabad","Pune"],logistics:["Bhiwandi","Gurugram","Sriperumbudur","Kolkata","Hyderabad"],hospitality:["Goa","Udaipur","Lonavala","Kochi","Jaipur"],education:["Pune","Coimbatore","Indore","Bhubaneswar","Jaipur"]};
+const FIRST = ["Rajesh","Anita","Sandeep","Priya","Mahesh","Kavita","Arun","Sunita","Vikram","Deepa","Nitin","Rekha","Sameer","Aparna","Girish","Shalini","Prakash","Meera","Ravi","Nandini","Ashok","Swati","Manoj","Vaishali","Harish","Neelam"];
+const LAST = ["Deshpande","Iyer","Kulkarni","Nair","Bhatia","Reddy","Joshi","Menon","Shetty","Agarwal","Pillai","Chavan","Rao","Sinha","Patil","Bhandari","Mehta","Krishnan","Gokhale","Trivedi"];
+const TITLES = {auto_components:["Head of Procurement","Plant Head","VP Operations","Purchase Manager","Managing Director"],automotive_oem:["Sourcing Head","Supplier Quality Head","Category Manager","GM Procurement"],pharma_mfg:["Plant Head","QA Head","Head of Engineering","Procurement Manager"],hospitals:["Purchase Head","Biomedical Head","Chief Operating Officer","Materials Manager"],food_processing:["Plant Head","Purchase Manager","Head of Operations","Production Head"],textiles:["Works Manager","Purchase Head","VP Manufacturing","Processing Head"],chemicals:["Plant Head","EHS Head","Procurement Manager","Technical Director"],engineering:["Purchase Head","Design Head","Works Manager","Managing Director"],construction:["Project Head","Purchase Manager","Head of Contracts","VP Projects"],fmcg:["Plant Head","Packaging Development Head","Category Buyer","VP Supply Chain"],plastics:["Works Manager","Purchase Head","Production Head","Director Operations"],electronics:["Sourcing Head","NPI Head","Commodity Manager","Operations Head"],logistics:["Operations Head","Fleet Head","Branch Head","VP Network"],hospitality:["Chief Engineer","F&B Manager","General Manager","Purchase Head"],education:["Registrar","Estate Head","Administrator","Director Operations"]};
+const WHY = {
+  auto_components:["runs procurement for {n} plants; commissioned a new {mach} line in {mon} 2026","added a second shift at the {city} unit this year to meet an OEM ramp-up","leads the vendor approval committee; {n} new suppliers onboarded in the last year","owns capex for the machining division, currently mid-way through a {mach} upgrade","moved {n} part families in-house this year after an OEM localisation push","signed off a {mach} shop expansion at {city} in {mon}","consolidating {n} existing suppliers down to a shorter approved list","took over plant purchase in {mon} when the {city} unit came under one head"],
+  automotive_oem:["signs off supplier additions for the {city} plant; annual vendor review due this quarter","driving localisation of {n} imported part families this financial year","owns the approved-vendor list for the assembly line","expanding the {city} line capacity announced in {mon} 2026"],
+  pharma_mfg:["responsible for the {city} formulation block; an audit closed in {mon}","leads the cleanroom expansion announced in {mon} 2026","owns qualification for all new material vendors","consolidating supply across {n} manufacturing sites"],
+  hospitals:["consolidating purchase across {n} units in the group","commissioned a new critical care block in {mon}","reviewing consumables contracts ahead of NABH re-accreditation","owns biomedical capex for the {city} facility"],
+  food_processing:["expanding cold storage capacity ahead of the {mon} season","owns plant capex; a new processing line was announced in {mon} 2026","consolidating supply across {n} processing units","added export-grade packing capacity at {city} this year"],
+  textiles:["modernising {n} lines under the state textile subsidy scheme","owns dyehouse procurement; effluent norms forced a chemical review in {mon}","added export capacity at the {city} unit this year","running a {mach} upgrade across {n} sheds"],
+  chemicals:["owns EHS and plant purchase at the {city} site; a safety audit closed in {mon}","commissioning a new intermediates block announced in {mon} 2026","reviewing bulk supplier contracts across {n} sites","leads qualification for all incoming raw material vendors"],
+  engineering:["promoter-led purchase decisions; {n} new fabrication bays added this year","owns machine tool capex; a {mach} investment was made in {mon}","bidding on larger capital projects and adding capacity accordingly","consolidating vendors across {n} units after a {city} expansion"],
+  construction:["running {n} active sites; procurement is centralised under this role","won a large residential mandate in {mon} 2026; material tie-ups being finalised","owns contractor and material vendor empanelment","opening a new {city} project office this quarter"],
+  fmcg:["owns packaging development; a format change was announced in {mon}","scaling the {city} plant to serve {n} additional states","reviewing co-packer and material contracts this quarter","added a new production line in {mon} 2026"],
+  plastics:["added {n} moulding machines at the {city} unit this year","owns raw material and machine purchase; a {mach} upgrade is underway","qualifying new masterbatch suppliers after a customer specification change","expanding extrusion capacity announced in {mon}"],
+  electronics:["owns sourcing for {n} product lines; localisation targets set for this year","commissioning a new SMT line announced in {mon} 2026","leading vendor qualification for the {city} facility","consolidating {n} component suppliers into a shorter list"],
+  logistics:["operating {n} warehouses; a fit-out is underway at the {city} hub","owns fleet and equipment capex across the region","won a large distribution mandate in {mon} 2026","adding {n} spokes to the network this financial year"],
+  hospitality:["overseeing a renovation of {n} properties announced in {mon}","owns engineering and utilities purchase for the {city} property","planning an energy retrofit after last summer's tariff increase","opening a new {city} property in {mon} 2026"],
+  education:["managing a campus expansion announced in {mon} 2026","owns estate and facilities budget across {n} buildings","equipping {n} new laboratories for the coming academic year","consolidating vendor contracts across {n} campuses"]
+};
+const MACH = ["paint","assembly","heat treatment","CNC machining","packing","press"];
+const MON = ["January","March","April","June","July","September"];
+const EXAMPLES = [
+  "We manufacture industrial air compressors, 5 to 50 HP, ticket size ₹2–15 lakh. We sell to factories across west India.",
+  "We supply high-tensile fasteners and fixings, mostly bulk repeat orders to manufacturing plants in Maharashtra and Gujarat.",
+  "We make corrugated cartons and printed labels for consumer goods companies. Minimum order 5,000 units.",
+  "We install rooftop solar, 100 kW to 2 MW, for commercial and industrial rooftops in Tamil Nadu.",
+  "We're a staffing firm placing contract manpower — operators, technicians and supervisors — across Pune and Chennai."
+];
+const EX_LABELS = ["Air compressors","Fasteners","Cartons & labels","Rooftop solar","Contract staffing"];
+
+/* ================================================== helpers ============== */
+function rng(seed){ let a=seed>>>0; return function(){ a|=0; a=a+0x6D2B79F5|0;
+  let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function hash(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
+function makeContacts(code,count){
+  const r=rng(hash(code)), pick=a=>a[Math.floor(r()*a.length)], out=[], used=new Set();
+  let guard=0;
+  while(out.length<count && guard++<400){
+    const pre=pick(CO_PRE[code]), suf=pick(CO_SUF[code]), company=pre+" "+suf;
+    const person=pick(FIRST)+" "+pick(LAST), key=company+"|"+person;
+    if(used.has(key)) continue;
+    used.add(key);
+    const domain=pre.toLowerCase().replace(/[^a-z]/g,"")+(r()<.5?".co.in":".in");
+    const parts=person.toLowerCase().split(" "), city=pick(CITY[code]);
+    const why=WHY[code][out.length%WHY[code].length]
+      .replace("{n}",String(2+Math.floor(r()*5))).replace("{mach}",pick(MACH))
+      .replace("{mon}",pick(MON)).replace("{city}",city.split(",")[0])
+      .replace(/\ba (assembly|hour|honest)\b/g,"an $1");
+    const std=pick(["20","22","44","161","265","120","79","712"]);
+    out.push({name:person,title:TITLES[code][out.length%TITLES[code].length],company,city,
+      email:parts[0]+"."+parts[1]+"@"+domain,
+      phone:"+91 "+std+" "+(2+Math.floor(r()*7))+String(Math.floor(r()*900+100))+" "+String(Math.floor(r()*9000+1000)),
+      ext:String(100+Math.floor(r()*800)),
+      why:parts[0].charAt(0).toUpperCase()+parts[0].slice(1)+" "+why+"."});
+  }
+  return out;
+}
+const $ = id => document.getElementById(id);
+const scoreColor = s => s>=8?"var(--good)":s>=6?"var(--mid)":"var(--weak)";
+const maskEmail = e => { const p=e.split("@"); return p[0][0]+"•".repeat(Math.max(4,p[0].length-1))+"@"+p[1]; };
+const maskPhone = p => p.slice(0,7)+" •••• ••"+p.slice(-2);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+
+/* ================================================== hero instrument ===== */
+function buildInstrument(){
+  const host = $("instRows");
+  if(!host) return;
+  const p = PRODUCTS.find(x=>x.id==="machinery");
+  const rows = IND.map(([code,label],i)=>({label,score:p.s[i]}))
+                  .sort((a,b)=>b.score-a.score).slice(0,6);
+  host.innerHTML = rows.map((r,i)=>`
+    <div class="inst-row">
+      <span class="r">${String(i+1).padStart(2,"0")}</span>
+      <div>
+        <div class="nm">${r.label}</div>
+        <div class="inst-track"><i data-w="${r.score*10}"></i></div>
+      </div>
+      <span class="sc" data-v="${r.score}">0</span>
+    </div>`).join("");
+  const reduce = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const bars = host.querySelectorAll(".inst-track i");
+  const nums = host.querySelectorAll(".sc");
+  if(reduce){
+    bars.forEach(b => { b.style.width = b.dataset.w + "%"; });
+    nums.forEach(n => { n.textContent = parseFloat(n.dataset.v).toFixed(1); });
+    return;
+  }
+  bars.forEach((b,i) => {
+    b.style.transition = "width .85s cubic-bezier(.2,.8,.3,1)";
+    setTimeout(()=>{ b.style.width = b.dataset.w + "%"; }, 340 + i*110);
+  });
+  nums.forEach((n,i) => {
+    const target = parseFloat(n.dataset.v);
+    setTimeout(()=>{
+      const t0 = performance.now(), dur = 850;
+      (function tick(now){
+        const k = Math.min(1, (now - t0)/dur);
+        const eased = 1 - Math.pow(1-k, 3);
+        n.textContent = (target*eased).toFixed(1);
+        if(k < 1) requestAnimationFrame(tick); else n.textContent = target.toFixed(1);
+      })(t0);
+    }, 340 + i*110);
+  });
+}
+
+/* ==================================================================== */
+/* CONFIGURATION — the only two lines you edit to go live                */
+/* ==================================================================== */
+/* Leave both blank and the site runs on the invented demo data, exactly
+   as it does now. Paste your Supabase project URL and ANON key here and
+   the same screens run on your real contacts instead — with the paywall
+   enforced in the database, so locked contacts never reach the browser.
+
+   The anon key is safe to put in the page. The service_role key is NOT:
+   it bypasses every security rule. It belongs only in the importer and
+   your payment webhook, never here.                                      */
+
+const NM_CONFIG = {
+  supabaseUrl:     "",   // e.g. "https://abcdefgh.supabase.co"
+  supabaseAnonKey: "",   // e.g. "eyJhbGciOi..."
+};
+
+const LIVE = Boolean(NM_CONFIG.supabaseUrl && NM_CONFIG.supabaseAnonKey);
+
+/* ================================================== state ================ */
+const FREE_CREDITS = 5, PACK_SIZE = 10, LIST_SIZE = 15;
+const DEFAULT_STATE = {
+  loggedIn:false, mobile:"", company:"",
+  freeLeft:FREE_CREDITS, paidLeft:0,
+  productId:null, rawDesc:"", size:"₹50–500 cr", geo:"West India",
+  unlocked:{}, credited:{}, currentIndustry:null,
+  ranked:null, contacts:null
+};
+let state = Object.assign({}, DEFAULT_STATE);
+let pendingOtp = null, payMethod = "upi", busy = false;
+
+function save(){ try{ localStorage.setItem("nm_state", JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem("nm_state");
+    if(raw) state = Object.assign({}, DEFAULT_STATE, JSON.parse(raw));
+  }catch(e){ state = Object.assign({}, DEFAULT_STATE); }
+}
+
+function product(){ return PRODUCTS.find(p=>p.id===state.productId) || PRODUCTS[0]; }
+function sizeKey(){ return state.size==="Under ₹50 cr"?"s":state.size==="Over ₹500 cr"?"l":"m"; }
+function unlockedCount(code){ return state.unlocked[code]||0; }
+
+function extract(text){
+  const t=(text||"").toLowerCase(); let best=null,bestHits=0;
+  for(const p of PRODUCTS){ let h=0; for(const k of p.kw) if(t.includes(k)) h += k.length>6?2:1;
+    if(h>bestHits){bestHits=h;best=p;} }
+  const geo = /gujarat|maharashtra|pune|mumbai|west india|rajkot|surat|ahmedabad/.test(t)?"West India"
+    : /tamil|chennai|bengaluru|bangalore|karnataka|kerala|hyderabad|south/.test(t)?"South India"
+    : /delhi|ncr|punjab|haryana|ludhiana|noida|gurugram|north/.test(t)?"North India"
+    : /kolkata|odisha|east/.test(t)?"East India":"All India";
+  const size = /small|msme|sme|micro/.test(t)?"Under ₹50 cr":"₹50–500 cr";
+  return {product:best||PRODUCTS[0],geo,size};
+}
+
+/* ==================================================================== */
+/* DATA LAYER                                                            */
+/* Two implementations behind one interface. Every screen calls `api.*`  */
+/* and neither knows nor cares which one is running.                     */
+/* ==================================================================== */
+
+/* ---------- demo: invented data, generated in the browser ------------ */
+const demoApi = {
+  live: false,
+
+  async sendOtp(mobile, company){
+    pendingOtp = { mobile, company, code: String(Math.floor(100000+Math.random()*900000)) };
+    return { demoCode: pendingOtp.code };
+  },
+
+  async verifyOtp(code){
+    if(!pendingOtp || code !== pendingOtp.code) throw new Error("bad-code");
+    state.loggedIn = true;
+    state.mobile   = pendingOtp.mobile;
+    state.company  = pendingOtp.company;
+    state.freeLeft = FREE_CREDITS;
+    state.paidLeft = 0;
+    pendingOtp = null;
+    save();
+  },
+
+  async signOut(){ state.loggedIn = false; save(); },
+
+  async me(){ return { free: state.freeLeft, paid: state.paidLeft }; },
+
+  async search(raw){
+    const got = extract(raw);
+    state.rawDesc = raw; state.productId = got.product.id;
+    state.geo = got.geo; state.size = got.size;
+    save();
+    return this.rank();
+  },
+
+  async rank(){
+    const p = product(), k = sizeKey();
+    return IND.map(([code,label],i)=>({
+      code, label, score:p.s[i],
+      reason:(REASON[p.id]&&REASON[p.id][code])
+             || "Plausible fit on the base matrix — worth confirming before you spend time here.",
+      approach: ROLES_BY_SIZE[code][k],
+      available: LIST_SIZE
+    })).sort((a,b)=>b.score-a.score).slice(0,6);
+  },
+
+  async contacts(code){
+    const open = unlockedCount(code);
+    return makeContacts(code, LIST_SIZE).map((c,i)=>({
+      id: code+":"+i,
+      name: c.name, title: c.title, company: c.company, city: c.city, why: c.why,
+      email: i<open ? c.email : maskEmail(c.email),
+      phone: i<open ? c.phone+" x"+c.ext : maskPhone(c.phone),
+      unlocked: i<open,
+      tier: i<open ? (i<FREE_CREDITS ? "free" : "paid") : "locked",
+      credited: Boolean(state.credited[code+":"+i])
+    }));
+  },
+
+  async unlock(code, count){
+    const have = state.freeLeft + state.paidLeft;
+    const take = Math.min(count, have, LIST_SIZE - unlockedCount(code));
+    let free = state.freeLeft, paid = state.paidLeft;
+    for(let i=0;i<take;i++){ if(free>0) free--; else if(paid>0) paid--; }
+    state.unlocked[code] = unlockedCount(code) + take;
+    state.freeLeft = free; state.paidLeft = paid;
+    save();
+    return { unlocked: take, free, paid };
+  },
+
+  async reportWrong(id){
+    state.credited[id] = true;
+    state.paidLeft += 1;
+    save();
+    return { credited: true, paid: state.paidLeft };
+  },
+
+  async buyPack(){
+    state.paidLeft += PACK_SIZE;
+    save();
+    return { paid: state.paidLeft };
+  }
+};
+
+/* ---------- live: Supabase. The paywall runs in the database. -------- */
+function makeLiveApi(sb){
+  const rpc = async (fn, args) => {
+    const { data, error } = await sb.rpc(fn, args || {});
+    if(error) throw error;
+    return data;
+  };
+  return {
+    live: true,
+
+    async sendOtp(mobile, company){
+      state.company = company; save();
+      const { error } = await sb.auth.signInWithOtp({ phone: "+91" + mobile });
+      if(error) throw error;
+      pendingOtp = { mobile, company };
+      return {};                                   // a real SMS goes out; no code to show
+    },
+
+    async verifyOtp(code){
+      const { error } = await sb.auth.verifyOtp({
+        phone: "+91" + pendingOtp.mobile, token: code, type: "sms" });
+      if(error) throw new Error("bad-code");
+      if(pendingOtp.company){
+        await sb.from("profiles").update({ company_name: pendingOtp.company })
+                .eq("id", (await sb.auth.getUser()).data.user.id);
+      }
+      state.loggedIn = true;
+      state.mobile   = pendingOtp.mobile;
+      state.company  = pendingOtp.company;
+      pendingOtp = null;
+      await this.me();
+      save();
+    },
+
+    async signOut(){ await sb.auth.signOut(); state.loggedIn = false; save(); },
+
+    async me(){
+      const rows = await rpc("nm_me");
+      const r = (rows && rows[0]) || { free_credits:0, paid_credits:0 };
+      state.freeLeft = r.free_credits;
+      state.paidLeft = r.paid_credits;
+      if(r.company_name) state.company = r.company_name;
+      save();
+      return { free: state.freeLeft, paid: state.paidLeft };
+    },
+
+    async search(raw){
+      state.rawDesc = raw; save();
+      const rows = await rpc("nm_search", { p_raw: raw, p_size: state.size, p_geo: state.geo });
+      return rows.map(r => ({
+        code: r.industry_code, label: r.industry_name, score: Number(r.score),
+        reason: r.reason, approach: r.approach, available: r.available
+      }));
+    },
+
+    async rank(){
+      return state.ranked || this.search(state.rawDesc || "");
+    },
+
+    async contacts(code){
+      const rows = await rpc("nm_list_contacts", { p_industry: code, p_limit: LIST_SIZE });
+      return rows.map(r => ({
+        id: r.person_id, name: r.full_name, title: r.title, company: r.company_name,
+        city: r.city, why: r.why_line, email: r.email, phone: r.phone,
+        unlocked: r.unlocked, tier: r.tier, credited: r.credited_back
+      }));
+    },
+
+    async unlock(code, count){
+      const rows = await rpc("nm_unlock", { p_industry: code, p_count: count });
+      const r = (rows && rows[0]) || { unlocked:0, free_left:0, paid_left:0 };
+      state.freeLeft = r.free_left; state.paidLeft = r.paid_left;
+      state.unlocked[code] = unlockedCount(code) + r.unlocked;
+      save();
+      return { unlocked: r.unlocked, free: r.free_left, paid: r.paid_left };
+    },
+
+    async reportWrong(id){
+      const rows = await rpc("nm_report_wrong", { p_person: id });
+      const r = (rows && rows[0]) || { credited:false, paid_left:state.paidLeft };
+      state.paidLeft = r.paid_left; save();
+      return { credited: r.credited, paid: r.paid_left };
+    },
+
+    async buyPack(){
+      /* Razorpay goes here. Open checkout, and on success your server webhook
+         calls nm_credit_order() with the service_role key — never the browser,
+         or anyone could mint their own credits. Then re-read the balance: */
+      await this.me();
+      return { paid: state.paidLeft };
+    }
+  };
+}
+
+let api = demoApi;
+
+async function initApi(){
+  if(!LIVE) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  const sb = window.supabase.createClient(NM_CONFIG.supabaseUrl, NM_CONFIG.supabaseAnonKey);
+  api = makeLiveApi(sb);
+  const { data } = await sb.auth.getSession();
+  if(data && data.session){ state.loggedIn = true; await api.me(); }
+  else { state.loggedIn = false; }
+  save();
+}
+
+/* ================================================== router =============== */
+const SCREENS = ["landing","login","otp","search","results","contacts","pay"];
+const LANDING_ANCHORS = {why:"why", data:"data", pricing:"pricing", faq:"faq",
+                         how:"how", optout:"optout"};
+
+function show(name){
+  SCREENS.forEach(s => { const el=$("screen-"+s); if(el) el.hidden = (s!==name); });
+  renderChrome(name);
+}
+
+async function route(){
+  const raw = (location.hash || "#/").replace(/^#/,"");
+  const parts = raw.split("/").filter(Boolean);
+  const head = parts[0] || "";
+
+  if(LANDING_ANCHORS[head]){
+    show("landing");
+    const t = document.getElementById(LANDING_ANCHORS[head]);
+    if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+    return;
+  }
+  if(head === ""){ show("landing"); window.scrollTo(0,0); return; }
+
+  if(head === "login"){
+    if(state.loggedIn){ location.hash = "#/search"; return; }
+    show("login"); window.scrollTo(0,0); return;
+  }
+  if(head === "otp"){
+    if(!pendingOtp){ location.hash = "#/login"; return; }
+    show("otp"); window.scrollTo(0,0); return;
+  }
+  if(!state.loggedIn){ location.hash = "#/login"; return; }
+
+  if(head === "search"){ show("search"); renderSearch(); window.scrollTo(0,0); return; }
+  if(head === "results"){
+    if(!state.ranked){ location.hash = "#/search"; return; }
+    show("results"); renderResults(); window.scrollTo(0,0); return;
+  }
+  if(head === "contacts"){
+    const code = parts[1];
+    if(!state.ranked || !code){ location.hash = "#/results"; return; }
+    state.currentIndustry = code; save();
+    show("contacts"); await renderContacts(); window.scrollTo(0,0); return;
+  }
+  if(head === "pay"){
+    if(!state.currentIndustry){ location.hash = "#/results"; return; }
+    show("pay"); window.scrollTo(0,0); return;
+  }
+  location.hash = "#/";
+}
+
+function renderChrome(screen){
+  const onLanding = screen === "landing";
+  $("navLinks").hidden = !onLanding;
+  if(state.loggedIn){
+    $("credPill").hidden = false;
+    $("credVal").textContent = state.freeLeft + " free · " + state.paidLeft + " paid";
+    $("navCta").textContent = onLanding ? "Open app" : "Sign out";
+  }else{
+    $("credPill").hidden = true;
+    $("navCta").textContent = "Sign in";
+  }
+}
+
+/* ---------------------------------------------------------- small helpers */
+function setBusy(btn, on, label){
+  busy = on;
+  btn.disabled = on;
+  if(on){ btn.dataset.label = btn.textContent; btn.innerHTML = '<span class="spinner"></span> ' + (label||"Working…"); }
+  else  { btn.textContent = btn.dataset.label || btn.textContent; }
+}
+function friendly(err){
+  const m = (err && (err.message || err.error_description || "")) + "";
+  if(/bad-code/.test(m))              return "That code does not match. Try again.";
+  if(/rate|too many/i.test(m))        return "Too many attempts. Wait a minute and try again.";
+  if(/not signed in/i.test(m))        return "Your session expired. Please sign in again.";
+  if(/network|fetch|Failed to/i.test(m)) return "Could not reach the server. Check your connection.";
+  return m || "Something went wrong. Try again.";
+}
+
+/* ================================================== login =============== */
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(busy) return;
+  const m = $("mobile").value.replace(/\D/g,"");
+  const c = $("company").value.trim();
+  $("mobileErr").textContent = ""; $("companyErr").textContent = "";
+  if(m.length !== 10 || !/^[6-9]/.test(m)){
+    $("mobileErr").textContent = "Enter a 10-digit Indian mobile number."; $("mobile").focus(); return;
+  }
+  if(c.length < 2){ $("companyErr").textContent = "We need your company name."; $("company").focus(); return; }
+
+  const btn = $("sendOtpBtn");
+  setBusy(btn, true, "Sending…");
+  try{
+    const r = await api.sendOtp(m, c);
+    $("otpTo").textContent = "+91 " + m.slice(0,5) + " " + m.slice(5);
+    ["o1","o2","o3","o4","o5","o6"].forEach(id => { $(id).value = ""; });
+    $("otpErr").textContent = "";
+    const hint = document.querySelector("#screen-otp .demohint");
+    if(r.demoCode){
+      $("demoCode").textContent = r.demoCode;
+      if(hint) hint.hidden = false;
+    }else if(hint){ hint.hidden = true; }
+    location.hash = "#/otp";
+    setTimeout(()=>$("o1").focus(), 60);
+  }catch(err){
+    $("mobileErr").textContent = friendly(err);
+  }finally{ setBusy(btn, false); }
+});
+
+const otpIds = ["o1","o2","o3","o4","o5","o6"];
+otpIds.forEach((id,i) => {
+  const el = $(id);
+  el.addEventListener("input", () => {
+    el.value = el.value.replace(/\D/g,"").slice(0,1);
+    if(el.value && i < 5) $(otpIds[i+1]).focus();
+  });
+  el.addEventListener("keydown", ev => {
+    if(ev.key === "Backspace" && !el.value && i > 0) $(otpIds[i-1]).focus();
+  });
+  el.addEventListener("paste", ev => {
+    const d = (ev.clipboardData.getData("text")||"").replace(/\D/g,"").slice(0,6);
+    if(d.length){ ev.preventDefault(); d.split("").forEach((ch,j)=>{ if(otpIds[j]) $(otpIds[j]).value = ch; });
+      $(otpIds[Math.min(d.length,6)-1]).focus(); }
+  });
+});
+
+$("otpForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if(busy) return;
+  const entered = otpIds.map(id=>$(id).value).join("");
+  if(entered.length !== 6){ $("otpErr").textContent = "Enter all six digits."; return; }
+  const btn = $("verifyBtn");
+  setBusy(btn, true, "Verifying…");
+  try{
+    await api.verifyOtp(entered);
+    location.hash = "#/search";
+  }catch(err){
+    $("otpErr").textContent = friendly(err);
+  }finally{ setBusy(btn, false); }
+});
+
+$("changeNum").addEventListener("click", () => { pendingOtp = null; location.hash = "#/login"; });
+$("backHome").addEventListener("click", () => { location.hash = "#/"; });
+$("brandBtn").addEventListener("click", () => { location.hash = "#/"; });
+$("navCta").addEventListener("click", async () => {
+  if(!state.loggedIn){ location.hash = "#/login"; return; }
+  if(!$("screen-landing").hidden){ location.hash = state.ranked ? "#/results" : "#/search"; return; }
+  if(confirm("Sign out? Your credits and unlocked contacts stay with this number.")){
+    await api.signOut();
+    state.ranked = null; state.contacts = null; save();
+    location.hash = "#/";
+  }
+});
+
+/* ================================================== search ============== */
+$("examples").innerHTML = EXAMPLES.map((e,i)=>
+  `<button class="chipbtn" type="button" data-i="${i}">${EX_LABELS[i]}</button>`).join("");
+Array.prototype.forEach.call($("examples").querySelectorAll(".chipbtn"), b => {
+  b.addEventListener("click", ()=>{ $("desc").value = EXAMPLES[b.dataset.i]; $("descErr").textContent=""; });
+});
+function renderSearch(){ $("desc").value = state.rawDesc || ""; $("descErr").textContent = ""; }
+
+$("searchBtn").addEventListener("click", async () => {
+  if(busy) return;
+  const v = $("desc").value.trim();
+  if(v.length < 12){
+    $("descErr").textContent = "Tell us a little more — a sentence is enough."; $("desc").focus(); return;
+  }
+  const btn = $("searchBtn");
+  setBusy(btn, true, "Finding buyers…");
+  try{
+    state.ranked = await api.search(v);
+    if(!state.ranked.length){
+      $("descErr").textContent = "No industries matched that yet. Try describing the product differently.";
+      return;
+    }
+    state.unlocked = {}; state.credited = {};
+    save();
+    location.hash = "#/results";
+  }catch(err){
+    $("descErr").textContent = friendly(err);
+  }finally{ setBusy(btn, false); }
+});
+
+/* ================================================== results ============= */
+function renderResults(){
+  $("icp").innerHTML =
+    `<label class="chip"><span class="k">Category</span><select id="selProduct" aria-label="Product category">` +
+      PRODUCTS.map(p=>`<option value="${p.id}"${p.id===state.productId?" selected":""}>${esc(p.label)}</option>`).join("") +
+    `</select></label>` +
+    `<label class="chip"><span class="k">Buyer size</span><select id="selSize" aria-label="Buyer company size">` +
+      ["Under ₹50 cr","₹50–500 cr","Over ₹500 cr"].map(v=>`<option${v===state.size?" selected":""}>${v}</option>`).join("") +
+    `</select></label>` +
+    `<label class="chip"><span class="k">Geography</span><select id="selGeo" aria-label="Target geography">` +
+      ["All India","West India","South India","North India","East India"].map(v=>`<option${v===state.geo?" selected":""}>${v}</option>`).join("") +
+    `</select></label>`;
+
+  const refresh = async () => {
+    try{ state.ranked = await api.rank(); save(); renderResults(); }
+    catch(err){ console.error(err); }
+  };
+  $("selProduct").addEventListener("change", e=>{ state.productId=e.target.value; save(); refresh(); });
+  $("selSize").addEventListener("change",   e=>{ state.size=e.target.value;      save(); refresh(); });
+  $("selGeo").addEventListener("change",    e=>{ state.geo=e.target.value;       save(); refresh(); });
+
+  const rows = state.ranked || [];
+  $("ranks").innerHTML = rows.map((r,i)=>{
+    const open = unlockedCount(r.code);
+    return `<button class="rank" data-code="${esc(r.code)}" role="listitem">
+      <span class="rank-n">${String(i+1).padStart(2,"0")}</span>
+      <span>
+        <h4>${esc(r.label)}</h4>
+        <p>${esc(r.reason)}</p>
+        <span class="who">Approach: ${esc(r.approach || "")}</span>
+      </span>
+      <span class="rank-right">
+        <span class="score">
+          <b style="color:${scoreColor(r.score)}">${Number(r.score).toFixed(0)}<span style="color:var(--text-3); font-size:10px">/10</span></b>
+          <span class="bar"><i style="width:${r.score*10}%; background:${scoreColor(r.score)}"></i></span>
+        </span>
+        <span class="chev">${open ? "✓" : "›"}</span>
+      </span>
+    </button>`;
+  }).join("");
+
+  Array.prototype.forEach.call($("ranks").querySelectorAll(".rank"), el => {
+    el.addEventListener("click", ()=>{ location.hash = "#/contacts/" + el.dataset.code; });
+  });
+}
+$("backSearch").addEventListener("click", ()=>{ location.hash = "#/search"; });
+$("backResults").addEventListener("click", ()=>{ location.hash = "#/results"; });
+
+/* ================================================== contacts =========== */
+async function renderContacts(){
+  const code = state.currentIndustry;
+  const meta = (state.ranked || []).find(r=>r.code===code) || { label: code };
+
+  $("cIndustryEyebrow").textContent = "Contacts · " + state.geo;
+  $("cTitle").textContent = meta.label;
+  $("cSub").textContent = "Loading…";
+  $("cards").innerHTML = "";
+  $("payArea").innerHTML = "";
+
+  let justSpent = 0;
+  try{
+    // first visit to an industry spends whatever free credits are left
+    if(unlockedCount(code) === 0 && state.freeLeft > 0){
+      const r = await api.unlock(code, Math.min(FREE_CREDITS, state.freeLeft));
+      justSpent = r.unlocked;
+    }
+    state.contacts = await api.contacts(code);
+  }catch(err){
+    $("cSub").textContent = "";
+    $("cBanner").innerHTML = `<div class="banner warn"><b>Could not load contacts.</b>
+      <span>${esc(friendly(err))}</span></div>`;
+    return;
+  }
+
+  const list = state.contacts;
+  const open = list.filter(c=>c.unlocked).length;
+  state.unlocked[code] = open; save();
+
+  $("cSub").textContent =
+    `${list.length} matched · ${state.size} · ${open} unlocked · ` +
+    `${state.freeLeft} free and ${state.paidLeft} paid credits left`;
+
+  $("cBanner").innerHTML =
+      justSpent > 0
+        ? `<div class="banner good"><b>${justSpent} free contacts unlocked.</b>
+             <span>That is your free trial spent. The rest of this list needs a pack.</span></div>`
+    : open === 0
+        ? `<div class="banner warn"><b>No credits left.</b>
+             <span>Your five free contacts are used. ₹999 unlocks ten more, here or in any industry.</span></div>`
+    : "";
+
+  $("cards").innerHTML = list.map(c => `
+    <article class="card${c.unlocked?"":" locked"}${c.credited?" credited":""}">
+      <div class="card-top">
+        <div><h4>${esc(c.name)}</h4><div class="role">${esc(c.title)}</div></div>
+        <span class="tag ${c.unlocked?(c.tier==="paid"?"paid":"free"):"lock"}">${esc(c.tier)}</span>
+      </div>
+      <div class="co">${esc(c.company)}${c.city?" · "+esc(c.city):""}</div>
+      <p class="why">${esc(c.why)}</p>
+      <div class="reach">
+        <div><span class="lb">Mail</span><span class="${c.unlocked?"":"masked"}">${esc(c.email||"—")}</span></div>
+        <div><span class="lb">Call</span><span class="${c.unlocked?"":"masked"}">${esc(c.phone||"—")}</span></div>
+      </div>
+      ${c.unlocked ? `<div class="card-foot">${c.credited
+        ? `<span class="credited-note">Credited back</span>`
+        : `<button class="wrongbtn" type="button" data-id="${esc(c.id)}">Wrong contact? Get the credit back</button>`}</div>` : ``}
+    </article>`).join("");
+
+  Array.prototype.forEach.call($("cards").querySelectorAll(".wrongbtn"), b => {
+    b.addEventListener("click", async ()=>{
+      b.disabled = true; b.textContent = "Crediting…";
+      try{ await api.reportWrong(b.dataset.id); await renderContacts(); }
+      catch(err){ b.disabled = false; b.textContent = friendly(err); }
+    });
+  });
+
+  const remaining = list.length - open;
+  if(remaining > 0){
+    $("payArea").innerHTML = `<div class="paybar">
+      <div class="t"><strong>${remaining} more in ${esc(meta.label)}</strong>
+      <span>₹999 unlocks the next ${PACK_SIZE}. Wrong contacts are credited back.</span></div>
+      <button class="btn" type="button" id="goPay">Unlock ${PACK_SIZE} for ₹999</button></div>`;
+    $("goPay").addEventListener("click", ()=>{ location.hash = "#/pay"; });
+  }else{
+    $("payArea").innerHTML = `<div class="banner good" style="margin-top:22px">
+      <b>All ${list.length} delivered.</b>
+      <span>On day seven we will ask on WhatsApp which ones you reached — that answer sharpens your next list.</span></div>`;
+  }
+  renderChrome("contacts");
+}
+
+/* ================================================== payment ============ */
+function setMethod(m){
+  payMethod = m;
+  $("pmUpi").setAttribute("aria-pressed", m==="upi" ? "true":"false");
+  $("pmCard").setAttribute("aria-pressed", m==="card" ? "true":"false");
+}
+$("pmUpi").addEventListener("click", ()=>setMethod("upi"));
+$("pmCard").addEventListener("click", ()=>setMethod("card"));
+$("cancelPay").addEventListener("click", ()=>{ location.hash = "#/contacts/" + state.currentIndustry; });
+
+$("payBtn").addEventListener("click", async () => {
+  if(busy) return;
+  const btn = $("payBtn");
+  setBusy(btn, true, "Processing…");
+  try{
+    await api.buyPack();
+    const code = state.currentIndustry;
+    await api.unlock(code, PACK_SIZE);
+    location.hash = "#/contacts/" + code;
+    await renderContacts();
+  }catch(err){
+    alert(friendly(err));
+  }finally{ setBusy(btn, false); }
+});
+
+/* ================================================== boot =============== */
+(async function boot(){
+  load();
+  try{ await initApi(); }
+  catch(err){
+    console.error("Supabase failed to load; falling back to demo data.", err);
+    api = demoApi;
+  }
+  window.addEventListener("hashchange", route);
+  if(!location.hash) location.hash = "#/";
+  await route();
+  buildInstrument();
+})();
+
+})();
+</script>
+</body>
+</html>
