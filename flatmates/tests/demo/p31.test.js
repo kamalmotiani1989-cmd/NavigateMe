@@ -253,6 +253,9 @@ const oldLeft = old => { const out = [];
   ok(tw.steps.bg === 'rgb(255, 255, 255)' && tw.steps.radius === '28px' && tw.steps.hair && tw.steps.l === tw.h1[0] && tw.steps.r === tw.h1[1] && tw.todo === 'rgb(247, 243, 239)' && tw.now === 'rgb(194, 65, 12)',
     'Tribe: the four steps sit on a white card too; the step you are on is orange and the ones to come are the quiet off-white, which shows on white (on the cream it could hardly be seen): ' + JSON.stringify(tw.steps) + ' ' + tw.todo);
   await p.screenshot({ path: O + '/p31-tribe-cards.png' });
+  const twEmpty = await p.evaluate(() => { const o = $('tribeOrbit'), j = $('tribeJourney'), keep = [o.innerHTML, j.innerHTML]; o.innerHTML = ''; j.innerHTML = '';
+    const d = [getComputedStyle(o).display, getComputedStyle(j).display].join(); o.innerHTML = keep[0]; j.innerHTML = keep[1]; return d + ' / ' + getComputedStyle(o).display + ',' + getComputedStyle(j).display; });
+  ok(twEmpty === 'none,none / block,grid', 'Tribe: until the list has come in the two cards are not there at all (an empty one would show as a white pill), and they show once filled: ' + twEmpty);
   await go(p, 'account');
   const acc = await p.evaluate(() => { const v = document.querySelector('.vt-line'), cs = getComputedStyle(v), out = document.querySelector('.acc-out b'), del = document.querySelector('.acc-del b');
     return { card: cs.backgroundColor, grad: /gradient/.test(cs.backgroundImage), words: getComputedStyle(v.querySelector('b')).color, fam: getComputedStyle(v.querySelector('b')).fontFamily.slice(0, 18),

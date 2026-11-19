@@ -1026,7 +1026,8 @@ the end of the stylesheet; the layouts, the words, the login, the questions and 
   every size. Both were straight on the cream, where the people's discs looked washed out and the steps still to
   come could hardly be seen. By the one rule, what sits inside those cards is cream: the match label under each
   person and the disc behind your letter. On a computer the picture was already inside the band's white card. On
-  a narrow phone the drawing keeps its shape, so the card has no empty strip above and below it.
+  a narrow phone the drawing keeps its shape, so the card has no empty strip above and below it. Until the list
+  has come in, neither card is there, as before (an empty one would show as a white pill).
 - Green still means accepted, verified or "owes you", amber look twice, crimson danger; WhatsApp keeps its green.
 Checks: `p31` (the palette on every screen, the key words, the underline, the ink sheet, the brown header and
 pictures, no panel melted into what it sits on, small phones, the Android bars, the rings' colours, Tribe's two

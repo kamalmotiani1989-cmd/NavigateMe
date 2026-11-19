@@ -2876,6 +2876,8 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
    card there too. And what sits inside a white card is cream: the match labels and the disc behind your letter */
 .journey{padding:16px 8px 14px; border-radius:var(--r-card); background:var(--surface); box-shadow:0 0 0 1px var(--hair), var(--card-shadow)}
 .orbit .node > rect, .orbit .me > circle:first-child{fill:var(--cream)}
+/* until the list has come in the two are empty: no card yet, as before (an empty card would show as a white pill) */
+.orbit:empty, .journey:empty{display:none}
 @media (max-width:720px){
   .orbit{margin:0 0 14px; padding:2px 5px 28px; border-radius:var(--r-card); background:var(--surface); box-shadow:0 0 0 1px var(--hair), var(--card-shadow)}
   /* the drawing keeps its shape on a narrow phone, so the card has no empty strip above and below it */
