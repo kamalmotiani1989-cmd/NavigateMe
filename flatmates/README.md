@@ -166,7 +166,7 @@ the room comes second.
 
    The Tribe tab is the build-up page: a live constellation of your matches
    around you (lines light up as people say yes), a 4-step journey (Match → Team up → Bond → Hunt),
-   what a tribe could save in your city, and a card per match with budget, areas, the habits you
+   each of the two on a white card (see "Look and feel"), what a tribe could save in your city, and a card per match with budget, areas, the habits you
    share, interests in common and the compatibility analysis. **Team up** is a yes; the other
    person sees "Riya wants to build a tribe with you". **Numbers are shared only when both say
    yes**, with a celebration screen. A bonded tribe sees its joint budget and **Hunt together**:
@@ -1020,10 +1020,18 @@ the end of the stylesheet; the layouts, the words, the login, the questions and 
   three lines at 320 wide. On the first page the same space above the sign-up card went, so the card, Continue
   and "I already have an account" sit a little higher than they did at every phone size (19px at 390 wide), and
   the help button is clear of Continue.
+- **Tribe's two white cards** (Kamal, 19 Nov, with two places circled on a screenshot of his phone: "This area
+  should have white backgroud which matches the app color"): the picture of the people around you (`.orbit`) sits
+  on a white card inside the cream band on a phone, and the four steps under the band (`.journey`) on another, at
+  every size. Both were straight on the cream, where the people's discs looked washed out and the steps still to
+  come could hardly be seen. By the one rule, what sits inside those cards is cream: the match label under each
+  person and the disc behind your letter. On a computer the picture was already inside the band's white card. On
+  a narrow phone the drawing keeps its shape, so the card has no empty strip above and below it. Until the list
+  has come in, neither card is there, as before (an empty one would show as a white pill).
 - Green still means accepted, verified or "owes you", amber look twice, crimson danger; WhatsApp keeps its green.
 Checks: `p31` (the palette on every screen, the key words, the underline, the ink sheet, the brown header and
-pictures, no panel melted into what it sits on, small phones, the Android bars, the rings' colours), `p8`, `p26`,
-`p27`.
+pictures, no panel melted into what it sits on, small phones, the Android bars, the rings' colours, Tribe's two
+white cards), `p8`, `p26`, `p27`.
 
 Under it is the look of 16 Nov 2026, the logo's own colours, set by Kamal in three steps:
 1. after looking at another app, "copy style and colors of dwelo. Change the orange color to light red color", and
