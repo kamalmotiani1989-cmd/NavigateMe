@@ -13,6 +13,8 @@
 // with no photo and for the pictures people share. The checks below hold both: what 16 Nov fixed, in 17 Nov's colours.
 // King's review of 18 Nov is held here too: the score rings keep the colours that say how strong a match is, the top
 // bar is cream once you scroll (p26), and the first page's headline keeps to two lines at 390 wide.
+// Tribe's two white cards are held here as well (Kamal, 19 Nov, two places circled on a screenshot of his phone: "This
+// area should have white backgroud which matches the app color"): the people around you, and the four steps.
 // The logo is not part of the look (Kamal, 16 Nov: "App and website logo to stay the same as earlier", "App and website
 // logo color to stay same as earlier"): its files are his own of 9 Nov, and this suite holds them to that, byte for byte.
 const { chromium, devices } = require('playwright'), fs = require('fs'), path = require('path'), crypto = require('crypto');
@@ -234,6 +236,23 @@ const oldLeft = old => { const out = [];
   await go(p, 'market');
   const tiles = await p.evaluate(() => { const t = document.querySelector('#mkStats div'); return t ? getComputedStyle(t).backgroundColor + ' / ' + getComputedStyle(t).boxShadow : 'no tiles'; });
   ok(/^rgb\(255, 255, 255\) \/ rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(tiles), 'FlatMart: the three number tiles on the band are white with a hairline (they were a see-through white and melted into the cream): ' + tiles);
+  // Tribe (Kamal, 19 Nov, two places circled on a screenshot: "This area should have white backgroud which matches the app
+  // color"): the people around you, and the four steps, each on a white card
+  await go(p, 'tribe');
+  const tw = await p.evaluate(() => { const card = e => { const c = getComputedStyle(e), r = e.getBoundingClientRect(); return { bg: c.backgroundColor, radius: c.borderRadius, hair: /^rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(c.boxShadow), l: Math.round(r.left), r: Math.round(r.right) }; };
+    const o = $('tribeOrbit'), j = $('tribeJourney'), or = o.getBoundingClientRect(), h1 = document.querySelector('.tribe-hero h1').getBoundingClientRect(), nodes = [...o.querySelectorAll('.node')];
+    return { orbit: card(o), steps: card(j), band: getComputedStyle(document.querySelector('.tribe-hero')).backgroundColor, h1: [Math.round(h1.left), Math.round(h1.right)], nodes: nodes.length,
+      inside: nodes.every(n => { const r = n.getBoundingClientRect(); return r.left >= or.left && r.right <= or.right && r.top >= or.top && r.bottom <= or.bottom; }),
+      labels: [...new Set(nodes.map(n => getComputedStyle(n.querySelector(':scope > rect')).fill))].join(), me: getComputedStyle(o.querySelector('.me > circle')).fill,
+      faces: [...new Set(nodes.map(n => { const r = n.querySelector('foreignObject svg').getBoundingClientRect(); return Math.round(r.width) + 'x' + Math.round(r.height); }))].join(),
+      todo: getComputedStyle(j.querySelector('li:not(.now):not(.done) i')).backgroundColor, now: getComputedStyle(j.querySelector('li.now i')).backgroundColor }; });
+  ok(tw.orbit.bg === 'rgb(255, 255, 255)' && tw.orbit.radius === '28px' && tw.orbit.hair && tw.band === 'rgb(255, 244, 232)' && tw.orbit.l === tw.h1[0] && tw.orbit.r === tw.h1[1] && tw.nodes >= 3 && tw.inside,
+    'Tribe on a phone: the people around you sit on a white card (28px corners, the hairline) inside the cream band, in line with the headline, and every person and label is inside it: ' + JSON.stringify(tw.orbit) + ' ' + tw.nodes + ' people, inside ' + tw.inside);
+  ok(tw.labels === 'rgb(255, 244, 232)' && tw.me === 'rgb(255, 244, 232)' && tw.faces === '42x42',
+    'Tribe: inside that white card the match labels and the disc behind your letter are cream, and the cartoon people keep their own colours and size: ' + JSON.stringify({ labels: tw.labels, me: tw.me, faces: tw.faces }));
+  ok(tw.steps.bg === 'rgb(255, 255, 255)' && tw.steps.radius === '28px' && tw.steps.hair && tw.steps.l === tw.h1[0] && tw.steps.r === tw.h1[1] && tw.todo === 'rgb(247, 243, 239)' && tw.now === 'rgb(194, 65, 12)',
+    'Tribe: the four steps sit on a white card too; the step you are on is orange and the ones to come are the quiet off-white, which shows on white (on the cream it could hardly be seen): ' + JSON.stringify(tw.steps) + ' ' + tw.todo);
+  await p.screenshot({ path: O + '/p31-tribe-cards.png' });
   await go(p, 'account');
   const acc = await p.evaluate(() => { const v = document.querySelector('.vt-line'), cs = getComputedStyle(v), out = document.querySelector('.acc-out b'), del = document.querySelector('.acc-del b');
     return { card: cs.backgroundColor, grad: /gradient/.test(cs.backgroundImage), words: getComputedStyle(v.querySelector('b')).color, fam: getComputedStyle(v.querySelector('b')).fontFamily.slice(0, 18),
@@ -338,6 +357,12 @@ const oldLeft = old => { const out = [];
         return { lines: Math.round(h1.getBoundingClientRect().height / parseFloat(cs.lineHeight)), size: parseFloat(cs.fontSize), side: document.documentElement.scrollWidth - innerWidth }; });
       sizes.add(m.size); if(m.lines > 3) tall.push(v + ' ' + m.lines); if(m.side > 0) wide.push(v + ' ' + m.side); }
     ok(!tall.length && !wide.length && [...sizes].every(x => x >= 30 && x <= 36), w + ' x ' + h + ': every screen\'s headline is the serif at ' + [...sizes].join('/') + 'px on at most three lines, and nothing runs off the side: ' + tall.concat(wide).join(' | '));
+    await go(p, 'tribe'); const tn = await p.evaluate(() => { const o = $('tribeOrbit'), s = o.querySelector(':scope > svg').getBoundingClientRect(), or = o.getBoundingClientRect(), j = $('tribeJourney').getBoundingClientRect();
+      return { card: getComputedStyle(o).backgroundColor, w: Math.round(or.width), steps: Math.round(j.width), shape: Math.round(s.width * 220 / 340 - s.height), side: document.documentElement.scrollWidth - innerWidth,
+        inside: [...o.querySelectorAll('.node')].every(n => { const r = n.getBoundingClientRect(); return r.left >= or.left && r.right <= or.right && r.top >= or.top && r.bottom <= or.bottom; }),
+        oneLine: [...document.querySelectorAll('#tribeJourney li b')].every(x => x.getClientRects().length === 1) }; });
+    ok(tn.card === 'rgb(255, 255, 255)' && tn.w === w - 40 && tn.steps === w - 40 && Math.abs(tn.shape) <= 1 && tn.inside && tn.oneLine && tn.side <= 0,
+      w + ' x ' + h + ': Tribe\'s two white cards fit the screen, the drawing keeps its shape (no empty strip above and below it), everyone is inside the card, and each step\'s name is on one line: ' + JSON.stringify(tn));
     if(w === 360){ await go(p, 'discover'); const fold = await p.evaluate(() => { const c = document.querySelector('#cards .card'), s = document.querySelector('.d-search, #dSearch, .ds-q'); return { card: c ? Math.round(c.getBoundingClientRect().top) : null, search: s ? Math.round(s.getBoundingClientRect().top) : null }; });
       ok(fold.card !== null && fold.search !== null && fold.search <= 296, '360 x 640: with the bigger headline the search still starts no lower than it did (296px on 16 Nov; the room kept for the old sheet\'s edge went), so the homes under it do not either: ' + JSON.stringify(fold));
       await p.screenshot({ path: O + '/p31-discover-360.png' }); }
@@ -352,6 +377,13 @@ const oldLeft = old => { const out = [];
   ok(pass.n === 3 && pass.rows === 1 && pass.names.every(x => x === 1) && pass.terms.every(x => x === 1) && pass.buttons.every(h => h <= 56) && pass.tagOnName === 0,
     'Passes on a computer: the three passes stand side by side, each name, term and button on one line, no tag over a name (they stood in a box too narrow for them): ' + JSON.stringify(pass));
   await p.screenshot({ path: O + '/p31-passes-wide.png' });
+  await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close())); await go(p, 'tribe');
+  const twc = await p.evaluate(() => { const o = $('tribeOrbit'), j = $('tribeJourney'), cj = getComputedStyle(j), hero = document.querySelector('.tribe-hero').getBoundingClientRect(), jr = j.getBoundingClientRect();
+    return { hero: getComputedStyle(document.querySelector('.tribe-hero')).backgroundColor, orbit: getComputedStyle(o).backgroundColor, label: getComputedStyle(o.querySelector('.node > rect')).fill,
+      steps: cj.backgroundColor, radius: cj.borderRadius, hair: /^rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(cj.boxShadow), inLine: Math.round(jr.left - hero.left) + Math.round(jr.right - hero.right), subs: [...j.querySelectorAll('li span')].filter(x => x.offsetParent).length }; });
+  ok(twc.hero === 'rgb(255, 255, 255)' && twc.orbit === 'rgba(0, 0, 0, 0)' && twc.label === 'rgb(255, 244, 232)' && twc.steps === 'rgb(255, 255, 255)' && twc.radius === '28px' && twc.hair && twc.inLine === 0 && twc.subs === 4,
+    'Tribe on a computer: the people are inside the band\'s white card as before (no second card), their labels cream; the four steps get a white card, as wide as the band, with their second lines: ' + JSON.stringify(twc));
+  await p.screenshot({ path: O + '/p31-tribe-wide.png' });
   await ctx.close();
   // ------------------------------------------------------------ the pages beside the app
   ({ ctx, p } = await open(b, null, { viewport:{ width:390, height:844 } }));
