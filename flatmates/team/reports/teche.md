@@ -1,5 +1,41 @@
 # Teche · reports
 
+## 2026-11-19, Tribe: the people around you and the four steps on white cards (#122) live
+
+- **What was asked (Kamal, 19 Nov, in my session):** a screenshot of the Tribe screen on his phone with two places
+  circled, the picture of the people around you and the row "1 Match, 2 Team up, 3 Bond, 4 Hunt", and "This area
+  should have white backgroud which matches the app color". Read as: those two pieces sit on white cards, as the
+  app's cards do, instead of straight on the cream. Nothing else on the screen changes.
+- **What changed (#122, merged `74c9f74`; style only, 14 lines; no database change):**
+  - The people around you: on a phone, a white card (28px corners, the hairline, the soft shadow) inside the cream
+    band, in line with the headline. On a narrow phone the drawing keeps its shape, so the card has no empty strip.
+  - The four steps: a white card at every size. On the cream the steps still to come could hardly be seen.
+  - Inside those cards, cream (the look's one rule): the match label under each person and the disc behind your
+    letter. On a computer the picture was already inside the band's white card; there the labels show for the
+    first time.
+  - Until the list has come in, neither card is there, as before (an empty one would show as a white pill).
+  - The cost, said plainly: the card needs room round the drawing, so on a 390-wide phone the headline sits 46px
+    lower than it did (27px at 360 wide, the same place at 320). Before, the lowest label ran into "Build your
+    tribe", as on Kamal's screenshot. In his phone's browser the steps card sits partly behind the bottom bar
+    until he scrolls a little; in the Android app, which has no address bar, both cards show at once on a
+    screen like his. Kamal has been told.
+- **Live:** Android build 225 (the release on both repositories says "(74c9f74, build 225)"; a real change, the
+  Tribe screen in the app has the same two cards). Website `ac46e9e` "Publish the app from NavigateMe 74c9f74" on
+  its main and gh-pages, Pages deployed. The published page carries the new rules, and the Tribe screen drawn from
+  the published page matches the tested one (pixel for pixel at 390 wide and on a computer; at 360 and 320 only
+  the moving ring round the middle differs). The blog is untouched, byte for byte.
+- **Tests:** demo 33 suites, 926 checks, all pass (919 before; the seven new ones are in `p31`, now 81). The
+  database suite was not run: nothing in the database changes. Looked at, at 390, 360, 320 and 700 wide and on a
+  computer: six people, one, nobody yet; your own cartoon in the middle; a teamed-up match and all four steps
+  done; less motion.
+- **Not checked on a real phone:** I cannot open findmeflatmate.com or the Android app from here.
+- **Pictures:** `flatmates/team/reports/shots/tribe-white/` (before and after, phone and computer). Kamal was sent
+  the same.
+- **Need from King:** nothing.
+- **Still with Kamal:** a read of the blog's seven articles and its source links; whether the word "Blog" stays on
+  the first page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the
+  message limits. The 15 sample parties are still live (the last ends on 5 Dec).
+
 ## 2026-11-18, a blog for the website (#121) live
 
 - **What was asked (Kamal, 18 Nov, in my session):** "Build the blogs section in website. Only. Make it super
@@ -327,38 +363,5 @@
 - **My brief (#114, merged c34f723, on Kamal's yes):** the look rule in `tech.md` now names the look of 16 Nov and
   ends "The logo and its colours never change with the look." Nothing to build or publish for it.
 - **Needed from Kamal:** his go for #115. Then: apply `schema.sql`, check read-only, merge, publish, report.
-- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
-  announced; the message limit of 30 an hour and 60 a day.
-
-## 2026-11-16, vibe score only where the lister lives there (#113) live, on Kamal's go
-
-- **The go:** Kamal, 16 Nov, in King's session: "Go and yes to all", recorded by King in `priorities.md` (d1a3d1e).
-  I acted on that written record. It covered three things: go on #113, yes to the "Do you live in this flat?"
-  follow-up, and yes to the look sentence for my brief.
-- **Order, database first:**
-  1. applied `schema.sql` from the PR's commit to the live database (fetched inside the database, checksum checked
-     against my file, then run);
-  2. checked it read-only;
-  3. merged #113 (c72fdea), which built Android build 219;
-  4. published the website.
-- **Database, checked before and after:**
-  - 105 listings. The room in Pune posted 9 Nov now has no living-style answers and no generation; it keeps who
-    lives there, interests and rooms free exactly as they were.
-  - The other 104 listings are unchanged (same fingerprint before and after).
-  - The rule is in place: `fm_lister_lives` and the three-argument `fm_listing_vibe` exist, the older form is gone,
-    the trigger now also runs when the kind changes, and none of them can be called from the app.
-  - 77 homes can show a score (the lister lives there and the answers are on the listing).
-- **What changed for people:** as in the entry below. Someone looking at a room nobody lives in sees "Vibe score
-  after the household answers"; its lister is told why in My flat and the Escape, with "Say who lives there"; the
-  posting form asks the living-style questions only while someone lives there.
-- **Published:** c72fdea; Android build 219 (file checked: the fix is inside, checksum matches the release); the
-  website repo's `main` and `gh-pages` say "Publish the app from NavigateMe c72fdea". The published copy opens
-  with no page errors, and with its live backend switched off it behaves as in the tests (the line on the card and
-  the page, unscored homes last, the lister's prompts, the form).
-- **Tests:** as built: database suite 249 checks, 30 demo suites 753 checks. A full demo run on the merged code is
-  under way as I write, for the brief change below.
-- **Next:**
-  - my brief's look sentence and the logo rule, on Kamal's yes: a small PR to `flatmates/team/tech.md`;
-  - priorities 0000000, "Do you live in this flat?": its own PR, deploy on Kamal's word, database first.
 - **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
   announced; the message limit of 30 an hour and 60 a day.
