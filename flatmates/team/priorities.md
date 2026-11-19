@@ -9,6 +9,7 @@ _Last update: 17 Nov 2026._
   main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
   (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
   Parties: the short message after asking to join says what the answer was (#120, 18 Nov). Android build 223.
+  Tribe: the people around you and the four steps sit on white cards (#122, 19 Nov, Kamal's ask). Android build 225.
 - **The website has a blog (#121, 18 Nov, Kamal's ask):** seven articles at `/blog/`, on the website only. The app does
   not carry it; Android build 224 holds the same app as 223. King read the two legal and money articles in full and
   checked five of their news and government figures by search: all held. Nobody on the team can open the source pages
