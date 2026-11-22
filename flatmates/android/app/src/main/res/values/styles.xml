@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="brand">#C2410C</color>
-    <color name="page">#FFF4E8</color>
+    <color name="page">#FFFFFF</color>
     <color name="teal">#1C1917</color>
-    <!-- The look of 17 Nov 2026 (the reels'): "brand" is the logo's orange, "page" the cream page (the window, the
-         navigation bar and the strip behind the clock, all with dark icons), and "teal" (the name is from an older
-         look) the app's near-black. -->
+    <!-- The look of 22 Nov 2026: "brand" is the logo's orange, "page" the white page (the window, the navigation bar
+         and, until the page says otherwise, the strip behind the clock, all with dark icons), and "teal" (the name is
+         from an older look) the app's near-black. The strip behind the clock then takes the colour of the top of the
+         screen, which the page reports (MainActivity, paintBars). -->
     <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:colorPrimary">@color/teal</item>
         <item name="android:colorPrimaryDark">@color/page</item>

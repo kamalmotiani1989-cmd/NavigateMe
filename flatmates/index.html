@@ -10,7 +10,7 @@
 <script>if(window.top !== window.self){ try{ window.top.location.replace(window.self.location.href); }catch(e){ document.documentElement.style.display = "none"; } }</script>
 <title>FindMeFlatMate: find flatmates who match your vibe</title>
 <meta name="description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
-<meta name="theme-color" content="#FFF4E8">
+<meta name="theme-color" content="#FFFFFF">
 <meta property="og:title" content="FindMeFlatMate: find flatmates who match your vibe">
 <meta property="og:description" content="Find a room, and flatmates who live like you. See how well you'd fit with every home, and why. No brokers, and your number stays private until you both say yes.">
 <meta property="og:locale" content="en_IN">
@@ -2883,6 +2883,83 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
   /* the drawing keeps its shape on a narrow phone, so the card has no empty strip above and below it */
   .orbit > svg{height:auto; aspect-ratio:340 / 220; max-height:220px}
 }
+/* =====================================================================================================
+   The look of 22 Nov 2026: white, an orange-red and pastels. Kamal that day, with two screenshots of another
+   app (a home screen with pastel tiles, a list with an orange button): "Use these colors and prepare some
+   screens and show me", and of the screens he was shown: "This looks cool change the colors of the app".
+   The layouts, the words, the fonts, the login, the questions and the logo stay; this layer changes colour only.
+   - white (--bg): the page and the cards. A hairline and a soft grey shadow tell a card from the page; inside
+     a white card a panel is the palest pink (--cream) or the quiet grey (--surface-2);
+   - the orange-red (--orange): main buttons, badges, what is on, and the key word of a headline. It is his
+     orange a little deeper, so that the key word reads on every band and white words on a button read better.
+     Small orange words are a deeper shade again (--orange-text), which reads at 4.5:1 wherever it is used;
+   - his pastels: the band at the top of each screen, lighter at the top, with the white page coming up over
+     its foot again on a phone (blue: Discover, Profile, Requests; mint: Tribe, the Escape, Messages; yellow:
+     Parties; pink: Flatsplits, Saved; apricot: FlatMart, My flat, Post), the three sign-up choices and
+     party covers;
+   - the pale blue-grey of his search bar (--search): Discover's search box; his blue (--link): the words you
+     tap that are not buttons;
+   - charcoal (--ink): words, what is picked, score discs, dark sheets, a home's header with no photo and the
+     pictures people share.
+   Green, amber and crimson keep their meanings; the score rings, the charts and the drawn people keep their
+   colours. The logo keeps its own orange (Kamal, 16 Nov), which is deeper than the buttons'.
+   ===================================================================================================== */
+:root{
+  --bg:#FFFFFF; --app-bg:var(--bg); --wash:#FFFFFF; --surface:#FFFFFF; --card:var(--surface);
+  --surface-2:#F3F5F8; --line:#E6E9ED; --line-2:#D3D8DE; --hair:#E6E9ED; --cream:#FFF3EE;
+  --text:#24272C; --ink:#24272C; --ink-2:#16181C; --ink-soft:#4A4F57; --text-2:#4F545C; --text-3:#5F656D;
+  --brand:#24272C; --brand-2:#16181C; --accent:#24272C; --on-ink-2:#D5D8DD; --ink-chip:#353A42;
+  --orange:#E2461B; --orange-2:#CF3D15; --orange-text:#BC360F; --orange-deep:#A32E0C; --orange-40:var(--orange-text);
+  --orange-soft:#FFF1EC; --accent-soft:#FFF1EC; --brand-soft:#FFF1EC; --orange-tint:#FFE5DE; --hi:#FFE5DE;
+  --orange-line:#FFC9BA; --orange-pale:#FF9F85; --orange-glow:rgba(226,70,27,.26); --orange-lt:#FFB19C;
+  --mark:var(--orange); --dot:#E2461B; --coral:#E2461B; --olive:#E2461B; --red-51:#E2461B; --teal:var(--orange-text);
+  /* his tiles: each from its lighter top (-a) to its deeper foot (-b) */
+  --p-blue-a:#DDECF8; --p-blue-b:#CCE3F5; --p-mint-a:#E7F3F3; --p-mint-b:#D1E5E4; --p-apricot-a:#FCE5C2; --p-apricot-b:#FDDDAC;
+  --p-pink-a:#FFE9E3; --p-pink-b:#FEDCD2; --p-yellow-a:#FEF0BE; --p-yellow-b:#FDE698;
+  --lav:var(--p-blue-a); --lav-2:var(--p-blue-b); --butter:var(--p-apricot-a); --mint:var(--p-mint-a); --blush:var(--p-pink-a); --sun:var(--p-yellow-a);
+  --band:var(--p-blue-a); --band-b:var(--p-blue-b); --band-2:var(--p-blue-b); --on-band:#24272C; --on-band-2:#4F545C; --lit:#FFFFFF; --unlit:#F6F8FA; --grad:var(--lav);
+  --search:#E0E9F2; --search-line:#CBD6E2; --link:#2269C3;
+  --teal-99:#FFFFFF; --teal-97:#F6F8FA; --teal-96:#F6F8FA; --teal-94:#F3F5F8; --teal-95:#FFF1EC; --teal-91:#FFE5DE; --teal-89:#FFE5DE; --teal-83:#FFC9BA;
+  --teal-69:#FF9F85; --teal-84:#FF9F85; --blue-87:#FFFFFF; --blue-98:#F6F8FA; --blue-93:#E6E9ED;
+  --grey-96:#F3F5F8; --grey-97:#F6F8FA; --grey-63:#8B929B; --purple-97:#FFF1EC; --purple-89:#FFC9BA; --pink-35:#A32E0C;
+  --orange-94:#FFF1EC; --orange-95b:#FFF1EC; --orange-95c:#FFF1EC; --orange-95d:#FFF1EC;
+  --shadow:0 14px 36px rgba(24,32,48,.10); --card-shadow:0 6px 20px rgba(24,32,48,.08); --card-shadow-hi:0 2px 4px rgba(24,32,48,.05), 0 14px 30px rgba(24,32,48,.13);
+  --dark-card:linear-gradient(#24272C, #24272C); --brown:#2C3138;
+  --dark-hero:radial-gradient(62% 56% at 14% 18%, #46566B 0, transparent 72%), radial-gradient(58% 60% at 92% 30%, #3A4657 0, transparent 72%), radial-gradient(80% 62% at 55% 108%, #51627A 0, transparent 70%);
+}
+/* each screen's band takes one of his pastels. On a phone it runs from the top of the screen, top bar included, and the
+   white page comes up over its foot with round corners again, as it did until 17 Nov */
+.home-band[data-band="lav"], .app-head[data-band="lav"]{--band:var(--p-blue-a); --band-b:var(--p-blue-b)}
+.home-band[data-band="butter"], .app-head[data-band="butter"]{--band:var(--p-apricot-a); --band-b:var(--p-apricot-b)}
+.home-band[data-band="mint"], .app-head[data-band="mint"]{--band:var(--p-mint-a); --band-b:var(--p-mint-b)}
+.home-band[data-band="blush"], .app-head[data-band="blush"]{--band:var(--p-pink-a); --band-b:var(--p-pink-b)}
+.home-band[data-band="sun"], .app-head[data-band="sun"]{--band:var(--p-yellow-a); --band-b:var(--p-yellow-b)}
+@media (max-width:720px){
+  .home-band{background:linear-gradient(180deg, var(--band) 0, var(--band-b) 100%) var(--band); padding-bottom:42px}
+  .home-band::after{display:block}
+}
+/* on a computer the bands are rounded panels inside the page: the same pastels (they were white cards on the cream), and
+   what sits on a pastel is white */
+@media (min-width:721px){
+  .tribe-hero, .fs-hero, .mk-hero, .acc-hero, .esc-hero{background:linear-gradient(180deg, var(--band) 0, var(--band-b) 100%) var(--band); box-shadow:none}
+  .esc-stats div, .acc-role{background:var(--surface); box-shadow:0 0 0 1px var(--hair)}
+}
+/* the top bar once you have scrolled: the white page, a little see-through */
+.app-head.scrolled{background:rgba(255,255,255,.95)}
+@media (max-width:720px){ .app-head.scrolled{background:rgba(255,255,255,.96)} }
+/* his blue for the words you tap that are not buttons (on a band they stay dark, and the first page's small print stays as it is) */
+a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:var(--link)}
+.w-footer a:not([class]), .w-footer .linkbtn{color:inherit} .w-foot-slim a:not([class]){color:var(--text)}
+/* Discover's search box: the pale blue-grey of his search bar */
+.d-search{background:var(--search); box-shadow:0 0 0 1.5px var(--search-line)}
+/* the bottom bar: the screen you're on in the orange, on the palest pink, whichever screen it is */
+.tab.tab[aria-current="true"][aria-current]{color:var(--orange-text)}
+/* party covers: four of his pastels (blue and apricot come from the tokens) */
+.pc.t2{background-color:var(--p-pink-a)} .pc.t3{background-color:var(--p-mint-a)}
+/* Tribe: the people around you keep their white card on a computer too, now that the band there is a pastel */
+@media (min-width:721px){
+  .orbit{margin:0 0 14px; padding:2px 5px 28px; border-radius:var(--r-card); background:var(--surface); box-shadow:0 0 0 1px var(--hair), var(--card-shadow)}
+}
 </style>
 </head>
 <body>
@@ -3195,7 +3272,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
        start your own. The rules are the ones it had inside Splits and Account: off until you switch it on, 21 and
        over, and the address only after the host says yes. -->
   <section id="view-parties" hidden>
-    <div class="greet home-band" data-band="butter"><p class="eyebrow">Parties nearby</p><h1>House parties, <span class="kw">round the corner.</span></h1>
+    <div class="greet home-band" data-band="sun"><p class="eyebrow">Parties nearby</p><h1>House parties, <span class="kw">round the corner.</span></h1>
       <p id="pnSub">Game nights, potlucks and match screenings in flats near you.</p><div id="pnWhere"></div></div>
     <div id="pnBody"></div>
   </section>
@@ -3411,7 +3488,7 @@ input:focus, select:focus, textarea:focus{box-shadow:inset 0 0 0 2px var(--orang
   <!-- both: Flatsplits -->
   <section id="view-splits" hidden>
     <div id="fsHome">
-      <div class="fs-hero home-band" data-band="lav">
+      <div class="fs-hero home-band" data-band="blush">
         <p class="eyebrow">Flatsplits</p>
         <h1>Split rent, bills and groceries. <span class="kw">Stay friends.</span></h1>
         <p>Add an expense in seconds and see who owes whom. Pay back over UPI in one tap. Rent, Wi-Fi and the maid can be added automatically every month.</p>
@@ -5166,7 +5243,7 @@ function makeLiveApi(sb){
           key: order.key_id, order_id: order.order_id, amount: order.amount, currency: "INR",
           name: "FindMeFlatMate", description: order.plan + " (incl. 18% GST)",
           prefill: { contact: "+91" + (state.user?.phone || ""), name: state.user?.name || "" },
-          theme: { color: "#C2410C" },
+          theme: { color: "#E2461B" },
           handler: resolve,
           modal: { ondismiss: () => reject(new Error("cancelled")) }
         });
@@ -13479,7 +13556,7 @@ const Geo = {
         setView: (p, z) => { m.setCenter(p); if(z) m.setZoom(z); },
         center: () => { const c = m.getCenter(); return { lat: c.lat(), lng: c.lng() }; },
         onMove: cb => m.addListener("idle", () => { const c = m.getCenter(); cb({ lat: c.lat(), lng: c.lng() }); }),
-        circle: (p, r) => { const c = new Circle({ map: m, center: p, radius: r, strokeColor: "#C2410C", strokeWeight: 2, fillColor: "#C2410C", fillOpacity: .12, clickable: false }); return { remove: () => c.setMap(null) }; },
+        circle: (p, r) => { const c = new Circle({ map: m, center: p, radius: r, strokeColor: "#E2461B", strokeWeight: 2, fillColor: "#E2461B", fillOpacity: .12, clickable: false }); return { remove: () => c.setMap(null) }; },
         pins: (list, onClick) => { overlays.forEach(o => o.setMap(null)); overlays = list.map(x => { const o = new HtmlPin(x, x.html, () => onClick(x)); o.setMap(m); return o; }); },
         fit: (pts, maxZoom) => { if(!pts.length) return; const b = new google.maps.LatLngBounds(); pts.forEach(p => b.extend(p)); m.fitBounds(b, 40);
           google.maps.event.addListenerOnce(m, "idle", () => { if(m.getZoom() > maxZoom) m.setZoom(maxZoom); }); },
@@ -13495,7 +13572,7 @@ const Geo = {
       setView: (p, z) => m.setView([p.lat, p.lng], z || m.getZoom()),
       center: () => { const c = m.getCenter(); return { lat: c.lat, lng: c.lng }; },
       onMove: cb => m.on("moveend", () => { const c = m.getCenter(); cb({ lat: c.lat, lng: c.lng }); }),
-      circle: (p, r) => { const c = L.circle([p.lat, p.lng], { radius: r, color: "#C2410C", weight: 2, fillOpacity: .12, interactive: false }).addTo(m); return { remove: () => c.remove() }; },
+      circle: (p, r) => { const c = L.circle([p.lat, p.lng], { radius: r, color: "#E2461B", weight: 2, fillOpacity: .12, interactive: false }).addTo(m); return { remove: () => c.remove() }; },
       pins: (list, onClick) => { layer.clearLayers(); list.forEach(x => L.marker([x.lat, x.lng], { icon: L.divIcon({ className: "lpin", html: `<div class="gpin">${x.html}</div>`, iconSize: [0, 0] }) })
         .on("click", () => onClick(x)).addTo(layer)); },
       fit: (pts, maxZoom) => { if(pts.length) m.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])), { padding: [40, 40], maxZoom }); },
@@ -14130,23 +14207,23 @@ function roundRect(x, l, t, w, h, r, fill){ x.beginPath(); x.roundRect(l, t, w, 
 // The share pictures' lettering and colours: Urbanist with the serif for titles (the look of 16 Nov 2026), on the
 // deep warm brown inside a thin orange frame, with white words and white panels (the look of 17 Nov; cardBackdrop).
 const CARD_F = '"Urbanist", "Plus Jakarta Sans", system-ui, sans-serif', CARD_SERIF = '"DM Serif Display", Georgia, "Times New Roman", serif';
-const CARD = { brown: "#5C2408", glow: ["#9A5B00", "#7A3410", "#B45309"], ink: "#1C1917", ink2: "#57534E", orange: "#C2410C", lt: "#FDBA74", pale: "#FFF4E8",
-  tints: ["#FFF4E8", "#F7F3EF", "#FFF4E8", "#F7F3EF", "#FFF4E8"], confetti: ["#FDBA74", "#FFFFFF", "#FFF4E8", "#F59E6C", "#FFD08A"] };
+const CARD = { brown: "#2C3138", glow: ["#46566B", "#3A4657", "#51627A"], ink: "#24272C", ink2: "#4F545C", orange: "#E2461B", lt: "#FFB19C", pale: "#FFF1EC",
+  tints: ["#FFF1EC", "#F3F5F8", "#FFF1EC", "#F3F5F8", "#FFF1EC"], confetti: ["#FFB19C", "#FFFFFF", "#FDE698", "#CCE3F5", "#D1E5E4"] };   // "brown" is the charcoal since 22 Nov
 // The backdrop of a picture people share (the look of 17 Nov 2026): a deep warm brown with soft glows, inside a thin
 // orange frame, as on the reels' last scene. White words read on it at 5:1 or better everywhere.
 function cardBackdrop(x, W, H){
   x.fillStyle = CARD.brown; x.fillRect(0, 0, W, H);
   for(const [cx, cy, r, col] of [[W * .1, H * .12, W * .7, CARD.glow[0]], [W * .96, H * .3, W * .62, CARD.glow[1]], [W * .55, H * 1.04, W * .85, CARD.glow[2]]]){
-    const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col); g.addColorStop(1, "rgba(92,36,8,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H); }
+    const g = x.createRadialGradient(cx, cy, 0, cx, cy, r); g.addColorStop(0, col); g.addColorStop(1, "rgba(44,49,56,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H); }
   x.save(); x.lineWidth = 12; x.strokeStyle = CARD.orange; x.beginPath(); x.roundRect(20, 20, W - 40, H - 40, 30); x.stroke(); x.restore();
 }
 const cardFonts = () => Promise.race([Promise.all(['800 60px "Urbanist"', '700 32px "Urbanist"', '500 32px "Urbanist"', '400 92px "DM Serif Display"'].map(f => document.fonts.load(f))).catch(() => {}),
   new Promise(r => setTimeout(r, 2500))]);
 // The Vibe Card's colours (the contrast audit in p13 checks every text colour on every background here).
-const VC_PALETTE = { bg: { "Early Bird": "#FFF4E8", "Midnight": "#FFF4E8", "Night Owl": "#FFF4E8", "": "#FFF4E8" }, ink: "#1C1917", ink2: "#57534E", panel: "#FFFFFF",
-  tints: ["#FFF4E8", "#F7F3EF", "#FFF4E8", "#F7F3EF", "#FFF4E8", "#F7F3EF"] };
+const VC_PALETTE = { bg: { "Early Bird": "#DDECF8", "Midnight": "#DDECF8", "Night Owl": "#DDECF8", "": "#DDECF8" }, ink: "#24272C", ink2: "#4F545C", panel: "#FFFFFF",
+  tints: ["#FFF1EC", "#F3F5F8", "#FFF1EC", "#F3F5F8", "#FFF1EC", "#F3F5F8"] };
 async function drawVibeCard(t, name, stat, av){
-  // On the cream, whatever the rhythm (each had its own warm tint until 17 Nov), dark ink text, the type's name in
+  // On the pale blue of Profile's band, whatever the rhythm (the cream until 22 Nov), dark ink text, the type's name in
   // the serif, the logo and wordmark, and your avatar large where the type's emoji was. Same words as before.
   const W = 1080, H = 1920, c = document.createElement("canvas"), F = CARD_F,
     E = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
@@ -14650,7 +14727,35 @@ function bandApply(){
   const h = $("appHead"), on = Boolean(bandGeo && bandGeo.bottom - scrollY - 30 > bandGeo.head);
   if(on && h.dataset.band !== bandGeo.band) h.dataset.band = bandGeo.band;
   if(h.classList.contains("on-band") !== on) h.classList.toggle("on-band", on);
+  barApply();
 }
+// The strip above the page takes the colour of the top of the screen (the look of 22 Nov: each screen's band is its own
+// pastel, so one fixed colour would leave a seam): the band's pastel while the band runs under the top bar, the first
+// page's blue while that is at the top, and white otherwise and under any sheet. On the website it is the browser's bar
+// (the theme-color tag); in the Android app the strip behind the clock (MainActivity paints it on a "bars" message).
+// Like the band: barMeasure measures (when a screen or a sheet shows or hides), barApply only compares numbers.
+var barGeo = null, barKey = null, barQueued = false;   // var: bandApply can run before this line is reached, and then does nothing here
+function barMeasure(){
+  barQueued = false;
+  // the first page on a phone: its blue runs from the top down to the white sheet the sign-up card stands on
+  const w = PHONE_WIDE.matches && document.querySelector("#view-welcome:not([hidden]) .w-card, #view-host:not([hidden]) .w-card");
+  barGeo = { sheet: Boolean(document.querySelector("dialog[open]")), first: w && w.offsetParent ? w.getBoundingClientRect().top + scrollY - 22 : 0 };
+  barApply();
+}
+function barApply(){
+  if(!barGeo) return;
+  const h = $("appHead"), key = barGeo.sheet ? "" : h.classList.contains("on-band") ? h.dataset.band : barGeo.first - scrollY > 24 ? "lav" : "";
+  if(key === barKey) return;
+  barKey = key;
+  const tok = { lav: "--p-blue-a", butter: "--p-apricot-a", mint: "--p-mint-a", blush: "--p-pink-a", sun: "--p-yellow-a" }[key];
+  const c = (tok && getComputedStyle(document.documentElement).getPropertyValue(tok).trim().toUpperCase()) || "#FFFFFF";
+  const m = document.querySelector('meta[name="theme-color"]'); if(m) m.content = c;
+  try{ if(window.FlatmatesNative) FlatmatesNative.postMessage(JSON.stringify({ type:"bars", color: c })); }catch(e){}
+}
+new MutationObserver(() => { if(!barQueued){ barQueued = true; requestAnimationFrame(barMeasure); } })
+  .observe(document.body, { subtree: true, attributes: true, attributeFilter: ["hidden", "open"] });
+addEventListener("resize", barMeasure, { passive: true });
+requestAnimationFrame(barMeasure);
 // the band's size changes when its view is shown or hidden, when its words arrive, and when the screen turns
 if(window.ResizeObserver){ const ro = new ResizeObserver(bandSync); document.querySelectorAll(".home-band").forEach(b => ro.observe(b)); ro.observe($("appHead")); }
 addEventListener("resize", bandSync, { passive: true });

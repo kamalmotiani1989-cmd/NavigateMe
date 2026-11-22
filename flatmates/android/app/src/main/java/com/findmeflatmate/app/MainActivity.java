@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
@@ -57,6 +58,7 @@ public class MainActivity extends Activity {
     private GeolocationPermissions.Callback pendingGeo;   // the map's "use my location", waiting on Android's permission
     private String pendingGeoOrigin;
     private JavaScriptReplyProxy page;   // lets native code message the web app
+    private View statusStrip;            // the strip behind the clock (Android 11 and later)
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -141,7 +143,7 @@ public class MainActivity extends Activity {
 
     /**
      * Exposes `FlatmatesNative` to the app's own pages only (not to embedded maps).
-     * Messages are JSON: {type: hello | permission | notify | shareImage | shareFile, ...}.
+     * Messages are JSON: {type: hello | permission | notify | shareImage | shareFile | bars, ...}.
      */
     private void addNativeBridge() {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) return;
@@ -169,11 +171,27 @@ public class MainActivity extends Activity {
                             case "shareFile":
                                 shareFile(m.optString("b64"), m.optString("mime", "text/plain"), m.optString("name", "file.txt"), m.optString("text"), m.optString("title", "Share"));
                                 break;
+                            case "bars":
+                                paintBars(m.optString("color"));
+                                break;
                         }
                     } catch (Exception ignored) {
                         // Malformed message from the page: nothing to do.
                     }
                 });
+    }
+
+    /**
+     * The strip behind the clock takes the colour the page reports for the top of the screen: a main screen's
+     * pastel band, or white (the look of 22 Nov 2026). Only "#RRGGBB" is accepted; anything else is ignored.
+     */
+    private void paintBars(String hex) {
+        if (hex == null || !hex.matches("#[0-9A-Fa-f]{6}")) return;
+        final int colour = Color.parseColor(hex);
+        runOnUiThread(() -> {
+            if (statusStrip != null) statusStrip.setBackgroundColor(colour);
+            else getWindow().setStatusBarColor(colour);
+        });
     }
 
     /** The Vibe Card: a PNG (base64) and its caption, handed to Android's share sheet. */
@@ -297,15 +315,16 @@ public class MainActivity extends Activity {
 
     /**
      * Android 15 draws apps edge to edge: keep the page clear of the bars and paint the
-     * strip behind the status bar in the page's own cream (R.color.page, the look of
-     * 17 Nov 2026), with dark icons on it, like the navigation bar.
+     * strip behind the status bar in the page's own white (R.color.page, the look of
+     * 22 Nov 2026) until the page reports the colour of its top (paintBars), with dark
+     * icons on it, like the navigation bar.
      */
     private void keepClearOfSystemBars(FrameLayout root) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return;
         int light = WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
                 | WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
         getWindow().getInsetsController().setSystemBarsAppearance(light, light);
-        View statusStrip = new View(this);
+        statusStrip = new View(this);
         statusStrip.setBackgroundColor(getColor(R.color.page));
         root.addView(statusStrip, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 0));
         root.setOnApplyWindowInsetsListener((v, insets) -> {

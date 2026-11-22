@@ -15,6 +15,10 @@
 // bar is cream once you scroll (p26), and the first page's headline keeps to two lines at 390 wide.
 // Tribe's two white cards are held here as well (Kamal, 19 Nov, two places circled on a screenshot of his phone: "This
 // area should have white backgroud which matches the app color"): the people around you, and the four steps.
+// The look of 22 Nov 2026, over both (Kamal, with two screenshots of another app: "Use these colors and prepare some screens
+// and show me", then "This looks cool change the colors of the app"): a white page and white cards, an orange-red for buttons
+// and the key word, the screenshots' pastels for each screen's band (with the white page over its foot again), a pale blue
+// search box, blue for the words you tap, charcoal for words and dark sheets. Colour only; the checks below hold it.
 // The logo is not part of the look (Kamal, 16 Nov: "App and website logo to stay the same as earlier", "App and website
 // logo color to stay same as earlier"): its files are his own of 9 Nov, and this suite holds them to that, byte for byte.
 const { chromium, devices } = require('playwright'), fs = require('fs'), path = require('path'), crypto = require('crypto');
@@ -62,8 +66,11 @@ const audit = () => {
 // colours of the older looks still showing: the light red and its shades, the deep aubergine, the cream page and beige,
 // the pink and rose tints (all of the first step on 16 Nov), and before them the deeper orange for text, the lavender,
 // butter and mint panels, the teal, the beige page and the navy; and the seven peach tints of 16 Nov's last step
-// (panels, bands, the bottom bar's pill), which are all the one cream since 17 Nov
-const OLD = ['rgb(238, 100, 104)', 'rgb(206, 58, 68)', 'rgb(185, 47, 58)', 'rgb(226, 83, 90)', 'rgb(31, 27, 46)', 'rgb(30, 26, 43)', 'rgb(253, 248, 241)', 'rgb(248, 240, 231)', 'rgb(251, 221, 218)', 'rgb(251, 227, 218)',
+// (panels, bands, the bottom bar's pill), which were all the one cream from 17 Nov; and, since 22 Nov, the look of 17 Nov
+// itself: that cream, its warm off-white, hairlines and hint grey, the light orange and the brown. (Its near-black and its
+// grey are not in the list: the dots behind people's initials and the drawn people still use them, as their own colours.)
+const OLD = ['rgb(255, 244, 232)', 'rgb(247, 243, 239)', 'rgb(238, 232, 226)', 'rgb(221, 212, 204)', 'rgb(107, 99, 93)', 'rgb(253, 186, 116)', 'rgb(92, 36, 8)',
+  'rgb(238, 100, 104)', 'rgb(206, 58, 68)', 'rgb(185, 47, 58)', 'rgb(226, 83, 90)', 'rgb(31, 27, 46)', 'rgb(30, 26, 43)', 'rgb(253, 248, 241)', 'rgb(248, 240, 231)', 'rgb(251, 221, 218)', 'rgb(251, 227, 218)',
   'rgb(178, 58, 10)', 'rgb(195, 201, 246)', 'rgb(235, 217, 129)', 'rgb(195, 224, 214)', 'rgb(28, 127, 114)', 'rgb(239, 228, 220)', 'rgb(27, 36, 64)',
   'rgb(255, 241, 232)', 'rgb(255, 228, 211)', 'rgb(255, 235, 221)', 'rgb(255, 241, 220)', 'rgb(253, 238, 226)', 'rgb(255, 245, 238)', 'rgb(255, 243, 234)', 'rgb(255, 239, 228)', 'rgb(255, 241, 230)'];
 // a panel that has melted into what it sits on: it has a shape (padding, round corners) but its colour is, to the eye,
@@ -98,7 +105,7 @@ const oldLeft = old => { const out = [];
     const logo = await (await fetch('icons/logo-icon.svg')).text(), mark = await (await fetch('icons/wordmark.svg')).text();
     const cols = (t, re) => [...new Set((t.match(re) || []).map(c => c.toUpperCase()))].sort().join();   // every colour named in a file, once each
     const px = await new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = c.height = 192; const x = c.getContext('2d'); x.drawImage(i, 0, 0); r([...x.getImageData(96, 30, 1, 1).data].slice(0, 3).join()); }; i.onerror = () => r('none'); i.src = 'icons/icon-192.png'; });
-    return { tints: ['--cream', '--band', '--lav', '--butter', '--mint', '--blush', '--orange-soft', '--accent-soft', '--brand-soft', '--hi', '--orange-tint', '--wash', '--teal-95', '--purple-97'].map(tok), lt: tok('--orange-lt'), brown: tok('--brown'), chip: tok('--ink-chip'),
+    return { tints: ['--cream', '--lav', '--butter', '--mint', '--blush', '--sun', '--orange-soft', '--accent-soft', '--brand-soft', '--hi', '--orange-tint', '--wash', '--search', '--link'].map(tok), lt: tok('--orange-lt'), brown: tok('--brown'), chip: tok('--ink-chip'),
       orange: tok('--orange'), page: tok('--bg'), card: tok('--surface'), ink: tok('--ink'), text: tok('--text'), text2: tok('--text-2'), orangeText: tok('--orange-text'), deep: tok('--orange-deep'), danger: tok('--danger'), fam: cs.fontFamily, weight: cs.fontWeight, spacing: cs.letterSpacing,
       serif: document.fonts.check('400 20px "DM Serif Display"'), usedSerif: [...document.fonts].some(f => /DM Serif/.test(f.family) && f.status === 'loaded'),
       h2: getComputedStyle(document.querySelector('.w-card h2')).fontFamily, body: getComputedStyle(document.querySelector('.w-copy .lede, .w-trust')).fontFamily,
@@ -108,17 +115,17 @@ const oldLeft = old => { const out = [];
       top: [...document.querySelectorAll('.w-top .logo img')].filter(i => i.offsetParent).map(i => i.getAttribute('src')).join(), glow: getComputedStyle(document.querySelector('.w-top .logo img.fm-mark')).boxShadow,
       bodyBg: getComputedStyle(document.body).backgroundColor, prog: (e => e && getComputedStyle(e).backgroundColor)(document.querySelector('.lg-prog i')),
       emW: getComputedStyle(document.querySelector('.w-copy h1 em') || h1).fontWeight }; });
-  ok(T.orange === '#C2410C' && T.page === '#FFF4E8' && T.card === '#FFFFFF' && T.ink === '#1C1917' && T.text === '#1C1917' && T.text2 === '#57534E' && T.bodyBg === 'rgb(255, 244, 232)',
-    'the palette: a cream page (white until 17 Nov) and white cards, the orange, near-black text and grey for secondary text: ' + JSON.stringify({ orange: T.orange, page: T.page, card: T.card, ink: T.ink, text2: T.text2 }));
-  ok(T.tints.length === 14 && T.tints.every(v => v === '#FFF4E8') && T.lt === '#FDBA74' && T.brown === '#5C2408' && T.chip === '#2B2928',
-    'one cream: the old tint tokens (bands, pale panels, the bottom bar\'s pill) are all #FFF4E8 now; light orange #FDBA74 is for ticks and rings on ink, and the brown #5C2408 for pictures: ' + JSON.stringify([...new Set(T.tints)]));
-  ok(T.logo.split(',').includes(T.orange) && T.mark.split(',').includes(T.text) && T.mark.split(',').includes(T.text2) && T.orangeText === T.orange,
-    'those are the logo\'s own colours: the tile\'s orange is the app\'s orange, and the wordmark\'s near-black and grey are the text colours');
-  ok(T.danger === '#BE123C' && T.danger !== T.orange && T.deep === '#9A3412', 'danger is a crimson, a clear step from the orange; small orange text on tints has a deeper shade: ' + JSON.stringify({ danger: T.danger, deep: T.deep }));
+  ok(T.orange === '#E2461B' && T.page === '#FFFFFF' && T.card === '#FFFFFF' && T.ink === '#24272C' && T.text === '#24272C' && T.text2 === '#4F545C' && T.bodyBg === 'rgb(255, 255, 255)',
+    'the palette: a white page (cream from 17 to 22 Nov) and white cards, the orange-red, charcoal text and grey for secondary text: ' + JSON.stringify({ orange: T.orange, page: T.page, card: T.card, ink: T.ink, text2: T.text2 }));
+  ok(T.tints.join() === '#FFF3EE,#DDECF8,#FCE5C2,#E7F3F3,#FFE9E3,#FEF0BE,#FFF1EC,#FFF1EC,#FFF1EC,#FFE5DE,#FFE5DE,#FFFFFF,#E0E9F2,#2269C3' && T.lt === '#FFB19C' && T.brown === '#2C3138' && T.chip === '#353A42',
+    'the tints: a panel inside a card is the palest pink; the five bands are blue, apricot, mint, pink and yellow; what is picked softly is a pale pink; the search box is a pale blue-grey and links are blue; light orange #FFB19C is for ticks on charcoal, and the charcoal #2C3138 for pictures (all one cream, #FFF4E8, from 17 to 22 Nov): ' + JSON.stringify([...new Set(T.tints)]));
+  ok(T.logo.split(',').includes('#C2410C') && T.mark.split(',').includes('#1C1917') && T.mark.split(',').includes('#57534E') && T.orange !== '#C2410C' && T.orangeText === '#BC360F',
+    'the logo keeps its own colours (Kamal, 16 Nov): its tile is still #C2410C and the wordmark its near-black and grey, while the app\'s orange is the brighter orange-red since 22 Nov, and small orange words a deeper shade of that');
+  ok(T.danger === '#BE123C' && T.danger !== T.orange && T.deep === '#A32E0C', 'danger is a crimson, a clear step from the orange; small orange text on tints has a deeper shade: ' + JSON.stringify({ danger: T.danger, deep: T.deep }));
   // the logo: Kamal's own, as before the look of 16 Nov
   ok(T.logo === '#C2410C,#FFFFFF' && T.mark === '#1C1917,#57534E,#C2410C' && T.px === '194,65,12' && T.fav === '%23C2410C,%23FFFFFF',
     'the logo keeps its own colours: an orange tile with white "fm", the wordmark in near-black, orange and grey, the app icon and the tab icon in the same orange: ' + JSON.stringify({ logo: T.logo, mark: T.mark, px: T.px, fav: T.fav }));
-  ok(T.theme.toUpperCase() === '#FFF4E8', 'the browser bar is the page\'s cream: ' + T.theme);
+  ok(T.theme.toUpperCase() === '#DDECF8', 'the browser bar takes the colour of the top of the screen, here the first page\'s pale blue (one fixed colour, the page\'s cream, until 22 Nov): ' + T.theme);
   const changed = Object.entries(LOGO_FILES).filter(([f, h]) => { try{ return crypto.createHash('sha256').update(fs.readFileSync(path.join(APP, f))).digest('hex').slice(0, 16) !== h; }catch(e){ return true; } }).map(([f]) => f);
   ok(Object.keys(LOGO_FILES).length === 19 && !changed.length, 'the logo and icon files are the ones that went in with Kamal\'s logo on 9 Nov, byte for byte (5 drawings, 4 web icons, 10 Android launcher icons): ' + JSON.stringify(changed));
   const icons = Object.keys(LOGO_FILES).filter(f => f.endsWith('.png')), tile = {};
@@ -132,14 +139,17 @@ const oldLeft = old => { const out = [];
     'headings are in the serif (its one weight, not tightened) and it has loaded; the rest stays Urbanist: ' + JSON.stringify({ h1: T.fam.slice(0, 22), weight: T.weight, spacing: T.spacing, body: T.body.slice(0, 12) }));
   await p.keyboard.press('Tab'); await p.waitForTimeout(150);
   const ring = await p.evaluate(() => { const a = document.activeElement, cs = a && a !== document.body ? getComputedStyle(a) : null; return cs ? cs.outlineStyle + ' ' + cs.outlineColor : 'nothing in focus'; });
-  ok(T.prog === 'rgb(194, 65, 12)' && /rgb\(194, 65, 12\)/.test(ring), 'what shows progress or focus is orange: the "1 of 4" bar and the ring round what the keyboard is on: ' + JSON.stringify({ bar: T.prog, ring }));
+  ok(T.prog === 'rgb(226, 70, 27)' && /rgb\(226, 70, 27\)/.test(ring), 'what shows progress or focus is orange: the "1 of 4" bar and the ring round what the keyboard is on: ' + JSON.stringify({ bar: T.prog, ring }));
   ok(T.emW === '400', 'the words picked out inside a heading keep the serif\'s one weight: ' + T.emW);
-  ok(T.go.bg === 'rgb(194, 65, 12)' && T.go.color === 'rgb(255, 255, 255)' && T.go.ratio >= 4.5, 'the main button is the logo\'s orange with white words that read at ' + T.go.ratio + ':1');
+  ok(T.go.bg === 'rgb(226, 70, 27)' && T.go.color === 'rgb(255, 255, 255)' && T.go.ratio >= 4, 'the main button is the orange-red with white bold words that read at ' + T.go.ratio + ':1 (5.2:1 on the logo\'s orange until 22 Nov; Kamal was told before he chose)');
+  const nl = await p.evaluate(() => { const c = e => getComputedStyle(e); return { roles: [...document.querySelectorAll('.w-card .role')].map(e => c(e).backgroundColor).join(' | '), have: c($('lgHave')).color, small: [...new Set([...document.querySelectorAll('.w-foot-slim a')].filter(a => a.offsetParent).map(a => c(a).color))].join(' | ') }; });
+  ok(nl.roles === 'rgb(221, 236, 248) | rgb(252, 229, 194) | rgb(231, 243, 243)' && nl.have === 'rgb(34, 105, 195)' && nl.small === 'rgb(36, 39, 44)',
+    'the first page: the three choices are pastel tiles (blue, apricot, mint), "I already have an account" is in the blue of the words you tap that are not buttons, and the links in the small print are all charcoal, underlined, as they were: ' + JSON.stringify(nl));
   const K = await p.evaluate(() => { const h1 = document.querySelector('.w-copy h1'), k = h1.querySelector('.kw.ul'), svg = k && k.querySelector('svg.kw-ul'), path = svg && svg.querySelector('path'), kr = k && k.getBoundingClientRect(), sr = svg && svg.getBoundingClientRect();
     return { words: h1.textContent.replace(/\s+/g, ' ').trim(), kw: k && k.textContent, n: h1.querySelectorAll('.kw').length, colour: k && getComputedStyle(k).color, line: path && getComputedStyle(path).stroke, draws: path && getComputedStyle(path).animationName,
       under: !!sr && sr.top > kr.top + kr.height * .6 && sr.width >= kr.width, hidden: svg && svg.getAttribute('aria-hidden'), size: parseFloat(getComputedStyle(h1).fontSize), lines: Math.round(h1.getBoundingClientRect().height / parseFloat(getComputedStyle(h1).lineHeight)) }; });
-  ok(K.words === 'Find flatmates who match your vibe.' && K.kw === 'vibe' && K.n === 1 && K.colour === 'rgb(194, 65, 12)' && K.line === 'rgb(194, 65, 12)' && K.under && K.hidden === 'true' && K.draws === 'kwdraw',
-    'the first page\'s headline says what it said, with one key word ("vibe") in the logo\'s orange and a line under it that draws itself once (a picture to a screen reader, not a word): ' + JSON.stringify(K));
+  ok(K.words === 'Find flatmates who match your vibe.' && K.kw === 'vibe' && K.n === 1 && K.colour === 'rgb(226, 70, 27)' && K.line === 'rgb(226, 70, 27)' && K.under && K.hidden === 'true' && K.draws === 'kwdraw',
+    'the first page\'s headline says what it said, with one key word ("vibe") in the orange and a line under it that draws itself once (a picture to a screen reader, not a word): ' + JSON.stringify(K));
   ok(K.size >= 38 && K.size <= 48 && K.lines === 2, 'on a phone that headline is the serif at ' + K.size + 'px (between 38 and 48: a step under the story\'s), on two lines at 390 wide: ' + K.lines);
   const first = await p.evaluate(() => { const r = e => e.getBoundingClientRect(), go = r(document.querySelector('.w-card .btn-primary')), have = r([...document.querySelectorAll('.w-card button, .w-card a')].find(e => /already have an account/i.test(e.textContent))), fab = r($('helpFab'));
     return { card: Math.round(r(document.querySelector('.w-card')).top), goEnd: Math.round(go.bottom), haveEnd: Math.round(have.bottom), vh: innerHeight, helpOnGo: fab.left < go.right && fab.right > go.left && fab.top < go.bottom && fab.bottom > go.top }; });
@@ -150,7 +160,7 @@ const oldLeft = old => { const out = [];
   // the page for people with a spare room and the moving-out sale page: their words were white on the band
   await p.goto(U + '#host/Bengaluru/HSR%20Layout'); await p.waitForTimeout(1500); await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close()));
   const host = await p.evaluate(() => ({ shown: !$('view-host').hidden, h1: getComputedStyle(document.querySelector('.h-copy h1')).color, em: getComputedStyle(document.querySelector('.h-copy h1 em')).color }));
-  ok(host.shown && host.h1 === 'rgb(28, 25, 23)' && host.em === 'rgb(154, 52, 18)' && !(await p.evaluate(audit)).length, 'the page for people with a spare room: dark words on the band, the words that matter in the deeper orange, all of it readable: ' + JSON.stringify(host) + ' ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
+  ok(host.shown && host.h1 === 'rgb(36, 39, 44)' && host.em === 'rgb(163, 46, 12)' && !(await p.evaluate(audit)).length, 'the page for people with a spare room: dark words on the band, the words that matter in the deeper orange, all of it readable: ' + JSON.stringify(host) + ' ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
   await p.screenshot({ path: O + '/p31-host.png' });
   // the story a first visit opens with: four screens, one key word each, the line under it; your line in its little chat is an ink bubble
   await p.goto(U + '?story'); await p.waitForTimeout(1300);
@@ -159,10 +169,10 @@ const oldLeft = old => { const out = [];
       return h ? { h: h.textContent.replace(/\s+/g, ' ').trim(), kw: k && k.textContent, n: h.querySelectorAll('.kw').length, colour: k && getComputedStyle(k).color, line: !!(k && k.querySelector('svg.kw-ul path')),
         size: parseFloat(getComputedStyle(h).fontSize), lines: Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight)) } : {}; }));
     if(i < 3){ await p.click('#stNext'); await p.waitForTimeout(550); } }
-  ok(st.map(x => x.kw).join() === 'easy,live,like you,yes' && st.every(x => x.n === 1 && x.colour === 'rgb(194, 65, 12)' && x.line && x.size >= 40 && x.size <= 48 && x.lines <= 3),
+  ok(st.map(x => x.kw).join() === 'easy,live,like you,yes' && st.every(x => x.n === 1 && x.colour === 'rgb(226, 70, 27)' && x.line && x.size >= 40 && x.size <= 48 && x.lines <= 3),
     'the story: each of its four headlines has one key word in the orange with the hand-drawn line (easy, live, like you, yes), 40 to 48px, on at most three lines: ' + JSON.stringify(st.map(x => [x.h, x.lines])));
   const mine = await p.evaluate(() => (e => e ? { bg: getComputedStyle(e).backgroundColor, color: getComputedStyle(e).color, w: Math.round(e.getBoundingClientRect().width), h: Math.round(e.getBoundingClientRect().height) } : null)(document.querySelector('.st-chat p.me')));
-  ok(mine && mine.bg === 'rgb(28, 25, 23)' && mine.color === 'rgb(255, 255, 255)' && mine.w > 120 && mine.h < 60, 'the story\'s last screen: your line in the little chat is an ink bubble as wide as its words, on one line (it was 38px wide and broke one word to a line): ' + JSON.stringify(mine));
+  ok(mine && mine.bg === 'rgb(36, 39, 44)' && mine.color === 'rgb(255, 255, 255)' && mine.w > 120 && mine.h < 60, 'the story\'s last screen: your line in the little chat is an ink bubble as wide as its words, on one line (it was 38px wide and broke one word to a line): ' + JSON.stringify(mine));
   await p.screenshot({ path: O + '/p31-story-4.png' });
   await ctx.close();
   // someone who asked their phone for less motion: the line is simply there, it does not draw
@@ -177,13 +187,13 @@ const oldLeft = old => { const out = [];
   await p.evaluate(() => { const g = document.querySelector('#obGo'); if(g) g.click(); }); await p.waitForTimeout(600);
   const discs = await p.evaluate(() => [...document.querySelectorAll('#obStage .opt .dot')].map(d => getComputedStyle(d).backgroundColor + ' ' + getComputedStyle(d).color));
   const obBg = await p.evaluate(() => { const o = document.querySelector('#obStage .opt'); return { page: getComputedStyle(document.body).backgroundColor, card: getComputedStyle(o).backgroundColor }; });
-  ok(discs.length >= 3 && new Set(discs).size === 1 && discs[0] === 'rgb(255, 244, 232) rgb(154, 52, 18)' && obBg.card === 'rgb(255, 255, 255)',
-    'sign-up: each answer is a white card, and the letter in front of it sits on one quiet cream disc in the deeper orange (they were eight different colours): ' + [...new Set(discs)].join(' | ') + ' ' + JSON.stringify(obBg));
+  ok(discs.length >= 3 && new Set(discs).size === 1 && discs[0] === 'rgb(255, 241, 236) rgb(163, 46, 12)' && obBg.card === 'rgb(255, 255, 255)',
+    'sign-up: each answer is a white card, and the letter in front of it sits on one quiet pale pink disc in the deeper orange (they were eight different colours): ' + [...new Set(discs)].join(' | ') + ' ' + JSON.stringify(obBg));
   for(let i = 0; i < 12 && !/Which city are you moving to/.test(await h1()); i++){
     await p.evaluate(() => { const t = document.querySelector('#obWhat'), o = document.querySelector('#obStage .opt[data-i]'), g = document.querySelector('#obGo');
       if(t){ t.value = 'Designer'; t.form.requestSubmit(); } else if(o) o.click(); else if(g) g.click(); }); await p.waitForTimeout(550); }
   const back = await p.evaluate(() => { const bk = $('obBack'), cs = getComputedStyle(bk); return { shown: cs.visibility !== 'hidden', bg: cs.backgroundColor, color: cs.color }; });
-  ok(back.shown && back.bg === 'rgb(255, 255, 255)' && back.color === 'rgb(28, 25, 23)', 'sign-up: the back button is a white disc with a dark arrow (it was a white arrow on a faint disc): ' + JSON.stringify(back));
+  ok(back.shown && back.bg === 'rgb(255, 255, 255)' && back.color === 'rgb(36, 39, 44)', 'sign-up: the back button is a white disc with a dark arrow (it was a white arrow on a faint disc): ' + JSON.stringify(back));
   const big = await p.evaluate(() => [...document.querySelectorAll('#obStage .opt')].map(o => o.querySelector('b').textContent));
   ok(/Which city are you moving to/.test(await h1()) && big.includes('Pune') && big[big.length - 1] === 'Other city', 'sign-up: the city question still offers the big cities and "Other city": ' + big.join(', '));
   await p.evaluate(() => [...document.querySelectorAll('#obStage .opt')].find(o => /Other city/.test(o.textContent)).click()); await p.waitForTimeout(500);
@@ -230,28 +240,31 @@ const oldLeft = old => { const out = [];
   ok(!left.length, 'someone looking: no screen still shows the light red, the aubergine, the older cream, the pastels or the peach tints of 16 Nov: ' + left.slice(0, 5).join(' | '));
   ok(!low.length, 'someone looking: every word reads on every screen: ' + low.slice(0, 5).join(' | '));
   ok(!gone.length, 'someone looking: no panel has melted into what it sits on (on cream a panel is white; in a white card, cream or off-white): ' + gone.slice(0, 5).join(' | '));
-  const O1 = ' rgb(194, 65, 12)';
+  const O1 = ' rgb(226, 70, 27)';
   ok(JSON.stringify(kws) === JSON.stringify({ discover: 'get along' + O1, saved: '', requests: '', tribe: 'people' + O1, parties: 'round the corner.' + O1, splits: 'Stay friends.' + O1, market: 'nearby.' + O1, account: '', messages: '' }),
     'one key word in the orange in the headline of Discover, Tribe, Parties, Flatsplits and FlatMart, and none on Saved, Requests, Profile and Messages: ' + JSON.stringify(kws));
+  await go(p, 'discover');
+  const sb = await p.evaluate(() => { const s = getComputedStyle(document.querySelector('.d-search')); return { bg: s.backgroundColor, edge: s.boxShadow.slice(0, 18) }; });
+  ok(sb.bg === 'rgb(224, 233, 242)' && sb.edge === 'rgb(203, 214, 226)', 'Discover: the search box is the pale blue-grey of the screenshots\' search bar, with a slightly deeper edge (white with a grey edge until 22 Nov): ' + JSON.stringify(sb));
   await go(p, 'market');
   const tiles = await p.evaluate(() => { const t = document.querySelector('#mkStats div'); return t ? getComputedStyle(t).backgroundColor + ' / ' + getComputedStyle(t).boxShadow : 'no tiles'; });
-  ok(/^rgb\(255, 255, 255\) \/ rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(tiles), 'FlatMart: the three number tiles on the band are white with a hairline (they were a see-through white and melted into the cream): ' + tiles);
+  ok(/^rgb\(255, 255, 255\) \/ rgb\(230, 233, 237\) 0px 0px 0px 1px/.test(tiles), 'FlatMart: the three number tiles on the band are white with a hairline: ' + tiles);
   // Tribe (Kamal, 19 Nov, two places circled on a screenshot: "This area should have white backgroud which matches the app
   // color"): the people around you, and the four steps, each on a white card
   await go(p, 'tribe');
-  const tw = await p.evaluate(() => { const card = e => { const c = getComputedStyle(e), r = e.getBoundingClientRect(); return { bg: c.backgroundColor, radius: c.borderRadius, hair: /^rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(c.boxShadow), l: Math.round(r.left), r: Math.round(r.right) }; };
+  const tw = await p.evaluate(() => { const card = e => { const c = getComputedStyle(e), r = e.getBoundingClientRect(); return { bg: c.backgroundColor, radius: c.borderRadius, hair: /^rgb\(230, 233, 237\) 0px 0px 0px 1px/.test(c.boxShadow), l: Math.round(r.left), r: Math.round(r.right) }; };
     const o = $('tribeOrbit'), j = $('tribeJourney'), or = o.getBoundingClientRect(), h1 = document.querySelector('.tribe-hero h1').getBoundingClientRect(), nodes = [...o.querySelectorAll('.node')];
     return { orbit: card(o), steps: card(j), band: getComputedStyle(document.querySelector('.tribe-hero')).backgroundColor, h1: [Math.round(h1.left), Math.round(h1.right)], nodes: nodes.length,
       inside: nodes.every(n => { const r = n.getBoundingClientRect(); return r.left >= or.left && r.right <= or.right && r.top >= or.top && r.bottom <= or.bottom; }),
       labels: [...new Set(nodes.map(n => getComputedStyle(n.querySelector(':scope > rect')).fill))].join(), me: getComputedStyle(o.querySelector('.me > circle')).fill,
       faces: [...new Set(nodes.map(n => { const r = n.querySelector('foreignObject svg').getBoundingClientRect(); return Math.round(r.width) + 'x' + Math.round(r.height); }))].join(),
       todo: getComputedStyle(j.querySelector('li:not(.now):not(.done) i')).backgroundColor, now: getComputedStyle(j.querySelector('li.now i')).backgroundColor }; });
-  ok(tw.orbit.bg === 'rgb(255, 255, 255)' && tw.orbit.radius === '28px' && tw.orbit.hair && tw.band === 'rgb(255, 244, 232)' && tw.orbit.l === tw.h1[0] && tw.orbit.r === tw.h1[1] && tw.nodes >= 3 && tw.inside,
-    'Tribe on a phone: the people around you sit on a white card (28px corners, the hairline) inside the cream band, in line with the headline, and every person and label is inside it: ' + JSON.stringify(tw.orbit) + ' ' + tw.nodes + ' people, inside ' + tw.inside);
-  ok(tw.labels === 'rgb(255, 244, 232)' && tw.me === 'rgb(255, 244, 232)' && tw.faces === '42x42',
-    'Tribe: inside that white card the match labels and the disc behind your letter are cream, and the cartoon people keep their own colours and size: ' + JSON.stringify({ labels: tw.labels, me: tw.me, faces: tw.faces }));
-  ok(tw.steps.bg === 'rgb(255, 255, 255)' && tw.steps.radius === '28px' && tw.steps.hair && tw.steps.l === tw.h1[0] && tw.steps.r === tw.h1[1] && tw.todo === 'rgb(247, 243, 239)' && tw.now === 'rgb(194, 65, 12)',
-    'Tribe: the four steps sit on a white card too; the step you are on is orange and the ones to come are the quiet off-white, which shows on white (on the cream it could hardly be seen): ' + JSON.stringify(tw.steps) + ' ' + tw.todo);
+  ok(tw.orbit.bg === 'rgb(255, 255, 255)' && tw.orbit.radius === '28px' && tw.orbit.hair && tw.band === 'rgb(231, 243, 243)' && tw.orbit.l === tw.h1[0] && tw.orbit.r === tw.h1[1] && tw.nodes >= 3 && tw.inside,
+    'Tribe on a phone: the people around you sit on a white card (28px corners, the hairline) inside the mint band, in line with the headline, and every person and label is inside it: ' + JSON.stringify(tw.orbit) + ' ' + tw.nodes + ' people, inside ' + tw.inside);
+  ok(tw.labels === 'rgb(255, 243, 238)' && tw.me === 'rgb(255, 243, 238)' && tw.faces === '42x42',
+    'Tribe: inside that white card the match labels and the disc behind your letter are the palest pink, and the cartoon people keep their own colours and size: ' + JSON.stringify({ labels: tw.labels, me: tw.me, faces: tw.faces }));
+  ok(tw.steps.bg === 'rgb(255, 255, 255)' && tw.steps.radius === '28px' && tw.steps.hair && tw.steps.l === tw.h1[0] && tw.steps.r === tw.h1[1] && tw.todo === 'rgb(243, 245, 248)' && tw.now === 'rgb(226, 70, 27)',
+    'Tribe: the four steps sit on a white card too; the step you are on is orange and the ones to come are the quiet grey, which shows on white: ' + JSON.stringify(tw.steps) + ' ' + tw.todo);
   await p.screenshot({ path: O + '/p31-tribe-cards.png' });
   const twEmpty = await p.evaluate(() => { const o = $('tribeOrbit'), j = $('tribeJourney'), keep = [o.innerHTML, j.innerHTML]; o.innerHTML = ''; j.innerHTML = '';
     const d = [getComputedStyle(o).display, getComputedStyle(j).display].join(); o.innerHTML = keep[0]; j.innerHTML = keep[1]; return d + ' / ' + getComputedStyle(o).display + ',' + getComputedStyle(j).display; });
@@ -260,7 +273,7 @@ const oldLeft = old => { const out = [];
   const acc = await p.evaluate(() => { const v = document.querySelector('.vt-line'), cs = getComputedStyle(v), out = document.querySelector('.acc-out b'), del = document.querySelector('.acc-del b');
     return { card: cs.backgroundColor, grad: /gradient/.test(cs.backgroundImage), words: getComputedStyle(v.querySelector('b')).color, fam: getComputedStyle(v.querySelector('b')).fontFamily.slice(0, 18),
       out: getComputedStyle(out).color, del: getComputedStyle(del).color, labelOneLine: v.querySelector('small').getClientRects().length === 1 }; });
-  ok(acc.card === 'rgb(28, 25, 23)' && acc.grad && acc.words === 'rgb(255, 255, 255)' && /DM Serif/.test(acc.fam) && acc.labelOneLine && acc.out === 'rgb(190, 18, 60)' && acc.del === 'rgb(87, 83, 78)',
+  ok(acc.card === 'rgb(36, 39, 44)' && acc.grad && acc.words === 'rgb(255, 255, 255)' && /DM Serif/.test(acc.fam) && acc.labelOneLine && acc.out === 'rgb(190, 18, 60)' && acc.del === 'rgb(79, 84, 92)',
     'Profile: "Your flatmate type" is the one dark card, white serif words on it; Sign out is in the danger crimson and Delete my account is quiet grey, neither in the app\'s orange: ' + JSON.stringify(acc));
   // what the audit of 16 Nov found and fixed, so it stays fixed
   const aud = await p.evaluate(() => { const q = s => document.querySelector(s), sw = q('#view-account .switch input:checked');
@@ -270,32 +283,32 @@ const oldLeft = old => { const out = [];
     const bub = getComputedStyle(f.querySelector('.hb-msg div')), mine = bub.backgroundColor + ' ' + bub.color; f.remove();
     const sh = q('#filterForm .section-h'), shc = sh && getComputedStyle(sh);
     return { sw: sw ? getComputedStyle(sw).backgroundColor : null, cap, time, mine, label: shc ? shc.paddingLeft + ' ' + shc.textIndent : null }; });
-  ok(aud.sw === 'rgb(194, 65, 12)', 'a switch that is on is orange: ' + aud.sw);
+  ok(aud.sw === 'rgb(226, 70, 27)', 'a switch that is on is orange: ' + aud.sw);
   ok(aud.cap.length === 3 && new Set(aud.cap).size === 1 && aud.cap[0] === '12.5px 700 1px uppercase', 'the quiet captions in small capitals (and the card\'s Share) share one size, weight and spacing: ' + JSON.stringify(aud.cap));
   ok(!aud.time.length, 'a time box looks like every other box (it had the browser\'s own grey edge and small type): ' + aud.time.join());
-  ok(aud.mine === 'rgb(255, 244, 232) rgb(28, 25, 23)', 'what you wrote in the help chat is the same cream bubble with dark words as in a real chat: ' + aud.mine);
+  ok(aud.mine === 'rgb(255, 241, 236) rgb(36, 39, 44)', 'what you wrote in the help chat is the same pale pink bubble with dark words as in a real chat: ' + aud.mine);
   ok(aud.label === '28px -28px', 'a section label that runs to a second line starts it under its words: ' + aud.label);
   await go(p, 'saved');
   const empty = await p.evaluate(() => (e => e && getComputedStyle(e).fontSize)(document.querySelector('#view-saved .empty h3')));
   ok(empty === '21px', 'the title of an empty screen is on the type scale (it took the browser\'s 18.72px): ' + empty);
   await go(p, 'market');
   const sell = await p.evaluate(() => (e => e && getComputedStyle(e).backgroundColor + ' ' + getComputedStyle(e).color)(document.querySelector('.mk-hero .btn:not(.btn-ghost)')));
-  ok(sell === 'rgb(194, 65, 12) rgb(255, 255, 255)', 'FlatMart: "Sell something" is the same orange as every other main button (it was the last dark one): ' + sell);
+  ok(sell === 'rgb(226, 70, 27) rgb(255, 255, 255)', 'FlatMart: "Sell something" is the same orange as every other main button (it was the last dark one): ' + sell);
   await go(p, 'discover');
   const hello = await p.evaluate(() => (e => { if(!e) return 'no greeting'; const c = getComputedStyle(e); return [c.fontSize, c.fontWeight, c.letterSpacing, c.textTransform].join(' '); })(document.querySelector('#view-discover .eyebrow')));
   ok(hello === '14px 700 normal none', 'the line over a headline ("Good morning, Neha") is in ordinary letters, not spaced like a capital label: ' + hello);
   const dot = await p.evaluate(() => (e => e ? getComputedStyle(e).backgroundColor : 'no banner')(document.querySelector('.inv-banner .urgent-dot')));
-  ok(dot === 'rgb(194, 65, 12)', 'the "live" dot on a banner that invites you somewhere can be seen: orange on the pale panel (it was a pale tint on a pale tint): ' + dot);
+  ok(dot === 'rgb(226, 70, 27)', 'the "live" dot on a banner that invites you somewhere can be seen: orange on the pale panel (it was a pale tint on a pale tint): ' + dot);
   const hc = await p.evaluate(() => { const c = document.querySelector('#cards .card'), cs = e => getComputedStyle(e), pp = c.querySelector('.price-pill'), sm = pp.querySelector('small');
-    return { card: cs(c).backgroundColor, lifted: /rgba\(60, 30, 10/.test(cs(c).boxShadow), price: cs(pp).fontFamily.slice(0, 18) + ' ' + cs(pp).fontSize, per: cs(sm).fontFamily.slice(0, 8) + ' ' + cs(sm).fontSize + ' ' + cs(sm).color, rupee: pp.textContent.trim()[0],
+    return { card: cs(c).backgroundColor, lifted: /rgba\(24, 32, 48/.test(cs(c).boxShadow), price: cs(pp).fontFamily.slice(0, 18) + ' ' + cs(pp).fontSize, per: cs(sm).fontFamily.slice(0, 8) + ' ' + cs(sm).fontSize + ' ' + cs(sm).color, rupee: pp.textContent.trim()[0],
       name: cs(c.querySelector('h3')).fontWeight, ring: (v => v && cs(v).stroke)(c.querySelector('.ring .val')), disc: (v => v && cs(v).fill)(c.querySelector('.ring circle')), btn: cs(document.querySelector('.btn')).fontWeight }; });
-  ok(hc.card === 'rgb(255, 255, 255)' && hc.lifted && hc.price === '"DM Serif Display" 28px' && hc.per === 'Urbanist 12.5px rgb(87, 83, 78)' && hc.rupee === '₹' && hc.name === '800' && hc.btn === '800',
-    'a home\'s card on Discover: white, lifted off the cream by a warm shadow; the rent in the serif at 28px with a small grey "/month"; the name and the buttons at 800: ' + JSON.stringify(hc));
+  ok(hc.card === 'rgb(255, 255, 255)' && hc.lifted && hc.price === '"DM Serif Display" 28px' && hc.per === 'Urbanist 12.5px rgb(79, 84, 92)' && hc.rupee === '₹' && hc.name === '800' && hc.btn === '800',
+    'a home\'s card on Discover: white, lifted off the white page by a soft grey shadow and a hairline; the rent in the serif at 28px with a small grey "/month"; the name and the buttons at 800: ' + JSON.stringify(hc));
   const rings = await p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
     const want = n => n >= 80 ? tok('--ok') : n >= 60 ? tok('--mid') : tok('--text-3');
     const all = [...document.querySelectorAll('#cards .card .ring')].map(r => { const n = parseInt(r.getAttribute('aria-label'), 10), got = getComputedStyle(r.querySelector('.val')).stroke; return { n, got, right: got === want(n) }; });
     return { n: all.length, wrong: all.filter(x => !x.right).map(x => x.n + ' ' + x.got), kinds: [...new Set(all.map(x => x.got))], lt: tok('--orange-lt'), strong: all.filter(x => x.n >= 80).length, fair: all.filter(x => x.n >= 60 && x.n < 80).length }; });
-  ok(rings.n >= 5 && !rings.wrong.length && rings.strong >= 1 && rings.fair >= 1 && rings.kinds.length >= 2 && !rings.kinds.includes(rings.lt) && hc.disc === 'rgb(28, 25, 23)',
+  ok(rings.n >= 5 && !rings.wrong.length && rings.strong >= 1 && rings.fair >= 1 && rings.kinds.length >= 2 && !rings.kinds.includes(rings.lt) && hc.disc === 'rgb(36, 39, 44)',
     'the vibe score\'s ring keeps its meaning on its ink disc: green from 80, amber from 60, grey under (' + rings.strong + ' strong and ' + rings.fair + ' fair on Discover); never the look\'s light orange, which made a strong match and a fair one look the same: ' + JSON.stringify(rings.kinds) + ' ' + rings.wrong.join(' | '));
   // neither of our fonts has a rupee sign (a phone borrows it from a font of its own): beside the big serif figures it is set small, in the body face
   const rs = await p.evaluate(() => { const pp = document.querySelector('#cards .card .price-pill'), r = pp.querySelector('.rs'), cs = r && getComputedStyle(r);
@@ -308,18 +321,18 @@ const oldLeft = old => { const out = [];
     return { label: cs.color, caps: cs.textTransform, size: cs.fontSize, dash: dash.backgroundColor, dashW: dash.width, hero: np ? getComputedStyle(np).backgroundColor : null, heroGrad: np ? /gradient/.test(getComputedStyle(np).backgroundImage) : null,
       title: t ? getComputedStyle(t).fontFamily.slice(0, 18) : null, ring: ring && getComputedStyle(ring).fill, go: go && getComputedStyle(go).backgroundColor,
       frame: np ? (a => a.content !== 'none' ? a.borderTopWidth + ' ' + a.borderTopColor : 'none')(getComputedStyle(np, '::after')) : null, white: np ? getComputedStyle(np).color : null }; });
-  ok(d.label === 'rgb(194, 65, 12)' && d.caps === 'uppercase' && d.size === '12.5px' && d.dash === 'rgb(194, 65, 12)' && d.dashW === '18px', 'a home\'s page: the small labels are orange capitals with a short orange line in front: ' + JSON.stringify({ label: d.label, size: d.size, dash: d.dash }));
-  ok(d.hero === 'rgb(92, 36, 8)' && d.heroGrad && d.frame === '3px rgb(194, 65, 12)' && d.white === 'rgb(255, 255, 255)' && /DM Serif/.test(d.title || '') && d.ring === 'rgb(28, 25, 23)' && d.go === 'rgb(194, 65, 12)',
-    'a home with no photo: the deep warm brown inside a thin orange frame as its header (the dark card until 17 Nov), white words, the name in the serif, the score on an ink disc, Send request in the orange: ' + JSON.stringify(d));
+  ok(d.label === 'rgb(188, 54, 15)' && d.caps === 'uppercase' && d.size === '12.5px' && d.dash === 'rgb(226, 70, 27)' && d.dashW === '18px', 'a home\'s page: the small labels are orange capitals with a short orange line in front: ' + JSON.stringify({ label: d.label, size: d.size, dash: d.dash }));
+  ok(d.hero === 'rgb(44, 49, 56)' && d.heroGrad && d.frame === '3px rgb(226, 70, 27)' && d.white === 'rgb(255, 255, 255)' && /DM Serif/.test(d.title || '') && d.ring === 'rgb(36, 39, 44)' && d.go === 'rgb(226, 70, 27)',
+    'a home with no photo: charcoal inside a thin frame of the orange-red as its header (the deep warm brown from 17 to 22 Nov), white words, the name in the serif, the score on an ink disc, Send request in the orange: ' + JSON.stringify(d));
   const ink = await p.evaluate(() => { const cs = e => getComputedStyle(e), D = $('dlgListing'), sh = D.querySelector('.ink-sheet'); if(!sh) return { n: 0 }; const h = sh.querySelector('.ink-h'), pr = D.querySelector('.l-bar-price b');
     return { n: D.querySelectorAll('.ink-sheet').length, bg: cs(sh).backgroundColor, h: h.textContent, tag: h.tagName, hLook: cs(h).fontFamily.slice(0, 18) + ' ' + cs(h).fontSize + ' ' + cs(h).color, intro: cs(sh.querySelector('.gen-intro')).color,
       chips: [...new Set([...sh.querySelectorAll('.traits span')].map(x => cs(x).backgroundColor + ' ' + cs(x).color))].join(' | '), ticks: sh.querySelectorAll('.traits .tk').length, tick: (t => t && cs(t).color)(sh.querySelector('.tk')),
       same: [...sh.querySelectorAll('.traits span.tr-same')].length, compat: (c => c && cs(c).backgroundColor + ' ' + cs(c).color)(sh.querySelector('.compat-mini')), cell: (c => c && cs(c).backgroundColor)(sh.querySelector('.compat-mini .cx-area')),
       bar: pr && cs(pr).fontFamily.slice(0, 18) + ' ' + cs(pr).fontSize + ' ' + pr.textContent.trim()[0] + ' ' + !!pr.querySelector('.rs'), labelGone: ![...D.querySelectorAll('.section-h')].some(x => /who you'd live with/i.test(x.textContent)) }; });
-  ok(ink.n === 1 && ink.bg === 'rgb(28, 25, 23)' && ink.h === 'Who you\'d live with' && ink.tag === 'H3' && ink.hLook === '"DM Serif Display" 24px rgb(255, 255, 255)' && ink.intro === 'rgb(214, 211, 209)' && ink.labelGone,
+  ok(ink.n === 1 && ink.bg === 'rgb(36, 39, 44)' && ink.h === 'Who you\'d live with' && ink.tag === 'H3' && ink.hLook === '"DM Serif Display" 24px rgb(255, 255, 255)' && ink.intro === 'rgb(213, 216, 221)' && ink.labelGone,
     'a home\'s page: "Who you\'d live with" and the household\'s answers sit on one ink sheet, the title in the white serif at 24px with a small grey line under it: ' + JSON.stringify({ n: ink.n, bg: ink.bg, h: ink.h, look: ink.hLook }));
-  ok(ink.chips === 'rgb(43, 41, 40) rgb(255, 255, 255)' && ink.ticks >= 1 && ink.ticks === ink.same && ink.tick === 'rgb(253, 186, 116)' && ink.compat === 'rgb(255, 255, 255) rgb(28, 25, 23)' && ink.cell === 'rgb(255, 244, 232)',
-    'on the ink sheet: dark chips with white words, a light-orange tick on each answer you share (' + ink.ticks + '), and the compatibility card white inside it with cream cells: ' + JSON.stringify({ chips: ink.chips, tick: ink.tick, compat: ink.compat, cell: ink.cell }));
+  ok(ink.chips === 'rgb(53, 58, 66) rgb(255, 255, 255)' && ink.ticks >= 1 && ink.ticks === ink.same && ink.tick === 'rgb(255, 177, 156)' && ink.compat === 'rgb(255, 255, 255) rgb(36, 39, 44)' && ink.cell === 'rgb(255, 243, 238)',
+    'on the ink sheet: dark chips with white words, a light-orange tick on each answer you share (' + ink.ticks + '), and the compatibility card white inside it with pale pink cells: ' + JSON.stringify({ chips: ink.chips, tick: ink.tick, compat: ink.compat, cell: ink.cell }));
   ok(ink.bar === '"DM Serif Display" 32px ₹ true', 'the bar at the foot of a home\'s page: the rent in the serif at 32px, with the same small rupee sign: ' + ink.bar);
   ok(!(await p.evaluate(melted)).length, 'a home\'s page: no panel has melted into what it sits on: ' + (await p.evaluate(melted)).slice(0, 4).join(' | '));
   ok(!(await p.evaluate(audit)).length, 'a home\'s page: every word reads: ' + (await p.evaluate(audit)).slice(0, 4).join(' | '));
@@ -335,10 +348,10 @@ const oldLeft = old => { const out = [];
       pal: JSON.stringify([CARD, VC_PALETTE]), fonts: document.fonts.check('400 54px "DM Serif Display"') && document.fonts.check('800 60px "Urbanist"') }; });
   // a deep warm brown: red over green over blue, and dark enough for white words at 5:1 or better (the lightest glow is #B45309)
   const lumOf = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
-  const brown = h => { const [r, g, bl] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); return r > g && g > bl && 1.05 / (lumOf(h) + .05) >= 5; };
-  ok(pics.card === '#5C2408' && brown(pics.top) && brown(pics.bottom) && brown(pics.inside) && pics.frame === '#C2410C' && pics.vibeBg === '#FFF4E8' && pics.vibeBg === pics.want.toUpperCase() && pics.fonts
+  const brown = h => 1.05 / (lumOf(h) + .05) >= 5;   // dark enough for white words (the name is from the warm brown of 17 Nov; it is charcoal since 22 Nov)
+  ok(pics.card === '#2C3138' && brown(pics.top) && brown(pics.bottom) && brown(pics.inside) && pics.frame === '#E2461B' && pics.vibeBg === '#DDECF8' && pics.vibeBg === pics.want.toUpperCase() && pics.fonts
     && !/#1F1B2E|#4B303B|#EE6468|#CE3A44|#1B2440|#253360|#10264F|#0B7C82|#1C7F72|#C3C9F6|#EBD981|#C3E0D6/i.test(pics.pal),
-    'the pictures people share: a home\'s is the deep warm brown inside a thin orange frame, dark enough everywhere for its white words; the Vibe Card sits on the cream: ' + JSON.stringify({ top: pics.top, bottom: pics.bottom, inside: pics.inside, frame: pics.frame, vibeBg: pics.vibeBg }));
+    'the pictures people share: a home\'s is charcoal inside a thin frame of the orange-red, dark enough everywhere for its white words; the Vibe Card sits on the pale blue: ' + JSON.stringify({ top: pics.top, bottom: pics.bottom, inside: pics.inside, frame: pics.frame, vibeBg: pics.vibeBg }));
   // the compatibility chart's four areas: each name is written in its own colour, so each must read on white
   const cg = await p.evaluate(() => { const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     return COMPAT_GROUPS.map(g => [g.name, g.color, Math.round(1.05 / (lum(g.color) + .05) * 100) / 100]).concat(AV_COLORS.map(c => ['dot', c, Math.round(1.05 / (lum(c) + .05) * 100) / 100])); });
@@ -367,7 +380,7 @@ const oldLeft = old => { const out = [];
     ok(tn.card === 'rgb(255, 255, 255)' && tn.w === w - 40 && tn.steps === w - 40 && Math.abs(tn.shape) <= 1 && tn.inside && tn.oneLine && tn.side <= 0,
       w + ' x ' + h + ': Tribe\'s two white cards fit the screen, the drawing keeps its shape (no empty strip above and below it), everyone is inside the card, and each step\'s name is on one line: ' + JSON.stringify(tn));
     if(w === 360){ await go(p, 'discover'); const fold = await p.evaluate(() => { const c = document.querySelector('#cards .card'), s = document.querySelector('.d-search, #dSearch, .ds-q'); return { card: c ? Math.round(c.getBoundingClientRect().top) : null, search: s ? Math.round(s.getBoundingClientRect().top) : null }; });
-      ok(fold.card !== null && fold.search !== null && fold.search <= 296, '360 x 640: with the bigger headline the search still starts no lower than it did (296px on 16 Nov; the room kept for the old sheet\'s edge went), so the homes under it do not either: ' + JSON.stringify(fold));
+      ok(fold.card !== null && fold.search !== null && fold.search <= 296, '360 x 640: with the bigger headline and the white sheet over the band\'s foot back, the search still starts no lower than it did (296px on 16 Nov), so the homes under it do not either: ' + JSON.stringify(fold));
       await p.screenshot({ path: O + '/p31-discover-360.png' }); }
     await ctx.close(); }
   // ------------------------------------------------------------ Passes on a computer
@@ -383,9 +396,9 @@ const oldLeft = old => { const out = [];
   await p.evaluate(() => document.querySelectorAll('dialog[open]').forEach(d => d.close())); await go(p, 'tribe');
   const twc = await p.evaluate(() => { const o = $('tribeOrbit'), j = $('tribeJourney'), cj = getComputedStyle(j), hero = document.querySelector('.tribe-hero').getBoundingClientRect(), jr = j.getBoundingClientRect();
     return { hero: getComputedStyle(document.querySelector('.tribe-hero')).backgroundColor, orbit: getComputedStyle(o).backgroundColor, label: getComputedStyle(o.querySelector('.node > rect')).fill,
-      steps: cj.backgroundColor, radius: cj.borderRadius, hair: /^rgb\(238, 232, 226\) 0px 0px 0px 1px/.test(cj.boxShadow), inLine: Math.round(jr.left - hero.left) + Math.round(jr.right - hero.right), subs: [...j.querySelectorAll('li span')].filter(x => x.offsetParent).length }; });
-  ok(twc.hero === 'rgb(255, 255, 255)' && twc.orbit === 'rgba(0, 0, 0, 0)' && twc.label === 'rgb(255, 244, 232)' && twc.steps === 'rgb(255, 255, 255)' && twc.radius === '28px' && twc.hair && twc.inLine === 0 && twc.subs === 4,
-    'Tribe on a computer: the people are inside the band\'s white card as before (no second card), their labels cream; the four steps get a white card, as wide as the band, with their second lines: ' + JSON.stringify(twc));
+      steps: cj.backgroundColor, radius: cj.borderRadius, hair: /^rgb\(230, 233, 237\) 0px 0px 0px 1px/.test(cj.boxShadow), inLine: Math.round(jr.left - hero.left) + Math.round(jr.right - hero.right), subs: [...j.querySelectorAll('li span')].filter(x => x.offsetParent).length }; });
+  ok(twc.hero === 'rgb(231, 243, 243)' && twc.orbit === 'rgb(255, 255, 255)' && twc.label === 'rgb(255, 243, 238)' && twc.steps === 'rgb(255, 255, 255)' && twc.radius === '28px' && twc.hair && twc.inLine === 0 && twc.subs === 4,
+    'Tribe on a computer: the band is a mint panel, the people sit on their white card in it (the band itself was the white card until 22 Nov), their labels the palest pink; the four steps have a white card, as wide as the band, with their second lines: ' + JSON.stringify(twc));
   await p.screenshot({ path: O + '/p31-tribe-wide.png' });
   await ctx.close();
   // ------------------------------------------------------------ the pages beside the app
@@ -393,8 +406,8 @@ const oldLeft = old => { const out = [];
   await p.goto(U + 'privacy.html'); await p.waitForTimeout(900); await p.evaluate(() => document.fonts.ready);
   const pv = await p.evaluate(() => { const cs = e => getComputedStyle(document.querySelector(e)); return { h1: cs('h1').fontFamily.slice(0, 18), body: cs('body').fontFamily.slice(0, 12), bg: cs('body').backgroundColor, box: cs('.short').backgroundColor, link: cs('main a, .wrap a:not(.logo):not(.back)').color,
     logo: document.querySelector('.logo img').getAttribute('src'), src: document.documentElement.outerHTML }; });
-  ok(/DM Serif/.test(pv.h1) && /Urbanist/.test(pv.body) && pv.bg === 'rgb(255, 244, 232)' && pv.box === 'rgb(255, 255, 255)' && pv.link === 'rgb(194, 65, 12)' && !/#1C7F72|#156358|#DCEFE9|#EE6468|#CE3A44|#1F1B2E|Plus Jakarta/i.test(pv.src) && !(await p.evaluate(audit)).length,
-    'the privacy policy page wears the same look (a cream page, its summary a white panel), and reads: ' + JSON.stringify({ h1: pv.h1, body: pv.body, bg: pv.bg, link: pv.link }) + ' ' + (await p.evaluate(audit)).slice(0, 3).join(' | '));
+  ok(/DM Serif/.test(pv.h1) && /Urbanist/.test(pv.body) && pv.bg === 'rgb(255, 255, 255)' && pv.box === 'rgb(255, 255, 255)' && pv.link === 'rgb(34, 105, 195)' && !/#1C7F72|#156358|#DCEFE9|#EE6468|#CE3A44|#1F1B2E|Plus Jakarta/i.test(pv.src) && !(await p.evaluate(audit)).length,
+    'the privacy policy page wears the same look (a white page, its summary a white panel with a hairline and a shadow, blue links), and reads: ' + JSON.stringify({ h1: pv.h1, body: pv.body, bg: pv.bg, link: pv.link }) + ' ' + (await p.evaluate(audit)).slice(0, 3).join(' | '));
   const pl = await p.evaluate(() => ({ srcs: [...document.querySelectorAll('.logo img')].map(i => i.getAttribute('src')).join(), glow: getComputedStyle(document.querySelector('.logo img')).boxShadow,
     word: getComputedStyle(document.querySelectorAll('.logo img')[1]).boxShadow, tab: document.querySelector('link[rel=icon]').getAttribute('href') }));
   const pvSeen = await pixelOf(p, (await p.locator('.logo img').first().screenshot()).toString('base64'), .5, .88);   // under the letters, where the tile is plain
@@ -402,14 +415,15 @@ const oldLeft = old => { const out = [];
     && pvSeen === '194,65,12', 'the privacy policy page shows the same logo: the orange tile and the wordmark, and the tile as its tab icon: ' + JSON.stringify(Object.assign(pl, { seen: pvSeen })));
   await p.screenshot({ path: O + '/p31-privacy.png' });
   const hold = fs.readFileSync(path.join(APP, 'hold.html'), 'utf8');
-  ok(/fill='%23C2410C'/.test(hold) && !/%23EE6468|#EE6468|#1F1B2E|#FDF8F1/i.test(hold) && /--orange:#C2410C/.test(hold) && /--bg:#FFF4E8/.test(hold) && /name="theme-color" content="#FFF4E8"/.test(hold) && /src="icons\/logo-icon\.svg"/.test(hold) && /src="icons\/wordmark\.svg"/.test(hold),
-    'the Coming soon page (kept for a hold) has the same logo, the same orange tab icon and the app\'s colours, on the cream');
+  ok(/fill='%23C2410C'/.test(hold) && !/%23EE6468|#EE6468|#1F1B2E|#FDF8F1/i.test(hold) && /--orange:#E2461B/.test(hold) && /--bg:#FFFFFF/.test(hold) && /name="theme-color" content="#FFFFFF"/.test(hold) && /src="icons\/logo-icon\.svg"/.test(hold) && /src="icons\/wordmark\.svg"/.test(hold),
+    'the Coming soon page (kept for a hold) has the same logo, the logo\'s own orange on its tab icon and the app\'s colours, on white');
   const man = await p.evaluate(async () => (await fetch('manifest.webmanifest')).json());
-  ok(man.theme_color.toUpperCase() === '#FFF4E8' && man.background_color.toUpperCase() === '#FFF4E8', 'the installed app opens on the cream page: ' + man.theme_color);
+  ok(man.theme_color.toUpperCase() === '#FFFFFF' && man.background_color.toUpperCase() === '#FFFFFF', 'the installed app opens on the white page: ' + man.theme_color);
   // the Android app: the window, the navigation bar and the strip behind the clock are the same cream, with dark icons
   const sty = fs.readFileSync(path.join(APP, 'android/app/src/main/res/values/styles.xml'), 'utf8'), act = fs.readFileSync(path.join(APP, 'android/app/src/main/java/com/findmeflatmate/app/MainActivity.java'), 'utf8');
-  ok(/<color name="page">#FFF4E8<\/color>/.test(sty) && /<color name="brand">#C2410C<\/color>/.test(sty) && /statusStrip\.setBackgroundColor\(getColor\(R\.color\.page\)\)/.test(act) && /APPEARANCE_LIGHT_NAVIGATION_BARS\s*\|\s*WindowInsetsController\.APPEARANCE_LIGHT_STATUS_BARS/.test(act)
-    && /setSystemBarsAppearance\(light, light\)/.test(act), 'the Android app: the page colour is the cream, the strip behind the clock is painted in it, and both bars carry dark icons');
+  ok(/<color name="page">#FFFFFF<\/color>/.test(sty) && /<color name="brand">#C2410C<\/color>/.test(sty) && /statusStrip\.setBackgroundColor\(getColor\(R\.color\.page\)\)/.test(act)
+    && /case "bars":\s*paintBars\(m\.optString\("color"\)\)/.test(act) && /hex\.matches\("#\[0-9A-Fa-f\]\{6\}"\)/.test(act) && /statusStrip\.setBackgroundColor\(colour\)/.test(act) && /APPEARANCE_LIGHT_NAVIGATION_BARS\s*\|\s*WindowInsetsController\.APPEARANCE_LIGHT_STATUS_BARS/.test(act)
+    && /setSystemBarsAppearance\(light, light\)/.test(act), 'the Android app: the page colour is white, the strip behind the clock starts in it and is then painted in the colour the page reports for the top of the screen ("bars", a #RRGGBB only), and both bars carry dark icons');
   await ctx.close();
   await b.close();
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));

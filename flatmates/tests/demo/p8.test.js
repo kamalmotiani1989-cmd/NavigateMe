@@ -2,8 +2,9 @@
 // first screen, the type scale, the sign-in card on the first phone screen, the "No photos yet" state, the hint
 // grey, the WhatsApp green and "every colour is a named token". Since the look of 16 Nov 2026 (the logo's orange
 // and white) the low-contrast check reads every piece of small orange text against what is behind it (it looked for
-// green text on pale green, then for red text on pink). Since the look of 17 Nov 2026 the pale tints are all one cream,
-// on which the logo's orange reads at 4.8:1.
+// green text on pale green, then for red text on pink). Since the look of 17 Nov 2026 the pale tints were all one cream,
+// on which the logo's orange read at 4.8:1. Since the look of 22 Nov 2026 (white, an orange-red and pastels) small orange
+// words are a deeper shade of the buttons' orange-red, and the hint grey is a cooler one that reads on every pastel.
 const { chromium } = require('playwright');
 const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m), errs = [];
 (async () => {
@@ -27,13 +28,13 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   const city = await p.evaluate(() => { const c = $('city').getBoundingClientRect(), q = document.querySelector('.w-card').getBoundingClientRect(); return { w: Math.round(c.width), quiz: Math.round(q.width) }; });
   ok(city.w > 300 && city.w >= city.quiz, 'visitor: the picture is full width on a phone, not squashed: ' + JSON.stringify(city));
   await p.screenshot({ path: O + '/p8-welcome.png' });
-  // hints and small print: the grey reads at 4.5:1 or better on white, the page, the off-white and the old tint tokens (all the cream since 17 Nov)
+  // hints and small print: the grey reads at 4.5:1 or better on white, the page, the quiet grey, the palest pink, the pink highlight and the blue band
   const grey = await p.evaluate(() => { const v = getComputedStyle(document.documentElement).getPropertyValue('--text-3').trim();
     const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
     const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return Math.round((x + .05) / (y + .05) * 100) / 100; };
     const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
     return { v, white: ratio(v, '#FFFFFF'), page: ratio(v, tok('--bg')), offWhite: ratio(v, tok('--surface-2')), soft: ratio(v, tok('--orange-soft')), tint: ratio(v, tok('--hi')), band: ratio(v, tok('--lav')) }; });
-  ok(grey.v.toUpperCase() === '#6B635D' && grey.white >= 4.5 && grey.page >= 4.5 && grey.offWhite >= 4.5 && grey.soft >= 4.5 && grey.tint >= 4.5 && grey.band >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better on every surface: ' + JSON.stringify(grey));
+  ok(grey.v.toUpperCase() === '#5F656D' && grey.white >= 4.5 && grey.page >= 4.5 && grey.offWhite >= 4.5 && grey.soft >= 4.5 && grey.tint >= 4.5 && grey.band >= 4.5, 'visitor: the hint grey reads at 4.5:1 or better on every surface: ' + JSON.stringify(grey));
   // the WhatsApp button: darker green, white text at 4.5:1 or better; the sign-in card's controls are the same
   const wa = await p.evaluate(() => { const bt = document.querySelector('#loginForm .btn-wa'), cs = getComputedStyle(bt);
     const lum = rgb => { const c = rgb.match(/\d+/g).slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
@@ -59,8 +60,8 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
   ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
   await ctx.addInitScript(s => { if(!localStorage.getItem('fm_state')){ localStorage.setItem('fm_state', JSON.stringify(s)); localStorage.setItem('fm_state:' + s.account, JSON.stringify(s)); } }, seeker);
   p = await ctx.newPage(); p.on('pageerror', e => errs.push('seeker ' + e.message)); p.on('dialog', d => d.accept().catch(() => {}));
-  // every visible text in the logo's orange (--orange-text) against what is behind it: on white, the cream and the off-white it
-  // reads at 4.7:1 or better. (On 16 Nov's peach bands it read at 4.3 to 4.5:1, too little for small text, so orange text there
+  // every visible text in the orange (small words in --orange-text, the key word in --orange) against what is behind it: small
+  // words read at 4.5:1 or better, big ones at 3:1. Until 22 Nov this looked for the logo's orange, which read at 4.7:1. (On 16 Nov's peach bands it read at 4.3 to 4.5:1, too little for small text, so orange text there
   // took --orange-deep; a few places still use that shade. Before 16 Nov this looked for the old green on pale green.)
   // text sizes in use on each screen (avatars and icon circles aside)
   const sizes = new Set(), odd = new Set();
@@ -84,7 +85,7 @@ const O = process.argv[2], ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + 
     const out = [];
     document.querySelectorAll('body *').forEach(e => { if(!e.offsetParent && getComputedStyle(e).position !== 'fixed') return;
       const own = [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()); if(!own) return;
-      const cs = getComputedStyle(e); if(cs.color !== 'rgb(194, 65, 12)') return;
+      const cs = getComputedStyle(e); if(cs.color !== 'rgb(188, 54, 15)' && cs.color !== 'rgb(226, 70, 27)') return;
       const lum = c => { const a = c.match(/[\d.]+/g).slice(0, 3).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }); return .2126 * a[0] + .7152 * a[1] + .0722 * a[2]; };
       const bg = bgOf(e) || 'rgb(255, 255, 255)', ratio = (lum(bg) + .05) / (lum(cs.color) + .05), f = parseFloat(cs.fontSize), big = f >= 18.5 || (f >= 14 && +cs.fontWeight >= 700);
       if(ratio < (big ? 3 : 4.5)) out.push((e.className || e.tagName) + ' ' + ratio.toFixed(2) + ' on ' + bg + ': ' + e.textContent.trim().slice(0, 30)); });

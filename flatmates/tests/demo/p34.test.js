@@ -33,6 +33,7 @@ const fine = a => a.n > 5 && !a.odd.length && !a.low.length;
   // ------------------------------------------------------------ 1. the feed
   let { ctx, p } = await open(b, person('9822200031', 'Asha', 'female'), 390, 844);
   const card = await p.evaluate(() => { const c = document.querySelector('#pnBody .pn-card'), cs = getComputedStyle(c.querySelector('.pn-title')), bar = c.querySelector('.pn-bar i');
+    scrollTo(0, c.getBoundingClientRect().top + scrollY - 110);   // the card clear of the bottom bar and the Help button, whatever stands above it
     const o = c.querySelector('.pn-open'), at = (x, y) => document.elementFromPoint(x, y), r = c.getBoundingClientRect(), hr = c.querySelector('.pn-save').getBoundingClientRect();
     return { tag: c.tagName, role: c.getAttribute('role'), open: o && o.tagName + ' ' + o.dataset.near + ' ' + o.textContent, inTitle: !!o && o.parentNode.classList.contains('pn-title'), nested: !!c.querySelector('button button, [role=button] button'),
       whole: at(r.left + 20, r.top + 150) === o && at(r.left + r.width / 2, r.top + 60) === o && at(r.right - 20, r.top + 170) === o, heartOnTop: !!at(hr.left + hr.width / 2, hr.top + hr.height / 2).closest('.pn-save'), cover: !!c.querySelector('.pn-cover .pc'), bulbs: c.querySelectorAll('.pc-lights circle').length, emoji: c.querySelector('.pc-emoji').textContent,
@@ -247,7 +248,7 @@ const fine = a => a.n > 5 && !a.odd.length && !a.low.length;
       zones: list.map(x => x.zone && x.zone.lat + ',' + x.zone.lng).join(' '), rounded: list.every(x => { const g = all.find(y => y.code === x.code).near_geo; return x.zone.lat === Math.round(g.lat * 100) / 100 && x.zone.lng === Math.round(g.lng * 100) / 100 && (x.zone.lat !== g.lat || x.zone.lng !== g.lng); }),
       leak: list.some(x => 'near_geo' in x || 'geo' in x || 'address' in x || 'near_address' in x || 'host_phone' in x) || all.some(y => json.includes(String(y.near_geo.lat)) || json.includes(String(y.near_geo.lng)) || json.includes(y.host_phone)) }; });
   ok(view0.list === 'true' && view0.map === 'false' && mp.pressed === 'true' && mp.view === 'map' && !mp.cards && mp.lenses === 7, 'List or Map by "Near you": the map takes the place of the cards, under the same lenses');
-  ok(mp.pins.join() === '🎲,🏏,🍲' && mp.me === 'You' && mp.rings === 3 && /^#C2410C$/i.test(mp.ring) && mp.card && mp.h >= 320, 'on the map: a mark for each party (its kind\'s emoji) in the middle of an orange circle, and "You" where you measure from');
+  ok(mp.pins.join() === '🎲,🏏,🍲' && mp.me === 'You' && mp.rings === 3 && /^#E2461B$/i.test(mp.ring) && mp.card && mp.h >= 320, 'on the map: a mark for each party (its kind\'s emoji) in the middle of an orange circle, and "You" where you measure from');
   ok(/Each circle is an area about a kilometre across, not the flat\. The address comes when the host says yes\./.test(mp.hint), 'the line under the map says what a circle is: ' + mp.hint);
   ok(mp.rounded && !mp.leak, 'what the app holds for the map is each party\'s spot rounded to two decimals (' + mp.zones + '), never its pin, address or number');
   ok(mp.top >= 60 && mp.top <= 110, 'on a phone, picking Map brings the map up under the top bar (the "Near you" line at ' + mp.top + 'px)');

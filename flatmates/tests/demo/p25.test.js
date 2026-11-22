@@ -48,10 +48,10 @@ const FEATURES = /Flatsplits|FlatMart|Move-in kit|agreement|scam|Tribe|Escape|Vi
       h1: getComputedStyle(document.querySelector('.w-copy h1')).color, em: getComputedStyle(document.querySelector('.w-copy h1 em')).color, lede: getComputedStyle(document.querySelector('.w-copy .lede')).color,
       trust: getComputedStyle(document.querySelector('.w-trust')).color, tag: getComputedStyle(document.querySelector('.tagline')).color,
       sheet: { bg: sheet.backgroundColor, radius: sheet.borderTopLeftRadius }, cardTop: Math.round(card.top), copyBottom: Math.round(copy.bottom), cityTop: Math.round(city.top), cardBottom: Math.round(card.bottom), copyRight: Math.round(copy.right), cardLeft: Math.round(card.left) }; });
-  ok(look.band === look.page && look.page === 'rgb(255, 244, 232)' && [look.h1, look.em].every(c => c === look.ink) && look.kw === 'vibe ' + look.orange && [look.lede, look.trust, look.tag].every(c => c === look.text),
-    'the headline sits on the cream page, near-black, with its one key word in the logo\'s orange (a tinted band with nothing orange on it until 17 Nov): ' + look.kw);
-  ok(look.sheet.bg === look.band && look.cardBg === 'rgb(255, 255, 255)' && look.cardTop < look.copyBottom && look.cardBottom > look.cityTop && look.copyRight <= look.cardLeft,
-    'the sign-up card is a white card beside the words, reaching down past them to the picture (the sheet it stood across is the page\'s own cream now, so no edge shows): ' + JSON.stringify({ cardTop: look.cardTop, copyBottom: look.copyBottom, cityTop: look.cityTop, cardBottom: look.cardBottom }));
+  ok(look.band === 'rgb(221, 236, 248)' && look.page === 'rgb(255, 255, 255)' && [look.h1, look.em].every(c => c === look.ink) && look.kw === 'vibe ' + look.orange && [look.lede, look.trust, look.tag].every(c => c === look.text),
+    'the headline sits on a pale blue band over a white page (the look of 22 Nov; the page was all cream from 17 Nov), charcoal, with its one key word in the orange: ' + look.kw + ' on ' + look.band);
+  ok(look.sheet.bg === look.page && look.cardBg === 'rgb(255, 255, 255)' && look.cardTop < look.copyBottom && look.cardBottom > look.cityTop && look.copyRight <= look.cardLeft,
+    'the sign-up card is a white card beside the words, reaching down past them to the picture; the white page comes up over the band\'s foot as a sheet again: ' + JSON.stringify({ cardTop: look.cardTop, copyBottom: look.copyBottom, cityTop: look.cityTop, cardBottom: look.cardBottom }));
   // the picture: our cartoon people around a match ring, no photos, no screens of the app
   const art = await p.evaluate(() => { const c = $('city'); return { hidden: c.getAttribute('aria-hidden'), people: c.querySelectorAll('.w-people > span svg').length, ring: (c.querySelector('.w-people > b text') || {}).textContent, imgs: c.querySelectorAll('img').length,
     words: c.textContent.replace(/\d+/g, '').trim(), solid: /^rgb\(/.test(getComputedStyle(c.querySelector('.ring circle')).fill) }; });
@@ -80,12 +80,12 @@ const FEATURES = /Flatsplits|FlatMart|Move-in kit|agreement|scam|Tribe|Escape|Vi
     await p.goto(U); await p.waitForTimeout(1100);
     const ph = await p.evaluate(() => { const tok = n => { const d = document.createElement('i'); d.style.color = `var(${n})`; document.body.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
       const r = s => document.querySelector(s).getBoundingClientRect(), sheet = getComputedStyle(document.querySelector('.w-card'), '::before');
-      return { side: document.documentElement.scrollWidth - innerWidth, band: getComputedStyle(document.querySelector('.w-band')).backgroundColor === tok('--bg'), sheet: sheet.backgroundColor === getComputedStyle(document.querySelector('.w-band')).backgroundColor,
+      return { side: document.documentElement.scrollWidth - innerWidth, band: getComputedStyle(document.querySelector('.w-band')).backgroundColor === 'rgb(221, 236, 248)', sheet: sheet.backgroundColor === 'rgb(255, 255, 255)',
         trustBottom: Math.round(r('.w-trust').bottom), cardTop: Math.round(r('.w-card').top), roles: [...document.querySelectorAll('.w-card .role')].map(e => Math.round(e.getBoundingClientRect().bottom)),
         ledeAfter: r('.w-copy .lede').top > r('.w-card').bottom, people: Math.round(r('.w-people').width), H: document.documentElement.scrollHeight }; });
     // (on the smallest phone, 320 x 640, the first two choices are on the first screen and the third just below)
     ok(ph.side <= 0 && ph.band && ph.sheet && ph.cardTop - ph.trustBottom >= 20 && ph.cardTop - ph.trustBottom <= 36 && (w === 320 ? ph.roles[0] < h : ph.roles.every(y => y < h)) && ph.ledeAfter && ph.people <= w - 30,
-      w + ' wide: the headline on the cream, then the card close under it (the room kept for the old sheet\'s edge went on 17 Nov); the choices on the first screen; nothing scrolls sideways: ' + JSON.stringify({ trustBottom: ph.trustBottom, cardTop: ph.cardTop, roles: ph.roles, H: ph.H }));
+      w + ' wide: the headline on the pale blue band, then the card close under it on the white sheet; the choices on the first screen; nothing scrolls sideways: ' + JSON.stringify({ trustBottom: ph.trustBottom, cardTop: ph.cardTop, roles: ph.roles, H: ph.H }));
     if(w === 390) await p.screenshot({ path: O + '/p25-login-phone.png', fullPage: true });
     await ctx.close(); }
 
