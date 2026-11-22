@@ -1,5 +1,39 @@
 # Teche · reports
 
+## 2026-11-22, the new colours (#123) live, on Kamal's yes
+
+- **What was asked (Kamal, 22 Nov, in my session):** he was sent the finished build's pictures and asked "Shall
+  I put it live? On your yes I'll also update my own rules to say this is the look to keep." He answered "Yes"
+  twice (two lines). Read as yes to both: put it live, and change the look rule in my brief.
+- **Live:** #123 merged (`b41d5dc`). Android build 226 (the new Java compiled in CI; both `flatmates-apk`
+  releases say build 226 and carry the same file). Website `6b541d5` "Publish the app from NavigateMe b41d5dc",
+  its Pages deployment succeeded. What #123 is: the entry below. No database change.
+- **Checked after publishing:**
+  - the published copy: main and gh-pages hold the same files (57, no internal folders); the new tokens, the
+    yellow and pink bands and the `bars` message are in the page; the privacy page, the manifest and the
+    link-preview picture are the new ones; the blog is byte for byte the repository's;
+  - the Android file: build number 226, its sha256 equals the release's, and the page inside it is the
+    published website page byte for byte;
+  - thirteen screens drawn from the published page against the tested ones: eleven identical; the two Discover
+    pictures differ only in the greeting ("Good afternoon" had become "Good evening"); the strip above the
+    page follows the band there too (the first page, Parties, white once scrolled); no page errors.
+- **Not tested:** the strip behind the clock on a real phone. It compiled and the page sends the right
+  messages (`p26`), but nobody has seen it on a device. Kamal has been sent build 226 and asked to look.
+- **My brief:** the look rule in `team/tech.md` changes to the look of 22 Nov in its own small PR, which follows
+  this entry (a document only: no build, nothing to publish).
+- **Not changed:** the blog (website only) still wears the look of 17 Nov; the README says so. I have asked
+  Kamal whether it should follow; I will not recolour it unasked.
+- **Where this meets King's note:** priorities.md recommends a variant (the logo's orange on buttons, no blue
+  links). Kamal said yes to what he was shown, so that is what is live. The variant is still a change of two
+  tokens if he asks for it.
+- **Pictures:** `flatmates/team/reports/shots/colours-22nov/` (the finished build; `preview/` inside it is what
+  Kamal saw first).
+- **Need from King:** nothing. `priorities.md` still says the colour preview waits for Kamal.
+- **Still with Kamal:** a look at the strip behind the clock in the app; whether the blog follows the new
+  colours; a read of the blog's seven articles and its source links; whether the word "Blog" stays on the first
+  page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the message
+  limits. The 15 sample parties are still live (the last ends on 5 Dec).
+
 ## 2026-11-22, the new colours built and tested (#123, open): waits for Kamal's yes to the pictures
 
 - **What was asked (Kamal, 22 Nov, in my session, after the preview below):** "This looks cool change the colors
@@ -329,48 +363,3 @@
 - **Still with Kamal:** yes or no to the Parties distance privacy fix (a database change; his "Yez pleaze" answered
   the two questions about the look, and I have not read it as a yes to this); his look at the Parties map on his
   phone; whether Tribe matches under 70% are announced; the message limit of 30 an hour and 60 a day.
-
-## 2026-11-17, Parties: a feed with covers, a party's page, hosting in one screen, and a map (#116) live
-
-- **What was asked (Kamal, 17 Nov, in my session, with four recordings of a hangouts app):** "Take the idea for
-  parties nearby dont copy but make it awesome", "Also check how the party is created", "Check how the search
-  happens on parties own discover page through maps. Can we build this also". The ideas are taken; the look, the
-  words and the rules are ours, and no photo is asked for. He also said "Dont change the colors use our colors":
-  these screens are in the app's own orange and white.
-- **The feed:** a party is a card with a drawn cover (a string of lights and the kind's emoji), when it is the way
-  people say it ("Tonight · 8 pm"), a heart that keeps it on this phone, how long it runs and how full it is (a bar,
-  "4 going", "2 spots left"). A search, a lens for each kind of party that is on near you, Saved, three orders.
-- **"How was it?":** a party you went to stays in your list for three days after it ends, with the thumbs. Until now
-  it left the list the moment it ended, so the thumbs after a party could only be reached from an old link.
-- **A party's page:** its cover, what to expect, how full it is, how joining works in three steps, and a bar at the
-  foot that leads to the request form. Once you've asked, where you stand moves up under the cover.
-- **Host a party:** one sheet, with the card people nearby will see drawn again as it is filled in. It makes the
-  party's group, saves the party and opens it; the server's checks are the ones it had. A party for friends only is
-  still made from Splits.
-- **List or Map:** each party is a mark in the middle of a circle about a kilometre across, never a pin on the
-  flat. The server sends only that rounded spot (the pin to two decimals, the rule a home's public pin follows).
-  It shows the parties in reach of your place (hosts choose 1 to 5 km), not the whole city as in the recording: a
-  host's party is for people nearby, and that stays. Kamal has been told both.
-- **Database, applied before the merge** (from the PR's commit: fetched inside the database, checksum checked
-  against my file, then run). Checked read-only before and after: `fm_party_near_json` and `fm_party_nearby`
-  changed and nothing else did (195 functions; 5 parties, 2 of them open; 2 requests; 105 listings; 224 profiles,
-  all as before). Both open parties give a rounded zone and no pin, address or number. `fm_party_near_json` cannot
-  be called from the app; `fm_party_nearby` only by someone signed in.
-- **Published:** ab235ec (#116). Android build 221 (file checked: the new screens are inside, checksum matches the
-  release). The website repo's `main` and `gh-pages` say "Publish the app from NavigateMe ab235ec". The published
-  copy opens with no page errors, and with its live backend switched off the new screens work end to end (three
-  cards, a party's page, a party hosted from the sheet, the map with its marks and a card).
-- **Tests:** database suite 279 checks (13 new), 32 demo suites 840 checks (new suite p34, 53 checks), all pass.
-- **Not checked by me: the map's own pictures.** My machine cannot reach a map server, and Google's key works only
-  on the live site and in the Android app. The marks, circles and cards were checked on the bundled map, and the
-  calls to Google's library against a strict stand-in for it. I have asked Kamal to open Map on his phone and say
-  if anything looks off.
-- **Found on the way, not changed, needs Kamal's yes:** a party's distance is measured from the flat's exact pin
-  and shown to 100 m, and a person can change the place they measure from as often as they like. Someone patient
-  could use that to work out roughly where a flat is. Homes don't have this: their distance is from the rounded
-  pin. The fix is to measure parties from the same rounded spot the map uses and to limit how often the place can
-  be changed. Distances would be a little less exact. I have put it to Kamal.
-- **Next: the reel look** (priorities 00000000, now GO: on its own branch, pictures first, nothing merged or
-  published without Kamal's yes to the pictures). Not started. King's notes of 17 Nov are with my working files.
-- **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
-  60 a day. (White or pale orange for the top band is answered by the reel look, if it goes live: cream.)
