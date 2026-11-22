@@ -1,5 +1,27 @@
 # Teche · reports
 
+## 2026-11-22, "Take a photo": the camera app is granted the photo's file by name (#128) live
+
+- **Why:** King read #127 and suggested it (his note reached me after #127 was live): a camera app opened from a
+  chooser's extra entry is not always handed the right to write the file, and the shot then comes back empty.
+  Nobody could try #127 on a phone before it went out, so I took the suggestion at once, before Kamal's own try.
+- **What changed:** before the chooser opens, each app that can take the picture is given the right to write
+  that one file by name; the right is taken back as soon as the chooser answers. No new permission, no change
+  to the page; the gallery path is untouched.
+- **Tests:** demo 34 suites, 955 checks, all pass (one new, in `p36`, on the Android file as written).
+- **Live:** #128 merged (`3754297`). Android build 230 (it compiled; the build started a few minutes late).
+  The website's pages did not change, so its last publish stays `e95bf95`; its copy of the Android file is build
+  230, sha256 equal to the release's, and the page inside it is the published page byte for byte. The built
+  app's manifest still names no camera permission.
+- **King's other late notes:** all done before they arrived (the other app not named; the hold; way B; pictures
+  first). His check that the sheet's words match what Parties promises and that the privacy page stays true:
+  I read the privacy page again; nothing in it is made untrue by the sheet or by the camera.
+- **Not tested: anything on a real phone.** Kamal has build 230 and two things to try: the sheet at first open,
+  and "Add photos" with the camera.
+- **Need from King:** nothing.
+- **Still with Kamal:** those two tries; how the avatar studio feels on his phone; whether a room nobody lives
+  in should show a score; the blog's colours; and the older list.
+
 ## 2026-11-22, the permissions sheet (way B), "Take a photo" and blue and pink tiles (#127) live
 
 - **What was asked (Kamal, 22 Nov, in my session):**
@@ -198,41 +220,5 @@
 - **Need from King:** nothing. `priorities.md` says it is live (f01266e).
 - **Still with Kamal:** a look at the strip behind the clock in the app; whether the blog follows the new
   colours; a read of the blog's seven articles and its source links; whether the word "Blog" stays on the first
-  page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the message
-  limits. The 15 sample parties are still live (the last ends on 5 Dec).
-
-## 2026-11-22, the new colours built and tested (#123, open): waits for Kamal's yes to the pictures
-
-- **What was asked (Kamal, 22 Nov, in my session, after the preview below):** "This looks cool change the colors
-  of the app". Read as yes to what he was shown. I had told him he would see pictures of the finished build
-  before anything goes live, so #123 is open and **not merged**; nothing is on the website or in the Android app.
-- **Where this meets King's note:** priorities.md recommends a variant (the logo's orange on buttons, no blue
-  links). Kamal has not said that to me, and by my brief his word wins, so I built what he saw and chose. The
-  variant is a change of two tokens; the PR says so. If he tells King otherwise and it is written into
-  priorities.md, I follow that.
-- **What #123 is (colour only; layouts, words, fonts, login, questions and the logo untouched):**
-  - a third layer at the end of the stylesheet: a white page and white cards; an orange-red `#E2461B` for main
-    buttons and the key word (the screenshots' `#F65D34` a little deeper: white words on a button read at 4.1:1
-    where the preview's read at 3.2:1; small orange words use `#BC360F` and keep our 4.5:1); each screen's band
-    in a pastel, lighter at the top, with the white page over its foot again (blue Discover, Profile, Requests;
-    mint Tribe, the Escape, Messages; yellow Parties; pink Flatsplits, Saved; apricot FlatMart, My flat, Post);
-    a pale blue search box; blue for the words you tap; charcoal for words and dark sheets;
-  - the strip above the page follows the band: the browser's bar on the website, and in the Android app the
-    strip behind the clock, through the existing native bridge (a `bars` message; `MainActivity.paintBars`);
-  - outside the stylesheet: share pictures and the Vibe Card, the map's circle, `og-image.png` (redrawn),
-    `privacy.html`, `hold.html`, the installed app's colours and the Android bars.
-- **Not changed:** the blog (website only) still wears the look of 17 Nov; the README says so. Kamal has been told.
-- **Tests:** demo 33 suites, 929 checks, all pass (926 before; three new). The look suites were rewritten to hold
-  the new look, not loosened: `p31` now counts the cream, the brown and the other colours of 17 Nov as old and
-  finds none left; `p26` and `p27` hold each band's pastel, the sheet over its foot and the strip above the page.
-  Two real things they found and I fixed: the search box sat 11px lower on a 360 x 640 phone, and the
-  link-preview picture had lost the logo's exact orange. The database suite was not run: nothing there changes.
-- **Not tested:** the Android code on a phone. It cannot be compiled here; CI compiles it after merge. If it does
-  not compile, no APK is published and the app stays on build 225 while the website has the new colours.
-- **Pictures:** on the PR's branch, `flatmates/team/reports/shots/colours-22nov/` (the finished build) and
-  `preview/` inside it (what Kamal saw first), as King asked. Kamal was sent the finished build's.
-- **Need from King:** nothing. My brief's look rule still describes 17 Nov; I have asked Kamal for the sentence.
-- **Still with Kamal:** yes or no to putting #123 live, and the look sentence for my brief; whether the blog
-  follows; a read of the blog's seven articles and its source links; whether the word "Blog" stays on the first
   page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the message
   limits. The 15 sample parties are still live (the last ends on 5 Dec).
