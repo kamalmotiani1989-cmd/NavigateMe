@@ -335,8 +335,8 @@ the room comes second.
     Tests: `flatmates/tests/db/run.sh` (schema applied twice, then every function and refusal) and demo suite p9.
 
     **Parties is a section of its own** (Kamal, 15 Nov: "Make parties near by a seperate section all together and
-    an amazing one"): a **Parties** tab in the bottom bar (top bar on a computer) for everyone, on the same cream band as
-    every screen (it had its own pale orange tint, `--butter`, until 17 Nov). Nearby parties no longer show inside Splits; Account keeps the switch as a setting.
+    an amazing one"): a **Parties** tab in the bottom bar (top bar on a computer) for everyone, on a yellow band (`data-band="sun"`)
+    since 22 Nov (the cream every screen had from 17 Nov, and its own pale orange tint, `--butter`, before that). Nearby parties no longer show inside Splits; Account keeps the switch as a setting.
     - **Before it's switched on:** what it is in three lines (what, when and how far, never the address; ask to
       join and the host decides; once in, the address, the host's number and a check-in code), the switch, and
       "Off until you switch it on. 21 and over. You pick a place once; we don't follow your location."
@@ -351,7 +351,7 @@ the room comes second.
     a hangouts app: "Take the idea for parties nearby dont copy but make it awesome", "Also check how the party is
     created", "Check how the search happens on parties own discover page through maps. Can we build this also").
     The ideas are taken; the look, the words and the rules are ours. No photo is asked for anywhere.
-    - **A party is a card with a cover.** The cover is drawn: a cream or off-white panel, a string of lights and the kind's
+    - **A party is a card with a cover.** The cover is drawn: a pastel panel (blue, apricot, pink or mint since 22 Nov), a string of lights and the kind's
       emoji (`pnCoverHtml`; the same party always gets the same cover). On it: **when, the way people say it**
       ("Tonight · 8 pm", "Tomorrow · 7:30 pm", "Saturday · 8 pm", from a week out "Sat, 28 Nov · 8 pm";
       `nearWhenChip`) and a **heart** that keeps the party on this phone (`state.partySaved`; nothing about it
@@ -979,6 +979,54 @@ and the sun, moon or stars moving a little.
   bottom. The filters themselves are the same as before.
 - **Not doing:** no photo is required anywhere, and no question about religion.
 
+**The look of 22 Nov 2026: white, an orange-red and pastels.** Kamal, with two screenshots of another app (a home
+screen with pastel tiles, a list with an orange button): "Use these colors and prepare some screens and show me",
+and of the eleven screens he was shown: "This looks cool change the colors of the app". It is a third layer at the
+end of the stylesheet, colour only: the layouts, the words, both fonts, the type sizes, the login, the questions and
+the logo are as they were. **Where the two sections under this one name a colour, this one wins**; what they say
+about type, shapes, layout and the logo still holds.
+- **White** (`--bg` #FFFFFF) is the page, and the cards are white too. A hairline (`--line` #E6E9ED) and a soft
+  grey shadow (`--card-shadow`) tell a card from the page. Inside a white card a panel is the palest pink
+  (`--cream` #FFF3EE) or the quiet grey (`--surface-2` #F3F5F8). The cream of 17 Nov is gone.
+- **The orange-red** (`--orange` #E2461B) is for the main buttons, badges, whatever is on or shows progress, and
+  the one key word of a main headline with its hand-drawn line. It is the screenshots' orange (#F65D34) made a
+  little deeper, the brightest that still reads at 3:1 as a key word on every band; white words on a button read at
+  4.1:1 (they were 5.2:1 on the logo's orange; Kamal was told before he chose). Small orange words (labels, counts,
+  the place you are on in the bottom bar) are a deeper shade, `--orange-text` #BC360F, which reads at 4.5:1 or
+  better wherever it is used.
+- **His pastels** (`--p-blue-a/b`, `--p-mint-…`, `--p-apricot-…`, `--p-pink-…`, `--p-yellow-…`: each from a
+  lighter top to a deeper foot):
+  - **the band at the top of each screen.** On a phone it runs from the top of the screen, top bar included, and
+    the white page comes up over its foot with round corners (as it did between 15 and 17 Nov). On a computer the
+    same pastels fill the rounded panels at the top of Tribe, Flatsplits, FlatMart, the Escape and Profile.
+    Blue (`data-band="lav"`): Discover, Profile, Requests. Mint: Tribe, the Escape, Messages. Yellow (`sun`):
+    Parties. Pink (`blush`): Flatsplits, Saved. Apricot (`butter`): FlatMart, My flat, Post, an owner's Requests.
+    Words on a band are charcoal; what sits on a band is white;
+  - the three choices on the sign-up card (blue, apricot, mint) and the four party covers (blue, apricot, pink,
+    mint).
+- **The strip above the page follows the band** (`barMeasure`, `barApply`): on the website it is the browser's bar
+  (the `theme-color` tag), in the Android app the strip behind the clock (the page sends a `bars` message and
+  `MainActivity.paintBars` paints it). It is the band's pastel while the band runs under the top bar, the first
+  page's blue while that is at the top, and white once you scroll and under any sheet. One fixed colour would leave
+  a seam above every band.
+- **The pale blue-grey of his search bar** (`--search` #E0E9F2) is Discover's search box. **His blue** (`--link`
+  #2269C3) is for the words you tap that are not buttons ("I already have an account", "More", "Or try it with a
+  sample flat"); on a band they stay charcoal.
+- **Charcoal** (`--ink`, `--text` #24272C) is for words, what is picked, the score discs, the dark sheets ("Who
+  you'd live with", "Your flatmate type"), a home's header while it has no photo, the pictures people share and
+  `og-image.png` (charcoal with soft blue-grey glows inside a thin frame of the orange-red; the warm brown until
+  22 Nov). Secondary text is `--text-2` #4F545C; hints are `--text-3` #5F656D. On charcoal, ticks and the key word
+  are a light orange (`--orange-lt` #FFB19C).
+- **Unchanged:** green still means accepted, verified or "owes you", amber look twice, crimson danger; WhatsApp
+  keeps its green; the vibe score's ring keeps the colour that says how strong the match is; the compatibility
+  chart, the dots behind initials and the drawn people and rooms keep their own colours.
+- **The logo keeps its own orange** (#C2410C; Kamal, 16 Nov), which is deeper than the buttons' orange-red, so
+  two oranges meet on the first page and in the top bar. Kamal was told before he chose.
+- **Not changed yet:** the blog (website only) is still in the colours of 17 Nov.
+Checks: `p31` (the palette on every screen, no colour of 17 Nov left, every word readable, no panel melted into what
+it sits on, the first page's pastel choices and blue link, the search box, the pictures, the side pages, the Android
+files), `p26` and `p27` (each band's pastel, the white sheet over its foot, the strip above the page), `p8`, `p25`.
+
 **The look of 17 Nov 2026: the reels'.** Kamal, of the ten feature reels King made that day: "The colors are so
 amazing of the reels wht dont we use these for our app. Put your best efforts to pull these colors and font size and
 font colors and make the app and website awesome". It is a second style layer over the look of 16 Nov (below), at
@@ -1199,9 +1247,9 @@ links, the iPhone question) is hidden inside the Android app, which loads the pa
 
 **What a visitor sees is kept short on purpose** (Kamal, 15 Nov: "Reduce the information on the login page of
 website and app as people might copy the same. Make it more clean"). It is the same page in the app before sign-in:
-1. the headline and one line under it, on the cream page: dark words, with the key word "vibe" in the orange and a
-   line drawn under it by hand (until 17 Nov the headline sat on a pale orange band and a white sheet came up
-   under it);
+1. the headline and one line under it, on a pale blue band with the white page coming up under it (since 22 Nov;
+   the page was all cream from 17 Nov): dark words, with the key word "vibe" in the orange and a line drawn under
+   it by hand;
 2. the sign-up card (see "How it flows"), a white card under the headline; on a computer, beside it;
 3. a row of our cartoon people around a match ring. No photos, no pictures of the app's screens;
 4. one line of small print: "Blog" (on the web only, since 18 Nov; see "Blog"), the privacy policy, "Have a room?
@@ -1319,7 +1367,8 @@ split by head, the rest by room; a room a size up or down counts for a fifth mor
 numbers can be changed by the reader, the amounts are whole tens of rupees that always add up to the rent, and the
 result can be copied or sent on WhatsApp. The percentages are ours, said to be ours, and offered as a start.
 
-**The look** is the app's (see "Look and feel"): the cream page, white cards, the logo's orange for the main
+**The look** is the app's look of 17 Nov (see "Look and feel"; the app itself changed colours on 22 Nov and the blog
+has not followed yet): the cream page, white cards, the logo's orange for the main
 buttons, the small labels and one key word in a headline, near-black text, one dark sheet with light-orange accents,
 the serif for headings, the app's four text sizes, and the rule that a panel on cream is white and a panel inside a
 white card is cream. No colour the app doesn't have. **Covers are drawn, never photos:** our cartoon people round a

@@ -43,7 +43,7 @@ const LINE = 'Vibe score after the household answers';
   const lastScored = Math.max(...list.map((x, i) => x.score !== null ? i : -1)), firstNone = list.findIndex(x => x.score === null);
   ok(firstNone > lastScored && ['mine-e1', 'mine-e2', 'mine-e3'].every(id => list.findIndex(x => x.id === id) > lastScored), 'homes without a score come after every home with one: ' + list.map(x => x.score ?? '-').join(' '));
   let t = await p.evaluate(() => { const e = document.querySelector('.card[data-id="mine-e1"] .lc-noscore'), c = getComputedStyle(e); e.scrollIntoView({ block:'center' }); return { size: c.fontSize, color: c.color, oneLine: e.getClientRects().length === 1 && e.getBoundingClientRect().height < 24 }; });
-  ok(t.size === '12.5px' && t.color === 'rgb(87, 83, 78)' && t.oneLine, 'the line is small quiet text on one line of the card: ' + JSON.stringify(t));
+  ok(t.size === '12.5px' && t.color === 'rgb(79, 84, 92)' && t.oneLine, 'the line is small quiet text on one line of the card: ' + JSON.stringify(t));
   await p.waitForTimeout(300); await p.screenshot({ path: O + '/p32-card-no-score.png' });
   // the home's own page
   await p.evaluate(() => openListing('mine-e1')); await p.waitForTimeout(1200);
