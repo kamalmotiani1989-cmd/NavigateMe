@@ -1,5 +1,37 @@
 # Teche · reports
 
+## 2026-11-22, My flat: the Flatsplits and FlatMart tiles in the pastels of their screens (#125) live
+
+- **What was asked (Kamal, 22 Nov, in my session, with a screenshot of My flat in the new colours):** "Can u put
+  tab colors to flatsplit and flat mark matching the app". The two tiles were white with blue names. Read as:
+  give each tile a colour from the app's own pastels. I took the pastel of the screen each one opens.
+- **What changed (colour only):** Flatsplits is a pink tile, FlatMart an apricot one, lighter at the top like
+  that screen's band; names charcoal (they had turned blue on 22 Nov, as unclassed links), the small line the
+  secondary grey, the icon on a white chip. Three rules at the end of the stylesheet, tokens only. The README's
+  look section says it; its FlatMart section no longer says Discover shows these shortcuts (it has not for a
+  while; `p12` checks that).
+- **Tests:** demo 33 suites, 930 checks, all pass (929 before; one new, in `p31`: both tiles carry their screen's
+  pastel, compared with the tokens, charcoal names, the white icon chip, and lead to `#splits` and `#market`).
+  Names read at 11.5:1 or better, the small line at 5.85:1 or better. No database change.
+- **Live:** #125 merged (`5764802`). Android build 227. Website `4a97e9b` "Publish the app from NavigateMe
+  5764802". Checked after publishing: My flat drawn from the published page on a 390 and a 360 wide phone and on
+  a computer is pixel for pixel the tested one; the page inside the Android file is the published page byte for
+  byte, build number 227, sha256 equal to the release's.
+- **Seen in Kamal's screenshot:** the strip behind the clock on his phone is the band's apricot, so the Android
+  change of #123 works on a real device (it was "not tested on a phone" until now).
+- **Pictures:** `flatmates/team/reports/shots/my-flat-tiles/` (before and after on a phone, a small phone, a
+  computer).
+- **Next, asked by Kamal the same hour, with a screen recording of Snapchat's avatar builder:** "Can we make the
+  avtaar saction more advanced . Look the way snapchat creates avtaar". I told him yes and what I would take
+  (a full-body avatar with outfits; a studio screen with tabs, a grid of choices, undo, redo and Save; many more
+  choices; a "ready" moment) and what I would not (the selfie scan: no face-reading technology here, and his
+  rule of 15 Nov says no photos; and Snapchat's own artwork). I build it on a branch and show him pictures
+  before anything goes live. It needs a database change (the avatar check accepts only today's keys and values).
+- **Need from King:** nothing.
+- **Still with Kamal:** whether he wants the selfie step after all; whether a room nobody lives in should show
+  a score; King's note on moving the Escape's no-score note up; the blog's colours; and the list in the entries
+  below.
+
 ## 2026-11-22, Kamal asked why the Escape shows no vibe score: answered, nothing changed
 
 - **What was asked (Kamal, 22 Nov, in my session):** "Why in empty room escape vibe score is not showing ?"
@@ -247,69 +279,4 @@
 - **Still with Kamal:** whether I fix the map's overlapping marks (King recommends yes); yes or no to the Parties
   distance privacy fix; whether Tribe matches under 70% are announced; the message limit of 30 an hour and 60 a
   day. The 15 sample parties are still live and drop off as their time comes (none may be live when sign-up opens).
-- **Need from King:** nothing.
-
-## 2026-11-18, 15 sample parties for testing Parties and its map (#119) live in the database
-
-- **What was asked (Kamal, 18 Nov, in my session):** "Can you create some samples for parties so that i can chceck
-  the map and test the same . Create some 15 parties."
-- **Done:** 15 sample parties are in the live database, around where Kamal tests. His account sees all 15 on the
-  list and on the map. The app did not change: no Android build (222 stays) and nothing to publish on the website.
-- **What was built (#119, merged `d6e61d1`; database only):**
-  - `fm_sample_parties(lat, lng, areas)` makes 15 open parties hosted by 15 of the 200 sample people, at fixed
-    spots 0.4 to 3.5 km from the point given: 15 kinds (game night to house party), from tonight to three
-    Saturdays on in India time, eight free and seven with a chip-in (₹150 to ₹400, never alcohol), some part full,
-    one with nobody in yet, two without plus-ones, open to everyone, reach 3 to 5 km. Two of them fall in the same
-    map square, so one mark carries a "2". Running it again replaces all 15 with dates from that day;
-    `fm_sample_parties_clear()` removes them. It is not `samples.sql`, which is not run on live again (it would
-    replace all 200 sample people).
-  - What a nearby person is sent for a party now says whether the host is a sample, so the app's "Sample" tag
-    shows on the card, on the map's card and on the party's page (the app already drew the tag when told).
-  - A request to a sample host is accepted straight away, with a door code. The address that then shows ends
-    "(a sample address)"; there is no Call or WhatsApp button because a sample has no number; no push goes out.
-    Places left are still counted, and a request to a real host waits for the host as before.
-  - The app's own roles cannot call the generator, the clear or the list of spots.
-- **Tests:** database 310 checks (29 new, `parties-19-samples.sql`), demo 32 suites and 864 checks, all pass.
-- **Live, step by step:** the merged `schema.sql` fetched into the database, md5 `067caf20…` matched, executed.
-  Functions 195 to 199, triggers 32 to 33, every function's body equal to a fresh local build, no row changed.
-  Then the generator: parties 6 to 21, party groups up by 15, 82 accepted requests from sample guests. Nothing
-  else moved: 224 profiles (200 sample), 105 homes, the 2 requests on real parties.
-- **Checked afterwards (read-only):** Kamal's account is sent exactly these 15, each marked sample, none with an
-  address, a pin or a number; 14 marks; the nearest 1.0 km away, the furthest 3.9 km. Three other testers who live
-  close see all 15 too, tagged the same; the two testers a hundred kilometres away see none. No sample party is
-  tied to a flat, so no "party at your flat" push went to anyone.
-- **Where they are:** the point and the area names are deliberately not written here, because this repo is public
-  and the point is close to where Kamal tests. The area names are the real ones for each spot (OpenStreetMap).
-  No pictures in `shots/` for the same reason: a map picture shows the neighbourhood.
-- **To make the same 15 again from today** (the point and the names are read back from the rows; the point was a
-  two-decimal grid point, so it is the first party's map square):
-  ```sql
-  select public.fm_sample_parties(z.lat, z.lng, a.areas)
-  from (select round((p.near_geo->>'lat')::numeric, 2)::float8 as lat, round((p.near_geo->>'lng')::numeric, 2)::float8 as lng
-          from fm_parties p join fm_profiles h on h.id = p.host_id where h.sample and p.occasion = 'games') z,
-       (select array_agg(p.area order by array_position(array['games','movie','chai','karaoke','match','brunch','terrace',
-                 'birthday','potluck','jam','housewarming','festival','welcome','farewell','party'], p.occasion)) as areas
-          from fm_parties p join fm_profiles h on h.id = p.host_id where h.sample) a;
-  ```
-  To remove them: `select public.fm_sample_parties_clear();` (after that the point has to be given again).
-- **They drop off as their time comes:** tonight's two start at 8 and 9 pm (they are the pair behind the "2"), so
-  by Kamal's late-evening hours 13 are left; 5 are left after Sunday; the last is on 5 Dec. A refresh takes one
-  statement, on his word.
-- **What the map does with 15 parties this close (drawn on a test copy from the live data; not changed, it is
-  outside this task):** on a phone the map opens far enough out to hold them all, and at that distance two
-  neighbouring squares are about 30px apart while a mark is 44px wide. 16 pairs of marks overlap, the "You" label
-  sits on one, and a tapped mark's card (at the top of the map) can cover the mark that was tapped. Pinching in
-  separates them. With a few parties spread out it does not show, as in #116's pictures. I have told
-  Kamal and offered to fix it.
-- **Small things in the sample flow (not changed):** after asking, the short message still says "Asked! <host> will
-  let you know." though the page already says "You're in!", and the page says "<host> has your number too" (nobody
-  does: a sample). The limit of 10 requests an hour holds for samples as well.
-- **A mistake of mine, no harm to the app:** to look up the area names I sent 15 look-ups to Photon, the free
-  place search, from the database in one statement. 4 answered, 11 were refused, and Photon stopped answering the
-  database for a while. People's searches go from their own phones, not from the database, so nobody using the app
-  was affected. I finished with one look-up at a time from OpenStreetMap's own service. I won't send a burst to an
-  outside service from the database again.
-- **Still with Kamal:** his look at the map; whether I fix the crowding; yes or no to the Parties distance privacy
-  fix (a database change; asked again on 18 Nov, not answered); whether Tribe matches under 70% are announced; the
-  message limit of 30 an hour and 60 a day.
 - **Need from King:** nothing.
