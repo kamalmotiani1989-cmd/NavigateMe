@@ -407,7 +407,7 @@ the room comes second.
     **numbers are shared only when the seller accepts**, then both get Call and WhatsApp; the item is marked
     reserved, then sold. Sellers can **drop the price**, which moves the item back to the top. Offers have
     their own tab and badge, with a notification for every new offer, acceptance or decline.
-    Discover and My flat show a shortcut to both ("You get back ₹1,240", "8 new things for sale near you this week").
+    My flat shows a shortcut to both ("You get back ₹1,240", "8 new things for sale near you this week").
     **Boost** (₹49): an item shows first in FlatMart for 3 days with a "⚡ Boosted" tag (boosting again adds 3 days).
     **Boost pack** (5 for ₹199): boosts to use on any item, any time. **Moving-out sale** (₹149): everything the seller
     has for sale, and anything they add until the date they pick (up to 30 days), on one page with one link
@@ -1003,7 +1003,11 @@ about type, shapes, layout and the logo still holds.
     Parties. Pink (`blush`): Flatsplits, Saved. Apricot (`butter`): FlatMart, My flat, Post, an owner's Requests.
     Words on a band are charcoal; what sits on a band is white;
   - the three choices on the sign-up card (blue, apricot, mint) and the four party covers (blue, apricot, pink,
-    mint).
+    mint);
+  - **My flat's two shortcuts** (Kamal, 22 Nov, of the white tiles with blue names: "Can u put tab colors to
+    flatsplit and flat mark matching the app"): each is a tile in the pastel of the screen it opens, lighter at
+    the top like that screen's band. Flatsplits is pink, FlatMart apricot. The words are charcoal, as on a band,
+    and the icon sits on white (`.extras a`; checked in `p31`).
 - **The strip above the page follows the band** (`barMeasure`, `barApply`): on the website it is the browser's bar
   (the `theme-color` tag), in the Android app the strip behind the clock (the page sends a `bars` message and
   `MainActivity.paintBars` paints it). It is the band's pastel while the band runs under the top bar, the first
