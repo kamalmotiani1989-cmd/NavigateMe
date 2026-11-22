@@ -1,5 +1,25 @@
 # Teche · reports
 
+## 2026-11-22, Kamal asked why the Escape shows no vibe score: answered, nothing changed
+
+- **What was asked (Kamal, 22 Nov, in my session):** "Why in empty room escape vibe score is not showing ?"
+- **What I found (read-only; nothing changed, nothing shipped):** it is the rule of 16 Nov (#113), not a fault
+  and not the new colours. The room he was looking at says "People living there now: 0", so it has no household
+  to score people against: everyone in its Escape list comes without a score, and the note "No vibe scores for
+  this room" with "Say who lives there" sits above the list. His other open room has a household with answers,
+  and everyone in its list has a score.
+- **Checked:** the live database, counts only (people listed and people scored for each open room of a real
+  lister: four such rooms, one without scores, for this reason); and today's build in demo mode with the same two
+  cases: no rings and the note in one, a ring on every card in the other; no page errors.
+- **Told Kamal:** why; how to get scores there (say who lives there and answer the 12 questions; if he lives
+  there, his own answers are used); and that scoring a room nobody lives in against the owner would undo part of
+  his own rule of 16 Nov, so it is his call. Two pictures sent.
+- **Noticed, not changed:** on a phone the note starts low on the Escape's first screen and its button is under
+  the bottom bar until you scroll, so it is easy to miss. Left alone until asked.
+- **Need from King:** nothing.
+- **Still with Kamal:** whether a room nobody lives in should show a score after all; and the list in the entry
+  below (the strip behind the clock, the blog's colours and the rest).
+
 ## 2026-11-22, the new colours (#123) live, on Kamal's yes
 
 - **What was asked (Kamal, 22 Nov, in my session):** he was sent the finished build's pictures and asked "Shall
@@ -293,73 +313,3 @@
   fix (a database change; asked again on 18 Nov, not answered); whether Tribe matches under 70% are announced; the
   message limit of 30 an hour and 60 a day.
 - **Need from King:** nothing.
-
-## 2026-11-18, the reel look on every screen (#117) live, on Kamal's yes
-
-- **What was asked (Kamal, 17 Nov, in King's session):** "The colors are so amazing of the reels wht dont we use
-  these for our app. Put your best efforts to pull these colors and font size and font colors and make the app and
-  website awesome". In my session he then said "Dont change the colors use our colors"; I asked which of two he
-  meant (leave the colours and drop this, or still do it after Parties); he answered "Go ahead do it", and later
-  "Now continue". So it was built on its own branch (`claude/reel-look`) and nothing was merged or published until
-  he had seen the pictures.
-- **Kamal's yes (18 Nov, in my session):** he was sent the before and after pictures of 19 screens (five of them
-  again after King's fixes), asked "Shall I put this live on the website and in the Android app?" and shown the
-  new look sentence for my brief, and answered "Yez pleaze". King had recommended yes in priorities.md.
-- **Published:** a25fdcd (#117). The app files on main are the ones the tests ran on. Android build 222: the
-  file's checksum matches the release's, the app inside it is byte for byte the published website's, and the
-  cream page colour is in it (it is not in build 221). The website repo's `main` and `gh-pages` say "Publish the
-  app from NavigateMe a25fdcd". The published copy opens with no page errors and wears the look: cream first page
-  with "vibe" in orange and its line, headline on two lines at 390 wide, cream privacy and Coming soon pages, cream
-  manifest; with its live backend switched off, Discover (rings green and amber, rent in the serif), the cream
-  bar when scrolled, a home's page (the ink sheet, the brown header in its frame), the tabs' key words and the
-  story all work.
-- **My brief:** the look sentence in `tech.md` is the 17 Nov one, in King's words (#118, e4a310f), on the same yes.
-- **Not checked by me:** the look on a real phone. My machine cannot reach the live site or run the Android app;
-  everything above was checked on the published files themselves. Kamal has build 222 to open.
-- **What changes** (README "Look and feel" has all of it): the page is cream and the cards are white (it was a
-  white page with peach bands and panels); one key word of each main headline is in the logo's orange, with a line
-  drawn under it by hand on the first page and the story; headlines on a phone are bigger; rent is in the serif; on
-  a home's page "Who you'd live with" and the household's answers sit on one ink sheet with light-orange ticks; a
-  home with no photo, the pictures people share and the link-preview picture are a deep warm brown inside a thin
-  orange frame; the bar behind the clock, the installed app and the Android window are the cream.
-- **King's review (18 Nov, priorities.md): faithful to the reels; three fixes, all made.** (1) The score rings keep
-  the colours that say how strong a match is (green from 80, amber from 60); I had painted every ring light orange,
-  as the entry first said, and a strong match and a fair one looked the same. (2) The top bar is cream once you
-  scroll; it was turning white. (3) The first page's headline is a step smaller (`clamp(38px, 10.2vw, 48px)`), so it
-  keeps to two lines from 390 wide: the sign-up card, Continue and "I already have an account" now sit higher than
-  they do today at every phone size, and the help button is clear of Continue. The story and the Coming soon page
-  keep the bigger size. The pictures in the folder are of the fixed build.
-- **What does not change:** the logo and its colours (its 19 files still match Kamal's originals byte for byte),
-  the login, the sign-up questions, every word and every layout. No database change.
-- **Where the pictures are:** `flatmates/team/reports/shots/reel-look/`, today's look beside the new one at 390
-  wide: the first page, the story, Discover, a home's page (top, and the ink sheet), Tribe, Flatsplits, FlatMart,
-  Parties, Profile, a chat, Filters, My flat, the Escape, the posting form, a picture people share and Discover
-  scrolled down (the top bar); and the first page at 1280 wide. Kamal has the same pairs in my session.
-- **King's watch-list, one by one:**
-  - the peach tints are all the one cream. A sweep of every screen, phone and computer, finds no panel melted into
-    what it sits on and no peach left. Four had melted at first (the number tiles on FlatMart and the Escape, the
-    label on Profile, the List | Map switch); they are white with a hairline now;
-  - the rupee sign is in neither of our fonts: a phone borrows it from a font of its own, and always has. Beside
-    the big serif rent it is set small in the body face, as the note said to do if it fell back;
-  - no headline runs past three lines at 360 wide, or at 320. On a 360 x 640 phone the first home on Discover
-    starts at 554px where it started at 571px. The bottom bar begins at 558px, so the home did not show before
-    and shows by 4px now. Bringing it properly into view means moving things on Discover, which is more than a
-    colour change; say if it is wanted;
-  - Android: the page colour, the strip behind the clock (dark icons) and the manifest's two colours are the cream;
-  - the frame and the brown are only on a home's header with no photo, shared pictures and the link picture.
-- **Done differently from the entry, and why:**
-  - the room kept for the old sheet's round top went (26px under each band, 24px above the sign-up card): with a
-    flat band it was a hole. So the bigger headlines cost no height on the tabs;
-  - small orange words on cream read at 4.77:1, so they keep the logo's orange; the deeper orange stays only
-    where 16 Nov put it;
-  - the link-preview picture is reduced to 256 colours (114 KB). The brown's soft glows made a 329 KB file, and
-    `p25` holds it under 300 KB so that WhatsApp shows it;
-  - one of the four tints of a party's drawn cover was a beige; it is the quiet off-white now.
-- **Tests:** 32 demo suites, 864 checks, all pass (840 before). `p31` went from 51 to 74 checks: the
-  palette, the key words, the line and "less motion", small phones, the first page's card no lower than before,
-  the rings' colours, the rent and its rupee sign, the ink sheet, the brown header and pictures, no melted panels,
-  the Android bars. `p26`, `p27` and `p25`'s layout checks are rewritten for the flat band and the closer card.
-  The database suite was not run: nothing in the database changes.
-- **Still with Kamal:** yes or no to the Parties distance privacy fix (a database change; his "Yez pleaze" answered
-  the two questions about the look, and I have not read it as a yes to this); his look at the Parties map on his
-  phone; whether Tribe matches under 70% are announced; the message limit of 30 an hour and 60 a day.
