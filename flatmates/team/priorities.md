@@ -12,6 +12,7 @@ _Last update: 17 Nov 2026._
   Parties: the short message after asking to join says what the answer was (#120, 18 Nov). Android build 223.
   Tribe: the people around you and the four steps sit on white cards (#122, 19 Nov, Kamal's ask). Android build 225.
   My flat: the Flatsplits and FlatMart tiles in the pastels of their screens (#125, 22 Nov, Kamal's ask). Android build 227.
+  The avatar studio: the whole person, eleven tabs, outfits, undo and redo (#126, 22 Nov, Kamal's ask). Android build 228.
 - **The website has a blog (#121, 18 Nov, Kamal's ask):** seven articles at `/blog/`, on the website only. The app does
   not carry it; Android build 224 holds the same app as 223. King read the two legal and money articles in full and
   checked five of their news and government figures by search: all held. Nobody on the team can open the source pages
@@ -46,7 +47,8 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
    at first open; location at the moment someone first uses the map or parties near them (a "no" given before they know
    why can stop Android asking again); no camera or gallery permission at all, since the phone's own camera and picker
    do the job. Pictures to Kamal first, as always.
-000000000. **A richer avatar maker (PR #126): GO, database first. Kamal's yes, 22 Nov, in King's session.** King wrote to him
+000000000. DONE 22 Nov: live (#126, ca0d249, database first, Android build 228). Kamal said yes in both sessions.
+   **A richer avatar maker (PR #126): GO, database first. Kamal's yes, 22 Nov, in King's session.** King wrote to him
    "Avatar studio (PR #126): I recommend yes", with what it is and "To put it live: it needs a database change, so say
    yes to Teche in his session and he does the database first". Kamal's answer: "1. Yes". Kamal, 22 Nov, in Teche's session, with a recording of another app's avatar builder:
    "Can we make the avtaar saction more advanced". Built on a branch. Teche takes the ideas (a full-body figure with
