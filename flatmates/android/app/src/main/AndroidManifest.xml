@@ -38,7 +38,8 @@
         <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_notify" />
 
-        <!-- Shares the Vibe Card image with other apps (files in cache/share only). -->
+        <!-- Shares the Vibe Card image with other apps (cache/share), and gives the phone's camera app the file a
+             photo taken from the photo chooser is written to (cache/camera). Nothing else is reachable. -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.files"
@@ -53,5 +54,6 @@
         <intent><action android:name="android.intent.action.VIEW" /><data android:scheme="https" /></intent>
         <intent><action android:name="android.intent.action.DIAL" /></intent>
         <intent><action android:name="android.intent.action.GET_CONTENT" /><data android:mimeType="image/*" /></intent>
+        <intent><action android:name="android.media.action.IMAGE_CAPTURE" /></intent>
     </queries>
 </manifest>

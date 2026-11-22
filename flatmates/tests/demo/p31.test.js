@@ -365,14 +365,15 @@ const oldLeft = old => { const out = [];
   ok(!left2.length && !low2.length, 'someone with a room: no old colours left, every word reads: ' + left2.concat(low2).slice(0, 5).join(' | '));
   ok(!gone2.length, 'someone with a room: no panel has melted into what it sits on: ' + gone2.slice(0, 5).join(' | '));
   ok(JSON.stringify(kws2) === JSON.stringify({ mine: 'live' + O1, requests: 'meet you' + O1, escape: 'Escape' + O1, post: '', account: '' }), 'someone with a room: the key word is "live" on My flat, "meet you" on Requests and "Escape" on the Escape; none on Post and Profile: ' + JSON.stringify(kws2));
-  // My flat's two shortcuts (Kamal, 22 Nov: "Can u put tab colors to flatsplit and flat mark matching the app")
+  // My flat's two shortcuts (Kamal, 22 Nov: "Can u put tab colors to flatsplit and flat mark matching the app"; then, of the
+  // pink and apricot they first got: "Blue and pink will look good. The colors from the app")
   await go(p, 'mine'); await p.waitForFunction(() => document.querySelectorAll('#extrasM .extras a').length === 2, null, { timeout: 8000 }).catch(() => {});
   const tl = await p.evaluate(() => { const root = getComputedStyle(document.documentElement), tok = n => { const h = root.getPropertyValue(n).trim(); return 'rgb(' + [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)).join(', ') + ')'; };
-    return [...document.querySelectorAll('#extrasM .extras a')].map((a, n) => { const c = getComputedStyle(a), i = getComputedStyle(a.querySelector('i')), [top, foot] = n ? ['--p-apricot-a', '--p-apricot-b'] : ['--p-pink-a', '--p-pink-b'];
+    return [...document.querySelectorAll('#extrasM .extras a')].map((a, n) => { const c = getComputedStyle(a), i = getComputedStyle(a.querySelector('i')), [top, foot] = n ? ['--p-pink-a', '--p-pink-b'] : ['--p-blue-a', '--p-blue-b'];
       return { name: a.querySelector('b').textContent, to: a.getAttribute('href'), pastel: c.backgroundImage.replace(/\s+/g, ' ') === `linear-gradient(${tok(top)} 0px, ${tok(foot)} 100%)` && c.backgroundColor === tok(top),
         words: getComputedStyle(a.querySelector('b')).color, small: getComputedStyle(a.querySelector('small')).color, icon: i.backgroundColor + ' ' + i.color, shadow: c.boxShadow }; }); });
   ok(tl.length === 2 && tl[0].name === 'Flatsplits' && tl[0].to === '#splits' && tl[1].name === 'FlatMart' && tl[1].to === '#market' && tl.every(x => x.pastel && x.words === 'rgb(36, 39, 44)' && x.small === 'rgb(79, 84, 92)' && x.icon === 'rgb(255, 255, 255) rgb(36, 39, 44)' && x.shadow === 'none'),
-    'My flat: the two shortcuts are tiles in the pastel of the screen each opens (Flatsplits pink, FlatMart apricot, lighter at the top), with charcoal words and the icon on white (white cards with blue names until 22 Nov): ' + JSON.stringify(tl));
+    'My flat: the two shortcuts are tiles in the app\'s blue and pink (Flatsplits blue, FlatMart pink, lighter at the top), with charcoal words and the icon on white (white cards with blue names until 22 Nov; pink and apricot for a few hours): ' + JSON.stringify(tl));
   await ctx.close();
   // ------------------------------------------------------------ small phones: the bigger headlines still fit
   for(const [w, h, views] of [[360, 640, ['discover', 'saved', 'requests', 'tribe', 'parties', 'splits', 'market', 'account', 'messages']], [320, 568, ['discover', 'tribe', 'splits', 'market']]]){

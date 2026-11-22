@@ -55,6 +55,8 @@ public class MainActivity extends Activity {
 
     private WebView web;
     private ValueCallback<Uri[]> pendingPick;
+    private Uri cameraShot;              // where the camera app writes a photo taken from the chooser
+    private File cameraFile;
     private GeolocationPermissions.Callback pendingGeo;   // the map's "use my location", waiting on Android's permission
     private String pendingGeoOrigin;
     private JavaScriptReplyProxy page;   // lets native code message the web app
@@ -122,8 +124,12 @@ public class MainActivity extends Activity {
                         .setType("image/*")
                         .putExtra(Intent.EXTRA_ALLOW_MULTIPLE,
                                 params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE);
+                // "Take a photo" beside the gallery: the phone's own camera app, where there is one
+                Intent chooser = Intent.createChooser(pick, "Add photos");
+                Intent shot = cameraIntent();
+                if (shot != null) chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { shot });
                 try {
-                    startActivityForResult(Intent.createChooser(pick, "Add photos"), PICK_PHOTOS);
+                    startActivityForResult(chooser, PICK_PHOTOS);
                 } catch (ActivityNotFoundException e) {
                     pendingPick = null;
                     return false;
@@ -247,6 +253,35 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * "Take a photo" in the photo chooser (Kamal, 22 Nov 2026). The phone's own camera app takes the picture and
+     * writes it to a file in this app's cache (cache/camera, handed over through the FileProvider), so the app
+     * itself holds no camera permission and nothing is asked. Returns null where there is no camera app.
+     */
+    private Intent cameraIntent() {
+        cameraShot = null;
+        cameraFile = null;
+        try {
+            File dir = new File(getCacheDir(), "camera");
+            if (!dir.isDirectory() && !dir.mkdirs()) return null;
+            File[] old = dir.listFiles();
+            long hourAgo = System.currentTimeMillis() - 3600_000L;
+            if (old != null) for (File f : old) if (f.lastModified() < hourAgo) f.delete();   // long since uploaded or dropped
+            File file = new File(dir, "photo-" + System.currentTimeMillis() + ".jpg");
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".files", file);
+            Intent shot = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
+                    .putExtra(android.provider.MediaStore.EXTRA_OUTPUT, uri)
+                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shot.setClipData(ClipData.newRawUri("", uri));
+            if (shot.resolveActivity(getPackageManager()) == null) return null;
+            cameraShot = uri;
+            cameraFile = file;
+            return shot;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
@@ -343,15 +378,19 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode != PICK_PHOTOS || pendingPick == null) return;
         Uri[] picked = null;
-        if (resultCode == RESULT_OK && data != null) {
-            ClipData many = data.getClipData();
-            if (many != null) {
+        if (resultCode == RESULT_OK) {
+            ClipData many = data != null ? data.getClipData() : null;
+            if (many != null && many.getItemCount() > 0) {
                 picked = new Uri[many.getItemCount()];
                 for (int i = 0; i < picked.length; i++) picked[i] = many.getItemAt(i).getUri();
-            } else if (data.getData() != null) {
+            } else if (data != null && data.getData() != null) {
                 picked = new Uri[] { data.getData() };
+            } else if (cameraShot != null && cameraFile != null && cameraFile.length() > 0) {
+                picked = new Uri[] { cameraShot };   // a photo just taken: the camera app answers with no data
             }
         }
+        cameraShot = null;
+        cameraFile = null;
         pendingPick.onReceiveValue(picked);
         pendingPick = null;
     }

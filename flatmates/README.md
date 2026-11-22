@@ -1038,9 +1038,10 @@ about type, shapes, layout and the logo still holds.
   - the three choices on the sign-up card (blue, apricot, mint) and the four party covers (blue, apricot, pink,
     mint);
   - **My flat's two shortcuts** (Kamal, 22 Nov, of the white tiles with blue names: "Can u put tab colors to
-    flatsplit and flat mark matching the app"): each is a tile in the pastel of the screen it opens, lighter at
-    the top like that screen's band. Flatsplits is pink, FlatMart apricot. The words are charcoal, as on a band,
-    and the icon sits on white (`.extras a`; checked in `p31`).
+    flatsplit and flat mark matching the app"; and of the pink and apricot they first got: "Blue and pink will
+    look good. The colors from the app"): two tiles in the app's pastels, lighter at the top like a band.
+    Flatsplits is blue, FlatMart pink. The words are charcoal, as on a band, and the icon sits on white
+    (`.extras a`; checked in `p31`).
 - **The strip above the page follows the band** (`barMeasure`, `barApply`): on the website it is the browser's bar
   (the `theme-color` tag), in the Android app the strip behind the clock (the page sends a `bars` message and
   `MainActivity.paintBars` paints it). It is the band's pastel while the band runs under the top bar, the first
@@ -1659,6 +1660,28 @@ public API, at most every 6 hours) and, when there is a newer one, shows a card 
 with **Update** (the download link above; Android asks the person to confirm the install). The × hides it for a day,
 for that version only. Offline or a failed read shows nothing. The website never shows it: it always loads the latest
 pages. Only apps from this build on can check, so phones on an older build need one manual download first.
+
+**Permissions** (Kamal, 22 Nov: "Can we build that app automaticaly takes the permission of camera, location and
+gallery and anything else that is important"). No Android app can take a permission by itself: the phone shows its
+own box and the person answers it. Two ways were put to Kamal (22 Nov, by King): A, at first open ask for
+notifications and then location; B, at first open ask only for notifications, and ask for location the first time
+someone uses the map or parties near them; no camera or gallery permission in either. **Kamal chose B.**
+- **The first-open step:** the first time someone signed in reaches a main screen in the Android app with
+  notifications off, one sheet, "Set up your app", says what is asked now (notifications), what later (location)
+  and what never (photos and the camera). **Continue** brings up Android's box for notifications (the same ask as
+  the "Stay in the loop" card). Once per phone (`fm_setup_asked`). It never opens over another sheet, and not at
+  all when notifications are already allowed, before sign-in, or on the website.
+- **Not now** asks Android nothing; the "Stay in the loop" card still offers notifications where it did before.
+- **Location** is asked the first time someone taps "Use my current location" or the map's locate button, as
+  before, and read only on those taps. A "no" given before someone knows why can stop Android asking again, which
+  is why it is not asked at first open. Nothing follows it in the background (the privacy page says the same).
+- **Photos and the camera need no permission.** Choosing photos goes through Android's own picker. **Take a
+  photo** is in the same chooser (22 Nov): the phone's own camera app takes it and writes it to the app's cache
+  (`cache/camera`, handed over through the FileProvider). The app does not declare the camera permission, so
+  nothing is asked.
+- **What the app declares:** internet, notifications, location (approximate and precise). Nothing else.
+- Checks: `p36` (the sheet with a stand-in for the Android side, and the Android files as written: only
+  notifications are asked from the sheet, location only from the map's own prompt; the Java is compiled by CI).
 
 How it's built: `android/` is a small native app that shows the web app full-screen. The build
 copies `index.html`, `privacy.html`, `manifest.webmanifest`, `icons/` and `vendor/` into the APK, so you only ever
