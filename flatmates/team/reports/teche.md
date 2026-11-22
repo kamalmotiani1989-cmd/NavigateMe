@@ -1,5 +1,42 @@
 # Teche · reports
 
+## 2026-11-22, the avatar studio built and tested (#126, open): waits for Kamal's yes to the pictures
+
+- **What was asked (Kamal, 22 Nov, in my session, with a screen recording of another app's avatar builder):**
+  "Can we make the avtaar saction more advanced". I told him what I would take and what not, and that he would
+  see pictures before anything goes live. He has the pictures; #126 is open and **not merged**; nothing is live.
+- **What #126 is:**
+  - a studio in place of the one-screen maker: the whole person on a stage, eleven tabs (looks, skin, hair,
+    face, beard, glasses, headwear, outfits, top, bottoms, shoes) with a grid of choices drawn on your own
+    figure, Undo, Redo, "Surprise me", and "Your avatar is ready!" at the end;
+  - many more choices: 15 hair styles in 8 colours (grey and white among them), 6 beards with their own colour,
+    4 kinds of glasses, 9 tops in 16 colours, 6 bottoms, 4 shoes, 12 outfits, 12 looks to start from;
+  - two drawings of one person: the round one stays in every list, chat and on the Vibe Card; the standing one
+    is in the studio and on your own Profile;
+  - it still starts neutral (no skin tone picked for you) and is still never a photo.
+- **Not taken from the recording:** the selfie that starts it there (no face reading here, and Kamal's rule of
+  15 Nov says no photos) and that app's artwork. Kamal was told; he has not asked for the selfie.
+- **Older apps:** a phone on a build from before the studio knows only the first choices. A saved avatar carries
+  each new choice next to the nearest thing that build can draw, so nobody's avatar breaks on an older app.
+- **Database:** `fm_avatar_valid` accepts the studio's keys, each from a fixed list. On Kamal's yes: database
+  first, then merge. The app must not go out before it.
+- **King's ask in priorities.md (the other app is not named in the page, the README or the tests):** done; also
+  not in the commit or the PR. I have taken its name out of my earlier entry below as well.
+- **Tests:** demo 33 suites, 938 checks, all pass (930 before). `p21` was rewritten to hold the studio (31 checks
+  to 39), among them the app's lists of choices compared with the server's, value for value. Database suite on a
+  local Postgres: 313 checks, all pass (three new). Not tested on a real phone.
+- **Also changed:** the blog's pages are rebuilt, because their cover people are drawn by the same library.
+- **Pictures:** on the PR's branch, `flatmates/team/reports/shots/avatar-studio/`.
+- **Second ask from Kamal the same evening:** "Can we build that app automaticaly takes the permission of camera,
+  location and gallery and anything else that is important". Told him no app can take a permission by itself
+  (Android shows its own box), what the app does today, and what I would build: a one-time sheet at first open
+  that says what each is for and then brings up Android's boxes (notifications, then location), and "Take a
+  photo" in the photo chooser through the phone's own camera app, which needs no permission. Built on its own
+  branch (`claude/app-permissions`, a new suite `p36`); its full test run is going. He has not answered; I told
+  him I would build it this way unless he wants everything asked at first open.
+- **Need from King:** nothing.
+- **Still with Kamal:** yes or no to the avatar studio; the list in the entries below.
+
 ## 2026-11-22, My flat: the Flatsplits and FlatMart tiles in the pastels of their screens (#125) live
 
 - **What was asked (Kamal, 22 Nov, in my session, with a screenshot of My flat in the new colours):** "Can u put
@@ -21,11 +58,11 @@
   change of #123 works on a real device (it was "not tested on a phone" until now).
 - **Pictures:** `flatmates/team/reports/shots/my-flat-tiles/` (before and after on a phone, a small phone, a
   computer).
-- **Next, asked by Kamal the same hour, with a screen recording of Snapchat's avatar builder:** "Can we make the
-  avtaar saction more advanced . Look the way snapchat creates avtaar". I told him yes and what I would take
+- **Next, asked by Kamal the same hour, with a screen recording of another app's avatar builder:** "Can we make
+  the avtaar saction more advanced". I told him yes and what I would take
   (a full-body avatar with outfits; a studio screen with tabs, a grid of choices, undo, redo and Save; many more
   choices; a "ready" moment) and what I would not (the selfie scan: no face-reading technology here, and his
-  rule of 15 Nov says no photos; and Snapchat's own artwork). I build it on a branch and show him pictures
+  rule of 15 Nov says no photos; and that app's own artwork). I build it on a branch and show him pictures
   before anything goes live. It needs a database change (the avatar check accepts only today's keys and values).
 - **Need from King:** nothing.
 - **Still with Kamal:** whether he wants the selfie step after all; whether a room nobody lives in should show
@@ -246,37 +283,3 @@
 - **Still with Kamal:** a read of the seven articles (every word is easy to change); the source links; whether the
   word "Blog" stays on the first page; whether the map's overlapping marks get fixed; the Parties distance privacy
   fix; Tribe under 70%; the message limits.
-
-## 2026-11-18, Parties: the short message after asking says what the answer was (#120) live
-
-- **What was asked (Kamal, 18 Nov, in my session):** "F8x wrong short message". It answers one of two things I had
-  told him I saw while drawing his map from the live sample parties: after you ask to join a sample party the
-  pop-up still said the host "will let you know", though the page already said "You're in!". He did not answer the
-  other (the marks that overlap on the map), so that is not touched.
-- **What changed (#120, merged `33fc6ff`; the app only, no database change):**
-  - After asking to join, the short message is "<host> accepted you. The address is below." when the request came
-    back accepted, as a sample host's does (the database answers for it, #119), and stays "Asked! <host> will let
-    you know." while a host has not answered. It is the sentence the app already used when a host says yes later.
-  - The line under the door code said "<host> has your number too." for a sample host as well, which has no number
-    and gets none. Where there is no number to call it now reads "A sample host, so no numbers are shared." This
-    second line is mine to own: Kamal named the pop-up, and I took the same wrong claim on the same card with it.
-  - If the party is no longer open when its page is read again, the app's own "That party isn't open to you any
-    more." is the only message (an error used to show in the form too).
-- **Tests:** demo 32 suites, 869 checks, all pass (864 before). `p34` gains five: the message while the host has
-  not answered, the message and the line once a host says yes, and, with the live answer stood in for one of the
-  demo's sample hosts, the new message, the new line, no Call button and nothing said twice. The database suite
-  was not run: nothing in the database changes.
-- **Live:** Android build 223 (release `flatmates-apk`, from `33fc6ff`) and the website ("Publish the app from NavigateMe
-  33fc6ff" on its main and gh-pages, `b2fbcbb`; the Pages deployment finished). Checked on the published copy with
-  its backend off: a host who has not answered gives "Asked! Ananya will let you know."; a yes that comes back at
-  once gives "Kabir accepted you. The address is below.", the new line under the door code, no Call button and
-  nothing said twice; no page errors. The page inside build 223 is the published page, byte for byte. On the
-  website the fix shows after a refresh; in the Android app after the update to build 223.
-- **A slip of mine:** after starting the publish I waited ten minutes on a stale copy of the website repo's
-  gh-pages branch; the publish had landed within half a minute. Nothing was wrong on the site.
-- **Not checked on a real phone:** I cannot sign in to the live app from here. The checks are the test copy and
-  the published files.
-- **Still with Kamal:** whether I fix the map's overlapping marks (King recommends yes); yes or no to the Parties
-  distance privacy fix; whether Tribe matches under 70% are announced; the message limit of 30 an hour and 60 a
-  day. The 15 sample parties are still live and drop off as their time comes (none may be live when sign-up opens).
-- **Need from King:** nothing.
