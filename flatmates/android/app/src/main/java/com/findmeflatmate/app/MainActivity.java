@@ -274,6 +274,15 @@ public class MainActivity extends Activity {
                     .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             shot.setClipData(ClipData.newRawUri("", uri));
             if (shot.resolveActivity(getPackageManager()) == null) return null;
+            // A camera app opened from the chooser's extra entry is not always handed the right to write the file
+            // through the intent alone, and then the shot comes back empty. So each app that can take the picture
+            // is given it by name as well; it is taken back when the chooser answers (onActivityResult).
+            for (android.content.pm.ResolveInfo r : getPackageManager().queryIntentActivities(shot, PackageManager.MATCH_DEFAULT_ONLY)) {
+                if (r.activityInfo != null) {
+                    grantUriPermission(r.activityInfo.packageName, uri,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+            }
             cameraShot = uri;
             cameraFile = file;
             return shot;
@@ -387,6 +396,13 @@ public class MainActivity extends Activity {
                 picked = new Uri[] { data.getData() };
             } else if (cameraShot != null && cameraFile != null && cameraFile.length() > 0) {
                 picked = new Uri[] { cameraShot };   // a photo just taken: the camera app answers with no data
+            }
+        }
+        if (cameraShot != null) {
+            try {
+                revokeUriPermission(cameraShot, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (Exception ignored) {
+                // nothing was granted, or the file is gone: either way no other app can reach it
             }
         }
         cameraShot = null;
