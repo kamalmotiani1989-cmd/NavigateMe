@@ -15,6 +15,8 @@ _Last update: 17 Nov 2026._
   The avatar studio: the whole person, eleven tabs, outfits, undo and redo (#126, 22 Nov, Kamal's ask). Android build 228.
   The first-open permissions sheet (notifications now, location when the map is first used) and "Take a photo" in the
   photo chooser; My flat's tiles now Flatsplits blue and FlatMart pink, Kamal's pick (#127, 22 Nov). Android build 229.
+  The camera app is given the right to write the photo by name, and it is taken back after (#128, King's suggestion).
+  Android build 230.
 - **The website has a blog (#121, 18 Nov, Kamal's ask):** seven articles at `/blog/`, on the website only. The app does
   not carry it; Android build 224 holds the same app as 223. King read the two legal and money articles in full and
   checked five of their news and government figures by search: all held. Nobody on the team can open the source pages
@@ -37,7 +39,8 @@ _Last update: 17 Nov 2026._
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
 0000000000. DONE 22 Nov: live (#127, 2c07194, Android build 229), way B, on Kamal's "Yes, put it live" in Teche's session
-   after the picture. Not yet tried on a real phone: the sheet, and "Take a photo" in the photo chooser.
+   after the picture. Not yet tried on a real phone: the sheet, and "Take a photo" in the photo chooser (build 230 has
+   the safeguard of #128).
    **The permissions sheet in the Android app: build B; pictures to Kamal before it goes live.** King put two ways
    to Kamal on 22 Nov: A, at first open ask for notifications and then location; B, at first open ask only for
    notifications, and ask for location the first time someone uses the map or turns on parties near them; no camera or
