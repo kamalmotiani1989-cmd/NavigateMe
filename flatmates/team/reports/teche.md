@@ -1,5 +1,41 @@
 # Teche · reports
 
+## 2026-11-22, the new colours built and tested (#123, open): waits for Kamal's yes to the pictures
+
+- **What was asked (Kamal, 22 Nov, in my session, after the preview below):** "This looks cool change the colors
+  of the app". Read as yes to what he was shown. I had told him he would see pictures of the finished build
+  before anything goes live, so #123 is open and **not merged**; nothing is on the website or in the Android app.
+- **Where this meets King's note:** priorities.md recommends a variant (the logo's orange on buttons, no blue
+  links). Kamal has not said that to me, and by my brief his word wins, so I built what he saw and chose. The
+  variant is a change of two tokens; the PR says so. If he tells King otherwise and it is written into
+  priorities.md, I follow that.
+- **What #123 is (colour only; layouts, words, fonts, login, questions and the logo untouched):**
+  - a third layer at the end of the stylesheet: a white page and white cards; an orange-red `#E2461B` for main
+    buttons and the key word (the screenshots' `#F65D34` a little deeper: white words on a button read at 4.1:1
+    where the preview's read at 3.2:1; small orange words use `#BC360F` and keep our 4.5:1); each screen's band
+    in a pastel, lighter at the top, with the white page over its foot again (blue Discover, Profile, Requests;
+    mint Tribe, the Escape, Messages; yellow Parties; pink Flatsplits, Saved; apricot FlatMart, My flat, Post);
+    a pale blue search box; blue for the words you tap; charcoal for words and dark sheets;
+  - the strip above the page follows the band: the browser's bar on the website, and in the Android app the
+    strip behind the clock, through the existing native bridge (a `bars` message; `MainActivity.paintBars`);
+  - outside the stylesheet: share pictures and the Vibe Card, the map's circle, `og-image.png` (redrawn),
+    `privacy.html`, `hold.html`, the installed app's colours and the Android bars.
+- **Not changed:** the blog (website only) still wears the look of 17 Nov; the README says so. Kamal has been told.
+- **Tests:** demo 33 suites, 929 checks, all pass (926 before; three new). The look suites were rewritten to hold
+  the new look, not loosened: `p31` now counts the cream, the brown and the other colours of 17 Nov as old and
+  finds none left; `p26` and `p27` hold each band's pastel, the sheet over its foot and the strip above the page.
+  Two real things they found and I fixed: the search box sat 11px lower on a 360 x 640 phone, and the
+  link-preview picture had lost the logo's exact orange. The database suite was not run: nothing there changes.
+- **Not tested:** the Android code on a phone. It cannot be compiled here; CI compiles it after merge. If it does
+  not compile, no APK is published and the app stays on build 225 while the website has the new colours.
+- **Pictures:** on the PR's branch, `flatmates/team/reports/shots/colours-22nov/` (the finished build) and
+  `preview/` inside it (what Kamal saw first), as King asked. Kamal was sent the finished build's.
+- **Need from King:** nothing. My brief's look rule still describes 17 Nov; I have asked Kamal for the sentence.
+- **Still with Kamal:** yes or no to putting #123 live, and the look sentence for my brief; whether the blog
+  follows; a read of the blog's seven articles and its source links; whether the word "Blog" stays on the first
+  page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the message
+  limits. The 15 sample parties are still live (the last ends on 5 Dec).
+
 ## 2026-11-22, a preview of the app in another app's colours: pictures shown to Kamal, nothing changed
 
 - **What was asked (Kamal, 22 Nov, in my session):** two screenshots of a car-buying app (a home screen with
@@ -338,31 +374,3 @@
   published without Kamal's yes to the pictures). Not started. King's notes of 17 Nov are with my working files.
 - **Still with Kamal:** whether Tribe matches under 70% should be announced; the message limit of 30 an hour and
   60 a day. (White or pale orange for the top band is answered by the reel look, if it goes live: cream.)
-
-## 2026-11-16, "Do you live in this flat?" (#115) live, on Kamal's go
-
-- **The go:** Kamal, 16 Nov, in my session: "Go", after seeing the pictures and the summary of #115.
-- **Order, database first:**
-  1. applied `schema.sql` from the PR's commit to the live database (fetched inside the database, checksum checked
-     against my file, then run);
-  2. checked it read-only;
-  3. merged #115 (0e76f69), which built Android build 220;
-  4. published the website.
-- **Database, checked before and after:**
-  - 105 listings; every household is unchanged (same fingerprint), and so is every home's women-only result. No
-    listing has an answer to the question yet, so nothing was expected to change.
-  - The rule is in place: `fm_home_lived_in` is new, `fm_lister_lives`, `fm_listing_vibe` and `fm_home_gender`
-    follow the answer, and none of them can be called from the app.
-- **What changed for people:** as in the entry below. The form asks everyone posting a room, a bed or a flatmate
-  listing; on No the lister's own answers and gender are not used, nobody listed is "You", and the home says
-  "Owner-listed"; older listings are read as before and their editor asks on the next save.
-- **Published:** 0e76f69; Android build 220 (file checked: the question is inside, checksum matches the release);
-  the website repo's `main` and `gh-pages` say "Publish the app from NavigateMe 0e76f69". The published copy opens
-  with no page errors, and with its live backend switched off the question works end to end (asked, refused
-  without an answer, No saved with the two people's genders, "Owner-listed", women-only).
-- **Tests:** as built: database suite 266 checks, 31 demo suites 787 checks.
-- **The five real listings** have no answer yet. Each lister is asked the next time they edit. Until then they are
-  read as before.
-- **Priorities 000000 and 0000000 are both done.** Nothing of mine is waiting on a deploy.
-- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
-  announced; the message limit of 30 an hour and 60 a day.
