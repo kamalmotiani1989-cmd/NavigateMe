@@ -4,9 +4,10 @@ _Updated by King after each weekly review and whenever Kamal changes direction. 
 every routine and task._
 _Last update: 17 Nov 2026._
 
-## State of play (18 Nov)
-- **Live now:** the reel look on every screen (#117, 18 Nov: cream pages, white cards, one orange key word in each
-  main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
+## State of play (22 Nov)
+- **Live now:** the colours of 22 Nov on every screen (#123: white page, a pastel band per screen, orange-red buttons,
+  blue links, charcoal sheets; Android build 226), over the layout and type of the reel look (#117, 18 Nov: big serif
+  headlines, one key word in each main headline, the dark sheet on a home's page); the Parties feed, a party's page, hosting on one sheet and the map
   (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
   Parties: the short message after asking to join says what the answer was (#120, 18 Nov). Android build 223.
   Tribe: the people around you and the four steps sit on white cards (#122, 19 Nov, Kamal's ask). Android build 225.
@@ -148,15 +149,13 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
 2. On resume: the Wednesday pack from groups at `rules read` or better; the college outreach drafts are with Kamal.
 
 ## Decisions waiting for Kamal
-- **The colours of 22 Nov (PR #123, open, nothing live): Kamal's yes to the finished pictures, in Teche's session.** After
-  the preview Kamal told Teche "This looks cool change the colors of the app" (Teche's quote; King did not find the line
-  in the session's record himself). Teche built what was shown: white page, pastel band per screen, an orange-red on
-  buttons (`#E2461B`, the preview's made a little deeper), blue links, charcoal sheets; logo, layouts, words and login
-  untouched. King read the pictures and the Android change and ran the branch: it is clean. **One choice is left to
-  Kamal:** A, as built; or B, the same build with the logo's orange on buttons and the key word and dark links (two
-  tokens). White words on a button read at 4.1 to 1 in A and 5.2 to 1 in B, and B has one orange on the screen where A
-  has two. King recommends B and has sent Kamal the two side by side. Whichever he picks, the look then stays until
-  sign-up opens, and the blog (still in the look of 17 Nov) follows in its own PR.
+- **The colours of 22 Nov are live (#123, b41d5dc, Android build 226), as built.** Kamal's yes to the finished pictures,
+  22 Nov, in Teche's session ("Yes", as Teche quotes it); it came before King's side-by-side reached him. What is live:
+  white page, a pastel band per screen, the orange-red `#E2461B` on buttons and the key word, blue links, charcoal
+  sheets. **Still open to Kamal, a two-token change if he asks:** the logo's own orange on buttons and the key word and
+  dark links (white button words then read at 5.2 to 1, not 4.1, and the screen has one orange). King recommends it.
+  King also recommends the look now stays until sign-up opens.
+- **The blog** still wears the look of 17 Nov; whether it follows the new colours is with Kamal (Teche has asked him).
 - **Parties, privacy (found by Teche, 17 Nov):** a party's distance is measured from the flat's exact pin and shown to
   100 m, and the place you measure from can be changed as often as you like, so someone patient could work out roughly
   where a flat is. Fix: measure from the rounded spot the map already uses, and limit how often the place can change.
