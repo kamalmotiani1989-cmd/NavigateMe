@@ -28,6 +28,14 @@ do $$ begin perform fm_set_avatar('{"s":"s1","t":"#FF00FF"}'); raise exception '
 select pg_temp.ok(true, 'avatar: colours only from the palette');
 select pg_temp.ok(not fm_avatar_valid('{"s":"s1","ty":"3-0"}') and not fm_avatar_valid('{"s":"s1","g":"yes"}') and not fm_avatar_valid('[1]') and fm_avatar_valid(null)
   and fm_avatar_valid('{"s":"s6","h":"curly","hc":"#1C1917","b":"full","ty":"1-1"}'), 'avatar: type key, glasses flag and shape checked');
+-- the studio's choices (Kamal, 22 Nov): new keys next to the first ones
+select pg_temp.ok((fm_set_avatar('{"v":2,"s":"s4","f":"smile","m":"smirk","e":"big","br":"thick","h":"short","h2":"quiff","hc":"#9C9590","hc2":"#E4DFDA","c":"none","c2":"none","cc":"#C3C9F6","g":true,"gl":"square","b":"full","b2":"short","bc":"#E4DFDA","ea":"none","t":"#86A6E0","tc":"#2F3E63","o":"blazer","p":"trousers","pc":"#7D828A","sh":"loafers","shc":"#23262B","ty":"2-4"}')->>'o') = 'blazer',
+  'avatar: an avatar from the studio saves, its new choices next to the first ones');
+select pg_temp.ok(not fm_avatar_valid('{"s":"s1","h":"quiff"}') and fm_avatar_valid('{"s":"s1","h":"short","h2":"quiff"}') and not fm_avatar_valid('{"s":"s1","hc":"#E4DFDA"}') and not fm_avatar_valid('{"s":"s1","b":"goatee"}'),
+  'avatar: a new choice goes in its own key; the first keys keep their first values (an app from before the studio reads those)');
+select pg_temp.ok(not fm_avatar_valid('{"s":"s1","h2":"mohawk"}') and not fm_avatar_valid('{"s":"s1","tc":"#FF00FF"}') and not fm_avatar_valid('{"s":"s1","o":"cape"}') and not fm_avatar_valid('{"s":"s1","gl":true}')
+  and not fm_avatar_valid('{"s":"s1","selfie":"data:image/png;base64,AAAA"}') and not fm_avatar_valid('{"s":"s1","sh":"heels","shc":"#F4F2EE"}'),
+  'avatar: the studio''s choices come from fixed lists too, and there are still no other keys (no picture of any kind)');
 reset role;
 do $$ begin update fm_profiles set avatar = '{"s":"s0"}' where id = '90000000-0000-4000-8000-000000000093'; raise exception 'no-error'; exception when check_violation then null; end $$;
 select pg_temp.ok(true, 'avatar: the table refuses bad values too');

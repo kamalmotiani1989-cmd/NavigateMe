@@ -4404,11 +4404,18 @@ $$;
 -- s skin tone s1–s6 · f face · h hair style · hc hair colour · c head covering · cc its colour · g glasses ·
 -- b beard · t top colour · ty the flatmate type ("rhythm-habit", e.g. "2-4"), kept in step by the app from the
 -- person's answers · v version. Only these keys and values are accepted. No avatar = the neutral default.
+-- The studio (Kamal, 22 Nov: "make the avatar section more advanced") adds choices, each with its own key:
+-- m mouth · e eyes · br eyebrows · h2 hair style · hc2 hair colour · c2 headwear · gl glasses · b2 beard ·
+-- bc beard colour · ea earrings · o top · tc its colour · p bottoms · pc their colour · sh shoes · shc their colour.
+-- The first set stays on every avatar and keeps its first values: it holds the nearest thing an app from before the
+-- studio can draw, so a phone on an older build never meets a value it doesn't know. The app's avValid is this
+-- function in JavaScript; tests/demo/p21 compares the two lists.
 alter table public.fm_profiles add column if not exists avatar jsonb;
 create or replace function public.fm_avatar_valid(p jsonb) returns boolean
 language sql immutable set search_path = public as $$
-  select p is null or (jsonb_typeof(p) = 'object' and length(p::text) <= 400
-    and not exists (select 1 from jsonb_object_keys(p) k where k not in ('v','s','f','h','hc','c','cc','g','b','t','ty'))
+  select p is null or (jsonb_typeof(p) = 'object' and length(p::text) <= 700
+    and not exists (select 1 from jsonb_object_keys(p) k where k not in ('v','s','f','h','hc','c','cc','g','b','t','ty',
+                      'm','e','br','h2','hc2','c2','gl','b2','bc','ea','tc','o','p','pc','sh','shc'))
     and coalesce(p->>'s', '') ~ '^s[1-6]$'
     and coalesce(p->>'f', 'smile') in ('smile','grin','calm')
     and coalesce(p->>'h', 'short') in ('none','short','bob','long','curly','bun','bald')
@@ -4419,7 +4426,24 @@ language sql immutable set search_path = public as $$
     and coalesce(p->>'b', 'none') in ('none','full','moustache')
     and coalesce(p->>'t', '#86A6E0') in ('#C3C9F6','#C3E0D6','#EBD981','#E79078','#86A6E0','#8D9B62','#1C1917','#FBF8F6')
     and coalesce(p->>'ty', '0-0') ~ '^[0-2]-([0-9]|1[01])$'
-    and coalesce(jsonb_typeof(p->'v'), 'number') = 'number');
+    and coalesce(jsonb_typeof(p->'v'), 'number') = 'number'
+    and coalesce(p->>'m', 'smile') in ('smile','grin','laugh','smirk','calm')
+    and coalesce(p->>'e', 'dot') in ('dot','big','lash','happy','sleepy')
+    and coalesce(p->>'br', 'soft') in ('soft','straight','thick','raised')
+    and coalesce(p->>'h2', 'short') in ('short','buzz','quiff','side','spiky','curly','afro','pixie','bob','wavy','long','pony','bun','braid','bald')
+    and coalesce(p->>'hc2', '#1C1917') in ('#1C1917','#3A2A20','#5B3A29','#8A5A3B','#8E3B1F','#C9A35F','#9C9590','#E4DFDA')
+    and coalesce(p->>'c2', 'none') in ('none','cap','beanie','hat','hijab','turban')
+    and coalesce(p->>'gl', 'none') in ('none','round','square','thin','shades')
+    and coalesce(p->>'b2', 'none') in ('none','stubble','moustache','goatee','short','full')
+    and coalesce(p->>'bc', '#1C1917') in ('#1C1917','#3A2A20','#5B3A29','#8A5A3B','#8E3B1F','#C9A35F','#9C9590','#E4DFDA')
+    and coalesce(p->>'ea', 'none') in ('none','studs','hoops')
+    and coalesce(p->>'tc', '#86A6E0') in ('#C3C9F6','#C3E0D6','#EBD981','#E79078','#86A6E0','#8D9B62','#1C1917','#FBF8F6',
+                                         '#BFD7EE','#2F3E63','#7C2D3A','#D9A441','#F0B8C8','#3E8C84','#8E9299','#F3E9D8')
+    and coalesce(p->>'o', 'tee') in ('tee','shirt','hoodie','sweater','jacket','varsity','blazer','kurta','dress')
+    and coalesce(p->>'p', 'jeans') in ('jeans','trousers','joggers','wide','shorts','skirt')
+    and coalesce(p->>'pc', '#4F6FA5') in ('#4F6FA5','#9DB7D8','#23262B','#7D828A','#C8B48A','#6F7C4A','#F4F2EE','#2F3E63','#7C2D3A','#7A5540')
+    and coalesce(p->>'sh', 'sneakers') in ('sneakers','boots','loafers','sandals')
+    and coalesce(p->>'shc', '#F4F2EE') in ('#F4F2EE','#23262B','#7A5540','#E2461B','#2F3E63'));
 $$;
 do $$ begin
   if not exists (select 1 from pg_constraint where conname = 'fm_profiles_avatar_ok') then

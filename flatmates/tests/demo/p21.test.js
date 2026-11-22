@@ -1,4 +1,5 @@
-// Avatars (Kamal, 13 Nov; demo mode, port 8765, 390 wide): the maker (Skip, pick, save, edit, remove), the neutral
+// Avatars (Kamal, 13 Nov; the studio, 22 Nov; demo mode, port 8765, 390 wide): the studio (Skip, a look, tabs, pick, undo,
+// outfits, save, the "ready" moment, edit, remove), what is saved and what an older app reads of it, the neutral
 // default when there's none (never a guessed face), every list showing avatars instead of letters, the Vibe Card
 // (live on screen, a still in the shared image), Account, the owner's own row in "who lives there", the type layer
 // following the answers, still small avatars, and reduced motion.
@@ -31,29 +32,78 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
   // no avatar yet: the letter in the top bar, the maker opens on a neutral picture, and Save waits for a skin tone
   ok(await p.evaluate(() => $('meBtn').textContent.trim() === 'N' && !state.avatar), 'no avatar: the top bar keeps the initial');
   await p.evaluate(() => openAvatarMaker('account')); await p.waitForTimeout(300);
-  const m0 = await p.evaluate(() => ({ none: !!$('avStage').querySelector('.av-none'), save: $('avSave').disabled, note: $('avNote').textContent, skip: $('avSkip').textContent,
-    rows: [...document.querySelectorAll('.av-row h3')].map(h => h.textContent), skins: document.querySelectorAll('[data-avk-set="s"]').length,
-    picked: document.querySelectorAll('[data-avk-set="s"][aria-checked="true"]').length }));
-  ok(m0.none && m0.save && m0.picked === 0 && /nothing is guessed/.test(m0.note) && m0.skip === 'Skip', 'the maker starts neutral: no skin tone picked for you, Save waits: ' + m0.note);
-  ok(m0.rows.join() === 'Skin tone,Face,Hair,Head covering,Glasses and beard,Top' && m0.skins === 6, 'six rows of round tiles, six skin tones: ' + m0.rows.join(' / '));
+  const tab = k => p.click(`#avTabs [data-av-tab="${k}"]`), pick = l => p.click(`#avRows [aria-label="${l}"]`);
+  const m0 = await p.evaluate(() => ({ plain: $('avStage').classList.contains('blank') && getComputedStyle($('avStage').querySelector('.face')).opacity === '0' && !!$('avStage').querySelector('svg.fm-fig'),
+    save: $('avSave').disabled, note: $('avNote').textContent, skip: $('avSkip').textContent, title: $('avTitle').textContent,
+    tabs: [...document.querySelectorAll('#avTabs [role="tab"]')].map(x => x.textContent + (x.disabled ? '-' : '')).join(), on: document.querySelector('#avTabs [aria-selected="true"]').textContent,
+    looks: document.querySelectorAll('#avRows .av-tile').length, picked: document.querySelectorAll('#avRows [aria-checked="true"]').length, undo: $('avUndo').disabled && $('avRedo').disabled,
+    full: (r => r.width >= innerWidth - 1 && r.height >= innerHeight - 1)($('dlgAvatar').getBoundingClientRect()) }));
+  ok(m0.plain && m0.save && m0.picked === 0 && /nothing is guessed/.test(m0.note) && m0.skip === 'Skip' && m0.title === 'Make your avatar' && m0.undo && m0.full,
+    'the studio starts neutral: a plain figure with no face, nothing picked for you, Save waits, on the whole screen: ' + JSON.stringify(m0));
+  ok(m0.tabs === 'Looks,Skin,Hair-,Face-,Beard-,Glasses-,Headwear-,Outfits-,Top-,Bottoms-,Shoes-' && m0.on === 'Looks' && m0.looks === 12,
+    'eleven tabs, opening on twelve looks to start from; until a look or a skin tone is picked only Looks and Skin are open: ' + m0.tabs);
   await p.screenshot({ path: O + '/p21-maker-empty.png' });
-  // pick: the cartoon updates live
-  await p.click('[data-avk-set="s"][data-avv="s4"]'); const a1 = await p.evaluate(() => $('avStage').innerHTML.length);
-  await p.click('[data-avk-set="c"][data-avv="hijab"]'); await p.click('[data-avk-set="f"][data-avv="grin"]'); await p.click('[data-avk-set="t"][data-avv="#C3E0D6"]');
-  const m1 = await p.evaluate(() => ({ live: !$('avStage').querySelector('.av-none') && !$('avStage').querySelector('svg.still'), cc: !!document.querySelector('[aria-label="Head covering colour"]'),
-    save: $('avSave').disabled, len: $('avStage').innerHTML.length, prop: !!$('avStage').querySelector('.prop'), checked: document.querySelector('[data-avk-set="c"][aria-checked="true"]').dataset.avv }));
-  ok(m1.live && m1.cc && !m1.save && m1.len !== a1 && m1.prop && m1.checked === 'hijab', 'picking updates the cartoon live (with the type\'s prop), a hijab gets its colour row: ' + JSON.stringify(m1));
-  await p.evaluate(() => $('avStage').scrollIntoView()); await p.screenshot({ path: O + '/p21-maker.png' });
+  // pick: the figure follows, the stage moves in on the face for face things and back out for clothes
+  await tab('skin'); const skins = await p.evaluate(() => document.querySelectorAll('#avRows .av-tile.skin').length);
+  await pick('Tone 4'); const a1 = await p.evaluate(() => $('avStage').innerHTML.length);
+  await tab('head'); await pick('Hijab'); const cc = await p.evaluate(() => !!document.querySelector('[aria-label="Headwear colour"]') && $('avStage').classList.contains('zoom'));
+  await tab('face'); await pick('Big smile'); await tab('top'); await pick('Mint'); await p.waitForTimeout(450);
+  const m1 = await p.evaluate(() => ({ live: !$('avStage').classList.contains('blank') && !$('avStage').querySelector('svg.still'), whole: !!$('avStage').querySelector('svg.fm-fig') && !$('avStage').classList.contains('zoom'),
+    save: $('avSave').disabled, len: $('avStage').innerHTML.length, open: [...document.querySelectorAll('#avTabs [role="tab"]')].every(x => !x.disabled), undo: !$('avUndo').disabled && $('avRedo').disabled,
+    checked: [...document.querySelectorAll('#avRows [aria-checked="true"]')].map(x => x.getAttribute('aria-label')).join(), tiles: document.querySelectorAll('#avRows .av-tile').length,
+    drawn: [...document.querySelectorAll('#avRows .av-tile')].every(x => x.querySelector('svg.fm-fig') && x.querySelector('small').textContent) }));
+  ok(skins === 6 && cc && m1.live && m1.whole && !m1.save && m1.len !== a1 && m1.open && m1.undo && m1.checked === 'Mint,T-shirt' && m1.tiles === 9 && m1.drawn,
+    'six skin tones; picking changes the figure at once, every tab opens, a hijab gets its colour row, the stage is close on the face for headwear and shows the whole person for a top; each choice is drawn on your own figure with its name: ' + JSON.stringify(m1));
+  await p.screenshot({ path: O + '/p21-maker.png' });
+  // undo and redo, an outfit in one tap, and a dress
+  await p.click('#avUndo'); const u1 = await p.evaluate(() => avDraft.tc); await p.click('#avRedo'); const u2 = await p.evaluate(() => avDraft.tc + ' ' + $('avRedo').disabled);
+  await tab('outfit'); await pick('Smart'); const fit = await p.evaluate(() => [avDraft.o, avDraft.tc, avDraft.p, avDraft.pc, avDraft.sh, avDraft.shc].join() + ' ' + document.querySelectorAll('#avRows .av-tile').length);
+  await pick('Summer dress'); await tab('bottom'); const dr = await p.evaluate(() => /dress/.test($('avRows').querySelector('.av-hint').textContent)); await pick('Shorts'); const after = await p.evaluate(() => avDraft.o + ' ' + avDraft.p);
+  ok(u1 !== '#C3E0D6' && u2 === '#C3E0D6 true' && fit === 'blazer,#2F3E63,trousers,#7D828A,loafers,#23262B 12' && dr && after === 'tee shorts',
+    'Undo takes the last change back and Redo returns it; an outfit sets top, bottoms and shoes in one tap (twelve of them); in a dress the Bottoms tab says so, and picking bottoms changes the top to a T-shirt: ' + JSON.stringify({ u1, u2, fit, after }));
+  // Surprise me: a whole person at once, and always one the server would accept
+  const sur = await p.evaluate(() => { const bad = []; for(let i = 0; i < 300; i++){ const a = avPack(Object.assign(avUn({}), avRandom()), '1-3'); if(!avValid(a)) bad.push(JSON.stringify(a)); } $('avDice').click(); return { bad: bad.slice(0, 2), s: avDraft.s, undo: !$('avUndo').disabled }; });
+  ok(!sur.bad.length && /^s[1-6]$/.test(sur.s) && sur.undo, '"Surprise me" picks everything at once (and can be undone); 300 of them are all avatars the server would accept: ' + JSON.stringify(sur.bad));
+  // everything the studio offers is something the server accepts, and the lists are the server's lists
+  const lists = await p.evaluate(() => ({ m: AV_MOUTHS.map(x => x[0]), e: AV_EYES.map(x => x[0]), br: AV_BROWS.map(x => x[0]), h2: AV_HAIRS.map(x => x[0]), hc2: AV_HAIR_COLOURS.map(x => x[0]), c2: AV_COVERS.map(x => x[0]), gl: AV_GLASSES.map(x => x[0]),
+    b2: AV_BEARDS.map(x => x[0]), bc: AV_HAIR_COLOURS.map(x => x[0]), ea: AV_EARRINGS.map(x => x[0]), tc: AV_TOP_COLOURS.map(x => x[0]), o: AV_TOPS.map(x => x[0]), p: AV_BOTTOMS.map(x => x[0]), pc: AV_BOTTOM_COLOURS.map(x => x[0]),
+    sh: AV_SHOES.map(x => x[0]), shc: AV_SHOE_COLOURS.map(x => x[0]), cc: AV_COLOURS.map(x => x[0]), t: AV_COLOURS.map(x => x[0]),
+    old: [AV_MOUTHS, AV_HAIRS, AV_HAIR_COLOURS, AV_COVERS, AV_BEARDS, AV_TOP_COLOURS].map(l => [...new Set(l.map(x => x[2]))].sort().join()),
+    lib: [FMAvatar.MOUTH, FMAvatar.EYES, FMAvatar.BROWS, FMAvatar.HAIR, FMAvatar.COVER, FMAvatar.GLASSES, FMAvatar.BEARD, FMAvatar.EARRING, FMAvatar.TOPS, FMAvatar.BOTTOMS, FMAvatar.SHOES].map(x => x.slice().sort().join()),
+    looks: AV_LOOKS.concat(AV_OUTFITS.map(x => { const y = Object.assign({ s: 's1' }, x); delete y.n; return y; })).filter(x => !avValid(avPack(Object.assign(avUn({}), x), '0-0'))).length }));
+  const sql = require('fs').readFileSync(require('path').join(__dirname, '../../supabase/schema.sql'), 'utf8'), fn = sql.slice(sql.indexOf('create or replace function public.fm_avatar_valid'), sql.indexOf('fm_profiles_avatar_ok'));
+  const inSql = k => { const m = fn.match(new RegExp("p->>'" + k + "', '[^']*'\\) in \\(([^)]*)\\)")); return m ? m[1].replace(/[\s']/g, '').split(',') : []; };
+  const drift = Object.keys(lists).filter(k => !['old', 'lib', 'looks'].includes(k)).filter(k => lists[k].slice().sort().join() !== inSql(k).sort().join());
+  const draws = k => lists[k].filter(v => v !== 'none').sort().join();
+  ok(!drift.length, 'every list of choices in the app is the server\'s list for that key in fm_avatar_valid, value for value: ' + drift.join());
+  ok(lists.lib.join('|') === [draws('m'), draws('e'), draws('br'), lists.h2.concat('none').sort().join(), draws('c2'), draws('gl'), draws('b2'), draws('ea'), draws('o'), draws('p'), draws('sh')].join('|') && lists.looks === 0,
+    'the drawing library has a drawing for every choice and no others; every starting look and every outfit is an avatar the server accepts');
+  ok(lists.old.join('|') === [inSql('f'), inSql('h').filter(v => v !== 'none'), inSql('hc'), inSql('c'), inSql('b'), inSql('t')].map(l => l.sort().join()).join('|'),
+    'what an older app reads (the first keys) only ever takes the first values: ' + lists.old.join(' | '));
   // Skip saves nothing
   await p.click('#avSkip'); await p.waitForTimeout(200);
   ok(await p.evaluate(() => !state.avatar && !$('dlgAvatar').open), 'Skip closes it and saves nothing');
-  // save
-  await p.evaluate(() => openAvatarMaker('account')); await p.click('[data-avk-set="s"][data-avv="s4"]'); await p.click('[data-avk-set="c"][data-avv="hijab"]');
-  await p.click('[data-avk-set="t"][data-avv="#C3E0D6"]'); await p.click('#avSave'); await p.waitForTimeout(500);
-  const sv = await p.evaluate(() => ({ a: state.avatar, me: !!$('meBtn').querySelector('svg.still'), ty: avTypeKey(state.vibe) }));
-  ok(sv.a && sv.a.s === 's4' && sv.a.c === 'hijab' && sv.a.t === '#C3E0D6' && sv.a.ty === sv.ty && Object.keys(sv.a).every(k => ['v','s','f','h','hc','c','cc','g','b','t','ty'].includes(k)),
-    'Save keeps a few choices plus the type from the answers: ' + JSON.stringify(sv.a));
+  // save: the choices, and the "ready" moment
+  await p.evaluate(() => openAvatarMaker('account')); await tab('skin'); await pick('Tone 4'); await tab('head'); await pick('Hijab'); await tab('hair'); const cov = await p.evaluate(() => /covers your hair/.test($('avRows').textContent));
+  await tab('top'); await pick('Sky'); await pick('Kurta'); await p.click('#avSave'); await p.waitForTimeout(600);
+  const sv = await p.evaluate(() => ({ a: state.avatar, me: !!$('meBtn').querySelector('svg.still'), ty: avTypeKey(state.vibe), valid: avValid(state.avatar),
+    ready: $('dlgAvatar').open && $('avStudio').hidden && !$('avReady').hidden && /ready/.test($('avReady').querySelector('h2').textContent), fig: !!$('avReadyStage').querySelector('svg.fm-fig:not(.still)'),
+    acts: [...document.querySelectorAll('.av-ready-acts button')].map(x => x.textContent).join() }));
+  ok(sv.a && sv.a.v === 2 && sv.a.s === 's4' && sv.a.c2 === 'hijab' && sv.a.c === 'hijab' && sv.a.tc === '#BFD7EE' && sv.a.t === '#C3C9F6' && sv.a.o === 'kurta' && sv.a.h2 === 'short' && sv.a.h === 'short' && sv.a.ty === sv.ty && sv.valid && cov,
+    'Save keeps the choices plus the type from the answers; each new choice sits next to the nearest thing an older app can draw (a sky kurta reads there as a lavender top): ' + JSON.stringify(sv.a));
+  ok(sv.ready && sv.fig && sv.acts === 'Change outfit,Edit avatar,Done', '"Your avatar is ready!": the whole person, moving, with Change outfit, Edit avatar and Done');
+  await p.screenshot({ path: O + '/p21-ready.png' });
+  await p.click('#avOutfit'); await p.waitForTimeout(300);
+  const back = await p.evaluate(() => !$('avStudio').hidden && $('avReady').hidden && document.querySelector('#avTabs [aria-selected="true"]').textContent + ' ' + $('avSkip').textContent);
+  await p.click('#avSkip'); await p.waitForTimeout(200);
+  ok(back === 'Outfits Cancel' && await p.evaluate(() => !$('dlgAvatar').open && state.avatar.o === 'kurta'), '"Change outfit" goes back into the studio on Outfits; Cancel there leaves the saved avatar as it was');
   ok(sv.me, 'the top bar shows it (still)');
+  // an avatar from before the studio draws as itself, in a T-shirt, jeans and white sneakers; and the round one keeps its shape
+  const oldAv = await p.evaluate(() => { const a = { v:1, s:'s2', f:'calm', h:'bob', hc:'#5B3A29', c:'none', cc:'#C3C9F6', g:true, b:'none', t:'#86A6E0', ty:'2-4' }, u = avUn(a);
+    return { valid: avValid(a), u: [u.m, u.h2, u.hc2, u.gl, u.o, u.tc, u.p, u.sh].join(), round: /viewBox="0 0 240 240"/.test(avSvg(a)) && /class="prop"/.test(avSvg(a)), fig: /viewBox="0 0 240 440"/.test(avFig(a)) && !/class="prop"/.test(avFig(a)),
+      roundtrip: JSON.stringify(avUn(avPack(avUn(a), '2-4'))) === JSON.stringify(u) }; });
+  ok(oldAv.valid && oldAv.u === 'calm,bob,#5B3A29,round,tee,#86A6E0,jeans,sneakers' && oldAv.round && oldAv.fig && oldAv.roundtrip,
+    'an avatar saved before the studio is still accepted and reads as itself, in a T-shirt, jeans and sneakers; the round one keeps its type\'s prop, the standing one has none: ' + JSON.stringify(oldAv));
 
   // the type layer follows the answers
   await p.evaluate(() => { state.vibe = Object.assign({}, state.vibe, { cook: 0 }); save(); }); await go(p, '#account'); await go(p, '#discover');
@@ -110,13 +160,15 @@ const avs = (p, sel) => p.evaluate(sel => { const e = [...document.querySelector
   // Account: animated, with Edit; edit and remove
   await go(p, '#account');
   const ac = await p.evaluate(() => ({ live: !!$('accAvatar').querySelector('svg:not(.still)'), btn: $('accAvEdit').textContent }));
-  ok(ac.live && ac.btn === 'Edit avatar', 'Account: your avatar, animated, with "Edit avatar"');
+  const acFig = await p.evaluate(() => { const r = $('accAvatar').getBoundingClientRect(); return !!$('accAvatar').querySelector('svg.fm-fig') && r.height > r.width * 1.6 && r.height >= 140; });
+  ok(ac.live && ac.btn === 'Edit avatar' && acFig, 'Profile: your avatar stands there whole, moving, with "Edit avatar"');
   await p.evaluate(() => $('accAvatar').scrollIntoView({ block:'center' })); await p.screenshot({ path: O + '/p21-account.png' });
   await p.click('#accAvEdit'); await p.waitForTimeout(300);
-  ok(await p.evaluate(() => $('avSkip').textContent === 'Cancel' && document.querySelector('[data-avk-set="s"][data-avv="s4"]').getAttribute('aria-checked') === 'true' && !$('avRemove').hidden),
-    'edit: opens on your choices, with Cancel and Remove');
-  await p.click('[data-avk-set="g"][data-avv="true"]'); await p.click('#avSave'); await p.waitForTimeout(500);
-  ok(await p.evaluate(() => state.avatar.g === true && state.avatar.s === 's4'), 'edit saves the change and keeps the rest');
+  const ed = await p.evaluate(() => $('avSkip').textContent + ' ' + $('avTitle').textContent + ' ' + document.querySelector('#avTabs [aria-selected="true"]').textContent + ' ' + !$('avRemove').hidden + ' ' + !$('avSave').disabled);
+  await tab('skin'); const edSkin = await p.evaluate(() => document.querySelector('#avRows [aria-label="Tone 4"]').getAttribute('aria-checked'));
+  ok(ed === 'Cancel Your avatar Hair true true' && edSkin === 'true', 'edit: opens on your choices (on Hair), with Cancel and Remove: ' + ed);
+  await tab('glasses'); await pick('Square'); await p.click('#avSave'); await p.waitForTimeout(500); await p.click('#avDone'); await p.waitForTimeout(300);
+  ok(await p.evaluate(() => state.avatar.gl === 'square' && state.avatar.g === true && state.avatar.s === 's4' && state.avatar.o === 'kurta' && !$('dlgAvatar').open), 'edit saves the change and keeps the rest; Done closes the "ready" moment');
   await p.click('#accAvEdit'); await p.waitForTimeout(200); await p.click('#avRemove'); await p.waitForTimeout(500);
   ok(await p.evaluate(() => !state.avatar && $('meBtn').textContent.trim() === 'N' && $('accAvEdit').textContent === 'Make your avatar'), 'Remove: back to the initial and "Make your avatar"');
 
