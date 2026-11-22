@@ -1,5 +1,33 @@
 # Teche · reports
 
+## 2026-11-22, the permissions sheet (way B), "Take a photo" and blue and pink tiles (#127) live
+
+- **What was asked (Kamal, 22 Nov, in my session):**
+  - after the picture of the sheet he wrote "Blue and pink will look good / The colors from the app". It could
+    have meant the blog, the sheet or the two tiles on My flat, so I asked him, with the choices listed. His
+    answer: **the two tiles on My flat**. (My own first guess was the blog; asking was right.)
+  - to "shall I put the permissions sheet live?": **"Yes, put it live"**.
+- **Live:** #127 merged (`2c07194`). Android build 229: the new Java compiled. Website `e95bf95` "Publish the
+  app from NavigateMe 2c07194". No database change.
+- **What went out:**
+  - the first-open sheet in the Android app, way B (the entry below): notifications asked now, location the
+    first time the map is used, nothing for photos and the camera;
+  - "Take a photo" beside the gallery in the photo chooser, through the phone's own camera app;
+  - My flat's tiles: Flatsplits blue, FlatMart pink (pink and apricot since #125). I told him the other way
+    round is a one-line change if he prefers it.
+- **Tests:** demo 34 suites, 954 checks, all pass, on the exact tree that was merged.
+- **Checked after publishing:** the published copy has the sheet and nothing internal; My flat drawn from it on
+  two phones and a computer is pixel for pixel the tested one; the Android file is build 229, its sha256 equals
+  the release's, the page inside it is the published page byte for byte, and the built app's manifest names no
+  camera permission (internet, notifications, location, and what the notification library adds).
+- **Not tested: anything on a real phone.** The sheet at first open and the camera in the photo chooser are new
+  native behaviour that only compiled here. Kamal has build 229 and is asked to try both; if "Add photos" misbehaves
+  on his phone I take the camera out of the chooser at once (one small change back).
+- **Need from King:** nothing. `priorities.md` still says the permissions sheet waits for Kamal.
+- **Still with Kamal:** a try of the sheet and of "Add photos" on his phone; how the avatar studio feels there;
+  whether a room nobody lives in should show a score; the blog's colours (not answered: his "blue and pink" was
+  about the tiles); and the older list.
+
 ## 2026-11-22, permissions in the Android app, way B (#127, open): waits for Kamal's yes to the sheet
 
 - **What was asked (Kamal, 22 Nov, in my session):** "Can we build that app automaticaly takes the permission of
@@ -208,35 +236,3 @@
   follows; a read of the blog's seven articles and its source links; whether the word "Blog" stays on the first
   page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the message
   limits. The 15 sample parties are still live (the last ends on 5 Dec).
-
-## 2026-11-22, a preview of the app in another app's colours: pictures shown to Kamal, nothing changed
-
-- **What was asked (Kamal, 22 Nov, in my session):** two screenshots of a car-buying app (a home screen with
-  pastel tiles, a list screen with an orange button) and "Use these colors and prepare some screens and show me".
-  Read as: a preview only. Pictures of our screens in those colours; nothing in the repository, on the website or
-  in the Android app changes until he says yes.
-- **Done:** eleven phone screens and the first page on a computer, drawn from the app as it is on main with one
-  extra layer of colour added in my working folder (not committed anywhere). Kamal has four "today | in these
-  colours" pairs (first page, Discover, Parties, Tribe), all eleven screens, and the computer page.
-- **The colours, read off his pictures:** a white page and white cards (the cream goes); a bright orange-red
-  `#F65D34` for main buttons, badges and the place you are on in the bottom bar; his pastel tiles on the band at
-  the top of each screen, lighter at the top, with the white page coming up over the foot again (blue Discover
-  and Profile, mint Tribe, yellow Parties, pink Flatsplits, apricot FlatMart), on the three sign-up choices and
-  on party covers; the pale blue-grey of his search bar `#E0E9F2` for our search box; his blue `#2269C3` for the
-  words you tap that are not buttons; charcoal `#24272C` for words and dark sheets.
-- **Kept:** every layout and word, both fonts, the login, the questions, the score rings' green and amber, and
-  **the logo with its own orange** (Kamal's standing rule).
-- **What I told Kamal plainly:** (1) the logo's orange is deeper than this orange-red, so two oranges sit side by
-  side; (2) white words on this orange read at 3.2:1 where today's read at 5.2:1, and our own rule is 4.5:1, so
-  going ahead I would deepen the orange a little or keep it for big buttons only; small orange words already use
-  a deeper shade, `#C93A12`, which is nearly the logo's own; (3) blue links are new to our app; (4) it would
-  replace the look he chose on 17 Nov, on every screen, the two side pages, the pictures people share and the
-  Android bars: its own branch and PR, tests and pictures first, as the reel look was done.
-- **Tests:** none run; nothing in the repository changed. A check of the preview screens found no old cream or
-  brown left on them and no hard-to-read words other than the white words on orange buttons and, at the deepest
-  foot of a band, the orange key word.
-- **Need from King:** nothing now. If Kamal says yes it is a change to the look rule in my brief and to "Look and
-  feel"; I will ask him for the words, as on 16 Nov.
-- **Still with Kamal:** yes or no to these colours; a read of the blog's seven articles and its source links;
-  whether the word "Blog" stays on the first page; the Parties map's overlapping marks; the Parties distance
-  privacy fix; Tribe under 70%; the message limits. The 15 sample parties are still live (the last ends on 5 Dec).
