@@ -156,6 +156,10 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   dark links (white button words then read at 5.2 to 1, not 4.1, and the screen has one orange). King recommends it.
   King also recommends the look now stays until sign-up opens.
 - **The blog** still wears the look of 17 Nov; whether it follows the new colours is with Kamal (Teche has asked him).
+- **The Escape, a room nobody lives in (22 Nov):** Kamal asked Teche why no vibe score shows there. It is the rule of
+  16 Nov (#113): no household, so nothing to score against. The note that says so, with "Say who lives there", starts low
+  on a phone's first screen and its button is under the bottom bar. King recommends: keep the rule, move the note to the
+  top of the list. A small change, on Kamal's word.
 - **Parties, privacy (found by Teche, 17 Nov):** a party's distance is measured from the flat's exact pin and shown to
   100 m, and the place you measure from can be changed as often as you like, so someone patient could work out roughly
   where a flat is. Fix: measure from the rounded spot the map already uses, and limit how often the place can change.
