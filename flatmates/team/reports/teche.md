@@ -1,5 +1,37 @@
 # Teche · reports
 
+## 2026-11-22, a preview of the app in another app's colours: pictures shown to Kamal, nothing changed
+
+- **What was asked (Kamal, 22 Nov, in my session):** two screenshots of a car-buying app (a home screen with
+  pastel tiles, a list screen with an orange button) and "Use these colors and prepare some screens and show me".
+  Read as: a preview only. Pictures of our screens in those colours; nothing in the repository, on the website or
+  in the Android app changes until he says yes.
+- **Done:** eleven phone screens and the first page on a computer, drawn from the app as it is on main with one
+  extra layer of colour added in my working folder (not committed anywhere). Kamal has four "today | in these
+  colours" pairs (first page, Discover, Parties, Tribe), all eleven screens, and the computer page.
+- **The colours, read off his pictures:** a white page and white cards (the cream goes); a bright orange-red
+  `#F65D34` for main buttons, badges and the place you are on in the bottom bar; his pastel tiles on the band at
+  the top of each screen, lighter at the top, with the white page coming up over the foot again (blue Discover
+  and Profile, mint Tribe, yellow Parties, pink Flatsplits, apricot FlatMart), on the three sign-up choices and
+  on party covers; the pale blue-grey of his search bar `#E0E9F2` for our search box; his blue `#2269C3` for the
+  words you tap that are not buttons; charcoal `#24272C` for words and dark sheets.
+- **Kept:** every layout and word, both fonts, the login, the questions, the score rings' green and amber, and
+  **the logo with its own orange** (Kamal's standing rule).
+- **What I told Kamal plainly:** (1) the logo's orange is deeper than this orange-red, so two oranges sit side by
+  side; (2) white words on this orange read at 3.2:1 where today's read at 5.2:1, and our own rule is 4.5:1, so
+  going ahead I would deepen the orange a little or keep it for big buttons only; small orange words already use
+  a deeper shade, `#C93A12`, which is nearly the logo's own; (3) blue links are new to our app; (4) it would
+  replace the look he chose on 17 Nov, on every screen, the two side pages, the pictures people share and the
+  Android bars: its own branch and PR, tests and pictures first, as the reel look was done.
+- **Tests:** none run; nothing in the repository changed. A check of the preview screens found no old cream or
+  brown left on them and no hard-to-read words other than the white words on orange buttons and, at the deepest
+  foot of a band, the orange key word.
+- **Need from King:** nothing now. If Kamal says yes it is a change to the look rule in my brief and to "Look and
+  feel"; I will ask him for the words, as on 16 Nov.
+- **Still with Kamal:** yes or no to these colours; a read of the blog's seven articles and its source links;
+  whether the word "Blog" stays on the first page; the Parties map's overlapping marks; the Parties distance
+  privacy fix; Tribe under 70%; the message limits. The 15 sample parties are still live (the last ends on 5 Dec).
+
 ## 2026-11-19, Tribe: the people around you and the four steps on white cards (#122) live
 
 - **What was asked (Kamal, 19 Nov, in my session):** a screenshot of the Tribe screen on his phone with two places
@@ -332,36 +364,5 @@
 - **The five real listings** have no answer yet. Each lister is asked the next time they edit. Until then they are
   read as before.
 - **Priorities 000000 and 0000000 are both done.** Nothing of mine is waiting on a deploy.
-- **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
-  announced; the message limit of 30 an hour and 60 a day.
-
-## 2026-11-16, "Do you live in this flat?": built and tested (it then waited for Kamal's go; live since, see above); my brief updated (#114)
-
-- **What was asked (priorities, Teche 0000000; Kamal, 16 Nov, in King's session: "Go and yes to all"; in mine:
-  "Start now"):** one Yes / No on the posting form, to tell a landlord with tenants from a flatmate who lives there.
-- **State:** built, tested, PR #115 open. **Not merged and not deployed.** The priorities entry says deploy on
-  Kamal's word, database first; I have asked him.
-- **The form asks** for a room, a bed or a flatmate listing, right above "People living there now", with nothing
-  picked, and does not go on without an answer. A whole flat isn't asked. Stored as `household.lister_lives_here`.
-  - **Yes:** as before.
-  - **No:** the count is the people who do live there and none of them is "You"; the lister's own answers are never
-    copied (the questions start empty, to be answered for the household; a copy the listing carried is taken out);
-    the home says "Owner-listed"; the lister's gender no longer counts in the women-only check.
-  - **No answer** (older listings, older Android builds): read as before (#113's rule, beds included). The editor
-    asks on the next save.
-- **Database:** `fm_home_lived_in` (someone lives there) is split from `fm_lister_lives` (the lister is one of
-  them); `fm_listing_vibe` and `fm_home_gender` follow. On today's live data the two one-time statements touch
-  nothing.
-- **Why database first matters here:** the new form with the old database would still copy a landlord's answers
-  on a No.
-- **Two things I added that the entry did not spell out, small and listed in the PR:** the count's first option
-  reads "Nobody yet" for a room (it said "Nobody, it's a whole flat" there too); and a whole flat is not asked the
-  question, because nothing about it depends on the answer.
-- **Tests:** database suite on a fresh local Postgres: schema applied twice, 266 checks pass (17 new). App: 31 demo
-  suites, 787 checks (was 30 and 753); new suite `p33` with 33; `p5`, `p28`, `p32` and `pass3` now answer the
-  question where they save a listing.
-- **My brief (#114, merged c34f723, on Kamal's yes):** the look rule in `tech.md` now names the look of 16 Nov and
-  ends "The logo and its colours never change with the look." Nothing to build or publish for it.
-- **Needed from Kamal:** his go for #115. Then: apply `schema.sql`, check read-only, merge, publish, report.
 - **Still with Kamal:** pure white or the pale orange for the top band; whether Tribe matches under 70% should be
   announced; the message limit of 30 an hour and 60 a day.
