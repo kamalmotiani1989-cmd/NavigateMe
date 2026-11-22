@@ -19,8 +19,8 @@
     page follows the band there too (the first page, Parties, white once scrolled); no page errors.
 - **Not tested:** the strip behind the clock on a real phone. It compiled and the page sends the right
   messages (`p26`), but nobody has seen it on a device. Kamal has been sent build 226 and asked to look.
-- **My brief:** the look rule in `team/tech.md` changes to the look of 22 Nov in its own small PR, which follows
-  this entry (a document only: no build, nothing to publish).
+- **My brief:** the look rule in `team/tech.md` now describes the look of 22 Nov (#124, merged `c706931`; demo 33
+  suites, 929 checks, all pass). A document only: no build, nothing to publish. The logo rule is unchanged.
 - **Not changed:** the blog (website only) still wears the look of 17 Nov; the README says so. I have asked
   Kamal whether it should follow; I will not recolour it unasked.
 - **Where this meets King's note:** priorities.md recommends a variant (the logo's orange on buttons, no blue
@@ -28,7 +28,7 @@
   tokens if he asks for it.
 - **Pictures:** `flatmates/team/reports/shots/colours-22nov/` (the finished build; `preview/` inside it is what
   Kamal saw first).
-- **Need from King:** nothing. `priorities.md` still says the colour preview waits for Kamal.
+- **Need from King:** nothing. `priorities.md` says it is live (f01266e).
 - **Still with Kamal:** a look at the strip behind the clock in the app; whether the blog follows the new
   colours; a read of the blog's seven articles and its source links; whether the word "Blog" stays on the first
   page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the message
