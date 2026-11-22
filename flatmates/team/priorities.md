@@ -33,8 +33,18 @@ _Last update: 17 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
-000000000. **A richer avatar maker: Kamal, 22 Nov, in Teche's session, with a recording of another app's avatar builder:
-   "Can we make the avtaar saction more advanced".** In hand, on a branch. Teche takes the ideas (a full-body figure with
+0000000000. **The permissions sheet in the Android app: HOLD the merge until Kamal has seen it and said yes.** Kamal, 22 Nov,
+   in Teche's session: "Can we build that app automaticaly takes the permission of camera, location and gallery and
+   anything else that is important". No app can take a permission by itself; Teche built a one-time sheet at first open
+   that says what each is for and then brings up Android's own boxes (notifications, then location), and "Take a photo"
+   through the phone's own camera, which needs no permission (branch `claude/app-permissions`). Why hold: it changes the
+   first minute of the app for every new person, and Kamal has not answered. King's recommendation to him: notifications
+   at first open; location at the moment someone first uses the map or parties near them (a "no" given before they know
+   why can stop Android asking again); no camera or gallery permission at all, since the phone's own camera and picker
+   do the job. Pictures to Kamal first, as always.
+000000000. **A richer avatar maker: BUILT (PR #126, open). King has read the pictures and recommends yes; it waits for
+   Kamal's yes, database first.** Kamal, 22 Nov, in Teche's session, with a recording of another app's avatar builder:
+   "Can we make the avtaar saction more advanced". Built on a branch. Teche takes the ideas (a full-body figure with
    outfits; a studio screen with tabs, a grid of choices, undo, redo and Save; many more choices; a "ready" moment) in our
    own drawn style. Not taken: the selfie scan (no photos, Kamal's rule of 15 Nov) and the other app's artwork. Pictures
    to Kamal before anything goes live; it carries a database change, so on his word, database first. King's ask: the
