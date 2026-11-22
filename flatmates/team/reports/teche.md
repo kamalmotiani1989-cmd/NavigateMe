@@ -1,5 +1,31 @@
 # Teche · reports
 
+## 2026-11-22, permissions in the Android app, way B (#127, open): waits for Kamal's yes to the sheet
+
+- **What was asked (Kamal, 22 Nov, in my session):** "Can we build that app automaticaly takes the permission of
+  camera, location and gallery and anything else that is important". No app can take a permission by itself;
+  I told him so, and built a sheet at first open that asked for notifications and then location.
+- **King's note in priorities.md changed it:** King put two ways to Kamal and he chose B: at first open ask only
+  for notifications; ask for location the first time someone uses the map or parties near them; no camera or
+  gallery permission. Pictures to Kamal before it goes live. I had built A and was about to merge it on my own
+  reading of his "Yes"; I read the note first, did not merge, and rebuilt it as B.
+- **What #127 is now:**
+  - a sheet in the Android app, once per phone, the first time someone signed in reaches a main screen with
+    notifications off: what is asked now (notifications), what later (location), what never (photos and the
+    camera). Continue brings up Android's box for notifications only, through the ask the "Stay in the loop"
+    card already uses; "Not now" asks nothing;
+  - location is untouched: asked the first time "Use my current location" or the map's locate button is used;
+  - "Take a photo" beside the gallery in the photo chooser, through the phone's own camera app, which writes to
+    the app's cache. No camera permission; the app still declares internet, notifications and location only.
+- **Tests:** demo 34 suites, 954 checks, all pass (938 before; a new suite `p36` with 16, which also holds the
+  Android files as written: four declared permissions, location asked only from the map's own prompt, nothing
+  asks for the camera). The Java was checked for syntax with `javac`; it is compiled by CI after merge.
+- **Not tested:** anything on a real phone. The camera in the chooser and the sheet need one look on Kamal's.
+- **Picture:** on the PR's branch, `flatmates/team/reports/shots/app-permissions/`. Kamal has it.
+- **Need from King:** nothing. Thank you for writing the choice down; it stopped the wrong version going out.
+- **Still with Kamal:** yes or no to the sheet (#127); how the avatar studio feels on his phone; whether a room
+  nobody lives in should show a score; the blog's colours; and the older list.
+
 ## 2026-11-22, the avatar studio (#126) live, on Kamal's yes
 
 - **What was asked (Kamal, 22 Nov, in my session):** after the pictures of the studio, and after my answer on
@@ -214,39 +240,3 @@
 - **Still with Kamal:** yes or no to these colours; a read of the blog's seven articles and its source links;
   whether the word "Blog" stays on the first page; the Parties map's overlapping marks; the Parties distance
   privacy fix; Tribe under 70%; the message limits. The 15 sample parties are still live (the last ends on 5 Dec).
-
-## 2026-11-19, Tribe: the people around you and the four steps on white cards (#122) live
-
-- **What was asked (Kamal, 19 Nov, in my session):** a screenshot of the Tribe screen on his phone with two places
-  circled, the picture of the people around you and the row "1 Match, 2 Team up, 3 Bond, 4 Hunt", and "This area
-  should have white backgroud which matches the app color". Read as: those two pieces sit on white cards, as the
-  app's cards do, instead of straight on the cream. Nothing else on the screen changes.
-- **What changed (#122, merged `74c9f74`; style only, 14 lines; no database change):**
-  - The people around you: on a phone, a white card (28px corners, the hairline, the soft shadow) inside the cream
-    band, in line with the headline. On a narrow phone the drawing keeps its shape, so the card has no empty strip.
-  - The four steps: a white card at every size. On the cream the steps still to come could hardly be seen.
-  - Inside those cards, cream (the look's one rule): the match label under each person and the disc behind your
-    letter. On a computer the picture was already inside the band's white card; there the labels show for the
-    first time.
-  - Until the list has come in, neither card is there, as before (an empty one would show as a white pill).
-  - The cost, said plainly: the card needs room round the drawing, so on a 390-wide phone the headline sits 46px
-    lower than it did (27px at 360 wide, the same place at 320). Before, the lowest label ran into "Build your
-    tribe", as on Kamal's screenshot. In his phone's browser the steps card sits partly behind the bottom bar
-    until he scrolls a little; in the Android app, which has no address bar, both cards show at once on a
-    screen like his. Kamal has been told.
-- **Live:** Android build 225 (the release on both repositories says "(74c9f74, build 225)"; a real change, the
-  Tribe screen in the app has the same two cards). Website `ac46e9e` "Publish the app from NavigateMe 74c9f74" on
-  its main and gh-pages, Pages deployed. The published page carries the new rules, and the Tribe screen drawn from
-  the published page matches the tested one (pixel for pixel at 390 wide and on a computer; at 360 and 320 only
-  the moving ring round the middle differs). The blog is untouched, byte for byte.
-- **Tests:** demo 33 suites, 926 checks, all pass (919 before; the seven new ones are in `p31`, now 81). The
-  database suite was not run: nothing in the database changes. Looked at, at 390, 360, 320 and 700 wide and on a
-  computer: six people, one, nobody yet; your own cartoon in the middle; a teamed-up match and all four steps
-  done; less motion.
-- **Not checked on a real phone:** I cannot open findmeflatmate.com or the Android app from here.
-- **Pictures:** `flatmates/team/reports/shots/tribe-white/` (before and after, phone and computer). Kamal was sent
-  the same.
-- **Need from King:** nothing.
-- **Still with Kamal:** a read of the blog's seven articles and its source links; whether the word "Blog" stays on
-  the first page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the
-  message limits. The 15 sample parties are still live (the last ends on 5 Dec).
