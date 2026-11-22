@@ -11,6 +11,7 @@ _Last update: 17 Nov 2026._
   (#116, 17 Nov); "Do you live in this flat?" (#115) and the vibe score only where the lister lives there (#113).
   Parties: the short message after asking to join says what the answer was (#120, 18 Nov). Android build 223.
   Tribe: the people around you and the four steps sit on white cards (#122, 19 Nov, Kamal's ask). Android build 225.
+  My flat: the Flatsplits and FlatMart tiles in the pastels of their screens (#125, 22 Nov, Kamal's ask). Android build 227.
 - **The website has a blog (#121, 18 Nov, Kamal's ask):** seven articles at `/blog/`, on the website only. The app does
   not carry it; Android build 224 holds the same app as 223. King read the two legal and money articles in full and
   checked five of their news and government figures by search: all held. Nobody on the team can open the source pages
@@ -32,6 +33,12 @@ _Last update: 17 Nov 2026._
 
 ## Teche (tech)
 STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. The 9 Nov logo files stay as they are.
+000000000. **A richer avatar maker: Kamal, 22 Nov, in Teche's session, with a recording of another app's avatar builder:
+   "Can we make the avtaar saction more advanced".** In hand, on a branch. Teche takes the ideas (a full-body figure with
+   outfits; a studio screen with tabs, a grid of choices, undo, redo and Save; many more choices; a "ready" moment) in our
+   own drawn style. Not taken: the selfie scan (no photos, Kamal's rule of 15 Nov) and the other app's artwork. Pictures
+   to Kamal before anything goes live; it carries a database change, so on his word, database first. King's ask: the
+   other app is not named in the app's page, the README or the tests (the repository and the page source are public).
 00000000. DONE 18 Nov: live (#117, a25fdcd, Android 222, website published; brief #118). Kamal's yes, 18 Nov, in Teche's
    session, to "Shall I put this live on the website and in the Android app?" and to the look sentence: "Yez pleaze"
    (King read it in the session's record). What follows is the record of how it got there.
