@@ -1677,8 +1677,9 @@ someone uses the map or parties near them; no camera or gallery permission in ei
   is why it is not asked at first open. Nothing follows it in the background (the privacy page says the same).
 - **Photos and the camera need no permission.** Choosing photos goes through Android's own picker. **Take a
   photo** is in the same chooser (22 Nov): the phone's own camera app takes it and writes it to the app's cache
-  (`cache/camera`, handed over through the FileProvider). The app does not declare the camera permission, so
-  nothing is asked.
+  (`cache/camera`, handed over through the FileProvider). Each app that can take the picture is given the right
+  to write that one file by name, because a chooser does not always pass it on, and it is taken back as soon as
+  the chooser answers. The app does not declare the camera permission, so nothing is asked.
 - **What the app declares:** internet, notifications, location (approximate and precise). Nothing else.
 - Checks: `p36` (the sheet with a stand-in for the Android side, and the Android files as written: only
   notifications are asked from the sheet, location only from the map's own prompt; the Java is compiled by CI).

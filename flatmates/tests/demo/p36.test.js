@@ -78,6 +78,10 @@ const sheet = p => p.evaluate(() => ({ open: $('dlgSetup').open, title: $('suTit
   ok(/MediaStore\.ACTION_IMAGE_CAPTURE/.test(java) && /EXTRA_INITIAL_INTENTS, new Intent\[\] \{ shot \}/.test(java) && /new File\(getCacheDir\(\), "camera"\)/.test(java) && /<cache-path name="camera" path="camera\/" \/>/.test(paths)
     && /android\.media\.action\.IMAGE_CAPTURE/.test(man) && /cameraFile\.length\(\) > 0/.test(java),
     '"Take a photo" is in the photo chooser beside the gallery: the phone\'s camera app writes to the app\'s own cache, and an empty file (a cancelled shot) is never handed to the page');
+  const cam = java.slice(java.indexOf('private Intent cameraIntent()'), java.indexOf('public void onRequestPermissionsResult')), res = java.slice(java.indexOf('protected void onActivityResult'));
+  ok(/queryIntentActivities\(shot, PackageManager\.MATCH_DEFAULT_ONLY\)/.test(cam) && /grantUriPermission\(r\.activityInfo\.packageName, uri,\s*Intent\.FLAG_GRANT_WRITE_URI_PERMISSION \| Intent\.FLAG_GRANT_READ_URI_PERMISSION\)/.test(cam)
+    && /revokeUriPermission\(cameraShot, Intent\.FLAG_GRANT_WRITE_URI_PERMISSION \| Intent\.FLAG_GRANT_READ_URI_PERMISSION\)/.test(res) && res.indexOf('revokeUriPermission') < res.indexOf('cameraShot = null'),
+    'each app that can take the picture is given the right to write that one file by name (a chooser does not always pass it on), and it is taken back as soon as the chooser answers');
   ok(!errs.length, 'no page errors: ' + errs.join(' | '));
   await b.close();
 })();
