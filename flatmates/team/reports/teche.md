@@ -1,5 +1,29 @@
 # Teche · reports
 
+## 2026-11-22, the avatar studio (#126) live, on Kamal's yes
+
+- **What was asked (Kamal, 22 Nov, in my session):** after the pictures of the studio, and after my answer on
+  permissions, one word: "Yes". I had asked him to say yes if he liked the pictures, so I read it as yes to the
+  studio. (The permissions step was not a yes-or-no question; it follows in its own PR, as I had told him.)
+- **Live, in this order:**
+  1. the database: the branch's `schema.sql` fetched into the live database, its md5 equal to the tested file's,
+     then executed. Checked read-only before the app went out: a studio avatar is accepted; a new value in a
+     first key, an unknown key and an unknown colour are refused; the three avatars already saved are all still
+     valid; the table's check is in place;
+  2. #126 merged (`ca0d249`); main's `schema.sql` is byte for byte what the database got;
+  3. Android build 228; website `e6e013f` "Publish the app from NavigateMe ca0d249".
+- **Checked after publishing:** the published copy has the studio and nothing internal; the blog is byte for byte
+  the repository's (its pages were rebuilt in #126); the studio walked through on the published page end to end
+  with no page errors, and the avatar it saved is one the live database accepts; the Android file is build 228,
+  its sha256 equals the release's, and the page inside it is the published page byte for byte.
+- **What it is:** the entry below. Tests there: demo 33 suites, 938 checks; database 313.
+- **Not tested:** on a real phone. Kamal has build 228.
+- **Next:** the permissions step and "Take a photo" (`claude/app-permissions`, suite `p36`). On its own it passed
+  34 suites, 948 checks; it is being run again on top of the studio before it is pushed.
+- **Need from King:** nothing. `priorities.md` still says the avatar maker is in hand.
+- **Still with Kamal:** how the studio feels on his phone; whether he wants everything asked at first open
+  (permissions); whether a room nobody lives in should show a score; the blog's colours; and the older list.
+
 ## 2026-11-22, the avatar studio built and tested (#126, open): waits for Kamal's yes to the pictures
 
 - **What was asked (Kamal, 22 Nov, in my session, with a screen recording of another app's avatar builder):**
@@ -226,60 +250,3 @@
 - **Still with Kamal:** a read of the blog's seven articles and its source links; whether the word "Blog" stays on
   the first page; the Parties map's overlapping marks; the Parties distance privacy fix; Tribe under 70%; the
   message limits. The 15 sample parties are still live (the last ends on 5 Dec).
-
-## 2026-11-18, a blog for the website (#121) live
-
-- **What was asked (Kamal, 18 Nov, in my session):** "Build the blogs section in website. Only. Make it super
-  cool. Give your best. Research and then build". Read as: a blog on the website, not in the Android app, and
-  nothing else touched.
-- **Done:** https://findmeflatmate.com/blog/ is live with seven articles. #121 merged `576f405`; the website's copy
-  is `bc63b6d` "Publish the app from NavigateMe 576f405" on its main and gh-pages, the Pages deployment for it
-  succeeded, and the published blog is the tested one byte for byte (18 files).
-- **Research first (three passes, by web search):** what other flat-sharing and rental blogs do; rental paperwork
-  in India; rental scams. Other blogs are weak in five places: a worked answer to "who pays what" when rooms
-  differ; facts that are dated, sourced and consistent; paperwork written for people sharing a flat in India; a PG
-  vs flat-share vs co-living comparison not written by a co-living company; words to actually send when something
-  is awkward. The blog is built on those five.
-- **The seven articles, each with something to use the same day:** splitting the rent (**a calculator**: shared
-  space by head, rooms by size, own bathroom and balcony; every number can be changed; the amounts always add up);
-  PG, flat-share or co-living (a table, five questions, a real-monthly-cost list); what to ask a flatmate; a
-  **32-point flat-visit checklist** (ticks stay on the phone; print or send it); rental scams (five scripts, the
-  red flags, what to do in order if you paid: 1930, cybercrime.gov.in, the bank); rent agreement basics (why 11
-  months, deposits, whose name goes on it); house rules (**a one-page flat agreement to copy** or send on WhatsApp).
-- **The pages:** a first page ("Sharing a flat, minus the drama.", the leading article, "Things you can use", cards
-  with topic chips and a search); an article page with a drawn cover, "The short version", "In this article" that
-  marks where you are, a bar that fills as you read, numbered sources, WhatsApp and copy-link buttons, three next
-  reads, and one dark sheet that says "Launching soon". The look is the app's own, no new colour; the covers are
-  our cartoon people, drawn by the app's avatar module (the script reads it out of `index.html`), never photos.
-- **How it is made:** articles are text files in `marketing/blog/posts/` (the guide for Mark is
-  `marketing/blog/README.md`); `marketing/blog/build.js` makes the pages, the feed, the sitemap's lines and a share
-  picture per article (1200 x 630, about 108 KB each). The pages are committed, so the publish job copies plain
-  files as before. `p35` fails if the pages are not what the articles say.
-- **Website only, as asked:** the Android app packs none of it. The one change to the app's page is the word
-  "Blog" in the first page's small print, marked web-only, which the app hides. That change is why there is an
-  Android build (224): **the app in it is the same as build 223**, so its update card is a false alarm. I judged a
-  blog nobody can reach from the home page to be worse than one needless update; Kamal has been told and can have
-  the word taken off.
-- **Kept out, on purpose:** how the app works (Kamal, 15 Nov: that is shown after sign-in). The blog says only what
-  the home page says. No "download now": every page says "Launching soon". `p35` holds both.
-- **The limit on the facts, plainly:** I could not open any source page from my machine (its network allows
-  package sites only) and the search allowance ran out before every question was covered. So the facts are what
-  search results returned, checked against the law as generally known; statements were kept to what both support,
-  and unsettled points were hedged or left out (which states follow the Model Tenancy Act, police orders that are
-  renewed, tax limits, deposits by city). The articles on agreements and scams carry 14 sources each and name
-  their dates. **Someone should open each source link once**, or allow me those sites and I will. Until then the
-  agreements article carries "general information, not legal or tax advice".
-- **Tests:** demo 33 suites, 919 checks, all pass (32 and 869 before); `p35` is the blog's suite, 50 checks. The
-  database suite was not run: nothing in the database changes. After publishing, the published files were opened
-  from a local copy: the first page shows the word "Blog", the blog's first page and all seven articles open with
-  their share pictures, the calculator's amounts add up to the rent, the feed has seven entries, the sitemap ten
-  addresses, no request leaves the site from the blog, and no page errors.
-- **Not checked on a real phone:** I cannot open findmeflatmate.com from here. The checks are the test copy, the
-  published files and the Pages deployment.
-- **Pictures:** `flatmates/team/reports/shots/blog/` (four sheets: phone and computer). Kamal was sent six of the
-  same screens in my session.
-- **For King:** Mark now has a place to publish and a guide for writing to it; nothing is needed from King for
-  what is live. If Mark's Tuesday pack should feed the blog, that is a request for the priorities file.
-- **Still with Kamal:** a read of the seven articles (every word is easy to change); the source links; whether the
-  word "Blog" stays on the first page; whether the map's overlapping marks get fixed; the Parties distance privacy
-  fix; Tribe under 70%; the message limits.
