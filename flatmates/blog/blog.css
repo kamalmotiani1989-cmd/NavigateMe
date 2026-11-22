@@ -405,8 +405,9 @@ button{font:inherit; color:inherit}
 .fm-av .tw{animation:fmTwinkle 3s ease-in-out infinite} .fm-av .tw2{animation:fmTwinkle 2.4s ease-in-out .8s infinite}
 .fm-av .steam{animation:fmSteam 2.6s ease-in-out infinite}
 .fm-av .spark{animation:fmTwinkle 1.6s ease-in-out infinite; transform-origin:50% 50%}
-.fm-av .wave{opacity:0; transform-origin:50% 100%}
+.fm-av .wave{opacity:0; transform-origin:90% 100%}
 .play .fm-av .wave{animation:fmWave 2.4s ease-in-out .3s 1 both}
+.play .fm-av .arm-l{animation:fmArmAway 2.4s ease-in-out .3s 1 both}
 @keyframes fmBreathe{50%{transform:translateY(-1.6px) scale(1.006)}}
 @keyframes fmBlink{0%, 93%, 100%{transform:scaleY(1)} 96%{transform:scaleY(.1)}}
 @keyframes fmBob{50%{transform:translateY(-3px) rotate(-2deg)}}
@@ -415,5 +416,6 @@ button{font:inherit; color:inherit}
 @keyframes fmTwinkle{50%{opacity:.35; transform:scale(.8)}}
 @keyframes fmSteam{0%{opacity:0; transform:translateY(6px)} 40%{opacity:1} 100%{opacity:0; transform:translateY(-8px)}}
 @keyframes fmWave{0%{opacity:0; transform:rotate(0)} 10%{opacity:1} 25%{transform:rotate(-14deg)} 45%{transform:rotate(10deg)} 65%{transform:rotate(-14deg)} 85%{opacity:1; transform:rotate(6deg)} 100%{opacity:0; transform:rotate(0)}}
+@keyframes fmArmAway{0%{opacity:1} 10%{opacity:0} 85%{opacity:0} 100%{opacity:1}}
 .fm-av.still *, .fm-av.still{animation:none !important}
 @media (prefers-reduced-motion:reduce){ .fm-av *, .fm-av{animation:none !important} }

@@ -893,21 +893,43 @@ business is GST-registered; invoices need the GSTIN.
 **A cartoon of yourself that you build**, shown where your initial used to be. It is never a photo and never guessed
 from your name or anything else.
 
-**The maker:** one screen, `dlgAvatar`, with six rows of round tiles:
-1. skin tone (six);
-2. face (smile, big smile or calm);
-3. hair (short, bob, long, curly, bun or bald) plus a hair colour;
-4. head covering (none, hijab, turban or cap) plus its colour;
-5. glasses, and beard or moustache;
-6. top colour, from the pastels.
-
-The cartoon updates as you tap. It starts neutral: no skin tone is picked for you, and Save waits until you pick one.
-**Skip** (or **Cancel**) is always at the top.
+**The studio** (Kamal, 22 Nov, with a screen recording of another app's avatar builder: "Can we make the avtaar
+saction more advanced"). It replaces the one-screen maker of 13 Nov.
+- **Taken from the recording:** the whole person standing on a stage; tabs with a grid of choices that change the
+  figure as you tap; undo and redo; complete outfits; and a "ready" moment at the end.
+- **Not taken:** the selfie that starts it there (an avatar here is never a photo, and nothing is guessed; reading
+  a face would also mean handling face pictures), and that app's artwork. Ours is our own drawing, made richer.
+- **The screen** (`dlgAvatar`, the whole screen on a phone): Skip (or Cancel), the title and **Save** on a pastel
+  band; the figure on the stage with **Undo**, **Redo** and **Surprise me**; under it a sheet with eleven tabs.
+  The stage moves in on the face for Skin, Hair, Face, Beard, Glasses and Headwear, and shows the whole person
+  for the rest. Every choice is drawn on your own figure, with its name under it.
+- **The tabs:**
+  1. **Looks:** twelve whole people to start from. You pick one, or none;
+  2. **Skin:** six tones;
+  3. **Hair:** 15 styles (short, buzz cut, quiff, side part, spiky, curly, afro, pixie, bob, wavy, long, ponytail,
+     bun, braid, bald) in 8 colours (grey, white and auburn among them);
+  4. **Face:** eyes (5), eyebrows (4), mouth (5);
+  5. **Beard:** none, stubble, moustache, goatee, short, full, with its own colour (a grey beard under dark hair);
+  6. **Glasses:** none, round, square, thin, sunglasses;
+  7. **Headwear:** none, cap, beanie, hat, hijab, turban, with its colour; and earrings (none, studs, hoops);
+  8. **Outfits:** twelve complete ones (a top, bottoms and shoes in one tap);
+  9. **Top:** T-shirt, shirt, hoodie, sweater, jacket, varsity jacket, blazer, kurta, dress, in 16 colours;
+  10. **Bottoms:** jeans, trousers, joggers, wide-leg, shorts, skirt, in 10 colours. In a dress the tab says so,
+      and picking bottoms changes the top to a T-shirt;
+  11. **Shoes:** sneakers, boots, loafers, sandals, in 5 colours.
+- **It starts neutral:** a plain figure with no face. No skin tone is picked for you; until you pick a look or a
+  skin tone only Looks and Skin are open, and Save waits. "Surprise me" picks everything at once, only when asked.
+- **"Your avatar is ready!"** after Save: the whole person waving, the round one beside it (as it shows on your
+  cards, with your flatmate type), and **Change outfit**, **Edit avatar**, **Done**.
+- **Two drawings of one person:** the round one (head and shoulders, with the flatmate type's scene and prop) is
+  what every list, chat and the Vibe Card show, as before; the standing one is in the studio, at the "ready"
+  moment and on your own Profile. Other people only see the round one.
 
 **Where you make it:**
 - Seekers see it once, right after the reveal at the end of onboarding ("Show me"), and then go on to Discover. It
   adds no question to onboarding and never holds up sign-up.
-- Anyone can make or edit it from Account ("Make your avatar" / "Edit avatar", with "Remove my avatar").
+- Anyone can make or edit it from Account ("Make your avatar" / "Edit avatar"; "Remove my avatar" is at the foot of
+  the studio).
 - On the Vibe Card, "Put your avatar on your card".
 - Owners can also reach it from their own row in the posting form's "who lives there" step. It's never offered for
   their flatmates.
@@ -928,7 +950,7 @@ The cartoon updates as you tap. It starts neutral: no skin tone is picked for yo
 - the messages list and the chat header;
 - a FlatMart seller;
 - a nearby party's guest requests;
-- Account;
+- Account, standing whole in the band;
 - large on the Vibe Card. There it's live on screen, laid exactly over a still copy in the shared 1080 × 1920
   image. Without an avatar the card keeps the type's emoji.
 
@@ -945,16 +967,27 @@ People without an avatar show a **neutral default**: a plain silhouette in beige
 **Movement:** a blink every few seconds, slight breathing, a wave when the Vibe Card or the maker opens, and the prop
 and the sun, moon or stars moving a little.
 - It uses transform and opacity only.
-- Only the Vibe Card, Account and the maker move. Small avatars in lists stay still.
+- Only the Vibe Card, Account and the studio move (the wave runs once when the studio opens and at the "ready"
+  moment). Small avatars in lists stay still.
 - With reduced motion turned on, nothing moves.
 
 **How it's built:**
 - The parts are our own SVG, bundled in the app with no outside service. The library (`FMAvatar` in `index.html`) is
-  the same code as `design/avatars-human/avatar.js`.
-- The choices are saved as a small JSON on the profile, `fm_profiles.avatar`. Keys: `s` skin, `f` face, `h` hair,
-  `hc` hair colour, `c` covering, `cc` covering colour, `g` glasses, `b` beard, `t` top, `ty` type, `v` version.
+  the same code as `design/avatars-human/avatar.js`: `avatar()` draws the round one, `figure()` the standing one,
+  from the same parts in the same coordinates (the round one is the top of the figure).
+- The choices are saved as a small JSON on the profile, `fm_profiles.avatar`. The first keys (13 Nov): `s` skin,
+  `f` face, `h` hair, `hc` hair colour, `c` covering, `cc` covering colour, `g` glasses, `b` beard, `t` top, `ty`
+  type, `v` version. The studio's keys (22 Nov): `m` mouth, `e` eyes, `br` eyebrows, `h2` hair, `hc2` hair colour,
+  `c2` headwear, `gl` glasses, `b2` beard, `bc` beard colour, `ea` earrings, `o` top, `tc` its colour, `p` bottoms,
+  `pc` their colour, `sh` shoes, `shc` their colour.
+- **An older app still draws everyone.** A phone on a build from before the studio knows only the first keys and
+  their first values. So a saved avatar carries both: each new choice in its own key, and in the first key the
+  nearest thing the older app can draw (a quiff reads there as short hair, a sky kurta as a lavender top). The
+  first keys never take a new value (`avPack`, `avUn`). An avatar from before the studio reads as itself, in a
+  T-shirt, jeans and white sneakers.
 - They're saved with `fm_set_avatar`. The server accepts only these keys and values (`fm_avatar_valid`, also a check
-  on the table).
+  on the table); the app's `avValid` is the same rule, so demo mode refuses what live mode would, and `p21` compares
+  the app's lists with the server's, value for value.
 - Others' avatars come from `fm_avatars(kind, ids)`, using the ids a list already has: profile, listing, item,
   request, offer or thread. For a request or an offer, only the two people in it can see each other's.
 - Blocked people's avatars are never returned, and someone with no avatar gets no row.
