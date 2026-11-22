@@ -1038,9 +1038,10 @@ about type, shapes, layout and the logo still holds.
   - the three choices on the sign-up card (blue, apricot, mint) and the four party covers (blue, apricot, pink,
     mint);
   - **My flat's two shortcuts** (Kamal, 22 Nov, of the white tiles with blue names: "Can u put tab colors to
-    flatsplit and flat mark matching the app"): each is a tile in the pastel of the screen it opens, lighter at
-    the top like that screen's band. Flatsplits is pink, FlatMart apricot. The words are charcoal, as on a band,
-    and the icon sits on white (`.extras a`; checked in `p31`).
+    flatsplit and flat mark matching the app"; and of the pink and apricot they first got: "Blue and pink will
+    look good. The colors from the app"): two tiles in the app's pastels, lighter at the top like a band.
+    Flatsplits is blue, FlatMart pink. The words are charcoal, as on a band, and the icon sits on white
+    (`.extras a`; checked in `p31`).
 - **The strip above the page follows the band** (`barMeasure`, `barApply`): on the website it is the browser's bar
   (the `theme-color` tag), in the Android app the strip behind the clock (the page sends a `bars` message and
   `MainActivity.paintBars` paints it). It is the band's pastel while the band runs under the top bar, the first
