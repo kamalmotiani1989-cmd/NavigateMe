@@ -1662,23 +1662,25 @@ pages. Only apps from this build on can check, so phones on an older build need 
 
 **Permissions** (Kamal, 22 Nov: "Can we build that app automaticaly takes the permission of camera, location and
 gallery and anything else that is important"). No Android app can take a permission by itself: the phone shows its
-own box and the person answers it. So the app asks early, once, and says first what each one is for.
-- **The first-open step:** the first time someone signed in reaches a main screen in the Android app, one sheet,
-  "Set up your app", names what the phone will ask and why. **Continue** brings up Android's boxes one after the
-  other: notifications, then location (the page sends `setup`; `MainActivity` asks only for the ones not given yet
-  and answers with the new status). Only what is missing is named. Once per phone (`fm_setup_asked`). It never
-  opens over another sheet, and not at all when both are already given, before sign-in, in an app from before this
-  build, or on the website.
-- **Not now** leaves each to the moment it is needed, as before: the "Stay in the loop" card for notifications;
-  "Use my current location" and the map's locate button for location.
-- **Location** is read only on those taps. Nothing follows it in the background (the privacy page says the same).
+own box and the person answers it. Two ways were put to Kamal (22 Nov, by King): A, at first open ask for
+notifications and then location; B, at first open ask only for notifications, and ask for location the first time
+someone uses the map or parties near them; no camera or gallery permission in either. **Kamal chose B.**
+- **The first-open step:** the first time someone signed in reaches a main screen in the Android app with
+  notifications off, one sheet, "Set up your app", says what is asked now (notifications), what later (location)
+  and what never (photos and the camera). **Continue** brings up Android's box for notifications (the same ask as
+  the "Stay in the loop" card). Once per phone (`fm_setup_asked`). It never opens over another sheet, and not at
+  all when notifications are already allowed, before sign-in, or on the website.
+- **Not now** asks Android nothing; the "Stay in the loop" card still offers notifications where it did before.
+- **Location** is asked the first time someone taps "Use my current location" or the map's locate button, as
+  before, and read only on those taps. A "no" given before someone knows why can stop Android asking again, which
+  is why it is not asked at first open. Nothing follows it in the background (the privacy page says the same).
 - **Photos and the camera need no permission.** Choosing photos goes through Android's own picker. **Take a
   photo** is in the same chooser (22 Nov): the phone's own camera app takes it and writes it to the app's cache
   (`cache/camera`, handed over through the FileProvider). The app does not declare the camera permission, so
   nothing is asked.
 - **What the app declares:** internet, notifications, location (approximate and precise). Nothing else.
-- Checks: `p36` (the sheet with a stand-in for the Android side, and the Android files as written; the Java is
-  compiled by CI).
+- Checks: `p36` (the sheet with a stand-in for the Android side, and the Android files as written: only
+  notifications are asked from the sheet, location only from the map's own prompt; the Java is compiled by CI).
 
 How it's built: `android/` is a small native app that shows the web app full-screen. The build
 copies `index.html`, `privacy.html`, `manifest.webmanifest`, `icons/` and `vendor/` into the APK, so you only ever

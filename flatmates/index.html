@@ -1558,7 +1558,7 @@ dialog.confirm{width:min(400px,calc(100vw - 32px)); height:fit-content; max-heig
 .tribe-fit.solo{background:var(--surface-2); box-shadow:none} .tribe-fit.solo b{color:var(--text)}
 .confirm-body p{color:var(--text-2); margin:8px 0 20px}
 .confirm-body .btn + .btn{margin-top:10px}
-.su-list{list-style:none; margin:0 0 18px; padding:0; display:grid; gap:8px; text-align:left} .su-list li{padding:11px 14px; border-radius:14px; background:var(--surface-2)} .su-list li[hidden]{display:none}
+.su-list{list-style:none; margin:0 0 18px; padding:0; display:grid; gap:8px; text-align:left} .su-list li{padding:11px 14px; border-radius:14px; background:var(--surface-2)}
 .su-list b{display:block; font-size:var(--fs-m)} .su-list small{display:block; color:var(--text-2); font-size:var(--fs-s); line-height:1.4}
 @media (max-width:640px){
   dialog.confirm{width:100vw; max-width:100vw; height:fit-content; max-height:100dvh; margin:auto 0 0; border-radius:24px 24px 0 0;
@@ -3722,9 +3722,9 @@ a:not([class]), .linkbtn, .pk-more, .lg-sms, .otp-more .linkbtn, #otpBack{color:
 
 <dialog id="dlgSetup" class="confirm" aria-labelledby="suTitle"><div class="confirm-body">
   <span class="confirm-ic" style="background:var(--p-blue-a);color:var(--ink)"><svg class="ic" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 003.4 0"/></svg></span>
-  <h2 id="suTitle">Set up your app</h2><p>Your phone will ask you next. This is what each one is for.</p>
-  <ul class="su-list"><li id="suNotif"><b>Notifications</b><small>So you know the moment someone wants to meet you, says yes or sends a message.</small></li>
-    <li id="suLoc"><b>Location</b><small>Used only when you tap "Use my current location" or put your flat's pin on the map. Never followed in the background.</small></li>
+  <h2 id="suTitle">Set up your app</h2><p>One thing to allow now. Your phone will ask you next.</p>
+  <ul class="su-list"><li><b>Notifications</b><small>Now. So you know the moment someone wants to meet you, says yes or sends a message.</small></li>
+    <li><b>Location</b><small>Not now. Your phone asks only the first time you use the map or tap "Use my current location". Never followed in the background.</small></li>
     <li><b>Photos and camera</b><small>Nothing to allow. You pick a photo, or take one, with your phone's own gallery and camera.</small></li></ul>
   <button class="btn btn-primary btn-block" type="button" id="suAllow">Continue</button>
   <button class="btn btn-ghost btn-block" type="button" id="suLater">Not now</button>
@@ -7118,29 +7118,29 @@ async function savePushToken(){
 if(Notify.native()){
   FlatmatesNative.onmessage = e => {
     let m; try{ m = JSON.parse(e.data); }catch(err){ return; }
-    if(m.type === "status"){ Notify.nativeOn = Boolean(m.granted); Notify.loc = m.location === undefined ? null : Boolean(m.location); Notify.canSetup = Boolean(m.setup);
-      if(m.build) checkAppUpdate(m.build); setupAsk(); }
+    if(m.type === "status"){ Notify.nativeOn = Boolean(m.granted); if(m.build) checkAppUpdate(m.build); setupAsk(); }
     if(m.type === "token"){ pushToken = m.token; savePushToken(); }
     if(m.type === "open" && state.user){ if(api.fresh) api.fresh(); go(m.view || "requests"); }   // a tapped notification: the screen it opens reads anew
   };
   FlatmatesNative.postMessage(JSON.stringify({ type:"hello" }));
 }
-// The Android app's first-open step (Kamal, 22 Nov: "app automaticaly takes the permission of camera, location and gallery
-// and anything else that is important"). No app can take a permission by itself: Android shows its own box and the
-// person answers it. What the app can do is ask early, once, and say first what each is for. So the first time someone
-// signed in reaches a main screen in the Android app, one sheet names them; Continue brings up Android's boxes one after
-// the other (notifications, then location; MainActivity "setup"). Photos need none: Android's own picker and camera app
-// do the work, and "Take a photo" is in the chooser. Once per phone; "Not now" leaves each to the moment it is needed,
-// as before (Parties and the maps ask for location, the "Stay in the loop" card for notifications).
+// The Android app's first-open step (Kamal, 22 Nov: "Can we build that app automaticaly takes the permission of camera,
+// location and gallery and anything else that is important"). No app can take a permission by itself: Android shows its
+// own box and the person answers it. Of the two ways put to him, Kamal chose the second: at first open ask only for
+// notifications; ask for location the first time someone uses the map or "Use my current location", as the app already
+// did (a "no" given before someone knows why can stop Android asking again); no camera or gallery permission at all
+// (Android's own picker and camera app do that work, and "Take a photo" is in the chooser). So the first time someone
+// signed in reaches a main screen in the Android app with notifications off, one sheet says what is asked now, what
+// later and what never; Continue brings up Android's box for notifications (the same ask as the "Stay in the loop"
+// card). Once per phone; "Not now" leaves it to that card.
 const SETUP_KEY = "fm_setup_asked";
 function setupAsk(){
-  if(!Notify.native() || !Notify.canSetup || !state.user || !state.onboarded[roleKey()] || readLS(SETUP_KEY)) return;
-  if(Notify.nativeOn === true && Notify.loc === true){ writeLS(SETUP_KEY, Date.now()); return; }   // nothing left to ask
+  if(!Notify.native() || Notify.nativeOn === null || !state.user || !state.onboarded[roleKey()] || readLS(SETUP_KEY)) return;
+  if(Notify.nativeOn === true){ writeLS(SETUP_KEY, Date.now()); return; }   // already allowed: nothing to ask
   if(document.querySelector("dialog[open]")) return;   // not on top of something else: the next round asks
-  $("suNotif").hidden = Notify.nativeOn === true; $("suLoc").hidden = Notify.loc === true;
   $("dlgSetup").showModal();
 }
-$("suAllow").onclick = () => { writeLS(SETUP_KEY, Date.now()); $("dlgSetup").close(); FlatmatesNative.postMessage(JSON.stringify({ type:"setup" })); };
+$("suAllow").onclick = () => { writeLS(SETUP_KEY, Date.now()); $("dlgSetup").close(); Notify.ask(); };
 $("suLater").onclick = () => { writeLS(SETUP_KEY, Date.now()); $("dlgSetup").close(); };
 // A friendly ask (Kamal, 15 Nov): what you'll get, in three lines, with "Not now" (hidden for a week).
 const notifyCard = text => Notify.supported() && !Notify.on() && !(state.notifLater && Date.now() - state.notifLater < 7 * 864e5)

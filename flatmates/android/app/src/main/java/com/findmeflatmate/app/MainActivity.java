@@ -51,7 +51,6 @@ public class MainActivity extends Activity {
     private static final int PICK_PHOTOS = 1;
     private static final int ASK_NOTIFICATIONS = 2;
     private static final int ASK_LOCATION = 3;
-    private static final int ASK_SETUP = 4;
     static final String EXTRA_OPEN = "open";
 
     private WebView web;
@@ -104,7 +103,8 @@ public class MainActivity extends Activity {
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
                 if (!origin.startsWith("https://" + HOST)) { callback.invoke(origin, false, false); return; }
-                if (locationAllowed()) {
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     callback.invoke(origin, true, false);
                     return;
                 }
@@ -149,7 +149,7 @@ public class MainActivity extends Activity {
 
     /**
      * Exposes `FlatmatesNative` to the app's own pages only (not to embedded maps).
-     * Messages are JSON: {type: hello | permission | setup | notify | shareImage | shareFile | bars, ...}.
+     * Messages are JSON: {type: hello | permission | notify | shareImage | shareFile | bars, ...}.
      */
     private void addNativeBridge() {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_MESSAGE_LISTENER)) return;
@@ -167,9 +167,6 @@ public class MainActivity extends Activity {
                                 break;
                             case "permission":
                                 askNotificationPermission();
-                                break;
-                            case "setup":
-                                askSetupPermissions();
                                 break;
                             case "notify":
                                 Notifications.show(this, m.optString("title"), m.optString("body"), m.optString("open", "requests"));
@@ -257,33 +254,6 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * The first-open step (Kamal, 22 Nov 2026). The page has said what each permission is for; this brings up
-     * Android's own boxes for the ones not given yet, one after the other. Nothing is taken without the
-     * person's tap: no app can do that. Photos need no permission (Android's picker and camera app).
-     */
-    private void askSetupPermissions() {
-        java.util.ArrayList<String> ask = new java.util.ArrayList<>();
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
-            ask.add(Manifest.permission.POST_NOTIFICATIONS);
-        }
-        if (!locationAllowed()) {
-            ask.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            ask.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
-        if (ask.isEmpty()) {
-            sendStatus();
-            return;
-        }
-        requestPermissions(ask.toArray(new String[0]), ASK_SETUP);
-    }
-
-    private boolean locationAllowed() {
-        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    /**
      * "Take a photo" in the photo chooser (Kamal, 22 Nov 2026). The phone's own camera app takes the picture and
      * writes it to a file in this app's cache (cache/camera, handed over through the FileProvider), so the app
      * itself holds no camera permission and nothing is asked. Returns null where there is no camera app.
@@ -315,7 +285,7 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
-        if (requestCode == ASK_NOTIFICATIONS || requestCode == ASK_SETUP) sendStatus();
+        if (requestCode == ASK_NOTIFICATIONS) sendStatus();
         if (requestCode == ASK_LOCATION && pendingGeo != null) {
             boolean granted = false;
             for (int r : results) granted |= r == PackageManager.PERMISSION_GRANTED;
@@ -325,8 +295,7 @@ public class MainActivity extends Activity {
     }
 
     private void sendStatus() {
-        post("{\"type\":\"status\",\"granted\":" + Notifications.allowed(this) + ",\"location\":" + locationAllowed()
-                + ",\"setup\":true,\"build\":" + buildNumber() + "}");
+        post("{\"type\":\"status\",\"granted\":" + Notifications.allowed(this) + ",\"build\":" + buildNumber() + "}");
     }
 
     /** This app's build number (the CI run number), so the page can tell when a newer app is out. */
