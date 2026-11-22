@@ -148,6 +148,11 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
 2. On resume: the Wednesday pack from groups at `rules read` or better; the college outreach drafts are with Kamal.
 
 ## Decisions waiting for Kamal
+- **A colour preview (22 Nov, Kamal's ask to Teche, from another app's screens): yes or no.** Nothing is changed; Teche
+  showed pictures only. It would be the fourth look since 9 Nov and would replace the look of 17 Nov that the reels and
+  the blog are in. Teche told Kamal the three snags: its orange-red beside the logo's deeper orange, white words on it
+  at 3.2:1 against our 4.5:1, and blue links. King recommends: if he likes it, take the white page and the pastel bands,
+  keep the logo's orange on buttons, no second orange and no blue links; then leave the look alone until sign-up opens.
 - **Parties, privacy (found by Teche, 17 Nov):** a party's distance is measured from the flat's exact pin and shown to
   100 m, and the place you measure from can be changed as often as you like, so someone patient could work out roughly
   where a flat is. Fix: measure from the rounded spot the map already uses, and limit how often the place can change.
