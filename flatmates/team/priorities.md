@@ -180,6 +180,19 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
 2. On resume: the Wednesday pack from groups at `rules read` or better; the college outreach drafts are with Kamal.
 
 ## Decisions waiting for Kamal
+- **Minimal colours (Kamal, 24 Nov, in King's session: "Can we use minimalism colors"): a preview only, nothing changed.**
+  King drew three ways over today's build by overriding colour tokens in the browser and sent Kamal the pictures beside
+  today's. On his pick it becomes Teche's task (every screen, the Android bars, the blog in the same go, tests and
+  pictures first). In all three: words and dark sheets `#1C1917`, secondary words `#57534E`, the logo's own orange
+  `#C2410C` for `--orange` and its family (white on it reads at 5.2 to 1), links dark, every pastel band and tile one
+  neutral, hairlines `#E7E5E4`, lighter shadows. The drawn people, photos, score rings and green, amber and crimson keep
+  their colours; layouts, words and the logo do not change.
+  - **A, clean white:** page `#FFFFFF`; band and quiet panels `#F5F5F4` (band foot `#EFEEEC`); tints `#EEEDEB`; lines `#DEDCD9`.
+  - **B, warm neutral:** page `#FAF7F2` with white cards; band `#F1ECE4` (foot `#EAE3D8`); panels `#F4F0EA`; tints `#ECE6DC`;
+    lines `#DDD5C9`.
+  - **C, black and white:** A, with main buttons, the search button and badges in `#1C1917`; orange only in the logo, the
+    key word and the place you are on.
+  King recommends A, and that whichever look is picked then stays until sign-up opens.
 - **The colours of 22 Nov are live (#123, b41d5dc, Android build 226), as built.** Kamal's yes to the finished pictures,
   22 Nov, in Teche's session ("Yes", as Teche quotes it); it came before King's side-by-side reached him. What is live:
   white page, a pastel band per screen, the orange-red `#E2461B` on buttons and the key word, blue links, charcoal
