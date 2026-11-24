@@ -200,6 +200,10 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   blur is heavy on cheaper Android phones) and, if Kamal likes the feel, glass on the two bars only. One thing found
   while drawing it, for whoever builds it: the bottom bar sits inside the header in the page, so a blur put on the
   header itself pulls the bottom bar to the top of the screen; the blur has to go on a layer behind the header instead.
+- **Clay style (Kamal, 24 Nov, in King's session: "Show me claymorphism"): pictures only, nothing changed.** King drew the
+  first page, Discover, Parties, Tribe and a home's page as soft, puffy shapes on a pale blue page (`#E6ECFA`), white
+  cards, the pastel tiles kept, the logo's orange on buttons. It stays easy to read, which whole-app glass does not.
+  King's order of preference, put to Kamal: A with glass bars; clay; today's look. The pick is his.
 - **The colours of 22 Nov are live (#123, b41d5dc, Android build 226), as built.** Kamal's yes to the finished pictures,
   22 Nov, in Teche's session ("Yes", as Teche quotes it); it came before King's side-by-side reached him. What is live:
   white page, a pastel band per screen, the orange-red `#E2461B` on buttons and the key word, blue links, charcoal
