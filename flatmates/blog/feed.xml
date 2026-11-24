@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-IN">
+  <title>FindMeFlatMate blog</title>
+  <subtitle>Straight answers on finding a flatmate, splitting the bills and living together, for renters in India.</subtitle>
+  <link href="https://findmeflatmate.com/blog/feed.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://findmeflatmate.com/blog/" rel="alternate" type="text/html"/>
+  <id>https://findmeflatmate.com/blog/</id>
+  <updated>2026-11-18T09:00:00+05:30</updated>
+  <author><name>The FindMeFlatMate team</name><uri>https://findmeflatmate.com/</uri></author>
+  <entry>
+    <title>Split the rent without falling out</title>
+    <link href="https://findmeflatmate.com/blog/split-rent-fairly/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/split-rent-fairly/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Money"/>
+    <summary>Equal isn&apos;t always fair. A simple way to split rent and bills between flatmates, with a calculator that does the sums.</summary>
+  </entry>
+  <entry>
+    <title>PG, flat-share or co-living: which one fits you?</title>
+    <link href="https://findmeflatmate.com/blog/pg-flat-or-coliving/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/pg-flat-or-coliving/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Finding a place"/>
+    <summary>The three ways to rent a room in an Indian city, compared honestly: what you get, what you run yourself, deposits, rules and paperwork, and how to choose.</summary>
+  </entry>
+  <entry>
+    <title>What to ask a flatmate before you say yes</title>
+    <link href="https://findmeflatmate.com/blog/what-to-ask-a-flatmate/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/what-to-ask-a-flatmate/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Finding a place"/>
+    <summary>Most flatmate trouble is about sleep, cleaning, guests and money. The questions to ask before you move in, and the answers that should make you pause.</summary>
+  </entry>
+  <entry>
+    <title>Seeing a flat? Check these before you pay a token</title>
+    <link href="https://findmeflatmate.com/blog/flat-visit-checklist/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/flat-visit-checklist/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Finding a place"/>
+    <summary>A flat-visit checklist you can tick off on your phone: the room, the water, the building, the people and the money, in the order you will meet them.</summary>
+  </entry>
+  <entry>
+    <title>Rental scams: the red flags, and what to do if you paid</title>
+    <link href="https://findmeflatmate.com/blog/rental-scams-red-flags/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/rental-scams-red-flags/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Safety"/>
+    <summary>How rental scams in India work, the warning signs, the checks to make before you pay a token, and exactly what to do, in order, if the money has gone.</summary>
+  </entry>
+  <entry>
+    <title>Rent agreement basics: what to read before you sign</title>
+    <link href="https://findmeflatmate.com/blog/rent-agreement-basics/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/rent-agreement-basics/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Paperwork"/>
+    <summary>Why agreements run for 11 months, what the deposit rules really are, whose name should be on the paper, and the clauses to read twice. For renters in India.</summary>
+  </entry>
+  <entry>
+    <title>House rules the whole flat will actually follow</title>
+    <link href="https://findmeflatmate.com/blog/house-rules-that-hold/" rel="alternate" type="text/html"/>
+    <id>https://findmeflatmate.com/blog/house-rules-that-hold/</id>
+    <published>2026-11-18T09:00:00+05:30</published>
+    <updated>2026-11-18T09:00:00+05:30</updated>
+    <category term="Living together"/>
+    <summary>A one-page flat agreement you can copy, the seven things worth writing down, and how to bring up the awkward stuff before it turns into a fight.</summary>
+  </entry>
+</feed>
