@@ -210,6 +210,13 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   chips, a flat bottom bar with a tonal pill, headlines in Urbanist. Both drawn on the first page, Discover, Parties and
   a home's page. Kamal has now seen seven looks as pictures (minimal A, B, C; glass; glass bars; clay; Swiss; Material 3)
   beside today's. Nothing is built until he picks one.
+- **Liquid glass (Kamal, 24 Nov, in King's session: "Apples new liqid glass"): pictures only, nothing changed.** Drawn as
+  minimal A with the bars and buttons in clear, shiny glass (the bottom bar, the top bar's buttons with no solid strip,
+  the main button as orange glass, a home's foot bar), on Discover, Parties, FlatMart and a home's page, and a close-up of
+  the bottom bar three ways (solid, frosted, liquid). What King told Kamal: it is Apple's own look for iPhone apps; our
+  app is Android and a website, where it can only be imitated with blur and shine; it belongs on bars and buttons, not
+  pages, so it is "A with glass bars" in a shinier finish; and labels on the clear bar are harder to read when something
+  bright passes behind. King's preference is unchanged: A with frosted bars.
 - **The colours of 22 Nov are live (#123, b41d5dc, Android build 226), as built.** Kamal's yes to the finished pictures,
   22 Nov, in Teche's session ("Yes", as Teche quotes it); it came before King's side-by-side reached him. What is live:
   white page, a pastel band per screen, the orange-red `#E2461B` on buttons and the key word, blue links, charcoal
