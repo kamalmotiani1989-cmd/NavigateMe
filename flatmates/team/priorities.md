@@ -193,6 +193,13 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   - **C, black and white:** A, with main buttons, the search button and badges in `#1C1917`; orange only in the logo, the
     key word and the place you are on.
   King recommends A, and that whichever look is picked then stays until sign-up opens.
+- **Glass style (Kamal, 24 Nov, in King's session: "Yes show me the glass style"): pictures only, nothing changed.** King
+  drew the first page, Discover and Parties as frosted, see-through cards over a colourful background, and a third way:
+  minimal A with only the top bar and the bottom bar in glass. King recommends against glass on the whole app (it needs a
+  colourful background, so it is the opposite of minimal; words on see-through panels are harder to keep readable; the
+  blur is heavy on cheaper Android phones) and, if Kamal likes the feel, glass on the two bars only. One thing found
+  while drawing it, for whoever builds it: the bottom bar sits inside the header in the page, so a blur put on the
+  header itself pulls the bottom bar to the top of the screen; the blur has to go on a layer behind the header instead.
 - **The colours of 22 Nov are live (#123, b41d5dc, Android build 226), as built.** Kamal's yes to the finished pictures,
   22 Nov, in Teche's session ("Yes", as Teche quotes it); it came before King's side-by-side reached him. What is live:
   white page, a pastel band per screen, the orange-red `#E2461B` on buttons and the key word, blue links, charcoal
