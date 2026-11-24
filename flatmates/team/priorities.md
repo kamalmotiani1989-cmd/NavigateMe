@@ -204,6 +204,12 @@ STANDING (Kamal, 16 Nov): the logo and its colours never change with the look. T
   first page, Discover, Parties, Tribe and a home's page as soft, puffy shapes on a pale blue page (`#E6ECFA`), white
   cards, the pastel tiles kept, the logo's orange on buttons. It stays easy to read, which whole-app glass does not.
   King's order of preference, put to Kamal: A with glass bars; clay; today's look. The pick is his.
+- **Swiss grid and Material 3 (Kamal, 24 Nov, in King's session: "Show swis grid and material 3"): pictures only, nothing
+  changed.** Swiss: white, black and the logo's orange, square corners, black hairlines, no shadows, headlines in bold
+  Urbanist. Material 3: tones made from the logo's orange (page `#FFF8F6`, filled cards `#FEF1EC`), pill buttons, outlined
+  chips, a flat bottom bar with a tonal pill, headlines in Urbanist. Both drawn on the first page, Discover, Parties and
+  a home's page. Kamal has now seen seven looks as pictures (minimal A, B, C; glass; glass bars; clay; Swiss; Material 3)
+  beside today's. Nothing is built until he picks one.
 - **The colours of 22 Nov are live (#123, b41d5dc, Android build 226), as built.** Kamal's yes to the finished pictures,
   22 Nov, in Teche's session ("Yes", as Teche quotes it); it came before King's side-by-side reached him. What is live:
   white page, a pastel band per screen, the orange-red `#E2461B` on buttons and the key word, blue links, charcoal
